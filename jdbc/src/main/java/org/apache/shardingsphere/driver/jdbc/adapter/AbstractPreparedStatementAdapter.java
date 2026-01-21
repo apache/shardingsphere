@@ -50,170 +50,170 @@ import java.util.List;
  * Adapter for {@code PreparedStatement}.
  */
 public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupportedOperationPreparedStatement {
-
+    
     @Getter
     private final List<PreparedStatementParameter> parameterRecords = new ArrayList<>();
-
+    
     @Override
     public final void setNull(final int parameterIndex, final int sqlType) {
         setParameter(parameterIndex, SetterMethodType.SET_NULL, null, -1L);
     }
-
+    
     @Override
     public final void setNull(final int parameterIndex, final int sqlType, final String typeName) {
         setParameter(parameterIndex, SetterMethodType.SET_NULL, null, -1L);
     }
-
+    
     @Override
     public final void setBoolean(final int parameterIndex, final boolean x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setByte(final int parameterIndex, final byte x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setShort(final int parameterIndex, final short x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setInt(final int parameterIndex, final int x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setLong(final int parameterIndex, final long x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setFloat(final int parameterIndex, final float x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setDouble(final int parameterIndex, final double x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setString(final int parameterIndex, final String x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setBigDecimal(final int parameterIndex, final BigDecimal x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setDate(final int parameterIndex, final Date x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setDate(final int parameterIndex, final Date x, final Calendar cal) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setTime(final int parameterIndex, final Time x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setTime(final int parameterIndex, final Time x, final Calendar cal) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setTimestamp(final int parameterIndex, final Timestamp x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setTimestamp(final int parameterIndex, final Timestamp x, final Calendar cal) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setBytes(final int parameterIndex, final byte[] x) {
         setParameter(parameterIndex, SetterMethodType.SET_BYTES, x, -1L);
     }
-
+    
     @Override
     public final void setBlob(final int parameterIndex, final Blob x) {
         setParameter(parameterIndex, SetterMethodType.SET_BLOB, x, -1L);
     }
-
+    
     @Override
     public final void setBlob(final int parameterIndex, final InputStream x) {
         setParameter(parameterIndex, SetterMethodType.SET_BLOB_INPUT_STREAM, x, -1L);
     }
-
+    
     @Override
     public final void setBlob(final int parameterIndex, final InputStream x, final long length) {
         setParameter(parameterIndex, SetterMethodType.SET_BLOB_INPUT_STREAM, x, length);
     }
-
+    
     @Override
     public final void setClob(final int parameterIndex, final Clob x) {
         setParameter(parameterIndex, SetterMethodType.SET_CLOB, x, -1L);
     }
-
+    
     @Override
     public final void setClob(final int parameterIndex, final Reader x) {
         setParameter(parameterIndex, SetterMethodType.SET_CLOB_READER, x, -1L);
     }
-
+    
     @Override
     public final void setClob(final int parameterIndex, final Reader x, final long length) {
         setParameter(parameterIndex, SetterMethodType.SET_CLOB_READER, x, length);
     }
-
+    
     @Override
     public void setArray(final int parameterIndex, final Array x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setAsciiStream(final int parameterIndex, final InputStream x) {
         setParameter(parameterIndex, SetterMethodType.SET_ASCII_STREAM, x, -1L);
     }
-
+    
     @Override
     public final void setAsciiStream(final int parameterIndex, final InputStream x, final int length) {
         setParameter(parameterIndex, SetterMethodType.SET_ASCII_STREAM, x, length);
     }
-
+    
     @Override
     public final void setAsciiStream(final int parameterIndex, final InputStream x, final long length) {
         setParameter(parameterIndex, SetterMethodType.SET_ASCII_STREAM, x, length);
     }
-
+    
     @Override
     public final void setUnicodeStream(final int parameterIndex, final InputStream x, final int length) {
         setParameter(parameterIndex, SetterMethodType.SET_BINARY_STREAM, x, length);
     }
-
+    
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x) {
         setParameter(parameterIndex, SetterMethodType.SET_BINARY_STREAM, x, -1L);
     }
-
+    
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x, final int length) {
         setParameter(parameterIndex, SetterMethodType.SET_BINARY_STREAM, x, length);
     }
-
+    
     @Override
     public final void setBinaryStream(final int parameterIndex, final InputStream x, final long length) {
         setParameter(parameterIndex, SetterMethodType.SET_BINARY_STREAM, x, length);
     }
-
+    
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x) {
         try {
@@ -222,7 +222,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
             throw new UnknownSQLException(ex);
         }
     }
-
+    
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x, final int length) {
         try {
@@ -231,7 +231,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
             throw new UnknownSQLException(ex);
         }
     }
-
+    
     @Override
     public final void setCharacterStream(final int parameterIndex, final Reader x, final long length) {
         try {
@@ -240,32 +240,32 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
             throw new UnknownSQLException(ex);
         }
     }
-
+    
     @Override
     public final void setURL(final int parameterIndex, final URL x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setSQLXML(final int parameterIndex, final SQLXML x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setObject(final int parameterIndex, final Object x) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setObject(final int parameterIndex, final Object x, final int targetSqlType) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     @Override
     public final void setObject(final int parameterIndex, final Object x, final int targetSqlType, final int scaleOrLength) {
         setParameter(parameterIndex, SetterMethodType.SET_OBJECT, x, -1L);
     }
-
+    
     private void setParameter(final int parameterIndex, final SetterMethodType methodType, final Object value, final long length) {
         PreparedStatementParameter param = new PreparedStatementParameter(parameterIndex, methodType, value, length);
         if (parameterRecords.size() == parameterIndex - 1) {
@@ -277,7 +277,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         }
         parameterRecords.set(parameterIndex - 1, param);
     }
-
+    
     public List<Object> getParameters() {
         List<Object> result = new ArrayList<>(parameterRecords.size());
         for (PreparedStatementParameter each : parameterRecords) {
@@ -285,7 +285,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         }
         return result;
     }
-
+    
     protected final void replaySetParameter(final PreparedStatement preparedStatement, final List<Object> params) throws SQLException {
         DatabaseType databaseType = getDatabaseType(preparedStatement);
         DialectPreparedStatementParameterReplayer replayer = DatabaseTypedSPILoader.getService(
@@ -297,7 +297,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
             replayer.replay(preparedStatement, param);
         }
     }
-
+    
     private DatabaseType getDatabaseType(final PreparedStatement preparedStatement) {
         try {
             String url = preparedStatement.getConnection().getMetaData().getURL();
@@ -306,7 +306,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
             return DatabaseTypeFactory.get("SQL92");
         }
     }
-
+    
     private PreparedStatementParameter findParameterRecord(final int index, final Object value) {
         for (PreparedStatementParameter each : parameterRecords) {
             if (each.getIndex() == index) {
@@ -315,7 +315,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         }
         return new PreparedStatementParameter(index, SetterMethodType.SET_OBJECT, value, -1L);
     }
-
+    
     @Override
     public final void clearParameters() {
         parameterRecords.clear();
