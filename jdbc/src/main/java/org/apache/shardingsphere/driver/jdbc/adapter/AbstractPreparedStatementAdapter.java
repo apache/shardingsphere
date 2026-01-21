@@ -315,7 +315,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     private PreparedStatementParameter findParameterRecord(final int index, final Object value) {
         for (PreparedStatementParameter each : parameterRecords) {
             if (each.getIndex() == index) {
-                return each;
+                return new PreparedStatementParameter(index, each.getSetterMethodType(), value, each.getLength());
             }
         }
         return new PreparedStatementParameter(index, SetterMethodType.SET_OBJECT, value, -1L);
