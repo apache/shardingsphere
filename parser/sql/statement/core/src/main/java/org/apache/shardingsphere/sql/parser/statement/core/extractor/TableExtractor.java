@@ -59,6 +59,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
@@ -402,6 +404,10 @@ public final class TableExtractor {
             extractTablesFromDelete((DeleteStatement) sqlStatement);
         } else if (sqlStatement instanceof CreateViewStatement) {
             extractTablesFromCreateViewStatement((CreateViewStatement) sqlStatement);
+        } else if (sqlStatement instanceof CreateIndexStatement) {
+            extractTablesFromCreateIndexStatement((CreateIndexStatement) sqlStatement);
+        } else if (sqlStatement instanceof DropIndexStatement) {
+            extractTablesFromDropIndexStatement((DropIndexStatement) sqlStatement);
         }
     }
     
@@ -414,5 +420,25 @@ public final class TableExtractor {
         tableContext.add(createViewStatement.getView());
         rewriteTables.add(createViewStatement.getView());
         extractTablesFromSelect(createViewStatement.getSelect());
+    }
+    
+    /**
+     * Extract table that should be rewritten from create index statement.
+     *
+     * @param createIndexStatement create index statement
+     */
+    public void extractTablesFromCreateIndexStatement(final CreateIndexStatement createIndexStatement) {
+        if (null != createIndexStatement.getTable()) {
+            extractTablesFromTableSegment(createIndexStatement.getTable());
+        }
+    }
+    
+    /**
+     * Extract table that should be rewritten from drop index statement.
+     *
+     * @param dropIndexStatement drop index statement
+     */
+    public void extractTablesFromDropIndexStatement(final DropIndexStatement dropIndexStatement) {
+        dropIndexStatement.getSimpleTable().ifPresent(this::extractTablesFromTableSegment);
     }
 }

@@ -43,6 +43,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -234,5 +236,25 @@ class TableExtractorTest {
         tableExtractor.extractTablesFromSelect(selectStatement);
         assertThat(tableExtractor.getJoinTables().size(), is(1));
         assertThat(tableExtractor.getJoinTables().iterator().next(), is(joinTableSegment));
+    }
+    
+    @Test
+    void assertExtractTablesFromCreateIndexStatement() {
+        CreateIndexStatement createIndexStatement = mock(CreateIndexStatement.class);
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(30, 40, new IdentifierValue("t_order")));
+        when(createIndexStatement.getTable()).thenReturn(tableSegment);
+        tableExtractor.extractTablesFromCreateIndexStatement(createIndexStatement);
+        assertThat(tableExtractor.getRewriteTables().size(), is(1));
+        assertTableSegment(tableExtractor.getRewriteTables().iterator().next(), 30, 40, "t_order");
+    }
+    
+    @Test
+    void assertExtractTablesFromDropIndexStatement() {
+        DropIndexStatement dropIndexStatement = mock(DropIndexStatement.class);
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(30, 40, new IdentifierValue("t_order")));
+        when(dropIndexStatement.getSimpleTable()).thenReturn(Optional.of(tableSegment));
+        tableExtractor.extractTablesFromDropIndexStatement(dropIndexStatement);
+        assertThat(tableExtractor.getRewriteTables().size(), is(1));
+        assertTableSegment(tableExtractor.getRewriteTables().iterator().next(), 30, 40, "t_order");
     }
 }
