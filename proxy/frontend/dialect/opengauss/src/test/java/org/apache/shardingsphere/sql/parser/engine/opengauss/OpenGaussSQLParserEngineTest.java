@@ -77,7 +77,7 @@ class OpenGaussSQLParserEngineTest {
     private ShardingSphereMetaData mockMetaData() {
         ShardingSphereColumn userIdColumn = new ShardingSphereColumn("user_id", 0, false, false, false, true, false, false);
         ShardingSphereTable orderTable = new ShardingSphereTable("t_order", Collections.singletonList(userIdColumn), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema testSchema = new ShardingSphereSchema("test", Collections.singleton(orderTable), Collections.emptyList());
+        ShardingSphereSchema testSchema = new ShardingSphereSchema("test", Collections.singleton(orderTable), Collections.emptyList(), databaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("logic_db");
         when(database.containsSchema("test")).thenReturn(true);
