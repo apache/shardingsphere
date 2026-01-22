@@ -23,7 +23,7 @@ git config --global core.longpaths true
 
 ## 安装 JDK
 
-使用 JDK 11 或以上版本。
+使用 JDK 17 或以上版本。
 
 可以从 [OpenJDK 下载页面]( https://adoptium.net/temurin/releases ) 下载。
 
