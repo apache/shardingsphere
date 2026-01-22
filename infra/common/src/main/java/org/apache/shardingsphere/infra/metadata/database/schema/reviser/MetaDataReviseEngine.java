@@ -49,16 +49,16 @@ public final class MetaDataReviseEngine {
     
     private final Collection<ShardingSphereRule> rules;
     
+    private final DatabaseType protocolType;
+    
     /**
      * Revise meta data.
      *
      * @param schemaMetaDataMap schema meta data map
      * @param material generic schema builder material
-     * @param protocolType database type
      * @return ShardingSphere schema map
      */
-    public Map<String, ShardingSphereSchema> revise(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material,
-                                                    final DatabaseType protocolType) {
+    public Map<String, ShardingSphereSchema> revise(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         if (schemaMetaDataMap.isEmpty()) {
             return Collections.singletonMap(material.getDefaultSchemaName(), new ShardingSphereSchema(material.getDefaultSchemaName(), protocolType));
         }

@@ -54,9 +54,8 @@ class ShardingMetaDataReviseEngineTest {
     void assertReviseWithKeyGenerateStrategy() {
         GenericSchemaBuilderMaterial material = mock(GenericSchemaBuilderMaterial.class);
         when(material.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        Map<String, ShardingSphereSchema> actual = new MetaDataReviseEngine(Collections.singleton(mockShardingRule()))
-                .revise(Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData()))), material,
-                        mock(DatabaseType.class));
+        Map<String, ShardingSphereSchema> actual = new MetaDataReviseEngine(Collections.singleton(mockShardingRule()), mock(DatabaseType.class))
+                .revise(Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData()))), material);
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("sharding_db"));
         assertThat(actual.get("sharding_db").getAllTables().size(), is(1));
