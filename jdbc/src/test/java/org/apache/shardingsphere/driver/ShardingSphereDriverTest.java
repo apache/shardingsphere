@@ -65,6 +65,7 @@ class ShardingSphereDriverTest {
             assertThat(connection, isA(ShardingSphereConnection.class));
             statement.execute("DROP TABLE IF EXISTS t_order");
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT)");
+            statement.execute("CREATE INDEX idx_uid ON t_order (user_id)");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 101), (2, 102)");
             try (ResultSet resultSet = statement.executeQuery("SELECT COUNT(1) FROM t_order")) {
                 assertTrue(resultSet.next());
