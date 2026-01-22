@@ -1,0 +1,123 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_ADVISOR_TASKS:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: TASK_ID
+    type: NUMBER
+    nullable: false
+  - name: TASK_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: DESCRIPTION
+    type: VARCHAR2
+    nullable: true
+    length: 256
+  - name: ADVISOR_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: CREATED
+    type: DATE
+    nullable: false
+  - name: LAST_MODIFIED
+    type: DATE
+    nullable: false
+  - name: PARENT_TASK_ID
+    type: NUMBER
+    nullable: true
+  - name: PARENT_RXEC_ID
+    type: NUMBER
+    nullable: true
+  - name: LAST_EXECUTION
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: EXECUTION_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: EXECUTION_TYPE#
+    type: NUMBER
+    nullable: true
+  - name: EXECUTION_DESCRIPTION
+    type: VARCHAR2
+    nullable: true
+    length: 256
+  - name: EXECUTION_START
+    type: DATE
+    nullable: true
+  - name: EXECUTION_END
+    type: DATE
+    nullable: true
+  - name: STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 11
+  - name: STATUS_MESSAGE
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: PCT_COMPLETION_TIME
+    type: NUMBER
+    nullable: true
+  - name: PROGRESS_METRIC
+    type: NUMBER
+    nullable: true
+  - name: METRIC_UNITS
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: ACTIVITY_COUNTER
+    type: NUMBER
+    nullable: true
+  - name: RECOMMENDATION_COUNT
+    type: NUMBER
+    nullable: true
+  - name: ERROR_MESSAGE
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: SOURCE
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: HOW_CREATED
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: READ_ONLY
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: SYSTEM_TASK
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: ADVISOR_ID
+    type: NUMBER
+    nullable: false
+  - name: STATUS#
+    type: NUMBER
+    nullable: true

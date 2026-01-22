@@ -1,0 +1,96 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_STATEMENTS:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: SIGNATURE
+    type: VARCHAR2
+    nullable: true
+    length: 32
+  - name: TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 17
+  - name: OBJECT_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: OBJECT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: USAGE_ID
+    type: NUMBER
+    nullable: true
+  - name: LINE
+    type: NUMBER
+    nullable: true
+  - name: COL
+    type: NUMBER
+    nullable: true
+  - name: USAGE_CONTEXT_ID
+    type: NUMBER
+    nullable: true
+  - name: SQL_ID
+    type: VARCHAR2
+    nullable: true
+    length: 13
+  - name: HAS_HINT
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: HAS_INTO_BULK
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: HAS_INTO_RETURNING
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: HAS_INTO_RECORD
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: HAS_CURRENT_OF
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: HAS_FOR_UPDATE
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: HAS_IN_BINDS
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: TEXT
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: FULL_TEXT
+    type: CLOB
+    nullable: true
+  - name: ORIGIN_CON_ID
+    type: NUMBER
+    nullable: true
+  description: Statements in stored objects accessible to sys

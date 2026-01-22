@@ -1,0 +1,108 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+USER_LOBS:
+  schema: SYS
+  columns:
+  - name: TABLE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: COLUMN_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: SEGMENT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: TABLESPACE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: INDEX_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: CHUNK
+    type: NUMBER
+    nullable: true
+  - name: PCTVERSION
+    type: NUMBER
+    nullable: true
+  - name: RETENTION
+    type: NUMBER
+    nullable: true
+  - name: FREEPOOLS
+    type: NUMBER
+    nullable: true
+  - name: CACHE
+    type: VARCHAR2
+    nullable: true
+    length: 10
+  - name: LOGGING
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: ENCRYPT
+    type: VARCHAR2
+    nullable: true
+    length: 4
+  - name: COMPRESSION
+    type: VARCHAR2
+    nullable: true
+    length: 6
+  - name: DEDUPLICATION
+    type: VARCHAR2
+    nullable: true
+    length: 15
+  - name: IN_ROW
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: FORMAT
+    type: VARCHAR2
+    nullable: true
+    length: 15
+  - name: PARTITIONED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: SECUREFILE
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: SEGMENT_CREATED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: RETENTION_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: RETENTION_VALUE
+    type: NUMBER
+    nullable: true
+  - name: VALUE_BASED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: MAX_INLINE
+    type: NUMBER
+    nullable: true
+  description: Description of the user's own LOBs contained in the user's own tables

@@ -52,6 +52,8 @@ class SystemSchemaManagerTest {
         assertThat(actualOgInformationSchema.size(), is(66));
         Collection<String> actualOgPgCatalog = SystemSchemaManager.getTables("openGauss", "pg_catalog");
         assertThat(actualOgPgCatalog.size(), is(240));
+        Collection<String> actualOracleSysSchema = SystemSchemaManager.getTables("Oracle", "sys");
+        assertThat(actualOracleSysSchema.size(), is(2054));
     }
     
     @Test
@@ -83,6 +85,8 @@ class SystemSchemaManagerTest {
         assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_stat_progress_analyze"));
         assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_stat_progress_basebackup"));
         assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_stat_progress_cluster"));
+        assertTrue(SystemSchemaManager.isSystemTable("sys", "all_sequences"));
+        assertTrue(SystemSchemaManager.isSystemTable("sys", "all_synonyms"));
         assertFalse(SystemSchemaManager.isSystemTable("sharding_db", "t_order"));
         assertTrue(SystemSchemaManager.isSystemTable("shardingsphere", "cluster_information"));
         assertFalse(SystemSchemaManager.isSystemTable("shardingsphere", "foo_tbl"));
@@ -98,6 +102,8 @@ class SystemSchemaManagerTest {
     @Test
     void assertIsSystemTableWithDatabaseTypeAndSchema() {
         assertTrue(SystemSchemaManager.isSystemTable("MySQL", "information_schema", "columns"));
+        assertTrue(SystemSchemaManager.isSystemTable("Oracle", "sys", "all_sequences"));
+        assertTrue(SystemSchemaManager.isSystemTable("Oracle", "sys", "all_synonyms"));
         assertTrue(SystemSchemaManager.isSystemTable("PostgreSQL", "pg_catalog", "pg_database"));
         assertTrue(SystemSchemaManager.isSystemTable("MySQL", "shardingsphere", "cluster_information"));
         assertFalse(SystemSchemaManager.isSystemTable("MySQL", "information_schema", "foo_tbl"));

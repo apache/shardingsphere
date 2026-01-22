@@ -1,0 +1,98 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_HIST_UNDOSTAT:
+  schema: SYS
+  columns:
+  - name: BEGIN_TIME
+    type: DATE
+    nullable: false
+  - name: END_TIME
+    type: DATE
+    nullable: false
+  - name: DBID
+    type: NUMBER
+    nullable: false
+  - name: INSTANCE_NUMBER
+    type: NUMBER
+    nullable: false
+  - name: SNAP_ID
+    type: NUMBER
+    nullable: false
+  - name: UNDOTSN
+    type: NUMBER
+    nullable: false
+  - name: UNDOBLKS
+    type: NUMBER
+    nullable: true
+  - name: TXNCOUNT
+    type: NUMBER
+    nullable: true
+  - name: MAXQUERYLEN
+    type: NUMBER
+    nullable: true
+  - name: MAXQUERYSQLID
+    type: VARCHAR2
+    nullable: true
+    length: 13
+  - name: MAXCONCURRENCY
+    type: NUMBER
+    nullable: true
+  - name: UNXPSTEALCNT
+    type: NUMBER
+    nullable: true
+  - name: UNXPBLKRELCNT
+    type: NUMBER
+    nullable: true
+  - name: UNXPBLKREUCNT
+    type: NUMBER
+    nullable: true
+  - name: EXPSTEALCNT
+    type: NUMBER
+    nullable: true
+  - name: EXPBLKRELCNT
+    type: NUMBER
+    nullable: true
+  - name: EXPBLKREUCNT
+    type: NUMBER
+    nullable: true
+  - name: SSOLDERRCNT
+    type: NUMBER
+    nullable: true
+  - name: NOSPACEERRCNT
+    type: NUMBER
+    nullable: true
+  - name: ACTIVEBLKS
+    type: NUMBER
+    nullable: true
+  - name: UNEXPIREDBLKS
+    type: NUMBER
+    nullable: true
+  - name: EXPIREDBLKS
+    type: NUMBER
+    nullable: true
+  - name: TUNED_UNDORETENTION
+    type: NUMBER
+    nullable: true
+  - name: CON_DBID
+    type: NUMBER
+    nullable: true
+  - name: CON_ID
+    type: NUMBER
+    nullable: true
+  description: Undo Historical Statistics Information

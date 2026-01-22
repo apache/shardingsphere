@@ -141,7 +141,7 @@ class ShardingSphereIdentifierTest {
         DatabaseType oracle = getDatabaseType("Oracle");
         ShardingSphereIdentifier unquoted = new ShardingSphereIdentifier("mytable", oracle);
         assertThat(unquoted.getValue(), is("mytable"));
-        assertThat(unquoted.getStandardizeValue(), is("mytable"));
+        assertThat(unquoted.getStandardizeValue(), is("MYTABLE"));
         ShardingSphereIdentifier quoted = new ShardingSphereIdentifier(new IdentifierValue("\"mytable\""), oracle);
         assertThat(quoted.getValue(), is("mytable"));
         assertThat(quoted.getStandardizeValue(), is("mytable"));

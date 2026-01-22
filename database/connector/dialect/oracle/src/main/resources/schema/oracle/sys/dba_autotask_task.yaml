@@ -1,0 +1,236 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_AUTOTASK_TASK:
+  schema: SYS
+  columns:
+  - name: CLIENT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: TASK_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: TASK_TARGET_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: TASK_TARGET_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 513
+  - name: OPERATION_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: ATTRIBUTES
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: TASK_PRIORITY
+    type: NUMBER
+    nullable: true
+  - name: PRIORITY_OVERRIDE
+    type: NUMBER
+    nullable: true
+  - name: STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: DEFERRED_WINDOW_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 65
+  - name: CURRENT_JOB_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 65
+  - name: JOB_SCHEDULER_STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 15
+  - name: ESTIMATE_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: ESTIMATED_WEIGHT
+    type: NUMBER
+    nullable: true
+  - name: ESTIMATED_DURATION
+    type: NUMBER
+    nullable: true
+  - name: ESTIMATED_CPU_TIME
+    type: NUMBER
+    nullable: true
+  - name: ESTIMATED_TEMP
+    type: NUMBER
+    nullable: true
+  - name: ESTIMATED_DOP
+    type: NUMBER
+    nullable: true
+  - name: ESTIMATED_IO_RATE
+    type: NUMBER
+    nullable: true
+  - name: ESTIMATED_UNDO_RATE
+    type: NUMBER
+    nullable: true
+  - name: RETRY_COUNT
+    type: NUMBER
+    nullable: true
+  - name: LAST_GOOD_DATE
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: LAST_GOOD_PRIORITY
+    type: NUMBER
+    nullable: true
+  - name: LAST_GOOD_DURATION
+    type: NUMBER
+    nullable: true
+  - name: LAST_GOOD_CPU_TIME
+    type: NUMBER
+    nullable: true
+  - name: LAST_GOOD_TEMP
+    type: NUMBER
+    nullable: true
+  - name: LAST_GOOD_DOP
+    type: NUMBER
+    nullable: true
+  - name: LAST_GOOD_IO_RATE
+    type: NUMBER
+    nullable: true
+  - name: LAST_GOOD_UNDO_RATE
+    type: NUMBER
+    nullable: true
+  - name: LAST_GOOD_CPU_WAIT
+    type: NUMBER
+    nullable: true
+  - name: LAST_GOOD_IO_WAIT
+    type: NUMBER
+    nullable: true
+  - name: LAST_GOOD_UNDO_WAIT
+    type: NUMBER
+    nullable: true
+  - name: LAST_GOOD_TEMP_WAIT
+    type: NUMBER
+    nullable: true
+  - name: LAST_GOOD_CONCURRENCY
+    type: NUMBER
+    nullable: true
+  - name: LAST_GOOD_CONTENTION
+    type: NUMBER
+    nullable: true
+  - name: NEXT_TRY_DATE
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: LAST_TRY_DATE
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: LAST_TRY_PRIORITY
+    type: NUMBER
+    nullable: true
+  - name: LAST_TRY_RESULT
+    type: VARCHAR2
+    nullable: true
+    length: 36
+  - name: LAST_TRY_DURATION
+    type: NUMBER
+    nullable: true
+  - name: LAST_TRY_CPU_TIME
+    type: NUMBER
+    nullable: true
+  - name: LAST_TRY_TEMP
+    type: NUMBER
+    nullable: true
+  - name: LAST_TRY_DOP
+    type: NUMBER
+    nullable: true
+  - name: LAST_TRY_IO_RATE
+    type: NUMBER
+    nullable: true
+  - name: LAST_TRY_UNDO_RATE
+    type: NUMBER
+    nullable: true
+  - name: LAST_TRY_CPU_WAIT
+    type: NUMBER
+    nullable: true
+  - name: LAST_TRY_IO_WAIT
+    type: NUMBER
+    nullable: true
+  - name: LAST_TRY_UNDO_WAIT
+    type: NUMBER
+    nullable: true
+  - name: LAST_TRY_TEMP_WAIT
+    type: NUMBER
+    nullable: true
+  - name: LAST_TRY_CONCURRENCY
+    type: NUMBER
+    nullable: true
+  - name: LAST_TRY_CONTENTION
+    type: NUMBER
+    nullable: true
+  - name: MEAN_GOOD_DURATION
+    type: NUMBER
+    nullable: true
+  - name: MEAN_GOOD_CPU_TIME
+    type: NUMBER
+    nullable: true
+  - name: MEAN_GOOD_TEMP
+    type: NUMBER
+    nullable: true
+  - name: MEAN_GOOD_DOP
+    type: NUMBER
+    nullable: true
+  - name: MEAN_GOOD_IO
+    type: NUMBER
+    nullable: true
+  - name: MEAN_GOOD_UNDO
+    type: NUMBER
+    nullable: true
+  - name: MEAN_GOOD_CPU_WAIT
+    type: NUMBER
+    nullable: true
+  - name: MEAN_GOOD_IO_WAIT
+    type: NUMBER
+    nullable: true
+  - name: MEAN_GOOD_UNDO_WAIT
+    type: NUMBER
+    nullable: true
+  - name: MEAN_GOOD_TEMP_WAIT
+    type: NUMBER
+    nullable: true
+  - name: MEAN_GOOD_CONCURRENCY
+    type: NUMBER
+    nullable: true
+  - name: MEAN_GOOD_CONTENTION
+    type: NUMBER
+    nullable: true
+  - name: INFO_FIELD_1
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: INFO_FIELD_2
+    type: CLOB
+    nullable: true
+  - name: INFO_FIELD_3
+    type: NUMBER
+    nullable: true
+  - name: INFO_FIELD_4
+    type: NUMBER
+    nullable: true
+  description: Information about current and past autmated maintenance tasks

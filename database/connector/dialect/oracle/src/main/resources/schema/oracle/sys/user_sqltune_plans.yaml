@@ -1,0 +1,179 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+USER_SQLTUNE_PLANS:
+  schema: SYS
+  columns:
+  - name: TASK_ID
+    type: NUMBER
+    nullable: false
+    precision: 38
+  - name: EXECUTION_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: OBJECT_ID
+    type: NUMBER
+    nullable: false
+    precision: 38
+  - name: ATTRIBUTE
+    type: VARCHAR2
+    nullable: true
+    length: 34
+  - name: STATEMENT_ID
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: PLAN_HASH_VALUE
+    type: NUMBER
+    nullable: false
+  - name: PLAN_ID
+    type: NUMBER
+    nullable: false
+  - name: TIMESTAMP
+    type: DATE
+    nullable: true
+  - name: REMARKS
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: OPERATION
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: OPTIONS
+    type: VARCHAR2
+    nullable: true
+    length: 255
+  - name: OBJECT_NODE
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: OBJECT_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: OBJECT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: OBJECT_ALIAS
+    type: VARCHAR2
+    nullable: true
+    length: 261
+  - name: OBJECT_INSTANCE
+    type: NUMBER
+    nullable: true
+    precision: 38
+  - name: OBJECT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: OPTIMIZER
+    type: VARCHAR2
+    nullable: true
+    length: 255
+  - name: SEARCH_COLUMNS
+    type: NUMBER
+    nullable: true
+  - name: ID
+    type: NUMBER
+    nullable: false
+    precision: 38
+  - name: PARENT_ID
+    type: NUMBER
+    nullable: true
+    precision: 38
+  - name: DEPTH
+    type: NUMBER
+    nullable: true
+    precision: 38
+  - name: POSITION
+    type: NUMBER
+    nullable: true
+    precision: 38
+  - name: COST
+    type: NUMBER
+    nullable: true
+    precision: 38
+  - name: CARDINALITY
+    type: NUMBER
+    nullable: true
+    precision: 38
+  - name: BYTES
+    type: NUMBER
+    nullable: true
+    precision: 38
+  - name: OTHER_TAG
+    type: VARCHAR2
+    nullable: true
+    length: 255
+  - name: PARTITION_START
+    type: VARCHAR2
+    nullable: true
+    length: 255
+  - name: PARTITION_STOP
+    type: VARCHAR2
+    nullable: true
+    length: 255
+  - name: PARTITION_ID
+    type: NUMBER
+    nullable: true
+    precision: 38
+  - name: OTHER
+    type: LONG
+    nullable: true
+  - name: DISTRIBUTION
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: CPU_COST
+    type: NUMBER
+    nullable: true
+    precision: 38
+  - name: IO_COST
+    type: NUMBER
+    nullable: true
+    precision: 38
+  - name: TEMP_SPACE
+    type: NUMBER
+    nullable: true
+    precision: 38
+  - name: ACCESS_PREDICATES
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: FILTER_PREDICATES
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: PROJECTION
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: TIME
+    type: NUMBER
+    nullable: true
+    precision: 38
+  - name: QBLOCK_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: OTHER_XML
+    type: CLOB
+    nullable: true

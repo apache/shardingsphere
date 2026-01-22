@@ -1,0 +1,193 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_COMMON_AUDIT_TRAIL:
+  schema: SYS
+  columns:
+  - name: AUDIT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 22
+  - name: SESSION_ID
+    type: NUMBER
+    nullable: true
+  - name: PROXY_SESSIONID
+    type: NUMBER
+    nullable: true
+  - name: STATEMENTID
+    type: NUMBER
+    nullable: true
+  - name: ENTRYID
+    type: NUMBER
+    nullable: true
+  - name: EXTENDED_TIMESTAMP
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: GLOBAL_UID
+    type: VARCHAR2
+    nullable: true
+    length: 32
+  - name: DB_USER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: CLIENT_ID
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: ECONTEXT_ID
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: EXT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: OS_USER
+    type: VARCHAR2
+    nullable: true
+    length: 255
+  - name: USERHOST
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: OS_PROCESS
+    type: VARCHAR2
+    nullable: true
+    length: 16
+  - name: TERMINAL
+    type: VARCHAR2
+    nullable: true
+    length: 255
+  - name: INSTANCE_NUMBER
+    type: NUMBER
+    nullable: true
+  - name: OBJECT_SCHEMA
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: OBJECT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: POLICY_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: NEW_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: NEW_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: ACTION
+    type: NUMBER
+    nullable: true
+  - name: STATEMENT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 28
+  - name: AUDIT_OPTION
+    type: VARCHAR2
+    nullable: true
+    length: 40
+  - name: TRANSACTIONID
+    type: RAW
+    nullable: true
+  - name: RETURNCODE
+    type: NUMBER
+    nullable: true
+  - name: SCN
+    type: NUMBER
+    nullable: true
+  - name: COMMENT_TEXT
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: SQL_BIND
+    type: NVARCHAR2
+    nullable: true
+    length: 4000
+  - name: SQL_TEXT
+    type: NVARCHAR2
+    nullable: true
+    length: 4000
+  - name: OBJ_PRIVILEGE
+    type: VARCHAR2
+    nullable: true
+    length: 32
+  - name: SYS_PRIVILEGE
+    type: VARCHAR2
+    nullable: true
+    length: 40
+  - name: ADMIN_OPTION
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: OS_PRIVILEGE
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: GRANTEE
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: PRIV_USED
+    type: VARCHAR2
+    nullable: true
+    length: 40
+  - name: SES_ACTIONS
+    type: VARCHAR2
+    nullable: true
+    length: 19
+  - name: LOGOFF_TIME
+    type: DATE
+    nullable: true
+  - name: LOGOFF_LREAD
+    type: NUMBER
+    nullable: true
+  - name: LOGOFF_PREAD
+    type: NUMBER
+    nullable: true
+  - name: LOGOFF_LWRITE
+    type: NUMBER
+    nullable: true
+  - name: LOGOFF_DLOCK
+    type: VARCHAR2
+    nullable: true
+    length: 40
+  - name: SESSION_CPU
+    type: NUMBER
+    nullable: true
+  - name: OBJ_EDITION_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: DBID
+    type: NUMBER
+    nullable: true
+  - name: RLS_INFO
+    type: CLOB
+    nullable: true
+  - name: CURRENT_USER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  description: Combined Standard and Fine Grained audit trail entries

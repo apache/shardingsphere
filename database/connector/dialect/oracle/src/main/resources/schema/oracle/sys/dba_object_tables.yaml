@@ -1,0 +1,281 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_OBJECT_TABLES:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: TABLE_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: TABLESPACE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: CLUSTER_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: IOT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: PCT_FREE
+    type: NUMBER
+    nullable: true
+  - name: PCT_USED
+    type: NUMBER
+    nullable: true
+  - name: INI_TRANS
+    type: NUMBER
+    nullable: true
+  - name: MAX_TRANS
+    type: NUMBER
+    nullable: true
+  - name: INITIAL_EXTENT
+    type: NUMBER
+    nullable: true
+  - name: NEXT_EXTENT
+    type: NUMBER
+    nullable: true
+  - name: MIN_EXTENTS
+    type: NUMBER
+    nullable: true
+  - name: MAX_EXTENTS
+    type: NUMBER
+    nullable: true
+  - name: PCT_INCREASE
+    type: NUMBER
+    nullable: true
+  - name: FREELISTS
+    type: NUMBER
+    nullable: true
+  - name: FREELIST_GROUPS
+    type: NUMBER
+    nullable: true
+  - name: LOGGING
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: BACKED_UP
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: NUM_ROWS
+    type: NUMBER
+    nullable: true
+  - name: BLOCKS
+    type: NUMBER
+    nullable: true
+  - name: EMPTY_BLOCKS
+    type: NUMBER
+    nullable: true
+  - name: AVG_SPACE
+    type: NUMBER
+    nullable: true
+  - name: CHAIN_CNT
+    type: NUMBER
+    nullable: true
+  - name: AVG_ROW_LEN
+    type: NUMBER
+    nullable: true
+  - name: AVG_SPACE_FREELIST_BLOCKS
+    type: NUMBER
+    nullable: true
+  - name: NUM_FREELIST_BLOCKS
+    type: NUMBER
+    nullable: true
+  - name: DEGREE
+    type: VARCHAR2
+    nullable: true
+    length: 10
+  - name: INSTANCES
+    type: VARCHAR2
+    nullable: true
+    length: 10
+  - name: CACHE
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: TABLE_LOCK
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: SAMPLE_SIZE
+    type: NUMBER
+    nullable: true
+  - name: LAST_ANALYZED
+    type: DATE
+    nullable: true
+  - name: PARTITIONED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: IOT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: OBJECT_ID_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 16
+  - name: TABLE_TYPE_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: TABLE_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: TEMPORARY
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: SECONDARY
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: NESTED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: BUFFER_POOL
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: FLASH_CACHE
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: CELL_FLASH_CACHE
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: ROW_MOVEMENT
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: GLOBAL_STATS
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: USER_STATS
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: DURATION
+    type: VARCHAR2
+    nullable: true
+    length: 15
+  - name: SKIP_CORRUPT
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: MONITORING
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: CLUSTER_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: DEPENDENCIES
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: COMPRESSION
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: COMPRESS_FOR
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: DROPPED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: SEGMENT_CREATED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: INMEMORY
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: INMEMORY_PRIORITY
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: INMEMORY_DISTRIBUTE
+    type: VARCHAR2
+    nullable: true
+    length: 15
+  - name: INMEMORY_COMPRESSION
+    type: VARCHAR2
+    nullable: true
+    length: 17
+  - name: INMEMORY_DUPLICATE
+    type: VARCHAR2
+    nullable: true
+    length: 13
+  - name: EXTERNAL
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: HYBRID
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: CELLMEMORY
+    type: VARCHAR2
+    nullable: true
+    length: 24
+  - name: INMEMORY_SERVICE
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: INMEMORY_SERVICE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 1000
+  - name: MEMOPTIMIZE_READ
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: MEMOPTIMIZE_WRITE
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: HAS_SENSITIVE_COLUMN
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: LOGICAL_REPLICATION
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  description: Description of all object tables in the database

@@ -1,0 +1,94 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_AUDIT_POLICIES:
+  schema: SYS
+  columns:
+  - name: OBJECT_SCHEMA
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: OBJECT_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: POLICY_OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: POLICY_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: POLICY_TEXT
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: POLICY_COLUMN
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: PF_SCHEMA
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: PF_PACKAGE
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: PF_FUNCTION
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: ENABLED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: SEL
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: INS
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: UPD
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: DEL
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: AUDIT_TRAIL
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: POLICY_COLUMN_OPTIONS
+    type: VARCHAR2
+    nullable: true
+    length: 11
+  - name: COMMON
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: INHERITED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  description: Fine grained auditing policies in the database

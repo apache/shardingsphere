@@ -1,0 +1,74 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_ROLLING_STATUS:
+  schema: SYS
+  columns:
+  - name: REVISION
+    type: NUMBER
+    nullable: true
+  - name: STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: PHASE
+    type: VARCHAR2
+    nullable: true
+    length: 14
+  - name: NEXT_INSTRUCTION
+    type: NUMBER
+    nullable: true
+  - name: REMAINING_INSTRUCTIONS
+    type: NUMBER
+    nullable: true
+  - name: COORDINATOR_INSTANCE
+    type: NUMBER
+    nullable: true
+  - name: COORDINATOR_PID
+    type: NUMBER
+    nullable: true
+  - name: ORIGINAL_PRIMARY
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: FUTURE_PRIMARY
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: TOTAL_DATABASES
+    type: NUMBER
+    nullable: true
+  - name: PARTICIPATING_DATABASES
+    type: NUMBER
+    nullable: true
+  - name: INIT_TIME
+    type: TIMESTAMP(6)
+    nullable: true
+  - name: BUILD_TIME
+    type: TIMESTAMP(6)
+    nullable: true
+  - name: START_TIME
+    type: TIMESTAMP(6)
+    nullable: true
+  - name: SWITCH_TIME
+    type: TIMESTAMP(6)
+    nullable: true
+  - name: FINISH_TIME
+    type: TIMESTAMP(6)
+    nullable: true
+  description: Overall status of the rolling upgrade
