@@ -119,7 +119,7 @@ services:
 
 贡献者必须在设备安装，
 
-1. OpenJDK 11 或更高版本
+1. OpenJDK 17 或更高版本
 2. 可运行 Linux Containers 的 Docker Engine
 
 下文分别讨论在 Ubuntu 与 Windows 下可能的所需操作。
