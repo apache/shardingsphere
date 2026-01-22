@@ -50,8 +50,8 @@ class SingleMetaDataReviseEngineTest {
     @Test
     void assertRevise() {
         Map<String, SchemaMetaData> schemaMetaDataMap = Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData())));
-        Map<String, ShardingSphereSchema> actual = new MetaDataReviseEngine(Collections.singleton(mock(SingleRule.class))).revise(schemaMetaDataMap, mock(GenericSchemaBuilderMaterial.class),
-                mock(DatabaseType.class));
+        Map<String, ShardingSphereSchema> actual = new MetaDataReviseEngine(Collections.singleton(mock(SingleRule.class)), mock(DatabaseType.class))
+                .revise(schemaMetaDataMap, mock(GenericSchemaBuilderMaterial.class));
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("sharding_db"));
         assertThat(actual.get("sharding_db").getAllTables().size(), is(1));

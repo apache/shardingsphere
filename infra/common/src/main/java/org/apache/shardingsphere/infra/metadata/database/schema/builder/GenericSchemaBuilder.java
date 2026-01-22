@@ -107,6 +107,6 @@ public final class GenericSchemaBuilder {
     private static Map<String, ShardingSphereSchema> revise(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material, final DatabaseType protocolType) {
         Collection<ShardingSphereRule> rules = material.getRules().stream()
                 .filter(each -> each.getAttributes().findAttribute(TableMapperRuleAttribute.class).isPresent()).collect(Collectors.toList());
-        return new MetaDataReviseEngine(rules).revise(schemaMetaDataMap, material, protocolType);
+        return new MetaDataReviseEngine(rules, protocolType).revise(schemaMetaDataMap, material);
     }
 }
