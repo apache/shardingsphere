@@ -488,6 +488,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             if (null != ctx.FALSE()) {
                 operatorToken = ctx.FALSE().getSymbol();
             }
+            if (null != ctx.UNKNOWN()) {
+                operatorToken = ctx.UNKNOWN().getSymbol();
+            }
             int startIndex = null == operatorToken ? ctx.IS().getSymbol().getStopIndex() + 2 : operatorToken.getStartIndex();
             rightText = rightText + ctx.start.getInputStream().getText(new Interval(startIndex, ctx.stop.getStopIndex()));
             ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 2, ctx.stop.getStopIndex(), rightText);

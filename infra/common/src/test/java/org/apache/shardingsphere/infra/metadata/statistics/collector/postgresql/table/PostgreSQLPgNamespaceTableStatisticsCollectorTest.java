@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.statistics.collector.postgresql.table;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.statistics.collector.postgresql.PostgreSQLTableStatisticsCollector;
@@ -33,6 +34,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,7 +49,8 @@ class PostgreSQLPgNamespaceTableStatisticsCollectorTest {
     @Test
     void assertCollectWithMultipleSchemas() {
         when(metaData.getDatabase("foo_db").getAllSchemas())
-                .thenReturn(Arrays.asList(new ShardingSphereSchema("public"), new ShardingSphereSchema("foo_schema"), new ShardingSphereSchema("bar_schema")));
+                .thenReturn(Arrays.asList(new ShardingSphereSchema("public", mock(DatabaseType.class)),
+                        new ShardingSphereSchema("foo_schema", mock(DatabaseType.class)), new ShardingSphereSchema("bar_schema", mock(DatabaseType.class))));
         Collection<Map<String, Object>> actual = collector.collect("foo_db", "pg_catalog", "pg_namespace", metaData);
         assertThat(actual.size(), is(3));
         Map<String, Object>[] results = actual.toArray(new Map[0]);

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.checker.sql.schema;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
@@ -69,7 +70,8 @@ class SingleDropSchemaSupportedCheckerTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema",
-                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList());
+                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList(),
+                mock(DatabaseType.class));
         when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
         return result;
     }

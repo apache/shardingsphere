@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.rewriter.engine.scenario;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -35,6 +36,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
+
+import static org.mockito.Mockito.mock;
 
 @SQLRewriterITSettings("scenario/sharding/case")
 class ShardingSQLRewriterIT extends SQLRewriterIT {
@@ -96,7 +99,7 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
         tables.add(new ShardingSphereTable("t_order_type", Arrays.asList(
                 new ShardingSphereColumn("type_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("type_name", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        return Collections.singleton(new ShardingSphereSchema(schemaName, tables, Collections.emptyList()));
+        return Collections.singleton(new ShardingSphereSchema(schemaName, tables, Collections.emptyList(), mock(DatabaseType.class)));
     }
     
     @Override

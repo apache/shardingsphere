@@ -41,7 +41,7 @@ class SQLFederationDatabaseTest {
     
     @Test
     void assertNew() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", Collections.singleton(createTable()), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", Collections.singleton(createTable()), Collections.emptyList(), databaseType);
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
         SQLFederationDatabase actual = new SQLFederationDatabase(database, databaseType);
         assertThat(actual.getName(), is("foo_db"));

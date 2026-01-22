@@ -114,8 +114,8 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertRenameSchemaNameWithNotEmptyAlteredSchema() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getSchema("foo_schema")).thenReturn(new ShardingSphereSchema("foo_schema"));
-        when(database.getSchema("bar_schema")).thenReturn(new ShardingSphereSchema("bar_schema"));
+        when(database.getSchema("foo_schema")).thenReturn(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class)));
+        when(database.getSchema("bar_schema")).thenReturn(new ShardingSphereSchema("bar_schema", mock(DatabaseType.class)));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         DatabaseMetaDataPersistFacade databaseMetaDataFacade = mock(DatabaseMetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
@@ -128,7 +128,7 @@ class StandaloneMetaDataManagerPersistServiceTest {
     void assertDropSchema() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getSchema("foo_schema")).thenReturn(new ShardingSphereSchema("foo_schema"));
+        when(database.getSchema("foo_schema")).thenReturn(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class)));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), new ConfigurationProperties(new Properties()));
         when(metaDataContextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
         metaDataManagerPersistService.dropSchema(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), Collections.singleton("foo_schema"));

@@ -72,7 +72,8 @@ class GenericSQLRewriteEngineTest {
     @Test
     void assertRewriteStorageTypeIsEmpty() {
         SQLTranslatorRule rule = new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), new ResourceMetaData(Collections.emptyMap()), mock(), Collections.singleton(new ShardingSphereSchema("test")));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), new ResourceMetaData(Collections.emptyMap()), mock(),
+                Collections.singleton(new ShardingSphereSchema("test", mock(DatabaseType.class))));
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         DatabaseType databaseType = mock(DatabaseType.class);

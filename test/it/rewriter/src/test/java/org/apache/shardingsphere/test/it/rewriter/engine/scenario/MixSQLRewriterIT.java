@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.rewriter.engine.scenario;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -31,6 +32,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+
+import static org.mockito.Mockito.mock;
 
 @SQLRewriterITSettings("scenario/mix/case")
 class MixSQLRewriterIT extends SQLRewriterIT {
@@ -54,7 +57,7 @@ class MixSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("password", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("amount", Types.DECIMAL, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.TINYINT, false, false, false, false, false, false)), Collections.emptyList(), Collections.emptyList()));
-        return Collections.singleton(new ShardingSphereSchema(schemaName, tables, Collections.emptyList()));
+        return Collections.singleton(new ShardingSphereSchema(schemaName, tables, Collections.emptyList(), mock(DatabaseType.class)));
     }
     
     @Override

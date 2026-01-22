@@ -122,7 +122,8 @@ public final class StorageUnitManager {
     }
     
     private ShardingSphereSchema buildSchema(final ShardingSphereDatabase originalDatabase, final ShardingSphereSchema schema) {
-        return new ShardingSphereSchema(schema.getName(), schema.getAllTables(), metaDataPersistFacade.getDatabaseMetaDataFacade().getView().load(originalDatabase.getName(), schema.getName()));
+        return new ShardingSphereSchema(schema.getName(), schema.getAllTables(), metaDataPersistFacade.getDatabaseMetaDataFacade().getView().load(originalDatabase.getName(), schema.getName()),
+                schema.getProtocolType());
     }
     
     @SneakyThrows(Exception.class)

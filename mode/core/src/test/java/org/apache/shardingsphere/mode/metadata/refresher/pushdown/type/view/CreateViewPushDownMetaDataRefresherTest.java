@@ -81,7 +81,8 @@ class CreateViewPushDownMetaDataRefresherTest {
         when(TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType)).thenReturn("foo_view");
         when(TableRefreshUtils.isSingleTable("foo_view", database)).thenReturn(true);
         ShardingSphereTable loadedTable = new ShardingSphereTable("foo_view", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", Collections.singleton(loadedTable), Collections.emptyList()));
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", Collections.singleton(loadedTable), Collections.emptyList(),
+                databaseType));
         when(GenericSchemaBuilder.build(eq(Collections.singletonList("foo_view")), eq(database.getProtocolType()), any())).thenReturn(schemas);
         refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         verify(mutableDataNodeRuleAttribute).put("logic_ds", "foo_schema", "foo_view");
@@ -98,7 +99,8 @@ class CreateViewPushDownMetaDataRefresherTest {
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_view"))));
         when(TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType)).thenReturn("foo_view");
         ShardingSphereTable loadedTable = new ShardingSphereTable("foo_view", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", Collections.singleton(loadedTable), Collections.emptyList()));
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", Collections.singleton(loadedTable), Collections.emptyList(),
+                databaseType));
         when(GenericSchemaBuilder.build(eq(Collections.singletonList("foo_view")), eq(database.getProtocolType()), any())).thenReturn(schemas);
         refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         verify(mutableDataNodeRuleAttribute, never()).put("logic_ds", "foo_schema", "foo_view");

@@ -84,6 +84,6 @@ public final class SystemSchemaBuilder {
                 tables.add(TABLE_SWAPPER.swapToObject(metaData));
             }
         }
-        return new ShardingSphereSchema(schemaName, tables, Collections.emptyList());
+        return new ShardingSphereSchema(schemaName, tables, Collections.emptyList(), databaseType);
     }
 }

@@ -474,12 +474,12 @@ class ShardingDQLResultMergerTest {
     }
     
     private ShardingSphereDatabase createDatabase() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", Collections.singleton(createTable()), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", Collections.singleton(createTable()), Collections.emptyList(), mysqlDatabaseType);
         return new ShardingSphereDatabase("foo_db", mysqlDatabaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singleton(schema));
     }
     
     private ShardingSphereDatabase createSQLServerDatabase() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("dbo", Collections.singleton(createTable()), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("dbo", Collections.singleton(createTable()), Collections.emptyList(), sqlserverDatabaseType);
         return new ShardingSphereDatabase(
                 "foo_db", TypedSPILoader.getService(DatabaseType.class, "SQLServer"), mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singleton(schema));
     }

@@ -61,7 +61,7 @@ class RenameTablePushDownMetaDataRefresherTest {
     @Test
     void assertRefreshRenamesTables() {
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList(), databaseType);
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
         RenameTableDefinitionSegment renameDef = new RenameTableDefinitionSegment(0, 0);

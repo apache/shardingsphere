@@ -61,7 +61,7 @@ class SQLRewriteEntryTest {
     @Test
     void assertRewriteForGenericSQLRewriteResult() {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mockResourceMetaData(),
-                mock(RuleMetaData.class), Collections.singleton(new ShardingSphereSchema("test")));
+                mock(RuleMetaData.class), Collections.singleton(new ShardingSphereSchema("test", mock(DatabaseType.class))));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
                 database, new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()))), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
@@ -89,7 +89,7 @@ class SQLRewriteEntryTest {
     @Test
     void assertRewriteForRouteSQLRewriteResult() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, mockResourceMetaData(), mock(RuleMetaData.class), Collections.singleton(new ShardingSphereSchema("test")));
+                "foo_db", databaseType, mockResourceMetaData(), mock(RuleMetaData.class), Collections.singleton(new ShardingSphereSchema("test", mock(DatabaseType.class))));
         SQLTranslatorRule sqlTranslatorRule = mock(SQLTranslatorRule.class);
         when(sqlTranslatorRule.translate(any(), any(), any(), any(), any(), any())).thenReturn(Optional.of(new SQLTranslatorContext("", Collections.emptyList())));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, new RuleMetaData(Collections.singleton(sqlTranslatorRule)), new ConfigurationProperties(new Properties()));

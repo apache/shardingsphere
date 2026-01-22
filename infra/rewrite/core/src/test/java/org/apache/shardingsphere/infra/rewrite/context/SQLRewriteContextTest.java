@@ -88,7 +88,7 @@ class SQLRewriteContextTest {
         when(optionalSQLTokenGenerator.generateSQLToken(sqlStatementContext)).thenReturn(sqlToken);
         when(collectionSQLTokenGenerator.generateSQLTokens(sqlStatementContext)).thenReturn(Collections.singleton(sqlToken));
         when(database.getName()).thenReturn("foo_db");
-        when(database.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("test")));
+        when(database.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("test", mock(DatabaseType.class))));
     }
     
     @Test

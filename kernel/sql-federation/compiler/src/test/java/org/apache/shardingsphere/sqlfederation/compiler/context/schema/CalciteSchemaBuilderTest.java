@@ -63,7 +63,8 @@ class CalciteSchemaBuilderTest {
     @Test
     void assertBuildWithDefaultSchemaRegistersNestedFunctions() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        Collection<ShardingSphereSchema> schemas = Arrays.asList(new ShardingSphereSchema("public"), new ShardingSphereSchema("other"));
+        Collection<ShardingSphereSchema> schemas = Arrays.asList(new ShardingSphereSchema("public", mock(DatabaseType.class)),
+                new ShardingSphereSchema("other", mock(DatabaseType.class)));
         ShardingSphereDatabase database = new ShardingSphereDatabase("pg_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), schemas);
         DialectSQLFederationFunctionRegister functionRegister = mock(DialectSQLFederationFunctionRegister.class);
         try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
@@ -84,7 +85,7 @@ class CalciteSchemaBuilderTest {
     void assertBuildWithoutDefaultSchemaRegistersFunctions() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         ShardingSphereDatabase database = new ShardingSphereDatabase("mysql_db", databaseType, mock(ResourceMetaData.class),
-                new RuleMetaData(Collections.emptyList()), Collections.singletonList(new ShardingSphereSchema("foo_schema")));
+                new RuleMetaData(Collections.emptyList()), Collections.singletonList(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
             DialectSQLFederationFunctionRegister functionRegister = mock(DialectSQLFederationFunctionRegister.class);
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSQLFederationFunctionRegister.class, databaseType))

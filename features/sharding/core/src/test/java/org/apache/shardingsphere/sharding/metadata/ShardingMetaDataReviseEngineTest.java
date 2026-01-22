@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.metadata;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -54,7 +55,8 @@ class ShardingMetaDataReviseEngineTest {
         GenericSchemaBuilderMaterial material = mock(GenericSchemaBuilderMaterial.class);
         when(material.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         Map<String, ShardingSphereSchema> actual = new MetaDataReviseEngine(Collections.singleton(mockShardingRule()))
-                .revise(Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData()))), material);
+                .revise(Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData()))), material,
+                        mock(DatabaseType.class));
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("sharding_db"));
         assertThat(actual.get("sharding_db").getAllTables().size(), is(1));

@@ -83,7 +83,7 @@ public final class DatabaseMetaDataManager {
         if (database.containsSchema(schemaName)) {
             return;
         }
-        database.addSchema(new ShardingSphereSchema(schemaName));
+        database.addSchema(new ShardingSphereSchema(schemaName, database.getProtocolType()));
         metaData.getGlobalRuleMetaData().getRules().forEach(each -> ((GlobalRule) each).refresh(metaData.getAllDatabases(), GlobalRuleChangedType.SCHEMA_CHANGED));
     }
     
@@ -118,7 +118,7 @@ public final class DatabaseMetaDataManager {
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         ShardingSphereSchema schema = database.getSchema(schemaName);
         // TODO @haoran
-        ShardingSphereSchema renamedSchema = new ShardingSphereSchema(renamedSchemaName, schema.getAllTables(), schema.getAllViews());
+        ShardingSphereSchema renamedSchema = new ShardingSphereSchema(renamedSchemaName, schema.getAllTables(), schema.getAllViews(), database.getProtocolType());
         database.addSchema(renamedSchema);
         database.dropSchema(schemaName);
         database.reloadRules();

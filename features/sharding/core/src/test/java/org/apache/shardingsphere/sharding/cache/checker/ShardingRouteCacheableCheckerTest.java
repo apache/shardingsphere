@@ -124,7 +124,7 @@ class ShardingRouteCacheableCheckerTest {
     }
     
     private ShardingSphereDatabase createDatabase(final ShardingRule shardingRule, final TimestampServiceRule timestampServiceRule) {
-        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA_NAME);
+        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA_NAME, mock(DatabaseType.class));
         schema.putTable(new ShardingSphereTable("t_warehouse", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("warehouse_name", Types.VARCHAR, false, false, false, true, false, false)),

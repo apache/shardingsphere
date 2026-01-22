@@ -205,6 +205,6 @@ class PostgreSQLComParseExecutorTest {
                 new ShardingSphereColumn("k", Types.VARCHAR, false, false, false, false, false, false),
                 new ShardingSphereColumn("c", Types.VARCHAR, false, false, false, false, true, false),
                 new ShardingSphereColumn("pad", Types.VARCHAR, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
-        return new ShardingSphereSchema("public", Arrays.asList(testTable, sbTestTable), Collections.emptyList());
+        return new ShardingSphereSchema("public", Arrays.asList(testTable, sbTestTable), Collections.emptyList(), databaseType);
     }
 }

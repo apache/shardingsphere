@@ -348,7 +348,7 @@ class StatisticsManagerTest {
         ShardingSphereTable table = new ShardingSphereTable(TABLE, Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, true, false, true)), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA, Collections.singleton(table), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA, Collections.singleton(table), Collections.emptyList(), databaseType);
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 DATABASE, databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
         return new ShardingSphereMetaData(
@@ -363,7 +363,7 @@ class StatisticsManagerTest {
     }
     
     private ShardingSphereMetaData createMetaDataWithSchemaWithoutTable() {
-        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA);
+        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA, mock(DatabaseType.class));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 DATABASE, databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
         return new ShardingSphereMetaData(

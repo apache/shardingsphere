@@ -62,7 +62,8 @@ class ShardingSphereDatabaseTest {
     void assertGetAllSchemas() {
         DatabaseType databaseType = mock(DatabaseType.class);
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), ruleMetaData, Collections.singleton(new ShardingSphereSchema("foo_schema")));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), ruleMetaData,
+                Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         List<ShardingSphereSchema> actual = new LinkedList<>(database.getAllSchemas());
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getName(), is("foo_schema"));
@@ -72,7 +73,8 @@ class ShardingSphereDatabaseTest {
     void assertContainsSchema() {
         DatabaseType databaseType = mock(DatabaseType.class);
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), ruleMetaData, Collections.singleton(new ShardingSphereSchema("foo_schema")));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), ruleMetaData,
+                Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         assertTrue(database.containsSchema("foo_schema"));
         assertFalse(database.containsSchema("non_existent_schema"));
     }
@@ -81,7 +83,7 @@ class ShardingSphereDatabaseTest {
     void assertGetSchema() {
         DatabaseType databaseType = mock(DatabaseType.class);
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema");
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), ruleMetaData, Collections.singleton(schema));
         assertThat(database.getSchema("foo_schema"), is(schema));
         assertNull(database.getSchema("non_existent_schema"));
@@ -91,7 +93,7 @@ class ShardingSphereDatabaseTest {
     void assertAddSchema() {
         DatabaseType databaseType = mock(DatabaseType.class);
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
-        ShardingSphereSchema schema = new ShardingSphereSchema("new_schema");
+        ShardingSphereSchema schema = new ShardingSphereSchema("new_schema", mock(DatabaseType.class));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), ruleMetaData, Collections.emptyList());
         assertFalse(database.containsSchema("new_schema"));
         database.addSchema(schema);
@@ -103,7 +105,8 @@ class ShardingSphereDatabaseTest {
     void assertDropSchema() {
         DatabaseType databaseType = mock(DatabaseType.class);
         RuleMetaData ruleMetaData = mock(RuleMetaData.class);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), ruleMetaData, Collections.singleton(new ShardingSphereSchema("foo_schema")));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), ruleMetaData,
+                Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         assertTrue(database.containsSchema("foo_schema"));
         database.dropSchema("foo_schema");
         assertFalse(database.containsSchema("foo_schema"));
