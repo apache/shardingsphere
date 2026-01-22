@@ -39,3 +39,7 @@
       props:
         shadow: true
         foo: bar
+
+- !SINGLE
+  tables:
+    - "*.*"
