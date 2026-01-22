@@ -61,7 +61,7 @@ public final class ShardingSphereDatabaseFactory {
         Map<String, ShardingSphereSchema> systemSchemas = SystemSchemaBuilder.build(name, protocolType, props);
         String defaultSchemaName = new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(name);
         if (!systemSchemas.containsKey(defaultSchemaName)) {
-            systemSchemas.put(defaultSchemaName, new ShardingSphereSchema(defaultSchemaName));
+            systemSchemas.put(defaultSchemaName, new ShardingSphereSchema(defaultSchemaName, protocolType));
         }
         return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(new LinkedList<>()), systemSchemas.values());
     }

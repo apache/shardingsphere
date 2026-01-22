@@ -49,6 +49,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -66,7 +67,7 @@ class DropIndexPushDownMetaDataRefresherTest {
     @Test
     void assertRefreshSkipWhenLogicTableNotFound() {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db",
-                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
+                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList(), databaseType);
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
         DropIndexStatement sqlStatement = new DropIndexStatement(databaseType);
@@ -77,7 +78,7 @@ class DropIndexPushDownMetaDataRefresherTest {
     
     @Test
     void assertRefreshThrowsTableNotFound() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema");
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
         DropIndexStatement sqlStatement = new DropIndexStatement(databaseType);
@@ -93,7 +94,7 @@ class DropIndexPushDownMetaDataRefresherTest {
     void assertRefreshWithoutSimpleTableResolvesByMetaData() {
         ShardingSphereTable table = new ShardingSphereTable(
                 "foo_tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("idx_foo", Collections.emptyList(), false)), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList(), databaseType);
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
         DropIndexStatement sqlStatement = new DropIndexStatement(databaseType);
