@@ -129,7 +129,7 @@ if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
 fi
 
 print_version() {
-    $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion
+    $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} org.apache.shardingsphere.infra.version.ShardingSphereVersion
     exit 0
 }
 
