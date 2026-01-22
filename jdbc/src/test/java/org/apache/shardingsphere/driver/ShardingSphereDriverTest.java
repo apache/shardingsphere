@@ -60,7 +60,7 @@ class ShardingSphereDriverTest {
     @Test
     void assertDriverWorks() throws SQLException {
         try (
-                Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
+                Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/driver-fixture-h2-mysql.yaml");
                 Statement statement = connection.createStatement()) {
             assertThat(connection, isA(ShardingSphereConnection.class));
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -75,7 +75,7 @@ class ShardingSphereDriverTest {
     
     @Test
     void assertHashModSetLongOnIntColumnWorks() throws SQLException {
-        try (Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml")) {
+        try (Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/driver-fixture-h2-mysql.yaml")) {
             assertThat(connection, isA(ShardingSphereConnection.class));
             try (Statement statement = connection.createStatement()) {
                 statement.execute("DROP TABLE IF EXISTS t_order");
@@ -109,7 +109,7 @@ class ShardingSphereDriverTest {
     @Test
     void assertVarbinaryColumnWorks() throws SQLException {
         try (
-                Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
+                Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/driver-fixture-h2-mysql.yaml");
                 Statement statement = connection.createStatement()) {
             assertThat(connection, isA(ShardingSphereConnection.class));
             statement.execute("DROP TABLE IF EXISTS t_order");
@@ -129,7 +129,7 @@ class ShardingSphereDriverTest {
     @Test
     void assertDatabaseNameTransparentWithHintManager() throws SQLException {
         try (
-                Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
+                Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/driver-fixture-h2-mysql.yaml");
                 Statement statement = connection.createStatement()) {
             assertThat(connection, isA(ShardingSphereConnection.class));
             statement.execute("DROP TABLE IF EXISTS t_order");
