@@ -121,7 +121,7 @@ An example of adding a MySQL JDBC Driver dependency is as follows. The relevant 
 
 Contributors must have installed on their devices,
 
-1. OpenJDK 11 or higher
+1. OpenJDK 17 or higher
 
 2. Docker Engine that can run Linux Containers
 
