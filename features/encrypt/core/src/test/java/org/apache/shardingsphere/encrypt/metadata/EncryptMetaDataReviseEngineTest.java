@@ -51,8 +51,8 @@ class EncryptMetaDataReviseEngineTest {
     @Test
     void assertRevise() {
         Map<String, SchemaMetaData> schemaMetaData = Collections.singletonMap("foo_db", new SchemaMetaData("foo_db", Collections.singleton(createTableMetaData())));
-        Map<String, ShardingSphereSchema> actual = new MetaDataReviseEngine(Collections.singleton(mockEncryptRule())).revise(schemaMetaData, mock(GenericSchemaBuilderMaterial.class),
-                mock(DatabaseType.class));
+        Map<String, ShardingSphereSchema> actual = new MetaDataReviseEngine(Collections.singleton(mockEncryptRule()), mock(DatabaseType.class))
+                .revise(schemaMetaData, mock(GenericSchemaBuilderMaterial.class));
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("foo_db"));
         assertThat(actual.get("foo_db").getAllTables().size(), is(1));
