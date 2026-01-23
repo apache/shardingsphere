@@ -15,22 +15,21 @@
 # limitations under the License.
 #
 
-# After `ShardingSphereURLManager.getContent`, this file should be equivalent to `driver-fixture-h2-mysql.yaml` in the same folder.
-databaseName: foo_driver_fixture_db
+databaseName: driver_fixture_h2_mysql
 
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.h2.Driver
-    jdbcUrl: jdbc:h2:mem:foo_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
+    jdbcUrl: jdbc:h2:mem:mysql_ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
     username: sa
     password:
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-    driverClassName: $${fixture.config.driver.driver-class-name::org.h2.Driver}
-    jdbcUrl: $${fixture.config.driver.jdbc-url::jdbc:h2:mem:foo_ds_do_not_use}
-    username: $${fixture.config.driver.username::}
-    password: $${fixture.config.driver.password::}
+    driverClassName: org.h2.Driver
+    jdbcUrl: jdbc:h2:mem:mysql_ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL
+    username: sa
+    password:
 
 rules:
   - !SHARDING
