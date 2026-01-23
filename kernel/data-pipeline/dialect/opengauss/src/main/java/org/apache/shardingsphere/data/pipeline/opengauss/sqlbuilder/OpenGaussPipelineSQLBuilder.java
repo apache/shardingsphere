@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.sqlbuilder;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.CreateTableSQLGenerateException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Pipeline SQL builder of openGauss.
  */
+@Slf4j
 public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuilder {
     
     @Override
@@ -78,6 +80,7 @@ public final class OpenGaussPipelineSQLBuilder implements DialectPipelineSQLBuil
             if (resultSet.next()) {
                 // TODO use ";" to split is not always correct if return value's comments contains ";"
                 String tableDefinition = resultSet.getString("pg_get_tabledef");
+                log.info("Generate create table definition for {}.{}: {}", schemaName, tableName, tableDefinition);
                 return Arrays.asList(tableDefinition.split(";"));
             }
         }
