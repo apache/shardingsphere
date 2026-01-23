@@ -45,6 +45,7 @@
     <sql-case id="select_extract_function_week" value="SELECT EXTRACT(WEEK FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_extract_function_quarter" value="SELECT EXTRACT(QUARTER FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_extract_function_for_oracle" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40') FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_extract_function_doris" value="SELECT EXTRACT(YEAR FROM '2020-01-01')" db-types="Doris" />
     <sql-case id="select_mod_function" value="SELECT MOD(order_id, 1) from t_order" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_sys_xml_agg" value="SELECT SYS_XMLAGG(SYS_XMLGEN(last_name)) XMLAGG FROM employees WHERE last_name LIKE 'R%' ORDER BY xmlagg;" db-types="Oracle" />
     <sql-case id="select_set_function" value="SELECT customer_id, SET(cust_address_ntab) address FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
