@@ -56,6 +56,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
@@ -145,6 +146,7 @@ public final class CDCClient implements AutoCloseable {
         ResponseFuture responseFuture = new ResponseFuture(requestId, Type.STREAM_DATA);
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(request);
+        log.info("Sending start streaming request, param: {}, timeout: {} s", parameter, TimeUnit.MILLISECONDS.toSeconds(config.getTimeoutMillis()));
         String result = responseFuture.waitResponseResult(config.getTimeoutMillis(), connectionContext).toString();
         log.info("Start streaming success, streaming id: {}", result);
         return result;
