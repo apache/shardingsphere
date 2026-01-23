@@ -14,3 +14,4 @@
    sec-limitations
    sec-conf_global
    sec-conf_database
+   sec-distsql
