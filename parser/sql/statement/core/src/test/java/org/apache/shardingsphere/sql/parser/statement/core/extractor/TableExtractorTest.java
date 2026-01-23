@@ -43,8 +43,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -239,21 +242,46 @@ class TableExtractorTest {
     }
     
     @Test
+    void assertExtractTablesFromCreateTableStatement() {
+        CreateTableStatement createTableStatement = mock(CreateTableStatement.class);
+        when(createTableStatement.getTable()).thenReturn(createSimpleTableSegmentForDDLStatement());
+        assertSimpleTableSegmentFromDDLStatement(createTableStatement);
+    }
+    
+    @Test
+    void assertExtractTablesFromAlterTableStatement() {
+        AlterTableStatement alterTableStatement = mock(AlterTableStatement.class);
+        when(alterTableStatement.getTable()).thenReturn(createSimpleTableSegmentForDDLStatement());
+        assertSimpleTableSegmentFromDDLStatement(alterTableStatement);
+    }
+    
+    @Test
+    void assertExtractTablesFromCommentStatement() {
+        CommentStatement commentStatement = mock(CommentStatement.class);
+        when(commentStatement.getTable()).thenReturn(createSimpleTableSegmentForDDLStatement());
+        assertSimpleTableSegmentFromDDLStatement(commentStatement);
+    }
+    
+    @Test
     void assertExtractTablesFromCreateIndexStatement() {
         CreateIndexStatement createIndexStatement = mock(CreateIndexStatement.class);
-        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(30, 40, new IdentifierValue("t_order")));
-        when(createIndexStatement.getTable()).thenReturn(tableSegment);
-        tableExtractor.extractTablesFromCreateIndexStatement(createIndexStatement);
-        assertThat(tableExtractor.getRewriteTables().size(), is(1));
-        assertTableSegment(tableExtractor.getRewriteTables().iterator().next(), 30, 40, "t_order");
+        when(createIndexStatement.getTable()).thenReturn(createSimpleTableSegmentForDDLStatement());
+        assertSimpleTableSegmentFromDDLStatement(createIndexStatement);
     }
     
     @Test
     void assertExtractTablesFromDropIndexStatement() {
         DropIndexStatement dropIndexStatement = mock(DropIndexStatement.class);
-        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(30, 40, new IdentifierValue("t_order")));
-        when(dropIndexStatement.getSimpleTable()).thenReturn(Optional.of(tableSegment));
-        tableExtractor.extractTablesFromDropIndexStatement(dropIndexStatement);
+        when(dropIndexStatement.getSimpleTable()).thenReturn(Optional.of(createSimpleTableSegmentForDDLStatement()));
+        assertSimpleTableSegmentFromDDLStatement(dropIndexStatement);
+    }
+    
+    private SimpleTableSegment createSimpleTableSegmentForDDLStatement() {
+        return new SimpleTableSegment(new TableNameSegment(30, 40, new IdentifierValue("t_order")));
+    }
+    
+    private void assertSimpleTableSegmentFromDDLStatement(final DDLStatement statement) {
+        tableExtractor.extractTablesFromSQLStatement(statement);
         assertThat(tableExtractor.getRewriteTables().size(), is(1));
         assertTableSegment(tableExtractor.getRewriteTables().iterator().next(), 30, 40, "t_order");
     }
