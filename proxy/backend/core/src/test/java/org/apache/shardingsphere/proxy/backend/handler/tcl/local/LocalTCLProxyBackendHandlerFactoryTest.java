@@ -48,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Ro
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
@@ -142,6 +143,7 @@ class LocalTCLProxyBackendHandlerFactoryTest {
     private static Stream<Arguments> assertNewInstanceArguments() {
         return Stream.of(
                 Arguments.of(new BeginTransactionStatement(DATABASE_TYPE), BeginTransactionProxyBackendHandler.class),
+                Arguments.of(new StartTransactionStatement(DATABASE_TYPE), BeginTransactionProxyBackendHandler.class),
                 Arguments.of(new SetAutoCommitStatement(DATABASE_TYPE, false), SetAutoCommitProxyBackendHandler.class),
                 Arguments.of(new CommitStatement(DATABASE_TYPE), CommitProxyBackendHandler.class),
                 Arguments.of(new RollbackStatement(DATABASE_TYPE, "sp"), RollbackSavepointProxyBackendHandler.class),

@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Ro
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
 
 /**
@@ -56,7 +57,7 @@ public final class LocalTCLProxyBackendHandlerFactory {
      */
     public static ProxyBackendHandler newInstance(final QueryContext queryContext, final ConnectionSession connectionSession) {
         TCLStatement sqlStatement = (TCLStatement) queryContext.getSqlStatementContext().getSqlStatement();
-        if (sqlStatement instanceof BeginTransactionStatement) {
+        if (sqlStatement instanceof BeginTransactionStatement || sqlStatement instanceof StartTransactionStatement) {
             return new BeginTransactionProxyBackendHandler(sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof SetAutoCommitStatement) {
