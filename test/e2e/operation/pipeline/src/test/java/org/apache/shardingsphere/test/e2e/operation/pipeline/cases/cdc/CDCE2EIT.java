@@ -69,7 +69,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -97,7 +96,8 @@ class CDCE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertCDCDataImportSuccess(final PipelineTestParameter testParam) throws SQLException {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        // If run on NATIVE mode and database timezone is UTC, then: 1) set `e2e.timezone=UTC` in e2e-env.properties, 2) add this line of code in proxy Bootstrap main method.
+        // TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new CDCJobType());
             distSQLFacade.alterPipelineRule();
