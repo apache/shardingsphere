@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
@@ -82,6 +83,8 @@ import static org.mockito.Mockito.withSettings;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class RegisterCenterMetaDataContextsInitFactoryTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Mock
     private PersistRepository repository;
     
@@ -113,7 +116,6 @@ class RegisterCenterMetaDataContextsInitFactoryTest {
     
     @Test
     void assertCreateMergesViewsWhenSchemasNotPersisted() throws SQLException {
-        DatabaseType databaseType = mock(DatabaseType.class);
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.emptyList());
         when(ShardingSphereStatisticsFactory.create(any(), any())).thenReturn(new ShardingSphereStatistics());
         ShardingSphereDatabase fooDatabase = createDatabase("foo_db",
@@ -179,7 +181,7 @@ class RegisterCenterMetaDataContextsInitFactoryTest {
     
     private ShardingSphereDatabase createDatabase(final String databaseName, final Collection<ShardingSphereSchema> schemas) {
         return new ShardingSphereDatabase(databaseName,
-                mock(DatabaseType.class), new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), schemas);
+                databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), schemas);
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter(final Map<String, DatabaseConfiguration> databaseConfigs) {

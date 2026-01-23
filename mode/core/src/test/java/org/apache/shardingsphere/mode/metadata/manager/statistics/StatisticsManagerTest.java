@@ -363,7 +363,7 @@ class StatisticsManagerTest {
     }
     
     private ShardingSphereMetaData createMetaDataWithSchemaWithoutTable() {
-        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA, mock(DatabaseType.class));
+        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA, databaseType);
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 DATABASE, databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
         return new ShardingSphereMetaData(

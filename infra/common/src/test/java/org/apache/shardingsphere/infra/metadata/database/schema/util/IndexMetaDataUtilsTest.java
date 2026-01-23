@@ -75,9 +75,11 @@ class IndexMetaDataUtilsTest {
     }
     
     private ShardingSphereDatabase buildDatabase() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         ShardingSphereTable table = new ShardingSphereTable(
                 "foo_tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("foo_idx", Collections.emptyList(), false)), Collections.emptyList());
-        Collection<ShardingSphereSchema> schemas = Collections.singleton(new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList(), mock(DatabaseType.class)));
-        return new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), mock(ResourceMetaData.class), mock(RuleMetaData.class), schemas);
+        Collection<ShardingSphereSchema> schemas = Collections.singleton(new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList(),
+                databaseType));
+        return new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), schemas);
     }
 }

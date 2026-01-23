@@ -64,12 +64,13 @@ public final class ShardingSphereMetaData implements AutoCloseable {
     
     public ShardingSphereMetaData(final Collection<ShardingSphereDatabase> databases, final ResourceMetaData globalResourceMetaData,
                                   final RuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
-        this.databases = new ConcurrentHashMap<>(databases.stream().collect(Collectors.toMap(each -> new ShardingSphereIdentifier(each.getName()), each -> each)));
+        protocolType = databases.isEmpty() ? DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), props) : databases.iterator().next().getProtocolType();
+        this.databases = new ConcurrentHashMap<>(databases.stream()
+                .collect(Collectors.toMap(each -> new ShardingSphereIdentifier(each.getName(), protocolType), each -> each)));
         this.globalResourceMetaData = globalResourceMetaData;
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
         temporaryProps = new TemporaryConfigurationProperties(props.getProps());
-        protocolType = databases.isEmpty() ? DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), props) : databases.iterator().next().getProtocolType();
     }
     
     /**
@@ -88,7 +89,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @return contains database from meta data or not
      */
     public boolean containsDatabase(final String databaseName) {
-        return databases.containsKey(new ShardingSphereIdentifier(databaseName));
+        return databases.containsKey(new ShardingSphereIdentifier(databaseName, protocolType));
     }
     
     /**
@@ -98,7 +99,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @return meta data database
      */
     public ShardingSphereDatabase getDatabase(final String databaseName) {
-        return databases.get(new ShardingSphereIdentifier(databaseName));
+        return databases.get(new ShardingSphereIdentifier(databaseName, protocolType));
     }
     
     /**
@@ -110,7 +111,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      */
     public void addDatabase(final String databaseName, final DatabaseType protocolType, final ConfigurationProperties props) {
         ShardingSphereDatabase database = ShardingSphereDatabaseFactory.create(databaseName, protocolType, props);
-        databases.put(new ShardingSphereIdentifier(database.getName()), database);
+        databases.put(new ShardingSphereIdentifier(database.getName(), protocolType), database);
         globalRuleMetaData.getRules().forEach(each -> ((GlobalRule) each).refresh(databases.values(), GlobalRuleChangedType.DATABASE_CHANGED));
     }
     
@@ -120,7 +121,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @param database database
      */
     public void putDatabase(final ShardingSphereDatabase database) {
-        databases.put(new ShardingSphereIdentifier(database.getName()), database);
+        databases.put(new ShardingSphereIdentifier(database.getName(), protocolType), database);
     }
     
     /**
@@ -129,7 +130,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @param databaseName database name
      */
     public void dropDatabase(final String databaseName) {
-        cleanResources(databases.remove(new ShardingSphereIdentifier(databaseName)));
+        cleanResources(databases.remove(new ShardingSphereIdentifier(databaseName, protocolType)));
     }
     
     @SneakyThrows(Exception.class)

@@ -54,8 +54,8 @@ public final class ShardingSphereSchema {
         this.name = name;
         this.tables = new ConcurrentHashMap<>(tables.size(), 1F);
         this.views = new ConcurrentHashMap<>(views.size(), 1F);
-        tables.forEach(each -> this.tables.put(new ShardingSphereIdentifier(each.getName()), each));
-        views.forEach(each -> this.views.put(new ShardingSphereIdentifier(each.getName()), each));
+        tables.forEach(each -> this.tables.put(new ShardingSphereIdentifier(each.getName(), protocolType), each));
+        views.forEach(each -> this.views.put(new ShardingSphereIdentifier(each.getName(), protocolType), each));
         this.protocolType = protocolType;
     }
     
@@ -75,7 +75,7 @@ public final class ShardingSphereSchema {
      * @return contains table or not
      */
     public boolean containsTable(final String tableName) {
-        return tables.containsKey(new ShardingSphereIdentifier(tableName));
+        return tables.containsKey(new ShardingSphereIdentifier(tableName, protocolType));
     }
     
     /**
@@ -85,7 +85,7 @@ public final class ShardingSphereSchema {
      * @return table
      */
     public ShardingSphereTable getTable(final String tableName) {
-        return tables.get(new ShardingSphereIdentifier(tableName));
+        return tables.get(new ShardingSphereIdentifier(tableName, protocolType));
     }
     
     /**
@@ -94,7 +94,7 @@ public final class ShardingSphereSchema {
      * @param table table
      */
     public void putTable(final ShardingSphereTable table) {
-        tables.put(new ShardingSphereIdentifier(table.getName()), table);
+        tables.put(new ShardingSphereIdentifier(table.getName(), protocolType), table);
     }
     
     /**
@@ -103,7 +103,7 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      */
     public void removeTable(final String tableName) {
-        tables.remove(new ShardingSphereIdentifier(tableName));
+        tables.remove(new ShardingSphereIdentifier(tableName, protocolType));
     }
     
     /**
@@ -122,7 +122,7 @@ public final class ShardingSphereSchema {
      * @return contains view or not
      */
     public boolean containsView(final String viewName) {
-        return views.containsKey(new ShardingSphereIdentifier(viewName));
+        return views.containsKey(new ShardingSphereIdentifier(viewName, protocolType));
     }
     
     /**
@@ -132,7 +132,7 @@ public final class ShardingSphereSchema {
      * @return view
      */
     public ShardingSphereView getView(final String viewName) {
-        return views.get(new ShardingSphereIdentifier(viewName));
+        return views.get(new ShardingSphereIdentifier(viewName, protocolType));
     }
     
     /**
@@ -141,7 +141,7 @@ public final class ShardingSphereSchema {
      * @param view view
      */
     public void putView(final ShardingSphereView view) {
-        views.put(new ShardingSphereIdentifier(view.getName()), view);
+        views.put(new ShardingSphereIdentifier(view.getName(), protocolType), view);
     }
     
     /**
@@ -150,7 +150,7 @@ public final class ShardingSphereSchema {
      * @param viewName view name
      */
     public void removeView(final String viewName) {
-        views.remove(new ShardingSphereIdentifier(viewName));
+        views.remove(new ShardingSphereIdentifier(viewName, protocolType));
     }
     
     /**
