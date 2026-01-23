@@ -121,7 +121,9 @@ public final class CDCBackendHandler {
         StreamDataParameter parameter = new StreamDataParameter(requestBody.getDatabase(), new ArrayList<>(schemaTableNames), requestBody.getFull(), tableAndDataNodesMap, isDecodeWithTransaction);
         String jobId = jobAPI.create(parameter, CDCSinkType.SOCKET, new Properties());
         connectionContext.setJobId(jobId);
+        log.info("Stream data, jobId={}, database={}, schemaTableNames={}, full={}", jobId, requestBody.getDatabase(), schemaTableNames, requestBody.getFull());
         startStreaming(jobId, connectionContext, channel);
+        log.info("Stream data, started, jobId={}", jobId);
         return CDCResponseUtils.succeed(requestId, ResponseCase.STREAM_DATA_RESULT, StreamDataResult.newBuilder().setStreamingId(jobId).build());
     }
     
