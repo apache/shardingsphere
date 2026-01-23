@@ -73,6 +73,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     
     @Override
     public void channelActive(final ChannelHandlerContext ctx) {
+        log.info("channel active: {}", ctx.channel().remoteAddress());
         CDCResponse response = CDCResponse.newBuilder().setServerGreetingResult(ServerGreetingResult.newBuilder().setServerVersion(ShardingSphereVersion.VERSION).setProtocolVersion("1").build())
                 .setStatus(Status.SUCCEED).build();
         ctx.writeAndFlush(response);
@@ -80,6 +81,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     
     @Override
     public void channelInactive(final ChannelHandlerContext ctx) {
+        log.info("channel inactive: {}", ctx.channel().remoteAddress());
         CDCConnectionContext connectionContext = ctx.channel().attr(CONNECTION_CONTEXT_KEY).get();
         if (null != connectionContext && null != connectionContext.getJobId()) {
             backendHandler.stopStreaming(connectionContext.getJobId(), ctx.channel().id());
@@ -109,6 +111,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
         CDCConnectionContext connectionContext = ctx.channel().attr(CONNECTION_CONTEXT_KEY).get();
         CDCRequest request = (CDCRequest) msg;
+        log.info("channel read: {}, request type: {}, request id: {}", ctx.channel().remoteAddress(), request.getType(), request.getRequestId());
         if (null == connectionContext || request.hasLoginRequestBody()) {
             processLogin(ctx, request);
             return;
@@ -146,6 +149,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
                 () -> new CDCExceptionWrapper(request.getRequestId(), new CDCLoginFailedException()));
         ctx.channel().attr(CONNECTION_CONTEXT_KEY).set(new CDCConnectionContext(user));
         ctx.writeAndFlush(CDCResponseUtils.succeed(request.getRequestId()));
+        log.info("Process login success, request id: {}", request.getRequestId());
     }
     
     private void checkPrivileges(final String requestId, final Grantee grantee, final String currentDatabase) {
