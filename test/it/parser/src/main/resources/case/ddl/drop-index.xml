@@ -89,7 +89,7 @@
         <table name="orders" start-index="25" stop-index="30" />
     </drop-index>
 
-    <drop-index sql-case-id="drop_index_with_if_exists">
+    <drop-index sql-case-id="drop_index_with_if_exists" if-exists="true">
         <index name="customer_id" start-index="21" stop-index="31" />
         <table name="customers" start-index="36" stop-index="44" />
     </drop-index>
