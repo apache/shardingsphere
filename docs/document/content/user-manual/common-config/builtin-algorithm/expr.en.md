@@ -88,7 +88,7 @@ Example:
 This is an optional implementation. You need to actively declare the following dependencies in the `pom.xml` of your own project. 
 And please make sure your own projects are compiled with OpenJDK 21+ or its downstream distribution.
 
-Due to the limitation of https://www.graalvm.org/jdk21/reference-manual/java-on-truffle/faq/#does-java-running-on-truffle-run-on-hotspot-too,
+Due to the limitation of https://www.graalvm.org/jdk21/reference-manual/espresso/faq/#does-java-running-on-truffle-run-on-hotspot-too,
 when this module is used in a non-GraalVM Native Image environment, it is only ready on Linux with System Property `os.arch` set to `amd64`.
 
 Truffle's backward compatibility matrix with the JDK is located at https://medium.com/graalvm/40027a59c401 .

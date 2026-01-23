@@ -98,7 +98,7 @@ class OpenGaussPipelineSQLBuilderTest {
         when(resultSet.getString("pg_get_tabledef")).thenReturn("CREATE TABLE foo_tbl (id INT PRIMARY KEY);ALTER TABLE foo_tbl OWNER TO root");
         when(connection.createStatement().executeQuery("SELECT * FROM pg_get_tabledef('foo_schema.foo_tbl')")).thenReturn(resultSet);
         assertThat(sqlBuilder.buildCreateTableSQLs(new MockedDataSource(connection), "foo_schema", "foo_tbl"),
-                is(Arrays.asList("CREATE TABLE foo_tbl (id INT PRIMARY KEY)", "ALTER TABLE foo_schema.foo_tbl OWNER TO root")));
+                is(Arrays.asList("CREATE TABLE foo_tbl (id INT PRIMARY KEY)", "ALTER TABLE foo_tbl OWNER TO root")));
     }
     
     @Test

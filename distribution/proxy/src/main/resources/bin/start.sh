@@ -96,9 +96,6 @@ fi
 
 JAVA_MEM_OPTS=" -server ${JAVA_MEM_COMMON_OPTS} -Xss1m -XX:AutoBoxCacheMax=4096 -XX:+UseNUMA -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m ${VERSION_OPTS} -Dio.netty.leakDetection.level=DISABLED "
 
-
-
-
 MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 
 unset -v PORT
