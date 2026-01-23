@@ -29,3 +29,5 @@ host    all             all             ::1/128                 @authmethodhost@
 #local   replication     @default_username@                                @authmethodlocal@
 #host    replication     @default_username@        127.0.0.1/32            @authmethodhost@
 #host    replication     @default_username@        ::1/128                 @authmethodhost@
+
+host replication test_user 0.0.0.0/0 md5
