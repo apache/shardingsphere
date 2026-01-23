@@ -27,6 +27,11 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateEncryptKeyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSqlBlockRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropSqlBlockRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowSqlBlockRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadTaskStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.catalog.AlterCatalogStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.HiveAbortStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCloneStatementTestCase;
@@ -271,8 +276,11 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.DropIndexStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.CancelBuildIndexStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.BuildIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.macro.CreateMacroStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.macro.DropMacroStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowBuildIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.operator.AlterOperatorStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.operator.CreateOperatorStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.operator.DropOperatorStatementTestCase;
@@ -552,6 +560,30 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "drop-index")
     private final List<DropIndexStatementTestCase> dropIndexTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-build-index")
+    private final List<ShowBuildIndexStatementTestCase> showBuildIndexTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "build-index")
+    private final List<BuildIndexStatementTestCase> buildIndexTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "cancel-build-index")
+    private final List<CancelBuildIndexStatementTestCase> cancelBuildIndexStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-sql-block-rule")
+    private final List<DorisAlterSqlBlockRuleStatementTestCase> alterSqlBlockRuleTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-sql-block-rule")
+    private final List<DorisDropSqlBlockRuleStatementTestCase> dropSqlBlockRuleTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-sql-block-rule")
+    private final List<DorisShowSqlBlockRuleStatementTestCase> showSqlBlockRuleTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-routine-load-task")
+    private final List<DorisShowRoutineLoadTaskStatementTestCase> showRoutineLoadTaskTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-routine-load")
+    private final List<DorisShowRoutineLoadStatementTestCase> showRoutineLoadTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-constraints")
     private final List<SetConstraintsStatementTestCase> setConstraintsTestCases = new LinkedList<>();

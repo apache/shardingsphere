@@ -20,4 +20,11 @@
     <drop-resource-group sql-case-id="drop_resource_group">
         <group name="rg" start-index="20" stop-index="21" />
     </drop-resource-group>
+    <drop-sql-block-rule sql-case-id="drop_sql_block_rule_single">
+        <rule-name name="test_rule1" start-index="20" stop-index="29" />
+    </drop-sql-block-rule>
+    <drop-sql-block-rule sql-case-id="drop_sql_block_rule_multiple">
+        <rule-name name="test_rule1" start-index="20" stop-index="29" />
+        <rule-name name="test_rule2" start-index="32" stop-index="41" />
+    </drop-sql-block-rule>
 </sql-parser-test-cases>

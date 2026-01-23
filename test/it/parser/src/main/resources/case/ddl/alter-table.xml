@@ -2547,6 +2547,10 @@
         <rename-table name="table2" start-index="26" stop-index="31" />
     </alter-table>
 
+    <alter-table sql-case-id="alter_table_without_actions_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+
     <alter-table sql-case-id="alter_table_rename_column_doris">
         <table name="example_table" start-index="12" stop-index="24" />
         <rename-column start-index="26" stop-index="44">

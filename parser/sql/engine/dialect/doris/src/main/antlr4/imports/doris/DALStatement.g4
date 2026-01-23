@@ -174,6 +174,10 @@ showIndex
     : SHOW EXTENDED? (INDEX | INDEXES | KEYS) fromTable fromDatabase? showWhereClause?
     ;
 
+showBuildIndex
+    : SHOW BUILD INDEX fromDatabase? showWhereClause? orderByClause? limitClause?
+    ;
+
 showMasterStatus
     : SHOW MASTER STATUS
     ;
@@ -392,8 +396,36 @@ createSqlBlockRule
     : CREATE SQL_BLOCK_RULE ruleName propertiesClause
     ;
 
+alterSqlBlockRule
+    : ALTER SQL_BLOCK_RULE ruleName propertiesClause
+    ;
+
+dropSqlBlockRule
+    : DROP SQL_BLOCK_RULE ruleNames
+    ;
+
+showSqlBlockRule
+    : SHOW SQL_BLOCK_RULE (FOR ruleName)?
+    ;
+
+showRoutineLoadTask
+    : SHOW ROUTINE LOAD TASK showWhereClause
+    ;
+
+showRoutineLoad
+    : SHOW ALL? ROUTINE LOAD (FOR qualifiedJobName)?
+    ;
+
+qualifiedJobName
+    : (owner DOT_)? name
+    ;
+
 ruleName
     : identifier
+    ;
+
+ruleNames
+    : ruleName (COMMA_ ruleName)*
     ;
 
 propertiesClause
@@ -709,6 +741,7 @@ show
     | showBinaryLogs
     | showColumns
     | showIndex
+    | showBuildIndex
     | showCreateDatabase
     | showCreateTable
     | showBinlogEvents
@@ -747,4 +780,7 @@ show
     | showVariables
     | showReplicas
     | showReplicaStatus
+    | showSqlBlockRule
+    | showRoutineLoadTask
+    | showRoutineLoad
     ;

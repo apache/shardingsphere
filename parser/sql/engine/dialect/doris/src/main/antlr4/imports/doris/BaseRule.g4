@@ -503,6 +503,7 @@ identifierKeywordsUnambiguous
     | TABLESPACE
     | TABLE_CHECKSUM
     | TABLE_NAME
+    | TASK
     | TEMPORARY
     | TEMPTABLE
     | TEXT

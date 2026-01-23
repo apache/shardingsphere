@@ -374,6 +374,7 @@
     <sql-case id="alter_drop_tag_basic" value="ALTER TABLE test DROP TAG tag1;" db-types="Hive" />
     <sql-case id="alter_drop_tag_if_exists" value="ALTER TABLE test DROP TAG IF EXISTS tag1;" db-types="Hive" />
     <sql-case id="alter_table_rename_table_doris" value="ALTER TABLE table1 RENAME table2" db-types="Doris" />
+    <sql-case id="alter_table_without_actions_doris" value="ALTER TABLE t_order" db-types="Doris" />
     <sql-case id="alter_table_rename_column_doris" value="ALTER TABLE example_table RENAME COLUMN c1 c2" db-types="Doris" />
     <sql-case id="alter_table_rename_rollup" value="ALTER TABLE example_table RENAME ROLLUP rollup1 rollup2" db-types="Doris" />
     <sql-case id="alter_table_rename_partition" value="ALTER TABLE example_table RENAME PARTITION partition1 partition2" db-types="Doris" />

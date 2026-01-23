@@ -95,6 +95,10 @@ public enum SQLVisitorRule {
     
     DROP_INDEX("DropIndex", SQLStatementType.DDL),
     
+    BUILD_INDEX("BuildIndex", SQLStatementType.DDL),
+    
+    CANCEL_BUILD_INDEX("CancelBuildIndex", SQLStatementType.DDL),
+    
     CREATE_PROCEDURE("CreateProcedure", SQLStatementType.DDL),
     
     CREATE_PUBLICATION("CreatePublication", SQLStatementType.DDL),
@@ -392,6 +396,18 @@ public enum SQLVisitorRule {
     SHOW_COLUMNS("ShowColumns", SQLStatementType.DAL),
     
     SHOW_INDEX("ShowIndex", SQLStatementType.DAL),
+    
+    SHOW_BUILD_INDEX("ShowBuildIndex", SQLStatementType.DAL),
+    
+    ALTER_SQL_BLOCK_RULE("AlterSqlBlockRule", SQLStatementType.DAL),
+    
+    DROP_SQL_BLOCK_RULE("DropSqlBlockRule", SQLStatementType.DAL),
+    
+    SHOW_SQL_BLOCK_RULE("ShowSqlBlockRule", SQLStatementType.DAL),
+    
+    SHOW_ROUTINE_LOAD_TASK("ShowRoutineLoadTask", SQLStatementType.DAL),
+    
+    SHOW_ROUTINE_LOAD("ShowRoutineLoad", SQLStatementType.DAL),
     
     SHOW_CREATE_TABLE("ShowCreateTable", SQLStatementType.DAL),
     

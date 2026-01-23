@@ -85,6 +85,23 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_extract_function_doris">
+        <projections start-index="7" stop-index="37">
+            <expression-projection text="EXTRACT(YEAR FROM '2020-01-01')" start-index="7" stop-index="37">
+                <expr>
+                    <function function-name="EXTRACT" start-index="7" stop-index="37" text="EXTRACT(YEAR FROM '2020-01-01')">
+                        <parameter>
+                            <literal-expression value="YEAR" start-index="15" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2020-01-01" start-index="25" stop-index="36" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_cast_as_year">
         <projections start-index="7" stop-index="24">
             <expression-projection text="CAST(-1.1 AS YEAR)" start-index="7" stop-index="24">

@@ -17,7 +17,10 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_resource_group" value="DROP RESOURCE GROUP rg" db-types="MySQL,Doris" />
-    <sql-case id="drop_sql_block_rule_single" value="DROP SQL_BLOCK_RULE test_rule1" db-types="Doris" />
-    <sql-case id="drop_sql_block_rule_multiple" value="DROP SQL_BLOCK_RULE test_rule1, test_rule2" db-types="Doris" />
+    <sql-case id="show_build_index_simple" value="SHOW BUILD INDEX" db-types="Doris" />
+    <sql-case id="show_build_index_with_database" value="SHOW BUILD INDEX IN db1" db-types="Doris" />
+    <sql-case id="show_build_index_with_where" value="SHOW BUILD INDEX WHERE TableName = 'table1'" db-types="Doris" />
+    <sql-case id="show_build_index_with_order_by" value="SHOW BUILD INDEX WHERE TableName = 'table1' ORDER BY JobId" db-types="Doris" />
+    <sql-case id="show_build_index_with_limit" value="SHOW BUILD INDEX LIMIT 10" db-types="Doris" />
+    <sql-case id="show_build_index_full" value="SHOW BUILD INDEX WHERE TableName = 'table1' ORDER BY JobId LIMIT 10" db-types="Doris" />
 </sql-cases>

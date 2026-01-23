@@ -233,6 +233,10 @@ CALL
     : C A L L
     ;
 
+CANCEL
+    : C A N C E L
+    ;
+
 CASCADE
     : C A S C A D E
     ;
@@ -2840,6 +2844,10 @@ TABLE_CHECKSUM
 
 TABLE_NAME
     : T A B L E UL_ N A M E
+    ;
+
+TASK
+    : T A S K
     ;
 
 TEMPORARY

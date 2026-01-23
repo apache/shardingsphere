@@ -35,4 +35,9 @@
     <sql-case id="change_replication_ignore_server_ids_doris" value="CHANGE REPLICATION SOURCE TO IGNORE_SERVER_IDS = ()" db-types="Doris"/>
     <sql-case id="change_master_ignore_server_ids_doris" value="CHANGE MASTER TO IGNORE_SERVER_IDS = ()" db-types="Doris"/>
     <sql-case id="change_master_basic_doris" value="CHANGE MASTER TO MASTER_HOST='127.0.0.1', MASTER_PORT=3306" db-types="Doris"/>
+    <sql-case id="alter_sql_block_rule_with_sql" value="ALTER SQL_BLOCK_RULE test_rule PROPERTIES(&quot;sql&quot;=&quot;select \\* from test_table&quot;,&quot;enable&quot;=&quot;true&quot;)" db-types="Doris" />
+    <sql-case id="alter_sql_block_rule_with_sqlhash" value="ALTER SQL_BLOCK_RULE block_rule_sqlhash PROPERTIES(&quot;sqlHash&quot;=&quot;0e5491b37dbea5e8&quot;,&quot;enable&quot;=&quot;false&quot;)" db-types="Doris" />
+    <sql-case id="alter_sql_block_rule_with_partition_num" value="ALTER SQL_BLOCK_RULE limit_partition_rule PROPERTIES(&quot;partition_num&quot;=&quot;50&quot;,&quot;global&quot;=&quot;false&quot;)" db-types="Doris" />
+    <sql-case id="alter_sql_block_rule_with_cardinality" value="ALTER SQL_BLOCK_RULE limit_cardinality_rule PROPERTIES(&quot;cardinality&quot;=&quot;20000000000&quot;,&quot;tablet_num&quot;=&quot;200&quot;)" db-types="Doris" />
+    <sql-case id="alter_sql_block_rule_mixed_properties" value="ALTER SQL_BLOCK_RULE complex_rule PROPERTIES(&quot;sql&quot;=&quot;\\s*update\\s*\\*\\s*from order_\\w*\\s*&quot;,&quot;global&quot;=&quot;true&quot;,&quot;enable&quot;=&quot;false&quot;)" db-types="Doris" />
 </sql-cases>

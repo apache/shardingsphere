@@ -2143,6 +2143,34 @@
             <comment text="'doris table comment'" start-index="52" stop-index="72" />
         </create-table-option>
     </create-table>
+    
+    <create-table sql-case-id="create_table_with_unique_constraint_doris" db-types="Doris">
+        <table name="t_unique" start-index="13" stop-index="20" />
+        <column-definition type="INT" start-index="23" stop-index="28">
+            <column name="id" start-index="23" stop-index="24" />
+        </column-definition>
+        <constraint-definition start-index="31" stop-index="41">
+            <index-column name="id" start-index="39" stop-index="40" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_foreign_key_constraint_doris" db-types="Doris">
+        <table name="t_fk" start-index="13" stop-index="16" />
+        <column-definition type="INT" start-index="19" stop-index="24">
+            <column name="id" start-index="19" stop-index="20" />
+        </column-definition>
+        <constraint-definition constraint-name="fk_order" start-index="27" stop-index="88">
+            <referenced-table name="ref_table" start-index="75" stop-index="83" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_inline_reference_doris" db-types="Doris">
+        <table name="t_col_fk" start-index="13" stop-index="20" />
+        <column-definition type="INT" start-index="23" stop-index="53">
+            <column name="id" start-index="23" stop-index="24" />
+            <referenced-table name="ref_table" start-index="41" stop-index="49" />
+        </column-definition>
+    </create-table>
 
     <create-table sql-case-id="create_table_with_select_without_query" db-types="Oracle">
         <table name="t_order_new" start-index="13" stop-index="23"/>

@@ -69,4 +69,30 @@
         <action>DROP OBSERVER</action>
         <target>192.168.1.101:9010</target>
     </doris-alter-system>
+    <alter-sql-block-rule sql-case-id="alter_sql_block_rule_with_sql">
+        <rule-name start-index="23" stop-index="31">test_rule</rule-name>
+        <property key="sql" value="select \* from test_table" start-index="42" stop-index="75" />
+        <property key="enable" value="true" start-index="77" stop-index="91" />
+    </alter-sql-block-rule>
+    <alter-sql-block-rule sql-case-id="alter_sql_block_rule_with_sqlhash">
+        <rule-name start-index="23" stop-index="41">block_rule_sqlhash</rule-name>
+        <property key="sqlHash" value="0e5491b37dbea5e8" start-index="51" stop-index="78" />
+        <property key="enable" value="false" start-index="80" stop-index="95" />
+    </alter-sql-block-rule>
+    <alter-sql-block-rule sql-case-id="alter_sql_block_rule_with_partition_num">
+        <rule-name start-index="23" stop-index="42">limit_partition_rule</rule-name>
+        <property key="partition_num" value="50" start-index="53" stop-index="72" />
+        <property key="global" value="false" start-index="74" stop-index="89" />
+    </alter-sql-block-rule>
+    <alter-sql-block-rule sql-case-id="alter_sql_block_rule_with_cardinality">
+        <rule-name start-index="23" stop-index="46">limit_cardinality_rule</rule-name>
+        <property key="cardinality" value="20000000000" start-index="55" stop-index="81" />
+        <property key="tablet_num" value="200" start-index="83" stop-index="100" />
+    </alter-sql-block-rule>
+    <alter-sql-block-rule sql-case-id="alter_sql_block_rule_mixed_properties">
+        <rule-name start-index="23" stop-index="34">complex_rule</rule-name>
+        <property key="sql" value="\s*update\s*\*\s*from order_\w*\s*" start-index="45" stop-index="92" />
+        <property key="global" value="true" start-index="94" stop-index="108" />
+        <property key="enable" value="false" start-index="110" stop-index="125" />
+    </alter-sql-block-rule>
 </sql-parser-test-cases>

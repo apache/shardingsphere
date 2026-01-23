@@ -84,12 +84,15 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropTab
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BuildIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelBuildIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExecuteStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FieldDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FlowControlStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FunctionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IfStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.JobIdContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.KeyListWithExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.KeyPartContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.KeyPartWithExpressionContext;
@@ -180,6 +183,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.fu
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.DropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.BuildIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CancelBuildIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.AlterProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.DropProcedureStatement;
@@ -811,6 +816,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
         DropIndexStatement result = new DropIndexStatement(getDatabaseType());
+        result.setIfExists(null != ctx.ifExists());
         result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.getIndexes().add(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
@@ -830,6 +836,33 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         IndexSegment indexNameSegment = (IndexSegment) visitIndexName(ctx.indexName(0));
         IndexSegment renameIndexName = (IndexSegment) visitIndexName(ctx.indexName(1));
         return new RenameIndexDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), indexNameSegment, renameIndexName);
+    }
+    
+    @Override
+    public ASTNode visitBuildIndex(final BuildIndexContext ctx) {
+        BuildIndexStatement result = new BuildIndexStatement(getDatabaseType());
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
+        result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
+        if (null != ctx.partitionNames()) {
+            for (IdentifierContext each : ctx.partitionNames().identifier()) {
+                PartitionSegment partitionSegment = new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each));
+                result.getPartitions().add(partitionSegment);
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCancelBuildIndex(final CancelBuildIndexContext ctx) {
+        CancelBuildIndexStatement result = new CancelBuildIndexStatement(getDatabaseType());
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.jobIdList()) {
+            for (JobIdContext each : ctx.jobIdList().jobId()) {
+                result.getJobIds().add(each.getText());
+            }
+        }
+        return result;
     }
     
     @Override

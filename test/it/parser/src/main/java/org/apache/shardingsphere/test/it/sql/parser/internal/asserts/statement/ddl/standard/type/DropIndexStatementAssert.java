@@ -52,6 +52,7 @@ public final class DropIndexStatementAssert {
         assertIndex(assertContext, actual, expected);
         assertLockTable(assertContext, actual, expected);
         assertAlgorithm(assertContext, actual, expected);
+        assertIfExists(assertContext, actual, expected);
     }
     
     private static void assertTables(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
@@ -90,5 +91,9 @@ public final class DropIndexStatementAssert {
             assertThat(assertContext.getText(String.format("`%s`'s algorithm assertion error: ", actual.getClass().getSimpleName())),
                     actual.getAlgorithmType().get().getAlgorithmOption().name(), is(expected.getAlgorithmOption().getType()));
         }
+    }
+    
+    private static void assertIfExists(final SQLCaseAssertContext assertContext, final DropIndexStatement actual, final DropIndexStatementTestCase expected) {
+        assertThat(assertContext.getText(String.format("`%s`'s if exists assertion error: ", actual.getClass().getSimpleName())), actual.isIfExists(), is(expected.isIfExists()));
     }
 }

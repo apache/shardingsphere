@@ -137,6 +137,14 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Propert
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowQueryStatsContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterSqlBlockRuleContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropSqlBlockRuleContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSqlBlockRuleContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowRoutineLoadTaskContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowRoutineLoadContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.QualifiedJobNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RuleNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowBuildIndexContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActionSegment;
@@ -153,12 +161,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilte
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.JobNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.RuleNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
@@ -183,6 +194,12 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResour
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSwitchStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSqlBlockRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropSqlBlockRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBlockRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadTaskStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowBuildIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQueryStatsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
@@ -1095,6 +1112,87 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         DorisCreateSqlBlockRuleStatement result = new DorisCreateSqlBlockRuleStatement(getDatabaseType());
         result.setRuleName(((IdentifierValue) visit(ctx.ruleName())).getValue());
         result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterSqlBlockRule(final AlterSqlBlockRuleContext ctx) {
+        DorisAlterSqlBlockRuleStatement result = new DorisAlterSqlBlockRuleStatement(getDatabaseType());
+        result.setRuleName(((IdentifierValue) visit(ctx.ruleName())).getValue());
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDropSqlBlockRule(final DropSqlBlockRuleContext ctx) {
+        DorisDropSqlBlockRuleStatement result = new DorisDropSqlBlockRuleStatement(getDatabaseType());
+        for (RuleNameContext each : ctx.ruleNames().ruleName()) {
+            IdentifierValue identifier = (IdentifierValue) visit(each);
+            result.getRuleNames().add(new RuleNameSegment(each.start.getStartIndex(), each.stop.getStopIndex(), identifier));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowSqlBlockRule(final ShowSqlBlockRuleContext ctx) {
+        DorisShowSqlBlockRuleStatement result = new DorisShowSqlBlockRuleStatement(getDatabaseType());
+        if (null != ctx.ruleName()) {
+            RuleNameContext ruleNameCtx = ctx.ruleName();
+            IdentifierValue identifier = (IdentifierValue) visit(ruleNameCtx);
+            result.setRuleName(new RuleNameSegment(ruleNameCtx.start.getStartIndex(), ruleNameCtx.stop.getStopIndex(), identifier));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowRoutineLoadTask(final ShowRoutineLoadTaskContext ctx) {
+        DorisShowRoutineLoadTaskStatement result = new DorisShowRoutineLoadTaskStatement(getDatabaseType());
+        result.setWhere((WhereSegment) visit(ctx.showWhereClause()));
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowRoutineLoad(final ShowRoutineLoadContext ctx) {
+        DorisShowRoutineLoadStatement result = new DorisShowRoutineLoadStatement(getDatabaseType());
+        result.setShowAll(null != ctx.ALL());
+        if (null != ctx.qualifiedJobName()) {
+            result.setJobName((JobNameSegment) visit(ctx.qualifiedJobName()));
+        }
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitQualifiedJobName(final QualifiedJobNameContext ctx) {
+        int startIndex = ctx.start.getStartIndex();
+        int stopIndex = ctx.stop.getStopIndex();
+        IdentifierValue identifier = new IdentifierValue(ctx.name().identifier().getText());
+        DatabaseSegment database = null;
+        DorisStatementParser.OwnerContext owner = ctx.owner();
+        if (null != owner) {
+            IdentifierValue databaseName = new IdentifierValue(owner.identifier().getText());
+            database = new DatabaseSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), databaseName);
+        }
+        return new JobNameSegment(startIndex, stopIndex, identifier, database);
+    }
+    
+    @Override
+    public ASTNode visitShowBuildIndex(final ShowBuildIndexContext ctx) {
+        ShowBuildIndexStatement result = new ShowBuildIndexStatement(getDatabaseType());
+        if (null != ctx.fromDatabase()) {
+            FromDatabaseSegment fromDatabaseSegment = (FromDatabaseSegment) visit(ctx.fromDatabase());
+            result.setDatabase(fromDatabaseSegment.getDatabase());
+        }
+        if (null != ctx.showWhereClause()) {
+            result.setWhere((WhereSegment) visit(ctx.showWhereClause()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        }
         return result;
     }
     
