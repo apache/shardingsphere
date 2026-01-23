@@ -263,4 +263,11 @@
     <sql-case id="show_slave_hosts_doris" value="SHOW SLAVE HOSTS" db-types="Doris" />
     <sql-case id="show_replica_status_doris" value="SHOW REPLICA STATUS" db-types="Doris" />
     <sql-case id="show_relaylog_events_doris" value="SHOW RELAYLOG EVENTS" db-types="Doris" />
+    <sql-case id="show_sql_block_rule" value="SHOW SQL_BLOCK_RULE" db-types="Doris" />
+    <sql-case id="show_sql_block_rule_for" value="SHOW SQL_BLOCK_RULE FOR test_rule2" db-types="Doris" />
+    <sql-case id="show_routine_load_task" value="SHOW ROUTINE LOAD TASK WHERE JobName = &quot;test1&quot;" db-types="Doris" />
+    <sql-case id="show_routine_load" value="SHOW ROUTINE LOAD" db-types="Doris" />
+    <sql-case id="show_all_routine_load" value="SHOW ALL ROUTINE LOAD" db-types="Doris" />
+    <sql-case id="show_routine_load_for_job" value="SHOW ROUTINE LOAD FOR test1" db-types="Doris" />
+    <sql-case id="show_all_routine_load_for_job_with_db" value="SHOW ALL ROUTINE LOAD FOR example_db.test1" db-types="Doris" />
 </sql-cases>

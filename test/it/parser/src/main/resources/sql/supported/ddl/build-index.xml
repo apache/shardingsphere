@@ -17,7 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_resource_group" value="DROP RESOURCE GROUP rg" db-types="MySQL,Doris" />
-    <sql-case id="drop_sql_block_rule_single" value="DROP SQL_BLOCK_RULE test_rule1" db-types="Doris" />
-    <sql-case id="drop_sql_block_rule_multiple" value="DROP SQL_BLOCK_RULE test_rule1, test_rule2" db-types="Doris" />
+    <sql-case id="build_index_with_partitions" value="BUILD INDEX index1 ON table1 PARTITION(p1, p2)" db-types="Doris" />
+    <sql-case id="build_index_without_partitions" value="BUILD INDEX index1 ON table1" db-types="Doris" />
+    <sql-case id="build_index_single_partition" value="BUILD INDEX idx_customer ON customers PARTITION(p_2023)" db-types="Doris" />
+    <sql-case id="build_index_multiple_partitions" value="BUILD INDEX idx_orders ON orders PARTITION(p_jan, p_feb, p_mar)" db-types="Doris" />
 </sql-cases>

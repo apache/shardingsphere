@@ -225,7 +225,23 @@ dropTable
     ;
 
 dropIndex
-    : DROP INDEX indexName (ON tableName)? algorithmOptionAndLockOption?
+    : DROP INDEX ifExists? indexName ON tableName algorithmOptionAndLockOption?
+    ;
+
+buildIndex
+    : BUILD INDEX indexName ON tableName partitionNames?
+    ;
+
+cancelBuildIndex
+    : CANCEL BUILD INDEX ON tableName jobIdList?
+    ;
+
+jobIdList
+    : LP_ jobId (COMMA_ jobId)* RP_
+    ;
+
+jobId
+    : NUMBER_
     ;
 
 algorithmOptionAndLockOption

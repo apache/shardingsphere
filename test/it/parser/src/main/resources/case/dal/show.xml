@@ -1120,6 +1120,42 @@
         </from>
     </show-query-stats>
 
+    <show-sql-block-rule sql-case-id="show_sql_block_rule" />
+
+    <show-sql-block-rule sql-case-id="show_sql_block_rule_for">
+        <rule-name name="test_rule2" start-index="24" stop-index="33" />
+    </show-sql-block-rule>
+
+    <show-routine-load-task sql-case-id="show_routine_load_task">
+        <where start-index="23" stop-index="45">
+            <expr>
+                <binary-operation-expression start-index="29" stop-index="45">
+                    <left>
+                        <column name="JobName" start-index="29" stop-index="35" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="test1" start-index="39" stop-index="45" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </show-routine-load-task>
+
+    <show-routine-load sql-case-id="show_routine_load" show-all="false" />
+
+    <show-routine-load sql-case-id="show_all_routine_load" show-all="true" />
+
+    <show-routine-load sql-case-id="show_routine_load_for_job" show-all="false">
+        <job-name name="test1" start-index="22" stop-index="26" />
+    </show-routine-load>
+
+    <show-routine-load sql-case-id="show_all_routine_load_for_job_with_db" show-all="true">
+        <job-name name="test1" start-index="26" stop-index="41">
+            <database name="example_db" start-index="26" stop-index="35" />
+        </job-name>
+    </show-routine-load>
+
     <show sql-case-id="show_functions_basic" />
     <show sql-case-id="show_functions_with_like" />
     <show sql-case-id="show_role_grant_basic" />

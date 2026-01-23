@@ -17,7 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_resource_group" value="DROP RESOURCE GROUP rg" db-types="MySQL,Doris" />
-    <sql-case id="drop_sql_block_rule_single" value="DROP SQL_BLOCK_RULE test_rule1" db-types="Doris" />
-    <sql-case id="drop_sql_block_rule_multiple" value="DROP SQL_BLOCK_RULE test_rule1, test_rule2" db-types="Doris" />
+    <sql-case id="cancel_build_index_with_jobs" value="CANCEL BUILD INDEX ON table1(10001, 10002)" db-types="Doris" />
+    <sql-case id="cancel_build_index_without_jobs" value="CANCEL BUILD INDEX ON table1" db-types="Doris" />
+    <sql-case id="cancel_build_index_single_job" value="CANCEL BUILD INDEX ON customers(12345)" db-types="Doris" />
+    <sql-case id="cancel_build_index_multiple_jobs" value="CANCEL BUILD INDEX ON orders(1001, 1002, 1003)" db-types="Doris" />
 </sql-cases>
