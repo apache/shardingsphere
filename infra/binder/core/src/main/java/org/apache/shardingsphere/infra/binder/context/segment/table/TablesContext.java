@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -64,7 +65,21 @@ public final class TablesContext {
     public TablesContext(final Collection<SimpleTableSegment> tables) {
         this(tables, Collections.emptyMap());
     }
-    
+
+    private void appendTableBoundInfo(final TableNameSegment tableName, final SimpleTableSegment simpleTableSegment) {
+        Optional<TableSegmentBoundInfo> tableBoundInfo = tableName.getTableBoundInfo();
+        if (tableBoundInfo.isPresent()) {
+            schemaNames.add(tableBoundInfo.get().getOriginalSchema().getValue());
+            databaseNames.add(tableBoundInfo.get().getOriginalDatabase().getValue());
+            return;
+        }
+        if (simpleTableSegment.getOwner().isPresent()) {
+            // Fallback: use table owner as schema when TableBoundInfo is absent
+            // (openGauss CREATE INDEX)
+            schemaNames.add(simpleTableSegment.getOwner().get().getIdentifier().getValue());
+        }
+    }
+
     public TablesContext(final Collection<? extends TableSegment> tables, final Map<Integer, SelectStatementContext> subqueryContexts) {
         if (tables.isEmpty()) {
             return;
@@ -77,9 +92,7 @@ public final class TablesContext {
                 if (!"DUAL".equalsIgnoreCase(tableName.getIdentifier().getValue())) {
                     simpleTables.add(simpleTableSegment);
                     tableNames.add(tableName.getIdentifier().getValue());
-                    // TODO support bind with all statement contains table segment @duanzhengqiang
-                    tableName.getTableBoundInfo().ifPresent(optional -> schemaNames.add(optional.getOriginalSchema().getValue()));
-                    tableName.getTableBoundInfo().ifPresent(optional -> databaseNames.add(optional.getOriginalDatabase().getValue()));
+                    appendTableBoundInfo(tableName, simpleTableSegment);
                 }
             }
             if (each instanceof SubqueryTableSegment) {
