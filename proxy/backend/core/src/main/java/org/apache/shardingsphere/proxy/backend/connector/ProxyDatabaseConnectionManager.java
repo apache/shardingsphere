@@ -69,6 +69,8 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     
     private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
     
+    private final Collection<ConnectionPostProcessor> afterCreateConnectionPostProcessors = new LinkedList<>();
+    
     private final ConnectionResourceLock connectionResourceLock = new ConnectionResourceLock();
     
     private final AtomicBoolean closed = new AtomicBoolean(false);
@@ -131,6 +133,9 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         setSessionVariablesIfNecessary(result);
         for (Connection each : result) {
             replayTransactionOption(each);
+            for (ConnectionPostProcessor afterCreateConnectionPostProcessor : afterCreateConnectionPostProcessors) {
+                afterCreateConnectionPostProcessor.process(each);
+            }
         }
         if (connectionSession.getConnectionContext().getTransactionContext().isTransactionStarted()) {
             for (Connection each : result) {
