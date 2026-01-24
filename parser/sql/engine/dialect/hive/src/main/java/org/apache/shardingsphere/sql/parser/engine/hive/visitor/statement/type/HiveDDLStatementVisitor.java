@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.engine.hive.visitor.statement.type;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.AlterVie
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ChangeColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CommentClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.HiveStatementParser.CreateFunctionContext;
@@ -65,6 +67,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.po
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -94,7 +97,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * DDL statement visitor for Hive.
@@ -303,19 +308,93 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         CreateViewStatement result = new CreateViewStatement(getDatabaseType());
         result.setView((SimpleTableSegment) visit(ctx.viewNameWithDb()));
-        if (null != ctx.commentClause() && !ctx.commentClause().isEmpty()) {
-            result.setViewDefinition(ctx.commentClause(ctx.commentClause().size() - 1).string_().getText().replace("'", ""));
+        parseViewColumnDefinitions(ctx, result);
+        parseViewComment(ctx, result);
+        parseSelectStatement(ctx, result);
+        result.setViewDefinition(getText(ctx));
+        return result;
+    }
+    
+    private void parseViewComment(final CreateViewContext ctx, final CreateViewStatement statement) {
+        if (null == ctx.commentClause() || ctx.commentClause().isEmpty()) {
+            return;
         }
+        boolean hasColumnDefinitions = null != ctx.LP_() && null != ctx.RP_();
+        if (!hasColumnDefinitions) {
+            statement.setComment(ctx.commentClause(0).string_().getText().replace("'", "").replace("\"", ""));
+            return;
+        }
+        int columnListEndIndex = ctx.RP_().getSymbol().getStopIndex();
+        for (CommentClauseContext commentCtx : ctx.commentClause()) {
+            if (commentCtx.getStart().getStartIndex() > columnListEndIndex) {
+                statement.setComment(commentCtx.string_().getText().replace("'", "").replace("\"", ""));
+                break;
+            }
+        }
+    }
+    
+    private void parseSelectStatement(final CreateViewContext ctx, final CreateViewStatement statement) {
         if (null != ctx.tblProperties()) {
-            result.setViewDefinition(getText(ctx.tblProperties()));
+            statement.setViewDefinition(getText(ctx.tblProperties()));
         }
         HiveDMLStatementVisitor dmlVisitor = new HiveDMLStatementVisitor(getDatabaseType());
         ASTNode selectNode = dmlVisitor.visit(ctx.select());
         if (selectNode instanceof SelectStatement) {
-            result.setSelect((SelectStatement) selectNode);
+            statement.setSelect((SelectStatement) selectNode);
         }
-        result.setViewDefinition(getText(ctx));
-        return result;
+    }
+    
+    private void parseViewColumnDefinitions(final CreateViewContext ctx, final CreateViewStatement statement) {
+        if (null == ctx.LP_() || null == ctx.RP_()) {
+            return;
+        }
+        List<ColumnNameContext> columnNames = collectColumnNames(ctx);
+        List<CommentClauseContext> columnComments = collectColumnComments(ctx);
+        addViewColumns(statement, columnNames, columnComments);
+    }
+    
+    private List<ColumnNameContext> collectColumnNames(final CreateViewContext ctx) {
+        List<ColumnNameContext> columnNames = new ArrayList<>();
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            ParseTree child = ctx.getChild(i);
+            if (child instanceof ColumnNameContext) {
+                columnNames.add((ColumnNameContext) child);
+            }
+        }
+        return columnNames;
+    }
+    
+    private List<CommentClauseContext> collectColumnComments(final CreateViewContext ctx) {
+        List<CommentClauseContext> comments = new ArrayList<>();
+        int columnListEndIndex = ctx.RP_().getSymbol().getStartIndex();
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            ParseTree child = ctx.getChild(i);
+            if (child instanceof CommentClauseContext) {
+                CommentClauseContext commentCtx = (CommentClauseContext) child;
+                if (commentCtx.getStart().getStartIndex() < columnListEndIndex) {
+                    comments.add(commentCtx);
+                }
+            }
+        }
+        return comments;
+    }
+    
+    private void addViewColumns(final CreateViewStatement statement, final List<ColumnNameContext> columnNames, final List<CommentClauseContext> columnComments) {
+        int commentIndex = 0;
+        for (ColumnNameContext columnCtx : columnNames) {
+            ColumnSegment column = (ColumnSegment) visit(columnCtx);
+            String comment = null;
+            int stopIndex = columnCtx.getStop().getStopIndex();
+            if (commentIndex < columnComments.size()) {
+                CommentClauseContext commentCtx = columnComments.get(commentIndex);
+                if (commentCtx.getStart().getStartIndex() > columnCtx.getStop().getStopIndex()) {
+                    comment = commentCtx.string_().getText().replace("'", "").replace("\"", "");
+                    stopIndex = commentCtx.getStop().getStopIndex();
+                    commentIndex++;
+                }
+            }
+            statement.getColumns().add(new ViewColumnSegment(columnCtx.getStart().getStartIndex(), stopIndex, column, comment));
+        }
     }
     
     @Override

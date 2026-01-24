@@ -2197,11 +2197,10 @@
         </select>
     </create-view>
 
-    <create-view sql-case-id="create_view_hive" view-definition="CREATE VIEW onion_referrers(url COMMENT 'URL of Referring page') COMMENT 'Referrers to The Onion website' AS SELECT DISTINCT referrer_url FROM page_view WHERE page_url='http://www.theonion.com'">
+    <create-view sql-case-id="create_view_hive" view-definition="CREATE VIEW onion_referrers(url COMMENT 'URL of Referring page') COMMENT 'Referrers to The Onion website' AS SELECT DISTINCT referrer_url FROM page_view WHERE page_url='http://www.theonion.com'" comment="Referrers to The Onion website">
         <view name="onion_referrers" start-index="12" stop-index="26">
-            <column name="url" comment="URL of Referring page" start-index="29" stop-index="31" />
+            <column name="url" comment="URL of Referring page" start-index="28" stop-index="62" />
         </view>
-        <view-comment value="Referrers to The Onion website" start-index="34" stop-index="70" />
         <select>
             <distinct start-index="84" stop-index="92" />
             <projections start-index="125" stop-index="136" distinct-row="true">
@@ -2254,8 +2253,8 @@
 
     <create-view sql-case-id="create_view_with_column_def" view-definition="CREATE VIEW sales_summary (order_id COMMENT 'ID', total COMMENT 'total') AS SELECT order_id, total FROM sales">
         <view name="sales_summary" start-index="12" stop-index="24">
-            <column name="order_id" comment="ID" start-index="25" stop-index="33" />
-            <column name="total" comment="total" start-index="44" stop-index="49" />
+            <column name="order_id" comment="ID" start-index="27" stop-index="47" />
+            <column name="total" comment="total" start-index="50" stop-index="70" />
         </view>
         <select>
             <projections start-index="83" stop-index="97">
@@ -2268,9 +2267,8 @@
         </select>
     </create-view>
 
-    <create-view sql-case-id="create_view_with_comment" view-definition="CREATE VIEW sales_summary COMMENT 'view' AS SELECT order_id, total FROM sales">
+    <create-view sql-case-id="create_view_with_comment" view-definition="CREATE VIEW sales_summary COMMENT 'view' AS SELECT order_id, total FROM sales" comment="view">
         <view name="sales_summary" start-index="12" stop-index="24" />
-        <view-comment value="view" start-index="25" stop-index="33" />
         <select>
             <projections start-index="51" stop-index="65">
                 <column-projection name="order_id" start-index="51" stop-index="58" />
