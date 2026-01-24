@@ -97,6 +97,8 @@ class SystemSchemaManagerTest {
         assertTrue(SystemSchemaManager.isSystemTable("MySQL", null, "columns"));
         assertTrue(SystemSchemaManager.isSystemTable("PostgreSQL", null, "pg_database"));
         assertFalse(SystemSchemaManager.isSystemTable("MySQL", null, "foo_tbl"));
+        assertTrue(SystemSchemaManager.isSystemTable("Oracle", null, "all_synonyms"));
+
     }
     
     @Test
