@@ -36,11 +36,6 @@
     <create-materialized-view sql-case-id="create_materialized_view_with_pctfree_storage_build_deferred" />
     <create-materialized-view sql-case-id="create_materialized_view_refresh_fast_on_remand_as_select" />
     <create-materialized-view sql-case-id="create_materialized_view_refresh_with_date" />
-    <create-materialized-view sql-case-id="create_materialized_view_with_key_exists" />
-    <create-materialized-view sql-case-id="create_materialized_view_refresh_on_schedule" />
-    <create-materialized-view sql-case-id="create_materialized_view_refresh_complete" />
-    <create-materialized-view sql-case-id="create_materialized_view_build_immediate" />
-    <create-materialized-view sql-case-id="create_materialized_view_doris_simple" />
     <create-materialized-view sql-case-id="create_materialized_view_basic_hive" />
     <create-materialized-view sql-case-id="create_materialized_view_with_if_not_exists_hive" />
     <create-materialized-view sql-case-id="create_materialized_view_with_db_name_hive" />
@@ -58,4 +53,209 @@
     <create-materialized-view sql-case-id="create_materialized_view_with_tblproperties_hive" />
     <create-materialized-view sql-case-id="create_materialized_view_full_options_hive" />
     <create-materialized-view sql-case-id="create_materialized_view_full_options_with_stored_by_hive" />
+    <doris-create-materialized-view sql-case-id="create_materialized_view_with_key_exists">
+        <materialized-view name="mv1" start-index="25" stop-index="27" />
+        <key-columns>
+            <column name="k1" start-index="37" stop-index="38" />
+            <column name="k2" start-index="41" stop-index="42" />
+        </key-columns>
+        <select>
+            <projections start-index="51" stop-index="56">
+                <column-projection name="k1" start-index="51" stop-index="52" />
+                <column-projection name="k2" start-index="55" stop-index="56" />
+            </projections>
+            <from>
+                <simple-table name="test_table" start-index="63" stop-index="72" />
+            </from>
+        </select>
+    </doris-create-materialized-view>
+    <doris-create-materialized-view sql-case-id="create_materialized_view_refresh_on_schedule" refresh-trigger="SCHEDULE" refresh-interval="2" refresh-unit="HOUR" start-time="2023-12-13 21:07:09">
+        <materialized-view name="mv1" start-index="25" stop-index="27" />
+        <select>
+            <projections start-index="101" stop-index="106">
+                <column-projection name="k1" start-index="101" stop-index="102" />
+                <column-projection name="k2" start-index="105" stop-index="106" />
+            </projections>
+            <from>
+                <simple-table name="test_table" start-index="113" stop-index="122" />
+            </from>
+        </select>
+    </doris-create-materialized-view>
+    <doris-create-materialized-view sql-case-id="create_materialized_view_refresh_complete" refresh-method="COMPLETE">
+        <materialized-view name="mv1" start-index="25" stop-index="27" />
+        <select>
+            <projections start-index="56" stop-index="61">
+                <column-projection name="k1" start-index="56" stop-index="57" />
+                <column-projection name="k2" start-index="60" stop-index="61" />
+            </projections>
+            <from>
+                <simple-table name="test_table" start-index="68" stop-index="77" />
+            </from>
+        </select>
+    </doris-create-materialized-view>
+    <doris-create-materialized-view sql-case-id="create_materialized_view_build_immediate" build-mode="IMMEDIATE">
+        <materialized-view name="mv1" start-index="25" stop-index="27" />
+        <select>
+            <projections start-index="55" stop-index="60">
+                <column-projection name="k1" start-index="55" stop-index="56" />
+                <column-projection name="k2" start-index="59" stop-index="60" />
+            </projections>
+            <from>
+                <simple-table name="test_table" start-index="67" stop-index="76" />
+            </from>
+        </select>
+    </doris-create-materialized-view>
+    <doris-create-materialized-view sql-case-id="create_materialized_view_doris_simple">
+        <materialized-view name="mv_doris" start-index="25" stop-index="32" />
+        <select>
+            <projections start-index="44" stop-index="44">
+                <expression-projection text="1" start-index="44" stop-index="44" />
+            </projections>
+        </select>
+    </doris-create-materialized-view>
+    <doris-create-materialized-view sql-case-id="doris_create_materialized_view_full" if-not-exists="false" build-mode="IMMEDIATE" refresh-method="AUTO" refresh-trigger="SCHEDULE" refresh-interval="1" refresh-unit="DAY" start-time="2024-12-01 20:30:00" distribute-type="HASH" bucket-count="2">
+        <materialized-view name="partition_mv_2" start-index="25" stop-index="38" />
+        <partition-function function-name="DATE_TRUNC" unit="MONTH">
+            <column name="min_orderdate" start-index="147" stop-index="159" />
+        </partition-function>
+        <distribute-columns>
+            <column>l_orderkey</column>
+        </distribute-columns>
+        <properties start-index="215" stop-index="250">
+            <property key="replication_num" value="3" start-index="227" stop-index="249" />
+        </properties>
+        <select>
+            <projections start-index="262" stop-index="282">
+                <column-projection name="l_orderkey" start-index="262" stop-index="271" />
+                <column-projection name="l_partkey" start-index="274" stop-index="282" />
+            </projections>
+            <from>
+                <join-table start-index="289" stop-index="340" join-type="LEFT">
+                    <left>
+                        <simple-table name="orders" start-index="289" stop-index="294" />
+                    </left>
+                    <right>
+                        <simple-table name="lineitem" start-index="306" stop-index="313" />
+                    </right>
+                    <on-condition>
+                        <binary-operation-expression start-index="318" stop-index="340">
+                            <left>
+                                <column name="l_orderkey" start-index="318" stop-index="327" />
+                            </left>
+                            <operator>=</operator>
+                            <right>
+                                <column name="o_orderkey" start-index="331" stop-index="340" />
+                            </right>
+                        </binary-operation-expression>
+                    </on-condition>
+                </join-table>
+            </from>
+            <group-by>
+                <column-item name="l_orderkey" start-index="351" stop-index="360" />
+                <column-item name="l_partkey" start-index="363" stop-index="371" />
+            </group-by>
+        </select>
+    </doris-create-materialized-view>
+    <doris-create-materialized-view sql-case-id="doris_create_materialized_view_with_if_not_exists" if-not-exists="true">
+        <materialized-view name="test_mv" start-index="39" stop-index="45" />
+        <select>
+            <projections start-index="57" stop-index="62">
+                <column-projection name="k1" start-index="57" stop-index="58" />
+                <column-projection name="k2" start-index="61" stop-index="62" />
+            </projections>
+            <from>
+                <simple-table name="test_table" start-index="69" stop-index="78" />
+            </from>
+        </select>
+    </doris-create-materialized-view>
+    <doris-create-materialized-view sql-case-id="doris_create_materialized_view_with_columns" build-mode="DEFERRED">
+        <materialized-view name="test_mv" start-index="25" stop-index="31" />
+        <column>
+            <column name="col1" start-index="34" stop-index="37" />
+            <comment start-index="47" stop-index="60" text="first column" />
+        </column>
+        <column>
+            <column name="col2" start-index="63" stop-index="66" />
+        </column>
+        <select>
+            <projections start-index="94" stop-index="99">
+                <column-projection name="k1" start-index="94" stop-index="95" />
+                <column-projection name="k2" start-index="98" stop-index="99" />
+            </projections>
+            <from>
+                <simple-table name="test_table" start-index="106" stop-index="115" />
+            </from>
+        </select>
+    </doris-create-materialized-view>
+    <doris-create-materialized-view sql-case-id="doris_create_materialized_view_with_duplicate_key" duplicate-key="true">
+        <materialized-view name="test_mv" start-index="25" stop-index="31" />
+        <key-column name="k1" start-index="48" stop-index="49" />
+        <key-column name="k2" start-index="52" stop-index="53" />
+        <comment start-index="69" stop-index="79" text="test view" />
+        <select>
+            <projections start-index="86" stop-index="95">
+                <column-projection name="k1" start-index="86" stop-index="87" />
+                <column-projection name="k2" start-index="90" stop-index="91" />
+                <column-projection name="k3" start-index="94" stop-index="95" />
+            </projections>
+            <from>
+                <simple-table name="test_table" start-index="102" stop-index="111" />
+            </from>
+        </select>
+    </doris-create-materialized-view>
+    <doris-create-materialized-view sql-case-id="doris_create_materialized_view_with_partition" distribute-type="RANDOM">
+        <materialized-view name="test_mv" start-index="25" stop-index="31" />
+        <partition-column name="order_date" start-index="47" stop-index="56" />
+        <select>
+            <projections start-index="91" stop-index="100">
+                <column-projection name="order_date" start-index="91" stop-index="100" />
+            </projections>
+            <from>
+                <simple-table name="sales" start-index="107" stop-index="111" />
+            </from>
+            <group-by>
+                <column-item name="order_date" start-index="122" stop-index="131" />
+            </group-by>
+        </select>
+    </doris-create-materialized-view>
+    <doris-create-materialized-view sql-case-id="doris_create_materialized_view_with_auto_bucket" distribute-type="HASH" auto-bucket="true">
+        <materialized-view name="test_mv" start-index="25" stop-index="31" />
+        <distribute-columns>
+            <column>k1</column>
+            <column>k2</column>
+        </distribute-columns>
+        <select>
+            <projections start-index="85" stop-index="90">
+                <column-projection name="k1" start-index="85" stop-index="86" />
+                <column-projection name="k2" start-index="89" stop-index="90" />
+            </projections>
+            <from>
+                <simple-table name="test_table" start-index="97" stop-index="106" />
+            </from>
+        </select>
+    </doris-create-materialized-view>
+    <doris-create-materialized-view sql-case-id="doris_create_materialized_view_refresh_on_commit" refresh-trigger="COMMIT">
+        <materialized-view name="test_mv" start-index="25" stop-index="31" />
+        <select>
+            <projections start-index="61" stop-index="66">
+                <column-projection name="k1" start-index="61" stop-index="62" />
+                <column-projection name="k2" start-index="65" stop-index="66" />
+            </projections>
+            <from>
+                <simple-table name="test_table" start-index="73" stop-index="82" />
+            </from>
+        </select>
+    </doris-create-materialized-view>
+    <doris-create-materialized-view sql-case-id="doris_create_materialized_view_refresh_manual" refresh-trigger="MANUAL">
+        <materialized-view name="test_mv" start-index="25" stop-index="31" />
+        <select>
+            <projections start-index="61" stop-index="66">
+                <column-projection name="k1" start-index="61" stop-index="62" />
+                <column-projection name="k2" start-index="65" stop-index="66" />
+            </projections>
+            <from>
+                <simple-table name="test_table" start-index="73" stop-index="82" />
+            </from>
+        </select>
+    </doris-create-materialized-view>
 </sql-parser-test-cases>

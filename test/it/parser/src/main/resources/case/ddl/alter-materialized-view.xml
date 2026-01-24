@@ -30,4 +30,39 @@
     <alter-materialized-view sql-case-id="alter_materialized_view_disable_rewrite_basic" />
     <alter-materialized-view sql-case-id="alter_materialized_view_enable_rewrite_with_db" />
     <alter-materialized-view sql-case-id="alter_materialized_view_disable_rewrite_with_db" />
+    <doris-alter-materialized-view sql-case-id="doris_alter_materialized_view_rename" rename-value="mv1_new">
+        <materialized-view name="mv1" start-index="24" stop-index="26" />
+    </doris-alter-materialized-view>
+    <doris-alter-materialized-view sql-case-id="doris_alter_materialized_view_refresh_complete" refresh-method="COMPLETE">
+        <materialized-view name="mv1" start-index="24" stop-index="26" />
+    </doris-alter-materialized-view>
+    <doris-alter-materialized-view sql-case-id="doris_alter_materialized_view_refresh_manual" refresh-trigger="MANUAL">
+        <materialized-view name="mv1" start-index="24" stop-index="26" />
+    </doris-alter-materialized-view>
+    <doris-alter-materialized-view sql-case-id="doris_alter_materialized_view_refresh_schedule" refresh-trigger="SCHEDULE" refresh-interval="2" refresh-unit="HOUR">
+        <materialized-view name="mv1" start-index="24" stop-index="26" />
+    </doris-alter-materialized-view>
+    <doris-alter-materialized-view sql-case-id="doris_alter_materialized_view_refresh_schedule_with_starts" refresh-trigger="SCHEDULE" refresh-interval="1" refresh-unit="DAY" start-time="2024-12-01 20:30:00">
+        <materialized-view name="mv1" start-index="24" stop-index="26" />
+    </doris-alter-materialized-view>
+    <doris-alter-materialized-view sql-case-id="doris_alter_materialized_view_refresh_complete_schedule" refresh-method="COMPLETE" refresh-trigger="SCHEDULE" refresh-interval="2" refresh-unit="HOUR">
+        <materialized-view name="mv1" start-index="24" stop-index="26" />
+    </doris-alter-materialized-view>
+    <doris-alter-materialized-view sql-case-id="doris_alter_materialized_view_replace" replace-with-view="mv2">
+        <materialized-view name="mv1" start-index="24" stop-index="26" />
+    </doris-alter-materialized-view>
+    <doris-alter-materialized-view sql-case-id="doris_alter_materialized_view_replace_with_properties" replace-with-view="mv2">
+        <materialized-view name="mv1" start-index="24" stop-index="29">
+            <owner name="db" start-index="24" stop-index="25" />
+        </materialized-view>
+        <replace-properties start-index="66" stop-index="92">
+            <property key="swap" value="true" start-index="77" stop-index="91" />
+        </replace-properties>
+    </doris-alter-materialized-view>
+    <doris-alter-materialized-view sql-case-id="doris_alter_materialized_view_set_properties">
+        <materialized-view name="mv1" start-index="24" stop-index="26" />
+        <set-properties start-index="28" stop-index="56">
+            <property key="replication_num" value="3" start-index="33" stop-index="55" />
+        </set-properties>
+    </doris-alter-materialized-view>
 </sql-parser-test-cases>

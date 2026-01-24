@@ -205,6 +205,18 @@ public enum SQLVisitorRule {
     
     CREATE_VIEW("CreateView", SQLStatementType.DDL),
     
+    PAUSE_MATERIALIZED_VIEW("PauseMaterializedView", SQLStatementType.DDL),
+    
+    DORIS_RESUME_MATERIALIZED_VIEW("ResumeMaterializedView", SQLStatementType.DDL),
+    
+    DORIS_REFRESH_MATERIALIZED_VIEW("RefreshMaterializedView", SQLStatementType.DDL),
+    
+    DORIS_DROP_MATERIALIZED_VIEW("DropMaterializesView", SQLStatementType.DDL),
+    
+    DORIS_CREATE_MATERIALIZED_VIEW("DorisCreateMaterializedView", SQLStatementType.DDL),
+    
+    DORIS_SHOW_CREATE_MATERIALIZED_VIEW("ShowCreateMaterializedView", SQLStatementType.DAL),
+    
     ALTER_VIEW("AlterView", SQLStatementType.DDL),
     
     DROP_PACKAGE("DropPackage", SQLStatementType.DDL),

@@ -15,41 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view;
+package org.apache.shardingsphere.sql.parser.statement.doris.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
-
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
- * Create view statement.
+ * Alter materialized view statement for Doris.
  */
 @Getter
 @Setter
-public final class CreateViewStatement extends DDLStatement {
+public final class DorisAlterMaterializedViewStatement extends DDLStatement {
     
-    private boolean replaceView;
+    private SimpleTableSegment materializedView;
     
-    private SimpleTableSegment view;
+    private IdentifierValue renameValue;
     
-    private String viewDefinition;
+    private String refreshMethod;
     
-    private SelectStatement select;
+    private String refreshTrigger;
     
-    private List<ViewColumnSegment> columns = new LinkedList<>();
+    private Integer refreshInterval;
     
-    private String comment;
+    private String refreshUnit;
     
-    private boolean ifNotExists;
+    private String startTime;
     
-    public CreateViewStatement(final DatabaseType databaseType) {
+    private IdentifierValue replaceWithView;
+    
+    private PropertiesSegment replaceProperties;
+    
+    private PropertiesSegment setProperties;
+    
+    public DorisAlterMaterializedViewStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
 }

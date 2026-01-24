@@ -133,7 +133,7 @@ execute
     | dropTablespace
     | delimiter
     | startReplica
-    | createMaterializedView
+    | dorisCreateMaterializedView
     | resumeJob
     | dorisAlterSystem
     | createSqlBlockRule
@@ -141,6 +141,10 @@ execute
     | dropSqlBlockRule
     | buildIndex
     | cancelBuildIndex
+    | pauseMaterializedView
+    | resumeMaterializedView
+    | dropMaterializedView
+    | refreshMaterializedView
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

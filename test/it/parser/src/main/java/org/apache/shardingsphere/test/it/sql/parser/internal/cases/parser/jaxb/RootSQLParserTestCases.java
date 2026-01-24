@@ -32,6 +32,14 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadTaskStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowCreateMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisRefreshMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.show.DorisShowViewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.catalog.AlterCatalogStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.HiveAbortStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCloneStatementTestCase;
@@ -830,6 +838,30 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "create-view")
     private final List<CreateViewStatementTestCase> createViewTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "pause-materialized-view")
+    private final List<DorisPauseMaterializedViewStatementTestCase> pauseMaterializedViewJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-resume-materialized-view")
+    private final List<DorisResumeMaterializedViewStatementTestCase> resumeMaterializedViewJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-drop-materialized-view")
+    private final List<DorisDropMaterializedViewStatementTestCase> dorisDropMaterializedViewTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-refresh-materialized-view")
+    private final List<DorisRefreshMaterializedViewStatementTestCase> dorisRefreshMaterializedViewTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-view")
+    private final List<DorisShowViewStatementTestCase> showViewTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-create-materialized-view")
+    private final List<DorisShowCreateMaterializedViewStatementTestCase> showCreateMaterializedViewTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-create-materialized-view")
+    private final List<DorisCreateMaterializedViewStatementTestCase> dorisCreateMaterializedViewStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-alter-materialized-view")
+    private final List<DorisAlterMaterializedViewStatementTestCase> dorisAlterMaterializedViewStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-synonym")
     private final List<CreateSynonymStatementTestCase> createSynonymTestCases = new LinkedList<>();

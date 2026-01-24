@@ -270,4 +270,7 @@
     <sql-case id="show_all_routine_load" value="SHOW ALL ROUTINE LOAD" db-types="Doris" />
     <sql-case id="show_routine_load_for_job" value="SHOW ROUTINE LOAD FOR test1" db-types="Doris" />
     <sql-case id="show_all_routine_load_for_job_with_db" value="SHOW ALL ROUTINE LOAD FOR example_db.test1" db-types="Doris" />
+    <sql-case id="show_view_from_table" value="SHOW VIEW FROM testTbl" db-types="Doris" />
+    <sql-case id="show_view_in_table" value="SHOW VIEW IN testTbl" db-types="Doris" />
+    <sql-case id="show_view_from_table_with_db" value="SHOW VIEW FROM testTbl FROM test_db" db-types="Doris" />
 </sql-cases>

@@ -81,6 +81,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCre
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDatabasesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowEngineContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowEnginesContext;
@@ -111,6 +112,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowTab
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowTablesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowTriggersContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowVariablesContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowWarningsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShutdownContext;
@@ -199,6 +201,8 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropSqlBloc
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowCreateMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowBuildIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQueryStatsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
@@ -872,6 +876,24 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowCreateUser(final ShowCreateUserContext ctx) {
         return new MySQLShowCreateUserStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.username())).getValue());
+    }
+    
+    @Override
+    public ASTNode visitShowCreateMaterializedView(final ShowCreateMaterializedViewContext ctx) {
+        DorisShowCreateMaterializedViewStatement result = new DorisShowCreateMaterializedViewStatement(getDatabaseType());
+        result.setMaterializedViewName(ctx.identifier().getText());
+        result.setTableName((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowView(final ShowViewContext ctx) {
+        FromTableSegment fromTable = null == ctx.fromTable() ? null : (FromTableSegment) visit(ctx.fromTable());
+        FromDatabaseSegment fromDatabase = null == ctx.fromDatabase() ? null : (FromDatabaseSegment) visit(ctx.fromDatabase());
+        DatabaseSegment database = null == fromDatabase ? null : fromDatabase.getDatabase();
+        DorisShowViewStatement result = new DorisShowViewStatement(getDatabaseType(), fromTable, database);
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
     }
     
     @Override

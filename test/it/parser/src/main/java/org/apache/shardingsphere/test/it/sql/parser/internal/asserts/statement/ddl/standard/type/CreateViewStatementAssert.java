@@ -21,14 +21,17 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ViewColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.SelectStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.view.CreateViewStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Create view statement assert.
@@ -44,13 +47,40 @@ public final class CreateViewStatementAssert {
      * @param expected expected create view statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {
+        assertIfNotExists(assertContext, actual, expected);
         assertView(assertContext, actual, expected);
+        assertViewColumns(assertContext, actual, expected);
+        assertViewComment(assertContext, actual, expected);
         assertViewDefinition(assertContext, actual, expected);
         assertSelect(assertContext, actual, expected);
     }
     
+    private static void assertIfNotExists(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {
+        if (null != expected.getIfNotExists()) {
+            assertThat(assertContext.getText("IF NOT EXISTS assertion error: "), actual.isIfNotExists(), is(expected.getIfNotExists()));
+        }
+    }
+    
     private static void assertView(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {
         TableAssert.assertIs(assertContext, actual.getView(), expected.getView());
+    }
+    
+    private static void assertViewColumns(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {
+        if (expected.getView().getColumns().isEmpty()) {
+            assertTrue(actual.getColumns().isEmpty(), assertContext.getText("Actual view columns should be empty."));
+        } else {
+            assertFalse(actual.getColumns().isEmpty(), assertContext.getText("Actual view columns should exist."));
+            ViewColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getView().getColumns());
+        }
+    }
+    
+    private static void assertViewComment(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {
+        if (null == expected.getComment()) {
+            assertNull(actual.getComment(), assertContext.getText("Actual view comment should not exist."));
+        } else {
+            assertNotNull(actual.getComment(), assertContext.getText("Actual view comment should exist."));
+            assertThat(assertContext.getText("View comment assertion error: "), actual.getComment(), is(expected.getComment()));
+        }
     }
     
     private static void assertViewDefinition(final SQLCaseAssertContext assertContext, final CreateViewStatement actual, final CreateViewStatementTestCase expected) {

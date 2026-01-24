@@ -22,4 +22,19 @@
     <drop-materialized-view sql-case-id="drop_materialized_view_if_exists" />
     <drop-materialized-view sql-case-id="drop_materialized_view_basic" />
     <drop-materialized-view sql-case-id="drop_materialized_view_with_db" />
+    <doris-drop-materialized-view sql-case-id="drop_materialized_view_simple">
+        <materialized-view-name>sync_agg_mv</materialized-view-name>
+        <table-name start-index="38" stop-index="45" name="lineitem" />
+    </doris-drop-materialized-view>
+    <doris-drop-materialized-view sql-case-id="doris_drop_materialized_view_if_exists">
+        <materialized-view-name>sync_agg_mv</materialized-view-name>
+        <table-name start-index="48" stop-index="55" name="lineitem" />
+        <if-exists>true</if-exists>
+    </doris-drop-materialized-view>
+    <doris-drop-materialized-view sql-case-id="drop_materialized_view_with_schema">
+        <materialized-view-name>mv1</materialized-view-name>
+        <table-name start-index="30" stop-index="39" name="table1">
+            <owner start-index="30" stop-index="32" name="db1" />
+        </table-name>
+    </doris-drop-materialized-view>
 </sql-parser-test-cases>

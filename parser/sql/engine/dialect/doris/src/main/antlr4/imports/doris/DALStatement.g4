@@ -138,6 +138,14 @@ showCreateView
     : SHOW CREATE VIEW viewName
     ;
 
+showCreateMaterializedView
+    : SHOW CREATE MATERIALIZED VIEW identifier ON tableName
+    ;
+
+showView
+    : SHOW VIEW fromTable fromDatabase?
+    ;
+
 showDatabases
     : SHOW (DATABASES | SCHEMAS) showFilter?
     ;
@@ -783,4 +791,6 @@ show
     | showSqlBlockRule
     | showRoutineLoadTask
     | showRoutineLoad
+    | showCreateMaterializedView
+    | showView
     ;

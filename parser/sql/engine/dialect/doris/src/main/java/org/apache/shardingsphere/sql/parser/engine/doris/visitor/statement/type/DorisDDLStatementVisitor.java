@@ -63,7 +63,6 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateF
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLikeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLogfileGroupContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateTableContext;
@@ -120,6 +119,18 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameP
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterStoragePolicyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateEncryptKeyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterMVRenameContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterMVRefreshContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterMVReplaceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterMVSetPropertiesContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisCreateMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisMVColumnDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisMVRefreshTriggerContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PauseMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RefreshMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AlgorithmOption;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.LockTableOption;
@@ -162,12 +173,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Loc
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.MaterializedViewColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateEncryptKeyStatement;
@@ -201,7 +214,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ta
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.DropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropEncryptKeyStatement;
@@ -215,6 +227,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisRefreshMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLCreateEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLDropEventStatement;
@@ -242,9 +260,60 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitCreateView(final CreateViewContext ctx) {
         CreateViewStatement result = new CreateViewStatement(getDatabaseType());
         result.setReplaceView(null != ctx.REPLACE());
+        result.setIfNotExists(null != ctx.ifNotExists());
         result.setView((SimpleTableSegment) visit(ctx.viewName()));
+        if (null != ctx.columnNames()) {
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(ctx.columnNames());
+            for (ColumnSegment each : columns.getValue()) {
+                result.getColumns().add(new ViewColumnSegment(each.getStartIndex(), each.getStopIndex(), each, null));
+            }
+        }
+        if (null != ctx.viewColumnDefinitions()) {
+            CollectionValue<ViewColumnSegment> columns = (CollectionValue<ViewColumnSegment>) visit(ctx.viewColumnDefinitions());
+            result.getColumns().addAll(columns.getValue());
+        }
+        if (null != ctx.commentClause()) {
+            result.setComment(SQLUtils.getExactlyValue(ctx.commentClause().literals().getText()));
+        }
         result.setViewDefinition(getOriginalText(ctx.select()));
         result.setSelect((SelectStatement) visit(ctx.select()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitPauseMaterializedView(final PauseMaterializedViewContext ctx) {
+        DorisPauseMaterializedViewStatement result = new DorisPauseMaterializedViewStatement(getDatabaseType());
+        result.setMaterializedViewName((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitResumeMaterializedView(final ResumeMaterializedViewContext ctx) {
+        DorisResumeMaterializedViewStatement result = new DorisResumeMaterializedViewStatement(getDatabaseType());
+        result.setMaterializedViewName((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDropMaterializedView(final DropMaterializedViewContext ctx) {
+        DorisDropMaterializedViewStatement result = new DorisDropMaterializedViewStatement(getDatabaseType());
+        result.setMaterializedViewName(ctx.identifier().getText());
+        result.setTableName((SimpleTableSegment) visit(ctx.tableName()));
+        result.setIfExists(null != ctx.ifExists());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRefreshMaterializedView(final RefreshMaterializedViewContext ctx) {
+        DorisRefreshMaterializedViewStatement result = new DorisRefreshMaterializedViewStatement(getDatabaseType());
+        result.setMaterializedViewName((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.refreshType().partitionSpec()) {
+            ctx.refreshType().partitionSpec().identifier().forEach(each -> result.getPartitionNames().add(each.getText()));
+        } else if (null != ctx.refreshType().COMPLETE()) {
+            result.setRefreshType("COMPLETE");
+        } else if (null != ctx.refreshType().AUTO()) {
+            result.setRefreshType("AUTO");
+        }
         return result;
     }
     
@@ -1291,8 +1360,226 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
-    public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
-        return new CreateMaterializedViewStatement(getDatabaseType());
+    public ASTNode visitDorisCreateMaterializedView(final DorisCreateMaterializedViewContext ctx) {
+        DorisCreateMaterializedViewStatement result = new DorisCreateMaterializedViewStatement(getDatabaseType());
+        setMaterializedViewTable(ctx, result);
+        result.setIfNotExists(null != ctx.ifNotExists());
+        processColumnDefinitions(ctx, result);
+        processBuildMode(ctx, result);
+        processRefresh(ctx, result);
+        processKeyClause(ctx, result);
+        processComment(ctx, result);
+        processPartitionClause(ctx, result);
+        processDistributedClause(ctx, result);
+        processProperties(ctx, result);
+        result.setSelectStatement((SelectStatement) visit(ctx.select()));
+        return result;
+    }
+    
+    private void setMaterializedViewTable(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {
+        IdentifierValue identifier = (IdentifierValue) visit(ctx.name());
+        TableNameSegment tableName = new TableNameSegment(ctx.name().identifier().getStart().getStartIndex(), ctx.name().identifier().getStop().getStopIndex(), identifier);
+        statement.setMaterializedView(new SimpleTableSegment(tableName));
+    }
+    
+    private void processColumnDefinitions(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {
+        if (null == ctx.dorisMVColumnDefinitions()) {
+            return;
+        }
+        for (DorisMVColumnDefinitionContext each : ctx.dorisMVColumnDefinitions().dorisMVColumnDefinition()) {
+            ColumnSegment column = (ColumnSegment) visit(each.columnName());
+            MaterializedViewColumnSegment mvColumn = new MaterializedViewColumnSegment(column);
+            if (null != each.COMMENT()) {
+                String commentText = SQLUtils.getExactlyValue(each.string_().getText());
+                mvColumn.setComment(new CommentSegment(commentText, each.string_().getStart().getStartIndex(), each.string_().getStop().getStopIndex()));
+            }
+            statement.getColumns().add(mvColumn);
+        }
+    }
+    
+    private void processBuildMode(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {
+        if (null == ctx.dorisMVBuildMode()) {
+            return;
+        }
+        if (null != ctx.dorisMVBuildMode().IMMEDIATE()) {
+            statement.setBuildMode("IMMEDIATE");
+        } else if (null != ctx.dorisMVBuildMode().DEFERRED()) {
+            statement.setBuildMode("DEFERRED");
+        }
+    }
+    
+    private void processRefresh(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {
+        if (null == ctx.dorisMVRefresh()) {
+            return;
+        }
+        processRefreshMethod(ctx, statement);
+        processRefreshTrigger(ctx, statement);
+    }
+    
+    private void processRefreshMethod(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {
+        if (null == ctx.dorisMVRefresh().dorisMVRefreshMethod()) {
+            return;
+        }
+        if (null != ctx.dorisMVRefresh().dorisMVRefreshMethod().COMPLETE()) {
+            statement.setRefreshMethod("COMPLETE");
+        } else if (null != ctx.dorisMVRefresh().dorisMVRefreshMethod().AUTO()) {
+            statement.setRefreshMethod("AUTO");
+        }
+    }
+    
+    private void processRefreshTrigger(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {
+        if (null == ctx.dorisMVRefresh().dorisMVRefreshTrigger()) {
+            return;
+        }
+        if (null != ctx.dorisMVRefresh().dorisMVRefreshTrigger().MANUAL()) {
+            statement.setRefreshTrigger("MANUAL");
+        } else if (null != ctx.dorisMVRefresh().dorisMVRefreshTrigger().SCHEDULE()) {
+            processScheduleTrigger(ctx, statement);
+        } else if (null != ctx.dorisMVRefresh().dorisMVRefreshTrigger().COMMIT()) {
+            statement.setRefreshTrigger("COMMIT");
+        }
+    }
+    
+    private void processScheduleTrigger(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {
+        statement.setRefreshTrigger("SCHEDULE");
+        if (null != ctx.dorisMVRefresh().dorisMVRefreshTrigger().intervalValue()) {
+            statement.setRefreshInterval(Integer.parseInt(ctx.dorisMVRefresh().dorisMVRefreshTrigger().intervalValue().expr().getText()));
+            statement.setRefreshUnit(ctx.dorisMVRefresh().dorisMVRefreshTrigger().intervalValue().intervalUnit().getText());
+        }
+        if (null != ctx.dorisMVRefresh().dorisMVRefreshTrigger().STARTS()) {
+            statement.setStartTime(SQLUtils.getExactlyValue(ctx.dorisMVRefresh().dorisMVRefreshTrigger().timestampValue().getText()));
+        }
+    }
+    
+    private void processKeyClause(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {
+        if (null == ctx.dorisMVKeyClause()) {
+            return;
+        }
+        statement.setDuplicateKey(null != ctx.dorisMVKeyClause().DUPLICATE());
+        for (IdentifierContext each : ctx.dorisMVKeyClause().identifierList().identifier()) {
+            IdentifierValue identifierValue = (IdentifierValue) visit(each);
+            ColumnSegment column = new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), identifierValue);
+            statement.getKeyColumns().add(column);
+        }
+    }
+    
+    private void processComment(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {
+        if (null == ctx.commentClause()) {
+            return;
+        }
+        String commentText = SQLUtils.getExactlyValue(ctx.commentClause().literals().getText());
+        CommentSegment commentSegment = new CommentSegment(commentText, ctx.commentClause().literals().getStart().getStartIndex(), ctx.commentClause().literals().getStop().getStopIndex());
+        statement.getComments().add(commentSegment);
+        statement.setComment(commentSegment);
+    }
+    
+    private void processPartitionClause(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {
+        if (null == ctx.dorisMVPartitionClause()) {
+            return;
+        }
+        if (null != ctx.dorisMVPartitionClause().columnName()) {
+            statement.setPartitionColumn((ColumnSegment) visit(ctx.dorisMVPartitionClause().columnName()));
+        } else if (null != ctx.dorisMVPartitionClause().dorisMVPartitionFunction()) {
+            statement.setPartitionFunctionName("DATE_TRUNC");
+            statement.setPartitionFunctionColumn((ColumnSegment) visit(ctx.dorisMVPartitionClause().dorisMVPartitionFunction().columnName()));
+            statement.setPartitionFunctionUnit(SQLUtils.getExactlyValue(ctx.dorisMVPartitionClause().dorisMVPartitionFunction().string_().getText()));
+        }
+    }
+    
+    private void processDistributedClause(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {
+        if (null == ctx.dorisMVDistributedClause()) {
+            return;
+        }
+        if (null != ctx.dorisMVDistributedClause().HASH()) {
+            statement.setDistributeType("HASH");
+            for (IdentifierContext each : ctx.dorisMVDistributedClause().identifierList().identifier()) {
+                IdentifierValue identifierValue = (IdentifierValue) visit(each);
+                statement.getDistributeColumns().add(identifierValue);
+            }
+        } else if (null != ctx.dorisMVDistributedClause().RANDOM()) {
+            statement.setDistributeType("RANDOM");
+        }
+        if (null != ctx.dorisMVDistributedClause().BUCKETS()) {
+            if (null != ctx.dorisMVDistributedClause().NUMBER_()) {
+                statement.setBucketCount(Integer.parseInt(ctx.dorisMVDistributedClause().NUMBER_().getText()));
+            } else if (null != ctx.dorisMVDistributedClause().AUTO()) {
+                statement.setAutoBucket(true);
+            }
+        }
+    }
+    
+    private void processProperties(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {
+        if (null != ctx.propertiesClause()) {
+            statement.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+    }
+    
+    @Override
+    public ASTNode visitDorisAlterMaterializedView(final DorisAlterMaterializedViewContext ctx) {
+        DorisAlterMaterializedViewStatement result = new DorisAlterMaterializedViewStatement(getDatabaseType());
+        result.setMaterializedView((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.dorisAlterMVRename()) {
+            processAlterMVRename(ctx.dorisAlterMVRename(), result);
+        } else if (null != ctx.dorisAlterMVRefresh()) {
+            processAlterMVRefresh(ctx.dorisAlterMVRefresh(), result);
+        } else if (null != ctx.dorisAlterMVReplace()) {
+            processAlterMVReplace(ctx.dorisAlterMVReplace(), result);
+        } else if (null != ctx.dorisAlterMVSetProperties()) {
+            processAlterMVSetProperties(ctx.dorisAlterMVSetProperties(), result);
+        }
+        return result;
+    }
+    
+    private void processAlterMVRename(final DorisAlterMVRenameContext ctx, final DorisAlterMaterializedViewStatement statement) {
+        statement.setRenameValue((IdentifierValue) visit(ctx.identifier()));
+    }
+    
+    private void processAlterMVRefresh(final DorisAlterMVRefreshContext ctx, final DorisAlterMaterializedViewStatement statement) {
+        if (null != ctx.dorisMVRefreshMethod()) {
+            if (null != ctx.dorisMVRefreshMethod().COMPLETE()) {
+                statement.setRefreshMethod("COMPLETE");
+            } else if (null != ctx.dorisMVRefreshMethod().AUTO()) {
+                statement.setRefreshMethod("AUTO");
+            }
+        }
+        if (null != ctx.dorisMVRefreshTrigger()) {
+            processAlterMVRefreshTrigger(ctx.dorisMVRefreshTrigger(), statement);
+        }
+    }
+    
+    private void processAlterMVRefreshTrigger(final DorisMVRefreshTriggerContext ctx, final DorisAlterMaterializedViewStatement statement) {
+        if (null != ctx.MANUAL()) {
+            statement.setRefreshTrigger("MANUAL");
+        } else if (null != ctx.SCHEDULE()) {
+            statement.setRefreshTrigger("SCHEDULE");
+            if (null != ctx.intervalValue()) {
+                statement.setRefreshInterval(Integer.parseInt(ctx.intervalValue().expr().getText()));
+                statement.setRefreshUnit(ctx.intervalValue().intervalUnit().getText());
+            }
+            if (null != ctx.STARTS()) {
+                statement.setStartTime(SQLUtils.getExactlyValue(ctx.timestampValue().getText()));
+            }
+        } else if (null != ctx.COMMIT()) {
+            statement.setRefreshTrigger("COMMIT");
+        }
+    }
+    
+    private void processAlterMVReplace(final DorisAlterMVReplaceContext ctx, final DorisAlterMaterializedViewStatement statement) {
+        statement.setReplaceWithView((IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.propertiesClause()) {
+            statement.setReplaceProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+    }
+    
+    private void processAlterMVSetProperties(final DorisAlterMVSetPropertiesContext ctx, final DorisAlterMaterializedViewStatement statement) {
+        PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (PropertyContext each : ctx.propertyItemList().property()) {
+            String key = getPropertyKey(each);
+            String value = SQLUtils.getExactlyValue(each.literals().getText());
+            PropertySegment propertySegment = new PropertySegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), key, value);
+            propertiesSegment.getProperties().add(propertySegment);
+        }
+        statement.setSetProperties(propertiesSegment);
     }
     
     @Override

@@ -15,36 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.view;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.show;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.SelectStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.from.ExpectedFromDatabase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.from.ExpectedFromTable;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Create view statement test case.
+ * Show view statement test case for Doris.
  */
 @Getter
 @Setter
-public final class CreateViewStatementTestCase extends SQLParserTestCase {
+public final class DorisShowViewStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "view-definition")
-    private String viewDefinition;
+    @XmlElement(name = "from")
+    private ExpectedFromTable from;
     
-    @XmlElement
-    private ExpectedSimpleTable view;
-    
-    @XmlElement(name = "select")
-    private SelectStatementTestCase selectStatement;
-    
-    @XmlAttribute
-    private String comment;
-    
-    @XmlAttribute(name = "if-not-exists")
-    private Boolean ifNotExists;
+    @XmlElement(name = "from-database")
+    private ExpectedFromDatabase fromDatabase;
 }

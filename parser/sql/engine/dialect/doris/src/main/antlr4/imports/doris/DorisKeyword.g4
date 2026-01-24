@@ -507,6 +507,10 @@ DATE
     : D A T E
     ;
 
+DATE_TRUNC
+    : D A T E UL_ T R U N C
+    ;
+
 DATETIME
     : D A T E T I M E
     ;
@@ -1924,6 +1928,10 @@ PASSWORD_LOCK_TIME
 
 PATH
     : P A T H
+    ;
+
+PAUSE
+    : P A U S E
     ;
 
 PERCENT_RANK

@@ -15,36 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.view;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.SelectStatementTestCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Create view statement test case.
+ * Pause materialized view job statement test case for Doris.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class CreateViewStatementTestCase extends SQLParserTestCase {
+public final class DorisPauseMaterializedViewStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "view-definition")
-    private String viewDefinition;
-    
-    @XmlElement
-    private ExpectedSimpleTable view;
-    
-    @XmlElement(name = "select")
-    private SelectStatementTestCase selectStatement;
-    
-    @XmlAttribute
-    private String comment;
-    
-    @XmlAttribute(name = "if-not-exists")
-    private Boolean ifNotExists;
+    @XmlElement(name = "materialized-view-name")
+    private ExpectedSimpleTable materializedViewName;
 }

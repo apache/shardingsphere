@@ -15,36 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.view;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.partition;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.standard.SelectStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Create view statement test case.
+ * Expected partition function.
  */
 @Getter
 @Setter
-public final class CreateViewStatementTestCase extends SQLParserTestCase {
+public final class ExpectedPartitionFunction extends AbstractExpectedSQLSegment {
     
-    @XmlAttribute(name = "view-definition")
-    private String viewDefinition;
+    @XmlAttribute(name = "function-name")
+    private String functionName;
     
-    @XmlElement
-    private ExpectedSimpleTable view;
+    @XmlElement(name = "column")
+    private ExpectedColumn column;
     
-    @XmlElement(name = "select")
-    private SelectStatementTestCase selectStatement;
-    
-    @XmlAttribute
-    private String comment;
-    
-    @XmlAttribute(name = "if-not-exists")
-    private Boolean ifNotExists;
+    @XmlAttribute(name = "unit")
+    private String unit;
 }

@@ -23,11 +23,25 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DD
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisRefreshMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateMaterializedViewStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.doris.type.DorisAlterStoragePolicyStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.doris.type.DorisAlterMaterializedViewStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.doris.type.DorisCreateMaterializedViewStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisRefreshMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeMaterializedViewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.function.CreateFunctionStatementTestCase;
 
 /**
@@ -50,6 +64,18 @@ public final class DorisDDLStatementAssert {
             DorisCreateFunctionStatementAssert.assertIs(assertContext, (DorisCreateFunctionStatement) actual, (CreateFunctionStatementTestCase) expected);
         } else if (actual instanceof DorisAlterStoragePolicyStatement) {
             DorisAlterStoragePolicyStatementAssert.assertIs(assertContext, (DorisAlterStoragePolicyStatement) actual, (DorisAlterStoragePolicyStatementTestCase) expected);
+        } else if (actual instanceof DorisPauseMaterializedViewStatement) {
+            DorisPauseMaterializedViewStatementAssert.assertIs(assertContext, (DorisPauseMaterializedViewStatement) actual, (DorisPauseMaterializedViewStatementTestCase) expected);
+        } else if (actual instanceof DorisResumeMaterializedViewStatement) {
+            DorisResumeMaterializedViewStatementAssert.assertIs(assertContext, (DorisResumeMaterializedViewStatement) actual, (DorisResumeMaterializedViewStatementTestCase) expected);
+        } else if (actual instanceof DorisDropMaterializedViewStatement) {
+            DorisDropMaterializedViewStatementAssert.assertIs(assertContext, (DorisDropMaterializedViewStatement) actual, (DorisDropMaterializedViewStatementTestCase) expected);
+        } else if (actual instanceof DorisRefreshMaterializedViewStatement) {
+            DorisRefreshMaterializedViewStatementAssert.assertIs(assertContext, (DorisRefreshMaterializedViewStatement) actual, (DorisRefreshMaterializedViewStatementTestCase) expected);
+        } else if (actual instanceof DorisCreateMaterializedViewStatement) {
+            DorisCreateMaterializedViewStatementAssert.assertIs(assertContext, (DorisCreateMaterializedViewStatement) actual, (DorisCreateMaterializedViewStatementTestCase) expected);
+        } else if (actual instanceof DorisAlterMaterializedViewStatement) {
+            DorisAlterMaterializedViewStatementAssert.assertIs(assertContext, (DorisAlterMaterializedViewStatement) actual, (DorisAlterMaterializedViewStatementTestCase) expected);
         }
     }
 }

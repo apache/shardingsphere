@@ -15,41 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view;
+package org.apache.shardingsphere.sql.parser.statement.doris.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Create view statement.
+ * Drop materialized view statement for Doris.
  */
 @Getter
 @Setter
-public final class CreateViewStatement extends DDLStatement {
+public final class DorisDropMaterializedViewStatement extends DDLStatement {
     
-    private boolean replaceView;
+    private String materializedViewName;
     
-    private SimpleTableSegment view;
+    private SimpleTableSegment tableName;
     
-    private String viewDefinition;
+    private boolean ifExists;
     
-    private SelectStatement select;
-    
-    private List<ViewColumnSegment> columns = new LinkedList<>();
-    
-    private String comment;
-    
-    private boolean ifNotExists;
-    
-    public CreateViewStatement(final DatabaseType databaseType) {
+    public DorisDropMaterializedViewStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
 }
