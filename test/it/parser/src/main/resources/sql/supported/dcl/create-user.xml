@@ -34,6 +34,25 @@
     <sql-case id="create_user_with_password_option" value="CREATE USER user1 DEFAULT ROLE role1 PASSWORD EXPIRE DEFAULT" db-types="MySQL,Doris" />
     <sql-case id="create_user_with_password_options" value="CREATE USER user1 DEFAULT ROLE role1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT" db-types="MySQL,Doris" />
     <sql-case id="create_user_with_lock_option" value="CREATE USER user1 DEFAULT ROLE role1 ACCOUNT LOCK" db-types="MySQL,Doris" />
+    <sql-case id="create_user_account_unlock_mysql" value="CREATE USER user_unlock DEFAULT ROLE role1 ACCOUNT UNLOCK" db-types="MySQL" />
+    <sql-case id="create_user_with_max_connections_per_hour_mysql" value="CREATE USER user_conn_limit WITH MAX_CONNECTIONS_PER_HOUR 10" db-types="MySQL" />
+    <sql-case id="create_user_with_max_user_connections_mysql" value="CREATE USER user_user_conn_limit WITH MAX_USER_CONNECTIONS 5" db-types="MySQL" />
+    <sql-case id="create_user_require_none_mysql" value="CREATE USER user_none REQUIRE NONE" db-types="MySQL" />
+    <sql-case id="create_user_require_ssl_mysql" value="CREATE USER user_ssl REQUIRE SSL" db-types="MySQL" />
+    <sql-case id="create_user_require_x509_mysql" value="CREATE USER user_x509 REQUIRE X509" db-types="MySQL" />
+    <sql-case id="create_user_require_tls_specified_mysql" value="CREATE USER user_tls REQUIRE SUBJECT 'subj' ISSUER 'issuer' CIPHER 'cipher_name'" db-types="MySQL" />
+    <sql-case id="create_user_password_expire_interval_mysql" value="CREATE USER user_expire_interval PASSWORD EXPIRE INTERVAL 30 DAY" db-types="MySQL" />
+    <sql-case id="create_user_password_expire_never_mysql" value="CREATE USER user_expire_never PASSWORD EXPIRE NEVER" db-types="MySQL" />
+    <sql-case id="create_user_password_history_mysql" value="CREATE USER user_history PASSWORD HISTORY 5" db-types="MySQL" />
+    <sql-case id="create_user_password_reuse_interval_mysql" value="CREATE USER user_reuse PASSWORD REUSE INTERVAL 10 DAY" db-types="MySQL" />
+    <sql-case id="create_user_password_require_optional_mysql" value="CREATE USER user_require_optional PASSWORD REQUIRE CURRENT OPTIONAL" db-types="MySQL" />
+    <sql-case id="create_user_password_require_yes_mysql" value="CREATE USER user_require_yes PASSWORD REQUIRE CURRENT" db-types="MySQL" />
+    <sql-case id="create_user_failed_login_and_lock_time_mysql" value="CREATE USER user_failed_lock PASSWORD EXPIRE DEFAULT FAILED_LOGIN_ATTEMPTS 5 PASSWORD_LOCK_TIME 7" db-types="MySQL" />
+    <sql-case id="create_user_password_lock_time_unbounded_mysql" value="CREATE USER user_lock_unbounded PASSWORD EXPIRE DEFAULT PASSWORD_LOCK_TIME UNBOUNDED" db-types="MySQL" />
+    <sql-case id="create_user_identified_with_plugin_mysql" value="CREATE USER user_plugin IDENTIFIED WITH 'ldap'" db-types="MySQL" />
+    <sql-case id="create_user_identified_with_plugin_as_mysql" value="CREATE USER user_plugin_as IDENTIFIED WITH 'ldap' AS 'pwd'" db-types="MySQL" />
+    <sql-case id="create_user_identified_with_plugin_by_mysql" value="CREATE USER user_plugin_by IDENTIFIED WITH 'ldap' BY 'pwd'" db-types="MySQL" />
+    <sql-case id="create_user_identified_with_plugin_by_random_mysql" value="CREATE USER user_plugin_rand IDENTIFIED WITH 'ldap' BY RANDOM PASSWORD" db-types="MySQL" />
     <sql-case id="create_user_with_options" value="CREATE USER user1 DEFAULT ROLE role1 WITH MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT ACCOUNT LOCK" db-types="MySQL,Doris" />
     <sql-case id="create_user_account_unlock_password_expire_interval_doris" value="CREATE USER user_expire_interval DEFAULT ROLE role1 ACCOUNT UNLOCK PASSWORD EXPIRE INTERVAL 30 DAY" db-types="Doris" />
     <sql-case id="create_user_password_expire_never_doris" value="CREATE USER user_expire_never PASSWORD EXPIRE NEVER" db-types="Doris" />
