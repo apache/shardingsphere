@@ -458,4 +458,6 @@
     <sql-case id="select_subquery_table_sql92" value="SELECT * FROM (SELECT 1) t" db-types="SQL92" />
     <sql-case id="select_comma_join_sql92" value="SELECT * FROM t_order o, t_order_item i" db-types="SQL92" />
     <sql-case id="select_cross_join_sql92" value="SELECT * FROM t_order CROSS JOIN t_order_item" db-types="SQL92" />
+    <sql-case id="select_date_trunc_column" value="SELECT DATE_TRUNC FROM t_keyword_date_trunc" db-types="Doris" />
+    <sql-case id="select_materialized_column" value="SELECT MATERIALIZED FROM t_keyword_materialized WHERE MATERIALIZED = 'value'" db-types="Doris" />
 </sql-cases>

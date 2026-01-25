@@ -76,4 +76,5 @@
     <sql-case id="update_basic" value="UPDATE products SET stock = 0;" db-types="Hive" />
     <sql-case id="update_with_null" value="UPDATE user_profiles SET last_login = NULL;" db-types="Hive" />
     <sql-case id="update_with_where_sql92" value="UPDATE t_order SET status = 'x' WHERE order_id = 1" db-types="SQL92" />
+    <sql-case id="update_pause_column" value="UPDATE t_keyword_pause SET PAUSE = true" db-types="Doris" />
 </sql-cases>

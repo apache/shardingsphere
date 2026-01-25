@@ -13116,4 +13116,35 @@
             </subquery-table>
         </from>
     </select>
+
+    <select sql-case-id="select_date_trunc_column">
+        <projections start-index="7" stop-index="16">
+            <column-projection name="DATE_TRUNC" start-index="7" stop-index="16" />
+        </projections>
+        <from>
+            <simple-table name="t_keyword_date_trunc" start-index="23" stop-index="42" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_materialized_column">
+        <projections start-index="7" stop-index="18">
+            <column-projection name="MATERIALIZED" start-index="7" stop-index="18" />
+        </projections>
+        <from>
+            <simple-table name="t_keyword_materialized" start-index="25" stop-index="46" />
+        </from>
+        <where start-index="48" stop-index="75">
+            <expr>
+                <binary-operation-expression start-index="54" stop-index="75">
+                    <left>
+                        <column name="MATERIALIZED" start-index="54" stop-index="65" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="value" start-index="69" stop-index="75" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

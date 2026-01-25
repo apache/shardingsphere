@@ -3881,4 +3881,25 @@
             <referenced-table name="t_firebird_len" start-index="122" stop-index="135" />
         </constraint-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_date_trunc_column">
+        <table name="t_keyword_date_trunc" start-index="13" stop-index="32" />
+        <column-definition type="INT" start-index="35" stop-index="48">
+            <column name="DATE_TRUNC" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_materialized_column">
+        <table name="t_keyword_materialized" start-index="13" stop-index="34" />
+        <column-definition type="VARCHAR" start-index="37" stop-index="61">
+            <column name="MATERIALIZED" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_pause_column">
+        <table name="t_keyword_pause" start-index="13" stop-index="27" />
+        <column-definition type="BOOLEAN" start-index="30" stop-index="42">
+            <column name="PAUSE" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

@@ -297,7 +297,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitDropMaterializedView(final DropMaterializedViewContext ctx) {
         DorisDropMaterializedViewStatement result = new DorisDropMaterializedViewStatement(getDatabaseType());
-        result.setMaterializedViewName(ctx.identifier().getText());
+        result.setMaterializedViewName(((IdentifierValue) visit(ctx.identifier())).getValue());
         result.setTableName((SimpleTableSegment) visit(ctx.tableName()));
         result.setIfExists(null != ctx.ifExists());
         return result;

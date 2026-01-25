@@ -2555,4 +2555,18 @@
             </assignment>
         </set>
     </update>
+
+    <update sql-case-id="update_pause_column">
+        <table start-index="7" stop-index="21">
+            <simple-table name="t_keyword_pause" start-index="7" stop-index="21" />
+        </table>
+        <set start-index="23" stop-index="38">
+            <assignment start-index="27" stop-index="38">
+                <column name="PAUSE" start-index="27" stop-index="31" />
+                <assignment-value>
+                    <literal-expression value="true" start-index="35" stop-index="38" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
 </sql-parser-test-cases>

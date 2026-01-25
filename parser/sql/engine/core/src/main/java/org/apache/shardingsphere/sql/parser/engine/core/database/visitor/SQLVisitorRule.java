@@ -211,8 +211,6 @@ public enum SQLVisitorRule {
     
     DORIS_REFRESH_MATERIALIZED_VIEW("RefreshMaterializedView", SQLStatementType.DDL),
     
-    DORIS_DROP_MATERIALIZED_VIEW("DropMaterializesView", SQLStatementType.DDL),
-    
     DORIS_CREATE_MATERIALIZED_VIEW("DorisCreateMaterializedView", SQLStatementType.DDL),
     
     DORIS_SHOW_CREATE_MATERIALIZED_VIEW("ShowCreateMaterializedView", SQLStatementType.DAL),
