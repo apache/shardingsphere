@@ -606,6 +606,27 @@
         </where>
     </select>
 
+    <select sql-case-id="select_concat_pipe_with_table">
+        <projections start-index="7" stop-index="16">
+            <expression-projection text="'a' || 'b'" start-index="7" stop-index="16">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="16">
+                        <left>
+                            <literal-expression value="a" start-index="7" stop-index="9" />
+                        </left>
+                        <operator>||</operator>
+                        <right>
+                            <literal-expression value="b" start-index="14" stop-index="16" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="23" stop-index="29" />
+        </from>
+    </select>
+
     <select sql-case-id="select_where_with_expr_with_xor" parameters="1,2">
         <from start-index="14" stop-index="20">
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -2732,6 +2753,28 @@
         </where>
     </select>
     
+    <select sql-case-id="select_returning_expression">
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="'$.a'RETURNINGVARCHAR" start-index="7" stop-index="33">
+                <expr>
+                    <list-expression start-index="7" stop-index="33">
+                        <items>
+                            <literal-expression value="'$.a'" start-index="7" stop-index="11" />
+                        </items>
+                        <items>
+                            <literal-expression value="RETURNING" start-index="13" stop-index="21" />
+                        </items>
+                        <items>
+                            <data-type value="VARCHAR" start-index="23" stop-index="33">
+                                <data-type-length precision="10" start-index="31" stop-index="32" />
+                            </data-type>
+                        </items>
+                    </list-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
     <select sql-case-id="select_age_for_postgres">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
@@ -3305,5 +3348,73 @@
                 </expr>
             </expression-projection>
         </projections>
+    </select>
+
+    <select sql-case-id="select_where_equal_any_subquery_mysql">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="67">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="67">
+                    <left>
+                        <column name="amount" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <quantify-subquery-expression>
+                            <operator>ANY</operator>
+                            <subquery start-index="41" stop-index="67">
+                                <select>
+                                    <projections distinct-row="false" start-index="49" stop-index="53">
+                                        <column-projection name="price" start-index="49" stop-index="53" />
+                                    </projections>
+                                    <from start-index="55" stop-index="66">
+                                        <simple-table name="t_price" start-index="60" stop-index="66" />
+                                    </from>
+                                </select>
+                            </subquery>
+                        </quantify-subquery-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_not_equal_all_subquery_mysql">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="68">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="68">
+                    <left>
+                        <column name="amount" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>&lt;&gt;</operator>
+                    <right>
+                        <quantify-subquery-expression>
+                            <operator>ALL</operator>
+                            <subquery start-index="42" stop-index="68">
+                                <select>
+                                    <projections distinct-row="false" start-index="50" stop-index="54">
+                                        <column-projection name="price" start-index="50" stop-index="54" />
+                                    </projections>
+                                    <from start-index="56" stop-index="67">
+                                        <simple-table name="t_price" start-index="61" stop-index="67" />
+                                    </from>
+                                </select>
+                            </subquery>
+                        </quantify-subquery-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </select>
 </sql-parser-test-cases>

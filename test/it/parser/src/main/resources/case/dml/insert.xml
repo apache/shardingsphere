@@ -524,6 +524,21 @@
             </assignment>
         </on-duplicate-key-columns>
     </insert>
+
+    <insert sql-case-id="insert_set_with_row_alias">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <set start-index="20" stop-index="44" literal-stop-index="44">
+            <assignment>
+                <column name="a" start-index="24" stop-index="24" />
+                <assignment-value>
+                    <literal-expression value="1" literal-start-index="28" literal-stop-index="28" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <value-reference alias="new_alias" start-index="30" stop-index="44">
+            <derived-column name="a" start-index="43" stop-index="43" />
+        </value-reference>
+    </insert>
     <insert sql-case-id="insert_with_underscore_charset">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="19" stop-index="19" />

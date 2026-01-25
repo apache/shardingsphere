@@ -30,6 +30,7 @@
     <sql-case id="select_with_st_aswkb_st_geom_form_text" value="SELECT ST_AsWKB(ST_GeomFromText('POINT(0 0)')) IN (SELECT b FROM t1) AS result" db-types="MySQL" />
     <sql-case id="select_null_in_subquery" value="SELECT NULL IN(SELECT (f1 between 0 and 1) FROM (SELECT f1 FROM t WHERE (@b:=NULL) - f2) as dt)" db-types="MySQL,Doris" />
     <sql-case id="select_with_collate" value="SELECT NAME_CONST('var', 'value') COLLATE latin1_general_cs" db-types="MySQL" />
+    <sql-case id="select_collate_parameter_marker" value="SELECT name COLLATE ? FROM t_order" db-types="MySQL" case-types="PLACEHOLDER" />
     <sql-case id="select_with_hex_function" value="SELECT HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | 0x38))" db-types="MySQL" />
     <sql-case id="select_distinct_with_grouping_function" value="SELECT DISTINCT f1 FROM t1 GROUP BY f1 WITH ROLLUP ORDER BY f1, ANY_VALUE(GROUPING(f1))" db-types="MySQL" />
     <sql-case id="select_convert_function1" value="SELECT CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" db-types="MySQL" />
@@ -77,6 +78,8 @@
     <sql-case id="select_keyword_table_name_with_square_brackets" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN [select] c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND c.status = ? ORDER BY i.item_id" db-types="SQLServer" />
     <sql-case id="select_alias_as_keyword" value="SELECT length.item_id password FROM t_order_item length where length.item_id = ? " db-types="MySQL,H2,SQLServer,Oracle" />
     <sql-case id="select_with_force_index_join" value="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id WHERE o.order_id = ?" db-types="MySQL,Doris" />
+    <sql-case id="select_with_index_hint_for_order_by_mysql" value="SELECT * FROM t1 USE INDEX FOR ORDER BY (i1) ORDER BY col1" db-types="MySQL" />
+    <sql-case id="select_with_index_hint_for_group_by_mysql" value="SELECT * FROM t1 USE INDEX FOR GROUP BY (i1) GROUP BY col1" db-types="MySQL" />
     <sql-case id="select_equal_with_geography" value="SELECT * FROM t_order WHERE rule = ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_in_with_geography" value="SELECT * FROM t_order WHERE rule IN (?::jsonb, ?::jsonb) AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_between_with_geography" value="SELECT * FROM t_order WHERE rule BETWEEN ?::jsonb AND ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND order_id = ?" db-types="PostgreSQL,openGauss" />
@@ -84,6 +87,8 @@
     <sql-case id="select_special_function_nested" value="SELECT sum(if(status=0, 1, 0)) func_status FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" />
     <sql-case id="select_with_interval_function" value="SELECT INTERVAL(status,1,5) func_status FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" />
     <sql-case id="select_with_left_function" value="SELECT CONCAT(LEFT(status, 7), 'test') FROM t_order_item WHERE user_id = 10" db-types="MySQL" />
+    <sql-case id="select_table_statement" value="TABLE t_order" db-types="MySQL" />
+    <sql-case id="select_order_by_position_mysql" value="SELECT * FROM t_order ORDER BY 1 DESC" db-types="MySQL" />
     <sql-case id="select_database" value="SELECT DATABASE()" db-types="MySQL" />
     <sql-case id="select_quarter" value="SELECT QUARTER('2008-04-01')" db-types="MySQL" />
     <sql-case id="select_with_mod_function" value="SELECT * FROM t_order WHERE MOD(order_id, 1) = 1" db-types="MySQL" />
@@ -247,6 +252,7 @@
     <sql-case id="select_date_literal_doris" value="SELECT DATE '2020-01-01'" db-types="Doris" />
     <sql-case id="select_hex_literal_doris" value="SELECT 0x1AF" db-types="Doris" />
     <sql-case id="select_bit_literal_doris" value="SELECT b'1010'" db-types="Doris" />
+    <sql-case id="select_bit_literal_upper_doris" value="SELECT B'1101'" db-types="Doris" />
     <sql-case id="select_collate_clause_doris" value="SELECT 'a' COLLATE utf8mb4_bin" db-types="Doris" />
     <sql-case id="select_true_literal_doris" value="SELECT TRUE" db-types="Doris,Hive" />
     <sql-case id="select_false_literal_doris" value="SELECT FALSE" db-types="Doris" />
@@ -453,11 +459,15 @@
     <sql-case id="select_subquery_projection_sql92" value="SELECT (SELECT 1) sub FROM t_order" db-types="SQL92" />
     <sql-case id="select_hex_literal_sql92" value="SELECT 0x1 FROM t_order" db-types="SQL92" />
     <sql-case id="select_bit_literal_sql92" value="SELECT B'1' FROM t_order" db-types="SQL92" />
+    <sql-case id="select_date_trunc_column" value="SELECT DATE_TRUNC FROM t_keyword_date_trunc" db-types="Doris" />
+    <sql-case id="select_materialized_column" value="SELECT MATERIALIZED FROM t_keyword_materialized WHERE MATERIALIZED = 'value'" db-types="Doris" />
     <sql-case id="select_cast_literal_sql92" value="SELECT CAST(1 AS INT) FROM t_order" db-types="SQL92" />
     <sql-case id="select_boolean_literal_sql92" value="SELECT TRUE FROM t_order" db-types="SQL92" />
     <sql-case id="select_subquery_table_sql92" value="SELECT * FROM (SELECT 1) t" db-types="SQL92" />
     <sql-case id="select_comma_join_sql92" value="SELECT * FROM t_order o, t_order_item i" db-types="SQL92" />
     <sql-case id="select_cross_join_sql92" value="SELECT * FROM t_order CROSS JOIN t_order_item" db-types="SQL92" />
-    <sql-case id="select_date_trunc_column" value="SELECT DATE_TRUNC FROM t_keyword_date_trunc" db-types="Doris" />
-    <sql-case id="select_materialized_column" value="SELECT MATERIALIZED FROM t_keyword_materialized WHERE MATERIALIZED = 'value'" db-types="Doris" />
+    <sql-case id="select_where_is_true_mysql" value="SELECT * FROM t_order WHERE active IS TRUE" db-types="MySQL" />
+    <sql-case id="select_where_is_false_mysql" value="SELECT * FROM t_order WHERE active IS FALSE" db-types="MySQL" />
+    <sql-case id="select_where_is_unknown_mysql" value="SELECT * FROM t_order WHERE active IS UNKNOWN" db-types="MySQL" />
+    <sql-case id="select_null_safe_equal_mysql" value="SELECT * FROM t_order WHERE order_id &lt;=&gt; ?" db-types="MySQL" case-types="PLACEHOLDER" />
 </sql-cases>

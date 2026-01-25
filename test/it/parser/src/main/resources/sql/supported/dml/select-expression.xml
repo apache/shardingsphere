@@ -32,6 +32,7 @@
     <sql-case id="select_with_case_expression" value="select t.*,o.item_id as item_id,(case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end) as stateName from t_order t left join t_order_item as o on o.order_id =t.order_id where t.order_id=1000 limit 1" db-types="MySQL,H2" />
     <sql-case id="select_where_with_expr_with_or" value="SELECT * FROM t_order WHERE t_order.order_id = ? OR ? = t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_or_sign" value="SELECT * FROM t_order WHERE t_order.order_id = ? || ? = t_order.order_id" db-types="MySQL" />
+    <sql-case id="select_concat_pipe_with_table" value="SELECT 'a' || 'b' FROM t_order" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_xor" value="SELECT * FROM t_order WHERE t_order.order_id = ? XOR ? = t_order.order_id" db-types="MySQL,Presto" />
     <sql-case id="select_where_with_expr_with_and" value="SELECT * FROM t_order WHERE t_order.order_id = ? AND ? = t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_and_or" value="SELECT * FROM t_order WHERE t_order.order_id = ? AND ? = t_order.order_id OR t_order.status = 'failed' AND ? = t_order.order_id" />
@@ -104,6 +105,7 @@
     <sql-case id="select_with_regular_function_for_sql92" value="SELECT A(1) FROM t_order WHERE A(1) = 1" db-types="MySQL,Oracle,SQLServer,H2,SQL92" />
     <sql-case id="select_with_regular_function_utc_timestamp" value="SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP())" db-types="MySQL" />
     <sql-case id="select_with_collate_with_marker" value="SELECT * FROM t_order WHERE order_id COLLATE ?" db-types="MySQL,Presto,Doris,Hive" />
+    <sql-case id="select_returning_expression" value="SELECT '$.a' RETURNING VARCHAR(10)" db-types="MySQL" />
 
     <sql-case id="select_safe_equal" value="SELECT 1 &lt;=&gt; 1" db-types="Doris" />
     <sql-case id="select_where_is_true_doris" value="SELECT * FROM t_order WHERE flag IS TRUE" db-types="Doris" />
@@ -143,4 +145,6 @@
     <sql-case id="select_text_inet_function" value="SELECT text(inet '192.168.1.5') AS RESULT;" db-types="openGauss" />
     <sql-case id="select_trunc_function" value="SELECT trunc(macaddr '12:34:56:78:90:ab') AS RESULT;" db-types="openGauss" />
     <sql-case id="select_with_case_when_from_sys" value="SELECT FileName = df.name, current_file_size_MB = df.size*1.0/128, max_size = CASE df.max_size WHEN 0 THEN 'Autogrowth is off.' WHEN -1 THEN 'Autogrowth is on.' ELSE 'Log file grows to a maximum size of 2 TB.' END, growth_value = CASE WHEN df.growth = 0 THEN df.growth WHEN df.growth > 0 AND df.is_percent_growth = 0 THEN df.growth*1.0/128.0 WHEN df.growth > 0 AND df.is_percent_growth = 1 THEN df.growth END, growth_increment_unit = CASE WHEN df.growth = 0 THEN 'Size is fixed.' WHEN df.growth > 0 AND df.is_percent_growth = 0  THEN 'Growth value is MB.' WHEN df.growth > 0 AND df.is_percent_growth = 1  THEN 'Growth value is a percentage.' END FROM tempdb.sys.database_files AS df" db-types="SQLServer"/>
+    <sql-case id="select_where_equal_any_subquery_mysql" value="SELECT * FROM t_order WHERE amount = ANY (SELECT price FROM t_price)" db-types="MySQL" />
+    <sql-case id="select_where_not_equal_all_subquery_mysql" value="SELECT * FROM t_order WHERE amount &lt;&gt; ALL (SELECT price FROM t_price)" db-types="MySQL" />
 </sql-cases>
