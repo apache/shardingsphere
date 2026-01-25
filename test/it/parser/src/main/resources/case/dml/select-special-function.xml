@@ -2364,6 +2364,24 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_convert_function_using_binary">
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="CONVERT('abc' USING BINARY)" start-index="7" stop-index="33">
+                <expr>
+                    <function function-name="CONVERT" start-index="7" stop-index="33" text="CONVERT('abc' USING BINARY)">
+                        <parameter>
+                            <literal-expression value="abc" start-index="15" stop-index="19" />
+                            <using-character-set text="USING BINARY" start-index="20" stop-index="33" />
+                        </parameter>
+                        <parameter start-index="27" stop-index="32">
+                            <literal-expression value="BINARY" start-index="27" stop-index="32"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_convert_tz_function">
         <projections start-index="7" stop-index="51">
             <expression-projection text="CONVERT_TZ('2004-01-01 12:00:00','GMT','MET')" start-index="7" stop-index="51">
