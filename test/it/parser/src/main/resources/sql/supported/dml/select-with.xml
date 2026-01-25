@@ -29,5 +29,6 @@
     <sql-case id="select_with_recursive_union_all1" value="WITH RECURSIVE DirectoryCTE as (SELECT * FROM table1 WHERE id = 1 AND project_id = 2 UNION ALL SELECT * FROM project_file_catalog t INNER JOIN DirectoryCTE cte ON t.project_id = cte.project_id AND t.parent_id = cte.id) SELECT * FROM DirectoryCTE ORDER BY level" db-types="MySQL" />
     <sql-case id="select_with_oracle_recursive_union_all1" value="WITH DirectoryCTE as (SELECT table1.col1, table1.col2 FROM table1 WHERE id = 1 AND project_id = 2 UNION ALL SELECT t.col1, t.col2 FROM project_file_catalog t INNER JOIN DirectoryCTE cte ON t.project_id = cte.project_id AND t.parent_id = cte.id) SELECT DirectoryCTE.col1, DirectoryCTE.col2 FROM DirectoryCTE ORDER BY level" db-types="Oracle" />
     <sql-case id="select_with_recursive_union_all2" value="WITH cte AS (SELECT 1 AS col1, 2 AS col2 UNION ALL SELECT 3, 4) SELECT col1, col2 FROM cte" db-types="MySQL" />
+    <sql-case id="select_with_columns_cte" value="WITH cte(a,b) AS (SELECT 1,2) SELECT * FROM cte" db-types="MySQL" />
     <sql-case id="select_with_recursive_firebird" value="WITH RECURSIVE t(id) AS (SELECT 1) SELECT id FROM t" db-types="Firebird" />
 </sql-cases>
