@@ -390,6 +390,10 @@
     <sql-case id="alter_table_with_algorithm_inplace_doris" value="ALTER TABLE t_order ADD COLUMN col_alg_inplace INT, ALGORITHM=INPLACE" db-types="Doris" />
     <sql-case id="alter_table_with_algorithm_copy_doris" value="ALTER TABLE t_order ADD COLUMN col_alg_copy INT, ALGORITHM=COPY" db-types="Doris" />
     <sql-case id="alter_table_with_lock_default_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_default INT, LOCK=DEFAULT" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_default_mysql" value="ALTER TABLE t_order ADD COLUMN col_alg_def INT, ALGORITHM=DEFAULT" db-types="MySQL" />
+    <sql-case id="alter_table_with_algorithm_instant_mysql" value="ALTER TABLE t_order ADD COLUMN col_alg_instant INT, ALGORITHM=INSTANT" db-types="MySQL" />
+    <sql-case id="alter_table_with_lock_none_mysql" value="ALTER TABLE t_order ADD COLUMN col_lock_none INT, LOCK=NONE" db-types="MySQL" />
+    <sql-case id="alter_table_with_lock_default_mysql" value="ALTER TABLE t_order ADD COLUMN col_lock_default INT, LOCK=DEFAULT" db-types="MySQL" />
     <sql-case id="alter_table_with_lock_shared_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_shared INT, LOCK=SHARED" db-types="Doris" />
     <sql-case id="alter_table_with_lock_exclusive_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_exclusive INT, LOCK=EXCLUSIVE" db-types="Doris" />
 </sql-cases>

@@ -16,10 +16,6 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <unlock sql-case-id="unlock_table" />
-    <unlock sql-case-id="unlock_tables" />
-    <unlock sql-case-id="unlock_instance" />
-    <unlock sql-case-id="unlock_tables_doris" />
-    <unlock sql-case-id="unlock_tables_mysql" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="restart_server_mysql" value="RESTART" db-types="MySQL" />
+</sql-cases>
