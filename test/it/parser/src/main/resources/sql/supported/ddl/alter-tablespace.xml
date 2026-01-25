@@ -19,6 +19,7 @@
 <sql-cases>
     <sql-case id="alter_tablespace_rename" value="ALTER TABLESPACE ts1 RENAME TO ts2" db-types="MySQL,Oracle,Doris" />
     <sql-case id="alter_tablespace_ndb_add_datafile_doris" value="ALTER TABLESPACE ts_ndb ADD DATAFILE 'ts1.ibd' INITIAL_SIZE 100M ENGINE ndb" db-types="Doris" />
+    <sql-case id="alter_tablespace_ndb_wait_rename_mysql" value="ALTER TABLESPACE ts_ndb ADD DATAFILE 'ts2.ibd' WAIT RENAME TO ts_ndb_new ENGINE NDB" db-types="MySQL" />
     <sql-case id="alter_tablespace_innodb_add_datafile_doris" value="ALTER TABLESPACE ts_innodb ADD DATAFILE 'ts2.ibd' INITIAL_SIZE 50M ENGINE innodb" db-types="Doris" />
     <sql-case id="alter_tablespace_innodb_add_datafile_mysql" value="ALTER TABLESPACE ts_innodb ADD DATAFILE 'ts2.ibd' INITIAL_SIZE 50M ENGINE=INNODB" db-types="MySQL" />
     <sql-case id="alter_tablespace_read_only" value="ALTER TABLESPACE ts1 READ ONLY" db-types="Oracle" />
