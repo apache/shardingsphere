@@ -606,6 +606,27 @@
         </where>
     </select>
 
+    <select sql-case-id="select_concat_pipe_with_table">
+        <projections start-index="7" stop-index="16">
+            <expression-projection text="'a' || 'b'" start-index="7" stop-index="16">
+                <expr>
+                    <binary-operation-expression start-index="7" stop-index="16">
+                        <left>
+                            <literal-expression value="a" start-index="7" stop-index="9" />
+                        </left>
+                        <operator>||</operator>
+                        <right>
+                            <literal-expression value="b" start-index="14" stop-index="16" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="23" stop-index="29" />
+        </from>
+    </select>
+
     <select sql-case-id="select_where_with_expr_with_xor" parameters="1,2">
         <from start-index="14" stop-index="20">
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -2730,6 +2751,28 @@
                 </collate-expression>
             </expr>
         </where>
+    </select>
+    
+    <select sql-case-id="select_returning_expression">
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="'$.a'RETURNINGVARCHAR" start-index="7" stop-index="33">
+                <expr>
+                    <list-expression start-index="7" stop-index="33">
+                        <items>
+                            <literal-expression value="'$.a'" start-index="7" stop-index="11" />
+                        </items>
+                        <items>
+                            <literal-expression value="RETURNING" start-index="13" stop-index="21" />
+                        </items>
+                        <items>
+                            <data-type value="VARCHAR" start-index="23" stop-index="33">
+                                <data-type-length precision="10" start-index="31" stop-index="32" />
+                            </data-type>
+                        </items>
+                    </list-expression>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
     
     <select sql-case-id="select_age_for_postgres">
