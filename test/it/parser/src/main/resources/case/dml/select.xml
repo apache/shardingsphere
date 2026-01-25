@@ -466,6 +466,23 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_collate_parameter_marker" parameters="'utf8_general_ci'">
+        <from>
+            <simple-table name="t_order" start-index="27" stop-index="33" />
+        </from>
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="name COLLATE ?" start-index="7" stop-index="20">
+                <expr>
+                    <collate-expression start-index="7" stop-index="20">
+                        <collate-name>
+                            <parameter-marker-expression parameter-index="0" start-index="12" stop-index="20" />
+                        </collate-name>
+                    </collate-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
     
     <select sql-case-id="select_with_hex_function">
         <projections start-index="7" stop-index="50">
@@ -2637,6 +2654,30 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+
+    <select sql-case-id="select_with_index_hint_for_order_by_mysql">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="14" stop-index="15" />
+        </from>
+        <order-by>
+            <column-item name="col1" order-direction="ASC" start-index="54" stop-index="57" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_index_hint_for_group_by_mysql">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="14" stop-index="15" />
+        </from>
+        <group-by>
+            <column-item name="col1" order-direction="ASC" start-index="54" stop-index="57" />
+        </group-by>
     </select>
 
     <select sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1, 2">

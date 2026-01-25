@@ -20,4 +20,6 @@
     <sql-case id="start_slave_doris" value="START SLAVE SQL_THREAD USER='u'" db-types="Doris" />
     <sql-case id="stop_slave_doris" value="STOP SLAVE SQL_THREAD" db-types="Doris" />
     <sql-case id="start_replica_doris" value="START REPLICA SQL_THREAD" db-types="Doris" />
+    <sql-case id="start_slave_mysql" value="START SLAVE SQL_THREAD" db-types="MySQL" />
+    <sql-case id="stop_slave_mysql" value="STOP SLAVE SQL_THREAD" db-types="MySQL" />
 </sql-cases>
