@@ -3417,4 +3417,60 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_where_with_safe_equal_parameter_mysql" parameters="1">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="39">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="39">
+                    <left>
+                        <column name="status" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>&lt;=&gt;</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="0" start-index="39" stop-index="39" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_equal_all_subquery_mysql">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="67">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="67">
+                    <left>
+                        <column name="amount" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <quantify-subquery-expression>
+                            <operator>ALL</operator>
+                            <subquery start-index="41" stop-index="67">
+                                <select>
+                                    <projections distinct-row="false" start-index="49" stop-index="53">
+                                        <column-projection name="price" start-index="49" stop-index="53" />
+                                    </projections>
+                                    <from start-index="55" stop-index="66">
+                                        <simple-table name="t_price" start-index="60" stop-index="66" />
+                                    </from>
+                                </select>
+                            </subquery>
+                        </quantify-subquery-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

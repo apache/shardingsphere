@@ -13276,4 +13276,29 @@
             </subquery-table>
         </from>
     </select>
+
+    <select sql-case-id="select_three_part_column_mysql">
+        <projections start-index="7" stop-index="24">
+            <column-projection name="status" start-index="7" stop-index="24">
+                <owner start-index="11" stop-index="17" name="t_order">
+                    <owner start-index="7" stop-index="9" name="db1" />
+                </owner>
+            </column-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="31" stop-index="41">
+                <owner start-index="31" stop-index="33" name="db1" />
+            </simple-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_string_literal_concat_mysql">
+        <projections start-index="7" stop-index="15">
+            <expression-projection text="abcd" start-index="7" stop-index="15">
+                <expr>
+                    <literal-expression value="abcd" start-index="7" stop-index="15" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

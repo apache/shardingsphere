@@ -468,4 +468,6 @@
     <sql-case id="select_where_is_false_mysql" value="SELECT * FROM t_order WHERE active IS FALSE" db-types="MySQL" />
     <sql-case id="select_where_is_unknown_mysql" value="SELECT * FROM t_order WHERE active IS UNKNOWN" db-types="MySQL" />
     <sql-case id="select_null_safe_equal_mysql" value="SELECT * FROM t_order WHERE order_id &lt;=&gt; ?" db-types="MySQL" case-types="PLACEHOLDER" />
+    <sql-case id="select_three_part_column_mysql" value="SELECT db1.t_order.status FROM db1.t_order" db-types="MySQL" />
+    <sql-case id="select_string_literal_concat_mysql" value="SELECT 'ab' 'cd'" db-types="MySQL" />
 </sql-cases>
