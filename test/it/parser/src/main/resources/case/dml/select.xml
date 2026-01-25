@@ -12705,6 +12705,94 @@
         </where>
     </select>
 
+    <select sql-case-id="select_where_is_true_mysql">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="41">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="41">
+                    <left>
+                        <column name="active" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="TRUE" start-index="38" stop-index="41" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_is_false_mysql">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="42">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="42">
+                    <left>
+                        <column name="active" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="FALSE" start-index="38" stop-index="42" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_is_unknown_mysql">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="44">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="44">
+                    <left>
+                        <column name="active" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="UNKNOWN" start-index="38" stop-index="44" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_null_safe_equal_mysql" parameters="1">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="41">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="41">
+                    <left>
+                        <column name="order_id" start-index="28" stop-index="35" />
+                    </left>
+                    <operator>&lt;=&gt;</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="0" start-index="41" stop-index="41" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_distinct_simple_sql92" >
         <from>
             <simple-table name="t_order" start-index="29" stop-index="35" />
