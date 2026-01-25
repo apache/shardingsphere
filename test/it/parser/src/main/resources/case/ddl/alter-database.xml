@@ -17,6 +17,7 @@
   -->
 
 <sql-parser-test-cases>
+    <alter-database sql-case-id="alter_database_mysql_simple" />
     <alter-database sql-case-id="alter_database_enable_block_change_tracking" />
     <alter-database sql-case-id="alter_database_add_logffile_group_size_m_blocksize_reuse" />
     <alter-database sql-case-id="alter_database_add_logfile_group_size_k_reuse" />

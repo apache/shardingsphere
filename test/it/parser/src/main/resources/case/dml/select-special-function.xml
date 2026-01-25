@@ -5472,4 +5472,94 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_json_separator_mysql">
+        <from>
+            <simple-table name="t_order" start-index="44" stop-index="50" />
+        </from>
+        <projections start-index="7" stop-index="37">
+            <expression-projection text="JSON_SEPARATOR(order_id, '$.a')" start-index="7" stop-index="37">
+                <expr>
+                    <function function-name="JSON_SEPARATOR" start-index="7" stop-index="37" text="JSON_SEPARATOR(order_id, '$.a')">
+                        <parameter>
+                            <column name="order_id" start-index="22" stop-index="29" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="$.a" start-index="32" stop-index="36" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_json_unquoted_separator_mysql">
+        <from>
+            <simple-table name="t_order" start-index="53" stop-index="59" />
+        </from>
+        <projections start-index="7" stop-index="46">
+            <expression-projection text="JSON_UNQUOTED_SEPARATOR(order_id, '$.a')" start-index="7" stop-index="46">
+                <expr>
+                    <function function-name="JSON_UNQUOTED_SEPARATOR" start-index="7" stop-index="46" text="JSON_UNQUOTED_SEPARATOR(order_id, '$.a')">
+                        <parameter>
+                            <column name="order_id" start-index="31" stop-index="38" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="$.a" start-index="41" stop-index="45" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_timestampadd_mysql">
+        <from>
+            <simple-table name="t_order" start-index="45" stop-index="51" />
+        </from>
+        <projections start-index="7" stop-index="38">
+            <expression-projection text="TIMESTAMPADD(DAY, 1, order_date)" start-index="7" stop-index="38">
+                <expr>
+                    <function function-name="TIMESTAMPADD" start-index="7" stop-index="38" text="TIMESTAMPADD(DAY, 1, order_date)">
+                        <parameter>
+                            <interval-unit-expression start-index="20" stop-index="22">
+                                <interval-unit>DAY</interval-unit>
+                            </interval-unit-expression>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="25" stop-index="25" />
+                        </parameter>
+                        <parameter>
+                            <column name="order_date" start-index="28" stop-index="37" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_timestampdiff_mysql">
+        <from>
+            <simple-table name="t_order" start-index="56" stop-index="62" />
+        </from>
+        <projections start-index="7" stop-index="49">
+            <expression-projection text="TIMESTAMPDIFF(MINUTE, start_time, end_time)" start-index="7" stop-index="49">
+                <expr>
+                    <function function-name="TIMESTAMPDIFF" start-index="7" stop-index="49" text="TIMESTAMPDIFF(MINUTE, start_time, end_time)">
+                        <parameter>
+                            <interval-unit-expression start-index="21" stop-index="26">
+                                <interval-unit>MINUTE</interval-unit>
+                            </interval-unit-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="start_time" start-index="29" stop-index="38" />
+                        </parameter>
+                        <parameter>
+                            <column name="end_time" start-index="41" stop-index="48" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

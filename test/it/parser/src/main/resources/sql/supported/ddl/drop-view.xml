@@ -21,7 +21,7 @@
     <sql-case id="drop_view_with_schemaname" value="DROP VIEW schemaName.viewName;" db-types="Oracle" />
     <sql-case id="drop_view_cascade_constraints" value="DROP VIEW schemaName.viewName CASCADE CONSTRAINTS;" db-types="Oracle" />
     <sql-case id="drop_view_cascade" value="DROP VIEW kinds, order_view CASCADE" db-types="PostgreSQL, openGauss" />
-    <sql-case id="drop_view_basic" value="DROP VIEW sales_summary" db-types="Hive" />
+    <sql-case id="drop_view_basic" value="DROP VIEW sales_summary" db-types="Hive,MySQL" />
     <sql-case id="drop_view_with_if_exists" value="DROP VIEW IF EXISTS sales_summary" db-types="Hive" />
     <sql-case id="drop_view_with_db_name" value="DROP VIEW db1.sales_summary" db-types="Hive,Presto" />
     <sql-case id="drop_view_with_if_exists_and_db_name" value="DROP VIEW IF EXISTS db1.sales_summary" db-types="Hive" />
