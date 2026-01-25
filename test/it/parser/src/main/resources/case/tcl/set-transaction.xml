@@ -20,6 +20,8 @@
     <set-transaction sql-case-id="set_transaction" />
     <set-transaction sql-case-id="set_global_transaction" />
     <set-transaction sql-case-id="set_session_transaction" />
+    <set-transaction sql-case-id="set_session_transaction_read_only_mysql" />
+    <set-transaction sql-case-id="set_session_transaction_read_write_mysql" />
     <set-transaction sql-case-id="set_transaction_read_only" />
     <set-transaction sql-case-id="set_transaction_read_write" />
     <set-transaction sql-case-id="set_transaction_read_write_with_name" />
