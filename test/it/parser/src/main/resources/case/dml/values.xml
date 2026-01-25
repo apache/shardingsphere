@@ -93,6 +93,35 @@
         </projections>
     </select>
 
+    <select sql-case-id="values_row_two_rows_mysql">
+        <projections start-index="0" stop-index="24">
+            <expression-projection text="VALUES ROW(1,2), ROW(3,4)" start-index="0" stop-index="24">
+                <expr>
+                    <values-expression>
+                        <values>
+                            <value>
+                                <assignment-value>
+                                    <literal-expression value="1" start-index="11" stop-index="11" />
+                                </assignment-value>
+                                <assignment-value>
+                                    <literal-expression value="2" start-index="13" stop-index="13" />
+                                </assignment-value>
+                            </value>
+                            <value>
+                                <assignment-value>
+                                    <literal-expression value="3" start-index="21" stop-index="21" />
+                                </assignment-value>
+                                <assignment-value>
+                                    <literal-expression value="4" start-index="23" stop-index="23" />
+                                </assignment-value>
+                            </value>
+                        </values>
+                    </values-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="values_with_order_limit">
         <projections start-index="0" stop-index="41">
             <expression-projection text="VALUES ROW(1,-2,3), ROW(5,7,9), ROW(4,6,8)" start-index="0" stop-index="41">

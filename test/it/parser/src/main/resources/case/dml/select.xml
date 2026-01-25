@@ -3669,6 +3669,27 @@
         </where>
     </select>
 
+    <select sql-case-id="select_order_by_position_mysql">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <order-by>
+            <index-item index="1" order-direction="DESC" start-index="31" stop-index="31" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_table_statement">
+        <projections start-index="0" stop-index="0">
+            <shorthand-projection start-index="0" stop-index="0" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="0" stop-index="12" />
+        </from>
+    </select>
+
     <select sql-case-id="select_with_left_function">
         <from>
             <simple-table name="t_order_item" start-index="44" stop-index="55" />
