@@ -20,4 +20,5 @@
     <drop-tablespace sql-case-id="drop_tablespace_constraints" />
     <drop-tablespace sql-case-id="drop_tablespace_datafiles" />
     <drop-tablespace sql-case-id="drop_tablespace_simple_doris" />
+    <drop-tablespace sql-case-id="drop_tablespace_simple_mysql" />
 </sql-parser-test-cases>
