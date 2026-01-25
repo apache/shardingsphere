@@ -25,6 +25,7 @@
     <sql-case id="select_cast" value="SELECT CAST(c AT TIME ZONE 'UTC' AS DATETIME)" db-types="MySQL" />
     <sql-case id="select_cast_multiset" value="select CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ) from customer;" db-types="Oracle" />
     <sql-case id="select_convert_function" value="SELECT CONVERT('2020-10-01', DATE)" db-types="MySQL" />
+    <sql-case id="select_convert_function_using_binary" value="SELECT CONVERT('abc' USING BINARY)" db-types="MySQL" />
     <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL,Doris,Hive" />
     <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from -4 for 2)" db-types="MySQL" />
     <sql-case id="select_substr" value="SELECT SUBSTR('foobarbar' from 4)" db-types="MySQL,Presto" />
