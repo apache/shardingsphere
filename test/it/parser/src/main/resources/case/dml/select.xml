@@ -12066,6 +12066,16 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_bit_literal_upper_doris">
+        <projections start-index="7" stop-index="13">
+            <expression-projection text="B'1101'" start-index="7" stop-index="13">
+                <expr>
+                    <common-expression text="B'1101'" start-index="7" stop-index="13" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_true_literal_doris">
         <projections start-index="7" stop-index="10">
             <expression-projection text="true" start-index="7" stop-index="10">
