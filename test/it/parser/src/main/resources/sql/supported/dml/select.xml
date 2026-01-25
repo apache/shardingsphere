@@ -464,4 +464,8 @@
     <sql-case id="select_subquery_table_sql92" value="SELECT * FROM (SELECT 1) t" db-types="SQL92" />
     <sql-case id="select_comma_join_sql92" value="SELECT * FROM t_order o, t_order_item i" db-types="SQL92" />
     <sql-case id="select_cross_join_sql92" value="SELECT * FROM t_order CROSS JOIN t_order_item" db-types="SQL92" />
+    <sql-case id="select_where_is_true_mysql" value="SELECT * FROM t_order WHERE active IS TRUE" db-types="MySQL" />
+    <sql-case id="select_where_is_false_mysql" value="SELECT * FROM t_order WHERE active IS FALSE" db-types="MySQL" />
+    <sql-case id="select_where_is_unknown_mysql" value="SELECT * FROM t_order WHERE active IS UNKNOWN" db-types="MySQL" />
+    <sql-case id="select_null_safe_equal_mysql" value="SELECT * FROM t_order WHERE order_id &lt;=&gt; ?" db-types="MySQL" case-types="PLACEHOLDER" />
 </sql-cases>
