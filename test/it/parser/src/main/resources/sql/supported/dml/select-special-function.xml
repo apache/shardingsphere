@@ -252,6 +252,7 @@
     <sql-case id="select_json_unquote" value="SELECT JSON_UNQUOTE('&quot;abc&quot;')" db-types="MySQL" />
     <sql-case id="select_json_valid" value="SELECT JSON_VALID('{&quot;a&quot;: 1}')" db-types="MySQL" />
     <sql-case id="select_json_value" value="SELECT JSON_VALUE('{&quot;price&quot;: &quot;49.95&quot;}', '$.price' RETURNING DECIMAL(4,1) null on empty default 0 on error)" db-types="MySQL" />
+    <sql-case id="select_json_value_doris" value="SELECT JSON_VALUE('{&quot;price&quot;: &quot;49.95&quot;}', '$.price' RETURNING DECIMAL(4,1) null on empty default 0 on error)" db-types="Doris" />
     <sql-case id="select_st_difference" value="SELECT ST_Difference(Point(1,1), Point(2,2))" db-types="MySQL" />
     <sql-case id="select_st_dimension" value="SELECT ST_Dimension(ST_GeomFromText('LineString(1 1,2 2)'))" db-types="MySQL" />
     <sql-case id="select_st_disjoint" value="SELECT ST_Disjoint(Point(1,1),Point(2,2))" db-types="MySQL" />

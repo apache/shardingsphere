@@ -4323,6 +4323,33 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_json_value_doris">
+        <projections start-index="7" stop-index="105">
+            <expression-projection start-index="7" stop-index="105" text="JSON_VALUE('{&quot;price&quot;: &quot;49.95&quot;}', '$.price' RETURNING DECIMAL(4,1) null on empty default 0 on error)">
+                <expr>
+                    <function  start-index="7" stop-index="105" function-name="JSON_VALUE" text="JSON_VALUE('{&quot;price&quot;: &quot;49.95&quot;}', '$.price' RETURNING DECIMAL(4,1) null on empty default 0 on error)">
+                        <parameter>
+                            <literal-expression value="{&quot;price&quot;: &quot;49.95&quot;}" start-index="18" stop-index="37" />
+                        </parameter>
+                        <parameter>
+                            <list-expression start-index="40" stop-index="104" >
+                                <items>
+                                    <literal-expression value="'$.price'" start-index="40" stop-index="48" />
+                                </items>
+                                <items>
+                                    <literal-expression value="RETURNING" start-index="50" stop-index="58" />
+                                </items>
+                                <items>
+                                    <data-type value="DECIMAL" start-index="60" stop-index="71" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_st_difference">
         <projections start-index="7" stop-index="43">
             <expression-projection start-index="7" stop-index="43" text="ST_Difference(Point(1,1), Point(2,2))">

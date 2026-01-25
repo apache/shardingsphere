@@ -247,6 +247,7 @@
     <sql-case id="select_date_literal_doris" value="SELECT DATE '2020-01-01'" db-types="Doris" />
     <sql-case id="select_hex_literal_doris" value="SELECT 0x1AF" db-types="Doris" />
     <sql-case id="select_bit_literal_doris" value="SELECT b'1010'" db-types="Doris" />
+    <sql-case id="select_bit_literal_upper_doris" value="SELECT B'1101'" db-types="Doris" />
     <sql-case id="select_collate_clause_doris" value="SELECT 'a' COLLATE utf8mb4_bin" db-types="Doris" />
     <sql-case id="select_true_literal_doris" value="SELECT TRUE" db-types="Doris,Hive" />
     <sql-case id="select_false_literal_doris" value="SELECT FALSE" db-types="Doris" />
