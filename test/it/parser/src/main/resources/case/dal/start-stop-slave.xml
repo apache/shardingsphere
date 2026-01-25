@@ -20,4 +20,6 @@
     <common sql-case-id="start_slave_doris" />
     <common sql-case-id="stop_slave_doris" />
     <common sql-case-id="start_replica_doris" />
+    <common sql-case-id="start_slave_mysql" />
+    <common sql-case-id="stop_slave_mysql" />
 </sql-parser-test-cases>

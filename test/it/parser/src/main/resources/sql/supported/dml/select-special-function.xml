@@ -248,6 +248,10 @@
     <sql-case id="select_json_storage_size" value="SELECT JSON_STORAGE_SIZE(json_col) FROM t" db-types="MySQL" />
     <sql-case id="select_json_table" value="SELECT * FROM JSON_TABLE('[{&quot;name&quot;: 2}]','$[*]' COLUMNS( name INT PATH '$.name' error on empty)) as t" db-types="MySQL" />
     <sql-case id="select_json_table_with_path" value="SELECT * FROM JSON_TABLE('[]', '$[*]' COLUMNS (p NCHAR PATH '$.a')) AS t" db-types="MySQL" />
+    <sql-case id="select_json_separator_mysql" value="SELECT JSON_SEPARATOR(order_id, '$.a') FROM t_order" db-types="MySQL" />
+    <sql-case id="select_json_unquoted_separator_mysql" value="SELECT JSON_UNQUOTED_SEPARATOR(order_id, '$.a') FROM t_order" db-types="MySQL" />
+    <sql-case id="select_timestampadd_mysql" value="SELECT TIMESTAMPADD(DAY, 1, order_date) FROM t_order" db-types="MySQL" />
+    <sql-case id="select_timestampdiff_mysql" value="SELECT TIMESTAMPDIFF(MINUTE, start_time, end_time) FROM t_order" db-types="MySQL" />
     <sql-case id="select_json_type" value="SELECT JSON_TYPE('[1,2,3]')" db-types="MySQL" />
     <sql-case id="select_json_unquote" value="SELECT JSON_UNQUOTE('&quot;abc&quot;')" db-types="MySQL" />
     <sql-case id="select_json_valid" value="SELECT JSON_VALID('{&quot;a&quot;: 1}')" db-types="MySQL" />
