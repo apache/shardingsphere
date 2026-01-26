@@ -54,6 +54,8 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     @Getter
     private final List<PreparedStatementParameter> parameterRecords = new ArrayList<>();
     
+    private final List<PreparedStatementParameter> batchParameterRecords = new ArrayList<>();
+    
     @Override
     public final void setNull(final int parameterIndex, final int sqlType) {
         setParameter(parameterIndex, SetterMethodType.SET_NULL, null, -1L);
@@ -313,12 +315,31 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     }
     
     private PreparedStatementParameter findParameterRecord(final int index, final Object value) {
-        for (PreparedStatementParameter each : parameterRecords) {
+        List<PreparedStatementParameter> records = batchParameterRecords.isEmpty() ? parameterRecords : batchParameterRecords;
+        for (PreparedStatementParameter each : records) {
             if (each.getIndex() == index) {
                 return new PreparedStatementParameter(index, each.getSetterMethodType(), value, each.getLength());
             }
         }
         return new PreparedStatementParameter(index, SetterMethodType.SET_OBJECT, value, -1L);
+    }
+    
+    /**
+     * Save current parameter records to batch parameter records.
+     * Should be called before clearParameters in addBatch.
+     */
+    protected void saveBatchParameterRecords() {
+        if (batchParameterRecords.isEmpty()) {
+            batchParameterRecords.addAll(parameterRecords);
+        }
+    }
+    
+    /**
+     * Clear batch parameter records.
+     * Should be called in clearBatch.
+     */
+    protected void clearBatchParameterRecords() {
+        batchParameterRecords.clear();
     }
     
     @Override
