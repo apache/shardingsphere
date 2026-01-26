@@ -51,9 +51,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @PipelineE2ESettings(database = {
-        @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/create-table-generator/mysql/create-table-sql-generator.xml"),
-        @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/scenario/create-table-generator/postgresql/create-table-sql-generator.xml"),
-        @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/scenario/create-table-generator/opengauss/create-table-sql-generator.xml")})
+        @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/common/none.xml"),
+        @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/common/none.xml"),
+        @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/common/none.xml")})
 class CreateTableSQLGeneratorIT {
     
     private static final String DEFAULT_SCHEMA = "public";
@@ -74,8 +74,9 @@ class CreateTableSQLGeneratorIT {
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertGenerateCreateTableSQL(final PipelineTestParameter testParam) throws SQLException {
         startStorageContainer(testParam.getDatabaseType(), testParam.getDatabaseContainerImage());
+        String resourcePath = String.format("env/scenario/create-table-generator/%s/create-table-sql-generator.xml", testParam.getDatabaseType().getType().toLowerCase());
         CreateTableSQLGeneratorAssertionsRootEntity rootEntity = JAXB.unmarshal(
-                Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParam.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
+                Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(resourcePath)), CreateTableSQLGeneratorAssertionsRootEntity.class);
         DataSource dataSource = storageContainer.createAccessDataSource(DEFAULT_DATABASE);
         try (
                 Connection connection = dataSource.getConnection();
