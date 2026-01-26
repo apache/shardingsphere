@@ -456,6 +456,54 @@
             </set>
         </update>
     </merge>
+
+    <merge sql-case-id="merge_insert_then_update">
+        <target>
+            <simple-table alias="D" name="bonuses" start-index="11" stop-index="19" />
+        </target>
+        <source>
+            <simple-table alias="S" name="employees" start-index="27" stop-index="37" />
+        </source>
+        <expr>
+            <binary-operation-expression start-index="43" stop-index="53">
+                <left>
+                    <column name="id" start-index="43" stop-index="46">
+                        <owner name="D" start-index="43" stop-index="43" />
+                    </column>
+                </left>
+                <operator>=</operator>
+                <right>
+                    <column name="id" start-index="50" stop-index="53">
+                        <owner name="S" start-index="50" stop-index="50" />
+                    </column>
+                </right>
+            </binary-operation-expression>
+        </expr>
+        <insert>
+            <columns start-index="85" stop-index="88">
+                <column name="id" start-index="86" stop-index="87" />
+            </columns>
+            <values start-index="90" stop-index="102">
+                <column name="id" start-index="98" stop-index="101">
+                    <owner name="S" start-index="98" stop-index="98" />
+                </column>
+            </values>
+        </insert>
+        <update>
+            <set start-index="133" stop-index="143">
+                <assignment start-index="133" stop-index="143">
+                    <column name="id" start-index="133" stop-index="136">
+                        <owner name="D" start-index="133" stop-index="133" />
+                    </column>
+                    <assignment-value>
+                        <column name="id" start-index="140" stop-index="143">
+                            <owner name="S" start-index="140" stop-index="140" />
+                        </column>
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </merge>
     <merge sql-case-id="merge_into_select">
         <target>
             <subquery-table alias="D" start-index="11" stop-index="60">
