@@ -128,6 +128,7 @@ public final class Configuration {
     
     private Collection<RuleConfiguration> createRuleConfiguration() {
         Collection<RuleConfiguration> result = new LinkedList<>();
+        result.add(createSingleRuleConfiguration());
     <#if transaction!="local">
         result.add(createTransactionRuleConfiguration());
     </#if>
@@ -148,9 +149,6 @@ public final class Configuration {
     <#if feature?contains("mask")>
         result.add(createMaskRuleConfiguration());
     </#if>
-    <#if mode=="cluster-zookeeper" || mode=="cluster-etcd">
-        result.add(createSingleRuleConfiguration());
-    </#if>
         return result;
     }
 <#list feature?split(",") as item>
@@ -169,11 +167,9 @@ public final class Configuration {
      }
     </#if>
 
-    <#if mode=="cluster-zookeeper" || mode=="cluster-etcd">
     private SingleRuleConfiguration createSingleRuleConfiguration() {
         return new SingleRuleConfiguration(Collections.singletonList("*.*"), null);
     }
-    </#if>
 
     private Properties createProperties() {
         Properties result = new Properties();
