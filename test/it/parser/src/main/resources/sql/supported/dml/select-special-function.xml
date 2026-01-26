@@ -320,4 +320,7 @@
     <sql-case id="select_regexp_function_with_null" value="SELECT REGEXP(NULL, '^billie')" db-types="Doris" />
     <sql-case id="select_current_time_precision_mysql" value="SELECT CURRENT_TIME(3)" db-types="MySQL" />
     <sql-case id="select_odbc_fn_now_mysql" value="SELECT {fn NOW()}" db-types="MySQL" />
+    <sql-case id="select_translate_nchar_cs_oracle" value="SELECT TRANSLATE(col USING NCHAR_CS) FROM translate_tab" db-types="Oracle" />
+    <sql-case id="select_approx_rank_oracle" value="SELECT APPROX_RANK(0.5) FROM dual" db-types="Oracle" />
+    <sql-case id="select_isschemavalid_function_oracle" value="SELECT ISSCHEMAVALID(xml_doc, 'schema.xsd') FROM dual" db-types="Oracle" />
 </sql-cases>
