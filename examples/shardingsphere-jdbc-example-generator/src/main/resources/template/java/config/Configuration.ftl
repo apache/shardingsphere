@@ -23,6 +23,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 <#if mode=="standalone">
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 <#else>
@@ -147,7 +148,10 @@ public final class Configuration {
     <#if feature?contains("mask")>
         result.add(createMaskRuleConfiguration());
     </#if>
-        return result; 
+    <#if mode=="cluster-zookeeper" || mode=="cluster-etcd">
+        result.add(createSingleRuleConfiguration());
+    </#if>
+        return result;
     }
 <#list feature?split(",") as item>
     <#include "${item}.ftl">
@@ -164,7 +168,13 @@ public final class Configuration {
      </#if>
      }
     </#if>
-    
+
+    <#if mode=="cluster-zookeeper" || mode=="cluster-etcd">
+    private SingleRuleConfiguration createSingleRuleConfiguration() {
+        return new SingleRuleConfiguration(Collections.singletonList("*.*"), null);
+    }
+    </#if>
+
     private Properties createProperties() {
         Properties result = new Properties();
         result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
