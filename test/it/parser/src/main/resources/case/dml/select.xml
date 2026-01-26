@@ -13220,7 +13220,7 @@
         </projections>
     </select>
 
-      <select sql-case-id="select_date_trunc_column">
+    <select sql-case-id="select_date_trunc_column">
         <projections start-index="7" stop-index="16">
             <column-projection name="DATE_TRUNC" start-index="7" stop-index="16" />
         </projections>
