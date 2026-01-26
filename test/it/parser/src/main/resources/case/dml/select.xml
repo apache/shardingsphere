@@ -13249,7 +13249,8 @@
                 </binary-operation-expression>
             </expr>
         </where>
-      
+    </select>
+  
     <select sql-case-id="select_position_function_sql92">
         <projections start-index="7" stop-index="28">
             <expression-projection text="POSITION('a' IN 'aaa')" start-index="7" stop-index="28">
@@ -13260,7 +13261,6 @@
             </expression-projection>
         </projections>
     </select>
-
 
     <select sql-case-id="select_without_from_sql92">
         <projections start-index="7" stop-index="7">
