@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="alter_instance_doris_rotate_innodb_master_key" value="ALTER INSTANCE ROTATE INNODB MASTER KEY" db-types="Doris" />
+    <sql-case id="alter_instance_mysql_rotate_innodb_master_key" value="ALTER INSTANCE ROTATE INNODB MASTER KEY" db-types="MySQL" />
 </sql-cases>

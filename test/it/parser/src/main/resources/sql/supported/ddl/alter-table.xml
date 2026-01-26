@@ -379,6 +379,7 @@
     <sql-case id="alter_table_rename_rollup" value="ALTER TABLE example_table RENAME ROLLUP rollup1 rollup2" db-types="Doris" />
     <sql-case id="alter_table_rename_partition" value="ALTER TABLE example_table RENAME PARTITION partition1 partition2" db-types="Doris" />
     <sql-case id="alter_table_with_algorithm_lock_doris" value="ALTER TABLE t_order ADD COLUMN col_alg INT, ALGORITHM=INSTANT, LOCK=NONE" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_lock_mysql" value="ALTER TABLE t_order ADD COLUMN col_alg INT, ALGORITHM=INPLACE, LOCK=EXCLUSIVE" db-types="MySQL" />
     <sql-case id="alter_table_drop_column_doris" value="ALTER TABLE t_order DROP COLUMN old_col" db-types="Doris" />
     <sql-case id="alter_table_drop_index_doris" value="ALTER TABLE t_order DROP INDEX idx_old" db-types="Doris" />
     <sql-case id="alter_table_convert_charset_collate_doris" value="ALTER TABLE t_order CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin" db-types="Doris" />
@@ -389,6 +390,10 @@
     <sql-case id="alter_table_with_algorithm_inplace_doris" value="ALTER TABLE t_order ADD COLUMN col_alg_inplace INT, ALGORITHM=INPLACE" db-types="Doris" />
     <sql-case id="alter_table_with_algorithm_copy_doris" value="ALTER TABLE t_order ADD COLUMN col_alg_copy INT, ALGORITHM=COPY" db-types="Doris" />
     <sql-case id="alter_table_with_lock_default_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_default INT, LOCK=DEFAULT" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_default_mysql" value="ALTER TABLE t_order ADD COLUMN col_alg_def INT, ALGORITHM=DEFAULT" db-types="MySQL" />
+    <sql-case id="alter_table_with_algorithm_instant_mysql" value="ALTER TABLE t_order ADD COLUMN col_alg_instant INT, ALGORITHM=INSTANT" db-types="MySQL" />
+    <sql-case id="alter_table_with_lock_none_mysql" value="ALTER TABLE t_order ADD COLUMN col_lock_none INT, LOCK=NONE" db-types="MySQL" />
+    <sql-case id="alter_table_with_lock_default_mysql" value="ALTER TABLE t_order ADD COLUMN col_lock_default INT, LOCK=DEFAULT" db-types="MySQL" />
     <sql-case id="alter_table_with_lock_shared_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_shared INT, LOCK=SHARED" db-types="Doris" />
     <sql-case id="alter_table_with_lock_exclusive_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_exclusive INT, LOCK=EXCLUSIVE" db-types="Doris" />
 </sql-cases>

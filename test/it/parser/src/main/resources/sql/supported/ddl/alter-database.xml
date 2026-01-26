@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="alter_database_mysql_simple" value="ALTER DATABASE test_db" db-types="MySQL" />
     <sql-case id="alter_database_enable_block_change_tracking" value="ALTER DATABASE ENABLE BLOCK CHANGE TRACKING" db-types="Oracle" />
     <sql-case id="alter_database_add_logffile_group_size_m_blocksize_reuse" value="ALTER DATABASE orcl ADD LOGFILE GROUP 4 ('/u01/logs/orcl/redo04a.log','/u01/logs/orcl/redo04b.log') SIZE 100M BLOCKSIZE 512 REUSE" db-types="Oracle" />
     <sql-case id="alter_database_add_logfile_group_size_k_reuse" value="ALTER DATABASE payable ADD LOGFILE GROUP 3 ('diska:log3.log', 'diskb:log3.log') SIZE 50K REUSE" db-types="Oracle" />

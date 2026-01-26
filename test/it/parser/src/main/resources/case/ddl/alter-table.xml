@@ -2596,8 +2596,17 @@
             </column-position>
         </add-column>
     </alter-table>
-    
+
     <alter-table sql-case-id="alter_table_with_algorithm_lock_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="41">
+                <column name="col_alg" start-index="31" stop-index="37" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_with_algorithm_lock_mysql">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
             <column-definition type="INT" start-index="31" stop-index="41">
@@ -2625,6 +2634,42 @@
                 <index name="idx_new" />
             </rename-index-definition>
         </rename-index>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_with_algorithm_default_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="45">
+                <column name="col_alg_def" start-index="31" stop-index="41" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_algorithm_instant_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="49">
+                <column name="col_alg_instant" start-index="31" stop-index="45" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_lock_none_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="47">
+                <column name="col_lock_none" start-index="31" stop-index="43" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_lock_default_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="50">
+                <column name="col_lock_default" start-index="31" stop-index="46" />
+            </column-definition>
+        </add-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_drop_column_doris">

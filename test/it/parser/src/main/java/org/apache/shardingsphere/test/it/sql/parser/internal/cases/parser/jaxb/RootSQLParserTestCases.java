@@ -52,6 +52,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLKillStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLResetPersistStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLResetStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLRestartStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLShutdownStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLUseStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.component.MySQLInstallComponentStatementTestCase;
@@ -1344,6 +1345,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "kill")
     private final List<MySQLKillStatementTestCase> killTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "restart")
+    private final List<MySQLRestartStatementTestCase> restartTestCases = new LinkedList<>();
     
     @XmlElement(name = "shutdown")
     private final List<MySQLShutdownStatementTestCase> shutdownTestCases = new LinkedList<>();

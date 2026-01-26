@@ -25,6 +25,7 @@
     <sql-case id="select_cast" value="SELECT CAST(c AT TIME ZONE 'UTC' AS DATETIME)" db-types="MySQL" />
     <sql-case id="select_cast_multiset" value="select CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ) from customer;" db-types="Oracle" />
     <sql-case id="select_convert_function" value="SELECT CONVERT('2020-10-01', DATE)" db-types="MySQL" />
+    <sql-case id="select_convert_function_using_binary" value="SELECT CONVERT('abc' USING BINARY)" db-types="MySQL" />
     <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL,Doris,Hive" />
     <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from -4 for 2)" db-types="MySQL" />
     <sql-case id="select_substr" value="SELECT SUBSTR('foobarbar' from 4)" db-types="MySQL,Presto" />
@@ -248,6 +249,10 @@
     <sql-case id="select_json_storage_size" value="SELECT JSON_STORAGE_SIZE(json_col) FROM t" db-types="MySQL" />
     <sql-case id="select_json_table" value="SELECT * FROM JSON_TABLE('[{&quot;name&quot;: 2}]','$[*]' COLUMNS( name INT PATH '$.name' error on empty)) as t" db-types="MySQL" />
     <sql-case id="select_json_table_with_path" value="SELECT * FROM JSON_TABLE('[]', '$[*]' COLUMNS (p NCHAR PATH '$.a')) AS t" db-types="MySQL" />
+    <sql-case id="select_json_separator_mysql" value="SELECT JSON_SEPARATOR(order_id, '$.a') FROM t_order" db-types="MySQL" />
+    <sql-case id="select_json_unquoted_separator_mysql" value="SELECT JSON_UNQUOTED_SEPARATOR(order_id, '$.a') FROM t_order" db-types="MySQL" />
+    <sql-case id="select_timestampadd_mysql" value="SELECT TIMESTAMPADD(DAY, 1, order_date) FROM t_order" db-types="MySQL" />
+    <sql-case id="select_timestampdiff_mysql" value="SELECT TIMESTAMPDIFF(MINUTE, start_time, end_time) FROM t_order" db-types="MySQL" />
     <sql-case id="select_json_type" value="SELECT JSON_TYPE('[1,2,3]')" db-types="MySQL" />
     <sql-case id="select_json_unquote" value="SELECT JSON_UNQUOTE('&quot;abc&quot;')" db-types="MySQL" />
     <sql-case id="select_json_valid" value="SELECT JSON_VALID('{&quot;a&quot;: 1}')" db-types="MySQL" />
@@ -313,4 +318,6 @@
     <sql-case id="select_with_json_object_function" value="SELECT JSON_OBJECT('name' VALUE 'John', 'age' VALUE 30) AS json_data FROM DUAL" db-types="Oracle" />
     <sql-case id="select_regexp_function" value="SELECT REGEXP('billie eillish', '^billie')" db-types="Doris" />
     <sql-case id="select_regexp_function_with_null" value="SELECT REGEXP(NULL, '^billie')" db-types="Doris" />
+    <sql-case id="select_current_time_precision_mysql" value="SELECT CURRENT_TIME(3)" db-types="MySQL" />
+    <sql-case id="select_odbc_fn_now_mysql" value="SELECT {fn NOW()}" db-types="MySQL" />
 </sql-cases>
