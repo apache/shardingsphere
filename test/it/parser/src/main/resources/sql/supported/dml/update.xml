@@ -68,7 +68,7 @@
     <sql-case id="update_with_nchar" value="UPDATE HumanResources.Employee SET JobTitle = N'Executive' WHERE NationalIDNumber = 123456789" db-types="SQLServer" />
     <sql-case id="update_with_inner_join" value="UPDATE dbo.Table2 SET dbo.Table2.ColB = dbo.Table2.ColB + dbo.Table1.ColB FROM dbo.Table2 INNER JOIN dbo.Table1 ON (dbo.Table2.ColA = dbo.Table1.ColA)" db-types="SQLServer"/>
     <sql-case id="update_with_current_of_abc" value="UPDATE dbo.Table1 SET c2 = c2 + d2 FROM dbo.Table2 WHERE CURRENT OF abc" db-types="SQLServer"/>
-  sql-case id="update_pause_column" value="UPDATE t_keyword_pause SET PAUSE = true" db-types="Doris" />
+    <sql-case id="update_pause_column" value="UPDATE t_keyword_pause SET PAUSE = true" db-types="Doris" />
     <sql-case id="update_with_location_setXY" value="UPDATE Cities SET Location.SetXY(23.5, 23.5) WHERE Name = 'Anchorage'" db-types="SQLServer"/>
     <sql-case id="update_returning_expressions" value="UPDATE t_order SET status = status - ? WHERE order_id = ? AND user_id = ? RETURNING status" db-types="Firebird" />
     <sql-case id="update_with_option_label_hint" value="UPDATE DimProduct SET ProductSubcategoryKey = 2 WHERE ProductKey = 313 OPTION (LABEL = N'label1');" db-types="SQLServer"/>
