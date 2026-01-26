@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.MySQLShowDatabasesStatement;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -59,26 +60,26 @@ class SQLParseCountAdviceTest {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
-    @ParameterizedTest(name = "{index}: type={0}")
+    @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("sqlStatements")
-    void assertParseSQL(final String type, final SQLStatement sqlStatement, final String expected) {
+    void assertParseSQL(final SQLStatement sqlStatement, final String expected) {
         new SQLParseCountAdvice().afterMethod(new TargetAdviceObjectFixture(), mock(TargetAdviceMethod.class), new Object[]{}, sqlStatement, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is(expected));
     }
     
     private static Stream<Arguments> sqlStatements() {
         return Stream.of(
-                Arguments.of("INSERT", mock(InsertStatement.class), "INSERT=1"),
-                Arguments.of("UPDATE", mock(UpdateStatement.class), "UPDATE=1"),
-                Arguments.of("DELETE", mock(DeleteStatement.class), "DELETE=1"),
-                Arguments.of("SELECT", mock(SelectStatement.class), "SELECT=1"),
-                Arguments.of("DDL", mock(CreateDatabaseStatement.class), "DDL=1"),
-                Arguments.of("DCL", mock(CreateUserStatement.class), "DCL=1"),
-                Arguments.of("DAL", mock(MySQLShowDatabasesStatement.class), "DAL=1"),
-                Arguments.of("TCL", mock(CommitStatement.class), "TCL=1"),
-                Arguments.of("RQL", new ShowStorageUnitsStatement(new FromDatabaseSegment(0, new DatabaseSegment(0, 0, null)), null), "RQL=1"),
-                Arguments.of("RDL", new RegisterStorageUnitStatement(false, Collections.emptyList(), Collections.emptySet()), "RDL=1"),
-                Arguments.of("RAL", new ShowMigrationListStatement(), "RAL=1"),
-                Arguments.of("RUL", new ParseStatement("SELECT * FROM tbl"), "RUL=1"));
+                Arguments.of(Named.named("INSERT", mock(InsertStatement.class)), "INSERT=1"),
+                Arguments.of(Named.named("UPDATE", mock(UpdateStatement.class)), "UPDATE=1"),
+                Arguments.of(Named.named("DELETE", mock(DeleteStatement.class)), "DELETE=1"),
+                Arguments.of(Named.named("SELECT", mock(SelectStatement.class)), "SELECT=1"),
+                Arguments.of(Named.named("DDL", mock(CreateDatabaseStatement.class)), "DDL=1"),
+                Arguments.of(Named.named("DCL", mock(CreateUserStatement.class)), "DCL=1"),
+                Arguments.of(Named.named("DAL", mock(MySQLShowDatabasesStatement.class)), "DAL=1"),
+                Arguments.of(Named.named("TCL", mock(CommitStatement.class)), "TCL=1"),
+                Arguments.of(Named.named("RQL", new ShowStorageUnitsStatement(new FromDatabaseSegment(0, new DatabaseSegment(0, 0, null)), null)), "RQL=1"),
+                Arguments.of(Named.named("RDL", new RegisterStorageUnitStatement(false, Collections.emptyList(), Collections.emptySet())), "RDL=1"),
+                Arguments.of(Named.named("RAL", new ShowMigrationListStatement()), "RAL=1"),
+                Arguments.of(Named.named("RUL", new ParseStatement("SELECT * FROM tbl")), "RUL=1"));
     }
 }

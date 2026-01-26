@@ -149,4 +149,9 @@
     <sql-case id="select_where_not_equal_all_subquery_mysql" value="SELECT * FROM t_order WHERE amount &lt;&gt; ALL (SELECT price FROM t_price)" db-types="MySQL" />
     <sql-case id="select_where_with_safe_equal_parameter_mysql" value="SELECT * FROM t_order WHERE status &lt;=&gt; ?" db-types="MySQL" case-types="PLACEHOLDER" />
     <sql-case id="select_where_equal_all_subquery_mysql" value="SELECT * FROM t_order WHERE amount = ALL (SELECT price FROM t_price)" db-types="MySQL" />
+    <sql-case id="select_hex_literal_oracle" value="SELECT 0x1 FROM dual" db-types="Oracle" />
+    <sql-case id="select_bit_literal_oracle" value="SELECT 0b101 FROM dual" db-types="Oracle" />
+    <sql-case id="select_binary_prefix_oracle" value="SELECT BINARY col FROM dual" db-types="Oracle" />
+    <sql-case id="select_interval_day_to_second_precision_oracle" value="SELECT (SYSTIMESTAMP - order_date) DAY(2) TO SECOND(3) FROM orders" db-types="Oracle" />
+    <sql-case id="select_interval_year_to_month_precision_oracle" value="SELECT (hire_date - start_date) YEAR(3) TO MONTH FROM employees" db-types="Oracle" />
 </sql-cases>

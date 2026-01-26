@@ -204,4 +204,5 @@
     <sql-case id="insert_with_columns_sql92" value="INSERT INTO t_order(order_id, status) VALUES (1, 'ok')" db-types="SQL92" />
     <sql-case id="insert_without_columns_sql92" value="INSERT INTO t_order VALUES (1, 'ok')" db-types="SQL92" />
     <sql-case id="insert_with_default_sql92" value="INSERT INTO t_order(status) VALUES (DEFAULT)" db-types="SQL92" />
+    <sql-case id="insert_table_collection_oracle" value="INSERT INTO TABLE(SELECT t.nested_col FROM t_nested t) VALUES (1)" db-types="Oracle" />
 </sql-cases>

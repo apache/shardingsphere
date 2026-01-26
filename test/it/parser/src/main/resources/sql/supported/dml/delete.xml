@@ -42,6 +42,7 @@
     <sql-case id="delete_with_returning_into" value="DELETE FROM employees WHERE job_id = 'SA_REP' AND hire_date + TO_YMINTERVAL('01-00') &lt; SYSDATE RETURNING salary INTO bnd1" db-types="Oracle" />
     <sql-case id="delete_with_partition" value="DELETE FROM sales PARTITION (sales_q1_1998) WHERE amount_sold > 1000" db-types="Oracle" />
     <sql-case id="delete_with_table" value="DELETE product_price_history" db-types="Oracle" />
+    <sql-case id="delete_table_collection_oracle" value="DELETE FROM TABLE(SELECT nested_col FROM t_nested) WHERE nested_col = 1" db-types="Oracle" />
     <sql-case id="delete_with_schema" value="DELETE FROM db1.t_order" />
     <sql-case id="delete_with_simple_condition" value="DELETE FROM Q1_2000_sales WHERE amount_sold &lt; 0" db-types="Oracle" />
     <sql-case id="delete_with_output_clause_with_compress_function" value="DELETE FROM player OUTPUT deleted.id,deleted.name, deleted.surname,deleted.datemodifier,COMPRESS(deleted.info) INTO dbo.inactivePlayers WHERE datemodified &lt; @startOfYear" db-types="SQLServer" />

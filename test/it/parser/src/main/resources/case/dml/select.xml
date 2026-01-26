@@ -13331,4 +13331,77 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_where_is_true_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="14" stop-index="22" />
+        </from>
+        <where start-index="24" stop-index="43">
+            <expr>
+                <binary-operation-expression start-index="30" stop-index="43">
+                    <left>
+                        <column name="active" start-index="30" stop-index="35" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="TRUE" start-index="40" stop-index="43" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_in_without_parentheses_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="46">
+            <expr>
+                <in-expression start-index="28" stop-index="46">
+                    <left>
+                        <column name="status" start-index="28" stop-index="33" />
+                    </left>
+                    <right>
+                        <literal-expression value="shipped" start-index="38" stop-index="46" />
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_from_shards_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="21" stop-index="29" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_xmlnamespaces_clause_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <function-table table-alias="xt">
+                <table-function function-name="XMLTABLE"
+                                text="XMLTABLE(XMLNAMESPACES(DEFAULT 'uri', 'urn:ns1' AS ns1), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy')" />
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_table_collection_column_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <collection-table start-index="14" stop-index="30" />
+        </from>
+    </select>
 </sql-parser-test-cases>
