@@ -237,6 +237,27 @@
         </values>
     </insert>
 
+    <insert sql-case-id="insert_table_collection_oracle">
+        <columns start-index="54" stop-index="54" />
+        <select>
+            <from start-index="38" stop-index="52">
+                <simple-table name="t_nested" alias="t" start-index="43" stop-index="52" />
+            </from>
+            <projections start-index="25" stop-index="36">
+                <column-projection name="nested_col" start-index="25" stop-index="36">
+                    <owner name="t" start-index="25" stop-index="25" />
+                </column-projection>
+            </projections>
+        </select>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="63" stop-index="63" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
     <insert sql-case-id="insert_with_now_function" parameters="1, 1, 'init'">
         <table name="t_order_item" start-index="12" stop-index="23" />
         <columns start-index="25" stop-index="75">
