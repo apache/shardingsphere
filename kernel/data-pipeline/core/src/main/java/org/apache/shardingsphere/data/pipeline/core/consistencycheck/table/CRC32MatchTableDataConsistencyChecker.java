@@ -20,13 +20,11 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableInventoryCheckCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.table.calculator.CRC32TableInventoryCheckCalculator;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.query.calculator.TableInventoryCalculator;
+import org.apache.shardingsphere.data.pipeline.core.util.DatabaseTypeUtils;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.spi.annotation.SPIDescription;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * CRC32 match table data consistency checker.
@@ -41,11 +39,7 @@ public final class CRC32MatchTableDataConsistencyChecker implements TableDataCon
     
     @Override
     public Collection<DatabaseType> getSupportedDatabaseTypes() {
-        Collection<DatabaseType> result = new LinkedList<>();
-        DatabaseType supportedDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        result.add(supportedDatabaseType);
-        result.addAll(new DatabaseTypeRegistry(supportedDatabaseType).getAllBranchDatabaseTypes());
-        return result;
+        return DatabaseTypeUtils.getTypeAndBranchTypes("MySQL");
     }
     
     @Override
