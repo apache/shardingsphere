@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisRefreshMate
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCancelMaterializedViewTaskStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.doris.type.DorisAlterStoragePolicyStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.doris.type.DorisAlterMaterializedViewStatementAssert;
@@ -42,6 +43,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseMaterializedViewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisRefreshMaterializedViewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCancelMaterializedViewTaskStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.function.CreateFunctionStatementTestCase;
 
 /**
@@ -76,6 +78,8 @@ public final class DorisDDLStatementAssert {
             DorisCreateMaterializedViewStatementAssert.assertIs(assertContext, (DorisCreateMaterializedViewStatement) actual, (DorisCreateMaterializedViewStatementTestCase) expected);
         } else if (actual instanceof DorisAlterMaterializedViewStatement) {
             DorisAlterMaterializedViewStatementAssert.assertIs(assertContext, (DorisAlterMaterializedViewStatement) actual, (DorisAlterMaterializedViewStatementTestCase) expected);
+        } else if (actual instanceof DorisCancelMaterializedViewTaskStatement) {
+            DorisCancelMaterializedViewTaskStatementAssert.assertIs(assertContext, (DorisCancelMaterializedViewTaskStatement) actual, (DorisCancelMaterializedViewTaskStatementTestCase) expected);
         }
     }
 }

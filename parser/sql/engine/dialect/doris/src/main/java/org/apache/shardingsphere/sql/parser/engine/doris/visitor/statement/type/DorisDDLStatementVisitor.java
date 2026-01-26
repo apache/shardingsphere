@@ -85,6 +85,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropTri
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BuildIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelBuildIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelMaterializedViewTaskContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExecuteStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FieldDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FlowControlStatementContext;
@@ -231,6 +232,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseMateri
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisRefreshMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCancelMaterializedViewTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
@@ -314,6 +316,14 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         } else if (null != ctx.refreshType().AUTO()) {
             result.setRefreshType("AUTO");
         }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCancelMaterializedViewTask(final CancelMaterializedViewTaskContext ctx) {
+        DorisCancelMaterializedViewTaskStatement result = new DorisCancelMaterializedViewTaskStatement(getDatabaseType());
+        result.setTaskId(ctx.taskId().getText());
+        result.setMaterializedViewName(((IdentifierValue) visit(ctx.identifier())).getValue());
         return result;
     }
     

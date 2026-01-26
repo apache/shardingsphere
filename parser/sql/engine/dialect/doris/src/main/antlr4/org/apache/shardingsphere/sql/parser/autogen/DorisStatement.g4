@@ -145,6 +145,7 @@ execute
     | resumeMaterializedView
     | dropMaterializedView
     | refreshMaterializedView
+    | cancelMaterializedViewTask
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

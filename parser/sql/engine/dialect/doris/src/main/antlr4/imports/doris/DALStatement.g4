@@ -142,6 +142,10 @@ showCreateMaterializedView
     : SHOW CREATE MATERIALIZED VIEW identifier ON tableName
     ;
 
+showAlterTableMaterializedView
+    : SHOW ALTER TABLE MATERIALIZED VIEW fromDatabase
+    ;
+
 showView
     : SHOW VIEW fromTable fromDatabase?
     ;
@@ -792,5 +796,6 @@ show
     | showRoutineLoadTask
     | showRoutineLoad
     | showCreateMaterializedView
+    | showAlterTableMaterializedView
     | showView
     ;

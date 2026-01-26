@@ -82,6 +82,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCre
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowAlterTableMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDatabasesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowEngineContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowEnginesContext;
@@ -202,6 +203,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBloc
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowCreateMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowAlterTableMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowBuildIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQueryStatsStatement;
@@ -884,6 +886,12 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         result.setMaterializedViewName(((IdentifierValue) visit(ctx.identifier())).getValue());
         result.setTableName((SimpleTableSegment) visit(ctx.tableName()));
         return result;
+    }
+    
+    @Override
+    public ASTNode visitShowAlterTableMaterializedView(final ShowAlterTableMaterializedViewContext ctx) {
+        FromDatabaseSegment fromDatabase = (FromDatabaseSegment) visit(ctx.fromDatabase());
+        return new DorisShowAlterTableMaterializedViewStatement(getDatabaseType(), fromDatabase.getDatabase());
     }
     
     @Override

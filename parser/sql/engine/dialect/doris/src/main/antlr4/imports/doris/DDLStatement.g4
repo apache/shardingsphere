@@ -237,6 +237,14 @@ cancelBuildIndex
     : CANCEL BUILD INDEX ON tableName jobIdList?
     ;
 
+cancelMaterializedViewTask
+    : CANCEL MATERIALIZED VIEW TASK taskId ON identifier
+    ;
+
+taskId
+    : NUMBER_
+    ;
+
 jobIdList
     : LP_ jobId (COMMA_ jobId)* RP_
     ;
