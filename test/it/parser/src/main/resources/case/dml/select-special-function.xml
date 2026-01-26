@@ -5580,4 +5580,28 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_current_time_precision_mysql">
+        <projections start-index="7" stop-index="21">
+            <expression-projection text="CURRENT_TIME(3)" start-index="7" stop-index="21">
+                <expr>
+                    <function function-name="CURRENT_TIME" start-index="7" stop-index="21" text="CURRENT_TIME(3)">
+                        <parameter>
+                            <literal-expression value="3" start-index="20" stop-index="20" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_odbc_fn_now_mysql">
+        <projections start-index="7" stop-index="16">
+            <expression-projection text="NOW()" start-index="11" stop-index="15">
+                <expr>
+                    <function function-name="NOW" start-index="11" stop-index="15" text="NOW()" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

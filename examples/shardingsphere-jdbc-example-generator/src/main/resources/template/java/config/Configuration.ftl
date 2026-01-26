@@ -23,6 +23,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 <#if mode=="standalone">
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 <#else>
@@ -127,6 +128,7 @@ public final class Configuration {
     
     private Collection<RuleConfiguration> createRuleConfiguration() {
         Collection<RuleConfiguration> result = new LinkedList<>();
+        result.add(createSingleRuleConfiguration());
     <#if transaction!="local">
         result.add(createTransactionRuleConfiguration());
     </#if>
@@ -147,7 +149,7 @@ public final class Configuration {
     <#if feature?contains("mask")>
         result.add(createMaskRuleConfiguration());
     </#if>
-        return result; 
+        return result;
     }
 <#list feature?split(",") as item>
     <#include "${item}.ftl">
@@ -164,7 +166,11 @@ public final class Configuration {
      </#if>
      }
     </#if>
-    
+
+    private SingleRuleConfiguration createSingleRuleConfiguration() {
+        return new SingleRuleConfiguration(Collections.singletonList("*.*"), null);
+    }
+
     private Properties createProperties() {
         Properties result = new Properties();
         result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");
