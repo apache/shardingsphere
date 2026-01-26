@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.In
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -47,27 +48,27 @@ class SQLStatementUtilsTest {
     
     @ParameterizedTest(name = "{index}: {0}")
     @MethodSource("provideStatements")
-    void assertGetType(final String name, final SQLStatement sqlStatement, final SQLStatementType expectedType) {
+    void assertGetType(final SQLStatement sqlStatement, final SQLStatementType expectedType) {
         assertThat(SQLStatementUtils.getType(sqlStatement), is(expectedType));
     }
     
     private static Stream<Arguments> provideStatements() {
         return Stream.of(
-                Arguments.of("null", null, SQLStatementType.OTHER),
-                Arguments.of("select", mock(SelectStatement.class), SQLStatementType.SELECT),
-                Arguments.of("insert", mock(InsertStatement.class), SQLStatementType.INSERT),
-                Arguments.of("update", mock(UpdateStatement.class), SQLStatementType.UPDATE),
-                Arguments.of("delete", mock(DeleteStatement.class), SQLStatementType.DELETE),
-                Arguments.of("dml-other", mock(DMLStatement.class), SQLStatementType.DML),
-                Arguments.of("ddl", mock(DDLStatement.class), SQLStatementType.DDL),
-                Arguments.of("dcl", mock(DCLStatement.class), SQLStatementType.DCL),
-                Arguments.of("dal", mock(DALStatement.class), SQLStatementType.DAL),
-                Arguments.of("tcl", mock(TCLStatement.class), SQLStatementType.TCL),
-                Arguments.of("rql", mock(RQLStatement.class), SQLStatementType.RQL),
-                Arguments.of("rdl", mock(RDLStatement.class), SQLStatementType.RDL),
-                Arguments.of("ral", mock(RALStatement.class), SQLStatementType.RAL),
-                Arguments.of("rul", mock(RULStatement.class), SQLStatementType.RUL),
-                Arguments.of("distsql-other", mock(DistSQLStatement.class), SQLStatementType.OTHER),
-                Arguments.of("other", mock(SQLStatement.class), SQLStatementType.OTHER));
+                Arguments.of(Named.named("null", null), SQLStatementType.OTHER),
+                Arguments.of(Named.named("select", mock(SelectStatement.class)), SQLStatementType.SELECT),
+                Arguments.of(Named.named("insert", mock(InsertStatement.class)), SQLStatementType.INSERT),
+                Arguments.of(Named.named("update", mock(UpdateStatement.class)), SQLStatementType.UPDATE),
+                Arguments.of(Named.named("delete", mock(DeleteStatement.class)), SQLStatementType.DELETE),
+                Arguments.of(Named.named("dml-other", mock(DMLStatement.class)), SQLStatementType.DML),
+                Arguments.of(Named.named("ddl", mock(DDLStatement.class)), SQLStatementType.DDL),
+                Arguments.of(Named.named("dcl", mock(DCLStatement.class)), SQLStatementType.DCL),
+                Arguments.of(Named.named("dal", mock(DALStatement.class)), SQLStatementType.DAL),
+                Arguments.of(Named.named("tcl", mock(TCLStatement.class)), SQLStatementType.TCL),
+                Arguments.of(Named.named("rql", mock(RQLStatement.class)), SQLStatementType.RQL),
+                Arguments.of(Named.named("rdl", mock(RDLStatement.class)), SQLStatementType.RDL),
+                Arguments.of(Named.named("ral", mock(RALStatement.class)), SQLStatementType.RAL),
+                Arguments.of(Named.named("rul", mock(RULStatement.class)), SQLStatementType.RUL),
+                Arguments.of(Named.named("distsql-other", mock(DistSQLStatement.class)), SQLStatementType.OTHER),
+                Arguments.of(Named.named("other", mock(SQLStatement.class)), SQLStatementType.OTHER));
     }
 }

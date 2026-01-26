@@ -470,4 +470,8 @@
     <sql-case id="select_null_safe_equal_mysql" value="SELECT * FROM t_order WHERE order_id &lt;=&gt; ?" db-types="MySQL" case-types="PLACEHOLDER" />
     <sql-case id="select_three_part_column_mysql" value="SELECT db1.t_order.status FROM db1.t_order" db-types="MySQL" />
     <sql-case id="select_string_literal_concat_mysql" value="SELECT 'ab' 'cd'" db-types="MySQL" />
+    <sql-case id="select_where_is_true_oracle" value="SELECT * FROM employees WHERE active IS TRUE" db-types="Oracle" />
+    <sql-case id="select_in_without_parentheses_oracle" value="SELECT * FROM t_order WHERE status IN 'shipped'" db-types="Oracle" />
+    <sql-case id="select_from_shards_oracle" value="SELECT * FROM SHARDS(employees)" db-types="Oracle" />
+    <sql-case id="select_with_xmlnamespaces_clause_oracle" value="SELECT * FROM XMLTABLE(XMLNAMESPACES(DEFAULT 'uri', 'urn:ns1' AS ns1), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy') xt" db-types="Oracle" />
 </sql-cases>

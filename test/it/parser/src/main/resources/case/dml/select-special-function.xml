@@ -5604,4 +5604,61 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_translate_nchar_cs_oracle">
+        <from>
+            <simple-table name="translate_tab" start-index="42" stop-index="54" />
+        </from>
+        <projections start-index="7" stop-index="35">
+            <expression-projection text="TRANSLATE(col USING NCHAR_CS)" start-index="7" stop-index="35">
+                <expr>
+                    <function function-name="TRANSLATE" start-index="7" stop-index="35" text="TRANSLATE(col USING NCHAR_CS)">
+                        <parameter>
+                            <column name="col" start-index="17" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="NCHAR_CS" start-index="27" stop-index="34" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_approx_rank_oracle">
+        <from>
+            <simple-table name="dual" start-index="29" stop-index="32" />
+        </from>
+        <projections start-index="7" stop-index="22">
+            <expression-projection text="APPROX_RANK(0.5)" start-index="7" stop-index="22">
+                <expr>
+                    <function function-name="APPROX_RANK" start-index="7" stop-index="22" text="APPROX_RANK(0.5)">
+                        <parameter>
+                            <literal-expression value="0.5" start-index="19" stop-index="21" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_isschemavalid_function_oracle">
+        <from>
+            <simple-table name="dual" start-index="49" stop-index="52" />
+        </from>
+        <projections start-index="7" stop-index="42">
+            <expression-projection text="ISSCHEMAVALID(xml_doc, 'schema.xsd')" start-index="7" stop-index="42">
+                <expr>
+                    <function function-name="ISSCHEMAVALID" start-index="7" stop-index="42" text="ISSCHEMAVALID(xml_doc, 'schema.xsd')">
+                        <parameter>
+                            <column name="xml_doc" start-index="21" stop-index="27" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="schema.xsd" start-index="30" stop-index="41" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

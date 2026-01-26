@@ -3660,4 +3660,31 @@
             </join-table>
         </from>
     </select>
+
+    <select sql-case-id="select_outer_apply_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="LEFT">
+                <left>
+                    <simple-table name="t_outer" start-index="14" stop-index="20" />
+                </left>
+                <right>
+                    <subquery-table alias="i" start-index="34" stop-index="59">
+                        <subquery>
+                            <select>
+                                <projections start-index="42" stop-index="43">
+                                    <column-projection name="id" start-index="42" stop-index="43" />
+                                </projections>
+                                <from>
+                                    <simple-table name="t_inner" start-index="50" stop-index="56" />
+                                </from>
+                            </select>
+                        </subquery>
+                    </subquery-table>
+                </right>
+            </join-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

@@ -68,4 +68,5 @@
     <sql-case id="select_join_with_brackets" value="SELECT t.ORDER_ID FROM (t_order t INNER JOIN t_order_item i ON t.ORDER_ID = i.ORDER_ID) LEFT JOIN T_ORDER c ON t.ORDER_ID = c.ORDER_ID" db-types="Oracle"/>
     <sql-case id="select_right_join_firebird" value="SELECT * FROM t_order o RIGHT JOIN t_order_item i ON o.order_id = i.order_id" db-types="Firebird"/>
     <sql-case id="select_cross_join_firebird" value="SELECT * FROM t_order CROSS JOIN t_order_item" db-types="Firebird"/>
+    <sql-case id="select_outer_apply_oracle" value="SELECT * FROM t_outer OUTER APPLY (SELECT id FROM t_inner) i" db-types="Oracle" />
 </sql-cases>

@@ -985,4 +985,17 @@
             </expression-item>
         </group-by>
     </select>
+
+    <select sql-case-id="select_group_by_rollup_oracle">
+        <from>
+            <simple-table name="employees" start-index="30" stop-index="38" />
+        </from>
+        <projections start-index="7" stop-index="23">
+            <column-projection name="dept" start-index="7" stop-index="10" />
+            <aggregation-projection type="SUM" expression="SUM(salary)" start-index="13" stop-index="23" />
+        </projections>
+        <group-by start-index="40" stop-index="60">
+            <column-item name="dept" start-index="56" stop-index="59" />
+        </group-by>
+    </select>
 </sql-parser-test-cases>
