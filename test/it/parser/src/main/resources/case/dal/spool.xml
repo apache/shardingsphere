@@ -18,4 +18,5 @@
 
 <sql-parser-test-cases>
     <spool sql-case-id="spool_online_all.sql" filename="online_all.sql" />
+    <spool sql-case-id="spool_without_filename" filename="OFF" />
 </sql-parser-test-cases>

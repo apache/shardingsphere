@@ -22,4 +22,5 @@
     <create-type sql-case-id="create_type_as_varray" />
     <create-type sql-case-id="create_type_as_object" />
     <create-type sql-case-id="create_sub_type" />
+    <create-type sql-case-id="create_type_noneditionable_not_instantiable_oracle" />
 </sql-parser-test-cases>

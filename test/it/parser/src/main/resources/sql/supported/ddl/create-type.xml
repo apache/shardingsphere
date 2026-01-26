@@ -22,4 +22,5 @@
     <sql-case id="create_type_as_varray" value="CREATE TYPE address_array_t AS VARRAY(3) OF cust_address_typ;" db-types="Oracle" />
     <sql-case id="create_type_as_object" value="CREATE TYPE person_t AS OBJECT (name VARCHAR2(100), ssn NUMBER) NOT FINAL;" db-types="Oracle" />
     <sql-case id="create_sub_type" value="CREATE TYPE employee_t UNDER person_t (department_id NUMBER, salary NUMBER) NOT FINAL;" db-types="Oracle" />
+    <sql-case id="create_type_noneditionable_not_instantiable_oracle" value="CREATE OR REPLACE NONEDITIONABLE TYPE person_t AS OBJECT (name VARCHAR2(100)) NOT INSTANTIABLE" db-types="Oracle" />
 </sql-cases>

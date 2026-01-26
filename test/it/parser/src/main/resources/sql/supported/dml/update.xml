@@ -76,4 +76,6 @@
     <sql-case id="update_basic" value="UPDATE products SET stock = 0;" db-types="Hive" />
     <sql-case id="update_with_null" value="UPDATE user_profiles SET last_login = NULL;" db-types="Hive" />
     <sql-case id="update_with_where_sql92" value="UPDATE t_order SET status = 'x' WHERE order_id = 1" db-types="SQL92" />
+    <sql-case id="update_set_default_oracle" value="UPDATE employees SET status = DEFAULT WHERE employee_id = 1" db-types="Oracle" />
+    <sql-case id="update_table_collection_oracle" value="UPDATE TABLE(SELECT nested_col FROM t_nested) SET nested_col = DEFAULT" db-types="Oracle" />
 </sql-cases>
