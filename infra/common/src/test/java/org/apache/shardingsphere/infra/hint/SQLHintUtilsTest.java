@@ -39,20 +39,17 @@ class SQLHintUtilsTest {
     
     @Test
     void assertSQLHintWriteRouteOnlyWithCommentString() {
-        HintValueContext actual = SQLHintUtils.extractHint("/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */");
-        assertTrue(actual.isWriteRouteOnly());
+        assertTrue(SQLHintUtils.extractHint("/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */").isWriteRouteOnly());
     }
     
     @Test
     void assertSQLHintSkipSQLRewrite() {
-        HintValueContext actual = SQLHintUtils.extractHint("/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */");
-        assertTrue(actual.isSkipSQLRewrite());
+        assertTrue(SQLHintUtils.extractHint("/* SHARDINGSPHERE_HINT: SKIP_SQL_REWRITE=true */").isSkipSQLRewrite());
     }
     
     @Test
     void assertSQLHintSkipMetadataValidate() {
-        HintValueContext actual = SQLHintUtils.extractHint("/* SHARDINGSPHERE_HINT: SKIP_METADATA_VALIDATE=true */");
-        assertTrue(actual.isSkipMetadataValidate());
+        assertTrue(SQLHintUtils.extractHint("/* SHARDINGSPHERE_HINT: SKIP_METADATA_VALIDATE=true */").isSkipMetadataValidate());
     }
     
     @Test
@@ -104,9 +101,9 @@ class SQLHintUtilsTest {
         assertTrue(actual.isShadow());
     }
     
-    @ParameterizedTest(name = "extractHintFormat:{0}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(ExtractHintTestCaseArgumentsProvider.class)
-    void assertExtractHintFormat(@SuppressWarnings("unused") final String name, final String actualSQL, final boolean found) {
+    void assertExtractHintFormat(final String name, final String actualSQL, final boolean found) {
         HintValueContext actual = SQLHintUtils.extractHint(actualSQL);
         if (found) {
             assertTrue(actual.findHintDataSourceName().isPresent());
@@ -116,9 +113,9 @@ class SQLHintUtilsTest {
         }
     }
     
-    @ParameterizedTest(name = "extractHintFormat:{0}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(RemoveHintTestCaseArgumentsProvider.class)
-    void assertRemoveHint(@SuppressWarnings("unused") final String name, final String actualSQL, final String expectedSQL) {
+    void assertRemoveHint(final String name, final String actualSQL, final String expectedSQL) {
         assertThat(SQLHintUtils.removeHint(actualSQL), is(expectedSQL));
     }
     
@@ -147,7 +144,8 @@ class SQLHintUtilsTest {
                     Arguments.of("WithoutHint", "SELECT * FROM t_order", "SELECT * FROM t_order"),
                     Arguments.of("UnderlineMode", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order", "SELECT * FROM t_order"),
                     Arguments.of("SpaceMode", "/* ShardingSphere hint: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order", "SELECT * FROM t_order"),
-                    Arguments.of("DBeaverHint", "/* ApplicationName=DBeaver 24.1.0 - SQLEditor <Script-84.sql> */ /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order",
+                    Arguments.of("DBeaverHint",
+                            "/* ApplicationName=DBeaver 24.1.0 - SQLEditor <Script-84.sql> */ /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order",
                             "/* ApplicationName=DBeaver 24.1.0 - SQLEditor <Script-84.sql> */  SELECT * FROM t_order"));
         }
     }

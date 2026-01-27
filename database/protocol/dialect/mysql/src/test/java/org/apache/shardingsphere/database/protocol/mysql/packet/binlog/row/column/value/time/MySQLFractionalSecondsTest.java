@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class MySQLFractionalSecondsTest {
     
-    @ParameterizedTest(name = "[{index}] precision={0}, expectedNanos={2}")
+    @ParameterizedTest(name = "precision={0}, expectedNanos={2}")
     @MethodSource("fractionalSecondsArguments")
     void assertNanosWithVariousPrecision(final int precision, final ByteBuf buf, final int expectedNanos, final int expectedRemaining) {
         assertThat(new MySQLFractionalSeconds(precision, new MySQLPacketPayload(buf, StandardCharsets.UTF_8)).getNanos(), is(expectedNanos));
