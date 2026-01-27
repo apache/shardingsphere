@@ -42,6 +42,7 @@ public final class ExtraSQLCommand {
     
     @XmlElement(name = "full-insert-order-item")
     @Getter
+    // TODO Delete
     private String fullInsertOrderItem;
     
     /**

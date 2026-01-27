@@ -47,7 +47,9 @@ public final class OrderItemDAO {
      * @throws SQLException SQL exception
      */
     public void createTable() throws SQLException {
-        DataSourceExecuteUtils.execute(dataSource, sqlBuilder.buildCreateTableSQL());
+        String sql = sqlBuilder.buildCreateTableSQL();
+        log.info("Create order_item table SQL: {}", sql);
+        DataSourceExecuteUtils.execute(dataSource, sql);
     }
     
     /**
@@ -58,6 +60,8 @@ public final class OrderItemDAO {
      */
     public void batchInsert(final int insertRows) throws SQLException {
         List<Object[]> params = PipelineCaseHelper.generateOrderItemInsertData(new AutoIncrementKeyGenerateAlgorithm(), insertRows);
-        DataSourceExecuteUtils.execute(dataSource, sqlBuilder.buildPreparedInsertSQL(), params);
+        String sql = sqlBuilder.buildPreparedInsertSQL();
+        log.info("Batch insert order_item SQL: {}, params size: {}", sql, params.size());
+        DataSourceExecuteUtils.execute(dataSource, sql, params);
     }
 }

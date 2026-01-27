@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGe
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.task.E2EIncrementalTask;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.OrderItemDAO;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings;
@@ -66,7 +67,8 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             distSQLFacade.alterPipelineRule();
             containerComposer.createSourceOrderTable(SOURCE_TABLE_NAME);
-            containerComposer.createSourceOrderItemTable();
+            OrderItemDAO orderItemDAO = new OrderItemDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType());
+            orderItemDAO.createTable();
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);
             createTargetOrderTableRule(containerComposer);
@@ -76,8 +78,7 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             List<Object[]> orderInsertData = PipelineCaseHelper.generateOrderInsertData(
                     containerComposer.getDatabaseType(), new AutoIncrementKeyGenerateAlgorithm(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
             DataSourceExecuteUtils.execute(containerComposer.getSourceDataSource(), containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), orderInsertData);
-            List<Object[]> orderItemInsertData = PipelineCaseHelper.generateOrderItemInsertData(new AutoIncrementKeyGenerateAlgorithm(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
-            DataSourceExecuteUtils.execute(containerComposer.getSourceDataSource(), containerComposer.getExtraSQLCommand().getFullInsertOrderItem(), orderItemInsertData);
+            orderItemDAO.batchInsert(PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
             log.info("init data end: {}", LocalDateTime.now());
             startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
             startMigration(containerComposer, "t_order_item", "t_order_item");
