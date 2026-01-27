@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
 
@@ -28,10 +28,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Comme
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class MaterializedViewColumnSegment {
+public final class MaterializedViewColumnSegment implements SQLSegment {
+    
+    private final int startIndex;
+    
+    private final int stopIndex;
     
     private final ColumnSegment column;
     
-    private CommentSegment comment;
+    private final CommentSegment comment;
 }

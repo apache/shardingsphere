@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateMater
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.SelectStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedMaterializedViewColumn;
@@ -92,6 +93,7 @@ public final class DorisCreateMaterializedViewStatementAssert {
             int count = 0;
             for (MaterializedViewColumnSegment each : actual.getColumns()) {
                 ExpectedMaterializedViewColumn expectedColumn = expected.getColumns().get(count);
+                SQLSegmentAssert.assertIs(assertContext, each, expectedColumn);
                 ColumnAssert.assertIs(assertContext, each.getColumn(), expectedColumn.getColumn());
                 if (null != expectedColumn.getComment()) {
                     assertNotNull(each.getComment(), assertContext.getText("Actual column comment should exist."));
@@ -118,9 +120,9 @@ public final class DorisCreateMaterializedViewStatementAssert {
             assertNotNull(actual.getRefreshTrigger(), assertContext.getText("Actual refresh trigger should exist."));
             assertThat(assertContext.getText("Refresh trigger assertion error: "), actual.getRefreshTrigger(), is(expected.getRefreshTrigger()));
         }
-        if (null != expected.getRefreshInterval()) {
-            assertNotNull(actual.getRefreshInterval(), assertContext.getText("Actual refresh interval should exist."));
-            assertThat(assertContext.getText("Refresh interval assertion error: "), actual.getRefreshInterval(), is(expected.getRefreshInterval()));
+        if (null != expected.getRefreshIntervalExpression()) {
+            assertNotNull(actual.getRefreshIntervalExpression(), assertContext.getText("Actual refresh interval expression should exist."));
+            ExpressionAssert.assertExpression(assertContext, actual.getRefreshIntervalExpression(), expected.getRefreshIntervalExpression());
         }
         if (null != expected.getRefreshUnit()) {
             assertNotNull(actual.getRefreshUnit(), assertContext.getText("Actual refresh unit should exist."));

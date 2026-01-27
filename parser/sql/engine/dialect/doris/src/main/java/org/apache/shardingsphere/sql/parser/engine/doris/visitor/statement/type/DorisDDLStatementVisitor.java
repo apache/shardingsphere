@@ -1398,11 +1398,12 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         for (DorisMVColumnDefinitionContext each : ctx.dorisMVColumnDefinitions().dorisMVColumnDefinition()) {
             ColumnSegment column = (ColumnSegment) visit(each.columnName());
-            MaterializedViewColumnSegment mvColumn = new MaterializedViewColumnSegment(column);
+            CommentSegment commentSegment = null;
             if (null != each.COMMENT()) {
                 String commentText = SQLUtils.getExactlyValue(each.string_().getText());
-                mvColumn.setComment(new CommentSegment(commentText, each.string_().getStart().getStartIndex(), each.string_().getStop().getStopIndex()));
+                commentSegment = new CommentSegment(commentText, each.string_().getStart().getStartIndex(), each.string_().getStop().getStopIndex());
             }
+            MaterializedViewColumnSegment mvColumn = new MaterializedViewColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), column, commentSegment);
             statement.getColumns().add(mvColumn);
         }
     }
@@ -1453,7 +1454,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     private void processScheduleTrigger(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {
         statement.setRefreshTrigger("SCHEDULE");
         if (null != ctx.dorisMVRefresh().dorisMVRefreshTrigger().intervalValue()) {
-            statement.setRefreshInterval(Integer.parseInt(ctx.dorisMVRefresh().dorisMVRefreshTrigger().intervalValue().expr().getText()));
+            ExpressionSegment intervalExpr = (ExpressionSegment) visit(ctx.dorisMVRefresh().dorisMVRefreshTrigger().intervalValue().expr());
+            statement.setRefreshIntervalExpression(intervalExpr);
             statement.setRefreshUnit(ctx.dorisMVRefresh().dorisMVRefreshTrigger().intervalValue().intervalUnit().getText());
         }
         if (null != ctx.dorisMVRefresh().dorisMVRefreshTrigger().STARTS()) {
@@ -1563,7 +1565,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         } else if (null != ctx.SCHEDULE()) {
             statement.setRefreshTrigger("SCHEDULE");
             if (null != ctx.intervalValue()) {
-                statement.setRefreshInterval(Integer.parseInt(ctx.intervalValue().expr().getText()));
+                ExpressionSegment intervalExpr = (ExpressionSegment) visit(ctx.intervalValue().expr());
+                statement.setRefreshIntervalExpression(intervalExpr);
                 statement.setRefreshUnit(ctx.intervalValue().intervalUnit().getText());
             }
             if (null != ctx.STARTS()) {

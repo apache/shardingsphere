@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedMaterializedViewColumn;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.comments.ExpectedComment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperties;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.partition.ExpectedPartitionFunction;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
@@ -59,8 +60,8 @@ public final class DorisCreateMaterializedViewStatementTestCase extends SQLParse
     @XmlAttribute(name = "refresh-trigger")
     private String refreshTrigger;
     
-    @XmlAttribute(name = "refresh-interval")
-    private Integer refreshInterval;
+    @XmlElement(name = "refresh-interval-expression")
+    private ExpectedExpression refreshIntervalExpression;
     
     @XmlAttribute(name = "refresh-unit")
     private String refreshUnit;

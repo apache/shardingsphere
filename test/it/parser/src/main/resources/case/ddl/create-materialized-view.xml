@@ -69,8 +69,11 @@
             </from>
         </select>
     </doris-create-materialized-view>
-    <doris-create-materialized-view sql-case-id="create_materialized_view_refresh_on_schedule" refresh-trigger="SCHEDULE" refresh-interval="2" refresh-unit="HOUR" start-time="2023-12-13 21:07:09">
+    <doris-create-materialized-view sql-case-id="create_materialized_view_refresh_on_schedule" refresh-trigger="SCHEDULE" refresh-unit="HOUR" start-time="2023-12-13 21:07:09">
         <materialized-view name="mv1" start-index="25" stop-index="27" />
+        <refresh-interval-expression start-index="55" stop-index="55">
+            <literal-expression value="2" start-index="55" stop-index="55" />
+        </refresh-interval-expression>
         <select>
             <projections start-index="101" stop-index="106">
                 <column-projection name="k1" start-index="101" stop-index="102" />
@@ -113,8 +116,11 @@
             </projections>
         </select>
     </doris-create-materialized-view>
-    <doris-create-materialized-view sql-case-id="doris_create_materialized_view_full" if-not-exists="false" build-mode="IMMEDIATE" refresh-method="AUTO" refresh-trigger="SCHEDULE" refresh-interval="1" refresh-unit="DAY" start-time="2024-12-01 20:30:00" distribute-type="HASH" bucket-count="2">
+    <doris-create-materialized-view sql-case-id="doris_create_materialized_view_full" if-not-exists="false" build-mode="IMMEDIATE" refresh-method="AUTO" refresh-trigger="SCHEDULE" refresh-unit="DAY" start-time="2024-12-01 20:30:00" distribute-type="HASH" bucket-count="2">
         <materialized-view name="partition_mv_2" start-index="25" stop-index="38" />
+        <refresh-interval-expression start-index="87" stop-index="87">
+            <literal-expression value="1" start-index="87" stop-index="87" />
+        </refresh-interval-expression>
         <partition-function function-name="DATE_TRUNC" unit="MONTH">
             <column name="min_orderdate" start-index="147" stop-index="159" />
         </partition-function>
@@ -170,11 +176,11 @@
     </doris-create-materialized-view>
     <doris-create-materialized-view sql-case-id="doris_create_materialized_view_with_columns" build-mode="DEFERRED">
         <materialized-view name="test_mv" start-index="25" stop-index="31" />
-        <column>
+        <column start-index="34" stop-index="60">
             <column name="col1" start-index="34" stop-index="37" />
             <comment start-index="47" stop-index="60" text="first column" />
         </column>
-        <column>
+        <column start-index="63" stop-index="66">
             <column name="col2" start-index="63" stop-index="66" />
         </column>
         <select>

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterMaterializedViewStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperty;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterMaterializedViewStatementTestCase;
@@ -78,9 +79,9 @@ public final class DorisAlterMaterializedViewStatementAssert {
             assertNotNull(actual.getRefreshTrigger(), assertContext.getText("Actual refresh trigger should exist."));
             assertThat(assertContext.getText("Refresh trigger assertion error: "), actual.getRefreshTrigger(), is(expected.getRefreshTrigger()));
         }
-        if (null != expected.getRefreshInterval()) {
-            assertNotNull(actual.getRefreshInterval(), assertContext.getText("Actual refresh interval should exist."));
-            assertThat(assertContext.getText("Refresh interval assertion error: "), actual.getRefreshInterval(), is(expected.getRefreshInterval()));
+        if (null != expected.getRefreshIntervalExpression()) {
+            assertNotNull(actual.getRefreshIntervalExpression(), assertContext.getText("Actual refresh interval expression should exist."));
+            ExpressionAssert.assertExpression(assertContext, actual.getRefreshIntervalExpression(), expected.getRefreshIntervalExpression());
         }
         if (null != expected.getRefreshUnit()) {
             assertNotNull(actual.getRefreshUnit(), assertContext.getText("Actual refresh unit should exist."));
