@@ -40,6 +40,7 @@ public final class DataSourceExecuteUtils {
      * @param sql SQL
      * @throws SQLWrapperException SQL wrapper exception
      */
+    // TODO Delete unused method
     public static void execute(final DataSource dataSource, final String sql) {
         try (Connection connection = dataSource.getConnection()) {
             connection.createStatement().execute(sql);
@@ -53,14 +54,15 @@ public final class DataSourceExecuteUtils {
      *
      * @param dataSource data source
      * @param sql SQL
-     * @param parameters parameters
+     * @param params parameters
      * @throws SQLWrapperException SQL wrapper exception
      */
-    public static void execute(final DataSource dataSource, final String sql, final Object[] parameters) {
+    // TODO Throw SQLException
+    public static void execute(final DataSource dataSource, final String sql, final Object[] params) {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            for (int i = 0; i < parameters.length; i++) {
-                preparedStatement.setObject(i + 1, parameters[i]);
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
             }
             preparedStatement.execute();
         } catch (final SQLException ex) {
@@ -73,15 +75,16 @@ public final class DataSourceExecuteUtils {
      *
      * @param dataSource data source
      * @param sql SQL
-     * @param parameters parameters
-     * @throws SQLWrapperException SQL wrapper exception
+     * @param params parameters
+     * @throws SQLException SQL exception
      */
-    public static void execute(final DataSource dataSource, final String sql, final List<Object[]> parameters) {
+    // TODO Rename executeBatch
+    public static void execute(final DataSource dataSource, final String sql, final List<Object[]> params) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             int batchSize = 1000;
             int count = 0;
-            for (Object[] each : parameters) {
+            for (Object[] each : params) {
                 for (int i = 0; i < each.length; i++) {
                     preparedStatement.setObject(i + 1, each[i]);
                 }
@@ -94,8 +97,6 @@ public final class DataSourceExecuteUtils {
             if (count % batchSize > 0) {
                 preparedStatement.executeBatch();
             }
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
         }
     }
 }
