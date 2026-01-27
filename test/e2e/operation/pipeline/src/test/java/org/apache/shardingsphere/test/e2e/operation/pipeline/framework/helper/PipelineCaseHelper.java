@@ -61,6 +61,7 @@ public final class PipelineCaseHelper {
      * @param insertRows insert rows
      * @return insert data list
      */
+    // TODO Delete
     public static Pair<List<Object[]>, List<Object[]>> generateFullInsertData(final DatabaseType databaseType, final int insertRows) {
         if (insertRows < 0) {
             return Pair.of(null, null);
@@ -81,6 +82,7 @@ public final class PipelineCaseHelper {
      * @return order insert data
      * @throws UnsupportedOperationException Unsupported operation exception
      */
+    // TODO Refactor to use SPI
     public static List<Object[]> generateOrderInsertData(final DatabaseType databaseType, final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {
         List<Object[]> result = new ArrayList<>(insertRows);
         String emojiText = "☠️x☺️x✋x☹️";
@@ -167,7 +169,14 @@ public final class PipelineCaseHelper {
         return ThreadLocalRandom.current().nextInt(-1000000000, 1000000000) / 1000000.0D;
     }
     
-    private static List<Object[]> generateOrderItemInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {
+    /**
+     * Generate order item insert data.
+     *
+     * @param keyGenerateAlgorithm key generate algorithm
+     * @param insertRows insert rows
+     * @return order item insert data
+     */
+    public static List<Object[]> generateOrderItemInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {
         List<Object[]> result = new ArrayList<>(insertRows);
         for (int i = 0; i < insertRows; i++) {
             Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
