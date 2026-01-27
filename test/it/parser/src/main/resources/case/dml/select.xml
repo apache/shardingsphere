@@ -6243,6 +6243,29 @@
         </from>
     </select>
 
+    <select sql-case-id="select_function_table_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <function-table start-index="14" stop-index="33" table-alias="pf">
+                <table-function function-name="pipelined_func" text="pipelined_func(1)" />
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_from_xmltable_with_namespaces_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <function-table table-alias="xt">
+                <table-function function-name="XMLTABLE"
+                                text="XMLTABLE(XMLNAMESPACES(DEFAULT 'uri0', 'uri1' AS ns1, 'uri2' AS ns2), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy')" />
+            </function-table>
+        </from>
+    </select>
+
     <select sql-case-id="select_with_null_keyword_in_projection">
         <projections start-index="7" stop-index="31">
             <expression-projection text="null" alias="order_id" start-index="7" stop-index="22">
