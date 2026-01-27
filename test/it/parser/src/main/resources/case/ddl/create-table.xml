@@ -3888,4 +3888,14 @@
             <column name="ref_col" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_varchar2_char_length_oracle">
+        <table name="dt_len" start-index="13" stop-index="18" />
+        <column-definition type="VARCHAR2" start-index="21" stop-index="39">
+            <column name="c" />
+            <data-type value="VARCHAR2">
+                <data-type-length precision="10" type="CHAR" />
+            </data-type>
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>
