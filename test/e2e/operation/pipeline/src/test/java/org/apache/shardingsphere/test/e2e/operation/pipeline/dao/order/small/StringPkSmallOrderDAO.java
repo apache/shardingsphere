@@ -15,69 +15,77 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem;
+package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.small;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlbuilder.IntPkOrderItemSQLBuilder;
+import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.small.sqlbuilder.StringPkSmallOrderSQLBuilder;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * String PK small order DAO. Small table means the table has few columns.
+ */
 @Slf4j
-public final class IntPkOrderItemDAO {
+public final class StringPkSmallOrderDAO {
     
     private final DataSource dataSource;
     
-    private final IntPkOrderItemSQLBuilder sqlBuilder;
+    private final DatabaseType databaseType;
     
-    public IntPkOrderItemDAO(final DataSource dataSource, final DatabaseType databaseType) {
+    private final StringPkSmallOrderSQLBuilder sqlBuilder;
+    
+    private final String tableName;
+    
+    public StringPkSmallOrderDAO(final DataSource dataSource, final DatabaseType databaseType, final String tableName) {
         this.dataSource = dataSource;
-        sqlBuilder = DatabaseTypedSPILoader.getService(IntPkOrderItemSQLBuilder.class, databaseType);
+        this.databaseType = databaseType;
+        this.sqlBuilder = DatabaseTypedSPILoader.getService(StringPkSmallOrderSQLBuilder.class, databaseType);
+        this.tableName = tableName;
     }
     
     /**
-     * Create order_item table.
+     * Create order table.
      *
      * @throws SQLException SQL exception
      */
     public void createTable() throws SQLException {
-        String sql = sqlBuilder.buildCreateTableSQL();
-        log.info("Create order_item table SQL: {}", sql);
+        String sql = sqlBuilder.buildCreateTableSQL(tableName);
+        log.info("Create string pk small order table SQL: {}", sql);
         DataSourceExecuteUtils.execute(dataSource, sql);
     }
     
     /**
-     * Batch insert order items.
+     * Batch insert orders.
      *
-     * @param recordCount record count
+     * @param insertRows insert rows
      * @throws SQLException SQL exception
      */
-    public void batchInsert(final int recordCount) throws SQLException {
-        List<Object[]> paramsList = PipelineCaseHelper.generateOrderItemInsertData(new AutoIncrementKeyGenerateAlgorithm(), recordCount);
-        String sql = sqlBuilder.buildPreparedInsertSQL();
-        log.info("Batch insert order_item SQL: {}, params list size: {}", sql, paramsList.size());
+    public void batchInsert(final int insertRows) throws SQLException {
+        List<Object[]> paramsList = PipelineCaseHelper.generateSmallOrderInsertData(new UUIDKeyGenerateAlgorithm(), insertRows);
+        String sql = sqlBuilder.buildPreparedInsertSQL(tableName);
+        log.info("Batch insert string pk small order SQL: {}, params list size: {}", sql, paramsList.size());
         DataSourceExecuteUtils.execute(dataSource, sql, paramsList);
     }
     
     /**
-     * Insert order item.
+     * Insert order.
      *
-     * @param itemId item id
-     * @param orderId order id
-     * @param userId user id
+     * @param orderId order ID
+     * @param userId user ID
      * @param status status
      * @throws SQLException SQL exception
      */
-    public void insert(final long itemId, final long orderId, final int userId, final String status) throws SQLException {
-        String sql = sqlBuilder.buildPreparedInsertSQL();
-        Object[] params = new Object[]{itemId, orderId, userId, status};
-        log.info("Insert order_item SQL: {}, params: {}", sql, params);
+    public void insert(final String orderId, final int userId, final String status) throws SQLException {
+        String sql = sqlBuilder.buildPreparedInsertSQL(tableName);
+        Object[] params = new Object[]{orderId, userId, status};
+        log.info("Insert string pk small order SQL: {}, params: {}", sql, params);
         DataSourceExecuteUtils.execute(dataSource, sql, params);
     }
 }

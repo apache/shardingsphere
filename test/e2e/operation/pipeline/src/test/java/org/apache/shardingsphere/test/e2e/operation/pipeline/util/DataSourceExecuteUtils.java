@@ -75,16 +75,16 @@ public final class DataSourceExecuteUtils {
      *
      * @param dataSource data source
      * @param sql SQL
-     * @param params parameters
+     * @param paramsList parameters
      * @throws SQLException SQL exception
      */
     // TODO Rename executeBatch
-    public static void execute(final DataSource dataSource, final String sql, final List<Object[]> params) throws SQLException {
+    public static void execute(final DataSource dataSource, final String sql, final List<Object[]> paramsList) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             int batchSize = 1000;
             int count = 0;
-            for (Object[] each : params) {
+            for (Object[] each : paramsList) {
                 for (int i = 0; i < each.length; i++) {
                     preparedStatement.setObject(i + 1, each[i]);
                 }
