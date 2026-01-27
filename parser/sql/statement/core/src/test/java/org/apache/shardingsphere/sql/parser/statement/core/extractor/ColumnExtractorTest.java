@@ -54,7 +54,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -79,23 +78,23 @@ class ColumnExtractorTest {
         assertThat(toColumnNames(ColumnExtractor.extractColumnSegments(createWhereSegments())), is(Arrays.asList("foo_name", "bar_pwd")));
     }
     
-    @ParameterizedTest(name = "{index}: SelectStatement {0}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideSelectStatements")
-    void assertExtractFromSelectStatement(final SelectStatement selectStatement, final boolean containsSubQuery, final List<String> expectedColumnNames) {
+    void assertExtractFromSelectStatement(final String name, final SelectStatement selectStatement, final boolean containsSubQuery, final List<String> expectedColumnNames) {
         Collection<ColumnSegment> columnSegments = new LinkedList<>();
         ColumnExtractor.extractFromSelectStatement(columnSegments, selectStatement, containsSubQuery);
         assertThat(toColumnNames(columnSegments), is(expectedColumnNames));
     }
     
-    @ParameterizedTest(name = "{index}: {0}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideExpressions")
-    void assertExtract(final ExpressionSegment expression, final List<String> expectedColumnNames) {
+    void assertExtract(final String name, final ExpressionSegment expression, final List<String> expectedColumnNames) {
         assertThat(toColumnNames(ColumnExtractor.extract(expression)), is(expectedColumnNames));
     }
     
     private static Stream<Arguments> provideSelectStatements() {
         return Stream.of(
-                Arguments.of(Named.named("FullSegments", createSelectStatementForExtraction()), true, Arrays.asList(
+                Arguments.of("FullSegments", createSelectStatementForExtraction(), true, Arrays.asList(
                         "foo_projection_column",
                         "foo_projection_agg_param",
                         "foo_datetime_left",
@@ -124,27 +123,27 @@ class ColumnExtractorTest {
                         "bar_order_by_expr_column",
                         "foo_combine_left_column",
                         "bar_combine_right_column")),
-                Arguments.of(Named.named("SkipSubqueryFlagFalse", createSelectStatementSkippingSubquery()), false, Collections.emptyList()),
-                Arguments.of(Named.named("NoOptionalSegments", createSelectStatementWithoutOptionalSegments()), true, Collections.emptyList()));
+                Arguments.of("SkipSubqueryFlagFalse", createSelectStatementSkippingSubquery(), false, Collections.emptyList()),
+                Arguments.of("NoOptionalSegments", createSelectStatementWithoutOptionalSegments(), true, Collections.emptyList()));
     }
     
     private static Stream<Arguments> provideExpressions() {
         return Stream.of(
-                Arguments.of(Named.named("BinaryOperationColumns", createBinaryOperation("foo_left_col", "bar_right_col")), Arrays.asList("foo_left_col", "bar_right_col")),
-                Arguments.of(Named.named("BinaryOperationOuterJoin", createBinaryOperationWithOuterJoin()), Arrays.asList("foo_outer_left", "bar_outer_right")),
-                Arguments.of(Named.named("InExpressionWithColumnLeft", createInExpression(createColumnSegment("foo_in_left"),
-                        createBinaryOperation("foo_in_right_left", "bar_in_right_right"))), Arrays.asList("foo_in_left", "foo_in_right_left", "bar_in_right_right")),
-                Arguments.of(Named.named("InExpressionWithRowLeft", createInExpression(createRowExpression(),
-                        createBinaryOperation("foo_row_right_left", "bar_row_right_right"))), Arrays.asList("foo_row_item", "foo_row_right_left", "bar_row_right_right")),
-                Arguments.of(Named.named("InExpressionWithFunctionLeft",
-                        createInExpression(createFunctionWithSingleColumnParameter("foo_function_left_column"), createBinaryOperation("foo_function_right_left", "bar_function_right_right"))),
+                Arguments.of("BinaryOperationColumns", createBinaryOperation("foo_left_col", "bar_right_col"), Arrays.asList("foo_left_col", "bar_right_col")),
+                Arguments.of("BinaryOperationOuterJoin", createBinaryOperationWithOuterJoin(), Arrays.asList("foo_outer_left", "bar_outer_right")),
+                Arguments.of("InExpressionWithColumnLeft", createInExpression(createColumnSegment("foo_in_left"),
+                        createBinaryOperation("foo_in_right_left", "bar_in_right_right")), Arrays.asList("foo_in_left", "foo_in_right_left", "bar_in_right_right")),
+                Arguments.of("InExpressionWithRowLeft", createInExpression(createRowExpression(),
+                        createBinaryOperation("foo_row_right_left", "bar_row_right_right")), Arrays.asList("foo_row_item", "foo_row_right_left", "bar_row_right_right")),
+                Arguments.of("InExpressionWithFunctionLeft",
+                        createInExpression(createFunctionWithSingleColumnParameter("foo_function_left_column"), createBinaryOperation("foo_function_right_left", "bar_function_right_right")),
                         Arrays.asList("foo_function_left_column", "foo_function_right_left", "bar_function_right_right")),
-                Arguments.of(Named.named("BetweenExpressionWithColumns", createBetweenExpressionWithColumns()), Arrays.asList("foo_between_left", "foo_between_between", "foo_between_and")),
-                Arguments.of(Named.named("BetweenExpressionWithNonColumnOperands", createBetweenExpressionWithMixedOperands()),
+                Arguments.of("BetweenExpressionWithColumns", createBetweenExpressionWithColumns(), Arrays.asList("foo_between_left", "foo_between_between", "foo_between_and")),
+                Arguments.of("BetweenExpressionWithNonColumnOperands", createBetweenExpressionWithMixedOperands(),
                         Arrays.asList("foo_between_function_column", "foo_between_binary_left", "bar_between_binary_right")),
-                Arguments.of(Named.named("AggregationProjectionWithFunctionParameters", createAggregationProjectionExpression()),
+                Arguments.of("AggregationProjectionWithFunctionParameters", createAggregationProjectionExpression(),
                         Arrays.asList("foo_agg_direct", "foo_agg_func_direct", "foo_agg_func_binary_left", "bar_agg_func_binary_right")),
-                Arguments.of(Named.named("FunctionSegmentWithNestedBinary", createFunctionWithColumnAndBinaryParameter()),
+                Arguments.of("FunctionSegmentWithNestedBinary", createFunctionWithColumnAndBinaryParameter(),
                         Arrays.asList("foo_function_direct", "foo_function_binary_left", "bar_function_binary_right")));
     }
     

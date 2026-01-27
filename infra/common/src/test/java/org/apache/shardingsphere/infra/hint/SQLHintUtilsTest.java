@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.hint;
 
-import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -102,9 +101,9 @@ class SQLHintUtilsTest {
         assertTrue(actual.isShadow());
     }
     
-    @ParameterizedTest(name = "extractHintFormat:{0}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(ExtractHintTestCaseArgumentsProvider.class)
-    void assertExtractHintFormat(final String actualSQL, final boolean found) {
+    void assertExtractHintFormat(final String name, final String actualSQL, final boolean found) {
         HintValueContext actual = SQLHintUtils.extractHint(actualSQL);
         if (found) {
             assertTrue(actual.findHintDataSourceName().isPresent());
@@ -114,9 +113,9 @@ class SQLHintUtilsTest {
         }
     }
     
-    @ParameterizedTest(name = "extractHintFormat:{0}")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(RemoveHintTestCaseArgumentsProvider.class)
-    void assertRemoveHint(final String actualSQL, final String expectedSQL) {
+    void assertRemoveHint(final String name, final String actualSQL, final String expectedSQL) {
         assertThat(SQLHintUtils.removeHint(actualSQL), is(expectedSQL));
     }
     
@@ -125,16 +124,15 @@ class SQLHintUtilsTest {
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
-                    Arguments.of(Named.named("PrefixNotFound", "/* FOO_HINT: xxx=xxx */"), false),
-                    Arguments.of(Named.named("ContentNotMatch", "/* SHARDINGSPHERE_HINT: xxx=xxx */"), false),
-                    Arguments.of(Named.named("CommentWithoutPrefix", "SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds */"), false),
-                    Arguments.of(Named.named("EmptyHintValue", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME= */"), false),
-                    Arguments.of(Named.named("MalformedHintWithoutEquals", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds, DISABLE_AUDIT_NAMES */"), true),
-                    Arguments.of(Named.named("EmptyDisableAuditNames", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds, DISABLE_AUDIT_NAMES= */"), true),
-                    Arguments.of(Named.named("UnderlineMode", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds */"), true),
-                    Arguments.of(Named.named("SpaceMode", "/* ShardingSphere hint: dataSourceName=foo_ds */"), true),
-                    Arguments.of(Named.named(
-                            "DBeaverHint", "/* ApplicationName=DBeaver 24.1.0 - SQLEditor <Script-84.sql> */ /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order"), true));
+                    Arguments.of("PrefixNotFound", "/* FOO_HINT: xxx=xxx */", false),
+                    Arguments.of("ContentNotMatch", "/* SHARDINGSPHERE_HINT: xxx=xxx */", false),
+                    Arguments.of("CommentWithoutPrefix", "SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds */", false),
+                    Arguments.of("EmptyHintValue", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME= */", false),
+                    Arguments.of("MalformedHintWithoutEquals", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds, DISABLE_AUDIT_NAMES */", true),
+                    Arguments.of("EmptyDisableAuditNames", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds, DISABLE_AUDIT_NAMES= */", true),
+                    Arguments.of("UnderlineMode", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds */", true),
+                    Arguments.of("SpaceMode", "/* ShardingSphere hint: dataSourceName=foo_ds */", true),
+                    Arguments.of("DBeaverHint", "/* ApplicationName=DBeaver 24.1.0 - SQLEditor <Script-84.sql> */ /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order", true));
         }
     }
     
@@ -143,11 +141,11 @@ class SQLHintUtilsTest {
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
-                    Arguments.of(Named.named("WithoutHint", "SELECT * FROM t_order"), "SELECT * FROM t_order"),
-                    Arguments.of(Named.named("UnderlineMode", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order"), "SELECT * FROM t_order"),
-                    Arguments.of(Named.named("SpaceMode", "/* ShardingSphere hint: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order"), "SELECT * FROM t_order"),
-                    Arguments.of(Named.named("DBeaverHint", 
-                                    "/* ApplicationName=DBeaver 24.1.0 - SQLEditor <Script-84.sql> */ /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order"),
+                    Arguments.of("WithoutHint", "SELECT * FROM t_order", "SELECT * FROM t_order"),
+                    Arguments.of("UnderlineMode", "/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order", "SELECT * FROM t_order"),
+                    Arguments.of("SpaceMode", "/* ShardingSphere hint: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order", "SELECT * FROM t_order"),
+                    Arguments.of("DBeaverHint", 
+                            "/* ApplicationName=DBeaver 24.1.0 - SQLEditor <Script-84.sql> */ /* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=foo_ds*/ SELECT * FROM t_order",
                             "/* ApplicationName=DBeaver 24.1.0 - SQLEditor <Script-84.sql> */  SELECT * FROM t_order"));
         }
     }
