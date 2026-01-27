@@ -24,4 +24,5 @@
     <sql-case id="select_window_last_value_doris" value="SELECT LAST_VALUE(v) OVER (PARTITION BY k ORDER BY v ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) FROM t_order" db-types="Doris" />
     <sql-case id="select_window_frame_doris" value="SELECT SUM(v) OVER (PARTITION BY k ORDER BY v ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) FROM t_order" db-types="Doris" />
     <sql-case id="select_window_frame_mysql" value="SELECT SUM(v) OVER (PARTITION BY k ORDER BY v ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) FROM t_order" db-types="MySQL" />
+    <sql-case id="select_window_ntile_doris" value="SELECT NTILE(4) OVER (ORDER BY id) FROM t_order" db-types="Doris" />
 </sql-cases>

@@ -57,6 +57,7 @@
     <sql-case id="show_procedure_status_with_where_expr" value="SHOW PROCEDURE STATUS where name = ?" db-types="MySQL" />
     <sql-case id="show_procedure_status_with_where_expr_no_parameter" value="SHOW PROCEDURE STATUS where name = 'procedure1'" db-types="MySQL" />
     <sql-case id="show_replicas" value="SHOW REPLICAS" db-types="MySQL" />
+    <sql-case id="show_replicas_doris" value="SHOW REPLICAS" db-types="Doris" />
     <sql-case id="show_procedure_code_func" value="SHOW PROCEDURE CODE TEST_FUNC" db-types="MySQL,Doris" />
     <sql-case id="show_procedure_code_owner_func" value="SHOW PROCEDURE CODE TEST_USER.TEST_FUNC" db-types="MySQL,Doris" />
     <sql-case id="show_relay-log_events" value="SHOW RELAYLOG EVENTS FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
@@ -96,6 +97,8 @@
     <sql-case id="show_events_with_like_pattern" value="SHOW EVENTS FROM `sharding_db` LIKE 'sharding_%'" db-types="MySQL" />
     <sql-case id="show_events_with_where_expr" value="SHOW EVENTS FROM `sharding_db` WHERE db = ?" db-types="MySQL" />
     <sql-case id="show_events_with_where_expr_no_parameter" value="SHOW EVENTS FROM `sharding_db` WHERE db = 'sharding_db'" db-types="MySQL" />
+    <sql-case id="show_events_doris_simple" value="SHOW EVENTS" db-types="Doris" />
+    <sql-case id="show_events_doris_with_filter" value="SHOW EVENTS FROM `example_db` WHERE db = 'example_db'" db-types="Doris" />
     <sql-case id="show_tables" value="SHOW TABLES" db-types="MySQL" />
     <sql-case id="show_extended_full_tables" value="SHOW EXTENDED FULL TABLES" db-types="MySQL" />
     <sql-case id="show_tables_from_schema" value="SHOW TABLES FROM `sharding_db`" db-types="MySQL" />

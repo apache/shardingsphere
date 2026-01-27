@@ -12393,6 +12393,24 @@
         </from>
     </select>
 
+    <select sql-case-id="select_from_function_expr_table_doris">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="40">
+            <function-table start-index="14" stop-index="40" table-alias="gs">
+                <table-function function-name="generate_series" text="generate_series(1, 3)" start-index="14" stop-index="34">
+                    <parameter>
+                        <literal-expression value="1" start-index="30" stop-index="30" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="3" start-index="33" stop-index="33" />
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
+
     <select sql-case-id="select_interval_firebird">
         <projections start-index="7" stop-index="20">
             <expression-projection text="INTERVAL 1 DAY" start-index="7" stop-index="20">

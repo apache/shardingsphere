@@ -20,4 +20,7 @@
     <sql-case id="create_logfile_group_mysql" value="CREATE LOGFILE GROUP lg1 ADD UNDOFILE 'undo_1.dat' ENGINE=NDBCLUSTER" db-types="MySQL" />
     <sql-case id="alter_logfile_group_mysql" value="ALTER LOGFILE GROUP lg1 ADD UNDOFILE 'undo_2.dat'" db-types="MySQL" />
     <sql-case id="drop_logfile_group_mysql" value="DROP LOGFILE GROUP lg1" db-types="MySQL" />
+    <sql-case id="create_logfile_group_doris" value="CREATE LOGFILE GROUP lg_doris ADD UNDOFILE 'undo_d1.dat' ENGINE = NDBCLUSTER" db-types="Doris" />
+    <sql-case id="alter_logfile_group_doris" value="ALTER LOGFILE GROUP lg_doris ADD UNDOFILE 'undo_d2.dat'" db-types="Doris" />
+    <sql-case id="drop_logfile_group_doris" value="DROP LOGFILE GROUP lg_doris" db-types="Doris" />
 </sql-cases>

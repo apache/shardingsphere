@@ -19,4 +19,7 @@
 <sql-cases>
     <sql-case id="alter_event_mysql" value="ALTER EVENT ev1 ON SCHEDULE EVERY 1 DAY DO SELECT 1" db-types="MySQL" />
     <sql-case id="drop_event_mysql" value="DROP EVENT ev1" db-types="MySQL" />
+    <sql-case id="create_event_doris" value="CREATE EVENT ev_doris ON SCHEDULE EVERY 1 DAY DO SELECT 1" db-types="Doris" />
+    <sql-case id="alter_event_doris" value="ALTER EVENT ev_doris ON SCHEDULE EVERY 2 DAY DO SELECT 2" db-types="Doris" />
+    <sql-case id="drop_event_doris" value="DROP EVENT ev_doris" db-types="Doris" />
 </sql-cases>
