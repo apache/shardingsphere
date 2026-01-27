@@ -147,6 +147,7 @@
     <sql-case id="select_with_partitioned_table" value="SELECT * FROM sales PARTITION (sales_q2_2000) s WHERE s.amount_sold > 1500 ORDER BY cust_id, time_id, channel_id" db-types="Oracle" />
     <sql-case id="select_with_binding_tables_without_join" value="SELECT last_name, job_id, departments.department_id, department_name FROM employees, departments WHERE employees.department_id = departments.department_id ORDER BY last_name, job_id" db-types="Oracle" />
     <sql-case id="select_with_lateral_clause" value="SELECT * FROM employees e, LATERAL(SELECT * FROM departments d WHERE e.department_id = d.department_id)" db-types="Oracle" />
+    <sql-case id="select_function_table_oracle" value="SELECT * FROM pipelined_func(1) pf" db-types="Oracle" />
     <sql-case id="select_with_containers" value="SELECT * FROM CONTAINERS(employees)" db-types="Oracle" />
     <sql-case id="select_with_hierarchical_connect_by" value="SELECT last_name, employee_id, manager_id FROM employees CONNECT BY employee_id = manager_id ORDER BY last_name" db-types="Oracle" />
     <sql-case id="select_current_date_function_with_shorthand_regular_function" value="SELECT * FROM t_order WHERE date = CURRENT_DATE" db-types="MySQL" />
@@ -200,10 +201,14 @@
     <sql-case id="select_xmlforest_function" value="SELECT XMLFOREST(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary) FROM employees e WHERE employee_id = 204;" db-types="Oracle" />
     <sql-case id="select_xmlparse_function" value="SELECT XMLPARSE(DOCUMENT 'DEPTXML' WELLFORMED) AS dept FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_xmlpi_function" value="SELECT XMLPI(NAME &quot;Order analysisComp&quot;, 'imported, reconfigured, disassembled') AS 'XMLPI' FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_xmlpi_evalname_function" value="SELECT XMLPI(EVALNAME 'target', 'value') FROM dual;" db-types="Oracle" />
     <sql-case id="select_xmlquery_function" value="SELECT XMLQUERY('//student[@age=20]' PASSING BY VALUE xcol AS x RETURNING CONTENT NULL ON EMPTY) FROM x_table;" db-types="Oracle" />
     <sql-case id="select_xmlroot_function" value="SELECT XMLROOT(XMLType('143598'), VERSION '1.0', STANDALONE YES) AS 'XMLROOT' FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_xmlserialize_function" value="SELECT XMLSERIALIZE(DOCUMENT c2 AS BLOB ENCODING 'UTF-8' VERSION 'a' INDENT SIZE = 0 SHOW DEFAULTS) FROM b;" db-types="Oracle" />
     <sql-case id="select_from_xmltable_function" value="SELECT warehouse_name warehouse, warehouse2.Water, warehouse2.Rail FROM warehouses, XMLTABLE('/Warehouse' PASSING warehouses.warehouse_spec COLUMNS &quot;Water&quot; varchar2(6) PATH 'WaterAccess',&quot;Rail&quot; varchar2(6) PATH 'RailAccess') warehouse2;" db-types="Oracle" />
+    <sql-case id="select_from_xmltable_with_namespaces_oracle" value="SELECT * FROM XMLTABLE(XMLNAMESPACES(DEFAULT 'uri0', 'uri1' AS ns1, 'uri2' AS ns2), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy') xt" db-types="Oracle" />
+    <sql-case id="select_with_xmlnamespaces_multiple_default_oracle" value="SELECT * FROM XMLTABLE(XMLNAMESPACES(DEFAULT 'uri0', DEFAULT 'uri1'), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy') xt" db-types="Oracle" />
+    <sql-case id="select_from_regular_function_table_oracle" value="SELECT * FROM my_func(1, 2) f" db-types="Oracle" />
     <sql-case id="select_with_null_keyword_in_projection" value="select null as order_id, item_id from t_order" db-types="MySQL" />
     <sql-case id="select_literal_type_cast_money" value="SELECT '$99'::money" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_positional_parameter_type_cast_money" value="SELECT $1::money" db-types="PostgreSQL,openGauss" case-types="Placeholder" />
@@ -261,6 +266,10 @@
     <sql-case id="select_with_keep_clause" value="SELECT salary,MIN(salary) KEEP (DENSE_RANK FIRST ORDER BY commission_pct) OVER (PARTITION BY department_id) 'Worst', MAX(salary) KEEP (DENSE_RANK LAST ORDER BY commission_pct) OVER (PARTITION BY department_id) 'Best' FROM employees ORDER BY department_id" db-types="Oracle" />
     <sql-case id="select_with_corr_function" value="SELECT employee_id, CORR(SYSDATE - hire_date, salary) FROM employees WHERE department_id in (50, 80) ORDER BY employee_id" db-types="Oracle" />
     <sql-case id="select_with_db_link" value="SELECT * FROM hr.employees@remote" db-types="Oracle" />
+    <sql-case id="select_with_sample_clause_oracle" value="SELECT * FROM employees SAMPLE(10)" db-types="Oracle" />
+    <sql-case id="select_with_order_by_index_oracle" value="SELECT * FROM t_order ORDER BY 1 NULLS LAST" db-types="Oracle" />
+    <sql-case id="select_is_nan_oracle" value="SELECT to_binary_float('NaN') FROM dual WHERE to_binary_float('NaN') IS NAN" db-types="Oracle" />
+    <sql-case id="select_group_by_rollup_oracle_with_rollup" value="SELECT department_id, COUNT(*) FROM employees GROUP BY ROLLUP(department_id)" db-types="Oracle" />
     <sql-case id="select_with_trim_function_multi" value="select TRIM('  derby '), TRIM(BOTH ' ' FROM '  derby '), TRIM(TRAILING ' ' FROM '  derby '), TRIM(cast (null as char(1)) FROM '  derby '), TRIM(' ' FROM cast(null as varchar(30))), TRIM('y' FROM ' derby') FROM employees" db-types="Oracle" />
     <sql-case id="select_with_trim_function_simple" value="SELECT TRIM( '.,! ' FROM '     #     test    .') AS Result" db-types="SQLServer" />
     <sql-case id="select_with_trim_function_leading" value="SELECT TRIM(LEADING '.,! ' FROM  '     .#     test    .') AS Result" db-types="SQLServer,Presto" />
@@ -476,7 +485,9 @@
     <sql-case id="select_from_shards_oracle" value="SELECT * FROM SHARDS(employees)" db-types="Oracle" />
     <sql-case id="select_with_table_dblink_oracle" value="SELECT * FROM t_order@db_link" db-types="Oracle" />
     <sql-case id="select_into_variable_oracle" value="SELECT status INTO status_var FROM t_order WHERE order_id = 1" db-types="Oracle" />
+    <sql-case id="select_table_collection_expr_oracle" value="SELECT * FROM TABLE(1 + 1)" db-types="Oracle" />
     <sql-case id="select_with_xmlnamespaces_clause_oracle" value="SELECT * FROM XMLTABLE(XMLNAMESPACES(DEFAULT 'uri', 'urn:ns1' AS ns1), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy') xt" db-types="Oracle" />
+    <sql-case id="select_from_xmltable_with_default_oracle" value="SELECT * FROM XMLTABLE('x' PASSING xmlcol COLUMNS c1 VARCHAR2(10) PATH 'p' DEFAULT 0) xt" db-types="Oracle" />
     <sql-case id="select_table_collection_column_oracle" value="SELECT * FROM TABLE(nested_col)" db-types="Oracle" />
     <sql-case id="select_table_collection_function_oracle" value="SELECT * FROM TABLE(get_nested()) t" db-types="Oracle" />
     <sql-case id="select_xmlcdata_function_oracle" value="SELECT XMLCDATA('text') FROM dual" db-types="Oracle" />

@@ -1765,6 +1765,18 @@
         <modify-constraint start-index="18" stop-index="53" constraint-name="sales_time_fk" />
     </alter-table>
     
+    <alter-table sql-case-id="alter_table_modify_primary_key_rely">
+        <table name="sales" start-index="12" stop-index="16" />
+        <modify-constraint start-index="18" stop-index="40" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_collection_retrieval_locator">
+        <table name="nested_table_parent" start-index="12" stop-index="30" />
+        <modify-collection-retrieval start-index="32" stop-index="78">
+            <table name="child_tbl" start-index="52" stop-index="60" />
+        </modify-collection-retrieval>
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_enable_row_movement">
         <table name="table" start-index="12" stop-index="16" />
     </alter-table>
