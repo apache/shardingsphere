@@ -193,6 +193,19 @@
         </lock>
     </select>
 
+    <select sql-case-id="select_lock_with_for_update_of_column_skip_locked">
+        <from start-index="14" stop-index="22">
+            <simple-table name="employees" start-index="14" stop-index="22" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <lock start-index="24" stop-index="65">
+            <table name="employees" start-index="38" stop-index="46" />
+            <column name="salary" start-index="48" stop-index="53" />
+        </lock>
+    </select>
+
     <select sql-case-id="select_lock_with_of_multi_tables" parameters="1">
         <where start-index="44" stop-index="151">
             <expr>

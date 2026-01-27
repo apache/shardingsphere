@@ -115,6 +115,31 @@
         </set>
     </update>
 
+    <update sql-case-id="update_with_subquery_target_oracle">
+        <table start-index="7" stop-index="31">
+            <subquery-table start-index="7" stop-index="31">
+                <subquery>
+                    <select>
+                        <projections start-index="15" stop-index="15">
+                            <shorthand-projection start-index="15" stop-index="15" />
+                        </projections>
+                        <from start-index="17" stop-index="30">
+                            <simple-table name="employees" start-index="22" stop-index="30" />
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </table>
+        <set start-index="33" stop-index="46">
+            <assignment start-index="36" stop-index="46">
+                <column name="salary" start-index="37" stop-index="42" />
+                <assignment-value>
+                    <literal-expression value="1" start-index="46" stop-index="46" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
     <update sql-case-id="update_with_alias" parameters="'update', 1, 1">
         <table start-index="7" stop-index="18" >
             <simple-table name="t_order" alias="o" start-index="7" stop-index="18" />

@@ -520,6 +520,9 @@
           WHERE u.status = 'active';" db-types="Hive" />
     <sql-case id="create_table_like_all_options" value="CREATE TEMPORARY EXTERNAL TABLE IF NOT EXISTS test_db.target_table LIKE source_db.source_table LOCATION '/user/hive/warehouse/test_db.db/target_table';" db-types="Hive" />
     <sql-case id="create_iceberg_table" value="CREATE EXTERNAL TABLE user_log (user_name STRING) STORED BY ICEBERG;" db-types="Hive" />
+    <sql-case id="create_table_with_date_trunc_column" value="CREATE TABLE t_keyword_date_trunc (DATE_TRUNC INT)" db-types="Doris" />
+    <sql-case id="create_table_with_materialized_column" value="CREATE TABLE t_keyword_materialized (MATERIALIZED VARCHAR(100))" db-types="Doris" />
+    <sql-case id="create_table_with_pause_column" value="CREATE TABLE t_keyword_pause (PAUSE BOOLEAN)" db-types="Doris" />
     <sql-case id="create_iceberg_table_partition" value="CREATE TABLE user_log (user_name STRING) PARTITIONED BY (year int) STORED BY ICEBERG;" db-types="Hive" />
     <sql-case id="create_iceberg_table_orc" value="CREATE TABLE user_log (user_name STRING) STORED BY ICEBERG STORED AS ORC;" db-types="Hive" />
     <sql-case id="create_iceberg_table_as_select" value="CREATE TABLE target STORED BY ICEBERG AS SELECT * FROM source;" db-types="Hive" />
@@ -530,7 +533,5 @@
     <sql-case id="create_table_with_blob_segment_size" value="CREATE TABLE t_blob_segment (payload BLOB SUB_TYPE 0 SEGMENT SIZE 80)" db-types="Firebird" />
     <sql-case id="create_table_firebird_len" value="CREATE TABLE t_firebird_len (id INT PRIMARY KEY, amount DECIMAL(10,2), code CHAR(5))" db-types="Firebird" />
     <sql-case id="create_table_firebird_constraint" value="CREATE TABLE t_firebird_constraint (id INT, CONSTRAINT pk_t PRIMARY KEY (id), CONSTRAINT fk_t FOREIGN KEY (id) REFERENCES t_firebird_len(id))" db-types="Firebird" />
-    <sql-case id="create_table_with_date_trunc_column" value="CREATE TABLE t_keyword_date_trunc (DATE_TRUNC INT)" db-types="Doris" />
-    <sql-case id="create_table_with_materialized_column" value="CREATE TABLE t_keyword_materialized (MATERIALIZED VARCHAR(100))" db-types="Doris" />
-    <sql-case id="create_table_with_pause_column" value="CREATE TABLE t_keyword_pause (PAUSE BOOLEAN)" db-types="Doris" />
+    <sql-case id="create_table_with_ref_column_oracle" value="CREATE TABLE ref_table (ref_col REF person_t)" db-types="Oracle" />
 </sql-cases>
