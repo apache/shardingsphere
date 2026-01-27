@@ -73,4 +73,19 @@ public final class StringPkSmallOrderDAO {
         log.info("Batch insert string pk small order SQL: {}, params list size: {}", sql, paramsList.size());
         DataSourceExecuteUtils.execute(dataSource, sql, paramsList);
     }
+    
+    /**
+     * Insert order.
+     *
+     * @param orderId order ID
+     * @param userId user ID
+     * @param status status
+     * @throws SQLException SQL exception
+     */
+    public void insert(final String orderId, final int userId, final String status) throws SQLException {
+        String sql = sqlBuilder.buildPreparedInsertSQL(tableName);
+        Object[] params = new Object[]{orderId, userId, status};
+        log.info("Insert string pk small order SQL: {}, params: {}", sql, params);
+        DataSourceExecuteUtils.execute(dataSource, sql, params);
+    }
 }

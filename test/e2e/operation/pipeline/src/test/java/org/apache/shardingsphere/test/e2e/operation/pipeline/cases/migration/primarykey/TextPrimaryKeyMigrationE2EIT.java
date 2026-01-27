@@ -62,8 +62,7 @@ class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
             createTargetOrderTableRule(containerComposer);
             startMigration(containerComposer, getSourceTableName(containerComposer), TARGET_TABLE_NAME);
             String jobId = distSQLFacade.listJobIds().get(0);
-            containerComposer.sourceExecuteWithLog(
-                    String.format("INSERT INTO %s (order_id,user_id,status) VALUES (%s, %s, '%s')", getSourceTableName(containerComposer), "1000000000", 1, "afterStop"));
+            orderDAO.insert("1000000000", 1, "afterStop");
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
             distSQLFacade.startCheck(jobId, "DATA_MATCH", ImmutableMap.of("chunk-size", "300", "streaming-range-type", "SMALL"));
             distSQLFacade.verifyCheck(jobId);
