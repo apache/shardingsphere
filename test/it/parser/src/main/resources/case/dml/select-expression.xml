@@ -120,6 +120,28 @@
         </where>
     </select>
 
+    <select sql-case-id="select_where_is_nan_oracle">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="38">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="38">
+                    <left>
+                        <column name="flag" start-index="28" stop-index="31" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="NAN" start-index="36" stop-index="38" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_case_when_with_mul_condition">
         <projections start-index="7" stop-index="52">
             <expression-projection text="case 1*0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" start-index="7" stop-index="52">

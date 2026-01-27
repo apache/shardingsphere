@@ -474,6 +474,13 @@
     <sql-case id="select_where_is_true_oracle" value="SELECT * FROM employees WHERE active IS TRUE" db-types="Oracle" />
     <sql-case id="select_in_without_parentheses_oracle" value="SELECT * FROM t_order WHERE status IN 'shipped'" db-types="Oracle" />
     <sql-case id="select_from_shards_oracle" value="SELECT * FROM SHARDS(employees)" db-types="Oracle" />
+    <sql-case id="select_with_table_dblink_oracle" value="SELECT * FROM t_order@db_link" db-types="Oracle" />
+    <sql-case id="select_into_variable_oracle" value="SELECT status INTO status_var FROM t_order WHERE order_id = 1" db-types="Oracle" />
     <sql-case id="select_with_xmlnamespaces_clause_oracle" value="SELECT * FROM XMLTABLE(XMLNAMESPACES(DEFAULT 'uri', 'urn:ns1' AS ns1), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy') xt" db-types="Oracle" />
     <sql-case id="select_table_collection_column_oracle" value="SELECT * FROM TABLE(nested_col)" db-types="Oracle" />
+    <sql-case id="select_table_collection_function_oracle" value="SELECT * FROM TABLE(get_nested()) t" db-types="Oracle" />
+    <sql-case id="select_xmlcdata_function_oracle" value="SELECT XMLCDATA('text') FROM dual" db-types="Oracle" />
+    <sql-case id="select_format_function_oracle" value="SELECT FORMAT('abc', '999') FROM dual" db-types="Oracle" />
+    <sql-case id="select_first_value_oracle" value="SELECT FIRST_VALUE(salary) OVER (ORDER BY salary) FROM employees" db-types="Oracle" />
+    <sql-case id="select_datetime_lbe_literal_oracle" value="SELECT {ts '2020-02-02 10:00:00'} FROM dual" db-types="Oracle" />
 </sql-cases>

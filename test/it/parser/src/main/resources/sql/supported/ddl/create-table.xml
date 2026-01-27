@@ -530,4 +530,5 @@
     <sql-case id="create_table_with_blob_segment_size" value="CREATE TABLE t_blob_segment (payload BLOB SUB_TYPE 0 SEGMENT SIZE 80)" db-types="Firebird" />
     <sql-case id="create_table_firebird_len" value="CREATE TABLE t_firebird_len (id INT PRIMARY KEY, amount DECIMAL(10,2), code CHAR(5))" db-types="Firebird" />
     <sql-case id="create_table_firebird_constraint" value="CREATE TABLE t_firebird_constraint (id INT, CONSTRAINT pk_t PRIMARY KEY (id), CONSTRAINT fk_t FOREIGN KEY (id) REFERENCES t_firebird_len(id))" db-types="Firebird" />
+    <sql-case id="create_table_with_ref_column_oracle" value="CREATE TABLE ref_table (ref_col REF person_t)" db-types="Oracle" />
 </sql-cases>

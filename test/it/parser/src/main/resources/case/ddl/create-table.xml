@@ -3881,4 +3881,11 @@
             <referenced-table name="t_firebird_len" start-index="122" stop-index="135" />
         </constraint-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_ref_column_oracle">
+        <table name="ref_table" start-index="13" stop-index="21" />
+        <column-definition type="person_t" start-index="24" stop-index="43">
+            <column name="ref_col" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

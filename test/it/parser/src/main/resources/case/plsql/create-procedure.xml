@@ -51,4 +51,12 @@
             <procedure-body-end-name name="cp_SHOPBudget_Gy" />
         </procedure-body-end-names>
     </create-procedure>
+
+    <create-procedure sql-case-id="pl_sql_create_procedure_with_loop_dml">
+        <procedure-name name="proc_multi" />
+        <sql-statements>
+            <sql-statement start-index="48" stop-index="65" statement-class-simple-name="UpdateStatement" />
+        </sql-statements>
+    </create-procedure>
+
 </sql-parser-test-cases>
