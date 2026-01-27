@@ -99,7 +99,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
                 }
                 Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
                 insertOneOrder(containerComposer, orderId);
-                containerComposer.assertOrderRecordExist(dataSource, "t_order", orderId);
+                containerComposer.assertRecordExists(dataSource, "t_order", orderId);
             };
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, incrementalTaskFn);
         }
@@ -176,7 +176,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
                 insertOneOrder(containerComposer, uniqueKey);
                 doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next());
-                containerComposer.assertOrderRecordExist(dataSource, "t_order", uniqueKey);
+                containerComposer.assertRecordExists(dataSource, "t_order", uniqueKey);
             });
         }
     }
@@ -199,7 +199,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
                 insertOneOrder(containerComposer, uniqueKey);
                 doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next());
-                containerComposer.assertOrderRecordExist(dataSource, "t_order", uniqueKey);
+                containerComposer.assertRecordExists(dataSource, "t_order", uniqueKey);
             });
         }
     }
@@ -224,7 +224,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             assertMigrationSuccess(containerComposer, sql, "order_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
                 insertOneOrder(containerComposer, uniqueKey);
                 // TODO Select by byte[] from proxy doesn't work, so unhex function is used for now
-                containerComposer.assertOrderRecordExist(dataSource, String.format("SELECT 1 FROM t_order WHERE order_id=UNHEX('%s')", Hex.encodeHexString(uniqueKey)));
+                containerComposer.assertRecordExists(dataSource, String.format("SELECT 1 FROM t_order WHERE order_id=UNHEX('%s')", Hex.encodeHexString(uniqueKey)));
             });
         }
     }
