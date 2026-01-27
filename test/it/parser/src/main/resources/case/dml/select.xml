@@ -13455,6 +13455,18 @@
         </from>
     </select>
 
+    <select sql-case-id="select_from_xmltable_with_default_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <function-table table-alias="xt">
+                <table-function function-name="XMLTABLE"
+                                text="XMLTABLE('x' PASSING xmlcol COLUMNS c1 VARCHAR2(10) PATH 'p' DEFAULT 0)" />
+            </function-table>
+        </from>
+    </select>
+
     <select sql-case-id="select_table_collection_column_oracle">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
@@ -13470,6 +13482,15 @@
         </projections>
         <from>
             <collection-table alias="t" start-index="14" stop-index="34" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_table_collection_expr_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <collection-table start-index="14" stop-index="25" />
         </from>
     </select>
 

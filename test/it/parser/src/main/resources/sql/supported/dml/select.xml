@@ -482,7 +482,9 @@
     <sql-case id="select_from_shards_oracle" value="SELECT * FROM SHARDS(employees)" db-types="Oracle" />
     <sql-case id="select_with_table_dblink_oracle" value="SELECT * FROM t_order@db_link" db-types="Oracle" />
     <sql-case id="select_into_variable_oracle" value="SELECT status INTO status_var FROM t_order WHERE order_id = 1" db-types="Oracle" />
+    <sql-case id="select_table_collection_expr_oracle" value="SELECT * FROM TABLE(1 + 1)" db-types="Oracle" />
     <sql-case id="select_with_xmlnamespaces_clause_oracle" value="SELECT * FROM XMLTABLE(XMLNAMESPACES(DEFAULT 'uri', 'urn:ns1' AS ns1), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy') xt" db-types="Oracle" />
+    <sql-case id="select_from_xmltable_with_default_oracle" value="SELECT * FROM XMLTABLE('x' PASSING xmlcol COLUMNS c1 VARCHAR2(10) PATH 'p' DEFAULT 0) xt" db-types="Oracle" />
     <sql-case id="select_table_collection_column_oracle" value="SELECT * FROM TABLE(nested_col)" db-types="Oracle" />
     <sql-case id="select_table_collection_function_oracle" value="SELECT * FROM TABLE(get_nested()) t" db-types="Oracle" />
     <sql-case id="select_xmlcdata_function_oracle" value="SELECT XMLCDATA('text') FROM dual" db-types="Oracle" />
