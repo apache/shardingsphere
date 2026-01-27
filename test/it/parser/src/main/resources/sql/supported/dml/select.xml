@@ -421,6 +421,7 @@
     <sql-case id="select_querytraceon_hint" value="SELECT * FROM Person OPTION (QUERYTRACEON 4199, QUERYTRACEON 4137);" db-types="SQLServer"/>
     <sql-case id="select_with_sample_clause" value="SELECT 1 AS C1 FROM T_ORDER SAMPLE BLOCK (1.43302, 8) SEED(9) T_ORDER" db-types="Oracle" />
     <sql-case id="select_from_function_table_doris" value="SELECT * FROM table_func(1, 2)" db-types="Doris" />
+    <sql-case id="select_from_function_expr_table_doris" value="SELECT * FROM generate_series(1, 3) AS gs" db-types="Doris" />
     <sql-case id="select_interval_firebird" value="SELECT INTERVAL 1 DAY FROM t_order" db-types="Firebird"/>
     <sql-case id="select_having_firebird" value="SELECT user_id, COUNT(*) AS cnt FROM t_order GROUP BY user_id HAVING COUNT(*) > 1" db-types="Firebird"/>
     <sql-case id="select_function_table_firebird" value="SELECT * FROM foo(1)" db-types="Firebird"/>
