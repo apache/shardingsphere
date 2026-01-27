@@ -314,6 +314,7 @@
     </show-procedure-status>
 
     <show-replicas sql-case-id="show_replicas" />
+    <show-replicas sql-case-id="show_replicas_doris" />
     <show-procedure-code sql-case-id="show_procedure_code_func">
         <function function-name="TEST_FUNC" start-index="20" stop-index="28" text="TEST_FUNC" />
     </show-procedure-code>
@@ -645,6 +646,27 @@
                         <operator>=</operator>
                         <right>
                             <literal-expression value="sharding_db" start-index="42" stop-index="54" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </filter>
+    </show-events>
+    <show-events sql-case-id="show_events_doris_simple" />
+    <show-events sql-case-id="show_events_doris_with_filter">
+        <from start-index="12" stop-index="28">
+            <database name="example_db" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="28" />
+        </from>
+        <filter start-index="30" stop-index="52">
+            <where start-index="30" stop-index="52">
+                <expr>
+                    <binary-operation-expression start-index="36" stop-index="52">
+                        <left>
+                            <column name="db" start-index="36" stop-index="37" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="example_db" start-index="41" stop-index="52" />
                         </right>
                     </binary-operation-expression>
                 </expr>

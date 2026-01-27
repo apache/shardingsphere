@@ -100,6 +100,7 @@
     <create-user sql-case-id="create_user_password_reuse_interval_default_doris" />
     <create-user sql-case-id="create_user_password_require_current_optional_doris" />
     <create-user sql-case-id="create_user_password_require_current_yes_doris" />
+    <create-user sql-case-id="create_user_password_require_current_default_doris" />
     <create-user sql-case-id="create_user_failed_login_and_lock_time_doris" />
     <create-user sql-case-id="create_user_password_lock_time_unbounded_doris" />
 </sql-parser-test-cases>

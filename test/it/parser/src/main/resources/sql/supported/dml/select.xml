@@ -30,7 +30,7 @@
     <sql-case id="select_with_st_aswkb_st_geom_form_text" value="SELECT ST_AsWKB(ST_GeomFromText('POINT(0 0)')) IN (SELECT b FROM t1) AS result" db-types="MySQL" />
     <sql-case id="select_null_in_subquery" value="SELECT NULL IN(SELECT (f1 between 0 and 1) FROM (SELECT f1 FROM t WHERE (@b:=NULL) - f2) as dt)" db-types="MySQL,Doris" />
     <sql-case id="select_with_collate" value="SELECT NAME_CONST('var', 'value') COLLATE latin1_general_cs" db-types="MySQL" />
-    <sql-case id="select_collate_parameter_marker" value="SELECT name COLLATE ? FROM t_order" db-types="MySQL" case-types="PLACEHOLDER" />
+    <sql-case id="select_collate_parameter_marker" value="SELECT name COLLATE ? FROM t_order" db-types="MySQL,Doris" case-types="PLACEHOLDER" />
     <sql-case id="select_with_hex_function" value="SELECT HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | 0x38))" db-types="MySQL" />
     <sql-case id="select_distinct_with_grouping_function" value="SELECT DISTINCT f1 FROM t1 GROUP BY f1 WITH ROLLUP ORDER BY f1, ANY_VALUE(GROUPING(f1))" db-types="MySQL" />
     <sql-case id="select_convert_function1" value="SELECT CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" db-types="MySQL" />
@@ -298,7 +298,7 @@
     <sql-case id="select_wm_concat_function4" value="SELECT NAME,WM_CONCAT(DECODE(SUBSTR((TO_CHAR(NAME)),0,1),'.','0'||TO_CHAR(NAME),TO_CHAR(NAME))) WM_NAME FROM TEST_TABLE WHERE NAME ='TEST' GROUP BY NAME" db-types="Oracle" />
     <sql-case id="select_with_user_updatable_columns" value="SELECT column_name, updatable FROM user_updatable_columns WHERE table_name = 'LOCATIONS_VIEW' ORDER BY column_name, updatable" db-types="Oracle" />
     <sql-case id="select_with_script_variables" value="SELECT x.$(ColumnName) FROM Person.Person x WHERE x.BusinessEntityID > 5" db-types="SQLServer" />
-    <sql-case id="select_not_expression" value="select !0,NOT 0=1,!(0=0),1 AND 1,1 &amp;&amp; 0,0 OR 1,1 || NULL, 1=1 or 1=1 and 1=0" db-types="MySQL" />
+    <sql-case id="select_not_expression" value="select !0,NOT 0=1,!(0=0),1 AND 1,1 &amp;&amp; 0,0 OR 1,1 || NULL, 1=1 or 1=1 and 1=0" db-types="MySQL,Doris" />
     <sql-case id="select_with_unreserved_column" value="SELECT name, server_id, provider FROM sys.servers" db-types="SQLServer" />
     <sql-case id="select_with_count_temp_table" value="SELECT COUNT(*) AS [Number of rows] FROM #Test" db-types="SQLServer"/>
     <sql-case id="select_with_bracket_alias" value="SELECT obj1.name AS [XEvent-name], col2.name AS [XEvent-column], obj1.description AS [Descr-name], col2.description AS [Descr-column] FROM sys.dm_xe_objects AS obj1 INNER JOIN sys.dm_xe_object_columns AS col2 ON col2.object_name = obj1.name ORDER BY obj1.name, col2.name" db-types="SQLServer"/>
@@ -421,6 +421,7 @@
     <sql-case id="select_querytraceon_hint" value="SELECT * FROM Person OPTION (QUERYTRACEON 4199, QUERYTRACEON 4137);" db-types="SQLServer"/>
     <sql-case id="select_with_sample_clause" value="SELECT 1 AS C1 FROM T_ORDER SAMPLE BLOCK (1.43302, 8) SEED(9) T_ORDER" db-types="Oracle" />
     <sql-case id="select_from_function_table_doris" value="SELECT * FROM table_func(1, 2)" db-types="Doris" />
+    <sql-case id="select_from_function_expr_table_doris" value="SELECT * FROM generate_series(1, 3) AS gs" db-types="Doris" />
     <sql-case id="select_interval_firebird" value="SELECT INTERVAL 1 DAY FROM t_order" db-types="Firebird"/>
     <sql-case id="select_having_firebird" value="SELECT user_id, COUNT(*) AS cnt FROM t_order GROUP BY user_id HAVING COUNT(*) > 1" db-types="Firebird"/>
     <sql-case id="select_function_table_firebird" value="SELECT * FROM foo(1)" db-types="Firebird"/>

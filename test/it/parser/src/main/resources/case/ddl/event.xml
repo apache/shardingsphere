@@ -19,4 +19,7 @@
 <sql-parser-test-cases>
     <common sql-case-id="alter_event_mysql" />
     <common sql-case-id="drop_event_mysql" />
+    <common sql-case-id="create_event_doris" />
+    <common sql-case-id="alter_event_doris" />
+    <common sql-case-id="drop_event_doris" />
 </sql-parser-test-cases>

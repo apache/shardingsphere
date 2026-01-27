@@ -62,6 +62,7 @@
     <sql-case id="create_user_password_reuse_interval_default_doris" value="CREATE USER user_reuse_default PASSWORD REUSE INTERVAL DEFAULT" db-types="Doris" />
     <sql-case id="create_user_password_require_current_optional_doris" value="CREATE USER user_require_optional PASSWORD REQUIRE CURRENT OPTIONAL" db-types="Doris" />
     <sql-case id="create_user_password_require_current_yes_doris" value="CREATE USER user_require_yes PASSWORD REQUIRE CURRENT" db-types="Doris" />
+    <sql-case id="create_user_password_require_current_default_doris" value="CREATE USER user_require_default PASSWORD REQUIRE CURRENT DEFAULT" db-types="Doris" />
     <sql-case id="create_user_failed_login_and_lock_time_doris" value="CREATE USER user_failed_lock PASSWORD EXPIRE DEFAULT FAILED_LOGIN_ATTEMPTS 5 PASSWORD_LOCK_TIME 7" db-types="Doris" />
     <sql-case id="create_user_password_lock_time_unbounded_doris" value="CREATE USER user_lock_unbounded PASSWORD EXPIRE DEFAULT PASSWORD_LOCK_TIME UNBOUNDED" db-types="Doris" />
     <sql-case id="create_user_require_ssl_doris" value="CREATE USER user_ssl REQUIRE SSL" db-types="Doris" />

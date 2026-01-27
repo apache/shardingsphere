@@ -18,4 +18,5 @@
 
 <sql-parser-test-cases>
     <restart sql-case-id="restart_server_mysql" />
+    <restart sql-case-id="restart_server_doris" />
 </sql-parser-test-cases>

@@ -21,4 +21,5 @@
     <drop-procedure sql-case-id="drop_multiple_procedure" />
     <drop-procedure sql-case-id="drop_procedure_for_oracle" />
     <drop-procedure sql-case-id="drop_procedure_mysql" />
+    <drop-procedure sql-case-id="drop_procedure_doris" />
 </sql-parser-test-cases>

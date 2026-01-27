@@ -21,4 +21,5 @@
     <sql-case id="drop_multiple_procedure" value="DROP PROCEDURE dbo.uspGetSalesbyMonth, dbo.uspUpdateSalesQuotes, dbo.uspGetSalesByYear;" db-types="SQLServer" />
     <sql-case id="drop_procedure_for_oracle" value="DROP PROCEDURE hr.remove_emp" db-types="Oracle" />
     <sql-case id="drop_procedure_mysql" value="DROP PROCEDURE proc1" db-types="MySQL" />
+    <sql-case id="drop_procedure_doris" value="DROP PROCEDURE doris_proc_control" db-types="Doris" />
 </sql-cases>
