@@ -13385,4 +13385,49 @@
             <collection-table start-index="14" stop-index="30" />
         </from>
     </select>
+
+    <select sql-case-id="select_table_collection_function_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <collection-table alias="t" start-index="14" stop-index="34" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_xmlcdata_function_oracle">
+        <projections start-index="7" stop-index="22">
+            <expression-projection text="XMLCDATA('text')" start-index="7" stop-index="22" />
+        </projections>
+        <from>
+            <simple-table name="dual" start-index="29" stop-index="32" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_format_function_oracle">
+        <projections start-index="7" stop-index="26">
+            <expression-projection text="FORMAT('abc', '999')" start-index="7" stop-index="26" />
+        </projections>
+        <from>
+            <simple-table name="dual" start-index="33" stop-index="36" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_first_value_oracle">
+        <projections start-index="7" stop-index="48">
+            <expression-projection text="FIRST_VALUE(salary) OVER (ORDER BY salary)" start-index="7" stop-index="48" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="55" stop-index="63" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_datetime_lbe_literal_oracle">
+        <projections start-index="7" stop-index="32">
+            <expression-projection text="{ts '2020-02-02 10:00:00'}" start-index="7" stop-index="32" />
+        </projections>
+        <from>
+            <simple-table name="dual" start-index="39" stop-index="42" />
+        </from>
+    </select>
 </sql-parser-test-cases>
