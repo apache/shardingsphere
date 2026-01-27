@@ -27,6 +27,24 @@
         <comment start-index="0" stop-index="19" text="/*FORCE_IMCI_NODES*/" />
         <comment start-index="28" stop-index="68" text="/*+ SET_VAR(cost_threshold_for_imci=0) */" />
     </select>
+
+    <select sql-case-id="select_from_regular_function_table_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from>
+            <function-table table-alias="f">
+                <table-function function-name="my_func" text="my_func(1, 2)">
+                    <parameter>
+                        <literal-expression value="1" start-index="22" stop-index="22" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="2" start-index="25" stop-index="25" />
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
     
     <select sql-case-id="select_position_function">
         <projections start-index="7" stop-index="97">
@@ -6188,6 +6206,15 @@
         </projections>
         <from>
             <simple-table name="DUAL" start-index="96" stop-index="99" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_xmlpi_evalname_function">
+        <projections start-index="7" stop-index="39">
+            <expression-projection text="XMLPI(EVALNAME 'target', 'value')" start-index="11" stop-index="39" />
+        </projections>
+        <from>
+            <simple-table name="dual" start-index="46" stop-index="49" />
         </from>
     </select>
 
@@ -13451,6 +13478,18 @@
             <function-table table-alias="xt">
                 <table-function function-name="XMLTABLE"
                                 text="XMLTABLE(XMLNAMESPACES(DEFAULT 'uri', 'urn:ns1' AS ns1), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy')" />
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_xmlnamespaces_multiple_default_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <function-table table-alias="xt">
+                <table-function function-name="XMLTABLE"
+                                text="XMLTABLE(XMLNAMESPACES(DEFAULT 'uri0', DEFAULT 'uri1'), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy')" />
             </function-table>
         </from>
     </select>

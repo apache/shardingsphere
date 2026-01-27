@@ -201,11 +201,14 @@
     <sql-case id="select_xmlforest_function" value="SELECT XMLFOREST(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary) FROM employees e WHERE employee_id = 204;" db-types="Oracle" />
     <sql-case id="select_xmlparse_function" value="SELECT XMLPARSE(DOCUMENT 'DEPTXML' WELLFORMED) AS dept FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_xmlpi_function" value="SELECT XMLPI(NAME &quot;Order analysisComp&quot;, 'imported, reconfigured, disassembled') AS 'XMLPI' FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_xmlpi_evalname_function" value="SELECT XMLPI(EVALNAME 'target', 'value') FROM dual;" db-types="Oracle" />
     <sql-case id="select_xmlquery_function" value="SELECT XMLQUERY('//student[@age=20]' PASSING BY VALUE xcol AS x RETURNING CONTENT NULL ON EMPTY) FROM x_table;" db-types="Oracle" />
     <sql-case id="select_xmlroot_function" value="SELECT XMLROOT(XMLType('143598'), VERSION '1.0', STANDALONE YES) AS 'XMLROOT' FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_xmlserialize_function" value="SELECT XMLSERIALIZE(DOCUMENT c2 AS BLOB ENCODING 'UTF-8' VERSION 'a' INDENT SIZE = 0 SHOW DEFAULTS) FROM b;" db-types="Oracle" />
     <sql-case id="select_from_xmltable_function" value="SELECT warehouse_name warehouse, warehouse2.Water, warehouse2.Rail FROM warehouses, XMLTABLE('/Warehouse' PASSING warehouses.warehouse_spec COLUMNS &quot;Water&quot; varchar2(6) PATH 'WaterAccess',&quot;Rail&quot; varchar2(6) PATH 'RailAccess') warehouse2;" db-types="Oracle" />
     <sql-case id="select_from_xmltable_with_namespaces_oracle" value="SELECT * FROM XMLTABLE(XMLNAMESPACES(DEFAULT 'uri0', 'uri1' AS ns1, 'uri2' AS ns2), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy') xt" db-types="Oracle" />
+    <sql-case id="select_with_xmlnamespaces_multiple_default_oracle" value="SELECT * FROM XMLTABLE(XMLNAMESPACES(DEFAULT 'uri0', DEFAULT 'uri1'), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy') xt" db-types="Oracle" />
+    <sql-case id="select_from_regular_function_table_oracle" value="SELECT * FROM my_func(1, 2) f" db-types="Oracle" />
     <sql-case id="select_with_null_keyword_in_projection" value="select null as order_id, item_id from t_order" db-types="MySQL" />
     <sql-case id="select_literal_type_cast_money" value="SELECT '$99'::money" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_positional_parameter_type_cast_money" value="SELECT $1::money" db-types="PostgreSQL,openGauss" case-types="Placeholder" />
