@@ -81,6 +81,11 @@ alterTable
     | alterTableCommonClause createTag
     | alterTableCommonClause dropBranch
     | alterTableCommonClause dropTag
+    | alterTableCommonClause EXECUTE alterTableExecuteClause
+    ;
+
+alterTableExecuteClause
+    : CHERRY_PICK NUMBER_
     ;
 
 createView

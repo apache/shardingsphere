@@ -2749,4 +2749,12 @@
             </column-definition>
         </add-column>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_execute_cherry_pick">
+        <table name="test" start-index="12" stop-index="15" />
+        <execute>
+            <keyword>CHERRY-PICK</keyword>
+            <number-literal value="8602659039622823857" start-index="32" stop-index="51" />
+        </execute>
+    </alter-table>
 </sql-parser-test-cases>
