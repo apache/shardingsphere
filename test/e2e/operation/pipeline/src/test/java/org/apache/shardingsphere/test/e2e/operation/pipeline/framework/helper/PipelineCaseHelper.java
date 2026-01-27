@@ -167,7 +167,14 @@ public final class PipelineCaseHelper {
         return ThreadLocalRandom.current().nextInt(-1000000000, 1000000000) / 1000000.0D;
     }
     
-    private static List<Object[]> generateOrderItemInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {
+    /**
+     * Generate order item insert data.
+     *
+     * @param keyGenerateAlgorithm key generate algorithm
+     * @param insertRows insert rows
+     * @return order item insert data
+     */
+    public static List<Object[]> generateOrderItemInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {
         List<Object[]> result = new ArrayList<>(insertRows);
         for (int i = 0; i < insertRows; i++) {
             Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();

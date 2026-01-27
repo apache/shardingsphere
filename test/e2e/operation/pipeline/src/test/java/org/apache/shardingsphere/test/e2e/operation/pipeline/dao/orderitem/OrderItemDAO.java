@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlbuilder.OrderItemSQLBuilder;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
 
 import javax.sql.DataSource;
@@ -57,11 +59,11 @@ public final class OrderItemDAO {
     /**
      * Batch insert order items.
      *
-     * @param params insert parameters
+     * @param insertRows insert rows
      * @throws SQLException SQL exception
      */
-    // TODO Generate params internally
-    public void batchInsert(final List<Object[]> params) throws SQLException {
+    public void batchInsert(final int insertRows) throws SQLException {
+        List<Object[]> params = PipelineCaseHelper.generateOrderItemInsertData(new AutoIncrementKeyGenerateAlgorithm(), insertRows);
         DataSourceExecuteUtils.execute(dataSource, sqlBuilder.buildPreparedInsertSQL(), params);
     }
 }
