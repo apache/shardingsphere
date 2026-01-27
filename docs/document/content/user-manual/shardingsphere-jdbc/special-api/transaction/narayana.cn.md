@@ -68,7 +68,7 @@ Apache ShardingSphere 提供 XA 事务，集成了 Narayana 的实现。
 
 可以通过在项目的 classpath 中添加 `jbossts-properties.xml` 来定制化 Narayana 配置项。
 
-详情请参见 [Narayana 官方文档](https://narayana.io/documentation/index.html) 。
+详情请参见 [Narayana 官方文档](https://narayana.io/documentation/) 。
 
 对于 `jbossts-properties.xml` 的最小配置，ShardingSphere 要求定义 Narayana 的 `CoreEnvironmentBean.nodeIdentifier` 属性。
 如果 Narayana 的 object store 并非在不同的 Narayana 实例之间共享，你可以将此值设置为 `1`。一个可能的 `jbossts-properties.xml` 配置如下，

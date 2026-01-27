@@ -52,6 +52,7 @@
     <sql-case id="select_set_function" value="SELECT customer_id, SET(cust_address_ntab) address FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
     <sql-case id="select_pivot" value="SELECT pivotAlias.* FROM (SELECT * FROM sales) PIVOT (SUM(amount) FOR month IN ('Jan', 'Feb')) pivotAlias" db-types="Oracle"/>
     <sql-case id="select_unpivot" value="SELECT * FROM (SELECT * FROM sales) UNPIVOT ((cert_type, cert_number) FOR cert_source IN ((primary_cert_type, primary_cert_no), (alt_cert_type1, alt_cert_no1), (alt_cert_type2, alt_cert_no2)))" db-types="Oracle"/>
+    <sql-case id="select_feature_compare_oracle" value="SELECT FEATURE_COMPARE(model USING *) FROM dual" db-types="Oracle" />
     <sql-case id="select_string_split_function" value="SELECT value as tag, COUNT(*) AS [number_of_articles] FROM Product CROSS APPLY STRING_SPLIT(Tags, ',') GROUP BY value HAVING COUNT(*) > 2 ORDER BY COUNT(*) DESC"  db-types="SQLServer"/>
     <sql-case id="select_from_open_json_function" value="SELECT * FROM OPENJSON(@array) WITH (  month VARCHAR(3), temp int, month_id tinyint '$.sql:identity()') as months" db-types="SQLServer"/>
     <sql-case id="select_from_open_json_function_with_path" value="SELECT [key], value FROM OPENJSON(@json,'$.path.to.&quot;sub-object&quot;')" db-types="SQLServer"/>

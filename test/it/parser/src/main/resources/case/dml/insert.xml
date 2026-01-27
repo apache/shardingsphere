@@ -2478,6 +2478,59 @@
         </select>
     </insert>
 
+    <insert sql-case-id="insert_first_with_conditional_when_else">
+        <multi-table-insert-type value="FIRST" />
+        <multi-table-conditional-into start-index="7" stop-index="121">
+            <conditional-into-when-then start-index="13" stop-index="79">
+                <when start-index="13" stop-index="35">
+                    <binary-operation-expression start-index="18" stop-index="35">
+                        <left>
+                            <column name="order_total" start-index="18" stop-index="28" />
+                        </left>
+                        <operator>&lt;=</operator>
+                        <right>
+                            <literal-expression value="100" start-index="33" stop-index="35" />
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="42" stop-index="79">
+                    <insert-statement>
+                        <table name="small_orders" start-index="47" stop-index="58" />
+                        <columns start-index="59" stop-index="59" />
+                        <values start-index="60" stop-index="79">
+                            <value>
+                                <assignment-value>
+                                    <column name="order_total" start-index="68" stop-index="78" />
+                                </assignment-value>
+                            </value>
+                        </values>
+                    </insert-statement>
+                </then>
+            </conditional-into-when-then>
+            <conditional-into-else start-index="81" stop-index="121">
+                <insert-statement>
+                    <table name="big_orders" start-index="91" stop-index="100" />
+                    <columns start-index="101" stop-index="101" />
+                    <values start-index="102" stop-index="121">
+                        <value>
+                            <assignment-value>
+                                <column name="order_total" start-index="110" stop-index="120" />
+                            </assignment-value>
+                        </value>
+                    </values>
+                </insert-statement>
+            </conditional-into-else>
+        </multi-table-conditional-into>
+        <select>
+            <projections start-index="130" stop-index="140">
+                <column-projection name="order_total" start-index="130" stop-index="140" />
+            </projections>
+            <from start-index="142" stop-index="152">
+                <simple-table name="orders" start-index="147" stop-index="152" />
+            </from>
+        </select>
+    </insert>
+
     <insert sql-case-id="insert_with_rank_column">
         <table name="sales" start-index="12" stop-index="16" />
         <columns start-index="18" stop-index="23">
