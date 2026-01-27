@@ -13439,4 +13439,35 @@
             <simple-table name="dual" start-index="43" stop-index="46" />
         </from>
     </select>
+
+    <select sql-case-id="select_with_table_dblink_oracle">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_into_variable_oracle">
+        <projections start-index="7" stop-index="12">
+            <column-projection name="status" start-index="7" stop-index="12" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="35" stop-index="41" />
+        </from>
+        <where start-index="43" stop-index="60">
+            <expr>
+                <binary-operation-expression start-index="49" stop-index="60">
+                    <left>
+                        <column name="order_id" start-index="49" stop-index="56" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="60" stop-index="60" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>
