@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.small;
+package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.small.sqlbuilder.StringPkSmallOrderSQLBuilder;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large.sqlbuilder.IntPkLargeOrderSQLBuilder;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
 
 import javax.sql.DataSource;
@@ -30,20 +30,23 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * String PK small order DAO. Small table means the table has few columns.
+ * Int PK large order DAO. Large table means the table has many columns.
  */
 @Slf4j
-public final class StringPkSmallOrderDAO {
+public final class IntPkLargeOrderDAO {
     
     private final DataSource dataSource;
     
-    private final StringPkSmallOrderSQLBuilder sqlBuilder;
+    private final DatabaseType databaseType;
+    
+    private final IntPkLargeOrderSQLBuilder sqlBuilder;
     
     private final String tableName;
     
-    public StringPkSmallOrderDAO(final DataSource dataSource, final DatabaseType databaseType, final String tableName) {
+    public IntPkLargeOrderDAO(final DataSource dataSource, final DatabaseType databaseType, final String tableName) {
         this.dataSource = dataSource;
-        this.sqlBuilder = DatabaseTypedSPILoader.getService(StringPkSmallOrderSQLBuilder.class, databaseType);
+        this.databaseType = databaseType;
+        this.sqlBuilder = DatabaseTypedSPILoader.getService(IntPkLargeOrderSQLBuilder.class, databaseType);
         this.tableName = tableName;
     }
     
@@ -54,7 +57,7 @@ public final class StringPkSmallOrderDAO {
      */
     public void createTable() throws SQLException {
         String sql = sqlBuilder.buildCreateTableSQL(tableName);
-        log.info("Create string pk small order table SQL: {}", sql);
+        log.info("Create int pk large order table SQL: {}", sql);
         DataSourceExecuteUtils.execute(dataSource, sql);
     }
     
@@ -65,9 +68,9 @@ public final class StringPkSmallOrderDAO {
      * @throws SQLException SQL exception
      */
     public void batchInsert(final int recordCount) throws SQLException {
-        List<Object[]> paramsList = PipelineCaseHelper.generateSmallOrderInsertData(new UUIDKeyGenerateAlgorithm(), recordCount);
+        List<Object[]> paramsList = PipelineCaseHelper.generateOrderInsertData(databaseType, new AutoIncrementKeyGenerateAlgorithm(), recordCount);
         String sql = sqlBuilder.buildPreparedInsertSQL(tableName);
-        log.info("Batch insert string pk small order SQL: {}, params list size: {}", sql, paramsList.size());
+        log.info("Batch insert int pk large order SQL: {}, params list size: {}", sql, paramsList.size());
         DataSourceExecuteUtils.execute(dataSource, sql, paramsList);
     }
     
@@ -79,10 +82,11 @@ public final class StringPkSmallOrderDAO {
      * @param status status
      * @throws SQLException SQL exception
      */
+    // TODO Update insert params
     public void insert(final String orderId, final int userId, final String status) throws SQLException {
         String sql = sqlBuilder.buildPreparedInsertSQL(tableName);
         Object[] params = new Object[]{orderId, userId, status};
-        log.info("Insert string pk small order SQL: {}, params: {}", sql, params);
+        log.info("Insert int pk large order SQL: {}, params: {}", sql, params);
         DataSourceExecuteUtils.execute(dataSource, sql, params);
     }
 }
