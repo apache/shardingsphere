@@ -29,6 +29,7 @@
     <sql-case id="select_into_with_lock_before_into" value="SELECT status FROM t_order WHERE order_id = ? FOR UPDATE INTO @var1" db-types="MySQL" />
     <sql-case id="select_into_param_without_at" value="SELECT 1 INTO a" db-types="MySQL" />
     <sql-case id="select_into_with_variable" value="SELECT select_list INTO record_variable_name FROM table_or_view_name" db-types="Oracle" />
+    <sql-case id="select_bulk_collect_into_oracle" value="SELECT deptno BULK COLLECT INTO v_tab FROM dept" db-types="Oracle" />
     <sql-case id="select_into_table_with_try_cast_function" value="SELECT machine.temperature, udf.ASAEdgeUDFDemo_Class1_SquareFunction(try_cast(machine.temperature as bigint)) INTO Output FROM Input;" db-types="SQLServer"/>
     <sql-case id="select_into_table_before_from" value="SELECT * INTO dbo.NewProducts FROM Production.Product WHERE ListPrice &gt; $25 AND ListPrice &lt; $100;" db-types="SQLServer"/>
     <sql-case id="select_into_simple_table" value="SELECT film_id, title, rental_rate INTO TABLE film_r FROM film WHERE rating = 'R' AND rental_duration = 5 ORDER BY title" db-types="PostgreSQL, openGauss"/>
