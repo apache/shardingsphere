@@ -97,6 +97,7 @@ class ShardingInsertRouteContextCheckerTest {
     
     private InsertStatementContext createInsertStatementContext(final InsertStatement insertStatement) {
         when(database.getName()).thenReturn("foo_db");
+        when(database.getProtocolType()).thenReturn(databaseType);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
         return new InsertStatementContext(insertStatement, metaData, "foo_db");
     }

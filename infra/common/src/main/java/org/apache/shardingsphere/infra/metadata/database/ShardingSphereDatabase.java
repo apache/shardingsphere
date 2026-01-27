@@ -66,7 +66,8 @@ public final class ShardingSphereDatabase {
         this.protocolType = protocolType;
         this.resourceMetaData = resourceMetaData;
         this.ruleMetaData = ruleMetaData;
-        this.schemas = new ConcurrentHashMap<>(schemas.stream().collect(Collectors.toMap(each -> new ShardingSphereIdentifier(each.getName()), each -> each)));
+        this.schemas = new ConcurrentHashMap<>(schemas.stream()
+                .collect(Collectors.toMap(each -> new ShardingSphereIdentifier(each.getName(), protocolType), each -> each)));
     }
     
     /**
@@ -85,7 +86,7 @@ public final class ShardingSphereDatabase {
      * @return contains schema from database or not
      */
     public boolean containsSchema(final String schemaName) {
-        return schemas.containsKey(new ShardingSphereIdentifier(schemaName));
+        return schemas.containsKey(new ShardingSphereIdentifier(schemaName, protocolType));
     }
     
     /**
@@ -95,7 +96,7 @@ public final class ShardingSphereDatabase {
      * @return schema
      */
     public ShardingSphereSchema getSchema(final String schemaName) {
-        return schemas.get(new ShardingSphereIdentifier(schemaName));
+        return schemas.get(new ShardingSphereIdentifier(schemaName, protocolType));
     }
     
     /**
@@ -104,7 +105,7 @@ public final class ShardingSphereDatabase {
      * @param schema schema
      */
     public void addSchema(final ShardingSphereSchema schema) {
-        schemas.put(new ShardingSphereIdentifier(schema.getName()), schema);
+        schemas.put(new ShardingSphereIdentifier(schema.getName(), protocolType), schema);
     }
     
     /**
@@ -113,7 +114,7 @@ public final class ShardingSphereDatabase {
      * @param schemaName schema name
      */
     public void dropSchema(final String schemaName) {
-        schemas.remove(new ShardingSphereIdentifier(schemaName));
+        schemas.remove(new ShardingSphereIdentifier(schemaName, protocolType));
     }
     
     /**

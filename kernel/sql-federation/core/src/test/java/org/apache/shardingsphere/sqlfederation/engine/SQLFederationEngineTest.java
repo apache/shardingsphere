@@ -22,6 +22,7 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.SqlExplainLevel;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
@@ -217,6 +218,7 @@ class SQLFederationEngineTest {
                     when(schemaOption.getDefaultSchema()).thenReturn(Optional.of("public"));
                     DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
                     when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(schemaOption);
+                    when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.LOWER_CASE);
                     when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
                 });
                 MockedConstruction<SQLFederationRelConverter> ignoredConverter = mockConstruction(SQLFederationRelConverter.class, (mock, context) -> {
@@ -333,6 +335,7 @@ class SQLFederationEngineTest {
                     when(schemaOption.getDefaultSchema()).thenReturn(Optional.of("public"));
                     DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
                     when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(schemaOption);
+                    when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.LOWER_CASE);
                     when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
                 });
                 MockedConstruction<SQLFederationRelConverter> ignoredConverter = mockConstruction(SQLFederationRelConverter.class,

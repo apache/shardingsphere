@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -34,7 +35,7 @@ import static org.mockito.Mockito.when;
 
 class ShardingSphereSchemaTest {
     
-    private final DatabaseType databaseType = mock(DatabaseType.class);
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertGetAllTables() {
@@ -60,7 +61,7 @@ class ShardingSphereSchemaTest {
     
     @Test
     void assertPutTable() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", mock(DatabaseType.class));
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("foo_tbl");
         schema.putTable(table);
@@ -129,7 +130,7 @@ class ShardingSphereSchemaTest {
     
     @Test
     void assertContainsIndexWithTableNotExists() {
-        assertFalse(new ShardingSphereSchema("foo_db", mock(DatabaseType.class)).containsIndex("nonexistent_tbl", "nonexistent_idx"));
+        assertFalse(new ShardingSphereSchema("foo_db", databaseType).containsIndex("nonexistent_tbl", "nonexistent_idx"));
     }
     
     @Test
@@ -163,7 +164,7 @@ class ShardingSphereSchemaTest {
     
     @Test
     void assertGetVisibleColumnAndIndexMapWhenNotContainsTable() {
-        assertTrue(new ShardingSphereSchema("foo_db", mock(DatabaseType.class)).getVisibleColumnAndIndexMap("nonexistent_tbl").isEmpty());
+        assertTrue(new ShardingSphereSchema("foo_db", databaseType).getVisibleColumnAndIndexMap("nonexistent_tbl").isEmpty());
     }
     
     @Test
@@ -178,6 +179,6 @@ class ShardingSphereSchemaTest {
     
     @Test
     void assertIsEmpty() {
-        assertTrue(new ShardingSphereSchema("foo_db", mock(DatabaseType.class)).isEmpty());
+        assertTrue(new ShardingSphereSchema("foo_db", databaseType).isEmpty());
     }
 }

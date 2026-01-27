@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.statistics.TableStatistics;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -48,6 +49,8 @@ import static org.mockito.Mockito.when;
 
 class MemoryTableStatisticsBuilderTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertBuildDatabaseData() {
         DialectDriverQuerySystemCatalogOption option = mock(DialectDriverQuerySystemCatalogOption.class);
@@ -67,8 +70,8 @@ class MemoryTableStatisticsBuilderTest {
     void assertBuildTableData() {
         DialectDriverQuerySystemCatalogOption option = mock(DialectDriverQuerySystemCatalogOption.class);
         when(option.isTableDataTable("pg_tables")).thenReturn(true);
-        ShardingSphereSchema schema1 = new ShardingSphereSchema("public", Collections.singleton(mockTable("t_order")), Collections.emptyList(), mock(DatabaseType.class));
-        ShardingSphereSchema schema2 = new ShardingSphereSchema("logic", Collections.singleton(mockTable("t_user")), Collections.emptyList(), mock(DatabaseType.class));
+        ShardingSphereSchema schema1 = new ShardingSphereSchema("public", Collections.singleton(mockTable("t_order")), Collections.emptyList(), databaseType);
+        ShardingSphereSchema schema2 = new ShardingSphereSchema("logic", Collections.singleton(mockTable("t_user")), Collections.emptyList(), databaseType);
         ShardingSphereDatabase database = mockDatabase("foo_db", Arrays.asList(schema1, schema2));
         ShardingSphereMetaData metaData = createMetaData(Collections.singleton(database), new RuleMetaData(Collections.emptyList()));
         TableStatistics actual = MemoryTableStatisticsBuilder.buildTableStatistics(mockTable("pg_tables"), metaData, option);
@@ -110,6 +113,7 @@ class MemoryTableStatisticsBuilderTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getName()).thenReturn(name);
         when(result.getAllSchemas()).thenReturn(schemas);
+        when(result.getProtocolType()).thenReturn(databaseType);
         return result;
     }
     

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -60,7 +61,7 @@ class MySQLShardingShowTableStatusMergedResultTest {
         rule = buildShardingRule();
         schema = new ShardingSphereSchema("foo_db",
                 Collections.singleton(new ShardingSphereTable("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList(),
-                mock(DatabaseType.class));
+                TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
     }
     
     private ShardingRule buildShardingRule() {

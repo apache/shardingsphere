@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatist
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
@@ -79,6 +80,8 @@ import static org.mockito.Mockito.withSettings;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class LocalConfigurationMetaDataContextsInitFactoryTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Mock
     private PersistRepository repository;
     
@@ -87,7 +90,7 @@ class LocalConfigurationMetaDataContextsInitFactoryTest {
         Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap("foo_db", mock(DatabaseConfiguration.class));
         Map<String, StorageUnit> storageUnits = Collections.singletonMap("foo_ds", mock(StorageUnit.class, RETURNS_DEEP_STUBS));
         ShardingSphereDatabase database = createDatabase("foo_db",
-                Collections.singleton(new ShardingSphereSchema("empty_schema", mock(DatabaseType.class))), storageUnits, Collections.singletonList(mock(ShardingSphereRule.class)));
+                Collections.singleton(new ShardingSphereSchema("empty_schema", databaseType)), storageUnits, Collections.singletonList(mock(ShardingSphereRule.class)));
         ShardingSphereStatistics statistics = createStatistics("foo_db", "empty_schema");
         ComputeNodeInstanceContext instanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
         when(ShardingSphereDatabasesFactory.create(eq(databaseConfigs), any(ConfigurationProperties.class), eq(instanceContext), any(DatabaseType.class)))
@@ -115,7 +118,7 @@ class LocalConfigurationMetaDataContextsInitFactoryTest {
     void assertCreateWithPersistSchemasDisabled() throws SQLException {
         Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap("foo_db", mock(DatabaseConfiguration.class));
         ShardingSphereSchema schema = new ShardingSphereSchema("non_empty_schema", Collections.singleton(new ShardingSphereTable("t_order",
-                Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList(), mock(DatabaseType.class));
+                Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList(), databaseType);
         ShardingSphereDatabase database = createDatabase("foo_db", Collections.singleton(schema), Collections.emptyMap(), Collections.emptyList());
         ComputeNodeInstanceContext instanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
         when(ShardingSphereDatabasesFactory.create(eq(databaseConfigs), any(ConfigurationProperties.class), eq(instanceContext), any(DatabaseType.class)))
@@ -140,7 +143,7 @@ class LocalConfigurationMetaDataContextsInitFactoryTest {
     
     private ShardingSphereDatabase createDatabase(final String databaseName, final Collection<ShardingSphereSchema> schemas,
                                                   final Map<String, StorageUnit> storageUnits, final Collection<ShardingSphereRule> rules) {
-        return new ShardingSphereDatabase(databaseName, mock(DatabaseType.class), new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(rules), schemas);
+        return new ShardingSphereDatabase(databaseName, databaseType, new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(rules), schemas);
     }
     
     private ShardingSphereStatistics createStatistics(final String databaseName, final String schemaName) {

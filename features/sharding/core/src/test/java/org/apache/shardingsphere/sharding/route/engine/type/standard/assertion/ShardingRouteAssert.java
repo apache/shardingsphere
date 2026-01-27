@@ -118,6 +118,6 @@ public final class ShardingRouteAssert {
                 Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_hint_test", Collections.singleton(new ShardingSphereColumn("user_id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        return Collections.singleton(new ShardingSphereSchema("foo_db", tables, Collections.emptyList(), mock(DatabaseType.class)));
+        return Collections.singleton(new ShardingSphereSchema("foo_db", tables, Collections.emptyList(), TypedSPILoader.getService(DatabaseType.class, "MySQL")));
     }
 }

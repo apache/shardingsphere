@@ -111,7 +111,9 @@ public final class EncryptGeneratorFixtureBuilder {
     public static InsertStatementContext createInsertStatementContext(final List<Object> params) {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
+        when(database.getProtocolType()).thenReturn(DATABASE_TYPE);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getProtocolType()).thenReturn(DATABASE_TYPE);
         when(database.getSchema("foo_db")).thenReturn(schema);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         InsertStatementContext result = new InsertStatementContext(createInsertStatement(), metaData, "foo_db");
@@ -217,7 +219,9 @@ public final class EncryptGeneratorFixtureBuilder {
     public static InsertStatementContext createInsertSelectStatementContext(final boolean containsInsertColumns) {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
+        when(database.getProtocolType()).thenReturn(DATABASE_TYPE);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(schema.getProtocolType()).thenReturn(DATABASE_TYPE);
         when(database.getSchema("foo_db")).thenReturn(schema);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
         return new InsertStatementContext(createInsertSelectStatement(containsInsertColumns), metaData, "foo_db");

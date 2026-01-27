@@ -74,6 +74,7 @@ class GroupByMemoryMergedResultTest {
     @Test
     void assertNextForResultSetsAllEmpty() throws SQLException {
         when(database.getName()).thenReturn("db_schema");
+        when(database.getProtocolType()).thenReturn(databaseType);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), database, mock(ConnectionContext.class));
         assertFalse(actual.next());
@@ -82,6 +83,7 @@ class GroupByMemoryMergedResultTest {
     @Test
     void assertNextForSomeResultSetsEmpty() throws SQLException {
         when(database.getName()).thenReturn("db_schema");
+        when(database.getProtocolType()).thenReturn(databaseType);
         QueryResult queryResult1 = createQueryResult();
         when(queryResult1.next()).thenReturn(true, false);
         when(queryResult1.getValue(1, Object.class)).thenReturn(20);
@@ -125,6 +127,7 @@ class GroupByMemoryMergedResultTest {
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
+        when(database.getProtocolType()).thenReturn(databaseType);
         return new SelectStatementContext(
                 selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
     }
@@ -145,6 +148,7 @@ class GroupByMemoryMergedResultTest {
     @Test
     void assertNextForAggregationResultSetsEmpty() throws SQLException {
         when(database.getName()).thenReturn("db_schema");
+        when(database.getProtocolType()).thenReturn(databaseType);
         QueryResult queryResult1 = createQueryResult();
         when(queryResult1.next()).thenReturn(true, false);
         when(queryResult1.getValue(1, Object.class)).thenReturn(20);
@@ -202,6 +206,7 @@ class GroupByMemoryMergedResultTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         when(database.getSchema("foo_db")).thenReturn(schema);
+        when(database.getProtocolType()).thenReturn(databaseType);
         when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         ShardingDQLResultMerger merger = new ShardingDQLResultMerger(databaseType);
         MergedResult actual = merger.merge(Arrays.asList(queryResult, queryResult, queryResult), createSelectStatementContext(database), database, mock(ConnectionContext.class));
@@ -211,6 +216,7 @@ class GroupByMemoryMergedResultTest {
     @Test
     void assertNextForEmptyResultWithCountAndGroupBy() throws SQLException {
         when(database.getName()).thenReturn("db_schema");
+        when(database.getProtocolType()).thenReturn(databaseType);
         QueryResult queryResult1 = createEmptyQueryResultWithCountGroupBy();
         QueryResult queryResult2 = createEmptyQueryResultWithCountGroupBy();
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
@@ -221,6 +227,7 @@ class GroupByMemoryMergedResultTest {
     @Test
     void assertNextForEmptyResultWithCountGroupByDifferentOrderBy() throws SQLException {
         when(database.getName()).thenReturn("db_schema");
+        when(database.getProtocolType()).thenReturn(databaseType);
         QueryResult queryResult = createEmptyQueryResultWithCountGroupBy();
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
         MergedResult actual = resultMerger.merge(Collections.singletonList(queryResult), createSelectStatementContextForCountGroupByDifferentOrderBy(), database, mock(ConnectionContext.class));
@@ -246,6 +253,7 @@ class GroupByMemoryMergedResultTest {
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
+        when(database.getProtocolType()).thenReturn(databaseType);
         return new SelectStatementContext(
                 selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
     }
@@ -259,6 +267,7 @@ class GroupByMemoryMergedResultTest {
         selectStatement.setProjections(projectionsSegment);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
+        when(database.getProtocolType()).thenReturn(databaseType);
         return new SelectStatementContext(
                 selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
     }

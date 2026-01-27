@@ -82,6 +82,7 @@ class OpenGaussSQLParserEngineTest {
         when(database.getName()).thenReturn("logic_db");
         when(database.containsSchema("test")).thenReturn(true);
         when(database.getSchema("test")).thenReturn(testSchema);
+        when(database.getProtocolType()).thenReturn(databaseType);
         return new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
 }
