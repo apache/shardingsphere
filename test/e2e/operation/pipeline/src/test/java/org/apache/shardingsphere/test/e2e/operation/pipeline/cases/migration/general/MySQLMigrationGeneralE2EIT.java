@@ -92,8 +92,8 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             distSQLFacade.pauseJob(orderJobId);
             distSQLFacade.resumeJob(orderJobId);
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
-            containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order", 10000);
-            containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order_item", 10000);
+            containerComposer.assertRecordExists(jdbcDataSource, "t_order", 10000);
+            containerComposer.assertRecordExists(jdbcDataSource, "t_order_item", 10000);
             assertMigrationSuccessById(distSQLFacade, orderJobId, "DATA_MATCH", ImmutableMap.of("chunk-size", "300", "streaming-range-type", "SMALL"));
             String orderItemJobId = distSQLFacade.getJobIdByTableName("ds_0.t_order_item");
             assertMigrationSuccessById(distSQLFacade, orderItemJobId, "DATA_MATCH", ImmutableMap.of("chunk-size", "300", "streaming-range-type", "LARGE"));

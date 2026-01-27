@@ -471,29 +471,29 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     /**
-     * Assert order record exists in proxy.
+     * Assert record exists.
      *
      * @param dataSource data source
      * @param tableName table name
      * @param orderId order id
      */
-    public void assertOrderRecordExist(final DataSource dataSource, final String tableName, final Object orderId) {
+    public void assertRecordExists(final DataSource dataSource, final String tableName, final Object orderId) {
         String sql;
         if (orderId instanceof String) {
             sql = String.format("SELECT 1 FROM %s WHERE order_id = '%s' AND user_id>0", tableName, orderId);
         } else {
             sql = String.format("SELECT 1 FROM %s WHERE order_id = %s AND user_id>0", tableName, orderId);
         }
-        assertOrderRecordExist(dataSource, sql);
+        assertRecordExists(dataSource, sql);
     }
     
     /**
-     * Assert proxy order record exist.
+     * Assert record exists.
      *
      * @param dataSource data source
      * @param sql SQL
      */
-    public void assertOrderRecordExist(final DataSource dataSource, final String sql) {
+    public void assertRecordExists(final DataSource dataSource, final String sql) {
         boolean recordExist = false;
         for (int i = 0; i < 5; i++) {
             List<Map<String, Object>> result = queryForListWithLog(dataSource, sql);
@@ -503,7 +503,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
             }
             sleepSeconds(2);
         }
-        assertTrue(recordExist, "Order record does not exist");
+        assertTrue(recordExist, "Record does not exist");
     }
     
     /**

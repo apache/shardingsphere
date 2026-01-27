@@ -95,7 +95,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             containerComposer.sourceExecuteWithLog(String.format("INSERT INTO %s (order_id, user_id, status) VALUES (10000, 1, 'OK')", qualifiedTableName));
             // TODO Insert new record in t_order_item
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
-            containerComposer.assertOrderRecordExist(jdbcDataSource, qualifiedTableName, 10000);
+            containerComposer.assertRecordExists(jdbcDataSource, qualifiedTableName, 10000);
             checkOrderMigration(distSQLFacade, jobId);
             startMigrationWithSchema(containerComposer, "t_order_item", "t_order_item");
             checkOrderItemMigration(distSQLFacade);

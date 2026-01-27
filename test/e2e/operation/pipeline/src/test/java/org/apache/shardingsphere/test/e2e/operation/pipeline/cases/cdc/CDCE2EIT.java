@@ -134,7 +134,7 @@ class CDCE2EIT {
             for (int i = 1; i <= 4; i++) {
                 int orderId = 10000 + i;
                 containerComposer.proxyExecuteWithLog(String.format("INSERT INTO %s (order_id, user_id, status) VALUES (%d, %d, 'OK')", tableName, orderId, i), 0);
-                containerComposer.assertOrderRecordExist(targetDataSource, tableName, orderId);
+                containerComposer.assertRecordExists(targetDataSource, tableName, orderId);
             }
             QualifiedTable orderQualifiedTable = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()
                     ? new QualifiedTable(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME)
