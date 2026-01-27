@@ -3820,7 +3820,7 @@
         <as-select query="SELECT * FROM source" start-index="48" stop-index="64" />
     </create-table>
 
-     <create-table sql-case-id="create_table_with_date_trunc_column">
+    <create-table sql-case-id="create_table_with_date_trunc_column">
         <table name="t_keyword_date_trunc" start-index="13" stop-index="32" />
         <column-definition type="INT" start-index="35" stop-index="48">
             <column name="DATE_TRUNC" />
