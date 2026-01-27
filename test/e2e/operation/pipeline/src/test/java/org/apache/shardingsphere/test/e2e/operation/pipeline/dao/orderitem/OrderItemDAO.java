@@ -26,9 +26,7 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.util.AutoIncrementK
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 @Slf4j
@@ -49,11 +47,7 @@ public final class OrderItemDAO {
      * @throws SQLException SQL exception
      */
     public void createTable() throws SQLException {
-        try (
-                Connection connection = dataSource.getConnection();
-                Statement statement = connection.createStatement()) {
-            statement.execute(sqlBuilder.buildCreateTableSQL());
-        }
+        DataSourceExecuteUtils.execute(dataSource, sqlBuilder.buildCreateTableSQL());
     }
     
     /**

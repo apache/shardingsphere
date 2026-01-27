@@ -25,6 +25,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 /**
@@ -38,14 +39,13 @@ public final class DataSourceExecuteUtils {
      *
      * @param dataSource data source
      * @param sql SQL
-     * @throws SQLWrapperException SQL wrapper exception
+     * @throws SQLException SQL exception
      */
-    // TODO Delete unused method
-    public static void execute(final DataSource dataSource, final String sql) {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.createStatement().execute(sql);
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
+    public static void execute(final DataSource dataSource, final String sql) throws SQLException {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(sql);
         }
     }
     
