@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGe
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.task.E2EIncrementalTask;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.OrderItemDAO;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.IntPkOrderItemDAO;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings;
@@ -67,7 +67,7 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             distSQLFacade.alterPipelineRule();
             containerComposer.createSourceOrderTable(SOURCE_TABLE_NAME);
-            OrderItemDAO orderItemDAO = new OrderItemDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType());
+            IntPkOrderItemDAO orderItemDAO = new IntPkOrderItemDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType());
             orderItemDAO.createTable();
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);

@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlbuilder.MySQLOrderItemSQLBuilder
-org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlbuilder.PostgreSQLOrderItemSQLBuilder
-org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlbuilder.OpenGaussOrderItemSQLBuilder
+org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlbuilder.MySQLIntPkOrderItemSQLBuilder
+org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlbuilder.PostgreSQLIntPkOrderItemSQLBuilder
+org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlbuilder.OpenGaussIntPkOrderItemSQLBuilder

@@ -17,21 +17,28 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlbuilder;
 
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
-
-public interface OrderItemSQLBuilder extends DatabaseTypedSPI {
+public final class PostgreSQLIntPkOrderItemSQLBuilder implements IntPkOrderItemSQLBuilder {
     
-    /**
-     * Build create table SQL.
-     *
-     * @return create table SQL
-     */
-    String buildCreateTableSQL();
+    @Override
+    public String buildCreateTableSQL() {
+        return """
+                CREATE TABLE test.t_order_item (
+                item_id int8 NOT NULL,
+                order_id int8 NOT NULL,
+                user_id int4 NOT NULL,
+                status varchar(50),
+                PRIMARY KEY (item_id)
+                )
+                """;
+    }
     
-    /**
-     * Build prepared insert SQL.
-     *
-     * @return prepared insert SQL
-     */
-    String buildPreparedInsertSQL();
+    @Override
+    public String buildPreparedInsertSQL() {
+        return "INSERT INTO test.t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)";
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return "PostgreSQL";
+    }
 }

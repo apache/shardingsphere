@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlbuilder;
 
-public final class MySQLOrderItemSQLBuilder implements OrderItemSQLBuilder {
+public final class MySQLIntPkOrderItemSQLBuilder implements IntPkOrderItemSQLBuilder {
     
     @Override
     public String buildCreateTableSQL() {

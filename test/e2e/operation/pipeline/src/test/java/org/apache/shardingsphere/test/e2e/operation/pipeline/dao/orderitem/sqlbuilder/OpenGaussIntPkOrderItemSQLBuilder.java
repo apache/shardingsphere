@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlbuilder;
 
-public final class PostgreSQLOrderItemSQLBuilder implements OrderItemSQLBuilder {
+public final class OpenGaussIntPkOrderItemSQLBuilder implements IntPkOrderItemSQLBuilder {
     
     @Override
     public String buildCreateTableSQL() {
@@ -39,6 +39,6 @@ public final class PostgreSQLOrderItemSQLBuilder implements OrderItemSQLBuilder 
     
     @Override
     public String getDatabaseType() {
-        return "PostgreSQL";
+        return "openGauss";
     }
 }

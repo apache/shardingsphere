@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlbuilder.OrderItemSQLBuilder;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlbuilder.IntPkOrderItemSQLBuilder;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
@@ -30,15 +30,15 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Slf4j
-public final class OrderItemDAO {
+public final class IntPkOrderItemDAO {
     
     private final DataSource dataSource;
     
-    private final OrderItemSQLBuilder sqlBuilder;
+    private final IntPkOrderItemSQLBuilder sqlBuilder;
     
-    public OrderItemDAO(final DataSource dataSource, final DatabaseType databaseType) {
+    public IntPkOrderItemDAO(final DataSource dataSource, final DatabaseType databaseType) {
         this.dataSource = dataSource;
-        sqlBuilder = DatabaseTypedSPILoader.getService(OrderItemSQLBuilder.class, databaseType);
+        sqlBuilder = DatabaseTypedSPILoader.getService(IntPkOrderItemSQLBuilder.class, databaseType);
     }
     
     /**
