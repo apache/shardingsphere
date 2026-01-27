@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.small;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.small.sqlbuilder.StringPkSmallOrderSQLBuilder;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
 
 import javax.sql.DataSource;
@@ -68,7 +68,7 @@ public final class StringPkSmallOrderDAO {
      * @throws SQLException SQL exception
      */
     public void batchInsert(final int insertRows) throws SQLException {
-        List<Object[]> paramsList = PipelineCaseHelper.generateSmallOrderInsertData(new AutoIncrementKeyGenerateAlgorithm(), insertRows);
+        List<Object[]> paramsList = PipelineCaseHelper.generateSmallOrderInsertData(new UUIDKeyGenerateAlgorithm(), insertRows);
         String sql = sqlBuilder.buildPreparedInsertSQL(tableName);
         log.info("Batch insert string pk small order SQL: {}, params list size: {}", sql, paramsList.size());
         DataSourceExecuteUtils.execute(dataSource, sql, paramsList);
