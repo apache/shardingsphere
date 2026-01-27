@@ -21,7 +21,6 @@ public final class MySQLStringPkSmallOrderSQLBuilder implements StringPkSmallOrd
     
     @Override
     public String buildCreateTableSQL(final String tableName) {
-        // TODO Delete t_unsigned_int (from primary_key/text_primary_key/mysql.xml)
         return String.format("""
                 CREATE TABLE `%s` (
                 `order_id` varchar(255) NOT NULL COMMENT 'pk id',

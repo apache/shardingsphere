@@ -26,6 +26,7 @@ public final class PostgreSQLStringPkSmallOrderSQLBuilder implements StringPkSma
                 order_id varchar(255) NOT NULL,
                 user_id int NOT NULL,
                 status varchar(255) NULL,
+                t_unsigned_int int NULL,
                 PRIMARY KEY (order_id)
                 )
                 """, tableName);
