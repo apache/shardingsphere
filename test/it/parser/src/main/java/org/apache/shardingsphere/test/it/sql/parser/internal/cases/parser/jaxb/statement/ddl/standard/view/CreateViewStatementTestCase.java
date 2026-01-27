@@ -41,10 +41,4 @@ public final class CreateViewStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "select")
     private SelectStatementTestCase selectStatement;
-    
-    @XmlAttribute
-    private String comment;
-    
-    @XmlAttribute(name = "if-not-exists")
-    private Boolean ifNotExists;
 }

@@ -412,7 +412,7 @@ createView
       (ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE))?
       ownerStatement?
       (SQL SECURITY (DEFINER | INVOKER))?
-      VIEW (ifNotExists)? viewName (LP_ (columnNames | viewColumnDefinitions) RP_)? commentClause?
+      VIEW viewName (LP_ columnNames RP_)?
       AS select
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
