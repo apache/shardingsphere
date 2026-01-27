@@ -64,4 +64,20 @@ public final class OrderItemDAO {
         log.info("Batch insert order_item SQL: {}, params size: {}", sql, params.size());
         DataSourceExecuteUtils.execute(dataSource, sql, params);
     }
+    
+    /**
+     * Insert order item.
+     *
+     * @param itemId item id
+     * @param orderId order id
+     * @param userId user id
+     * @param status status
+     * @throws SQLException SQL exception
+     */
+    public void insert(final long itemId, final long orderId, final int userId, final String status) throws SQLException {
+        String sql = sqlBuilder.buildPreparedInsertSQL();
+        Object[] params = new Object[]{itemId, orderId, userId, status};
+        log.info("Insert order_item SQL: {}, params: {}", sql, params);
+        DataSourceExecuteUtils.execute(dataSource, sql, params);
+    }
 }
