@@ -20,4 +20,7 @@
     <common sql-case-id="create_logfile_group_mysql" />
     <common sql-case-id="alter_logfile_group_mysql" />
     <common sql-case-id="drop_logfile_group_mysql" />
+    <common sql-case-id="create_logfile_group_doris" />
+    <common sql-case-id="alter_logfile_group_doris" />
+    <common sql-case-id="drop_logfile_group_doris" />
 </sql-parser-test-cases>
