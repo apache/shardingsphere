@@ -13430,4 +13430,13 @@
             <simple-table name="dual" start-index="39" stop-index="42" />
         </from>
     </select>
+
+    <select sql-case-id="select_feature_compare_oracle">
+        <projections start-index="7" stop-index="36">
+            <expression-projection text="FEATURE_COMPARE(model USING *)" start-index="7" stop-index="36" />
+        </projections>
+        <from>
+            <simple-table name="dual" start-index="43" stop-index="46" />
+        </from>
+    </select>
 </sql-parser-test-cases>
