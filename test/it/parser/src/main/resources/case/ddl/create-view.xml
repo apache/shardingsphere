@@ -273,7 +273,19 @@
             </where>
         </select>
     </create-view>
-    
+
+    <create-view sql-case-id="create_or_replace_view_simple_oracle" view-definition="SELECT 1 FROM dual">
+        <view name="v_or_replace" start-index="23" stop-index="34" />
+        <select>
+            <projections start-index="46" stop-index="46">
+                <expression-projection text="1" start-index="46" stop-index="46" />
+            </projections>
+            <from>
+                <simple-table name="dual" start-index="53" stop-index="56" />
+            </from>
+        </select>
+    </create-view>
+
     <create-view sql-case-id="create_view_as_simple_select1" view-definition="SELECT * FROM laurel.emp">
         <view name="employee" start-index="12" stop-index="26">
             <owner name="laurel" start-index="12" stop-index="17" />

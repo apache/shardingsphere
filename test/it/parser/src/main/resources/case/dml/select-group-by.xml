@@ -998,4 +998,17 @@
             <column-item name="dept" start-index="56" stop-index="59" />
         </group-by>
     </select>
+
+    <select sql-case-id="select_group_by_rollup_oracle_with_rollup">
+        <projections start-index="7" stop-index="29">
+            <column-projection name="department_id" start-index="7" stop-index="19" />
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="22" stop-index="29" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="36" stop-index="44" />
+        </from>
+        <group-by start-index="46" stop-index="75">
+            <column-item name="department_id" order-direction="ASC" start-index="62" stop-index="74" />
+        </group-by>
+    </select>
 </sql-parser-test-cases>

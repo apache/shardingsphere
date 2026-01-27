@@ -3174,6 +3174,43 @@
             </subquery-table>
         </from>
     </select>
+
+    <select sql-case-id="select_nchar_literal_oracle">
+        <projections start-index="7" stop-index="12">
+            <expression-projection text="abc" start-index="7" stop-index="12">
+                <expr>
+                    <literal-expression value="abc" start-index="7" stop-index="12" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="dual" start-index="19" stop-index="22" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_datetime_escape_literal_oracle">
+        <projections start-index="7" stop-index="32">
+            <expression-projection text="{ts '2020-01-01 10:00:00'}" start-index="7" stop-index="32">
+                <expr>
+                    <common-expression text="{ts '2020-01-01 10:00:00'}" start-index="7" stop-index="32" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="dual" start-index="39" stop-index="42" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_nested_attribute_oracle">
+        <projections start-index="7" stop-index="20">
+            <column-projection name="c.address.city" start-index="7" stop-index="20">
+                <owner name="c" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
+        <from>
+            <simple-table name="contacts" alias="c" start-index="27" stop-index="36" />
+        </from>
+    </select>
     
     <select sql-case-id="select_inet_function">
         <projections start-index="7" stop-index="55">

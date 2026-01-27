@@ -140,6 +140,20 @@
         </set>
     </update>
 
+    <update sql-case-id="update_with_dblink_oracle">
+        <table start-index="7" stop-index="22">
+            <simple-table name="employees" start-index="7" stop-index="22" />
+        </table>
+        <set start-index="24" stop-index="42">
+            <assignment start-index="24" stop-index="42">
+                <column name="salary" start-index="28" stop-index="33" />
+                <assignment-value>
+                    <column name="salary" start-index="37" stop-index="42" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
     <update sql-case-id="update_with_alias" parameters="'update', 1, 1">
         <table start-index="7" stop-index="18" >
             <simple-table name="t_order" alias="o" start-index="7" stop-index="18" />

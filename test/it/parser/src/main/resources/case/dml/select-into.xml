@@ -455,4 +455,13 @@
         </projections>
         <into-table name="t_backup" start-index="27" stop-index="34" />
     </select>
+
+    <select sql-case-id="select_bulk_collect_into_oracle">
+        <from start-index="38" stop-index="46">
+            <simple-table name="dept" start-index="43" stop-index="46" />
+        </from>
+        <projections start-index="7" stop-index="12">
+            <column-projection name="deptno" start-index="7" stop-index="12" />
+        </projections>
+    </select>
 </sql-parser-test-cases>

@@ -131,6 +131,9 @@
     <sql-case id="select_prediction_bounds_function" value="SELECT cust_id FROM mining_data_apply_v WHERE PREDICTION_BOUNDS(glmr_sh_regr_sample,0.98 USING *).LOWER = 24;" db-types="Oracle" />
     <sql-case id="select_prediction_function" value="SELECT cust_gender FROM mining_data_apply_v WHERE PREDICTION (nb_sh_clas_sample COST MODEL AUTO USING cust_marital_status, aeducation, household_size) = 1;" db-types="Oracle" />
     <sql-case id="select_prediction_details_function" value="SELECT PREDICTION_DETAILS(DT_SH_Clas_sample using *) FROM mining_data_apply_v WHERE occupation = 'TechSup'" db-types="Oracle" />
+    <sql-case id="select_nchar_literal_oracle" value="SELECT N'abc' FROM dual" db-types="Oracle" />
+    <sql-case id="select_datetime_escape_literal_oracle" value="SELECT {ts '2020-01-01 10:00:00'} FROM dual" db-types="Oracle" />
+    <sql-case id="select_nested_attribute_oracle" value="SELECT c.address.city FROM contacts c" db-types="Oracle" />
     <sql-case id="select_predict_by_function" value="SELECT PREDICT BY point_kmeans (FEATURES position) as pos FROM (select * from kmeans_2d limit 10);" db-types="openGauss" />
     <sql-case id="select_inet_function" value="SELECT inet '192.168.1.5' = inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
     <sql-case id="select_inet_function_with_inet_operator" value="SELECT inet '192.168.1.5' &lt;&lt;= inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
