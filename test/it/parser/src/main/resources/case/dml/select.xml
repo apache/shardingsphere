@@ -7059,6 +7059,15 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_with_sample_clause_oracle">
+        <from>
+            <simple-table name="employees" start-index="14" stop-index="22" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+    </select>
+
     <select sql-case-id="select_with_trim_function_multi">
         <projections start-index="7" stop-index="203" literal-start-index="7" literal-stop-index="203">
             <expression-projection text="TRIM('  derby ')" start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
