@@ -264,6 +264,9 @@
     <sql-case id="select_with_corr_function" value="SELECT employee_id, CORR(SYSDATE - hire_date, salary) FROM employees WHERE department_id in (50, 80) ORDER BY employee_id" db-types="Oracle" />
     <sql-case id="select_with_db_link" value="SELECT * FROM hr.employees@remote" db-types="Oracle" />
     <sql-case id="select_with_sample_clause_oracle" value="SELECT * FROM employees SAMPLE(10)" db-types="Oracle" />
+    <sql-case id="select_with_order_by_index_oracle" value="SELECT * FROM t_order ORDER BY 1 NULLS LAST" db-types="Oracle" />
+    <sql-case id="select_is_nan_oracle" value="SELECT to_binary_float('NaN') FROM dual WHERE to_binary_float('NaN') IS NAN" db-types="Oracle" />
+    <sql-case id="select_group_by_rollup_oracle_with_rollup" value="SELECT department_id, COUNT(*) FROM employees GROUP BY ROLLUP(department_id)" db-types="Oracle" />
     <sql-case id="select_with_trim_function_multi" value="select TRIM('  derby '), TRIM(BOTH ' ' FROM '  derby '), TRIM(TRAILING ' ' FROM '  derby '), TRIM(cast (null as char(1)) FROM '  derby '), TRIM(' ' FROM cast(null as varchar(30))), TRIM('y' FROM ' derby') FROM employees" db-types="Oracle" />
     <sql-case id="select_with_trim_function_simple" value="SELECT TRIM( '.,! ' FROM '     #     test    .') AS Result" db-types="SQLServer" />
     <sql-case id="select_with_trim_function_leading" value="SELECT TRIM(LEADING '.,! ' FROM  '     .#     test    .') AS Result" db-types="SQLServer,Presto" />

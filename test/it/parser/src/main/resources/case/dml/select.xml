@@ -7068,6 +7068,52 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_with_order_by_index_oracle">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <order-by start-index="22" stop-index="42">
+            <index-item index="1" order-direction="ASC" null-order-direction="LAST" start-index="31" stop-index="31" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_is_nan_oracle">
+        <projections start-index="7" stop-index="28">
+            <expression-projection text="to_binary_float('NaN')" start-index="7" stop-index="28">
+                <expr>
+                    <function function-name="to_binary_float" text="to_binary_float('NaN')" start-index="7" stop-index="28">
+                        <parameter>
+                            <literal-expression value="NaN" start-index="23" stop-index="27" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="dual" start-index="35" stop-index="38" />
+        </from>
+        <where start-index="40" stop-index="74">
+            <expr>
+                <binary-operation-expression start-index="46" stop-index="74">
+                    <left>
+                        <function function-name="to_binary_float" text="to_binary_float('NaN')" start-index="46" stop-index="67">
+                            <parameter>
+                                <literal-expression value="NaN" start-index="62" stop-index="66" />
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="NAN" start-index="72" stop-index="74" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
     <select sql-case-id="select_with_trim_function_multi">
         <projections start-index="7" stop-index="203" literal-start-index="7" literal-stop-index="203">
             <expression-projection text="TRIM('  derby ')" start-index="7" stop-index="22" literal-start-index="7" literal-stop-index="22">
