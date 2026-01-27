@@ -315,7 +315,7 @@
     <sql-case id="select_period_diff" value="SELECT PERIOD_DIFF(200802,200703)" db-types="MySQL" />
     <sql-case id="select_percent_rank" value="SELECT PERCENT_RANK() OVER (ORDER BY salary) FROM employees;" db-types="MySQL" />
     <sql-case id="select_pi" value="SELECT PI()" db-types="MySQL" />
-    <sql-case id="select_regexp" value="SELECT 'a' REGEXP '^[a-d]'" db-types="MySQL,Hive" />
+    <sql-case id="select_regexp" value="SELECT 'a' REGEXP '^[a-d]'" db-types="MySQL,Hive,Doris" />
     <sql-case id="select_with_json_object_function" value="SELECT JSON_OBJECT('name' VALUE 'John', 'age' VALUE 30) AS json_data FROM DUAL" db-types="Oracle" />
     <sql-case id="select_regexp_function" value="SELECT REGEXP('billie eillish', '^billie')" db-types="Doris" />
     <sql-case id="select_regexp_function_with_null" value="SELECT REGEXP(NULL, '^billie')" db-types="Doris" />

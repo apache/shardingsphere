@@ -33,7 +33,7 @@
     <sql-case id="select_where_with_expr_with_or" value="SELECT * FROM t_order WHERE t_order.order_id = ? OR ? = t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_or_sign" value="SELECT * FROM t_order WHERE t_order.order_id = ? || ? = t_order.order_id" db-types="MySQL" />
     <sql-case id="select_concat_pipe_with_table" value="SELECT 'a' || 'b' FROM t_order" db-types="MySQL" />
-    <sql-case id="select_where_with_expr_with_xor" value="SELECT * FROM t_order WHERE t_order.order_id = ? XOR ? = t_order.order_id" db-types="MySQL,Presto" />
+    <sql-case id="select_where_with_expr_with_xor" value="SELECT * FROM t_order WHERE t_order.order_id = ? XOR ? = t_order.order_id" db-types="MySQL,Presto,Doris" />
     <sql-case id="select_where_with_expr_with_and" value="SELECT * FROM t_order WHERE t_order.order_id = ? AND ? = t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_and_or" value="SELECT * FROM t_order WHERE t_order.order_id = ? AND ? = t_order.order_id OR t_order.status = 'failed' AND ? = t_order.order_id" />
     <sql-case id="select_where_with_expr_with_and_sign" value="SELECT * FROM t_order WHERE t_order.order_id = ? &amp;&amp; ? = t_order.order_id" db-types="MySQL" />
