@@ -106,6 +106,10 @@ public final class RouteSQLRewriteEngine {
             return false;
         }
         SelectStatementContext statementContext = (SelectStatementContext) sqlStatementContext;
+        if (statementContext.getProjectionsContext().isDistinctRow()) {
+            statementContext.setNeedAggregateRewrite(false);
+            return false;
+        }
         boolean containsSubqueryJoinQuery = statementContext.isContainsSubquery() || statementContext.isContainsJoinQuery();
         boolean containsOrderByLimitClause = !statementContext.getOrderByContext().getItems().isEmpty() || statementContext.getPaginationContext().isHasPagination();
         boolean containsLockClause = statementContext.getSqlStatement().getLock().isPresent();
