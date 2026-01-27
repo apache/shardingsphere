@@ -74,20 +74,39 @@ public final class PipelineCaseHelper {
     }
     
     /**
+     * Generate small order insert data.
+     *
+     * @param keyGenerateAlgorithm key generate algorithm
+     * @param recordCount record count
+     * @return small order insert data
+     */
+    public static List<Object[]> generateSmallOrderInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int recordCount) {
+        List<Object[]> result = new ArrayList<>(recordCount);
+        for (int i = 0; i < recordCount; i++) {
+            Object[] params = new Object[3];
+            params[0] = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
+            params[1] = ThreadLocalRandom.current().nextInt(0, 6);
+            params[2] = "OK";
+            result.add(params);
+        }
+        return result;
+    }
+    
+    /**
      * Generate order insert data.
      *
      * @param databaseType database type
      * @param keyGenerateAlgorithm key generate algorithm
-     * @param insertRows insert rows
+     * @param recordCount record count
      * @return order insert data
      * @throws UnsupportedOperationException Unsupported operation exception
      */
     // TODO Refactor to use SPI
-    public static List<Object[]> generateOrderInsertData(final DatabaseType databaseType, final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {
-        List<Object[]> result = new ArrayList<>(insertRows);
+    public static List<Object[]> generateOrderInsertData(final DatabaseType databaseType, final KeyGenerateAlgorithm keyGenerateAlgorithm, final int recordCount) {
+        List<Object[]> result = new ArrayList<>(recordCount);
         String emojiText = "☠️x☺️x✋x☹️";
         if (databaseType instanceof MySQLDatabaseType || databaseType instanceof MariaDBDatabaseType) {
-            for (int i = 0; i < insertRows; i++) {
+            for (int i = 0; i < recordCount; i++) {
                 int randomInt = generateInt(-100, 100);
                 Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
                 int randomUnsignedInt = generateInt(0, 100);
@@ -101,7 +120,7 @@ public final class PipelineCaseHelper {
             return result;
         }
         if (databaseType instanceof PostgreSQLDatabaseType) {
-            for (int i = 0; i < insertRows; i++) {
+            for (int i = 0; i < recordCount; i++) {
                 Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
                 result.add(new Object[]{orderId, generateInt(0, 100), generateString(6), generateInt(-128, 127),
                         BigDecimal.valueOf(generateDouble()), true, "bytea".getBytes(), generateString(2), generateString(2), generateFloat(), generateDouble(),
@@ -111,7 +130,7 @@ public final class PipelineCaseHelper {
             return result;
         }
         if (databaseType instanceof OpenGaussDatabaseType) {
-            for (int i = 0; i < insertRows; i++) {
+            for (int i = 0; i < recordCount; i++) {
                 Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
                 byte[] bytesValue = {Byte.MIN_VALUE, -1, 0, 1, Byte.MAX_VALUE};
                 result.add(new Object[]{orderId, generateInt(0, 1000), "'status'" + i, generateInt(-1000, 9999), generateInt(0, 100), generateFloat(), generateDouble(),
@@ -173,12 +192,12 @@ public final class PipelineCaseHelper {
      * Generate order item insert data.
      *
      * @param keyGenerateAlgorithm key generate algorithm
-     * @param insertRows insert rows
+     * @param recordCount record count
      * @return order item insert data
      */
-    public static List<Object[]> generateOrderItemInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {
-        List<Object[]> result = new ArrayList<>(insertRows);
-        for (int i = 0; i < insertRows; i++) {
+    public static List<Object[]> generateOrderItemInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int recordCount) {
+        List<Object[]> result = new ArrayList<>(recordCount);
+        for (int i = 0; i < recordCount; i++) {
             Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
             int userId = generateInt(0, 100);
             result.add(new Object[]{keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next(), orderId, userId, "SUCCESS"});
@@ -195,6 +214,7 @@ public final class PipelineCaseHelper {
      * @param recordCount record count
      * @throws SQLException sql exception
      */
+    // TODO Delete
     public static void batchInsertOrderRecordsWithGeneralColumns(final Connection connection, final KeyGenerateAlgorithm keyGenerateAlgorithm, final String tableName,
                                                                  final int recordCount) throws SQLException {
         log.info("init data begin: {}", LocalDateTime.now());

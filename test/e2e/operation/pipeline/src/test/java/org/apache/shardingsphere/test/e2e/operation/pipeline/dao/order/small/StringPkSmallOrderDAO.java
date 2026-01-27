@@ -68,10 +68,9 @@ public final class StringPkSmallOrderDAO {
      * @throws SQLException SQL exception
      */
     public void batchInsert(final int insertRows) throws SQLException {
-        // TODO Use batchInsertOrderRecordsWithGeneralColumns
-        List<Object[]> params = PipelineCaseHelper.generateOrderInsertData(databaseType, new AutoIncrementKeyGenerateAlgorithm(), insertRows);
+        List<Object[]> paramsList = PipelineCaseHelper.generateSmallOrderInsertData(new AutoIncrementKeyGenerateAlgorithm(), insertRows);
         String sql = sqlBuilder.buildPreparedInsertSQL(tableName);
-        log.info("Batch insert string pk small order SQL: {}, params size: {}", sql, params.size());
-        DataSourceExecuteUtils.execute(dataSource, sql, params);
+        log.info("Batch insert string pk small order SQL: {}, params list size: {}", sql, paramsList.size());
+        DataSourceExecuteUtils.execute(dataSource, sql, paramsList);
     }
 }

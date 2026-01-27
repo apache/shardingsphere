@@ -55,14 +55,14 @@ public final class IntPkOrderItemDAO {
     /**
      * Batch insert order items.
      *
-     * @param insertRows insert rows
+     * @param recordCount record count
      * @throws SQLException SQL exception
      */
-    public void batchInsert(final int insertRows) throws SQLException {
-        List<Object[]> params = PipelineCaseHelper.generateOrderItemInsertData(new AutoIncrementKeyGenerateAlgorithm(), insertRows);
+    public void batchInsert(final int recordCount) throws SQLException {
+        List<Object[]> paramsList = PipelineCaseHelper.generateOrderItemInsertData(new AutoIncrementKeyGenerateAlgorithm(), recordCount);
         String sql = sqlBuilder.buildPreparedInsertSQL();
-        log.info("Batch insert order_item SQL: {}, params size: {}", sql, params.size());
-        DataSourceExecuteUtils.execute(dataSource, sql, params);
+        log.info("Batch insert order_item SQL: {}, params list size: {}", sql, paramsList.size());
+        DataSourceExecuteUtils.execute(dataSource, sql, paramsList);
     }
     
     /**
