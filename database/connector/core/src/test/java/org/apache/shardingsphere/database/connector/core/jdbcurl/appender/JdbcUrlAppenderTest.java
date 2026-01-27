@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class JdbcUrlAppenderTest {
     
-    @ParameterizedTest(name = "{index}: url={0}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("appendQueryPropertiesProvider")
     void assertAppendQueryProperties(final String url, final Properties properties, final String expectedPrefix, final String[] expectedFragments) {
         String actual = new JdbcUrlAppender().appendQueryProperties(url, properties);

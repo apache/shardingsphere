@@ -34,7 +34,7 @@ class H2ConnectionPropertiesParserTest {
     
     private final ConnectionPropertiesParser parser = new H2ConnectionPropertiesParser();
     
-    @ParameterizedTest(name = "{index}: {0}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideArguments")
     void assertParse(final String name, final String url, final String expectedHost, final int expectedPort, final String expectedCatalog, final String expectedModel, final boolean expectException) {
         if (expectException) {

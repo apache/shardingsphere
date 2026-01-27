@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.isA;
 
 class PrometheusMetricsCollectorFactoryTest {
     
-    @ParameterizedTest(name = "[{index}] type={1}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideMetricCollectorArguments")
     void assertCreateCollector(final String metricName, final MetricCollectorType collectorType, final Class<?> expectedType) {
         MetricConfiguration config = new MetricConfiguration(metricName, collectorType, null, Collections.emptyList(), Collections.emptyMap());
