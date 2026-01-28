@@ -36,7 +36,6 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.Uniq
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -105,9 +104,7 @@ class CDCE2EIT {
             }
             createOrderTableRule(containerComposer);
             distSQLFacade.createBroadcastRule("t_address");
-            QualifiedTable orderQualifiedTable = new DatabaseTypeRegistry(containerComposer.getDatabaseType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()
-                    ? new QualifiedTable(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME)
-                    : new QualifiedTable(null, SOURCE_TABLE_NAME);
+            QualifiedTable orderQualifiedTable = containerComposer.createQualifiedTable(SOURCE_TABLE_NAME);
             initSchemaAndTable(containerComposer, containerComposer.getProxyDataSource(), orderQualifiedTable, 3);
             PipelineDataSource jdbcDataSource = new PipelineDataSource(containerComposer.generateShardingSphereDataSourceFromProxy(), containerComposer.getDatabaseType());
             log.info("init data begin: {}", LocalDateTime.now());
