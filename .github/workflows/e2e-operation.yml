@@ -18,22 +18,6 @@
 name: E2E - Operation
 
 on:
-  pull_request:
-    branches: [ master ]
-    paths:
-      - '.github/workflows/e2e-operation.yml'
-      - '**/pom.xml'
-      - '**/src/main/**'
-      - '!examples/**'
-      - '!distribution/**'
-      - 'distribution/proxy/**'
-      - '!distribution/proxy/src/main/release-docs/**'
-      - '!test/**'
-      - 'test/pom.xml'
-      - 'test/e2e/fixture/**'
-      - 'test/e2e/env/**'
-      - 'test/e2e/operation/**'
-      - '!*.md'
   workflow_dispatch:
 
 concurrency:
