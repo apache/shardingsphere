@@ -181,7 +181,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateEncryptKeyStatement;
@@ -1373,9 +1372,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     }
     
     private void setMaterializedViewTable(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {
-        IdentifierValue identifier = (IdentifierValue) visit(ctx.name());
-        TableNameSegment tableName = new TableNameSegment(ctx.name().identifier().getStart().getStartIndex(), ctx.name().identifier().getStop().getStopIndex(), identifier);
-        statement.setMaterializedView(new SimpleTableSegment(tableName));
+        statement.setMaterializedView((SimpleTableSegment) visit(ctx.tableName()));
     }
     
     private void processColumnDefinitions(final DorisCreateMaterializedViewContext ctx, final DorisCreateMaterializedViewStatement statement) {

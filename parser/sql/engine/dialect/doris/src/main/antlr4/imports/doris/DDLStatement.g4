@@ -443,7 +443,7 @@ partitionSpec
 
 // DORIS ADDED BEGIN
 dorisCreateMaterializedView
-    : CREATE MATERIALIZED VIEW ifNotExists? name dorisMVColumnDefinitions? dorisMVBuildMode? dorisMVRefresh? dorisMVKeyClause? commentClause? dorisMVPartitionClause? dorisMVDistributedClause? propertiesClause? AS select
+    : CREATE MATERIALIZED VIEW ifNotExists? tableName dorisMVColumnDefinitions? dorisMVBuildMode? dorisMVRefresh? dorisMVKeyClause? commentClause? dorisMVPartitionClause? dorisMVDistributedClause? propertiesClause? AS select
     ;
 
 dorisMVColumnDefinitions

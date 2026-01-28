@@ -172,4 +172,5 @@
     <sql-case id="doris_create_materialized_view_with_auto_bucket" value="CREATE MATERIALIZED VIEW test_mv DISTRIBUTED BY HASH (k1, k2) BUCKETS AUTO AS SELECT k1, k2 FROM test_table;" db-types="Doris" />
     <sql-case id="doris_create_materialized_view_refresh_on_commit" value="CREATE MATERIALIZED VIEW test_mv REFRESH ON COMMIT AS SELECT k1, k2 FROM test_table;" db-types="Doris" />
     <sql-case id="doris_create_materialized_view_refresh_manual" value="CREATE MATERIALIZED VIEW test_mv REFRESH ON MANUAL AS SELECT k1, k2 FROM test_table;" db-types="Doris" />
+    <sql-case id="doris_create_materialized_view_with_database_qualified_name" value="CREATE MATERIALIZED VIEW db1.test_mv AS SELECT k1, k2 FROM test_table;" db-types="Doris" />
 </sql-cases>

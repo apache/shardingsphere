@@ -264,4 +264,18 @@
             </from>
         </select>
     </doris-create-materialized-view>
+    <doris-create-materialized-view sql-case-id="doris_create_materialized_view_with_database_qualified_name">
+        <materialized-view name="test_mv" start-index="25" stop-index="35">
+            <owner name="db1" start-index="25" stop-index="27" />
+        </materialized-view>
+        <select>
+            <projections start-index="47" stop-index="52">
+                <column-projection name="k1" start-index="47" stop-index="48" />
+                <column-projection name="k2" start-index="51" stop-index="52" />
+            </projections>
+            <from>
+                <simple-table name="test_table" start-index="59" stop-index="68" />
+            </from>
+        </select>
+    </doris-create-materialized-view>
 </sql-parser-test-cases>
