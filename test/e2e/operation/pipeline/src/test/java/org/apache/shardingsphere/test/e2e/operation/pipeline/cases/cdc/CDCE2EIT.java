@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.cdc;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
 import org.apache.shardingsphere.data.pipeline.cdc.client.config.CDCClientConfiguration;
@@ -49,6 +48,7 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.Pip
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceTestUtils;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -63,9 +63,7 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -113,7 +111,8 @@ class CDCE2EIT {
             DataSourceExecuteUtils.execute(jdbcDataSource, "INSERT INTO t_address(id, address_name) VALUES (?,?)", Arrays.asList(new Object[]{1, "a"}, new Object[]{2, "b"}));
             DataSourceExecuteUtils.execute(jdbcDataSource, "INSERT INTO t_single(id) VALUES (?)", Arrays.asList(new Object[]{1}, new Object[]{2}, new Object[]{3}));
             log.info("init data end: {}", LocalDateTime.now());
-            PipelineDataSource targetDataSource = createStandardDataSource(containerComposer, PipelineContainerComposer.DS_4);
+            PipelineDataSource targetDataSource = DataSourceTestUtils.createStandardDataSource(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
+                    containerComposer.getUsername(), containerComposer.getPassword());
             initSchemaAndTable(containerComposer, targetDataSource, orderQualifiedTable, 0);
             final CDCClient cdcClient = buildCDCClientAndStart(targetDataSource, containerComposer);
             Awaitility.waitAtMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
@@ -153,14 +152,6 @@ class CDCE2EIT {
             statement.execute("CREATE TABLE t_single(id integer primary key)");
         }
         containerComposer.sleepSeconds(seconds);
-    }
-    
-    private PipelineDataSource createStandardDataSource(final PipelineContainerComposer containerComposer, final String storageUnitName) {
-        Map<String, Object> poolProps = new HashMap<>(3, 1F);
-        poolProps.put("url", containerComposer.getActualJdbcUrlTemplate(storageUnitName, false));
-        poolProps.put("username", containerComposer.getUsername());
-        poolProps.put("password", containerComposer.getPassword());
-        return new PipelineDataSource(new StandardPipelineDataSourceConfiguration(poolProps));
     }
     
     private CDCClient buildCDCClientAndStart(final PipelineDataSource dataSource, final PipelineContainerComposer containerComposer) {
