@@ -69,6 +69,6 @@ public @interface PipelineE2ESettings {
          *
          * @return table structures
          */
-        String[] tableStructures() default { "default" };
+        String[] tableStructures() default {"default"};
     }
 }
