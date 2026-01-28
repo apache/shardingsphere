@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.pr
 import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.database.connector.mysql.type.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.small.StringPkSmallOrderDAO;
@@ -52,7 +53,8 @@ class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertTextPrimaryMigrationSuccess(final PipelineTestParameter testParam) throws SQLException {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
-            StringPkSmallOrderDAO orderDAO = new StringPkSmallOrderDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType(), getSourceTableName(containerComposer));
+            StringPkSmallOrderDAO orderDAO = new StringPkSmallOrderDAO(containerComposer.getSourceDataSource(),
+                    containerComposer.getDatabaseType(), new QualifiedTable(null, getSourceTableName(containerComposer)));
             orderDAO.createTable();
             orderDAO.batchInsert(PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());

@@ -20,21 +20,21 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlb
 public final class OpenGaussIntPkOrderItemSQLBuilder implements IntPkOrderItemSQLBuilder {
     
     @Override
-    public String buildCreateTableSQL() {
-        return """
-                CREATE TABLE test.t_order_item (
+    public String buildCreateTableSQL(final String schemaPrefix) {
+        return String.format("""
+                CREATE TABLE %st_order_item (
                 item_id int8 NOT NULL,
                 order_id int8 NOT NULL,
                 user_id int4 NOT NULL,
                 status varchar(50),
                 PRIMARY KEY (item_id)
                 )
-                """;
+                """, schemaPrefix);
     }
     
     @Override
-    public String buildPreparedInsertSQL() {
-        return "INSERT INTO test.t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)";
+    public String buildPreparedInsertSQL(final String schemaPrefix) {
+        return String.format("INSERT INTO %st_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)", schemaPrefix);
     }
     
     @Override

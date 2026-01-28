@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.small.sq
 public final class MySQLStringPkSmallOrderSQLBuilder implements StringPkSmallOrderSQLBuilder {
     
     @Override
-    public String buildCreateTableSQL(final String tableName) {
+    public String buildCreateTableSQL(final String qualifiedTableName) {
         return String.format("""
                 CREATE TABLE `%s` (
                 `order_id` varchar(255) NOT NULL COMMENT 'pk id',
@@ -30,7 +30,7 @@ public final class MySQLStringPkSmallOrderSQLBuilder implements StringPkSmallOrd
                 PRIMARY KEY ( `order_id` ),
                 INDEX ( `user_id` )
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
-                """, tableName);
+                """, qualifiedTableName);
     }
     
     @Override

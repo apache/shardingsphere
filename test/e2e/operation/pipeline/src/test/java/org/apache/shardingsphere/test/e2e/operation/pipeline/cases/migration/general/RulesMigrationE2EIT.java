@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.general;
 
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.small.StringPkSmallOrderDAO;
@@ -74,7 +75,7 @@ class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     private void assertMigrationSuccess(final PipelineContainerComposer containerComposer, final Callable<Void> addRuleFn) throws Exception {
-        StringPkSmallOrderDAO orderDAO = new StringPkSmallOrderDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType(), SOURCE_TABLE_NAME);
+        StringPkSmallOrderDAO orderDAO = new StringPkSmallOrderDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType(), new QualifiedTable(null, SOURCE_TABLE_NAME));
         orderDAO.createTable();
         orderDAO.batchInsert(PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
         addMigrationSourceResource(containerComposer);
