@@ -1,0 +1,122 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_HIST_INST_CACHE_TRANSFER:
+  schema: SYS
+  columns:
+  - name: SNAP_ID
+    type: NUMBER
+    nullable: false
+  - name: DBID
+    type: NUMBER
+    nullable: false
+  - name: INSTANCE_NUMBER
+    type: NUMBER
+    nullable: false
+  - name: INSTANCE
+    type: NUMBER
+    nullable: false
+  - name: CLASS
+    type: VARCHAR2
+    nullable: false
+    length: 18
+  - name: CR_BLOCK
+    type: NUMBER
+    nullable: true
+  - name: CR_BUSY
+    type: NUMBER
+    nullable: true
+  - name: CR_CONGESTED
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_BLOCK
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_BUSY
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_CONGESTED
+    type: NUMBER
+    nullable: true
+  - name: LOST
+    type: NUMBER
+    nullable: true
+  - name: CR_2HOP
+    type: NUMBER
+    nullable: true
+  - name: CR_3HOP
+    type: NUMBER
+    nullable: true
+  - name: CR_RDMA
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_2HOP
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_3HOP
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_RDMA
+    type: NUMBER
+    nullable: true
+  - name: CR_BLOCK_TIME
+    type: NUMBER
+    nullable: true
+  - name: CR_BUSY_TIME
+    type: NUMBER
+    nullable: true
+  - name: CR_CONGESTED_TIME
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_BLOCK_TIME
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_BUSY_TIME
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_CONGESTED_TIME
+    type: NUMBER
+    nullable: true
+  - name: LOST_TIME
+    type: NUMBER
+    nullable: true
+  - name: CR_2HOP_TIME
+    type: NUMBER
+    nullable: true
+  - name: CR_3HOP_TIME
+    type: NUMBER
+    nullable: true
+  - name: CR_RDMA_TIME
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_2HOP_TIME
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_3HOP_TIME
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_RDMA_TIME
+    type: NUMBER
+    nullable: true
+  - name: CON_DBID
+    type: NUMBER
+    nullable: true
+  - name: CON_ID
+    type: NUMBER
+    nullable: true
+  description: Instance Cache Transfer Historical Statistics

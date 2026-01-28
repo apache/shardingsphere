@@ -1,0 +1,89 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_REGISTRY_SQLPATCH:
+  schema: SYS
+  columns:
+  - name: INSTALL_ID
+    type: NUMBER
+    nullable: false
+  - name: PATCH_ID
+    type: NUMBER
+    nullable: false
+  - name: PATCH_UID
+    type: NUMBER
+    nullable: false
+  - name: PATCH_TYPE
+    type: VARCHAR2
+    nullable: false
+    length: 10
+  - name: ACTION
+    type: VARCHAR2
+    nullable: false
+    length: 15
+  - name: STATUS
+    type: VARCHAR2
+    nullable: false
+    length: 25
+  - name: ACTION_TIME
+    type: TIMESTAMP(6)
+    nullable: false
+  - name: DESCRIPTION
+    type: VARCHAR2
+    nullable: true
+    length: 100
+  - name: LOGFILE
+    type: VARCHAR2
+    nullable: false
+    length: 500
+  - name: RU_LOGFILE
+    type: VARCHAR2
+    nullable: true
+    length: 500
+  - name: FLAGS
+    type: VARCHAR2
+    nullable: true
+    length: 10
+  - name: PATCH_DESCRIPTOR
+    type: XMLTYPE
+    nullable: true
+  - name: PATCH_DIRECTORY
+    type: BLOB
+    nullable: true
+  - name: SOURCE_VERSION
+    type: VARCHAR2
+    nullable: true
+    length: 15
+  - name: SOURCE_BUILD_DESCRIPTION
+    type: VARCHAR2
+    nullable: true
+    length: 80
+  - name: SOURCE_BUILD_TIMESTAMP
+    type: TIMESTAMP(6)
+    nullable: true
+  - name: TARGET_VERSION
+    type: VARCHAR2
+    nullable: true
+    length: 15
+  - name: TARGET_BUILD_DESCRIPTION
+    type: VARCHAR2
+    nullable: true
+    length: 80
+  - name: TARGET_BUILD_TIMESTAMP
+    type: TIMESTAMP(6)
+    nullable: true

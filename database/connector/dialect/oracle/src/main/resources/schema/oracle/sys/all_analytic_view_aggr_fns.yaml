@@ -1,0 +1,48 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+ALL_ANALYTIC_VIEW_AGGR_FNS:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: ANALYTIC_VIEW_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: AGGR_GROUP_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: FUNCTION_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: DEPTH
+    type: NUMBER
+    nullable: false
+  - name: IS_DISTINCT
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: ORIGIN_CON_ID
+    type: NUMBER
+    nullable: true
+  description: Analytic view aggregation functions in the database

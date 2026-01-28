@@ -1,0 +1,80 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_HEATMAP_TOP_OBJECTS:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: OBJECT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: OBJECT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 18
+  - name: TABLESPACE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: SEGMENT_COUNT
+    type: NUMBER
+    nullable: true
+  - name: OBJECT_SIZE
+    type: NUMBER
+    nullable: true
+  - name: MIN_WRITETIME
+    type: DATE
+    nullable: true
+  - name: MAX_WRITETIME
+    type: DATE
+    nullable: true
+  - name: AVG_WRITETIME
+    type: DATE
+    nullable: true
+  - name: MIN_READTIME
+    type: DATE
+    nullable: true
+  - name: MAX_READTIME
+    type: DATE
+    nullable: true
+  - name: AVG_READTIME
+    type: DATE
+    nullable: true
+  - name: MIN_FTSTIME
+    type: DATE
+    nullable: true
+  - name: MAX_FTSTIME
+    type: DATE
+    nullable: true
+  - name: AVG_FTSTIME
+    type: DATE
+    nullable: true
+  - name: MIN_LOOKUPTIME
+    type: DATE
+    nullable: true
+  - name: MAX_LOOKUPTIME
+    type: DATE
+    nullable: true
+  - name: AVG_LOOKUPTIME
+    type: DATE
+    nullable: true
+  description: Heatmap for Top N objects

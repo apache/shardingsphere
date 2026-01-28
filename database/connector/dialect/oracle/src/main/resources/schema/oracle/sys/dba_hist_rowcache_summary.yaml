@@ -1,0 +1,77 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_HIST_ROWCACHE_SUMMARY:
+  schema: SYS
+  columns:
+  - name: SNAP_ID
+    type: NUMBER
+    nullable: false
+  - name: DBID
+    type: NUMBER
+    nullable: false
+  - name: INSTANCE_NUMBER
+    type: NUMBER
+    nullable: false
+  - name: PARAMETER
+    type: VARCHAR2
+    nullable: false
+    length: 32
+  - name: TOTAL_USAGE
+    type: NUMBER
+    nullable: true
+  - name: USAGE
+    type: NUMBER
+    nullable: true
+  - name: GETS
+    type: NUMBER
+    nullable: true
+  - name: GETMISSES
+    type: NUMBER
+    nullable: true
+  - name: SCANS
+    type: NUMBER
+    nullable: true
+  - name: SCANMISSES
+    type: NUMBER
+    nullable: true
+  - name: SCANCOMPLETES
+    type: NUMBER
+    nullable: true
+  - name: MODIFICATIONS
+    type: NUMBER
+    nullable: true
+  - name: FLUSHES
+    type: NUMBER
+    nullable: true
+  - name: DLM_REQUESTS
+    type: NUMBER
+    nullable: true
+  - name: DLM_CONFLICTS
+    type: NUMBER
+    nullable: true
+  - name: DLM_RELEASES
+    type: NUMBER
+    nullable: true
+  - name: CON_DBID
+    type: NUMBER
+    nullable: true
+  - name: CON_ID
+    type: NUMBER
+    nullable: true
+  description: Row Cache Historical Statistics Information Summary

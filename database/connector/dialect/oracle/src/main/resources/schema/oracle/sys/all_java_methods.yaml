@@ -1,0 +1,94 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+ALL_JAVA_METHODS:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: NAME
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: METHOD_INDEX
+    type: NUMBER
+    nullable: true
+  - name: METHOD_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: ACCESSIBILITY
+    type: VARCHAR2
+    nullable: true
+    length: 9
+  - name: IS_STATIC
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: IS_FINAL
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: IS_SYNCHRONIZED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: HAS_VARARGS
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: IS_NATIVE
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: IS_ABSTRACT
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: IS_STRICTFP
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: IS_SYNTHETIC
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: ARGUMENTS
+    type: NUMBER
+    nullable: true
+  - name: THROWS
+    type: NUMBER
+    nullable: true
+  - name: ARRAY_DEPTH
+    type: NUMBER
+    nullable: true
+  - name: BASE_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: RETURN_CLASS
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: IS_COMPILED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  description: method information for java classes accessible the current user

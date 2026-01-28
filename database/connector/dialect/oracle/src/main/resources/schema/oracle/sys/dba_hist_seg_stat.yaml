@@ -1,0 +1,205 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_HIST_SEG_STAT:
+  schema: SYS
+  columns:
+  - name: SNAP_ID
+    type: NUMBER
+    nullable: false
+  - name: DBID
+    type: NUMBER
+    nullable: false
+  - name: INSTANCE_NUMBER
+    type: NUMBER
+    nullable: false
+  - name: TS#
+    type: NUMBER
+    nullable: false
+  - name: OBJ#
+    type: NUMBER
+    nullable: false
+  - name: DATAOBJ#
+    type: NUMBER
+    nullable: false
+  - name: LOGICAL_READS_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: LOGICAL_READS_DELTA
+    type: NUMBER
+    nullable: true
+  - name: BUFFER_BUSY_WAITS_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: BUFFER_BUSY_WAITS_DELTA
+    type: NUMBER
+    nullable: true
+  - name: DB_BLOCK_CHANGES_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: DB_BLOCK_CHANGES_DELTA
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_READS_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_READS_DELTA
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_WRITES_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_WRITES_DELTA
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_READS_DIRECT_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_READS_DIRECT_DELTA
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_WRITES_DIRECT_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_WRITES_DIRECT_DELTA
+    type: NUMBER
+    nullable: true
+  - name: ITL_WAITS_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: ITL_WAITS_DELTA
+    type: NUMBER
+    nullable: true
+  - name: ROW_LOCK_WAITS_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: ROW_LOCK_WAITS_DELTA
+    type: NUMBER
+    nullable: true
+  - name: GC_CR_BLOCKS_SERVED_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: GC_CR_BLOCKS_SERVED_DELTA
+    type: NUMBER
+    nullable: true
+  - name: GC_CU_BLOCKS_SERVED_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: GC_CU_BLOCKS_SERVED_DELTA
+    type: NUMBER
+    nullable: true
+  - name: GC_BUFFER_BUSY_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: GC_BUFFER_BUSY_DELTA
+    type: NUMBER
+    nullable: true
+  - name: GC_CR_BLOCKS_RECEIVED_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: GC_CR_BLOCKS_RECEIVED_DELTA
+    type: NUMBER
+    nullable: true
+  - name: GC_CU_BLOCKS_RECEIVED_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: GC_CU_BLOCKS_RECEIVED_DELTA
+    type: NUMBER
+    nullable: true
+  - name: GC_REMOTE_GRANTS_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: GC_REMOTE_GRANTS_DELTA
+    type: NUMBER
+    nullable: true
+  - name: SPACE_USED_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: SPACE_USED_DELTA
+    type: NUMBER
+    nullable: true
+  - name: SPACE_ALLOCATED_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: SPACE_ALLOCATED_DELTA
+    type: NUMBER
+    nullable: true
+  - name: TABLE_SCANS_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: TABLE_SCANS_DELTA
+    type: NUMBER
+    nullable: true
+  - name: CHAIN_ROW_EXCESS_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: CHAIN_ROW_EXCESS_DELTA
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_READ_REQUESTS_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_READ_REQUESTS_DELTA
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_WRITE_REQUESTS_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_WRITE_REQUESTS_DELTA
+    type: NUMBER
+    nullable: true
+  - name: OPTIMIZED_PHYSICAL_READS_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: OPTIMIZED_PHYSICAL_READS_DELTA
+    type: NUMBER
+    nullable: true
+  - name: IM_SCANS_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: IM_SCANS_DELTA
+    type: NUMBER
+    nullable: true
+  - name: POPULATE_CUS_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: POPULATE_CUS_DELTA
+    type: NUMBER
+    nullable: true
+  - name: REPOPULATE_CUS_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: REPOPULATE_CUS_DELTA
+    type: NUMBER
+    nullable: true
+  - name: IM_DB_BLOCK_CHANGES_TOTAL
+    type: NUMBER
+    nullable: true
+  - name: IM_DB_BLOCK_CHANGES_DELTA
+    type: NUMBER
+    nullable: true
+  - name: IM_MEMBYTES
+    type: NUMBER
+    nullable: true
+  - name: CON_DBID
+    type: NUMBER
+    nullable: true
+  - name: CON_ID
+    type: NUMBER
+    nullable: true
+  description: ' Historical Statistics Information'

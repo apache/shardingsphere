@@ -1,0 +1,195 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_PART_TABLES:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: TABLE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: PARTITIONING_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 9
+  - name: SUBPARTITIONING_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 9
+  - name: PARTITION_COUNT
+    type: NUMBER
+    nullable: true
+  - name: DEF_SUBPARTITION_COUNT
+    type: NUMBER
+    nullable: true
+  - name: PARTITIONING_KEY_COUNT
+    type: NUMBER
+    nullable: true
+  - name: SUBPARTITIONING_KEY_COUNT
+    type: NUMBER
+    nullable: true
+  - name: STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: DEF_TABLESPACE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: DEF_PCT_FREE
+    type: NUMBER
+    nullable: true
+  - name: DEF_PCT_USED
+    type: NUMBER
+    nullable: true
+  - name: DEF_INI_TRANS
+    type: NUMBER
+    nullable: true
+  - name: DEF_MAX_TRANS
+    type: NUMBER
+    nullable: true
+  - name: DEF_INITIAL_EXTENT
+    type: VARCHAR2
+    nullable: true
+    length: 40
+  - name: DEF_NEXT_EXTENT
+    type: VARCHAR2
+    nullable: true
+    length: 40
+  - name: DEF_MIN_EXTENTS
+    type: VARCHAR2
+    nullable: true
+    length: 40
+  - name: DEF_MAX_EXTENTS
+    type: VARCHAR2
+    nullable: true
+    length: 40
+  - name: DEF_MAX_SIZE
+    type: VARCHAR2
+    nullable: true
+    length: 40
+  - name: DEF_PCT_INCREASE
+    type: VARCHAR2
+    nullable: true
+    length: 40
+  - name: DEF_FREELISTS
+    type: NUMBER
+    nullable: true
+  - name: DEF_FREELIST_GROUPS
+    type: NUMBER
+    nullable: true
+  - name: DEF_LOGGING
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: DEF_COMPRESSION
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: DEF_COMPRESS_FOR
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: DEF_BUFFER_POOL
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: DEF_FLASH_CACHE
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: DEF_CELL_FLASH_CACHE
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: REF_PTN_CONSTRAINT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: INTERVAL
+    type: VARCHAR2
+    nullable: true
+    length: 1000
+  - name: AUTOLIST
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: INTERVAL_SUBPARTITION
+    type: VARCHAR2
+    nullable: true
+    length: 1000
+  - name: AUTOLIST_SUBPARTITION
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: IS_NESTED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: DEF_SEGMENT_CREATION
+    type: VARCHAR2
+    nullable: true
+    length: 4
+  - name: DEF_INDEXING
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: DEF_INMEMORY
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: DEF_INMEMORY_PRIORITY
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: DEF_INMEMORY_DISTRIBUTE
+    type: VARCHAR2
+    nullable: true
+    length: 15
+  - name: DEF_INMEMORY_COMPRESSION
+    type: VARCHAR2
+    nullable: true
+    length: 17
+  - name: DEF_INMEMORY_DUPLICATE
+    type: VARCHAR2
+    nullable: true
+    length: 13
+  - name: DEF_READ_ONLY
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: DEF_CELLMEMORY
+    type: VARCHAR2
+    nullable: true
+    length: 24
+  - name: DEF_INMEMORY_SERVICE
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: DEF_INMEMORY_SERVICE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 1000
+  - name: AUTO
+    type: VARCHAR2
+    nullable: true
+    length: 3

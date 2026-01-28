@@ -1,0 +1,56 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_SCHEDULER_REMOTE_JOBSTATE:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: JOB_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: DESTINATION
+    type: VARCHAR2
+    nullable: false
+    length: 512
+  - name: STATE
+    type: VARCHAR2
+    nullable: true
+    length: 15
+  - name: NEXT_START_DATE
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: RUN_COUNT
+    type: NUMBER
+    nullable: true
+  - name: FAILURE_COUNT
+    type: NUMBER
+    nullable: true
+  - name: RETRY_COUNT
+    type: NUMBER
+    nullable: true
+  - name: LAST_START_DATE
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: LAST_END_DATE
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  description: Remote state of all jobs originating from this database

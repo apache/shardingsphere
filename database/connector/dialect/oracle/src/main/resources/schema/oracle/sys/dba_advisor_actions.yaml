@@ -1,0 +1,111 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_ADVISOR_ACTIONS:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: TASK_ID
+    type: NUMBER
+    nullable: false
+  - name: TASK_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: EXECUTION_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: REC_ID
+    type: NUMBER
+    nullable: false
+  - name: ACTION_ID
+    type: NUMBER
+    nullable: false
+  - name: OBJECT_ID
+    type: NUMBER
+    nullable: true
+  - name: COMMAND
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: COMMAND_ID
+    type: NUMBER
+    nullable: false
+  - name: FLAGS
+    type: NUMBER
+    nullable: true
+  - name: ATTR1
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: ATTR2
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: ATTR3
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: ATTR4
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: ATTR5
+    type: CLOB
+    nullable: true
+  - name: ATTR6
+    type: CLOB
+    nullable: true
+  - name: NUM_ATTR1
+    type: NUMBER
+    nullable: true
+  - name: NUM_ATTR2
+    type: NUMBER
+    nullable: true
+  - name: NUM_ATTR3
+    type: NUMBER
+    nullable: true
+  - name: NUM_ATTR4
+    type: NUMBER
+    nullable: true
+  - name: NUM_ATTR5
+    type: NUMBER
+    nullable: true
+  - name: MESSAGE
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: FILTERED
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: RESULT_STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 25
+  - name: RESULT_LAST_MODIFIED
+    type: TIMESTAMP(3)
+    nullable: true
+  - name: RESULT_MESSAGE
+    type: VARCHAR2
+    nullable: true
+    length: 4000

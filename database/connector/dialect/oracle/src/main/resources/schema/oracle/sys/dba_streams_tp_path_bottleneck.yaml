@@ -1,0 +1,64 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_STREAMS_TP_PATH_BOTTLENECK:
+  schema: SYS
+  columns:
+  - name: PATH_ID
+    type: NUMBER
+    nullable: true
+  - name: COMPONENT_ID
+    type: NUMBER
+    nullable: true
+  - name: COMPONENT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: COMPONENT_DB
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: COMPONENT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 20
+  - name: TOP_SESSION_ID
+    type: NUMBER
+    nullable: true
+  - name: TOP_SESSION_SERIAL#
+    type: NUMBER
+    nullable: true
+  - name: ACTION_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: BOTTLENECK_IDENTIFIED
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: ADVISOR_RUN_ID
+    type: NUMBER
+    nullable: true
+  - name: ADVISOR_RUN_TIME
+    type: DATE
+    nullable: true
+  - name: ADVISOR_RUN_REASON
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  description: DBA Streams Path Bottleneck

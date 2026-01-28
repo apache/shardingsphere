@@ -1,0 +1,92 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_COMPARISON:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: COMPARISON_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: COMPARISON_MODE
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: SCHEMA_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: OBJECT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: OBJECT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 17
+  - name: REMOTE_SCHEMA_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: REMOTE_OBJECT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: REMOTE_OBJECT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 17
+  - name: DBLINK_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: SCAN_MODE
+    type: VARCHAR2
+    nullable: true
+    length: 9
+  - name: SCAN_PERCENT
+    type: NUMBER
+    nullable: true
+  - name: CYCLIC_INDEX_VALUE
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: NULL_VALUE
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: LOCAL_CONVERGE_TAG
+    type: RAW
+    nullable: true
+  - name: REMOTE_CONVERGE_TAG
+    type: RAW
+    nullable: true
+  - name: MAX_NUM_BUCKETS
+    type: NUMBER
+    nullable: true
+  - name: MIN_ROWS_IN_BUCKET
+    type: NUMBER
+    nullable: true
+  - name: LAST_UPDATE_TIME
+    type: TIMESTAMP(6)
+    nullable: true
+  description: Details about the comparison object

@@ -1,0 +1,88 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_HIST_CELL_DISKTYPE:
+  schema: SYS
+  columns:
+  - name: DBID
+    type: NUMBER
+    nullable: false
+  - name: SNAP_ID
+    type: NUMBER
+    nullable: false
+  - name: CELL_HASH
+    type: NUMBER
+    nullable: false
+  - name: CELL_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: HARD_DISK_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: FLASH_DISK_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: NUM_CELL_DISKS
+    type: NUMBER
+    nullable: true
+  - name: NUM_GRID_DISKS
+    type: NUMBER
+    nullable: true
+  - name: NUM_HARD_DISKS
+    type: NUMBER
+    nullable: true
+  - name: NUM_FLASH_DISKS
+    type: NUMBER
+    nullable: true
+  - name: MAX_DISK_IOPS
+    type: NUMBER
+    nullable: true
+  - name: MAX_FLASH_IOPS
+    type: NUMBER
+    nullable: true
+  - name: MAX_DISK_MBPS
+    type: NUMBER
+    nullable: true
+  - name: MAX_FLASH_MBPS
+    type: NUMBER
+    nullable: true
+  - name: MAX_CELL_DISK_IOPS
+    type: NUMBER
+    nullable: true
+  - name: MAX_CELL_FLASH_IOPS
+    type: NUMBER
+    nullable: true
+  - name: MAX_CELL_DISK_MBPS
+    type: NUMBER
+    nullable: true
+  - name: MAX_CELL_FLASH_MBPS
+    type: NUMBER
+    nullable: true
+  - name: CONFVAL
+    type: CLOB
+    nullable: true
+  - name: CON_DBID
+    type: NUMBER
+    nullable: true
+  - name: CON_ID
+    type: NUMBER
+    nullable: true
+  description: Exadata Cell disk types

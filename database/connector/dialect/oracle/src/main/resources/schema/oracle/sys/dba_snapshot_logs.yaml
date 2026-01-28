@@ -1,0 +1,68 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_SNAPSHOT_LOGS:
+  schema: SYS
+  columns:
+  - name: LOG_OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: MASTER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: LOG_TABLE
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: LOG_TRIGGER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: ROWIDS
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: PRIMARY_KEY
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: OBJECT_ID
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: FILTER_COLUMNS
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: SEQUENCE
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: INCLUDE_NEW_VALUES
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: CURRENT_SNAPSHOTS
+    type: DATE
+    nullable: true
+  - name: SNAPSHOT_ID
+    type: NUMBER
+    nullable: true
+  description: All snapshot logs in the database

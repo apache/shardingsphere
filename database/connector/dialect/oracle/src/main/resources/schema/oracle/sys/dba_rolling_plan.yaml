@@ -1,0 +1,68 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_ROLLING_PLAN:
+  schema: SYS
+  columns:
+  - name: REVISION
+    type: NUMBER
+    nullable: true
+  - name: BATCHID
+    type: NUMBER
+    nullable: true
+  - name: INSTID
+    type: NUMBER
+    nullable: true
+  - name: SOURCE
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: TARGET
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: PHASE
+    type: VARCHAR2
+    nullable: true
+    length: 14
+  - name: STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: PROGRESS
+    type: VARCHAR2
+    nullable: true
+    length: 10
+  - name: DESCRIPTION
+    type: VARCHAR2
+    nullable: true
+    length: 256
+  - name: EXEC_STATUS
+    type: NUMBER
+    nullable: true
+  - name: EXEC_INFO
+    type: VARCHAR2
+    nullable: true
+    length: 256
+  - name: EXEC_TIME
+    type: TIMESTAMP(6)
+    nullable: true
+  - name: FINISH_TIME
+    type: TIMESTAMP(6)
+    nullable: true
+  description: List of instructions which constitutes the upgrade plan

@@ -1,0 +1,170 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+ALL_MVIEWS:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: MVIEW_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: CONTAINER_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: QUERY
+    type: LONG
+    nullable: true
+  - name: QUERY_LEN
+    type: NUMBER
+    nullable: true
+  - name: UPDATABLE
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: UPDATE_LOG
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: MASTER_ROLLBACK_SEG
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: MASTER_LINK
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: REWRITE_ENABLED
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: REWRITE_CAPABILITY
+    type: VARCHAR2
+    nullable: true
+    length: 9
+  - name: REFRESH_MODE
+    type: VARCHAR2
+    nullable: true
+    length: 9
+  - name: REFRESH_METHOD
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: BUILD_MODE
+    type: VARCHAR2
+    nullable: true
+    length: 9
+  - name: FAST_REFRESHABLE
+    type: VARCHAR2
+    nullable: true
+    length: 18
+  - name: LAST_REFRESH_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: LAST_REFRESH_DATE
+    type: DATE
+    nullable: true
+  - name: LAST_REFRESH_END_TIME
+    type: DATE
+    nullable: true
+  - name: STALENESS
+    type: VARCHAR2
+    nullable: true
+    length: 19
+  - name: AFTER_FAST_REFRESH
+    type: VARCHAR2
+    nullable: true
+    length: 19
+  - name: UNKNOWN_PREBUILT
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: UNKNOWN_PLSQL_FUNC
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: UNKNOWN_EXTERNAL_TABLE
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: UNKNOWN_CONSIDER_FRESH
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: UNKNOWN_IMPORT
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: UNKNOWN_TRUSTED_FD
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: COMPILE_STATE
+    type: VARCHAR2
+    nullable: true
+    length: 19
+  - name: USE_NO_INDEX
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: STALE_SINCE
+    type: DATE
+    nullable: true
+  - name: NUM_PCT_TABLES
+    type: NUMBER
+    nullable: true
+  - name: NUM_FRESH_PCT_REGIONS
+    type: NUMBER
+    nullable: true
+  - name: NUM_STALE_PCT_REGIONS
+    type: NUMBER
+    nullable: true
+  - name: SEGMENT_CREATED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: EVALUATION_EDITION
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: UNUSABLE_BEFORE
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: UNUSABLE_BEGINNING
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: DEFAULT_COLLATION
+    type: VARCHAR2
+    nullable: true
+    length: 100
+  - name: ON_QUERY_COMPUTATION
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: AUTO
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  description: All materialized views in the database

@@ -1,0 +1,243 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+USER_INDEXES:
+  schema: SYS
+  columns:
+  - name: INDEX_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: INDEX_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 27
+  - name: TABLE_OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: TABLE_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: TABLE_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 11
+  - name: UNIQUENESS
+    type: VARCHAR2
+    nullable: true
+    length: 9
+  - name: COMPRESSION
+    type: VARCHAR2
+    nullable: true
+    length: 13
+  - name: PREFIX_LENGTH
+    type: NUMBER
+    nullable: true
+  - name: TABLESPACE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: INI_TRANS
+    type: NUMBER
+    nullable: true
+  - name: MAX_TRANS
+    type: NUMBER
+    nullable: true
+  - name: INITIAL_EXTENT
+    type: NUMBER
+    nullable: true
+  - name: NEXT_EXTENT
+    type: NUMBER
+    nullable: true
+  - name: MIN_EXTENTS
+    type: NUMBER
+    nullable: true
+  - name: MAX_EXTENTS
+    type: NUMBER
+    nullable: true
+  - name: PCT_INCREASE
+    type: NUMBER
+    nullable: true
+  - name: PCT_THRESHOLD
+    type: NUMBER
+    nullable: true
+  - name: INCLUDE_COLUMN
+    type: NUMBER
+    nullable: true
+  - name: FREELISTS
+    type: NUMBER
+    nullable: true
+  - name: FREELIST_GROUPS
+    type: NUMBER
+    nullable: true
+  - name: PCT_FREE
+    type: NUMBER
+    nullable: true
+  - name: LOGGING
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: BLEVEL
+    type: NUMBER
+    nullable: true
+  - name: LEAF_BLOCKS
+    type: NUMBER
+    nullable: true
+  - name: DISTINCT_KEYS
+    type: NUMBER
+    nullable: true
+  - name: AVG_LEAF_BLOCKS_PER_KEY
+    type: NUMBER
+    nullable: true
+  - name: AVG_DATA_BLOCKS_PER_KEY
+    type: NUMBER
+    nullable: true
+  - name: CLUSTERING_FACTOR
+    type: NUMBER
+    nullable: true
+  - name: STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: NUM_ROWS
+    type: NUMBER
+    nullable: true
+  - name: SAMPLE_SIZE
+    type: NUMBER
+    nullable: true
+  - name: LAST_ANALYZED
+    type: DATE
+    nullable: true
+  - name: DEGREE
+    type: VARCHAR2
+    nullable: true
+    length: 40
+  - name: INSTANCES
+    type: VARCHAR2
+    nullable: true
+    length: 40
+  - name: PARTITIONED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: TEMPORARY
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: GENERATED
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: SECONDARY
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: BUFFER_POOL
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: FLASH_CACHE
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: CELL_FLASH_CACHE
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: USER_STATS
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: DURATION
+    type: VARCHAR2
+    nullable: true
+    length: 15
+  - name: PCT_DIRECT_ACCESS
+    type: NUMBER
+    nullable: true
+  - name: ITYP_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: ITYP_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: PARAMETERS
+    type: VARCHAR2
+    nullable: true
+    length: 1000
+  - name: GLOBAL_STATS
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: DOMIDX_STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: DOMIDX_OPSTATUS
+    type: VARCHAR2
+    nullable: true
+    length: 6
+  - name: FUNCIDX_STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: JOIN_INDEX
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: IOT_REDUNDANT_PKEY_ELIM
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: DROPPED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: VISIBILITY
+    type: VARCHAR2
+    nullable: true
+    length: 9
+  - name: DOMIDX_MANAGEMENT
+    type: VARCHAR2
+    nullable: true
+    length: 14
+  - name: SEGMENT_CREATED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: ORPHANED_ENTRIES
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: INDEXING
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: AUTO
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: CONSTRAINT_INDEX
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  description: Description of the user's own indexes

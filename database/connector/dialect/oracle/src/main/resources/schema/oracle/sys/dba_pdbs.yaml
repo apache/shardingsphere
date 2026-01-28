@@ -1,0 +1,145 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_PDBS:
+  schema: SYS
+  columns:
+  - name: PDB_ID
+    type: NUMBER
+    nullable: false
+  - name: PDB_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: DBID
+    type: NUMBER
+    nullable: false
+  - name: CON_UID
+    type: NUMBER
+    nullable: false
+  - name: GUID
+    type: RAW
+    nullable: true
+  - name: STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 10
+  - name: CREATION_SCN
+    type: NUMBER
+    nullable: true
+  - name: VSN
+    type: NUMBER
+    nullable: true
+  - name: LOGGING
+    type: VARCHAR2
+    nullable: true
+    length: 9
+  - name: FORCE_LOGGING
+    type: VARCHAR2
+    nullable: true
+    length: 39
+  - name: FORCE_NOLOGGING
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: APPLICATION_ROOT
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: APPLICATION_PDB
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: APPLICATION_SEED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: APPLICATION_ROOT_CON_ID
+    type: NUMBER
+    nullable: true
+  - name: IS_PROXY_PDB
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: CON_ID
+    type: NUMBER
+    nullable: false
+  - name: UPGRADE_PRIORITY
+    type: NUMBER
+    nullable: true
+  - name: APPLICATION_CLONE
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: FOREIGN_CDB_DBID
+    type: NUMBER
+    nullable: true
+  - name: UNPLUG_SCN
+    type: NUMBER
+    nullable: true
+  - name: FOREIGN_PDB_ID
+    type: NUMBER
+    nullable: true
+  - name: CREATION_TIME
+    type: DATE
+    nullable: false
+  - name: REFRESH_MODE
+    type: VARCHAR2
+    nullable: true
+    length: 6
+  - name: REFRESH_INTERVAL
+    type: NUMBER
+    nullable: true
+  - name: TEMPLATE
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: LAST_REFRESH_SCN
+    type: NUMBER
+    nullable: true
+  - name: TENANT_ID
+    type: VARCHAR2
+    nullable: true
+    length: 32767
+  - name: SNAPSHOT_MODE
+    type: VARCHAR2
+    nullable: true
+    length: 6
+  - name: SNAPSHOT_INTERVAL
+    type: NUMBER
+    nullable: true
+  - name: CREDENTIAL_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 262
+  - name: LAST_REFRESH_TIME
+    type: DATE
+    nullable: true
+  - name: CLOUD_IDENTITY
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: SOURCE_PDB_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: SOURCE_DB_LINK
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  description: Describes all pluggable databases in the consolidated database

@@ -1,0 +1,204 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_WORKLOAD_REPLAYS:
+  schema: SYS
+  columns:
+  - name: ID
+    type: NUMBER
+    nullable: false
+  - name: NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: DBID
+    type: NUMBER
+    nullable: false
+  - name: DBNAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: DBVERSION
+    type: VARCHAR2
+    nullable: false
+    length: 17
+  - name: PARALLEL
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: DIRECTORY
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: CAPTURE_ID
+    type: NUMBER
+    nullable: true
+  - name: STATUS
+    type: VARCHAR2
+    nullable: false
+    length: 40
+  - name: PREPARE_TIME
+    type: DATE
+    nullable: true
+  - name: START_TIME
+    type: DATE
+    nullable: true
+  - name: END_TIME
+    type: DATE
+    nullable: true
+  - name: DURATION_SECS
+    type: NUMBER
+    nullable: true
+  - name: NUM_CLIENTS
+    type: NUMBER
+    nullable: false
+  - name: NUM_CLIENTS_DONE
+    type: NUMBER
+    nullable: false
+  - name: FILTER_SET_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: DEFAULT_ACTION
+    type: VARCHAR2
+    nullable: false
+    length: 30
+  - name: SYNCHRONIZATION
+    type: VARCHAR2
+    nullable: true
+    length: 9
+  - name: CONNECT_TIME_SCALE
+    type: NUMBER
+    nullable: false
+  - name: THINK_TIME_SCALE
+    type: NUMBER
+    nullable: false
+  - name: THINK_TIME_AUTO_CORRECT
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: SCALE_UP_MULTIPLIER
+    type: NUMBER
+    nullable: false
+  - name: USER_CALLS
+    type: NUMBER
+    nullable: true
+  - name: DBTIME
+    type: NUMBER
+    nullable: true
+  - name: NETWORK_TIME
+    type: NUMBER
+    nullable: true
+  - name: THINK_TIME
+    type: NUMBER
+    nullable: true
+  - name: PAUSE_TIME
+    type: NUMBER
+    nullable: true
+  - name: PLSQL_CALLS
+    type: NUMBER
+    nullable: true
+  - name: PLSQL_SUBCALLS
+    type: NUMBER
+    nullable: true
+  - name: PLSQL_DBTIME
+    type: NUMBER
+    nullable: true
+  - name: ELAPSED_TIME_DIFF
+    type: NUMBER
+    nullable: true
+  - name: REPLAY_DEADLOCKS
+    type: NUMBER
+    nullable: true
+  - name: AWR_DBID
+    type: NUMBER
+    nullable: true
+  - name: AWR_BEGIN_SNAP
+    type: NUMBER
+    nullable: true
+  - name: AWR_END_SNAP
+    type: NUMBER
+    nullable: true
+  - name: AWR_EXPORTED
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: ERROR_CODE
+    type: NUMBER
+    nullable: true
+  - name: ERROR_MESSAGE
+    type: VARCHAR2
+    nullable: true
+    length: 512
+  - name: DIR_PATH
+    type: VARCHAR2
+    nullable: false
+    length: 4000
+  - name: REPLAY_DIR_NUMBER
+    type: NUMBER
+    nullable: true
+  - name: SQLSET_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: SQLSET_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: SCHEDULE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: DIVERGENCE_LOAD_STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: PLSQL_MODE
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: CONNECT_TIME_AUTO_CORRECT
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: RAC_MODE
+    type: VARCHAR2
+    nullable: true
+    length: 19
+  - name: QUERY_ONLY
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: PDB_LEVEL
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: NUM_CLIENTS_ABORTED
+    type: NUMBER
+    nullable: true
+  - name: PATCH_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: DURATION_LIMIT
+    type: NUMBER
+    nullable: true
+  - name: STATUS_DETAILS
+    type: VARCHAR2
+    nullable: true
+    length: 128

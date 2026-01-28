@@ -1,0 +1,85 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_XS_USERS:
+  schema: SYS
+  columns:
+  - name: NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: GUID
+    type: RAW
+    nullable: true
+  - name: EXTERNAL_SOURCE
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: ROLES_DEFAULT_ENABLED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: ACCOUNT_STATUS
+    type: VARCHAR2
+    nullable: false
+    length: 32
+  - name: LOCK_DATE
+    type: DATE
+    nullable: true
+  - name: EXPIRY_DATE
+    type: DATE
+    nullable: true
+  - name: PROFILE
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: SCHEMA
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: START_DATE
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: END_DATE
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: DIRECT_LOGON_USER
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: VERIFIER_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 18
+  - name: ACL
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: DESCRIPTION
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: MANDATORY_PROFILE_VIOLATION
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  description: All the Real Application Security users defined in the database

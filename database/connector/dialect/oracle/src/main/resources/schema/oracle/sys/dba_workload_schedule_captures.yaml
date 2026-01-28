@@ -1,0 +1,88 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_WORKLOAD_SCHEDULE_CAPTURES:
+  schema: SYS
+  columns:
+  - name: SCHEDULE_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: SCHEDULE_CAP_ID
+    type: NUMBER
+    nullable: false
+  - name: CAPTURE_ID
+    type: NUMBER
+    nullable: false
+  - name: CAPTURE_DIR
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: OS_SUBDIR
+    type: VARCHAR2
+    nullable: false
+    length: 4000
+  - name: MAX_CONCURRENT_SESSIONS
+    type: NUMBER
+    nullable: true
+  - name: NUM_CLIENTS_ASSIGNED
+    type: NUMBER
+    nullable: true
+  - name: NUM_CLIENTS
+    type: NUMBER
+    nullable: true
+  - name: NUM_CLIENTS_DONE
+    type: NUMBER
+    nullable: true
+  - name: STOP_REPLAY
+    type: VARCHAR2
+    nullable: false
+    length: 1
+  - name: TAKE_BEGIN_SNAPSHOT
+    type: VARCHAR2
+    nullable: false
+    length: 1
+  - name: TAKE_END_SNAPSHOT
+    type: VARCHAR2
+    nullable: false
+    length: 1
+  - name: QUERY_ONLY
+    type: VARCHAR2
+    nullable: false
+    length: 1
+  - name: START_DELAY_SECS
+    type: NUMBER
+    nullable: true
+  - name: START_TIME
+    type: DATE
+    nullable: true
+  - name: END_TIME
+    type: DATE
+    nullable: true
+  - name: AWR_DBID
+    type: NUMBER
+    nullable: true
+  - name: AWR_BEGIN_SNAP
+    type: NUMBER
+    nullable: true
+  - name: AWR_END_SNAP
+    type: NUMBER
+    nullable: true
+  - name: NUM_CLIENTS_ABORTED
+    type: NUMBER
+    nullable: true

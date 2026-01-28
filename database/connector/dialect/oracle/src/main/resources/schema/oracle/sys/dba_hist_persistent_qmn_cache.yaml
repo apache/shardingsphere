@@ -1,0 +1,110 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_HIST_PERSISTENT_QMN_CACHE:
+  schema: SYS
+  columns:
+  - name: SNAP_ID
+    type: NUMBER
+    nullable: false
+  - name: DBID
+    type: NUMBER
+    nullable: false
+  - name: INSTANCE_NUMBER
+    type: NUMBER
+    nullable: false
+  - name: QUEUE_TABLE_ID
+    type: NUMBER
+    nullable: false
+  - name: TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 32
+  - name: STATUS
+    type: NUMBER
+    nullable: true
+  - name: NEXT_SERVICE_TIME
+    type: TIMESTAMP(3)
+    nullable: true
+  - name: WINDOW_END_TIME
+    type: TIMESTAMP(3)
+    nullable: true
+  - name: TOTAL_RUNS
+    type: NUMBER
+    nullable: true
+  - name: TOTAL_LATENCY
+    type: NUMBER
+    nullable: true
+  - name: TOTAL_ELAPSED_TIME
+    type: NUMBER
+    nullable: true
+  - name: TOTAL_CPU_TIME
+    type: NUMBER
+    nullable: true
+  - name: TMGR_ROWS_PROCESSED
+    type: NUMBER
+    nullable: true
+  - name: TMGR_ELAPSED_TIME
+    type: NUMBER
+    nullable: true
+  - name: TMGR_CPU_TIME
+    type: NUMBER
+    nullable: true
+  - name: LAST_TMGR_PROCESSING_TIME
+    type: TIMESTAMP(3)
+    nullable: true
+  - name: DEQLOG_ROWS_PROCESSED
+    type: NUMBER
+    nullable: true
+  - name: DEQLOG_PROCESSING_ELAPSED_TIME
+    type: NUMBER
+    nullable: true
+  - name: DEQLOG_PROCESSING_CPU_TIME
+    type: NUMBER
+    nullable: true
+  - name: LAST_DEQLOG_PROCESSING_TIME
+    type: TIMESTAMP(3)
+    nullable: true
+  - name: DEQUEUE_INDEX_BLOCKS_FREED
+    type: NUMBER
+    nullable: true
+  - name: HISTORY_INDEX_BLOCKS_FREED
+    type: NUMBER
+    nullable: true
+  - name: TIME_INDEX_BLOCKS_FREED
+    type: NUMBER
+    nullable: true
+  - name: INDEX_CLEANUP_COUNT
+    type: NUMBER
+    nullable: true
+  - name: INDEX_CLEANUP_ELAPSED_TIME
+    type: NUMBER
+    nullable: true
+  - name: INDEX_CLEANUP_CPU_TIME
+    type: NUMBER
+    nullable: true
+  - name: LAST_INDEX_CLEANUP_TIME
+    type: TIMESTAMP(3)
+    nullable: true
+  - name: CON_DBID
+    type: NUMBER
+    nullable: true
+  - name: CON_ID
+    type: NUMBER
+    nullable: true
+  description: STREAMS AQ Persistent QMN Cache Historical Statistics Information

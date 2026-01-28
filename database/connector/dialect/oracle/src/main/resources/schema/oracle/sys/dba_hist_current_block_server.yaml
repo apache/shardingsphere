@@ -1,0 +1,73 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_HIST_CURRENT_BLOCK_SERVER:
+  schema: SYS
+  columns:
+  - name: SNAP_ID
+    type: NUMBER
+    nullable: false
+  - name: DBID
+    type: NUMBER
+    nullable: false
+  - name: INSTANCE_NUMBER
+    type: NUMBER
+    nullable: false
+  - name: PIN0
+    type: NUMBER
+    nullable: true
+  - name: PIN1
+    type: NUMBER
+    nullable: true
+  - name: PIN10
+    type: NUMBER
+    nullable: true
+  - name: PIN100
+    type: NUMBER
+    nullable: true
+  - name: PIN1000
+    type: NUMBER
+    nullable: true
+  - name: PIN10000
+    type: NUMBER
+    nullable: true
+  - name: FLUSH0
+    type: NUMBER
+    nullable: true
+  - name: FLUSH1
+    type: NUMBER
+    nullable: true
+  - name: FLUSH10
+    type: NUMBER
+    nullable: true
+  - name: FLUSH100
+    type: NUMBER
+    nullable: true
+  - name: FLUSH1000
+    type: NUMBER
+    nullable: true
+  - name: FLUSH10000
+    type: NUMBER
+    nullable: true
+  - name: CON_DBID
+    type: NUMBER
+    nullable: true
+  - name: CON_ID
+    type: NUMBER
+    nullable: true
+  description: Current Block Server Historical Statistics

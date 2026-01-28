@@ -1,0 +1,119 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_ACTIVITY_TABLE:
+  schema: SYS
+  columns:
+  - name: SNAP_ID
+    type: NUMBER
+    nullable: false
+  - name: CON_DBNAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: INSTANCE_NUMBER
+    type: NUMBER
+    nullable: false
+  - name: BEGIN_TIME
+    type: TIMESTAMP(3)
+    nullable: false
+  - name: END_TIME
+    type: TIMESTAMP(3)
+    nullable: false
+  - name: TABLE_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: TABLE_OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: USER_CLASS
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: SCANS
+    type: NUMBER
+    nullable: true
+  - name: LOADS
+    type: NUMBER
+    nullable: true
+  - name: LOAD_ROWS
+    type: NUMBER
+    nullable: true
+  - name: INSERT_ROWS
+    type: NUMBER
+    nullable: true
+  - name: DELETE_ROWS
+    type: NUMBER
+    nullable: true
+  - name: UPDATE_ROWS
+    type: NUMBER
+    nullable: true
+  - name: TRUNCATES
+    type: NUMBER
+    nullable: true
+  - name: TRUNCATED_ROWS
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_TRUNCATES
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_TRUNCATED_ROWS
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_CREATES
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_DROPS
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_DROPS_ROWS
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_MOVES
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_MOVES_ROWS
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_SPLITS
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_SPLITS_ROWS
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_MERGES
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_MERGES_ROWS
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_COALESCES
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_COALESCE_ROWS
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_EXCHANGES
+    type: NUMBER
+    nullable: true
+  - name: PARTITION_EXCHANGES_ROWS
+    type: NUMBER
+    nullable: true
+  description: Object Activity Tracking for Tables

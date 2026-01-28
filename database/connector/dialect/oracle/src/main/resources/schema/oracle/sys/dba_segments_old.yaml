@@ -1,0 +1,85 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_SEGMENTS_OLD:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: SEGMENT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: PARTITION_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: SEGMENT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 18
+  - name: TABLESPACE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: HEADER_FILE
+    type: NUMBER
+    nullable: true
+  - name: HEADER_BLOCK
+    type: NUMBER
+    nullable: true
+  - name: BYTES
+    type: NUMBER
+    nullable: true
+  - name: BLOCKS
+    type: NUMBER
+    nullable: true
+  - name: EXTENTS
+    type: NUMBER
+    nullable: true
+  - name: INITIAL_EXTENT
+    type: NUMBER
+    nullable: true
+  - name: NEXT_EXTENT
+    type: NUMBER
+    nullable: true
+  - name: MIN_EXTENTS
+    type: NUMBER
+    nullable: true
+  - name: MAX_EXTENTS
+    type: NUMBER
+    nullable: true
+  - name: PCT_INCREASE
+    type: NUMBER
+    nullable: true
+  - name: FREELISTS
+    type: NUMBER
+    nullable: true
+  - name: FREELIST_GROUPS
+    type: NUMBER
+    nullable: true
+  - name: RELATIVE_FNO
+    type: NUMBER
+    nullable: true
+  - name: BUFFER_POOL
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  description: Storage allocated for all database segments

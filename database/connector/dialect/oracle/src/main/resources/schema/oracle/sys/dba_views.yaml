@@ -1,0 +1,117 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_VIEWS:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: VIEW_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: TEXT_LENGTH
+    type: NUMBER
+    nullable: true
+  - name: TEXT
+    type: LONG
+    nullable: true
+  - name: TEXT_VC
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: TYPE_TEXT_LENGTH
+    type: NUMBER
+    nullable: true
+  - name: TYPE_TEXT
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: OID_TEXT_LENGTH
+    type: NUMBER
+    nullable: true
+  - name: OID_TEXT
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: VIEW_TYPE_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: VIEW_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: SUPERVIEW_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: EDITIONING_VIEW
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: READ_ONLY
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: CONTAINER_DATA
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: BEQUEATH
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: ORIGIN_CON_ID
+    type: NUMBER
+    nullable: true
+  - name: DEFAULT_COLLATION
+    type: VARCHAR2
+    nullable: true
+    length: 100
+  - name: CONTAINERS_DEFAULT
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: CONTAINER_MAP
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: EXTENDED_DATA_LINK
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: EXTENDED_DATA_LINK_MAP
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: HAS_SENSITIVE_COLUMN
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: ADMIT_NULL
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: PDB_LOCAL_ONLY
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  description: Description of all views in the database

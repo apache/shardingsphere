@@ -1,0 +1,160 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+ALL_SERVICES:
+  schema: SYS
+  columns:
+  - name: SERVICE_ID
+    type: NUMBER
+    nullable: true
+  - name: NAME
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: NAME_HASH
+    type: NUMBER
+    nullable: true
+  - name: NETWORK_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 512
+  - name: CREATION_DATE
+    type: DATE
+    nullable: true
+  - name: CREATION_DATE_HASH
+    type: NUMBER
+    nullable: true
+  - name: FAILOVER_METHOD
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: FAILOVER_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: FAILOVER_RETRIES
+    type: NUMBER
+    nullable: true
+    precision: 10
+  - name: FAILOVER_DELAY
+    type: NUMBER
+    nullable: true
+    precision: 10
+  - name: MIN_CARDINALITY
+    type: NUMBER
+    nullable: true
+  - name: MAX_CARDINALITY
+    type: NUMBER
+    nullable: true
+  - name: GOAL
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: DTP
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: ENABLED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: AQ_HA_NOTIFICATIONS
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: CLB_GOAL
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: EDITION
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: COMMIT_OUTCOME
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: RETENTION_TIMEOUT
+    type: NUMBER
+    nullable: true
+  - name: REPLAY_INITIATION_TIMEOUT
+    type: NUMBER
+    nullable: true
+  - name: SESSION_STATE_CONSISTENCY
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: GLOBAL_SERVICE
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: PDB
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: SQL_TRANSLATION_PROFILE
+    type: VARCHAR2
+    nullable: true
+    length: 261
+  - name: MAX_LAG_TIME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: GSM_FLAGS
+    type: NUMBER
+    nullable: true
+  - name: PQ_SVC
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: STOP_OPTION
+    type: VARCHAR2
+    nullable: true
+    length: 13
+  - name: FAILOVER_RESTORE
+    type: VARCHAR2
+    nullable: true
+    length: 6
+  - name: DRAIN_TIMEOUT
+    type: NUMBER
+    nullable: true
+  - name: TABLE_FAMILY_ID
+    type: NUMBER
+    nullable: true
+  - name: PLACEMENT_POLICY
+    type: NUMBER
+    nullable: true
+  - name: RESET_STATE
+    type: VARCHAR2
+    nullable: true
+    length: 6
+  - name: PLACEMENT_TEMPLATE
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: COMMIT_OUTCOME_FASTPATH
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: VCSPARE1
+    type: VARCHAR2
+    nullable: true
+    length: 1024
+  - name: NSPARE1
+    type: NUMBER
+    nullable: true

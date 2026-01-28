@@ -1,0 +1,74 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_INDEX_USAGE:
+  schema: SYS
+  columns:
+  - name: OBJECT_ID
+    type: NUMBER
+    nullable: false
+  - name: NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: TOTAL_ACCESS_COUNT
+    type: NUMBER
+    nullable: true
+  - name: TOTAL_EXEC_COUNT
+    type: NUMBER
+    nullable: true
+  - name: TOTAL_ROWS_RETURNED
+    type: NUMBER
+    nullable: true
+  - name: BUCKET_0_ACCESS_COUNT
+    type: NUMBER
+    nullable: true
+  - name: BUCKET_1_ACCESS_COUNT
+    type: NUMBER
+    nullable: true
+  - name: BUCKET_2_10_ACCESS_COUNT
+    type: NUMBER
+    nullable: true
+  - name: BUCKET_2_10_ROWS_RETURNED
+    type: NUMBER
+    nullable: true
+  - name: BUCKET_11_100_ACCESS_COUNT
+    type: NUMBER
+    nullable: true
+  - name: BUCKET_11_100_ROWS_RETURNED
+    type: NUMBER
+    nullable: true
+  - name: BUCKET_101_1000_ACCESS_COUNT
+    type: NUMBER
+    nullable: true
+  - name: BUCKET_101_1000_ROWS_RETURNED
+    type: NUMBER
+    nullable: true
+  - name: BUCKET_1000_PLUS_ACCESS_COUNT
+    type: NUMBER
+    nullable: true
+  - name: BUCKET_1000_PLUS_ROWS_RETURNED
+    type: NUMBER
+    nullable: true
+  - name: LAST_USED
+    type: DATE
+    nullable: true

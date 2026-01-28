@@ -1,0 +1,82 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_TSM_SOURCE:
+  schema: SYS
+  columns:
+  - name: SOURCE_DATABASE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: SOURCE_INSTANCE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: SOURCE_INSTANCE_ID
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: SOURCE_INSTANCE_START_TIME
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: SEQUENCE#
+    type: NUMBER
+    nullable: true
+  - name: SOURCE_SID
+    type: NUMBER
+    nullable: true
+  - name: SOURCE_SERIAL#
+    type: NUMBER
+    nullable: true
+  - name: SOURCE_STATE
+    type: VARCHAR2
+    nullable: true
+    length: 24
+  - name: CONNECT_STRING
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: SOURCE_START_TIME
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: COST
+    type: NUMBER
+    nullable: true
+  - name: FAILURE_REASON
+    type: VARCHAR2
+    nullable: true
+    length: 34
+  - name: SOURCE_END_TIME
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: ROUNDTRIPS
+    type: NUMBER
+    nullable: true
+  - name: SOURCE_USER_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: SOURCE_SCHEMA_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: DESTINATION_DATABASE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  description: Transparent session migration source session statistics

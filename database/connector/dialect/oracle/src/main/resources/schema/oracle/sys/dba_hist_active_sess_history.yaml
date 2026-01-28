@@ -1,0 +1,403 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_HIST_ACTIVE_SESS_HISTORY:
+  schema: SYS
+  columns:
+  - name: SNAP_ID
+    type: NUMBER
+    nullable: false
+  - name: DBID
+    type: NUMBER
+    nullable: false
+  - name: INSTANCE_NUMBER
+    type: NUMBER
+    nullable: false
+  - name: SAMPLE_ID
+    type: NUMBER
+    nullable: false
+  - name: SAMPLE_TIME
+    type: TIMESTAMP(3)
+    nullable: false
+  - name: SAMPLE_TIME_UTC
+    type: TIMESTAMP(3)
+    nullable: true
+  - name: USECS_PER_ROW
+    type: NUMBER
+    nullable: true
+  - name: SESSION_ID
+    type: NUMBER
+    nullable: false
+  - name: SESSION_SERIAL#
+    type: NUMBER
+    nullable: true
+  - name: SESSION_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 10
+  - name: FLAGS
+    type: NUMBER
+    nullable: true
+  - name: USER_ID
+    type: NUMBER
+    nullable: true
+  - name: SQL_ID
+    type: VARCHAR2
+    nullable: true
+    length: 13
+  - name: IS_SQLID_CURRENT
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: SQL_CHILD_NUMBER
+    type: NUMBER
+    nullable: true
+  - name: SQL_OPCODE
+    type: NUMBER
+    nullable: true
+  - name: SQL_OPNAME
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: FORCE_MATCHING_SIGNATURE
+    type: NUMBER
+    nullable: true
+  - name: TOP_LEVEL_SQL_ID
+    type: VARCHAR2
+    nullable: true
+    length: 13
+  - name: TOP_LEVEL_SQL_OPCODE
+    type: NUMBER
+    nullable: true
+  - name: SQL_PLAN_HASH_VALUE
+    type: NUMBER
+    nullable: true
+  - name: SQL_FULL_PLAN_HASH_VALUE
+    type: NUMBER
+    nullable: true
+  - name: SQL_ADAPTIVE_PLAN_RESOLVED
+    type: NUMBER
+    nullable: true
+  - name: SQL_PLAN_LINE_ID
+    type: NUMBER
+    nullable: true
+  - name: SQL_PLAN_OPERATION
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: SQL_PLAN_OPTIONS
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: SQL_EXEC_ID
+    type: NUMBER
+    nullable: true
+  - name: SQL_EXEC_START
+    type: DATE
+    nullable: true
+  - name: PLSQL_ENTRY_OBJECT_ID
+    type: NUMBER
+    nullable: true
+  - name: PLSQL_ENTRY_SUBPROGRAM_ID
+    type: NUMBER
+    nullable: true
+  - name: PLSQL_OBJECT_ID
+    type: NUMBER
+    nullable: true
+  - name: PLSQL_SUBPROGRAM_ID
+    type: NUMBER
+    nullable: true
+  - name: QC_INSTANCE_ID
+    type: NUMBER
+    nullable: true
+  - name: QC_SESSION_ID
+    type: NUMBER
+    nullable: true
+  - name: QC_SESSION_SERIAL#
+    type: NUMBER
+    nullable: true
+  - name: PX_FLAGS
+    type: NUMBER
+    nullable: true
+  - name: EVENT
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: EVENT_ID
+    type: NUMBER
+    nullable: true
+  - name: SEQ#
+    type: NUMBER
+    nullable: true
+  - name: P1TEXT
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: P1
+    type: NUMBER
+    nullable: true
+  - name: P2TEXT
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: P2
+    type: NUMBER
+    nullable: true
+  - name: P3TEXT
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: P3
+    type: NUMBER
+    nullable: true
+  - name: WAIT_CLASS
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: WAIT_CLASS_ID
+    type: NUMBER
+    nullable: true
+  - name: WAIT_TIME
+    type: NUMBER
+    nullable: true
+  - name: SESSION_STATE
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: TIME_WAITED
+    type: NUMBER
+    nullable: true
+  - name: BLOCKING_SESSION_STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 11
+  - name: BLOCKING_SESSION
+    type: NUMBER
+    nullable: true
+  - name: BLOCKING_SESSION_SERIAL#
+    type: NUMBER
+    nullable: true
+  - name: BLOCKING_INST_ID
+    type: NUMBER
+    nullable: true
+  - name: BLOCKING_HANGCHAIN_INFO
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: CURRENT_OBJ#
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_FILE#
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_BLOCK#
+    type: NUMBER
+    nullable: true
+  - name: CURRENT_ROW#
+    type: NUMBER
+    nullable: true
+  - name: TOP_LEVEL_CALL#
+    type: NUMBER
+    nullable: true
+  - name: TOP_LEVEL_CALL_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: CONSUMER_GROUP_ID
+    type: NUMBER
+    nullable: true
+  - name: XID
+    type: RAW
+    nullable: true
+  - name: REMOTE_INSTANCE#
+    type: NUMBER
+    nullable: true
+  - name: TIME_MODEL
+    type: NUMBER
+    nullable: true
+  - name: IN_CONNECTION_MGMT
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_PARSE
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_HARD_PARSE
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_SQL_EXECUTION
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_PLSQL_EXECUTION
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_PLSQL_RPC
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_PLSQL_COMPILATION
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_JAVA_EXECUTION
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_BIND
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_CURSOR_CLOSE
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_SEQUENCE_LOAD
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_INMEMORY_QUERY
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_INMEMORY_POPULATE
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_INMEMORY_PREPOPULATE
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_INMEMORY_REPOPULATE
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_INMEMORY_TREPOPULATE
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IN_TABLESPACE_ENCRYPTION
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: CAPTURE_OVERHEAD
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: REPLAY_OVERHEAD
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IS_CAPTURED
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IS_REPLAYED
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: IS_REPLAY_SYNC_TOKEN_HOLDER
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: SERVICE_HASH
+    type: NUMBER
+    nullable: true
+  - name: PROGRAM
+    type: VARCHAR2
+    nullable: true
+    length: 84
+  - name: MODULE
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: ACTION
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: CLIENT_ID
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: MACHINE
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: PORT
+    type: NUMBER
+    nullable: true
+  - name: ECID
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: DBREPLAY_FILE_ID
+    type: NUMBER
+    nullable: true
+  - name: DBREPLAY_CALL_COUNTER
+    type: NUMBER
+    nullable: true
+  - name: TM_DELTA_TIME
+    type: NUMBER
+    nullable: true
+  - name: TM_DELTA_CPU_TIME
+    type: NUMBER
+    nullable: true
+  - name: TM_DELTA_DB_TIME
+    type: NUMBER
+    nullable: true
+  - name: DELTA_TIME
+    type: NUMBER
+    nullable: true
+  - name: DELTA_READ_IO_REQUESTS
+    type: NUMBER
+    nullable: true
+  - name: DELTA_WRITE_IO_REQUESTS
+    type: NUMBER
+    nullable: true
+  - name: DELTA_READ_IO_BYTES
+    type: NUMBER
+    nullable: true
+  - name: DELTA_WRITE_IO_BYTES
+    type: NUMBER
+    nullable: true
+  - name: DELTA_INTERCONNECT_IO_BYTES
+    type: NUMBER
+    nullable: true
+  - name: PGA_ALLOCATED
+    type: NUMBER
+    nullable: true
+  - name: TEMP_SPACE_ALLOCATED
+    type: NUMBER
+    nullable: true
+  - name: DBOP_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: DBOP_EXEC_ID
+    type: NUMBER
+    nullable: true
+  - name: CON_DBID
+    type: NUMBER
+    nullable: true
+  - name: CON_ID
+    type: NUMBER
+    nullable: true
+  description: Active Session Historical Statistics Information
