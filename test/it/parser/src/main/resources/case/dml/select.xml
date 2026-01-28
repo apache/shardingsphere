@@ -13261,6 +13261,7 @@
             </expr>
         </where>
     </select>
+
   
     <select sql-case-id="select_position_function_sql92">
         <projections start-index="7" stop-index="28">
