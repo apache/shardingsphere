@@ -80,14 +80,14 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         if (!dataMap.containsKey(groupByValue)) {
             dataMap.put(groupByValue, new MemoryQueryResultRow(queryResult));
         }
-        aggregationMap.computeIfAbsent(groupByValue, unused -> selectStatementContext.getProjectionsContext().getAggregationProjections().stream()
+        aggregationMap.computeIfAbsent(groupByValue, unused -> selectStatementContext.getProjectionsContext().getExpandAggregationProjections().stream()
                 .collect(Collectors.toMap(Function.identity(),
                         input -> AggregationUnitFactory.create(input.getType(), input instanceof AggregationDistinctProjection, input.getSeparator().orElse(null)))));
     }
     
     private void aggregate(final SelectStatementContext selectStatementContext, final QueryResult queryResult,
                            final GroupByValue groupByValue, final Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap) throws SQLException {
-        for (AggregationProjection each : selectStatementContext.getProjectionsContext().getAggregationProjections()) {
+        for (AggregationProjection each : selectStatementContext.getProjectionsContext().getExpandAggregationProjections()) {
             List<Comparable<?>> values = new ArrayList<>(2);
             if (each.getDerivedAggregationProjections().isEmpty()) {
                 values.add(getAggregationValue(queryResult, each));
@@ -109,7 +109,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     private void setAggregationValueToMemoryRow(final SelectStatementContext selectStatementContext,
                                                 final Map<GroupByValue, MemoryQueryResultRow> dataMap, final Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap) {
         for (Entry<GroupByValue, MemoryQueryResultRow> entry : dataMap.entrySet()) {
-            for (AggregationProjection each : selectStatementContext.getProjectionsContext().getAggregationProjections()) {
+            for (AggregationProjection each : selectStatementContext.getProjectionsContext().getExpandAggregationProjections()) {
                 entry.getValue().setCell(each.getIndex(), aggregationMap.get(entry.getKey()).get(each).getResult());
             }
         }
@@ -143,7 +143,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
                                                               final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
         if (dataMap.isEmpty()) {
             boolean hasGroupBy = !selectStatementContext.getGroupByContext().getItems().isEmpty();
-            boolean hasAggregations = !selectStatementContext.getProjectionsContext().getAggregationProjections().isEmpty();
+            boolean hasAggregations = !selectStatementContext.getProjectionsContext().getExpandAggregationProjections().isEmpty();
             if (hasGroupBy || !hasAggregations) {
                 return Collections.emptyList();
             }

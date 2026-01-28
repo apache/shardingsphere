@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -43,6 +45,8 @@ public final class ExpressionProjection implements Projection {
     private final IdentifierValue alias;
     
     private final DatabaseType databaseType;
+    
+    private final Collection<AggregationProjection> aggregationProjections = new LinkedList<>();
     
     @Override
     public String getColumnName() {

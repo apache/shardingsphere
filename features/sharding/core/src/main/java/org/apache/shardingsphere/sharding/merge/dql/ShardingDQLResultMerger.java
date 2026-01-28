@@ -99,7 +99,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     }
     
     private boolean isNeedProcessGroupBy(final SelectStatementContext selectStatementContext) {
-        return !selectStatementContext.getGroupByContext().getItems().isEmpty() || !selectStatementContext.getProjectionsContext().getAggregationProjections().isEmpty();
+        return !selectStatementContext.getGroupByContext().getItems().isEmpty() || !selectStatementContext.getProjectionsContext().getExpandAggregationProjections().isEmpty();
     }
     
     private boolean isNeedProcessDistinctRow(final SelectStatementContext selectStatementContext) {

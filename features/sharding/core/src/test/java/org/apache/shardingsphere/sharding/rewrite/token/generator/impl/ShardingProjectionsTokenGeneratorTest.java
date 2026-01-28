@@ -98,6 +98,7 @@ class ShardingProjectionsTokenGeneratorTest {
     void assertIsGenerateSQLTokenWithDerivedAggregationProjections() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         AggregationProjection aggregationProjection = mock(AggregationProjection.class, RETURNS_DEEP_STUBS);
+        when(aggregationProjection.getDerivedAggregationProjections()).thenReturn(Collections.singletonList(mock(AggregationProjection.class)));
         when(sqlStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.singleton(aggregationProjection));
         assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
     }
@@ -105,9 +106,10 @@ class ShardingProjectionsTokenGeneratorTest {
     @Test
     void assertGenerateSQLToken() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        Collection<Projection> projections = Arrays.asList(
-                createAggregationProjection(), createDerivedProjectionWithOwner(), createDerivedProjectionWithoutOwner(), createOtherDerivedProjection(), mock());
+        AggregationProjection aggProjection = createAggregationProjection();
+        Collection<Projection> projections = Arrays.asList(aggProjection, createDerivedProjectionWithOwner(), createDerivedProjectionWithoutOwner(), createOtherDerivedProjection(), mock());
         when(selectStatementContext.getProjectionsContext().getProjections()).thenReturn(projections);
+        when(selectStatementContext.getProjectionsContext().getExpandAggregationProjections()).thenReturn(Collections.singletonList(aggProjection));
         when(selectStatementContext.getProjectionsContext().getStopIndex()).thenReturn(2);
         when(selectStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
         ProjectionsToken actual = generator.generateSQLToken(selectStatementContext);
