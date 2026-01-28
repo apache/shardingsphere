@@ -59,9 +59,10 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -106,30 +107,24 @@ class CDCE2EIT {
             }
             createOrderTableRule(containerComposer);
             distSQLFacade.createBroadcastRule("t_address");
-            try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
-                initSchemaAndTable(containerComposer, connection, 3);
-            }
-            PipelineDataSource sourceDataSource = new PipelineDataSource(containerComposer.generateShardingSphereDataSourceFromProxy(), containerComposer.getDatabaseType());
+            initSchemaAndTable(containerComposer, containerComposer.getProxyDataSource(), 3);
+            PipelineDataSource jdbcDataSource = new PipelineDataSource(containerComposer.generateShardingSphereDataSourceFromProxy(), containerComposer.getDatabaseType());
             List<Object[]> orderInsertData = PipelineCaseHelper.generateOrderInsertData(
                     containerComposer.getDatabaseType(), new AutoIncrementKeyGenerateAlgorithm(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
             log.info("init data begin: {}", LocalDateTime.now());
-            DataSourceExecuteUtils.execute(sourceDataSource, containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), orderInsertData);
-            DataSourceExecuteUtils.execute(sourceDataSource, "INSERT INTO t_address(id, address_name) VALUES (?,?)", Arrays.asList(new Object[]{1, "a"}, new Object[]{2, "b"}));
-            DataSourceExecuteUtils.execute(sourceDataSource, "INSERT INTO t_single(id) VALUES (?)", Arrays.asList(new Object[]{1}, new Object[]{2}, new Object[]{3}));
+            DataSourceExecuteUtils.execute(jdbcDataSource, containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), orderInsertData);
+            DataSourceExecuteUtils.execute(jdbcDataSource, "INSERT INTO t_address(id, address_name) VALUES (?,?)", Arrays.asList(new Object[]{1, "a"}, new Object[]{2, "b"}));
+            DataSourceExecuteUtils.execute(jdbcDataSource, "INSERT INTO t_single(id) VALUES (?)", Arrays.asList(new Object[]{1}, new Object[]{2}, new Object[]{3}));
             log.info("init data end: {}", LocalDateTime.now());
-            try (
-                    Connection connection = DriverManager.getConnection(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
-                            containerComposer.getUsername(), containerComposer.getPassword())) {
-                initSchemaAndTable(containerComposer, connection, 0);
-            }
             PipelineDataSource targetDataSource = createStandardDataSource(containerComposer, PipelineContainerComposer.DS_4);
+            initSchemaAndTable(containerComposer, targetDataSource, 0);
             final CDCClient cdcClient = buildCDCClientAndStart(targetDataSource, containerComposer);
             Awaitility.waitAtMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
             String jobId = distSQLFacade.listJobIds().get(0);
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(containerComposer.getDatabaseType()).getDialectDatabaseMetaData();
             String tableName = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() ? String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME) : SOURCE_TABLE_NAME;
-            new E2EIncrementalTask(sourceDataSource, tableName, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 20).run();
+            new E2EIncrementalTask(jdbcDataSource, tableName, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 20).run();
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
             for (int i = 1; i <= 4; i++) {
                 int orderId = 10000 + i;
@@ -139,9 +134,9 @@ class CDCE2EIT {
             QualifiedTable orderQualifiedTable = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()
                     ? new QualifiedTable(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME)
                     : new QualifiedTable(null, SOURCE_TABLE_NAME);
-            assertDataMatched(sourceDataSource, targetDataSource, orderQualifiedTable);
-            assertDataMatched(sourceDataSource, targetDataSource, new QualifiedTable(null, "t_address"));
-            assertDataMatched(sourceDataSource, targetDataSource, new QualifiedTable(null, "t_single"));
+            assertDataMatched(jdbcDataSource, targetDataSource, orderQualifiedTable);
+            assertDataMatched(jdbcDataSource, targetDataSource, new QualifiedTable(null, "t_address"));
+            assertDataMatched(jdbcDataSource, targetDataSource, new QualifiedTable(null, "t_single"));
             cdcClient.close();
             Awaitility.waitAtMost(10L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS)
                     .until(() -> distSQLFacade.listJobs().stream().noneMatch(each -> Boolean.parseBoolean(each.get("active").toString())));
@@ -155,13 +150,17 @@ class CDCE2EIT {
         Awaitility.waitAtMost(20L, TimeUnit.SECONDS).pollInterval(2L, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order").isEmpty());
     }
     
-    private void initSchemaAndTable(final PipelineContainerComposer containerComposer, final Connection connection, final int seconds) throws SQLException {
-        containerComposer.createSchema(connection, seconds);
-        String sql = containerComposer.getExtraSQLCommand().getCreateTableOrder(SOURCE_TABLE_NAME);
-        log.info("Create table sql: {}", sql);
-        connection.createStatement().execute(sql);
-        connection.createStatement().execute("CREATE TABLE t_address(id integer primary key, address_name varchar(255))");
-        connection.createStatement().execute("CREATE TABLE t_single(id integer primary key)");
+    private void initSchemaAndTable(final PipelineContainerComposer containerComposer, final DataSource dataSource, final int seconds) throws SQLException {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            containerComposer.createSchema(connection, seconds);
+            String sql = containerComposer.getExtraSQLCommand().getCreateTableOrder(SOURCE_TABLE_NAME);
+            log.info("Create table sql: {}", sql);
+            statement.execute(sql);
+            statement.execute("CREATE TABLE t_address(id integer primary key, address_name varchar(255))");
+            statement.execute("CREATE TABLE t_single(id integer primary key)");
+        }
         containerComposer.sleepSeconds(seconds);
     }
     
