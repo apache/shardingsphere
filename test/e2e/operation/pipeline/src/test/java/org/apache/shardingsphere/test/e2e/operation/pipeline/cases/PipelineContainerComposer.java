@@ -132,7 +132,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
             username = E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getUser();
             password = E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getPassword();
         }
-        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
+        extraSQLCommand = null != testParam.getScenario()
+                ? JAXB.unmarshal(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class)
+                : null;
         containerComposer.start();
         sourceDataSource = StorageContainerUtils.generateDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password, 2);
         proxyDataSource = StorageContainerUtils.generateDataSource(
