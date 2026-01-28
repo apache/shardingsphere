@@ -317,6 +317,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * @param seconds sleep seconds
      * @throws SQLException SQL exception
      */
+    // TODO Refactor connection param
     public void createSchema(final Connection connection, final int seconds) throws SQLException {
         if (!new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
             return;
