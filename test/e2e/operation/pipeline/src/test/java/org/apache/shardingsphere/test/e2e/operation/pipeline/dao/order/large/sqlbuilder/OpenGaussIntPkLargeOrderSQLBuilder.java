@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large.sq
 public final class OpenGaussIntPkLargeOrderSQLBuilder implements IntPkLargeOrderSQLBuilder {
     
     @Override
-    public String buildCreateTableSQL(final String tableName) {
+    public String buildCreateTableSQL(final String qualifiedTableName) {
         return String.format("""
-                create table test.%s (
+                create table %s (
                 order_id bigint,
                 user_id integer,
                 status character varying(50),
@@ -67,18 +67,18 @@ public final class OpenGaussIntPkLargeOrderSQLBuilder implements IntPkLargeOrder
                 c_money money,
                 PRIMARY KEY ( order_id )
                 )
-                """, tableName);
+                """, qualifiedTableName);
     }
     
     @Override
-    public String buildPreparedInsertSQL(final String tableName) {
+    public String buildPreparedInsertSQL(final String qualifiedTableName) {
         return String.format("""
-                INSERT INTO test.%s (
+                INSERT INTO %s (
                 order_id, user_id, status, c_int, c_smallint, c_float, c_double, c_numeric, c_boolean, c_char, c_text, c_bytea, c_raw, c_date, c_time,
                 c_smalldatetime, c_timestamp, c_timestamptz, c_interval, c_array, c_json, c_jsonb, c_uuid, c_hash32, c_tsvector, c_tsquery, c_bit,
                 c_int4range, c_daterange, c_tsrange, c_reltime, c_abstime, c_point, c_lseg, c_box, c_circle, c_bitvarying, c_cidr, c_inet, c_macaddr, c_hll, c_money
                 ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, tableName);
+                """, qualifiedTableName);
     }
     
     @Override

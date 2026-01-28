@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large.sq
 public final class MySQLIntPkLargeOrderSQLBuilder implements IntPkLargeOrderSQLBuilder {
     
     @Override
-    public String buildCreateTableSQL(final String tableName) {
+    public String buildCreateTableSQL(final String qualifiedTableName) {
         return String.format("""
                 CREATE TABLE `%s` (
                 `order_id` bigint NOT NULL,
@@ -56,11 +56,11 @@ public final class MySQLIntPkLargeOrderSQLBuilder implements IntPkLargeOrderSQLB
                 KEY `idx_user_id` (`user_id`),
                 KEY `idx_mulit` (`t_mediumint`,`t_unsigned_mediumint`)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
-                """, tableName);
+                """, qualifiedTableName);
     }
     
     @Override
-    public String buildPreparedInsertSQL(final String tableName) {
+    public String buildPreparedInsertSQL(final String qualifiedTableName) {
         return String.format("""
                 INSERT INTO %s
                 (order_id, user_id, status, t_mediumint, t_smallint, t_tinyint, t_unsigned_int, t_unsigned_mediumint,
@@ -68,7 +68,7 @@ public final class MySQLIntPkLargeOrderSQLBuilder implements IntPkLargeOrderSQLB
                 t_bit, t_binary, t_varbinary, t_blob, t_mediumblob, t_char, t_text, t_mediumtext, t_enum, t_set, t_json)
                 VALUES
                 (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, tableName);
+                """, qualifiedTableName);
     }
     
     @Override

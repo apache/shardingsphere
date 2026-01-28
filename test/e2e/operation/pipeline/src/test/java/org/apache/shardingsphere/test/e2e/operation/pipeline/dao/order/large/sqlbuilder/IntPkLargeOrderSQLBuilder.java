@@ -24,16 +24,16 @@ public interface IntPkLargeOrderSQLBuilder extends DatabaseTypedSPI {
     /**
      * Build create table SQL.
      *
-     * @param tableName table name
+     * @param qualifiedTableName qualified table name
      * @return create table SQL
      */
-    String buildCreateTableSQL(String tableName);
+    String buildCreateTableSQL(String qualifiedTableName);
     
     /**
      * Build prepared insert SQL.
      *
-     * @param tableName table name
+     * @param qualifiedTableName qualified table name
      * @return prepared insert SQL
      */
-    String buildPreparedInsertSQL(String tableName);
+    String buildPreparedInsertSQL(String qualifiedTableName);
 }
