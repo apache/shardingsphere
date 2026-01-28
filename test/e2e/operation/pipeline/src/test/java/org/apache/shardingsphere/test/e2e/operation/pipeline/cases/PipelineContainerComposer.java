@@ -35,6 +35,7 @@ import org.apache.shardingsphere.database.connector.mysql.type.MySQLDatabaseType
 import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
@@ -324,6 +325,17 @@ public final class PipelineContainerComposer implements AutoCloseable {
             statement.execute(String.format("CREATE SCHEMA %s", SCHEMA_NAME));
         }
         sleepSeconds(seconds);
+    }
+    
+    /**
+     * Create qualified table.
+     *
+     * @param tableName table name
+     * @return qualified table
+     */
+    public QualifiedTable createQualifiedTable(final String tableName) {
+        String schemaName = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable() ? SCHEMA_NAME : null;
+        return new QualifiedTable(schemaName, tableName);
     }
     
     /**
