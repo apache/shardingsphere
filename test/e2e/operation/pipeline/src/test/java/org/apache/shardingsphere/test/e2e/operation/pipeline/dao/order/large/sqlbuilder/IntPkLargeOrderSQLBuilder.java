@@ -36,4 +36,14 @@ public interface IntPkLargeOrderSQLBuilder extends DatabaseTypedSPI {
      * @return prepared insert SQL
      */
     String buildPreparedInsertSQL(String qualifiedTableName);
+    
+    /**
+     * Build prepared simple insert SQL.
+     *
+     * @param qualifiedTableName qualified table name
+     * @return prepared simple insert SQL
+     */
+    default String buildPreparedSimpleInsertSQL(String qualifiedTableName) {
+        return "INSERT INTO " + qualifiedTableName + " (order_id, user_id, status) VALUES (?, ?, ?)";
+    }
 }

@@ -84,10 +84,9 @@ public final class IntPkLargeOrderDAO {
      * @throws SQLException SQL exception
      */
     public void insert(final String orderId, final int userId, final String status) throws SQLException {
-        // TODO Use dedicated insert SQL
-        String sql = sqlBuilder.buildPreparedInsertSQL(qualifiedTableName);
+        String sql = sqlBuilder.buildPreparedSimpleInsertSQL(qualifiedTableName);
         Object[] params = new Object[]{orderId, userId, status};
-        log.info("Insert int pk large order SQL: {}, params: {}", sql, params);
+        log.info("Insert int pk large order simple SQL: {}, params: {}", sql, params);
         DataSourceExecuteUtils.execute(dataSource, sql, params);
     }
 }
