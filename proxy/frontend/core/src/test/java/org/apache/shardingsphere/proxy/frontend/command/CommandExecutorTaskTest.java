@@ -205,7 +205,7 @@ class CommandExecutorTaskTest {
         verify(databaseConnectionManager).closeExecutionResources();
     }
     
-    private void mockProxyContext(boolean sqlShowEnabled) {
+    private void mockProxyContext(final boolean sqlShowEnabled) {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
         when(metaDataContexts.getMetaData()).thenReturn(new ShardingSphereMetaData(Collections.emptyList(), mock(),
                 mock(), new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.toString(sqlShowEnabled))))));
