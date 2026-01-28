@@ -36,7 +36,7 @@ public final class IntPkOrderItemDAO {
     
     private final IntPkOrderItemSQLBuilder sqlBuilder;
     
-    public IntPkOrderItemDAO(final DataSource dataSource, final DatabaseType databaseType) {
+    public IntPkOrderItemDAO(final DataSource dataSource, final DatabaseType databaseType, final String schemaName) {
         this.dataSource = dataSource;
         sqlBuilder = DatabaseTypedSPILoader.getService(IntPkOrderItemSQLBuilder.class, databaseType);
     }

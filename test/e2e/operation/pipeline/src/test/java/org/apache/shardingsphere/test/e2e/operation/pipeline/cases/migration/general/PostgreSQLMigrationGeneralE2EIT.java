@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.ge
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.task.E2EIncrementalTask;
@@ -66,10 +65,10 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             distSQLFacade.alterPipelineRule();
             createSourceSchema(containerComposer, PipelineContainerComposer.SCHEMA_NAME);
-            IntPkLargeOrderDAO orderDAO = new IntPkLargeOrderDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType(),
-                    new QualifiedTable(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME));
+            IntPkLargeOrderDAO orderDAO = new IntPkLargeOrderDAO(containerComposer.getSourceDataSource(),
+                    containerComposer.getDatabaseType(), containerComposer.createQualifiedTable(SOURCE_TABLE_NAME));
             orderDAO.createTable();
-            IntPkOrderItemDAO orderItemDAO = new IntPkOrderItemDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType());
+            IntPkOrderItemDAO orderItemDAO = new IntPkOrderItemDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType(), PipelineContainerComposer.SCHEMA_NAME);
             orderItemDAO.createTable();
             containerComposer.createSourceTableIndexList(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME);
             containerComposer.createSourceCommentOnList(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME);

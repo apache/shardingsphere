@@ -67,7 +67,7 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             distSQLFacade.alterPipelineRule();
             IntPkLargeOrderDAO orderDAO = new IntPkLargeOrderDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType(), new QualifiedTable(null, SOURCE_TABLE_NAME));
             orderDAO.createTable();
-            IntPkOrderItemDAO orderItemDAO = new IntPkOrderItemDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType());
+            IntPkOrderItemDAO orderItemDAO = new IntPkOrderItemDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType(), null);
             orderItemDAO.createTable();
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);
