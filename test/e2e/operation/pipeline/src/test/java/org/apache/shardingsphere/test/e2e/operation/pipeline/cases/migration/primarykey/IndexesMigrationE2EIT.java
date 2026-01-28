@@ -60,8 +60,8 @@ import static org.mockito.Mockito.mock;
  * 4) multiple columns unique key, first column type is BIGINT.
  */
 @PipelineE2ESettings(fetchSingle = true, database = {
-        @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/common/none.xml"),
-        @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/common/none.xml")})
+        @PipelineE2EDatabaseSettings(type = "MySQL"),
+        @PipelineE2EDatabaseSettings(type = "PostgreSQL")})
 class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static final String ORDER_TABLE_SHARDING_RULE_FORMAT = "CREATE SHARDING TABLE RULE t_order(\n"

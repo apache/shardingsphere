@@ -50,8 +50,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @PipelineE2ESettings(database = {
-        @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/scenario/general/postgresql.xml"),
-        @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/scenario/general/opengauss.xml")})
+        @PipelineE2EDatabaseSettings(type = "PostgreSQL"),
+        @PipelineE2EDatabaseSettings(type = "openGauss")})
 @Slf4j
 class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     

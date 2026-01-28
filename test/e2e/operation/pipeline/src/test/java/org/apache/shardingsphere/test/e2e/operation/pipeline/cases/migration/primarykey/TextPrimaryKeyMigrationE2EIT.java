@@ -41,9 +41,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @PipelineE2ESettings(fetchSingle = true, database = {
-        @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/primary_key/text_primary_key/mysql.xml"),
-        @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/scenario/primary_key/text_primary_key/postgresql.xml"),
-        @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/scenario/primary_key/text_primary_key/postgresql.xml")})
+        @PipelineE2EDatabaseSettings(type = "MySQL"),
+        @PipelineE2EDatabaseSettings(type = "PostgreSQL"),
+        @PipelineE2EDatabaseSettings(type = "openGauss")})
 class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static final String TARGET_TABLE_NAME = "t_order";
