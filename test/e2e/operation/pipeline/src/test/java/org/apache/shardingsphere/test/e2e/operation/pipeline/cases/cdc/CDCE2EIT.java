@@ -102,7 +102,7 @@ class CDCE2EIT {
             }
             createOrderTableRule(containerComposer);
             distSQLFacade.createBroadcastRule("t_address");
-            QualifiedTable orderQualifiedTable = containerComposer.createQualifiedTable(SOURCE_TABLE_NAME);
+            QualifiedTable orderQualifiedTable = containerComposer.createQualifiedTableWithSchema(SOURCE_TABLE_NAME);
             initSchemaAndTable(containerComposer, containerComposer.getProxyDataSource(), orderQualifiedTable, 3);
             PipelineDataSource jdbcDataSource = new PipelineDataSource(containerComposer.generateShardingSphereDataSourceFromProxy(), containerComposer.getDatabaseType());
             log.info("init data begin: {}", LocalDateTime.now());
@@ -143,11 +143,11 @@ class CDCE2EIT {
     }
     
     private void initSchemaAndTable(final PipelineContainerComposer containerComposer, final DataSource dataSource, final QualifiedTable orderQualifiedTable, final int seconds) throws SQLException {
+        containerComposer.createSchema(dataSource, seconds);
+        new IntPkLargeOrderDAO(dataSource, containerComposer.getDatabaseType(), orderQualifiedTable).createTable();
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            containerComposer.createSchema(connection, seconds);
-            new IntPkLargeOrderDAO(dataSource, containerComposer.getDatabaseType(), orderQualifiedTable).createTable();
             statement.execute("CREATE TABLE t_address(id integer primary key, address_name varchar(255))");
             statement.execute("CREATE TABLE t_single(id integer primary key)");
         }
