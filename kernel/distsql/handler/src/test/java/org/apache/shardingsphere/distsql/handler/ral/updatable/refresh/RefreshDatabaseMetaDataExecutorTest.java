@@ -36,19 +36,19 @@ class RefreshDatabaseMetaDataExecutorTest {
     private final RefreshDatabaseMetaDataExecutor executor = new RefreshDatabaseMetaDataExecutor();
     
     @Test
-    void assertExecuteWithDatabaseName() {
+    void assertRefreshSpecifiedDatabase() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getDatabase("foo_db")).thenReturn(database);
+        when(contextManager.getDatabase("db0")).thenReturn(database);
         try (MockedStatic<SystemSchemaUtils> mockedStatic = mockStatic(SystemSchemaUtils.class)) {
             mockedStatic.when(() -> SystemSchemaUtils.isSystemSchema(database)).thenReturn(false);
-            executor.executeUpdate(new RefreshDatabaseMetaDataStatement("foo_db", false), contextManager);
+            executor.executeUpdate(new RefreshDatabaseMetaDataStatement("db0", false), contextManager);
         }
         verify(contextManager).reloadDatabase(database);
     }
     
     @Test
-    void assertExecuteWithDatabases() {
+    void assertRefreshAllDatabasesExceptSystem() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase systemDatabase = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);

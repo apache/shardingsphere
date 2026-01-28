@@ -46,30 +46,32 @@ class ShowComputeNodeInfoExecutorTest {
     
     @Test
     void assertGetColumnNames() {
-        assertThat(executor.getColumnNames(mock(ShowComputeNodeInfoStatement.class)),
-                is(Arrays.asList("instance_id", "host", "port", "status", "mode_type", "worker_id", "labels", "version")));
+        ShowComputeNodeInfoStatement sqlStatement = mock(ShowComputeNodeInfoStatement.class);
+        assertThat(executor.getColumnNames(sqlStatement), is(Arrays.asList("instance_id", "host", "port", "status", "mode_type", "worker_id", "labels", "version")));
     }
     
     @Test
-    void assertExecuteWithProxyInstance() {
+    void assertExecute() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ComputeNodeInstanceContext computeNodeInstanceContext = createProxyInstanceContext();
         when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodeInfoStatement.class), contextManager);
+        assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("foo"));
         assertThat(row.getCell(2), is("127.0.0.1"));
-        assertThat(row.getCell(3), is("3308"));
+        assertThat(row.getCell(3), is("3309"));
         assertThat(row.getCell(4), is("OK"));
         assertThat(row.getCell(5), is("Standalone"));
-        assertThat(row.getCell(6), is("-1"));
+        assertThat(row.getCell(6), is("0"));
         assertThat(row.getCell(7), is(""));
         assertThat(row.getCell(8), is("foo_version"));
     }
     
     private ComputeNodeInstanceContext createProxyInstanceContext() {
         ComputeNodeInstanceContext result = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
-        ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo", "127.0.0.1@3308", "foo_version"));
+        ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo", "127.0.0.1@3309", "foo_version"));
+        computeNodeInstance.setWorkerId(0);
         when(result.getInstance()).thenReturn(computeNodeInstance);
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Standalone", mock(PersistRepositoryConfiguration.class)));
         return result;
@@ -78,20 +80,21 @@ class ShowComputeNodeInfoExecutorTest {
     @Test
     void assertExecuteWithJdbcInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new JDBCInstanceMetaData("jdbc_instance", "192.168.0.1", "jdbc_version", "logic_db"));
-        computeNodeInstance.setWorkerId(1);
+        ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new JDBCInstanceMetaData("jdbc_instance", "10.0.0.1", "jdbc_version", "logic_db"));
+        computeNodeInstance.setWorkerId(5);
+        computeNodeInstance.getLabels().add("blue");
         ComputeNodeInstanceContext computeNodeInstanceContext =
                 new ComputeNodeInstanceContext(computeNodeInstance, new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class)), new EventBusContext());
         when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowComputeNodeInfoStatement.class), contextManager);
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("jdbc_instance"));
-        assertThat(row.getCell(2), is("192.168.0.1"));
+        assertThat(row.getCell(2), is("10.0.0.1"));
         assertThat(row.getCell(3), is("-1"));
         assertThat(row.getCell(4), is("OK"));
         assertThat(row.getCell(5), is("Cluster"));
-        assertThat(row.getCell(6), is("1"));
-        assertThat(row.getCell(7), is(""));
+        assertThat(row.getCell(6), is("5"));
+        assertThat(row.getCell(7), is("blue"));
         assertThat(row.getCell(8), is("jdbc_version"));
     }
 }

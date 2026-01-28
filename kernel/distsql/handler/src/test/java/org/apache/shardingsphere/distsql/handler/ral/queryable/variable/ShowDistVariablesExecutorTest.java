@@ -46,30 +46,16 @@ class ShowDistVariablesExecutorTest {
     private final ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
     
     @Test
-    void assertShowTemporaryVariables() {
-        Properties props = PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.TRUE.toString()), new Property("instance-connection-enabled", Boolean.TRUE.toString()));
-        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(props));
-        ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement(true, null), contextManager);
-        Collection<String> actualNames = actual.stream().map(each -> each.getCell(1).toString()).collect(Collectors.toList());
-        assertThat(actual.size() >= 4, is(true));
-        assertThat(actualNames.contains("instance_connection_enabled"), is(true));
-        assertThat(actualNames.contains("proxy_meta_data_collector_cron"), is(true));
-        assertThat(actualNames.contains("proxy_meta_data_collector_enabled"), is(true));
-        assertThat(actualNames.contains("system_schema_metadata_assembly_enabled"), is(true));
-    }
-    
-    @Test
-    void assertShowNormalVariables() {
+    void assertExecute() {
         when(contextManager.getMetaDataContexts().getMetaData().getProps())
                 .thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("sql-show", Boolean.TRUE.toString()), new Property("sql-simple", Boolean.TRUE.toString()),
                         new Property("agent-plugins-enabled", Boolean.TRUE.toString()))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
-        executor.setConnectionContext(new DistSQLConnectionContext(mock(QueryContext.class), 3,
+        executor.setConnectionContext(new DistSQLConnectionContext(mock(QueryContext.class), 1,
                 mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement(false, null), contextManager);
         Collection<String> actualNames = actual.stream().map(each -> each.getCell(1).toString()).collect(Collectors.toList());
-        assertThat(actual.size() >= 4, is(true));
+        assertThat(actual.size(), is(22));
         assertThat(actualNames.contains("cached_connections"), is(true));
         assertThat(actualNames.contains("agent_plugins_enabled"), is(true));
         assertThat(actualNames.contains("sql_show"), is(true));
@@ -77,7 +63,22 @@ class ShowDistVariablesExecutorTest {
     }
     
     @Test
-    void assertShowVariablesWithPattern() {
+    void assertExecuteTemporary() {
+        Properties props = PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.TRUE.toString()), new Property("instance-connection-enabled", Boolean.TRUE.toString()));
+        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(props));
+        ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
+        ShowDistVariablesStatement sqlStatement = new ShowDistVariablesStatement(true, null);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(sqlStatement, contextManager);
+        Collection<String> actualNames = actual.stream().map(each -> each.getCell(1).toString()).collect(Collectors.toList());
+        assertThat(actual.size(), is(4));
+        assertThat(actualNames.contains("instance_connection_enabled"), is(true));
+        assertThat(actualNames.contains("proxy_meta_data_collector_cron"), is(true));
+        assertThat(actualNames.contains("proxy_meta_data_collector_enabled"), is(true));
+        assertThat(actualNames.contains("system_schema_metadata_assembly_enabled"), is(true));
+    }
+    
+    @Test
+    void assertExecuteTemporaryWithLike() {
         when(contextManager.getMetaDataContexts().getMetaData().getProps())
                 .thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("sql-show", Boolean.TRUE.toString()))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
@@ -85,7 +86,7 @@ class ShowDistVariablesExecutorTest {
                 mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement(false, "sql_%"), contextManager);
         Collection<String> actualNames = actual.stream().map(each -> each.getCell(1).toString()).collect(Collectors.toList());
-        assertThat(actual.size() >= 2, is(true));
+        assertThat(actual.size(), is(2));
         assertThat(actualNames.contains("sql_show"), is(true));
         assertThat(actualNames.contains("sql_simple"), is(true));
     }

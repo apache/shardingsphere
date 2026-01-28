@@ -40,18 +40,18 @@ class SetComputeNodeStateExecutorTest {
     private final SetComputeNodeStateExecutor executor = new SetComputeNodeStateExecutor();
     
     @Test
-    void assertDisableComputeNode() {
+    void assertExecuteUpdateWithAlreadyDisableInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ComputeNodeInstanceContext instanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
         when(contextManager.getComputeNodeInstanceContext()).thenReturn(instanceContext);
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("current", "127.0.0.1@3307", "version"));
         when(instanceContext.getInstance()).thenReturn(currentInstance);
-        ComputeNodeInstance targetInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("target", "127.0.0.1@3308", "version"));
-        when(instanceContext.getClusterInstanceRegistry().find("target")).thenReturn(Optional.of(targetInstance));
+        ComputeNodeInstance targetInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("instanceID", "127.0.0.1@3308", "version"));
+        when(instanceContext.getClusterInstanceRegistry().find("instanceID")).thenReturn(Optional.of(targetInstance));
         ClusterPersistServiceFacade clusterPersistServiceFacade = mock(ClusterPersistServiceFacade.class, RETURNS_DEEP_STUBS);
         when(contextManager.getPersistServiceFacade().getModeFacade()).thenReturn(clusterPersistServiceFacade);
-        executor.executeUpdate(new SetComputeNodeStateStatement("DISABLE", "target"), contextManager);
-        verify(clusterPersistServiceFacade.getComputeNodeService()).updateState("target", InstanceState.CIRCUIT_BREAK);
+        executor.executeUpdate(new SetComputeNodeStateStatement("DISABLE", "instanceID"), contextManager);
+        verify(clusterPersistServiceFacade.getComputeNodeService()).updateState("instanceID", InstanceState.CIRCUIT_BREAK);
     }
     
     @Test
@@ -65,16 +65,16 @@ class SetComputeNodeStateExecutorTest {
     }
     
     @Test
-    void assertEnableComputeNode() {
+    void assertExecuteUpdateWithEnableInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ComputeNodeInstanceContext instanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
         when(contextManager.getComputeNodeInstanceContext()).thenReturn(instanceContext);
-        ComputeNodeInstance targetInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("target", "127.0.0.1@3308", "version"));
-        when(instanceContext.getClusterInstanceRegistry().find("target")).thenReturn(Optional.of(targetInstance));
+        ComputeNodeInstance targetInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("instanceID", "127.0.0.1@3308", "version"));
+        when(instanceContext.getClusterInstanceRegistry().find("instanceID")).thenReturn(Optional.of(targetInstance));
         ClusterPersistServiceFacade clusterPersistServiceFacade = mock(ClusterPersistServiceFacade.class, RETURNS_DEEP_STUBS);
         when(contextManager.getPersistServiceFacade().getModeFacade()).thenReturn(clusterPersistServiceFacade);
-        executor.executeUpdate(new SetComputeNodeStateStatement("ENABLE", "target"), contextManager);
-        verify(clusterPersistServiceFacade.getComputeNodeService()).updateState("target", InstanceState.OK);
+        executor.executeUpdate(new SetComputeNodeStateStatement("ENABLE", "instanceID"), contextManager);
+        verify(clusterPersistServiceFacade.getComputeNodeService()).updateState("instanceID", InstanceState.OK);
     }
     
     @Test

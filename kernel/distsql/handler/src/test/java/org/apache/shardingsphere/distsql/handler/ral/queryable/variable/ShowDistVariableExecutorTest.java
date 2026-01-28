@@ -82,19 +82,19 @@ class ShowDistVariableExecutorTest {
     
     @Test
     void assertShowTemporaryPropsVariable() {
-        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(
-                new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.TRUE.toString()))));
+        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps())
+                .thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariableStatement("PROXY_META_DATA_COLLECTOR_ENABLED"), contextManager);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("proxy_meta_data_collector_enabled"));
-        assertThat(row.getCell(2), is("true"));
+        assertThat(row.getCell(2), is("false"));
     }
     
     @Test
-    void assertShowUnsupportedVariable() {
+    void assertExecuteWithInvalidVariableName() {
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        assertThrows(UnsupportedVariableException.class, () -> executor.getRows(new ShowDistVariableStatement("unsupported"), contextManager));
+        assertThrows(UnsupportedVariableException.class, () -> executor.getRows(new ShowDistVariableStatement("wrong_name"), contextManager));
     }
 }

@@ -55,6 +55,7 @@ class ShowComputeNodesExecutorTest {
     void assertExecuteWithStandaloneMode() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("foo", "127.0.0.1@3308", "foo_version"));
+        computeNodeInstance.setWorkerId(0);
         ComputeNodeInstanceContext computeNodeInstanceContext = createStandaloneInstanceContext(computeNodeInstance);
         when(contextManager.getComputeNodeInstanceContext()).thenReturn(computeNodeInstanceContext);
         when(contextManager.getPersistServiceFacade().getModeFacade().getComputeNodeService().loadAllInstances()).thenReturn(Collections.singleton(computeNodeInstance));
@@ -67,7 +68,7 @@ class ShowComputeNodesExecutorTest {
         assertThat(row.getCell(4), is("3308"));
         assertThat(row.getCell(5), is("OK"));
         assertThat(row.getCell(6), is("Standalone"));
-        assertThat(row.getCell(7), is("-1"));
+        assertThat(row.getCell(7), is("0"));
         assertThat(row.getCell(8), is(""));
         assertThat(row.getCell(9), is("foo_version"));
         assertThat(row.getCell(10), is(""));

@@ -50,7 +50,7 @@ public final class SetComputeNodeStateExecutor implements DistSQLUpdateExecutor<
     
     private void checkDisablingIsValid(final ContextManager contextManager, final String instanceId) {
         ShardingSpherePreconditions.checkState(!contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId().equals(instanceId),
-                () -> new UnsupportedSQLOperationException(String.format("`%s` is the instance currently in use and cannot be disabled", instanceId)));
+                () -> new UnsupportedSQLOperationException(String.format("`%s` is the currently in use instance and cannot be disabled", instanceId)));
         ShardingSpherePreconditions.checkState(contextManager.getComputeNodeInstanceContext().getClusterInstanceRegistry().find(instanceId).isPresent(),
                 () -> new UnsupportedSQLOperationException(String.format("`%s` does not exist", instanceId)));
         ShardingSpherePreconditions.checkState(

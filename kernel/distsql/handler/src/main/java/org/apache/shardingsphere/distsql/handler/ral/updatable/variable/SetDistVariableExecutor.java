@@ -52,7 +52,7 @@ public final class SetDistVariableExecutor implements DistSQLUpdateExecutor<SetD
         } catch (final IllegalArgumentException ex) {
             try {
                 return TemporaryConfigurationPropertyKey.valueOf(name.toUpperCase());
-            } catch (final IllegalArgumentException ignored) {
+            } catch (final IllegalArgumentException exception) {
                 throw new UnsupportedVariableException(name);
             }
         }

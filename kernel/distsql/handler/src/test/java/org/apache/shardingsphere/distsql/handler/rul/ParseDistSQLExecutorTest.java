@@ -62,7 +62,7 @@ class ParseDistSQLExecutorTest {
     }
     
     @Test
-    void assertGetRowDataForMySQL() throws Exception {
+    void assertGetRowDataForMySQL() {
         String sql = "SELECT * FROM t_order";
         when(connectionContext.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ParseDistSQLExecutor executor = new ParseDistSQLExecutor();
@@ -74,7 +74,7 @@ class ParseDistSQLExecutorTest {
     }
     
     @Test
-    void assertGetRowDataForPostgreSQL() throws Exception {
+    void assertGetRowDataForPostgreSQL() {
         String sql = "SELECT * FROM t_order";
         when(connectionContext.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         ParseDistSQLExecutor executor = new ParseDistSQLExecutor();
@@ -85,7 +85,7 @@ class ParseDistSQLExecutorTest {
     }
     
     @Test
-    void assertExecuteWithInvalidSQL() {
+    void assertExecute() {
         String sql = "wrong sql";
         when(connectionContext.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ParseDistSQLExecutor executor = new ParseDistSQLExecutor();
