@@ -327,16 +327,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     /**
-     * Create source order table.
-     *
-     * @param sourceTableName source table name
-     * @throws SQLException SQL exception
-     */
-    public void createSourceOrderTable(final String sourceTableName) throws SQLException {
-        sourceExecuteWithLog(extraSQLCommand.getCreateTableOrder(sourceTableName));
-    }
-    
-    /**
      * Create source table index list.
      *
      * @param schema schema

@@ -42,7 +42,7 @@ class RollbackMigrationE2EIT extends AbstractMigrationE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertIllegalTimeTypesValueMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
+    void assertRollbackSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql = "CREATE TABLE t_order (order_id BIGINT PRIMARY KEY, user_id INT, status VARCHAR(50))";
             containerComposer.sourceExecuteWithLog(sql);
