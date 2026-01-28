@@ -18,6 +18,8 @@
 name: E2E - Operation
 
 on:
+  pull_request:
+    branches: [ master ]
   workflow_dispatch:
 
 concurrency:

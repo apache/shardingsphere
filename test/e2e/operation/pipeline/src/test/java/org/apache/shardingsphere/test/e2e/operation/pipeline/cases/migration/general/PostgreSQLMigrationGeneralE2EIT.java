@@ -20,18 +20,17 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.ge
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.task.E2EIncrementalTask;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large.IntPkLargeOrderDAO;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.IntPkOrderItemDAO;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -45,7 +44,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -68,7 +66,9 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             distSQLFacade.alterPipelineRule();
             createSourceSchema(containerComposer, PipelineContainerComposer.SCHEMA_NAME);
-            containerComposer.createSourceOrderTable(SOURCE_TABLE_NAME);
+            IntPkLargeOrderDAO orderDAO = new IntPkLargeOrderDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType(),
+                    new QualifiedTable(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME));
+            orderDAO.createTable();
             IntPkOrderItemDAO orderItemDAO = new IntPkOrderItemDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType());
             orderItemDAO.createTable();
             containerComposer.createSourceTableIndexList(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME);
@@ -78,9 +78,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             createTargetOrderTableRule(containerComposer);
             createTargetOrderItemTableRule(containerComposer);
             log.info("init data begin: {}", LocalDateTime.now());
-            List<Object[]> orderInsertData = PipelineCaseHelper.generateOrderInsertData(
-                    containerComposer.getDatabaseType(), new AutoIncrementKeyGenerateAlgorithm(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
-            DataSourceExecuteUtils.execute(containerComposer.getSourceDataSource(), containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), orderInsertData);
+            orderDAO.batchInsert(PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
             orderItemDAO.batchInsert(PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
             int replicationSlotsCount = getReplicationSlotsCount(containerComposer);
             log.info("init data end: {}, replication slots count: {}", LocalDateTime.now(), replicationSlotsCount);
@@ -92,7 +90,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             containerComposer.startIncrementTask(new E2EIncrementalTask(containerComposer.getSourceDataSource(), qualifiedTableName, new SnowflakeKeyGenerateAlgorithm(),
                     containerComposer.getDatabaseType(), 20));
             TimeUnit.SECONDS.timedJoin(containerComposer.getIncreaseTaskThread(), 30L);
-            containerComposer.sourceExecuteWithLog(String.format("INSERT INTO %s (order_id, user_id, status) VALUES (10000, 1, 'OK')", qualifiedTableName));
+            orderDAO.insert(10000L, 1, "OK");
             // TODO Insert new record in t_order_item
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
             containerComposer.assertRecordExists(jdbcDataSource, qualifiedTableName, 10000);
