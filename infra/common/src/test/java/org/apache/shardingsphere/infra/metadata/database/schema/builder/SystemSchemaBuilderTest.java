@@ -21,11 +21,15 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManagerTestSupport;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
@@ -37,25 +41,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SystemSchemaBuilderTest {
     
     @Test
-    void assertBuildForMySQL() {
+    void assertBuildForMySQL() throws SQLException {
+        setUpMySQLSystemSchemaDataSource();
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         ConfigurationProperties configProps = new ConfigurationProperties(PropertiesBuilder.build());
         Map<String, ShardingSphereSchema> actualInformationSchema = SystemSchemaBuilder.build("information_schema", databaseType, configProps);
         assertThat(actualInformationSchema.size(), is(1));
         assertTrue(actualInformationSchema.containsKey("information_schema"));
-        assertThat(actualInformationSchema.get("information_schema").getAllTables().size(), is(95));
+        assertThat(actualInformationSchema.get("information_schema").getAllTables().size(), is(3));
         Map<String, ShardingSphereSchema> actualMySQLSchema = SystemSchemaBuilder.build("mysql", databaseType, configProps);
         assertThat(actualMySQLSchema.size(), is(1));
         assertTrue(actualMySQLSchema.containsKey("mysql"));
-        assertThat(actualMySQLSchema.get("mysql").getAllTables().size(), is(40));
+        assertThat(actualMySQLSchema.get("mysql").getAllTables().size(), is(1));
         Map<String, ShardingSphereSchema> actualPerformanceSchema = SystemSchemaBuilder.build("performance_schema", databaseType, configProps);
         assertThat(actualPerformanceSchema.size(), is(1));
         assertTrue(actualPerformanceSchema.containsKey("performance_schema"));
-        assertThat(actualPerformanceSchema.get("performance_schema").getAllTables().size(), is(114));
+        assertThat(actualPerformanceSchema.get("performance_schema").getAllTables().size(), is(1));
         Map<String, ShardingSphereSchema> actualSysSchema = SystemSchemaBuilder.build("sys", databaseType, configProps);
         assertThat(actualSysSchema.size(), is(1));
         assertTrue(actualSysSchema.containsKey("sys"));
-        assertThat(actualSysSchema.get("sys").getAllTables().size(), is(53));
+        assertThat(actualSysSchema.get("sys").getAllTables().size(), is(1));
     }
     
     @Test
@@ -103,5 +108,12 @@ class SystemSchemaBuilderTest {
         ShardingSphereSchema shardingsphereSchema = actual.get("shardingsphere");
         assertThat(shardingsphereSchema.getAllTables().size(), is(1));
         assertTrue(shardingsphereSchema.containsTable("cluster_information"));
+    }
+    
+    private void setUpMySQLSystemSchemaDataSource() throws SQLException {
+        SystemSchemaManagerTestSupport.setUpMySQLSystemSchemaDataSource("information_schema", Arrays.asList("columns", "tables", "schemata"));
+        SystemSchemaManagerTestSupport.setUpMySQLSystemSchemaDataSource("mysql", Collections.singletonList("db"));
+        SystemSchemaManagerTestSupport.setUpMySQLSystemSchemaDataSource("performance_schema", Collections.singletonList("events_waits_current"));
+        SystemSchemaManagerTestSupport.setUpMySQLSystemSchemaDataSource("sys", Collections.singletonList("sys_config"));
     }
 }
