@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlb
 public final class MySQLIntPkOrderItemSQLBuilder implements IntPkOrderItemSQLBuilder {
     
     @Override
-    public String buildCreateTableSQL() {
+    public String buildCreateTableSQL(final String schemaPrefix) {
         return """
                 CREATE TABLE t_order_item (
                 item_id bigint NOT NULL,
@@ -33,7 +33,7 @@ public final class MySQLIntPkOrderItemSQLBuilder implements IntPkOrderItemSQLBui
     }
     
     @Override
-    public String buildPreparedInsertSQL() {
+    public String buildPreparedInsertSQL(final String schemaPrefix) {
         return "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (?, ?, ?, ?)";
     }
     

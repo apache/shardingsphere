@@ -36,9 +36,12 @@ public final class IntPkOrderItemDAO {
     
     private final IntPkOrderItemSQLBuilder sqlBuilder;
     
+    private final String schemaPrefix;
+    
     public IntPkOrderItemDAO(final DataSource dataSource, final DatabaseType databaseType, final String schemaName) {
         this.dataSource = dataSource;
         sqlBuilder = DatabaseTypedSPILoader.getService(IntPkOrderItemSQLBuilder.class, databaseType);
+        schemaPrefix = null == schemaName || schemaName.isEmpty() ? "" : (schemaName + ".");
     }
     
     /**
@@ -47,7 +50,7 @@ public final class IntPkOrderItemDAO {
      * @throws SQLException SQL exception
      */
     public void createTable() throws SQLException {
-        String sql = sqlBuilder.buildCreateTableSQL();
+        String sql = sqlBuilder.buildCreateTableSQL(schemaPrefix);
         log.info("Create order_item table SQL: {}", sql);
         DataSourceExecuteUtils.execute(dataSource, sql);
     }
@@ -60,7 +63,7 @@ public final class IntPkOrderItemDAO {
      */
     public void batchInsert(final int recordCount) throws SQLException {
         List<Object[]> paramsList = PipelineCaseHelper.generateOrderItemInsertData(new AutoIncrementKeyGenerateAlgorithm(), recordCount);
-        String sql = sqlBuilder.buildPreparedInsertSQL();
+        String sql = sqlBuilder.buildPreparedInsertSQL(schemaPrefix);
         log.info("Batch insert order_item SQL: {}, params list size: {}", sql, paramsList.size());
         DataSourceExecuteUtils.execute(dataSource, sql, paramsList);
     }
@@ -75,7 +78,7 @@ public final class IntPkOrderItemDAO {
      * @throws SQLException SQL exception
      */
     public void insert(final long itemId, final long orderId, final int userId, final String status) throws SQLException {
-        String sql = sqlBuilder.buildPreparedInsertSQL();
+        String sql = sqlBuilder.buildPreparedInsertSQL(schemaPrefix);
         Object[] params = new Object[]{itemId, orderId, userId, status};
         log.info("Insert order_item SQL: {}, params: {}", sql, params);
         DataSourceExecuteUtils.execute(dataSource, sql, params);

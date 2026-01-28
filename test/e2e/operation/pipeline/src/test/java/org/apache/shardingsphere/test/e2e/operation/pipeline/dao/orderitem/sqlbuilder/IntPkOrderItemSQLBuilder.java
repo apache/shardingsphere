@@ -24,14 +24,16 @@ public interface IntPkOrderItemSQLBuilder extends DatabaseTypedSPI {
     /**
      * Build create table SQL.
      *
+     * @param schemaPrefix schema prefix
      * @return create table SQL
      */
-    String buildCreateTableSQL();
+    String buildCreateTableSQL(String schemaPrefix);
     
     /**
      * Build prepared insert SQL.
      *
+     * @param schemaPrefix schema prefix
      * @return prepared insert SQL
      */
-    String buildPreparedInsertSQL();
+    String buildPreparedInsertSQL(String schemaPrefix);
 }
