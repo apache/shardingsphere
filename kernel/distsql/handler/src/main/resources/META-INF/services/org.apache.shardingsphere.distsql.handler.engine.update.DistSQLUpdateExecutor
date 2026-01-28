@@ -15,7 +15,9 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.imports.ImportDatabaseConfigurationExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.imports.ImportMetaDataExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lock.LockClusterExecutor
-org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.lock.UnlockClusterExecutor
+org.apache.shardingsphere.distsql.handler.ral.updatable.computenode.SetComputeNodeStateExecutor
+org.apache.shardingsphere.distsql.handler.ral.updatable.label.LabelComputeNodeExecutor
+org.apache.shardingsphere.distsql.handler.ral.updatable.label.UnlabelComputeNodeExecutor
+org.apache.shardingsphere.distsql.handler.ral.updatable.refresh.RefreshDatabaseMetaDataExecutor
+org.apache.shardingsphere.distsql.handler.ral.updatable.refresh.RefreshTableMetaDataExecutor
+org.apache.shardingsphere.distsql.handler.ral.updatable.variable.SetDistVariableExecutor
