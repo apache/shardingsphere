@@ -323,6 +323,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         this.queryContext = queryContext;
         executeBatchExecutor.addBatch(queryContext, usedDatabase);
         findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
+        saveBatchParameterRecords();
         clearParameters();
     }
     
@@ -351,6 +352,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         currentResultSet = null;
         closeCurrentBatchGeneratedKeysResultSet();
         executeBatchExecutor.clear();
+        clearBatchParameterRecords();
         clearParameters();
     }
     

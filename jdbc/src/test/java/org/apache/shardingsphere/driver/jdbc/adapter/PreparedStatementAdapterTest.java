@@ -277,4 +277,19 @@ class PreparedStatementAdapterTest {
         shardingSpherePreparedStatement.clearParameters();
         assertTrue(shardingSpherePreparedStatement.getParameters().isEmpty());
     }
+    
+    @Test
+    void assertBatchParameterRecordsPreservedAfterClearParameters() {
+        shardingSpherePreparedStatement.setInt(1, 100);
+        shardingSpherePreparedStatement.setString(2, "test");
+        assertThat(shardingSpherePreparedStatement.getParameterRecords().size(), is(2));
+        shardingSpherePreparedStatement.saveBatchParameterRecords();
+        shardingSpherePreparedStatement.clearParameters();
+        assertTrue(shardingSpherePreparedStatement.getParameters().isEmpty());
+        assertTrue(shardingSpherePreparedStatement.getParameterRecords().isEmpty());
+        shardingSpherePreparedStatement.setInt(1, 200);
+        shardingSpherePreparedStatement.setString(2, "test2");
+        shardingSpherePreparedStatement.saveBatchParameterRecords();
+        shardingSpherePreparedStatement.clearBatchParameterRecords();
+    }
 }
