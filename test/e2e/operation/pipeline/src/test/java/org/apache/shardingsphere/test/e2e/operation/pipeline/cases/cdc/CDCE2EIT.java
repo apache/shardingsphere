@@ -102,7 +102,7 @@ class CDCE2EIT {
             }
             createOrderTableRule(containerComposer);
             distSQLFacade.createBroadcastRule("t_address");
-            QualifiedTable orderQualifiedTable = containerComposer.createQualifiedTable(SOURCE_TABLE_NAME);
+            QualifiedTable orderQualifiedTable = containerComposer.createQualifiedTableWithSchema(SOURCE_TABLE_NAME);
             initSchemaAndTable(containerComposer, containerComposer.getProxyDataSource(), orderQualifiedTable, 3);
             PipelineDataSource jdbcDataSource = new PipelineDataSource(containerComposer.generateShardingSphereDataSourceFromProxy(), containerComposer.getDatabaseType());
             log.info("init data begin: {}", LocalDateTime.now());

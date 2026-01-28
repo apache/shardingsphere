@@ -328,13 +328,12 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     /**
-     * Create qualified table.
+     * Create qualified table with schema.
      *
      * @param tableName table name
      * @return qualified table
      */
-    // TODO Rename, add schema
-    public QualifiedTable createQualifiedTable(final String tableName) {
+    public QualifiedTable createQualifiedTableWithSchema(final String tableName) {
         String schemaName = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable() ? SCHEMA_NAME : null;
         return new QualifiedTable(schemaName, tableName);
     }
