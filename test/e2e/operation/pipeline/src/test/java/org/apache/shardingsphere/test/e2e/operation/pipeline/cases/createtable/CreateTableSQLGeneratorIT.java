@@ -51,9 +51,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @PipelineE2ESettings(database = {
-        @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/common/none.xml"),
-        @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/common/none.xml"),
-        @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/common/none.xml")})
+        @PipelineE2EDatabaseSettings(type = "MySQL"),
+        @PipelineE2EDatabaseSettings(type = "PostgreSQL"),
+        @PipelineE2EDatabaseSettings(type = "openGauss")})
 class CreateTableSQLGeneratorIT {
     
     private static final String DEFAULT_SCHEMA = "public";

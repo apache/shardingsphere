@@ -62,6 +62,13 @@ public @interface PipelineE2ESettings {
          * 
          * @return scenario files
          */
-        String[] scenarioFiles();
+        String[] scenarioFiles() default {};
+        
+        /**
+         * Get table structures.
+         *
+         * @return table structures
+         */
+        String[] tableStructures() default {"default"};
     }
 }

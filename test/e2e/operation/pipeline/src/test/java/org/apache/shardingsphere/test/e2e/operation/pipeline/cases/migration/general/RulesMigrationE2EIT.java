@@ -44,8 +44,8 @@ import static org.hamcrest.Matchers.is;
  * 2) only encrypt rule.
  */
 @PipelineE2ESettings(fetchSingle = true, database = {
-        @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/primary_key/text_primary_key/mysql.xml"),
-        @PipelineE2EDatabaseSettings(type = "MariaDB", scenarioFiles = "env/scenario/primary_key/text_primary_key/mysql.xml")
+        @PipelineE2EDatabaseSettings(type = "MySQL"),
+        @PipelineE2EDatabaseSettings(type = "MariaDB")
 })
 class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     

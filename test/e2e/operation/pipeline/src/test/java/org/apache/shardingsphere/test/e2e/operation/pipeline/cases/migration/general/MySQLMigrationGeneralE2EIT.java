@@ -50,7 +50,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@PipelineE2ESettings(database = @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/general/mysql.xml"))
+@PipelineE2ESettings(database = @PipelineE2EDatabaseSettings(type = "MySQL"))
 @Slf4j
 class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
