@@ -24,18 +24,18 @@ public interface StringPkSmallOrderSQLBuilder extends DatabaseTypedSPI {
     /**
      * Build create table SQL.
      *
-     * @param tableName table name
+     * @param qualifiedTableName qualified table name
      * @return create table SQL
      */
-    String buildCreateTableSQL(String tableName);
+    String buildCreateTableSQL(String qualifiedTableName);
     
     /**
      * Build prepared insert SQL.
      *
-     * @param tableName table name
+     * @param qualifiedTableName qualified table name
      * @return prepared insert SQL
      */
-    default String buildPreparedInsertSQL(final String tableName) {
-        return String.format("INSERT INTO %s (order_id, user_id, status) VALUES (?, ?, ?)", tableName);
+    default String buildPreparedInsertSQL(final String qualifiedTableName) {
+        return String.format("INSERT INTO %s (order_id, user_id, status) VALUES (?, ?, ?)", qualifiedTableName);
     }
 }

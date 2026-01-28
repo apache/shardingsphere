@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.small.sq
 public final class OpenGaussStringPkSmallOrderSQLBuilder implements StringPkSmallOrderSQLBuilder {
     
     @Override
-    public String buildCreateTableSQL(final String tableName) {
+    public String buildCreateTableSQL(final String qualifiedTableName) {
         return String.format("""
                 CREATE TABLE %s (
                 order_id varchar(255) NOT NULL,
@@ -29,7 +29,7 @@ public final class OpenGaussStringPkSmallOrderSQLBuilder implements StringPkSmal
                 t_unsigned_int int NULL,
                 PRIMARY KEY (order_id)
                 )
-                """, tableName);
+                """, qualifiedTableName);
     }
     
     @Override
