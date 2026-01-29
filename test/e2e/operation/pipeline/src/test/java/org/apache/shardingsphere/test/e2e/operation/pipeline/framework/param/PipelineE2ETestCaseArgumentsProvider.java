@@ -54,7 +54,7 @@ public final class PipelineE2ETestCaseArgumentsProvider implements ArgumentsProv
         return settings.fetchSingle() && !databaseImages.isEmpty()
                 ? provideArguments(databaseType, databaseImages.iterator().next(), databaseSettings.scenarioFiles(), databaseSettings.tableStructures(), databaseSettings.storageContainerCount())
                 : databaseImages.stream().flatMap(each -> provideArguments(databaseType, each, databaseSettings.scenarioFiles(),
-                databaseSettings.tableStructures(), databaseSettings.storageContainerCount()).stream()).toList();
+                        databaseSettings.tableStructures(), databaseSettings.storageContainerCount()).stream()).toList();
     }
     
     private Collection<Arguments> provideArguments(final DatabaseType databaseType, final String databaseContainerImage,
