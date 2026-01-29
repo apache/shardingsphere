@@ -13,7 +13,7 @@
 1. Fix CVE-2025-55163, CVE-2025-58056, CVE-2025-58057 [#36758](https://github.com/apache/shardingsphere/pull/36758)
 1. Fix CVE-2025-48924 [#36085](https://github.com/apache/shardingsphere/pull/36085)
 1. Fix CVE-2024-7254 [#36153](https://github.com/apache/shardingsphere/pull/36153)
-1Fix CVE CVE-2015-5237, CVE-2024-7254, CVE-2022-3171, CVE-2021-22569, CVE-2021-22570, CVE-2021-22570 [#37888](https://github.com/apache/shardingsphere/pull/37888)
+1. Fix CVE CVE-2015-5237, CVE-2024-7254, CVE-2022-3171, CVE-2021-22569, CVE-2021-22570, CVE-2021-22570 [#37888](https://github.com/apache/shardingsphere/pull/37888)
 
 ### Metadata Storage Changes
 
