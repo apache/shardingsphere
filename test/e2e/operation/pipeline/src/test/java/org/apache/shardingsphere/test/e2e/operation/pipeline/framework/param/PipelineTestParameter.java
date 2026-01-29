@@ -37,8 +37,4 @@ public final class PipelineTestParameter {
     private final String tableStructure;
     
     private final int storageContainerCount;
-    
-    public PipelineTestParameter(final DatabaseType databaseType, final String databaseContainerImage, final String scenario, final String tableStructure) {
-        this(databaseType, databaseContainerImage, scenario, tableStructure, 1);
-    }
 }

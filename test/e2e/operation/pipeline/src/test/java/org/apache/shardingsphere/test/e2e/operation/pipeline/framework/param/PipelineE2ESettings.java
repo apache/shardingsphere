@@ -70,5 +70,12 @@ public @interface PipelineE2ESettings {
          * @return table structures
          */
         String[] tableStructures() default {"default"};
+        
+        /**
+         * Get storage container count.
+         *
+         * @return storage container count
+         */
+        int storageContainerCount() default 1;
     }
 }
