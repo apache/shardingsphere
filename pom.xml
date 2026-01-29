@@ -336,6 +336,17 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-protobuf</artifactId>
+                <version>${netty.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.protobuf.nano</groupId>
+                        <artifactId>protobuf-javanano</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
             
             <dependency>
                 <groupId>org.apache.calcite</groupId>
