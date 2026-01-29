@@ -470,6 +470,8 @@
     <sql-case id="select_subquery_projection_sql92" value="SELECT (SELECT 1) sub FROM t_order" db-types="SQL92" />
     <sql-case id="select_hex_literal_sql92" value="SELECT 0x1 FROM t_order" db-types="SQL92" />
     <sql-case id="select_bit_literal_sql92" value="SELECT B'1' FROM t_order" db-types="SQL92" />
+    <sql-case id="select_date_trunc_column" value="SELECT DATE_TRUNC FROM t_keyword_date_trunc" db-types="Doris" />
+    <sql-case id="select_materialized_column" value="SELECT MATERIALIZED FROM t_keyword_materialized WHERE MATERIALIZED = 'value'" db-types="Doris" />
     <sql-case id="select_cast_literal_sql92" value="SELECT CAST(1 AS INT) FROM t_order" db-types="SQL92" />
     <sql-case id="select_boolean_literal_sql92" value="SELECT TRUE FROM t_order" db-types="SQL92" />
     <sql-case id="select_subquery_table_sql92" value="SELECT * FROM (SELECT 1) t" db-types="SQL92" />

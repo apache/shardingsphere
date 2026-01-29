@@ -2559,6 +2559,20 @@
         <option-hint start-index="71" stop-index="96" text="OPTION (LABEL = N'label1')" />
     </update>
 
+    <update sql-case-id="update_pause_column">
+        <table start-index="7" stop-index="21">
+            <simple-table name="t_keyword_pause" start-index="7" stop-index="21" />
+        </table>
+        <set start-index="23" stop-index="38">
+            <assignment start-index="27" stop-index="38">
+                <column name="PAUSE" start-index="27" stop-index="31" />
+                <assignment-value>
+                    <literal-expression value="true" start-index="35" stop-index="38" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+  
     <update sql-case-id="update_with_where">
         <table start-index="7" stop-index="15">
             <simple-table name="employees" start-index="7" stop-index="15" />

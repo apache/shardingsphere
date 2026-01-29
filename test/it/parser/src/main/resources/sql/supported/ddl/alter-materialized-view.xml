@@ -30,4 +30,13 @@
     <sql-case id="alter_materialized_view_disable_rewrite_basic" value="ALTER MATERIALIZED VIEW sales_mv DISABLE REWRITE" db-types="Hive" />
     <sql-case id="alter_materialized_view_enable_rewrite_with_db" value="ALTER MATERIALIZED VIEW db1.sales_mv ENABLE REWRITE" db-types="Hive" />
     <sql-case id="alter_materialized_view_disable_rewrite_with_db" value="ALTER MATERIALIZED VIEW db1.sales_mv DISABLE REWRITE" db-types="Hive" />
+    <sql-case id="doris_alter_materialized_view_rename" value="ALTER MATERIALIZED VIEW mv1 RENAME mv1_new;" db-types="Doris" />
+    <sql-case id="doris_alter_materialized_view_refresh_complete" value="ALTER MATERIALIZED VIEW mv1 REFRESH COMPLETE;" db-types="Doris" />
+    <sql-case id="doris_alter_materialized_view_refresh_manual" value="ALTER MATERIALIZED VIEW mv1 REFRESH ON MANUAL;" db-types="Doris" />
+    <sql-case id="doris_alter_materialized_view_refresh_schedule" value="ALTER MATERIALIZED VIEW mv1 REFRESH ON SCHEDULE EVERY 2 HOUR;" db-types="Doris" />
+    <sql-case id="doris_alter_materialized_view_refresh_schedule_with_starts" value="ALTER MATERIALIZED VIEW mv1 REFRESH ON SCHEDULE EVERY 1 DAY STARTS '2024-12-01 20:30:00';" db-types="Doris" />
+    <sql-case id="doris_alter_materialized_view_refresh_complete_schedule" value="ALTER MATERIALIZED VIEW mv1 REFRESH COMPLETE ON SCHEDULE EVERY 2 HOUR;" db-types="Doris" />
+    <sql-case id="doris_alter_materialized_view_replace" value="ALTER MATERIALIZED VIEW mv1 REPLACE WITH MATERIALIZED VIEW mv2;" db-types="Doris" />
+    <sql-case id="doris_alter_materialized_view_replace_with_properties" value="ALTER MATERIALIZED VIEW db.mv1 REPLACE WITH MATERIALIZED VIEW mv2 PROPERTIES('swap' = 'true');" db-types="Doris" />
+    <sql-case id="doris_alter_materialized_view_set_properties" value="ALTER MATERIALIZED VIEW mv1 SET ('replication_num' = '3');" db-types="Doris" />
 </sql-cases>

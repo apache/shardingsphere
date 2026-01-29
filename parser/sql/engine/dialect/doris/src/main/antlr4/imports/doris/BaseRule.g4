@@ -198,6 +198,7 @@ identifierKeywordsUnambiguous
     | DATA
     | DATETIME
     | DATE
+    | DATE_TRUNC
     | DAY
     | DAY_MINUTE
     | DEFAULT_AUTH
@@ -322,6 +323,7 @@ identifierKeywordsUnambiguous
     | MASTER_TLS_VERSION
     | MASTER_USER
     | MASTER_ZSTD_COMPRESSION_LEVEL
+    | MATERIALIZED
     | MAX_CONNECTIONS_PER_HOUR
     | MAX_QUERIES_PER_HOUR
     | MAX_ROWS
@@ -386,6 +388,7 @@ identifierKeywordsUnambiguous
     | PASSWORD
     | PASSWORD_LOCK_TIME
     | PATH
+    | PAUSE
     | PHASE
     | PLUGINS
     | PLUGIN_DIR

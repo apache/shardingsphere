@@ -31,6 +31,7 @@ alterStatement
     | alterServer
     | alterCatalog
     | alterStoragePolicy
+    | dorisAlterMaterializedView
     ;
 
 createTable
@@ -236,6 +237,14 @@ cancelBuildIndex
     : CANCEL BUILD INDEX ON tableName jobIdList?
     ;
 
+cancelMaterializedViewTask
+    : CANCEL MATERIALIZED VIEW TASK taskId ON identifier
+    ;
+
+taskId
+    : NUMBER_
+    ;
+
 jobIdList
     : LP_ jobId (COMMA_ jobId)* RP_
     ;
@@ -408,35 +417,108 @@ createView
       (WITH (CASCADED | LOCAL)? CHECK OPTION)?
     ;
 
-// DORIS ADDED BEGIN
-createMaterializedView
-    : CREATE MATERIALIZED VIEW ifNotExists? name (LP_ columnDefinition RP_)? buildMode? (REFRESH refreshMethod? refreshTrigger?)? ((DUPLICATE)? KEY keys= LP_ identifierList RP_)? commentClause? partitionClause? distributedbyClause? propertiesClause? AS select
+pauseMaterializedView
+    : PAUSE MATERIALIZED VIEW JOB ON tableName
     ;
+
+resumeMaterializedView
+    : RESUME MATERIALIZED VIEW JOB ON tableName
+    ;
+
+dropMaterializedView
+    : DROP MATERIALIZED VIEW ifExists? identifier ON tableName
+    ;
+
+refreshMaterializedView
+    : REFRESH MATERIALIZED VIEW tableName refreshType
+    ;
+
+refreshType
+    : partitionSpec | COMPLETE | AUTO
+    ;
+
+partitionSpec
+    : PARTITIONS LP_ identifier (COMMA_ identifier)* RP_
+    ;
+
+// DORIS ADDED BEGIN
+dorisCreateMaterializedView
+    : CREATE MATERIALIZED VIEW ifNotExists? tableName dorisMVColumnDefinitions? dorisMVBuildMode? dorisMVRefresh? dorisMVKeyClause? commentClause? dorisMVPartitionClause? dorisMVDistributedClause? propertiesClause? AS select
+    ;
+
+dorisMVColumnDefinitions
+    : LP_ dorisMVColumnDefinition (COMMA_ dorisMVColumnDefinition)* RP_
+    ;
+
+dorisMVColumnDefinition
+    : columnName (COMMENT string_)?
+    ;
+
 // DORIS ADDED END
 
 // DORIS ADDED BEGIN
-buildMode
+dorisMVBuildMode
     : BUILD (IMMEDIATE | DEFERRED)
     ;
 // DORIS ADDED END
 
+dorisMVRefresh
+    : REFRESH dorisMVRefreshMethod? dorisMVRefreshTrigger?
+    ;
+
 // DORIS ADDED BEGIN
-refreshMethod
+dorisMVRefreshMethod
     : COMPLETE | AUTO
     ;
 // DORIS ADDED END
 
 // DORIS ADDED BEGIN
-refreshTrigger
-    : ON MANUAL | ON SCHEDULE refreshSchedule | ON COMMIT
+dorisMVRefreshTrigger
+    : ON MANUAL
+    | ON SCHEDULE EVERY intervalValue (STARTS timestampValue)?
+    | ON COMMIT
+    ;
+
+dorisMVKeyClause
+    : (DUPLICATE)? KEY LP_ identifierList RP_
+    ;
+
+dorisMVPartitionClause
+    : PARTITION BY LP_ (columnName | dorisMVPartitionFunction) RP_
+    ;
+
+dorisMVPartitionFunction
+    : DATE_TRUNC LP_ columnName COMMA_ string_ RP_
+    ;
+
+dorisMVDistributedClause
+    : DISTRIBUTED BY (HASH LP_ identifierList RP_ | RANDOM) (BUCKETS (NUMBER_ | AUTO))?
     ;
 // DORIS ADDED END
 
-// DORIS ADDED BEGIN
-refreshSchedule
-    : EVERY intervalValue (STARTS timestampValue)?
+dorisAlterMaterializedView
+    : ALTER MATERIALIZED VIEW tableName (dorisAlterMVRename | dorisAlterMVRefresh | dorisAlterMVReplace | dorisAlterMVSetProperties)
     ;
-// DORIS ADDED END
+
+dorisAlterMVRename
+    : RENAME identifier
+    ;
+
+dorisAlterMVRefresh
+    : REFRESH (dorisMVRefreshMethod | dorisMVRefreshTrigger | dorisMVRefreshMethod dorisMVRefreshTrigger)
+    ;
+
+dorisAlterMVReplace
+    : REPLACE WITH MATERIALIZED VIEW identifier propertiesClause?
+    ;
+
+dorisAlterMVSetProperties
+    : SET LP_ propertyItemList RP_
+    ;
+
+propertyItemList
+    : property (COMMA_ property)*
+    ;
 
 alterView
     : ALTER (ALGORITHM EQ_ (UNDEFINED | MERGE | TEMPTABLE))?

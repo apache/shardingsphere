@@ -21,4 +21,17 @@
     <refresh-materialized-view sql-case-id="refresh_mat_view_concurrently_no_data" />
     <refresh-materialized-view sql-case-id="refresh_mat_view_point" />
     <refresh-materialized-view sql-case-id="refresh_mat_view" />
+    <doris-refresh-materialized-view sql-case-id="refresh_materialized_view_with_partitions">
+        <materialized-view-name start-index="26" stop-index="28" name="mv1" />
+        <partition-name>p_19950801_19950901</partition-name>
+        <partition-name>p_19950901_19951001</partition-name>
+    </doris-refresh-materialized-view>
+    <doris-refresh-materialized-view sql-case-id="refresh_materialized_view_complete">
+        <materialized-view-name start-index="26" stop-index="28" name="mv1" />
+        <refresh-type>COMPLETE</refresh-type>
+    </doris-refresh-materialized-view>
+    <doris-refresh-materialized-view sql-case-id="refresh_materialized_view_auto">
+        <materialized-view-name start-index="26" stop-index="28" name="mv1" />
+        <refresh-type>AUTO</refresh-type>
+    </doris-refresh-materialized-view>
 </sql-parser-test-cases>

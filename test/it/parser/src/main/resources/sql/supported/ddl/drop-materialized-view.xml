@@ -21,4 +21,7 @@
     <sql-case id="drop_materialized_view_if_exists" value="DROP MATERIALIZED VIEW IF EXISTS tid_matview;" db-types="PostgreSQL" />
     <sql-case id="drop_materialized_view_basic" value="DROP MATERIALIZED VIEW sales_mv" db-types="Hive" />
     <sql-case id="drop_materialized_view_with_db" value="DROP MATERIALIZED VIEW db1.sales_mv" db-types="Hive" />
+    <sql-case id="drop_materialized_view_simple" value="DROP MATERIALIZED VIEW sync_agg_mv ON lineitem" db-types="Doris" />
+    <sql-case id="doris_drop_materialized_view_if_exists" value="DROP MATERIALIZED VIEW IF EXISTS sync_agg_mv ON lineitem" db-types="Doris" />
+    <sql-case id="drop_materialized_view_with_schema" value="DROP MATERIALIZED VIEW mv1 ON db1.table1" db-types="Doris" />
 </sql-cases>
