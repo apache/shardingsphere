@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.view;
 
-import com.sphereex.dbplusengine.sql.parser.statement.core.statement.attribute.type.ViewInResultSetSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ViewInResultSetSQLStatementAttribute;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;

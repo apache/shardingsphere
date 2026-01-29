@@ -1,5 +1,9 @@
 ## Release 5.5.4-SNAPSHOT
 
+### Enhancements
+
+1. Enhance MySQLTextResultSetRowPacket and MySQLDateBinaryProtocolValue to support LocalDateTime and LocalTime when value contains scale - [#37881](https://github.com/apache/shardingsphere/pull/37881)
+
 ### Bug Fixes
 
 ## Release 5.5.3

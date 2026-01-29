@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.protocol;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.sql.SQLException;
@@ -30,6 +31,8 @@ import java.util.Date;
  * Binary protocol value for date for MySQL.
  */
 public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolValue {
+    
+    private static final long NANOS_PER_SECOND = 1_000_000_000L;
     
     @Override
     public Object read(final MySQLPacketPayload payload, final boolean unsigned) throws SQLException {
@@ -60,42 +63,30 @@ public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolVa
     
     @Override
     public void write(final MySQLPacketPayload payload, final Object value) {
-        LocalDateTime dateTime = getLocalDateTime(value);
-        int year = dateTime.getYear();
-        int month = dateTime.getMonthValue();
-        int dayOfMonth = dateTime.getDayOfMonth();
-        int hours = dateTime.getHour();
-        int minutes = dateTime.getMinute();
-        int seconds = dateTime.getSecond();
-        int nanos = dateTime.getNano();
-        boolean isTimeAbsent = 0 == hours && 0 == minutes && 0 == seconds;
-        boolean isNanosAbsent = 0 == nanos;
+        LocalDateTime dateTime;
+        if (value instanceof LocalDate) {
+            dateTime = ((LocalDate) value).atStartOfDay();
+        } else {
+            dateTime = value instanceof LocalDateTime ? (LocalDateTime) value : new Timestamp(((Date) value).getTime()).toLocalDateTime();
+        }
+        DateTimeValues values = buildDateTimeValues(dateTime);
+        boolean isTimeAbsent = 0 == values.hours && 0 == values.minutes && 0 == values.seconds;
+        boolean isNanosAbsent = 0 == values.nanos;
         if (isTimeAbsent && isNanosAbsent) {
             payload.writeInt1(4);
-            writeDate(payload, year, month, dayOfMonth);
+            writeDate(payload, values.year, values.month, values.dayOfMonth);
             return;
         }
         if (isNanosAbsent) {
             payload.writeInt1(7);
-            writeDate(payload, year, month, dayOfMonth);
-            writeTime(payload, hours, minutes, seconds);
+            writeDate(payload, values.year, values.month, values.dayOfMonth);
+            writeTime(payload, values.hours, values.minutes, values.seconds);
             return;
         }
         payload.writeInt1(11);
-        writeDate(payload, year, month, dayOfMonth);
-        writeTime(payload, hours, minutes, seconds);
-        writeNanos(payload, nanos);
-    }
-    
-    @SuppressWarnings("UseOfObsoleteDateTimeApi")
-    private LocalDateTime getLocalDateTime(final Object value) {
-        if (value instanceof LocalDate) {
-            return ((LocalDate) value).atStartOfDay();
-        }
-        if (value instanceof LocalDateTime) {
-            return (LocalDateTime) value;
-        }
-        return new Timestamp(((Date) value).getTime()).toLocalDateTime();
+        writeDate(payload, values.year, values.month, values.dayOfMonth);
+        writeTime(payload, values.hours, values.minutes, values.seconds);
+        writeNanos(payload, values.nanos);
     }
     
     private void writeDate(final MySQLPacketPayload payload, final int year, final int month, final int dayOfMonth) {
@@ -112,5 +103,48 @@ public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolVa
     
     private void writeNanos(final MySQLPacketPayload payload, final int nanos) {
         payload.writeInt4(nanos / 1000);
+    }
+    
+    private DateTimeValues buildDateTimeValues(final LocalDateTime dateTime) {
+        int year = dateTime.getYear();
+        int month = dateTime.getMonthValue();
+        int dayOfMonth = dateTime.getDayOfMonth();
+        int hours = dateTime.getHour();
+        int minutes = dateTime.getMinute();
+        int seconds = dateTime.getSecond();
+        int nanos = dateTime.getNano();
+        if (nanos >= NANOS_PER_SECOND) {
+            long overflowNanos = nanos;
+            seconds = (int) (seconds + overflowNanos / NANOS_PER_SECOND);
+            nanos = (int) (overflowNanos % NANOS_PER_SECOND);
+            if (seconds >= 60) {
+                LocalDateTime normalized = dateTime.plusSeconds(seconds - dateTime.getSecond());
+                year = normalized.getYear();
+                month = normalized.getMonthValue();
+                dayOfMonth = normalized.getDayOfMonth();
+                hours = normalized.getHour();
+                minutes = normalized.getMinute();
+                seconds = normalized.getSecond();
+            }
+        }
+        return new DateTimeValues(year, month, dayOfMonth, hours, minutes, seconds, nanos);
+    }
+    
+    @RequiredArgsConstructor
+    private static class DateTimeValues {
+        
+        private final int year;
+        
+        private final int month;
+        
+        private final int dayOfMonth;
+        
+        private final int hours;
+        
+        private final int minutes;
+        
+        private final int seconds;
+        
+        private final int nanos;
     }
 }

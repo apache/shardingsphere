@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.sphereex.dbplusengine.sql.parser.statement.core.statement.attribute.type;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.segme
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
@@ -40,6 +41,7 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
+import java.util.TimeZone;
 
 /**
  * Literal expression converter.
@@ -48,12 +50,13 @@ import java.util.Optional;
 public final class LiteralExpressionConverter {
     
     /**
-     * Convert literal expression segment to SQL node.
+     * Convert literal expression segment to sql node.
      *
      * @param segment literal expression segment
-     * @return SQL node
+     * @param dataType data type
+     * @return sql node
      */
-    public static Optional<SqlNode> convert(final LiteralExpressionSegment segment) {
+    public static Optional<SqlNode> convert(final LiteralExpressionSegment segment, final RelDataType dataType) {
         if (null == segment.getLiterals()) {
             return Optional.of(SqlLiteral.createNull(SqlParserPos.ZERO));
         }
@@ -71,27 +74,29 @@ public final class LiteralExpressionConverter {
             return Optional.of(SqlLiteral.createBoolean(Boolean.parseBoolean(literalValue), SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof Calendar) {
-            return Optional.of(convertCalendar(segment));
+            return Optional.of(convertCalendar(segment, literalValue, dataType));
         }
         if (segment.getLiterals() instanceof Date) {
-            return Optional.of(convertDate(segment, literalValue));
+            return Optional.of(convertDate(segment, literalValue, dataType));
         }
         if (segment.getLiterals() instanceof TimestampString) {
-            return Optional.of(SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, (TimestampString) segment.getLiterals(), 1, SqlParserPos.ZERO));
+            return Optional.of(SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, (TimestampString) segment.getLiterals(), getTimeScale(literalValue, dataType), SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof LocalDate) {
             return Optional.of(SqlLiteral.createDate(DateString.fromDaysSinceEpoch((int) ((LocalDate) segment.getLiterals()).toEpochDay()), SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof LocalTime) {
-            String formatedValue = DateTimeFormatterFactory.getFullTimeFormatter().format((LocalTime) segment.getLiterals());
-            return Optional.of(SqlLiteral.createTime(new TimeString(formatedValue), 1, SqlParserPos.ZERO));
+            return Optional.of(convertLocalTime(segment, literalValue, dataType));
         }
         if (segment.getLiterals() instanceof LocalDateTime) {
-            String formatedValue = ((LocalDateTime) segment.getLiterals()).format(DateTimeFormatterFactory.getDatetimeFormatter());
-            return Optional.of(SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, new TimestampString(formatedValue), 1, SqlParserPos.ZERO));
+            LocalDateTime dateTime = (LocalDateTime) segment.getLiterals();
+            String fraction = literalValue.contains(".") ? literalValue.substring(literalValue.lastIndexOf('.') + 1) : "";
+            TimestampString timestampString = TimestampString.fromCalendarFields(toCalendar(dateTime.getYear(), dateTime.getMonthValue(),
+                    dateTime.getDayOfMonth(), dateTime.getHour(), dateTime.getMinute(), dateTime.getSecond())).withFraction(fraction);
+            return Optional.of(SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, timestampString, getTimeScale(literalValue, dataType), SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof ZonedDateTime) {
-            return Optional.of(SqlLiteral.createTimestamp(new TimestampWithTimeZoneString(literalValue), 1, SqlParserPos.ZERO));
+            return Optional.of(SqlLiteral.createTimestamp(new TimestampWithTimeZoneString(literalValue), getTimeScale(literalValue, dataType), SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof byte[]) {
             return Optional.of(SqlLiteral.createBinaryString((byte[]) segment.getLiterals(), SqlParserPos.ZERO));
@@ -109,10 +114,10 @@ public final class LiteralExpressionConverter {
         return SqlLiteral.createExactNumeric(literalValue, SqlParserPos.ZERO);
     }
     
-    private static SqlNode convertCalendar(final LiteralExpressionSegment segment) {
+    private static SqlNode convertCalendar(final LiteralExpressionSegment segment, final String literalValue, final RelDataType dataType) {
         Calendar calendar = (Calendar) segment.getLiterals();
         if (hasTimePart(calendar)) {
-            return SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, TimestampString.fromCalendarFields(calendar), 1, SqlParserPos.ZERO);
+            return SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, TimestampString.fromCalendarFields(calendar), getTimeScale(literalValue, dataType), SqlParserPos.ZERO);
         }
         return SqlLiteral.createDate(DateString.fromCalendarFields(calendar), SqlParserPos.ZERO);
     }
@@ -121,14 +126,40 @@ public final class LiteralExpressionConverter {
         return 0 != calendar.get(Calendar.HOUR_OF_DAY) || 0 != calendar.get(Calendar.MINUTE) || 0 != calendar.get(Calendar.SECOND) || 0 != calendar.get(Calendar.MILLISECOND);
     }
     
-    private static SqlNode convertDate(final LiteralExpressionSegment segment, final String literalValue) {
+    private static SqlNode convertDate(final LiteralExpressionSegment segment, final String literalValue, final RelDataType dataType) {
         if (segment.getLiterals() instanceof Timestamp) {
             Timestamp timestamp = (Timestamp) segment.getLiterals();
-            return SqlLiteral.createTimestamp(SqlTypeName.TIMESTAMP, TimestampString.fromMillisSinceEpoch(timestamp.getTime()), 1, SqlParserPos.ZERO);
+            LocalDateTime dateTime = timestamp.toLocalDateTime();
+            String fraction = literalValue.contains(".") ? literalValue.substring(literalValue.lastIndexOf('.') + 1) : "";
+            TimestampWithTimeZoneString timestampWithTimeZone = TimestampWithTimeZoneString.fromCalendarFields(toCalendar(dateTime.getYear(), dateTime.getMonthValue(),
+                    dateTime.getDayOfMonth(), dateTime.getHour(), dateTime.getMinute(), dateTime.getSecond())).withFraction(fraction).withTimeZone(TimeZone.getDefault());
+            return SqlLiteral.createTimestamp(timestampWithTimeZone, getTimeScale(literalValue, dataType), SqlParserPos.ZERO);
         }
         if (segment.getLiterals() instanceof Time) {
-            return SqlLiteral.createTime(new TimeString(literalValue), 1, SqlParserPos.ZERO);
+            return SqlLiteral.createTime(new TimeString(literalValue), getTimeScale(literalValue, dataType), SqlParserPos.ZERO);
         }
         return SqlLiteral.createDate(new DateString(literalValue), SqlParserPos.ZERO);
+    }
+    
+    private static SqlNode convertLocalTime(final LiteralExpressionSegment segment, final String literalValue, final RelDataType dataType) {
+        LocalTime localTime = (LocalTime) segment.getLiterals();
+        int nanos = localTime.getNano();
+        String formattedValue = 0 == nanos ? DateTimeFormatterFactory.getTimeFormatter().format(localTime) : DateTimeFormatterFactory.getFullTimeFormatter().format(localTime);
+        return SqlLiteral.createTime(new TimeString(formattedValue), getTimeScale(literalValue, dataType), SqlParserPos.ZERO);
+    }
+    
+    private static int getTimeScale(final String literalValue, final RelDataType dataType) {
+        if (null != dataType && dataType.getScale() > 0) {
+            return dataType.getScale();
+        }
+        return literalValue.contains(".") ? literalValue.substring(literalValue.lastIndexOf(".")).length() : 0;
+    }
+    
+    @SuppressWarnings("MagicConstant")
+    private static Calendar toCalendar(final int year, final int month, final int day, final int hour, final int minute, final int second) {
+        Calendar result = Calendar.getInstance();
+        result.clear();
+        result.set(year, month - 1, day, hour, minute, second);
+        return result;
     }
 }

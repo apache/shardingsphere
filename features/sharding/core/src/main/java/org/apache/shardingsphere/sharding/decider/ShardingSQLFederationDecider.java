@@ -74,10 +74,11 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
             return false;
         }
         appendTableDataNodes(rule, database, tableNames, includedDataNodes);
-        if (isAllShardingTables(selectStatementContext, tableNames) && isSubqueryAllSameShardingConditions(selectStatementContext, parameters, globalRuleMetaData, database, rule)) {
+        boolean allShardingTables = isAllShardingTables(selectStatementContext, tableNames);
+        if (allShardingTables && isSubqueryAllSameShardingConditions(selectStatementContext, parameters, globalRuleMetaData, database, rule)) {
             return false;
         }
-        if (isAllShardingTables(selectStatementContext, tableNames) && isJoinWithSameEqualityShardingCondition(selectStatementContext, parameters, globalRuleMetaData, database, rule, tableNames)) {
+        if (allShardingTables && isSingleOrJoinWithSameEqualityShardingCondition(selectStatementContext, parameters, globalRuleMetaData, database, rule, tableNames)) {
             return false;
         }
         if (selectStatementContext.isContainsSubquery() || selectStatementContext.isContainsHaving()
@@ -93,9 +94,9 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         return tableNames.size() > 1 && !rule.isBindingTablesUseShardingColumnsJoin(selectStatementContext, tableNames);
     }
     
-    private boolean isJoinWithSameEqualityShardingCondition(final SelectStatementContext selectStatementContext, final List<Object> parameters, final RuleMetaData globalRuleMetaData,
-                                                            final ShardingSphereDatabase database, final ShardingRule rule, final Collection<String> tableNames) {
-        if (!selectStatementContext.isContainsJoinQuery()) {
+    private boolean isSingleOrJoinWithSameEqualityShardingCondition(final SelectStatementContext selectStatementContext, final List<Object> parameters, final RuleMetaData globalRuleMetaData,
+                                                                    final ShardingSphereDatabase database, final ShardingRule rule, final Collection<String> tableNames) {
+        if (selectStatementContext.isContainsSubquery() || selectStatementContext.isContainsCombine()) {
             return false;
         }
         // TODO consider supporting JOIN optimization when config database and table sharding strategy @duanzhengqiang
@@ -109,6 +110,9 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         }
         if (!isAllEqualitySameShardingValues(shardingConditions, tableNames)) {
             return false;
+        }
+        if (1 == tableNames.size() && !selectStatementContext.isContainsJoinQuery()) {
+            return true;
         }
         Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups = Collections.singleton(new ShardingTableReferenceRuleConfiguration("", Joiner.on(",").join(tableNames)));
         BindingTableCheckedConfiguration configuration = new BindingTableCheckedConfiguration(rule.getDataSourceNames(), rule.getShardingAlgorithms(), rule.getConfiguration().getShardingAlgorithms(),
