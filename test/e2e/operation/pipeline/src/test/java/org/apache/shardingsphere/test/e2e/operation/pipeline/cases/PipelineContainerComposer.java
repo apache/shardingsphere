@@ -35,6 +35,7 @@ import org.apache.shardingsphere.database.connector.mysql.type.MySQLDatabaseType
 import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
@@ -87,6 +88,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     public static final String SCHEMA_NAME = "test";
     
+    // TODO Refactor: storage unit name and actual data source name are different
     public static final String DS_0 = "pipeline_e2e_0";
     
     public static final String DS_1 = "pipeline_e2e_1";
@@ -130,7 +132,9 @@ public final class PipelineContainerComposer implements AutoCloseable {
             username = E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getUser();
             password = E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getPassword();
         }
-        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
+        extraSQLCommand = null != testParam.getScenario()
+                ? JAXB.unmarshal(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class)
+                : null;
         containerComposer.start();
         sourceDataSource = StorageContainerUtils.generateDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password, 2);
         proxyDataSource = StorageContainerUtils.generateDataSource(
@@ -258,23 +262,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     /**
-     * Register storage unit.
-     *
-     * @param storageUnitName storage unit name
-     * @throws SQLException SQL exception
-     */
-    public void registerStorageUnit(final String storageUnitName) throws SQLException {
-        String username = ProxyDatabaseTypeUtils.isOracleBranch(databaseType) ? storageUnitName : getUsername();
-        String registerStorageUnitTemplate = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')".replace("${ds}", storageUnitName)
-                .replace("${user}", username)
-                .replace("${password}", getPassword())
-                .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, Type.DOCKER == E2ETestEnvironment.getInstance().getRunEnvironment().getType()));
-        proxyExecuteWithLog(registerStorageUnitTemplate, 0);
-        int timeout = databaseType instanceof OpenGaussDatabaseType ? 60 : 10;
-        Awaitility.await().ignoreExceptions().atMost(timeout, TimeUnit.SECONDS).pollInterval(3L, TimeUnit.SECONDS).until(() -> showStorageUnitsName().contains(storageUnitName));
-    }
-    
-    /**
      * Show storage units names.
      *
      * @return storage units names
@@ -328,28 +315,31 @@ public final class PipelineContainerComposer implements AutoCloseable {
     /**
      * Create schema.
      *
-     * @param connection connection
+     * @param dataSource data source
      * @param seconds sleep seconds
      * @throws SQLException SQL exception
      */
-    public void createSchema(final Connection connection, final int seconds) throws SQLException {
+    public void createSchema(final DataSource dataSource, final int seconds) throws SQLException {
         if (!new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
             return;
         }
-        try (Statement statement = connection.createStatement()) {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
             statement.execute(String.format("CREATE SCHEMA %s", SCHEMA_NAME));
         }
         sleepSeconds(seconds);
     }
     
     /**
-     * Create source order table.
+     * Create qualified table with schema.
      *
-     * @param sourceTableName source table name
-     * @throws SQLException SQL exception
+     * @param tableName table name
+     * @return qualified table
      */
-    public void createSourceOrderTable(final String sourceTableName) throws SQLException {
-        sourceExecuteWithLog(extraSQLCommand.getCreateTableOrder(sourceTableName));
+    public QualifiedTable createQualifiedTableWithSchema(final String tableName) {
+        String schemaName = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable() ? SCHEMA_NAME : null;
+        return new QualifiedTable(schemaName, tableName);
     }
     
     /**
@@ -376,15 +366,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     public void createSourceCommentOnList(final String schema, final String sourceTableName) throws SQLException {
         sourceExecuteWithLog(String.format("COMMENT ON COLUMN %s.%s.user_id IS 'user id'", schema, sourceTableName));
-    }
-    
-    /**
-     * Create source order item table.
-     *
-     * @throws SQLException SQL exception
-     */
-    public void createSourceOrderItemTable() throws SQLException {
-        sourceExecuteWithLog(extraSQLCommand.getCreateTableOrderItem());
     }
     
     /**
@@ -496,29 +477,29 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     /**
-     * Assert order record exists in proxy.
+     * Assert record exists.
      *
      * @param dataSource data source
      * @param tableName table name
      * @param orderId order id
      */
-    public void assertOrderRecordExist(final DataSource dataSource, final String tableName, final Object orderId) {
+    public void assertRecordExists(final DataSource dataSource, final String tableName, final Object orderId) {
         String sql;
         if (orderId instanceof String) {
             sql = String.format("SELECT 1 FROM %s WHERE order_id = '%s' AND user_id>0", tableName, orderId);
         } else {
             sql = String.format("SELECT 1 FROM %s WHERE order_id = %s AND user_id>0", tableName, orderId);
         }
-        assertOrderRecordExist(dataSource, sql);
+        assertRecordExists(dataSource, sql);
     }
     
     /**
-     * Assert proxy order record exist.
+     * Assert record exists.
      *
      * @param dataSource data source
      * @param sql SQL
      */
-    public void assertOrderRecordExist(final DataSource dataSource, final String sql) {
+    public void assertRecordExists(final DataSource dataSource, final String sql) {
         boolean recordExist = false;
         for (int i = 0; i < 5; i++) {
             List<Map<String, Object>> result = queryForListWithLog(dataSource, sql);
@@ -528,7 +509,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
             }
             sleepSeconds(2);
         }
-        assertTrue(recordExist, "Order record does not exist");
+        assertTrue(recordExist, "Record does not exist");
     }
     
     /**
@@ -564,7 +545,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      */
     // TODO proxy support for some fields still needs to be optimized, such as binary of MySQL, after these problems are optimized, Proxy dataSource can be used.
     public DataSource generateShardingSphereDataSourceFromProxy() {
-        Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> null != getYamlRootConfig().getRules());
+        Awaitility.waitAtMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> null != getYamlRootConfig().getRules());
         YamlRootConfiguration rootConfig = getYamlRootConfig();
         ShardingSpherePreconditions.checkNotNull(rootConfig.getDataSources(), () -> new IllegalStateException("dataSources is null"));
         ShardingSpherePreconditions.checkNotNull(rootConfig.getRules(), () -> new IllegalStateException("rules is null"));

@@ -141,7 +141,7 @@ class ShardingSphereStatisticsFactoryTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("foo_db");
         when(result.getProtocolType()).thenReturn(postgreSQLDatabaseType);
-        ShardingSphereSchema schema = new ShardingSphereSchema("pg_catalog");
+        ShardingSphereSchema schema = new ShardingSphereSchema("pg_catalog", mock(DatabaseType.class));
         when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(result.containsSchema("pg_catalog")).thenReturn(true);
         when(result.getSchema("pg_catalog")).thenReturn(schema);
@@ -152,7 +152,7 @@ class ShardingSphereStatisticsFactoryTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("foo_db");
         when(result.getProtocolType()).thenReturn(postgreSQLDatabaseType);
-        ShardingSphereSchema schema = new ShardingSphereSchema("shardingsphere");
+        ShardingSphereSchema schema = new ShardingSphereSchema("shardingsphere", mock(DatabaseType.class));
         when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(result.containsSchema("shardingsphere")).thenReturn(true);
         when(result.getSchema("shardingsphere")).thenReturn(schema);
@@ -164,7 +164,7 @@ class ShardingSphereStatisticsFactoryTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("foo_db");
         when(result.getProtocolType()).thenReturn(h2DatabaseType);
-        ShardingSphereSchema schema = new ShardingSphereSchema("public_schema");
+        ShardingSphereSchema schema = new ShardingSphereSchema("public_schema", mock(DatabaseType.class));
         when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
         return result;
     }

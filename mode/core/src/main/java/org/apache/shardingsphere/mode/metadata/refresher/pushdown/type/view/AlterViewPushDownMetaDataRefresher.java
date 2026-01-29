@@ -77,7 +77,7 @@ public final class AlterViewPushDownMetaDataRefresher implements PushDownMetaDat
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(viewName), database.getProtocolType(), material);
         Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(viewName));
-        ShardingSphereSchema result = new ShardingSphereSchema(schemaName);
+        ShardingSphereSchema result = new ShardingSphereSchema(schemaName, database.getProtocolType());
         actualViewMetaData.ifPresent(result::putTable);
         result.putView(new ShardingSphereView(viewName, viewDefinition));
         return result;

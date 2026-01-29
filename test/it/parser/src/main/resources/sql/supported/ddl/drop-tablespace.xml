@@ -20,4 +20,5 @@
     <sql-case id="drop_tablespace_constraints" value="DROP TABLESPACE tabs_02 INCLUDING CONTENTS CASCADE CONSTRAINTS" db-types="Oracle" />
     <sql-case id="drop_tablespace_datafiles" value="DROP TABLESPACE tabs_01 INCLUDING CONTENTS AND DATAFILES" db-types="Oracle" />
     <sql-case id="drop_tablespace_simple_doris" value="DROP TABLESPACE ts1" db-types="Doris" />
+    <sql-case id="drop_tablespace_simple_mysql" value="DROP TABLESPACE ts1" db-types="MySQL" />
 </sql-cases>

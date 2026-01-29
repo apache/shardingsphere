@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata.database;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
@@ -49,9 +51,11 @@ class ShardingSphereDatabasesFactoryTest {
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1/foo_ds");
         databaseConfigs.put("foo_db", new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource(connection)), Collections.emptyList()));
         Map<String, Collection<ShardingSphereSchema>> schemas = new LinkedHashMap<>(2, 1F);
-        schemas.put("empty_db", Collections.singleton(new ShardingSphereSchema("empty_schema")));
-        schemas.put("foo_db", Collections.singleton(new ShardingSphereSchema("foo_schema")));
-        Collection<ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(databaseConfigs, schemas, new ConfigurationProperties(new Properties()), mock());
+        schemas.put("empty_db", Collections.singleton(new ShardingSphereSchema("empty_schema", mock(DatabaseType.class))));
+        schemas.put("foo_db", Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigs, props);
+        Collection<ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(databaseConfigs, schemas, props, mock(), protocolType);
         assertThat(actual.size(), is(2));
         assertTrue(actual.stream().anyMatch(each -> "empty_db".equals(each.getName())));
         assertTrue(actual.stream().anyMatch(each -> "foo_db".equals(each.getName())));
@@ -67,7 +71,9 @@ class ShardingSphereDatabasesFactoryTest {
         databaseConfigs.put("bar_db", new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", mockedDataSource), Collections.emptyList()));
         databaseConfigs.put("sys", new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList()));
         databaseConfigs.put("shardingsphere", new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", mockedDataSource), Collections.emptyList()));
-        Collection<ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(databaseConfigs, new ConfigurationProperties(new Properties()), mock());
+        ConfigurationProperties props = new ConfigurationProperties(new Properties());
+        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigs, props);
+        Collection<ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(databaseConfigs, props, mock(), protocolType);
         assertThat(actual.size(), is(7));
         assertTrue(actual.stream().anyMatch(each -> "foo_db".equals(each.getName())));
         assertTrue(actual.stream().anyMatch(each -> "bar_db".equals(each.getName())));

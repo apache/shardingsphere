@@ -44,6 +44,7 @@
     <sql-case id="insert_without_columns_and_with_generate_key_column" value="INSERT INTO t_order_item VALUES(?, ?, ?, 'insert', '2017-08-08')" />
     <sql-case id="insert_without_columns_and_without_generate_key_column" value="INSERT INTO t_order_item VALUES(?, ?, 'insert', '2017-08-08')" />
     <sql-case id="insert_set_without_generate_key_column" value="INSERT INTO t_order_item SET order_id = ?, user_id = ?, status = 'insert', creation_date='2017-08-08'" db-types="MySQL" />
+    <sql-case id="insert_set_with_row_alias" value="INSERT INTO t_order SET a = 1 AS new_alias(a)" db-types="MySQL" />
     <sql-case id="insert_with_batch" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?), (?, ?, ?)" db-types="MySQL, SQLServer, PostgreSQL,openGauss,Doris" />
     <sql-case id="insert_with_batch_and_irregular_parameters" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, 1, 'insert'), (?, ?, ?)" db-types="MySQL, SQLServer, PostgreSQL,openGauss,Doris" />
     <sql-case id="insert_with_batch_and_composite_expression" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, SUBSTR(?, 1)), (?, ?, SUBSTR(?, 1))" db-types="H2,MySQL" />
@@ -92,6 +93,7 @@
     <sql-case id="insert_with_multitable_element" value="INSERT ALL INTO sales (prod_id, cust_id, time_id, amount) VALUES (product_id, customer_id, weekly_start_date, sales_sun) INTO sales (prod_id, cust_id, time_id, amount) VALUES (product_id, customer_id, sales_mon, weekly_start_date+1) SELECT product_id, customer_id, weekly_start_date, sales_sun, sales_mon FROM sales_input_table" db-types="Oracle" />
     <sql-case id="insert_all_with_multi_table_with_conditional_when" value="INSERT ALL WHEN order_total &lt;= 100000 THEN INTO small_orders WHEN order_total > 1000000 AND order_total &lt;= 200000 THEN INTO medium_orders WHEN order_total > 200000 THEN INTO large_orders SELECT order_id, order_total, sales_rep_id, customer_id FROM orders" db-types="Oracle" />
     <sql-case id="insert_all_with_multi_table_with_conditional_when_with_conditional_else" value="INSERT ALL WHEN order_total &lt;= 100000 THEN INTO small_orders WHEN order_total > 100000 AND order_total &lt;= 200000 THEN INTO medium_orders ELSE INTO large_orders SELECT order_id, order_total, sales_rep_id, customer_id FROM orders" db-types="Oracle" />
+    <sql-case id="insert_first_with_conditional_when_else" value="INSERT FIRST WHEN order_total &lt;= 100 THEN INTO small_orders VALUES (order_total) ELSE INTO big_orders VALUES (order_total) SELECT order_total FROM orders" db-types="Oracle" />
     <sql-case id="insert_with_rank_column" value="INSERT INTO sales (rank) VALUES (1)" db-types="Oracle" />
     <sql-case id="insert_with_schema" value="INSERT INTO db1.t_order VALUES (1,2,3)" />
     <sql-case id="insert_on_duplicate_key_update_nothing" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') ON DUPLICATE KEY UPDATE NOTHING" db-types="openGauss" />
@@ -203,4 +205,5 @@
     <sql-case id="insert_with_columns_sql92" value="INSERT INTO t_order(order_id, status) VALUES (1, 'ok')" db-types="SQL92" />
     <sql-case id="insert_without_columns_sql92" value="INSERT INTO t_order VALUES (1, 'ok')" db-types="SQL92" />
     <sql-case id="insert_with_default_sql92" value="INSERT INTO t_order(status) VALUES (DEFAULT)" db-types="SQL92" />
+    <sql-case id="insert_table_collection_oracle" value="INSERT INTO TABLE(SELECT t.nested_col FROM t_nested t) VALUES (1)" db-types="Oracle" />
 </sql-cases>

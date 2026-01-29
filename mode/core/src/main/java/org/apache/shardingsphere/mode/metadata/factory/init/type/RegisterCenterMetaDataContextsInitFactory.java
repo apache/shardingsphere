@@ -89,9 +89,9 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
         Collection<ShardingSphereDatabase> databases;
         if (persistSchemasEnabled) {
             // TODO merge schemas with local
-            databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, schemas, props, instanceContext);
+            databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, schemas, props, instanceContext, protocolType);
         } else {
-            databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, props, instanceContext);
+            databases = ShardingSphereDatabasesFactory.create(effectiveDatabaseConfigs, props, instanceContext, protocolType);
             databases.stream().filter(database -> schemas.containsKey(database.getName()))
                     .forEach(database -> schemas.get(database.getName()).stream()
                             .filter(schema -> database.containsSchema(schema.getName()))
@@ -135,7 +135,7 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
         Map<String, Collection<ShardingSphereSchema>> result = new HashMap<>(databaseNames.size());
         for (Map.Entry<String, DatabaseConfiguration> entry : effectiveDatabaseConfigs.entrySet()) {
             String dbName = entry.getKey();
-            Collection<ShardingSphereSchema> schemas = persistFacade.getDatabaseMetaDataFacade().getSchema().load(dbName);
+            Collection<ShardingSphereSchema> schemas = persistFacade.getDatabaseMetaDataFacade().getSchema().load(dbName, protocolType);
             if (sysDatabaseNames.contains(dbName)) {
                 if (null != schemas) {
                     result.put(dbName, schemas);
@@ -151,7 +151,7 @@ public final class RegisterCenterMetaDataContextsInitFactory extends MetaDataCon
                     try {
                         ShardingSphereDatabase database = ShardingSphereDatabaseFactory.createWithoutSystemSchema(dbName, protocolType, databaseConfig, props, instanceContext);
                         database.getAllSchemas().forEach(schema -> persistFacade.getDatabaseMetaDataFacade().getTable().persist(dbName, schema.getName(), schema.getAllTables()));
-                        result.put(dbName, persistFacade.getDatabaseMetaDataFacade().getSchema().load(dbName));
+                        result.put(dbName, persistFacade.getDatabaseMetaDataFacade().getSchema().load(dbName, protocolType));
                     } catch (final SQLException ex) {
                         result.put(dbName, schemas);
                         log.info("Reload reposotiry missed single tables: {} of database : {} failed", missedSingleTables, dbName, ex);

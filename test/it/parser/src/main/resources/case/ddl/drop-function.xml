@@ -26,4 +26,5 @@
     <drop-function sql-case-id="drop_function_basic" />
     <drop-function sql-case-id="drop_function_with_if_exists" />
     <drop-function sql-case-id="drop_function_doris" />
+    <drop-function sql-case-id="drop_function_mysql" />
 </sql-parser-test-cases>

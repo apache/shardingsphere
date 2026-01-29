@@ -27,6 +27,24 @@
         <comment start-index="0" stop-index="19" text="/*FORCE_IMCI_NODES*/" />
         <comment start-index="28" stop-index="68" text="/*+ SET_VAR(cost_threshold_for_imci=0) */" />
     </select>
+
+    <select sql-case-id="select_from_regular_function_table_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7"/>
+        </projections>
+        <from>
+            <function-table table-alias="f">
+                <table-function function-name="my_func" text="my_func(1, 2)">
+                    <parameter>
+                        <literal-expression value="1" start-index="22" stop-index="22" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="2" start-index="25" stop-index="25" />
+                    </parameter>
+                </table-function>
+            </function-table>
+        </from>
+    </select>
     
     <select sql-case-id="select_position_function">
         <projections start-index="7" stop-index="97">
@@ -460,6 +478,23 @@
                     <collate-expression start-index="7" stop-index="58">
                         <collate-name>
                             <literal-expression start-index="34" stop-index="58" value="latin1_general_cs" />
+                        </collate-name>
+                    </collate-expression>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_collate_parameter_marker" parameters="'utf8_general_ci'">
+        <from>
+            <simple-table name="t_order" start-index="27" stop-index="33" />
+        </from>
+        <projections start-index="7" stop-index="20">
+            <expression-projection text="name COLLATE ?" start-index="7" stop-index="20">
+                <expr>
+                    <collate-expression start-index="7" stop-index="20">
+                        <collate-name>
+                            <parameter-marker-expression parameter-index="0" start-index="12" stop-index="20" />
                         </collate-name>
                     </collate-expression>
                 </expr>
@@ -2639,6 +2674,30 @@
         </where>
     </select>
 
+    <select sql-case-id="select_with_index_hint_for_order_by_mysql">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="14" stop-index="15" />
+        </from>
+        <order-by>
+            <column-item name="col1" order-direction="ASC" start-index="54" stop-index="57" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_with_index_hint_for_group_by_mysql">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="14" stop-index="15" />
+        </from>
+        <group-by>
+            <column-item name="col1" order-direction="ASC" start-index="54" stop-index="57" />
+        </group-by>
+    </select>
+
     <select sql-case-id="select_equal_with_geography" parameters="'{&quot;rule2&quot;:&quot;null2&quot;}', 100, 200, 1, 2">
         <from>
             <simple-table name="t_order" start-index="14" stop-index="20" />
@@ -3626,6 +3685,27 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+
+    <select sql-case-id="select_order_by_position_mysql">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <order-by>
+            <index-item index="1" order-direction="DESC" start-index="31" stop-index="31" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_table_statement">
+        <projections start-index="0" stop-index="0">
+            <shorthand-projection start-index="0" stop-index="0" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="0" stop-index="12" />
+        </from>
     </select>
 
     <select sql-case-id="select_with_left_function">
@@ -6129,6 +6209,15 @@
         </from>
     </select>
 
+    <select sql-case-id="select_xmlpi_evalname_function">
+        <projections start-index="7" stop-index="39">
+            <expression-projection text="XMLPI(EVALNAME 'target', 'value')" start-index="11" stop-index="39" />
+        </projections>
+        <from>
+            <simple-table name="dual" start-index="46" stop-index="49" />
+        </from>
+    </select>
+
     <select sql-case-id="select_xmlquery_function">
         <projections start-index="7" stop-index="95">
             <expression-projection text="XMLQUERY('//student[@age=20]' PASSING BY VALUE xcol AS x RETURNING CONTENT NULL ON EMPTY)" start-index="7" stop-index="95" />
@@ -6178,6 +6267,29 @@
                     </function-table>
                 </right>
             </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_function_table_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <function-table start-index="14" stop-index="33" table-alias="pf">
+                <table-function function-name="pipelined_func" text="pipelined_func(1)" />
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_from_xmltable_with_namespaces_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <function-table table-alias="xt">
+                <table-function function-name="XMLTABLE"
+                                text="XMLTABLE(XMLNAMESPACES(DEFAULT 'uri0', 'uri1' AS ns1, 'uri2' AS ns2), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy')" />
+            </function-table>
         </from>
     </select>
 
@@ -6961,6 +7073,72 @@
         <order-by>
             <column-item name="employee_id" order-direction="ASC" start-index="110" stop-index="120" literal-start-index="110" literal-stop-index="120" />
         </order-by>
+    </select>
+
+    <select sql-case-id="select_with_db_link">
+        <from>
+            <simple-table name="employees" start-index="14" stop-index="25">
+                <owner name="hr" start-index="14" stop-index="15" />
+            </simple-table>
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_sample_clause_oracle">
+        <from>
+            <simple-table name="employees" start-index="14" stop-index="22" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_with_order_by_index_oracle">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <order-by start-index="22" stop-index="42">
+            <index-item index="1" order-direction="ASC" null-order-direction="LAST" start-index="31" stop-index="31" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_is_nan_oracle">
+        <projections start-index="7" stop-index="28">
+            <expression-projection text="to_binary_float('NaN')" start-index="7" stop-index="28">
+                <expr>
+                    <function function-name="to_binary_float" text="to_binary_float('NaN')" start-index="7" stop-index="28">
+                        <parameter>
+                            <literal-expression value="NaN" start-index="23" stop-index="27" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="dual" start-index="35" stop-index="38" />
+        </from>
+        <where start-index="40" stop-index="74">
+            <expr>
+                <binary-operation-expression start-index="46" stop-index="74">
+                    <left>
+                        <function function-name="to_binary_float" text="to_binary_float('NaN')" start-index="46" stop-index="67">
+                            <parameter>
+                                <literal-expression value="NaN" start-index="62" stop-index="66" />
+                            </parameter>
+                        </function>
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="NAN" start-index="72" stop-index="74" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </select>
 
     <select sql-case-id="select_with_trim_function_multi">
@@ -12066,6 +12244,16 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_bit_literal_upper_doris">
+        <projections start-index="7" stop-index="13">
+            <expression-projection text="B'1101'" start-index="7" stop-index="13">
+                <expr>
+                    <common-expression text="B'1101'" start-index="7" stop-index="13" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_true_literal_doris">
         <projections start-index="7" stop-index="10">
             <expression-projection text="true" start-index="7" stop-index="10">
@@ -12201,6 +12389,24 @@
         <from start-index="14" stop-index="29">
             <function-table start-index="14" stop-index="29">
                 <table-function function-name="table_func" text="table_func(1, 2)" start-index="14" stop-index="29" />
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_from_function_expr_table_doris">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="40">
+            <function-table start-index="14" stop-index="40" table-alias="gs">
+                <table-function function-name="generate_series" text="generate_series(1, 3)" start-index="14" stop-index="34">
+                    <parameter>
+                        <literal-expression value="1" start-index="30" stop-index="30" />
+                    </parameter>
+                    <parameter>
+                        <literal-expression value="3" start-index="33" stop-index="33" />
+                    </parameter>
+                </table-function>
             </function-table>
         </from>
     </select>
@@ -12627,6 +12833,94 @@
                     <operator>IS</operator>
                     <right>
                         <literal-expression value="FALSE" start-index="38" stop-index="42" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_is_true_mysql">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="41">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="41">
+                    <left>
+                        <column name="active" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="TRUE" start-index="38" stop-index="41" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_is_false_mysql">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="42">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="42">
+                    <left>
+                        <column name="active" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="FALSE" start-index="38" stop-index="42" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_is_unknown_mysql">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="44">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="44">
+                    <left>
+                        <column name="active" start-index="28" stop-index="33" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="UNKNOWN" start-index="38" stop-index="44" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_null_safe_equal_mysql" parameters="1">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="41">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="41">
+                    <left>
+                        <column name="order_id" start-index="28" stop-index="35" />
+                    </left>
+                    <operator>&lt;=&gt;</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="0" start-index="41" stop-index="41" />
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -13115,5 +13409,221 @@
                 </subquery>
             </subquery-table>
         </from>
+    </select>
+
+    <select sql-case-id="select_three_part_column_mysql">
+        <projections start-index="7" stop-index="24">
+            <column-projection name="status" start-index="7" stop-index="24">
+                <owner start-index="11" stop-index="17" name="t_order">
+                    <owner start-index="7" stop-index="9" name="db1" />
+                </owner>
+            </column-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="31" stop-index="41">
+                <owner start-index="31" stop-index="33" name="db1" />
+            </simple-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_string_literal_concat_mysql">
+        <projections start-index="7" stop-index="15">
+            <expression-projection text="abcd" start-index="7" stop-index="15">
+                <expr>
+                    <literal-expression value="abcd" start-index="7" stop-index="15" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_where_is_true_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="14" stop-index="22" />
+        </from>
+        <where start-index="24" stop-index="43">
+            <expr>
+                <binary-operation-expression start-index="30" stop-index="43">
+                    <left>
+                        <column name="active" start-index="30" stop-index="35" />
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="TRUE" start-index="40" stop-index="43" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_in_without_parentheses_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <where start-index="22" stop-index="46">
+            <expr>
+                <in-expression start-index="28" stop-index="46">
+                    <left>
+                        <column name="status" start-index="28" stop-index="33" />
+                    </left>
+                    <right>
+                        <literal-expression value="shipped" start-index="38" stop-index="46" />
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_from_shards_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="21" stop-index="29" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_xmlnamespaces_clause_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <function-table table-alias="xt">
+                <table-function function-name="XMLTABLE"
+                                text="XMLTABLE(XMLNAMESPACES(DEFAULT 'uri', 'urn:ns1' AS ns1), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy')" />
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_xmlnamespaces_multiple_default_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <function-table table-alias="xt">
+                <table-function function-name="XMLTABLE"
+                                text="XMLTABLE(XMLNAMESPACES(DEFAULT 'uri0', DEFAULT 'uri1'), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy')" />
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_from_xmltable_with_default_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <function-table table-alias="xt">
+                <table-function function-name="XMLTABLE"
+                                text="XMLTABLE('x' PASSING xmlcol COLUMNS c1 VARCHAR2(10) PATH 'p' DEFAULT 0)" />
+            </function-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_table_collection_column_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <collection-table start-index="14" stop-index="30" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_table_collection_function_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <collection-table alias="t" start-index="14" stop-index="34" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_table_collection_expr_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <collection-table start-index="14" stop-index="25" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_xmlcdata_function_oracle">
+        <projections start-index="7" stop-index="22">
+            <expression-projection text="XMLCDATA('text')" start-index="7" stop-index="22" />
+        </projections>
+        <from>
+            <simple-table name="dual" start-index="29" stop-index="32" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_format_function_oracle">
+        <projections start-index="7" stop-index="26">
+            <expression-projection text="FORMAT('abc', '999')" start-index="7" stop-index="26" />
+        </projections>
+        <from>
+            <simple-table name="dual" start-index="33" stop-index="36" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_first_value_oracle">
+        <projections start-index="7" stop-index="48">
+            <expression-projection text="FIRST_VALUE(salary) OVER (ORDER BY salary)" start-index="7" stop-index="48" />
+        </projections>
+        <from>
+            <simple-table name="employees" start-index="55" stop-index="63" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_datetime_lbe_literal_oracle">
+        <projections start-index="7" stop-index="32">
+            <expression-projection text="{ts '2020-02-02 10:00:00'}" start-index="7" stop-index="32" />
+        </projections>
+        <from>
+            <simple-table name="dual" start-index="39" stop-index="42" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_feature_compare_oracle">
+        <projections start-index="7" stop-index="36">
+            <expression-projection text="FEATURE_COMPARE(model USING *)" start-index="7" stop-index="36" />
+        </projections>
+        <from>
+            <simple-table name="dual" start-index="43" stop-index="46" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_with_table_dblink_oracle">
+        <from>
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+    </select>
+
+    <select sql-case-id="select_into_variable_oracle">
+        <projections start-index="7" stop-index="12">
+            <column-projection name="status" start-index="7" stop-index="12" />
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="35" stop-index="41" />
+        </from>
+        <where start-index="43" stop-index="60">
+            <expr>
+                <binary-operation-expression start-index="49" stop-index="60">
+                    <left>
+                        <column name="order_id" start-index="49" stop-index="56" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="60" stop-index="60" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </select>
 </sql-parser-test-cases>

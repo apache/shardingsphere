@@ -1765,6 +1765,18 @@
         <modify-constraint start-index="18" stop-index="53" constraint-name="sales_time_fk" />
     </alter-table>
     
+    <alter-table sql-case-id="alter_table_modify_primary_key_rely">
+        <table name="sales" start-index="12" stop-index="16" />
+        <modify-constraint start-index="18" stop-index="40" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_collection_retrieval_locator">
+        <table name="nested_table_parent" start-index="12" stop-index="30" />
+        <modify-collection-retrieval start-index="32" stop-index="78">
+            <table name="child_tbl" start-index="52" stop-index="60" />
+        </modify-collection-retrieval>
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_enable_row_movement">
         <table name="table" start-index="12" stop-index="16" />
     </alter-table>
@@ -2547,6 +2559,10 @@
         <rename-table name="table2" start-index="26" stop-index="31" />
     </alter-table>
 
+    <alter-table sql-case-id="alter_table_without_actions_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
+
     <alter-table sql-case-id="alter_table_rename_column_doris">
         <table name="example_table" start-index="12" stop-index="24" />
         <rename-column start-index="26" stop-index="44">
@@ -2592,8 +2608,17 @@
             </column-position>
         </add-column>
     </alter-table>
-    
+
     <alter-table sql-case-id="alter_table_with_algorithm_lock_doris">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="41">
+                <column name="col_alg" start-index="31" stop-index="37" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_with_algorithm_lock_mysql">
         <table name="t_order" start-index="12" stop-index="18" />
         <add-column>
             <column-definition type="INT" start-index="31" stop-index="41">
@@ -2621,6 +2646,42 @@
                 <index name="idx_new" />
             </rename-index-definition>
         </rename-index>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_with_algorithm_default_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="45">
+                <column name="col_alg_def" start-index="31" stop-index="41" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_algorithm_instant_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="49">
+                <column name="col_alg_instant" start-index="31" stop-index="45" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_lock_none_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="47">
+                <column name="col_lock_none" start-index="31" stop-index="43" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_with_lock_default_mysql">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <add-column>
+            <column-definition type="INT" start-index="31" stop-index="50">
+                <column name="col_lock_default" start-index="31" stop-index="46" />
+            </column-definition>
+        </add-column>
     </alter-table>
     
     <alter-table sql-case-id="alter_table_drop_column_doris">

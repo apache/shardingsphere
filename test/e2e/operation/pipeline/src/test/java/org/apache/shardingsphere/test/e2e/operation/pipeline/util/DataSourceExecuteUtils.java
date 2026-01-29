@@ -19,12 +19,12 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 /**
@@ -38,13 +38,13 @@ public final class DataSourceExecuteUtils {
      *
      * @param dataSource data source
      * @param sql SQL
-     * @throws SQLWrapperException SQL wrapper exception
+     * @throws SQLException SQL exception
      */
-    public static void execute(final DataSource dataSource, final String sql) {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.createStatement().execute(sql);
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
+    public static void execute(final DataSource dataSource, final String sql) throws SQLException {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute(sql);
         }
     }
     
@@ -53,18 +53,16 @@ public final class DataSourceExecuteUtils {
      *
      * @param dataSource data source
      * @param sql SQL
-     * @param parameters parameters
-     * @throws SQLWrapperException SQL wrapper exception
+     * @param params parameters
+     * @throws SQLException SQL exception
      */
-    public static void execute(final DataSource dataSource, final String sql, final Object[] parameters) {
+    public static void execute(final DataSource dataSource, final String sql, final Object[] params) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            for (int i = 0; i < parameters.length; i++) {
-                preparedStatement.setObject(i + 1, parameters[i]);
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
             }
             preparedStatement.execute();
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
         }
     }
     
@@ -73,15 +71,15 @@ public final class DataSourceExecuteUtils {
      *
      * @param dataSource data source
      * @param sql SQL
-     * @param parameters parameters
-     * @throws SQLWrapperException SQL wrapper exception
+     * @param paramsList parameters
+     * @throws SQLException SQL exception
      */
-    public static void execute(final DataSource dataSource, final String sql, final List<Object[]> parameters) {
+    public static void executeBatch(final DataSource dataSource, final String sql, final List<Object[]> paramsList) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             int batchSize = 1000;
             int count = 0;
-            for (Object[] each : parameters) {
+            for (Object[] each : paramsList) {
                 for (int i = 0; i < each.length; i++) {
                     preparedStatement.setObject(i + 1, each[i]);
                 }
@@ -94,8 +92,6 @@ public final class DataSourceExecuteUtils {
             if (count % batchSize > 0) {
                 preparedStatement.executeBatch();
             }
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
         }
     }
 }

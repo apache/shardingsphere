@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.cdc;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
 import org.apache.shardingsphere.data.pipeline.cdc.client.config.CDCClientConfiguration;
@@ -37,21 +35,20 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.Uniq
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
-import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.constants.ProxyContainerConstants;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.task.E2EIncrementalTask;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large.IntPkLargeOrderDAO;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceTestUtils;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -59,17 +56,15 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -78,9 +73,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * CDC E2E IT.
  */
 @PipelineE2ESettings(database = {
-        @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/general/mysql.xml"),
-        @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/scenario/general/postgresql.xml"),
-        @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/scenario/general/opengauss.xml")})
+        @PipelineE2EDatabaseSettings(type = "MySQL"),
+        @PipelineE2EDatabaseSettings(type = "PostgreSQL"),
+        @PipelineE2EDatabaseSettings(type = "openGauss")})
 @Slf4j
 class CDCE2EIT {
     
@@ -97,52 +92,45 @@ class CDCE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertCDCDataImportSuccess(final PipelineTestParameter testParam) throws SQLException {
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        // If run on NATIVE mode and database timezone is UTC, then: 1) set `e2e.timezone=UTC` in e2e-env.properties, 2) add this line of code in proxy Bootstrap main method.
+        // TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new CDCJobType());
             distSQLFacade.alterPipelineRule();
             for (String each : Arrays.asList(PipelineContainerComposer.DS_0, PipelineContainerComposer.DS_1)) {
-                containerComposer.registerStorageUnit(each);
+                distSQLFacade.registerStorageUnit(each);
             }
             createOrderTableRule(containerComposer);
             distSQLFacade.createBroadcastRule("t_address");
-            try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
-                initSchemaAndTable(containerComposer, connection, 3);
-            }
-            PipelineDataSource sourceDataSource = new PipelineDataSource(containerComposer.generateShardingSphereDataSourceFromProxy(), containerComposer.getDatabaseType());
-            Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(containerComposer.getDatabaseType(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
+            QualifiedTable orderQualifiedTable = containerComposer.createQualifiedTableWithSchema(SOURCE_TABLE_NAME);
+            initSchemaAndTable(containerComposer, containerComposer.getProxyDataSource(), orderQualifiedTable, 3);
+            PipelineDataSource jdbcDataSource = new PipelineDataSource(containerComposer.generateShardingSphereDataSourceFromProxy(), containerComposer.getDatabaseType());
             log.info("init data begin: {}", LocalDateTime.now());
-            DataSourceExecuteUtils.execute(sourceDataSource, containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), dataPair.getLeft());
-            DataSourceExecuteUtils.execute(sourceDataSource, "INSERT INTO t_address(id, address_name) VALUES (?,?)", Arrays.asList(new Object[]{1, "a"}, new Object[]{2, "b"}));
-            DataSourceExecuteUtils.execute(sourceDataSource, "INSERT INTO t_single(id) VALUES (?)", Arrays.asList(new Object[]{1}, new Object[]{2}, new Object[]{3}));
+            IntPkLargeOrderDAO orderDAO = new IntPkLargeOrderDAO(jdbcDataSource, containerComposer.getDatabaseType(), orderQualifiedTable);
+            orderDAO.batchInsert(PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
+            DataSourceExecuteUtils.executeBatch(jdbcDataSource, "INSERT INTO t_address(id, address_name) VALUES (?,?)", Arrays.asList(new Object[]{1, "a"}, new Object[]{2, "b"}));
+            DataSourceExecuteUtils.executeBatch(jdbcDataSource, "INSERT INTO t_single(id) VALUES (?)", Arrays.asList(new Object[]{1}, new Object[]{2}, new Object[]{3}));
             log.info("init data end: {}", LocalDateTime.now());
-            try (
-                    Connection connection = DriverManager.getConnection(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
-                            containerComposer.getUsername(), containerComposer.getPassword())) {
-                initSchemaAndTable(containerComposer, connection, 0);
-            }
-            PipelineDataSource targetDataSource = createStandardDataSource(containerComposer, PipelineContainerComposer.DS_4);
+            PipelineDataSource targetDataSource = DataSourceTestUtils.createStandardDataSource(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
+                    containerComposer.getUsername(), containerComposer.getPassword());
+            initSchemaAndTable(containerComposer, targetDataSource, orderQualifiedTable, 0);
             final CDCClient cdcClient = buildCDCClientAndStart(targetDataSource, containerComposer);
-            Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
+            Awaitility.waitAtMost(10L, TimeUnit.SECONDS).pollInterval(1L, TimeUnit.SECONDS).until(() -> !distSQLFacade.listJobIds().isEmpty());
             String jobId = distSQLFacade.listJobIds().get(0);
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
-            DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(containerComposer.getDatabaseType()).getDialectDatabaseMetaData();
-            String tableName = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() ? String.join(".", PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME) : SOURCE_TABLE_NAME;
-            new E2EIncrementalTask(sourceDataSource, tableName, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 20).run();
+            String orderTableName = orderQualifiedTable.format();
+            new E2EIncrementalTask(jdbcDataSource, orderTableName, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 20).run();
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
             for (int i = 1; i <= 4; i++) {
                 int orderId = 10000 + i;
-                containerComposer.proxyExecuteWithLog(String.format("INSERT INTO %s (order_id, user_id, status) VALUES (%d, %d, 'OK')", tableName, orderId, i), 0);
-                containerComposer.assertOrderRecordExist(targetDataSource, tableName, orderId);
+                orderDAO.insert(orderId, i, "OK");
+                containerComposer.assertRecordExists(targetDataSource, orderTableName, orderId);
             }
-            QualifiedTable orderQualifiedTable = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable()
-                    ? new QualifiedTable(PipelineContainerComposer.SCHEMA_NAME, SOURCE_TABLE_NAME)
-                    : new QualifiedTable(null, SOURCE_TABLE_NAME);
-            assertDataMatched(sourceDataSource, targetDataSource, orderQualifiedTable);
-            assertDataMatched(sourceDataSource, targetDataSource, new QualifiedTable(null, "t_address"));
-            assertDataMatched(sourceDataSource, targetDataSource, new QualifiedTable(null, "t_single"));
+            assertDataMatched(jdbcDataSource, targetDataSource, orderQualifiedTable);
+            assertDataMatched(jdbcDataSource, targetDataSource, new QualifiedTable(null, "t_address"));
+            assertDataMatched(jdbcDataSource, targetDataSource, new QualifiedTable(null, "t_single"));
             cdcClient.close();
-            Awaitility.await().atMost(10L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS)
+            Awaitility.waitAtMost(10L, TimeUnit.SECONDS).pollInterval(500L, TimeUnit.MILLISECONDS)
                     .until(() -> distSQLFacade.listJobs().stream().noneMatch(each -> Boolean.parseBoolean(each.get("active").toString())));
             distSQLFacade.drop(jobId);
             assertTrue(distSQLFacade.listJobs().isEmpty());
@@ -151,30 +139,24 @@ class CDCE2EIT {
     
     private void createOrderTableRule(final PipelineContainerComposer containerComposer) throws SQLException {
         containerComposer.proxyExecuteWithLog(CREATE_SHARDING_RULE_SQL, 0);
-        Awaitility.await().atMost(20L, TimeUnit.SECONDS).pollInterval(2L, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order").isEmpty());
+        Awaitility.waitAtMost(20L, TimeUnit.SECONDS).pollInterval(2L, TimeUnit.SECONDS).until(() -> !containerComposer.queryForListWithLog("SHOW SHARDING TABLE RULE t_order").isEmpty());
     }
     
-    private void initSchemaAndTable(final PipelineContainerComposer containerComposer, final Connection connection, final int seconds) throws SQLException {
-        containerComposer.createSchema(connection, seconds);
-        String sql = containerComposer.getExtraSQLCommand().getCreateTableOrder(SOURCE_TABLE_NAME);
-        log.info("Create table sql: {}", sql);
-        connection.createStatement().execute(sql);
-        connection.createStatement().execute("CREATE TABLE t_address(id integer primary key, address_name varchar(255))");
-        connection.createStatement().execute("CREATE TABLE t_single(id integer primary key)");
+    private void initSchemaAndTable(final PipelineContainerComposer containerComposer, final DataSource dataSource, final QualifiedTable orderQualifiedTable, final int seconds) throws SQLException {
+        containerComposer.createSchema(dataSource, seconds);
+        new IntPkLargeOrderDAO(dataSource, containerComposer.getDatabaseType(), orderQualifiedTable).createTable();
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE t_address(id integer primary key, address_name varchar(255))");
+            statement.execute("CREATE TABLE t_single(id integer primary key)");
+        }
         containerComposer.sleepSeconds(seconds);
-    }
-    
-    private PipelineDataSource createStandardDataSource(final PipelineContainerComposer containerComposer, final String storageUnitName) {
-        Map<String, Object> poolProps = new HashMap<>(3, 1F);
-        poolProps.put("url", containerComposer.getActualJdbcUrlTemplate(storageUnitName, false));
-        poolProps.put("username", containerComposer.getUsername());
-        poolProps.put("password", containerComposer.getPassword());
-        return new PipelineDataSource(new StandardPipelineDataSourceConfiguration(poolProps));
     }
     
     private CDCClient buildCDCClientAndStart(final PipelineDataSource dataSource, final PipelineContainerComposer containerComposer) {
         DataSourceRecordConsumer recordConsumer = new DataSourceRecordConsumer(dataSource, containerComposer.getDatabaseType());
-        CDCClient result = new CDCClient(new CDCClientConfiguration("localhost", containerComposer.getContainerComposer().getProxyCDCPort(), 5000));
+        CDCClient result = new CDCClient(new CDCClientConfiguration("localhost", containerComposer.getContainerComposer().getProxyCDCPort(), 10000));
         result.connect(recordConsumer, new RetryStreamingExceptionHandler(result, 5, 5000), (ctx, serverErrorResult) -> log.error("Server error: {}", serverErrorResult.getErrorMessage()));
         result.login(new CDCLoginParameter(ProxyContainerConstants.USER, ProxyContainerConstants.PASSWORD));
         // TODO add full=false test case later

@@ -3660,4 +3660,75 @@
             </join-table>
         </from>
     </select>
+
+    <select sql-case-id="select_outer_apply_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="LEFT">
+                <left>
+                    <simple-table name="t_outer" start-index="14" stop-index="20" />
+                </left>
+                <right>
+                    <subquery-table alias="i" start-index="34" stop-index="59">
+                        <subquery>
+                            <select>
+                                <projections start-index="42" stop-index="43">
+                                    <column-projection name="id" start-index="42" stop-index="43" />
+                                </projections>
+                                <from>
+                                    <simple-table name="t_inner" start-index="50" stop-index="56" />
+                                </from>
+                            </select>
+                        </subquery>
+                    </subquery-table>
+                </right>
+            </join-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_outer_apply_with_where_oracle">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <join-table join-type="LEFT">
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="14" stop-index="22" />
+                </left>
+                <right>
+                    <subquery-table alias="i" start-index="36" stop-index="97">
+                        <subquery>
+                            <select>
+                                <projections start-index="44" stop-index="44">
+                                    <shorthand-projection start-index="44" stop-index="44" />
+                                </projections>
+                                <from>
+                                    <simple-table name="t_order_item" alias="i" start-index="51" stop-index="64" />
+                                </from>
+                                <where start-index="66" stop-index="94">
+                                    <expr>
+                                        <binary-operation-expression start-index="72" stop-index="94">
+                                            <left>
+                                                <column name="order_id" start-index="72" stop-index="81">
+                                                    <owner name="i" start-index="72" stop-index="72" />
+                                                </column>
+                                            </left>
+                                            <operator>=</operator>
+                                            <right>
+                                                <column name="order_id" start-index="85" stop-index="94">
+                                                    <owner name="o" start-index="85" stop-index="85" />
+                                                </column>
+                                            </right>
+                                        </binary-operation-expression>
+                                    </expr>
+                                </where>
+                            </select>
+                        </subquery>
+                    </subquery-table>
+                </right>
+            </join-table>
+        </from>
+    </select>
 </sql-parser-test-cases>

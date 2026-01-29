@@ -19,19 +19,19 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.ge
 
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.task.E2EIncrementalTask;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large.IntPkLargeOrderDAO;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.IntPkOrderItemDAO;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -50,7 +50,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@PipelineE2ESettings(database = @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/general/mysql.xml"))
+@PipelineE2ESettings(database = @PipelineE2EDatabaseSettings(type = "MySQL"))
 @Slf4j
 class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
     
@@ -65,17 +65,18 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             distSQLFacade.alterPipelineRule();
-            containerComposer.createSourceOrderTable(SOURCE_TABLE_NAME);
-            containerComposer.createSourceOrderItemTable();
+            IntPkLargeOrderDAO orderDAO = new IntPkLargeOrderDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType(), new QualifiedTable(null, SOURCE_TABLE_NAME));
+            orderDAO.createTable();
+            IntPkOrderItemDAO orderItemDAO = new IntPkOrderItemDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType(), null);
+            orderItemDAO.createTable();
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);
             createTargetOrderTableRule(containerComposer);
             createTargetOrderTableEncryptRule(containerComposer);
             createTargetOrderItemTableRule(containerComposer);
-            Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(containerComposer.getDatabaseType(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
             log.info("init data begin: {}", LocalDateTime.now());
-            DataSourceExecuteUtils.execute(containerComposer.getSourceDataSource(), containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), dataPair.getLeft());
-            DataSourceExecuteUtils.execute(containerComposer.getSourceDataSource(), containerComposer.getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
+            orderDAO.batchInsert(PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
+            orderItemDAO.batchInsert(PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
             log.info("init data end: {}", LocalDateTime.now());
             startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
             startMigration(containerComposer, "t_order_item", "t_order_item");
@@ -84,13 +85,13 @@ class MySQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             containerComposer.startIncrementTask(
                     new E2EIncrementalTask(containerComposer.getSourceDataSource(), SOURCE_TABLE_NAME, new SnowflakeKeyGenerateAlgorithm(), containerComposer.getDatabaseType(), 30));
             TimeUnit.SECONDS.timedJoin(containerComposer.getIncreaseTaskThread(), 30L);
-            containerComposer.sourceExecuteWithLog(String.format("INSERT INTO %s (order_id, user_id, status) VALUES (10000, 1, 'OK')", SOURCE_TABLE_NAME));
-            containerComposer.sourceExecuteWithLog("INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (10000, 10000, 1, 'OK')");
+            orderDAO.insert(10000L, 1, "OK");
+            orderItemDAO.insert(10000L, 10000L, 1, "OK");
             distSQLFacade.pauseJob(orderJobId);
             distSQLFacade.resumeJob(orderJobId);
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
-            containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order", 10000);
-            containerComposer.assertOrderRecordExist(jdbcDataSource, "t_order_item", 10000);
+            containerComposer.assertRecordExists(jdbcDataSource, "t_order", 10000);
+            containerComposer.assertRecordExists(jdbcDataSource, "t_order_item", 10000);
             assertMigrationSuccessById(distSQLFacade, orderJobId, "DATA_MATCH", ImmutableMap.of("chunk-size", "300", "streaming-range-type", "SMALL"));
             String orderItemJobId = distSQLFacade.getJobIdByTableName("ds_0.t_order_item");
             assertMigrationSuccessById(distSQLFacade, orderItemJobId, "DATA_MATCH", ImmutableMap.of("chunk-size", "300", "streaming-range-type", "LARGE"));

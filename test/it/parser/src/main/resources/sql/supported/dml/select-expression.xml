@@ -32,7 +32,8 @@
     <sql-case id="select_with_case_expression" value="select t.*,o.item_id as item_id,(case when t.status = 'init' then '已启用' when t.status = 'failed' then '已停用' end) as stateName from t_order t left join t_order_item as o on o.order_id =t.order_id where t.order_id=1000 limit 1" db-types="MySQL,H2" />
     <sql-case id="select_where_with_expr_with_or" value="SELECT * FROM t_order WHERE t_order.order_id = ? OR ? = t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_or_sign" value="SELECT * FROM t_order WHERE t_order.order_id = ? || ? = t_order.order_id" db-types="MySQL" />
-    <sql-case id="select_where_with_expr_with_xor" value="SELECT * FROM t_order WHERE t_order.order_id = ? XOR ? = t_order.order_id" db-types="MySQL,Presto" />
+    <sql-case id="select_concat_pipe_with_table" value="SELECT 'a' || 'b' FROM t_order" db-types="MySQL" />
+    <sql-case id="select_where_with_expr_with_xor" value="SELECT * FROM t_order WHERE t_order.order_id = ? XOR ? = t_order.order_id" db-types="MySQL,Presto,Doris" />
     <sql-case id="select_where_with_expr_with_and" value="SELECT * FROM t_order WHERE t_order.order_id = ? AND ? = t_order.order_id" db-types="MySQL" />
     <sql-case id="select_where_with_expr_with_and_or" value="SELECT * FROM t_order WHERE t_order.order_id = ? AND ? = t_order.order_id OR t_order.status = 'failed' AND ? = t_order.order_id" />
     <sql-case id="select_where_with_expr_with_and_sign" value="SELECT * FROM t_order WHERE t_order.order_id = ? &amp;&amp; ? = t_order.order_id" db-types="MySQL" />
@@ -104,10 +105,12 @@
     <sql-case id="select_with_regular_function_for_sql92" value="SELECT A(1) FROM t_order WHERE A(1) = 1" db-types="MySQL,Oracle,SQLServer,H2,SQL92" />
     <sql-case id="select_with_regular_function_utc_timestamp" value="SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP())" db-types="MySQL" />
     <sql-case id="select_with_collate_with_marker" value="SELECT * FROM t_order WHERE order_id COLLATE ?" db-types="MySQL,Presto,Doris,Hive" />
+    <sql-case id="select_returning_expression" value="SELECT '$.a' RETURNING VARCHAR(10)" db-types="MySQL,Doris" />
 
     <sql-case id="select_safe_equal" value="SELECT 1 &lt;=&gt; 1" db-types="Doris" />
-    <sql-case id="select_where_is_true_doris" value="SELECT * FROM t_order WHERE flag IS TRUE" db-types="Doris" />
-    <sql-case id="select_where_is_false_doris" value="SELECT * FROM t_order WHERE flag IS FALSE" db-types="Doris" />
+    <sql-case id="select_where_is_true_doris" value="SELECT * FROM t_order WHERE flag IS TRUE" db-types="Doris,Oracle" />
+    <sql-case id="select_where_is_false_doris" value="SELECT * FROM t_order WHERE flag IS FALSE" db-types="Doris,Oracle" />
+    <sql-case id="select_where_is_nan_oracle" value="SELECT * FROM t_order WHERE flag IS NAN" db-types="Oracle" />
     <sql-case id="select_string_concat_with_double_bar" value="SELECT 'a' || 'b'" db-types="Doris,Hive,Firebird" />
     <sql-case id="select_age_for_postgres" value="SELECT * FROM cypher('sharding_test_1', $$ CREATE (n) $$) as (a agtype)" db-types="PostgreSQL" />
     <sql-case id="select_datetime_expression" value="SELECT SYSTIMESTAMP AT TIME ZONE 'UTC' FROM DUAL;" db-types="Oracle" />
@@ -128,6 +131,9 @@
     <sql-case id="select_prediction_bounds_function" value="SELECT cust_id FROM mining_data_apply_v WHERE PREDICTION_BOUNDS(glmr_sh_regr_sample,0.98 USING *).LOWER = 24;" db-types="Oracle" />
     <sql-case id="select_prediction_function" value="SELECT cust_gender FROM mining_data_apply_v WHERE PREDICTION (nb_sh_clas_sample COST MODEL AUTO USING cust_marital_status, aeducation, household_size) = 1;" db-types="Oracle" />
     <sql-case id="select_prediction_details_function" value="SELECT PREDICTION_DETAILS(DT_SH_Clas_sample using *) FROM mining_data_apply_v WHERE occupation = 'TechSup'" db-types="Oracle" />
+    <sql-case id="select_nchar_literal_oracle" value="SELECT N'abc' FROM dual" db-types="Oracle" />
+    <sql-case id="select_datetime_escape_literal_oracle" value="SELECT {ts '2020-01-01 10:00:00'} FROM dual" db-types="Oracle" />
+    <sql-case id="select_nested_attribute_oracle" value="SELECT c.address.city FROM contacts c" db-types="Oracle" />
     <sql-case id="select_predict_by_function" value="SELECT PREDICT BY point_kmeans (FEATURES position) as pos FROM (select * from kmeans_2d limit 10);" db-types="openGauss" />
     <sql-case id="select_inet_function" value="SELECT inet '192.168.1.5' = inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
     <sql-case id="select_inet_function_with_inet_operator" value="SELECT inet '192.168.1.5' &lt;&lt;= inet '192.168.1.5' AS RESULT;" db-types="openGauss" />
@@ -143,4 +149,13 @@
     <sql-case id="select_text_inet_function" value="SELECT text(inet '192.168.1.5') AS RESULT;" db-types="openGauss" />
     <sql-case id="select_trunc_function" value="SELECT trunc(macaddr '12:34:56:78:90:ab') AS RESULT;" db-types="openGauss" />
     <sql-case id="select_with_case_when_from_sys" value="SELECT FileName = df.name, current_file_size_MB = df.size*1.0/128, max_size = CASE df.max_size WHEN 0 THEN 'Autogrowth is off.' WHEN -1 THEN 'Autogrowth is on.' ELSE 'Log file grows to a maximum size of 2 TB.' END, growth_value = CASE WHEN df.growth = 0 THEN df.growth WHEN df.growth > 0 AND df.is_percent_growth = 0 THEN df.growth*1.0/128.0 WHEN df.growth > 0 AND df.is_percent_growth = 1 THEN df.growth END, growth_increment_unit = CASE WHEN df.growth = 0 THEN 'Size is fixed.' WHEN df.growth > 0 AND df.is_percent_growth = 0  THEN 'Growth value is MB.' WHEN df.growth > 0 AND df.is_percent_growth = 1  THEN 'Growth value is a percentage.' END FROM tempdb.sys.database_files AS df" db-types="SQLServer"/>
+    <sql-case id="select_where_equal_any_subquery_mysql" value="SELECT * FROM t_order WHERE amount = ANY (SELECT price FROM t_price)" db-types="MySQL" />
+    <sql-case id="select_where_not_equal_all_subquery_mysql" value="SELECT * FROM t_order WHERE amount &lt;&gt; ALL (SELECT price FROM t_price)" db-types="MySQL" />
+    <sql-case id="select_where_with_safe_equal_parameter_mysql" value="SELECT * FROM t_order WHERE status &lt;=&gt; ?" db-types="MySQL" case-types="PLACEHOLDER" />
+    <sql-case id="select_where_equal_all_subquery_mysql" value="SELECT * FROM t_order WHERE amount = ALL (SELECT price FROM t_price)" db-types="MySQL" />
+    <sql-case id="select_hex_literal_oracle" value="SELECT 0x1 FROM dual" db-types="Oracle" />
+    <sql-case id="select_bit_literal_oracle" value="SELECT 0b101 FROM dual" db-types="Oracle" />
+    <sql-case id="select_binary_prefix_oracle" value="SELECT BINARY col FROM dual" db-types="Oracle" />
+    <sql-case id="select_interval_day_to_second_precision_oracle" value="SELECT (SYSTIMESTAMP - order_date) DAY(2) TO SECOND(3) FROM orders" db-types="Oracle" />
+    <sql-case id="select_interval_year_to_month_precision_oracle" value="SELECT (hire_date - start_date) YEAR(3) TO MONTH FROM employees" db-types="Oracle" />
 </sql-cases>

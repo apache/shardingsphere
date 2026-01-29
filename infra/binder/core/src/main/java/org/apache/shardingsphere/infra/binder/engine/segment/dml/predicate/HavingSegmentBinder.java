@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.predicate;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -55,10 +56,13 @@ public final class HavingSegmentBinder {
     private static ExpressionSegment bind(final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,
                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts, final ExpressionSegment expressionSegment) {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> newOuterTableBinderContexts = LinkedHashMultimap.create();
+        newOuterTableBinderContexts.putAll(outerTableBinderContexts);
+        newOuterTableBinderContexts.putAll(tableBinderContexts);
         try {
-            return ExpressionSegmentBinder.bind(expressionSegment, SegmentType.HAVING, binderContext, currentTableBinderContexts, outerTableBinderContexts);
+            return ExpressionSegmentBinder.bind(expressionSegment, SegmentType.HAVING, binderContext, currentTableBinderContexts, newOuterTableBinderContexts);
         } catch (final ColumnNotFoundException ignored) {
-            return ExpressionSegmentBinder.bind(expressionSegment, SegmentType.HAVING, binderContext, tableBinderContexts, outerTableBinderContexts);
+            return ExpressionSegmentBinder.bind(expressionSegment, SegmentType.HAVING, binderContext, tableBinderContexts, newOuterTableBinderContexts);
         }
     }
 }

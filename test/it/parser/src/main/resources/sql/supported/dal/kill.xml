@@ -19,6 +19,7 @@
 <sql-cases>
     <sql-case id="kill_process_id" value="KILL abc" db-types="MySQL" />
     <sql-case id="kill_process_with_id" value="KILL QUERY @id" db-types="MySQL" />
+    <sql-case id="kill_connection_with_identifier_mysql" value="KILL CONNECTION job_session" db-types="MySQL" />
     <sql-case id="kill_connection_with_numeric_id" value="KILL CONNECTION 16" db-types="Doris" />
     <sql-case id="kill_query_with_numeric_id" value="KILL QUERY 16" db-types="Doris" />
     <sql-case id="kill_with_numeric_id" value="KILL 16" db-types="Doris" />

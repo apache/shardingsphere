@@ -55,7 +55,7 @@ class XATCLProxyBackendHandlerFactoryTest {
     
     private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    @ParameterizedTest(name = "{index}: {0}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideXAStatements")
     void assertCreateHandlersForEachXAStatement(final String name, final XAStatement statement, final Class<? extends ProxyBackendHandler> expectedClass) {
         QueryContext queryContext = mock(QueryContext.class);

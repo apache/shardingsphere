@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.merge.dal;
 
-import com.sphereex.dbplusengine.sql.parser.statement.core.statement.attribute.type.ViewInResultSetSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ViewInResultSetSQLStatementAttribute;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowColumnsMergedResult;
 import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowCreateTableMergedResult;

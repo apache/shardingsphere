@@ -67,7 +67,7 @@ Introducing Maven dependency
 
 Narayana configuration items can be customized by adding `jbossts-properties.xml` to the project's classpath.
 
-See [Narayana's Official Documentation](https://narayana.io/documentation/index.html) for more details.
+See [Narayana's Official Documentation](https://narayana.io/documentation/) for more details.
 
 For the minimum configuration of `jbossts-properties.xml`,
 ShardingSphere requires that Narayana's `CoreEnvironmentBean.nodeIdentifier` property be defined.

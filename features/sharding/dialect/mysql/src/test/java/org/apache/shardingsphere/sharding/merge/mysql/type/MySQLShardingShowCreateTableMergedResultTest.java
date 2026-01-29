@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.mysql.type;
 
 import org.apache.groovy.util.Maps;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -67,7 +68,7 @@ class MySQLShardingShowCreateTableMergedResultTest {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
         tables.add(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.singleton(new ShardingSphereConstraint("foo_tbl_foreign_key", "bar_tbl"))));
         tables.add(new ShardingSphereTable("bar_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        return new ShardingSphereSchema("foo_db", tables, Collections.emptyList());
+        return new ShardingSphereSchema("foo_db", tables, Collections.emptyList(), mock(DatabaseType.class));
     }
     
     @Test

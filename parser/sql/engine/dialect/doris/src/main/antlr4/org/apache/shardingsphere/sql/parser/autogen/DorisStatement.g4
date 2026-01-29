@@ -137,6 +137,10 @@ execute
     | resumeJob
     | dorisAlterSystem
     | createSqlBlockRule
+    | alterSqlBlockRule
+    | dropSqlBlockRule
+    | buildIndex
+    | cancelBuildIndex
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

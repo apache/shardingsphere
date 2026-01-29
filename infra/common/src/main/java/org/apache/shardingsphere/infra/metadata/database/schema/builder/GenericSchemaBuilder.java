@@ -73,7 +73,7 @@ public final class GenericSchemaBuilder {
         if (!isSameProtocolAndStorageTypes(protocolType, material.getStorageUnits())) {
             result = translate(result, protocolType, material);
         }
-        return revise(result, material);
+        return revise(result, material, protocolType);
     }
     
     private static Collection<String> getAllTableNames(final Collection<ShardingSphereRule> rules) {
@@ -104,9 +104,9 @@ public final class GenericSchemaBuilder {
         return Collections.singletonMap(frontendSchemaName, new SchemaMetaData(frontendSchemaName, tableMetaDataList));
     }
     
-    private static Map<String, ShardingSphereSchema> revise(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
+    private static Map<String, ShardingSphereSchema> revise(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material, final DatabaseType protocolType) {
         Collection<ShardingSphereRule> rules = material.getRules().stream()
                 .filter(each -> each.getAttributes().findAttribute(TableMapperRuleAttribute.class).isPresent()).collect(Collectors.toList());
-        return new MetaDataReviseEngine(rules).revise(schemaMetaDataMap, material);
+        return new MetaDataReviseEngine(rules, protocolType).revise(schemaMetaDataMap, material);
     }
 }

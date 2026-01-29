@@ -413,4 +413,17 @@
             </expression-item>
         </order-by>
     </select>
+
+    <select sql-case-id="select_order_by_position_oracle">
+        <from>
+            <simple-table name="t_order" start-index="30" stop-index="36" />
+        </from>
+        <projections start-index="7" stop-index="23">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+            <column-projection name="user_id" start-index="17" stop-index="23" />
+        </projections>
+        <order-by>
+            <index-item index="1" order-direction="ASC" start-index="47" stop-index="47" />
+        </order-by>
+    </select>
 </sql-parser-test-cases>

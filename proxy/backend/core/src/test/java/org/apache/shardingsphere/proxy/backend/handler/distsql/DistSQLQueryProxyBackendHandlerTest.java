@@ -103,7 +103,7 @@ class DistSQLQueryProxyBackendHandlerTest {
     @Test
     void assertExecute() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, mock(), mock(), Collections.singleton(new ShardingSphereSchema("foo_db", createTables(), Collections.emptyList())));
+                "foo_db", databaseType, mock(), mock(), Collections.singleton(new ShardingSphereSchema("foo_db", createTables(), Collections.emptyList(), databaseType)));
         ContextManager contextManager = mock(ContextManager.class);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         assertDoesNotThrow(() -> new DistSQLQueryProxyBackendHandler(createSqlStatement(), mock(), mock(ConnectionSession.class, RETURNS_DEEP_STUBS), contextManager).execute());

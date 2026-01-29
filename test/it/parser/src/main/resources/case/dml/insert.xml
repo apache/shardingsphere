@@ -237,6 +237,27 @@
         </values>
     </insert>
 
+    <insert sql-case-id="insert_table_collection_oracle">
+        <columns start-index="54" stop-index="54" />
+        <select>
+            <from start-index="38" stop-index="52">
+                <simple-table name="t_nested" alias="t" start-index="43" stop-index="52" />
+            </from>
+            <projections start-index="25" stop-index="36">
+                <column-projection name="nested_col" start-index="25" stop-index="36">
+                    <owner name="t" start-index="25" stop-index="25" />
+                </column-projection>
+            </projections>
+        </select>
+        <values>
+            <value>
+                <assignment-value>
+                    <literal-expression value="1" start-index="63" stop-index="63" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
+
     <insert sql-case-id="insert_with_now_function" parameters="1, 1, 'init'">
         <table name="t_order_item" start-index="12" stop-index="23" />
         <columns start-index="25" stop-index="75">
@@ -523,6 +544,21 @@
                 </assignment-value>
             </assignment>
         </on-duplicate-key-columns>
+    </insert>
+
+    <insert sql-case-id="insert_set_with_row_alias">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <set start-index="20" stop-index="44" literal-stop-index="44">
+            <assignment>
+                <column name="a" start-index="24" stop-index="24" />
+                <assignment-value>
+                    <literal-expression value="1" literal-start-index="28" literal-stop-index="28" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <value-reference alias="new_alias" start-index="30" stop-index="44">
+            <derived-column name="a" start-index="43" stop-index="43" />
+        </value-reference>
     </insert>
     <insert sql-case-id="insert_with_underscore_charset">
         <table name="t_order" start-index="12" stop-index="18" />
@@ -2439,6 +2475,59 @@
                 <column-projection name="sales_rep_id" start-index="190" stop-index="201" />
                 <column-projection name="customer_id" start-index="204" stop-index="214" />
             </projections>
+        </select>
+    </insert>
+
+    <insert sql-case-id="insert_first_with_conditional_when_else">
+        <multi-table-insert-type value="FIRST" />
+        <multi-table-conditional-into start-index="7" stop-index="121">
+            <conditional-into-when-then start-index="13" stop-index="79">
+                <when start-index="13" stop-index="35">
+                    <binary-operation-expression start-index="18" stop-index="35">
+                        <left>
+                            <column name="order_total" start-index="18" stop-index="28" />
+                        </left>
+                        <operator>&lt;=</operator>
+                        <right>
+                            <literal-expression value="100" start-index="33" stop-index="35" />
+                        </right>
+                    </binary-operation-expression>
+                </when>
+                <then start-index="42" stop-index="79">
+                    <insert-statement>
+                        <table name="small_orders" start-index="47" stop-index="58" />
+                        <columns start-index="59" stop-index="59" />
+                        <values start-index="60" stop-index="79">
+                            <value>
+                                <assignment-value>
+                                    <column name="order_total" start-index="68" stop-index="78" />
+                                </assignment-value>
+                            </value>
+                        </values>
+                    </insert-statement>
+                </then>
+            </conditional-into-when-then>
+            <conditional-into-else start-index="81" stop-index="121">
+                <insert-statement>
+                    <table name="big_orders" start-index="91" stop-index="100" />
+                    <columns start-index="101" stop-index="101" />
+                    <values start-index="102" stop-index="121">
+                        <value>
+                            <assignment-value>
+                                <column name="order_total" start-index="110" stop-index="120" />
+                            </assignment-value>
+                        </value>
+                    </values>
+                </insert-statement>
+            </conditional-into-else>
+        </multi-table-conditional-into>
+        <select>
+            <projections start-index="130" stop-index="140">
+                <column-projection name="order_total" start-index="130" stop-index="140" />
+            </projections>
+            <from start-index="142" stop-index="152">
+                <simple-table name="orders" start-index="147" stop-index="152" />
+            </from>
         </select>
     </insert>
 

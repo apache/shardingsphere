@@ -85,6 +85,23 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_extract_function_doris">
+        <projections start-index="7" stop-index="37">
+            <expression-projection text="EXTRACT(YEAR FROM '2020-01-01')" start-index="7" stop-index="37">
+                <expr>
+                    <function function-name="EXTRACT" start-index="7" stop-index="37" text="EXTRACT(YEAR FROM '2020-01-01')">
+                        <parameter>
+                            <literal-expression value="YEAR" start-index="15" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2020-01-01" start-index="25" stop-index="36" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
     <select sql-case-id="select_cast_as_year">
         <projections start-index="7" stop-index="24">
             <expression-projection text="CAST(-1.1 AS YEAR)" start-index="7" stop-index="24">
@@ -2340,6 +2357,24 @@
                         </parameter>
                         <parameter start-index="27" stop-index="33">
                             <literal-expression value="utf8mb4" start-index="27" stop-index="33"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_convert_function_using_binary">
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="CONVERT('abc' USING BINARY)" start-index="7" stop-index="33">
+                <expr>
+                    <function function-name="CONVERT" start-index="7" stop-index="33" text="CONVERT('abc' USING BINARY)">
+                        <parameter>
+                            <literal-expression value="abc" start-index="15" stop-index="19" />
+                            <using-character-set text="USING BINARY" start-index="20" stop-index="33" />
+                        </parameter>
+                        <parameter start-index="27" stop-index="32">
+                            <literal-expression value="BINARY" start-index="27" stop-index="32"/>
                         </parameter>
                     </function>
                 </expr>
@@ -5449,6 +5484,177 @@
                         </parameter>
                         <parameter>
                             <literal-expression value="^billie" start-index="20" stop-index="28" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_json_separator_mysql">
+        <from>
+            <simple-table name="t_order" start-index="44" stop-index="50" />
+        </from>
+        <projections start-index="7" stop-index="37">
+            <expression-projection text="JSON_SEPARATOR(order_id, '$.a')" start-index="7" stop-index="37">
+                <expr>
+                    <function function-name="JSON_SEPARATOR" start-index="7" stop-index="37" text="JSON_SEPARATOR(order_id, '$.a')">
+                        <parameter>
+                            <column name="order_id" start-index="22" stop-index="29" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="$.a" start-index="32" stop-index="36" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_json_unquoted_separator_mysql">
+        <from>
+            <simple-table name="t_order" start-index="53" stop-index="59" />
+        </from>
+        <projections start-index="7" stop-index="46">
+            <expression-projection text="JSON_UNQUOTED_SEPARATOR(order_id, '$.a')" start-index="7" stop-index="46">
+                <expr>
+                    <function function-name="JSON_UNQUOTED_SEPARATOR" start-index="7" stop-index="46" text="JSON_UNQUOTED_SEPARATOR(order_id, '$.a')">
+                        <parameter>
+                            <column name="order_id" start-index="31" stop-index="38" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="$.a" start-index="41" stop-index="45" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_timestampadd_mysql">
+        <from>
+            <simple-table name="t_order" start-index="45" stop-index="51" />
+        </from>
+        <projections start-index="7" stop-index="38">
+            <expression-projection text="TIMESTAMPADD(DAY, 1, order_date)" start-index="7" stop-index="38">
+                <expr>
+                    <function function-name="TIMESTAMPADD" start-index="7" stop-index="38" text="TIMESTAMPADD(DAY, 1, order_date)">
+                        <parameter>
+                            <interval-unit-expression start-index="20" stop-index="22">
+                                <interval-unit>DAY</interval-unit>
+                            </interval-unit-expression>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="25" stop-index="25" />
+                        </parameter>
+                        <parameter>
+                            <column name="order_date" start-index="28" stop-index="37" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_timestampdiff_mysql">
+        <from>
+            <simple-table name="t_order" start-index="56" stop-index="62" />
+        </from>
+        <projections start-index="7" stop-index="49">
+            <expression-projection text="TIMESTAMPDIFF(MINUTE, start_time, end_time)" start-index="7" stop-index="49">
+                <expr>
+                    <function function-name="TIMESTAMPDIFF" start-index="7" stop-index="49" text="TIMESTAMPDIFF(MINUTE, start_time, end_time)">
+                        <parameter>
+                            <interval-unit-expression start-index="21" stop-index="26">
+                                <interval-unit>MINUTE</interval-unit>
+                            </interval-unit-expression>
+                        </parameter>
+                        <parameter>
+                            <column name="start_time" start-index="29" stop-index="38" />
+                        </parameter>
+                        <parameter>
+                            <column name="end_time" start-index="41" stop-index="48" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_current_time_precision_mysql">
+        <projections start-index="7" stop-index="21">
+            <expression-projection text="CURRENT_TIME(3)" start-index="7" stop-index="21">
+                <expr>
+                    <function function-name="CURRENT_TIME" start-index="7" stop-index="21" text="CURRENT_TIME(3)">
+                        <parameter>
+                            <literal-expression value="3" start-index="20" stop-index="20" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_odbc_fn_now_mysql">
+        <projections start-index="7" stop-index="16">
+            <expression-projection text="NOW()" start-index="11" stop-index="15">
+                <expr>
+                    <function function-name="NOW" start-index="11" stop-index="15" text="NOW()" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_translate_nchar_cs_oracle">
+        <from>
+            <simple-table name="translate_tab" start-index="42" stop-index="54" />
+        </from>
+        <projections start-index="7" stop-index="35">
+            <expression-projection text="TRANSLATE(col USING NCHAR_CS)" start-index="7" stop-index="35">
+                <expr>
+                    <function function-name="TRANSLATE" start-index="7" stop-index="35" text="TRANSLATE(col USING NCHAR_CS)">
+                        <parameter>
+                            <column name="col" start-index="17" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="NCHAR_CS" start-index="27" stop-index="34" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_approx_rank_oracle">
+        <from>
+            <simple-table name="dual" start-index="29" stop-index="32" />
+        </from>
+        <projections start-index="7" stop-index="22">
+            <expression-projection text="APPROX_RANK(0.5)" start-index="7" stop-index="22">
+                <expr>
+                    <function function-name="APPROX_RANK" start-index="7" stop-index="22" text="APPROX_RANK(0.5)">
+                        <parameter>
+                            <literal-expression value="0.5" start-index="19" stop-index="21" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_isschemavalid_function_oracle">
+        <from>
+            <simple-table name="dual" start-index="49" stop-index="52" />
+        </from>
+        <projections start-index="7" stop-index="42">
+            <expression-projection text="ISSCHEMAVALID(xml_doc, 'schema.xsd')" start-index="7" stop-index="42">
+                <expr>
+                    <function function-name="ISSCHEMAVALID" start-index="7" stop-index="42" text="ISSCHEMAVALID(xml_doc, 'schema.xsd')">
+                        <parameter>
+                            <column name="xml_doc" start-index="21" stop-index="27" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="schema.xsd" start-index="30" stop-index="41" />
                         </parameter>
                     </function>
                 </expr>

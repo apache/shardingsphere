@@ -1,7 +1,10 @@
 ## Release 5.5.4-SNAPSHOT
 
+### Enhancements
+
+1. Enhance MySQLTextResultSetRowPacket and MySQLDateBinaryProtocolValue to support LocalDateTime and LocalTime when value contains scale - [#37881](https://github.com/apache/shardingsphere/pull/37881)
+
 ### Bug Fixes
-1. Proxy: Fix PostgreSQL text protocol bytea output to use hex encoding and avoid truncation - [#37772](https://github.com/apache/shardingsphere/pull/37772)
 
 ## Release 5.5.3
 
@@ -95,6 +98,7 @@
 1. SQL Binder: Fix unable to find the outer table in the NotExpressionBinder - [36135](https://github.com/apache/shardingsphere/pull/36135)
 1. SQL Binder: Fix unable to find the outer table in the ExistsSubqueryExpressionBinder - [#36068](https://github.com/apache/shardingsphere/pull/36068)
 1. SQL Binder: Fix column bind exception caused by oracle XMLELEMENT function first parameter without quote - [#36963](https://github.com/apache/shardingsphere/pull/36963)
+1. SQL Binder: Fix correlated subquery in HAVING cannot reference outer query column - [#37872](https://github.com/apache/shardingsphere/pull/37872)
 1. Transaction: Fix conflicting dependencies of BASE transaction integration module - [#35142](https://github.com/apache/shardingsphere/pull/35142)
 1. Transaction: Alleviate connection leaks caused by SEATA client throwing exceptions - [#34463](https://github.com/apache/shardingsphere/pull/34463)
 1. SQL Federation: Fix Operation not allowed after ResultSet closed exception when use SQL federation - [#35206](https://github.com/apache/shardingsphere/pull/35206)
@@ -116,12 +120,14 @@
 1. Proxy: Fix IndexOutOfBoundsException for MySQL no-FROM multi-projection SELECT routed to admin path - [#37391](https://github.com/apache/shardingsphere/pull/37391)
 1. Proxy: Fix MySQL binary protocol datetime/time fractional seconds precision - [#37294](https://github.com/apache/shardingsphere/pull/37294)
 1. Proxy: Fix PostgreSQL boolean text output to return `t`/`f` as per protocol - [#37184](https://github.com/apache/shardingsphere/pull/37184)
+1. Proxy: Fix PostgreSQL text protocol bytea output to use hex encoding and avoid truncation - [#37772](https://github.com/apache/shardingsphere/pull/37772)
 1. Mode: Fix issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
 1. Encrypt: Resolve rewrite issue in nested concat function - [#35815](https://github.com/apache/shardingsphere/pull/35815)
 1. Sharding: Fix mod sharding algorithm judgement -[#36386](https://github.com/apache/shardingsphere/pull/36386)
 1. Sharding: Fix check inline sharding algorithms in table rules - [#36999](https://github.com/apache/shardingsphere/pull/36999)
 1. Sharding: Fix wrong sharding condition merge when sharding column in case-sensitive - [#37389](https://github.com/apache/shardingsphere/pull/37389)
 1. Sharding: Fix wrong merge sharding condition logic caused by different type sharding value - [#37528](https://github.com/apache/shardingsphere/pull/37528)
+1. Sharding: Prevent SELECT DISTINCT rewrite from losing global de-duplication across shards - [#37857](https://github.com/apache/shardingsphere/pull/37857)
 1. Pipeline: Recover value of migration incremental importer batch size - [#34670](https://github.com/apache/shardingsphere/pull/34670)
 1. Pipeline: Fix InventoryDumper first time dump SQL without ORDER BY on multiple columns unique key table - [#34736](https://github.com/apache/shardingsphere/pull/34736)
 1. Pipeline: Fix MySQL JDBC query properties extension when SSL is required on server - [#36581](https://github.com/apache/shardingsphere/pull/36581)

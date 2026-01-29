@@ -45,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
@@ -379,6 +380,20 @@ class ShardingDQLResultMergerTest {
     }
     
     @Test
+    void assertBuildGroupByMemoryMergedResultWithDistinctRow() throws SQLException {
+        SelectStatement selectStatement = buildSelectStatement(new SelectStatement(mysqlDatabaseType));
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.setDistinctRow(true);
+        projectionsSegment.getProjections().add(new ShorthandProjectionSegment(0, 0));
+        selectStatement.setProjections(projectionsSegment);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
+                selectStatement, createShardingSphereMetaData(database), "foo_db", Collections.emptyList());
+        ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
+        assertThat(resultMerger.merge(createQueryResults(), selectStatementContext, createDatabase(), mock(ConnectionContext.class)), isA(GroupByMemoryMergedResult.class));
+    }
+    
+    @Test
     void assertBuildGroupByMemoryMergedResultWithAggregationOnly() throws SQLException {
         final ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(mysqlDatabaseType);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
@@ -474,12 +489,12 @@ class ShardingDQLResultMergerTest {
     }
     
     private ShardingSphereDatabase createDatabase() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", Collections.singleton(createTable()), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", Collections.singleton(createTable()), Collections.emptyList(), mysqlDatabaseType);
         return new ShardingSphereDatabase("foo_db", mysqlDatabaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singleton(schema));
     }
     
     private ShardingSphereDatabase createSQLServerDatabase() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("dbo", Collections.singleton(createTable()), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("dbo", Collections.singleton(createTable()), Collections.emptyList(), sqlserverDatabaseType);
         return new ShardingSphereDatabase(
                 "foo_db", TypedSPILoader.getService(DatabaseType.class, "SQLServer"), mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singleton(schema));
     }

@@ -181,4 +181,5 @@
             <sql-statement start-index="27" stop-index="42" statement-class-simple-name="AnalyzeTableStatement" />
         </sql-statements>
     </create-procedure>
+    <create-procedure sql-case-id="create_procedure_doris_control_flow" />
 </sql-parser-test-cases>

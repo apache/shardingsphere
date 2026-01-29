@@ -56,6 +56,6 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
                 new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false, false),
                 new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
-        return new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList());
+        return new ShardingSphereSchema("foo_db", Collections.singleton(table), Collections.emptyList(), databaseType);
     }
 }

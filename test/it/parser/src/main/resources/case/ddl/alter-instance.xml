@@ -18,4 +18,5 @@
 
 <sql-parser-test-cases>
     <common sql-case-id="alter_instance_doris_rotate_innodb_master_key" />
+    <common sql-case-id="alter_instance_mysql_rotate_innodb_master_key" />
 </sql-parser-test-cases>

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.common.generator;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -48,7 +49,7 @@ class SQLTokenGeneratorsTest {
         generators.addAll(Collections.singleton(generator));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("sharding_db");
-        when(database.getSchema("test")).thenReturn(new ShardingSphereSchema("test"));
+        when(database.getSchema("test")).thenReturn(new ShardingSphereSchema("test", mock(DatabaseType.class)));
         Collection<SQLToken> actualSqlTokens = generators.generateSQLTokens(database, mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), Collections.emptyList(), mock(ConnectionContext.class));
         assertThat(actualSqlTokens.size(), is(1));
         assertThat(actualSqlTokens.iterator().next(), is(expectedToken));

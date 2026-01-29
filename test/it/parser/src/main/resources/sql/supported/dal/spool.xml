@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="spool_online_all.sql" value="SPOOL online_all.sql" db-types="Oracle"/>
+    <sql-case id="spool_without_filename" value="SPOOL OFF" db-types="Oracle"/>
 </sql-cases>

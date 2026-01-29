@@ -15,20 +15,27 @@
  * limitations under the License.
  */
 
-package com.sphereex.dbplusengine.sql.parser.statement.core.statement.attribute.type;
+package org.apache.shardingsphere.sql.parser.statement.doris.dal;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttribute;
+import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.RuleNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Table in result set SQL statement attribute.
+ * Drop SQL block rule statement for Doris.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ViewInResultSetSQLStatementAttribute implements SQLStatementAttribute {
+@Setter
+public final class DorisDropSqlBlockRuleStatement extends DALStatement {
     
-    private final int nameResultSetIndex;
+    private final Collection<RuleNameSegment> ruleNames = new LinkedList<>();
     
-    private final String viewName;
+    public DorisDropSqlBlockRuleStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
 }
