@@ -66,7 +66,7 @@ public final class EncryptPredicateValueTokenGenerator implements CollectionSQLT
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof WhereContextAvailable;
+        return sqlStatementContext instanceof WhereContextAvailable && !encryptConditions.isEmpty();
     }
     
     @Override
