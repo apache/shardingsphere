@@ -2399,4 +2399,52 @@
             </from>
         </select>
     </create-view>
+
+    <create-view sql-case-id="create_view_with_column_comments_doris" view-definition="SELECT c1 as k1, k2, k3 FROM example_table WHERE k1 = 20160112 GROUP BY k1,k2,k3">
+        <view name="example_view" start-index="12" stop-index="34">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </view>
+        <select>
+            <projections start-index="170" stop-index="185">
+                <column-projection name="c1" alias="k1" start-index="170" stop-index="177">
+                    <column name="c1" start-index="171" stop-index="172" />
+                </column-projection>
+                <column-projection name="k2" start-index="180" stop-index="181" />
+                <column-projection name="k3" start-index="184" stop-index="185" />
+            </projections>
+            <from>
+                <simple-table name="example_table" start-index="192" stop-index="204" />
+            </from>
+            <where start-index="206" stop-index="224">
+                <expr>
+                    <binary-operation-expression start-index="212" stop-index="224">
+                        <left>
+                            <column name="k1" start-index="212" stop-index="213" />
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <literal-expression value="20160112" start-index="217" stop-index="224" />
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+            <group-by>
+                <column-item name="k1" start-index="235" stop-index="236" />
+                <column-item name="k2" start-index="238" stop-index="239" />
+                <column-item name="k3" start-index="241" stop-index="242" />
+            </group-by>
+        </select>
+    </create-view>
+
+    <create-view sql-case-id="create_view_if_not_exists_doris" view-definition="SELECT * FROM example_table">
+        <view name="example_view" start-index="26" stop-index="37" />
+        <select>
+            <projections start-index="49" stop-index="49">
+                <shorthand-projection start-index="49" stop-index="49" />
+            </projections>
+            <from>
+                <simple-table name="example_table" start-index="56" stop-index="68" />
+            </from>
+        </select>
+    </create-view>
 </sql-parser-test-cases>

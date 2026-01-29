@@ -108,4 +108,6 @@
     <sql-case id="create_view_with_limit" value="CREATE VIEW recent_orders AS SELECT order_id, order_date FROM sales LIMIT 100" db-types="Hive" />
     <sql-case id="create_view_with_db_name" value="CREATE VIEW db1.sales_summary AS SELECT order_id, total FROM db2.sales" db-types="Hive" />
     <sql-case id="create_view_with_cte" value="CREATE VIEW user_orders AS WITH user_cte AS (SELECT id, name FROM users) SELECT u.name, o.order_id FROM user_cte u JOIN orders o ON u.id = o.user_id" db-types="Hive" />
+    <sql-case id="create_view_with_column_comments_doris" value="CREATE VIEW example_db.example_view (k1 COMMENT &quot;first key&quot;, k2 COMMENT &quot;second key&quot;, k3 COMMENT &quot;third key&quot;, v1 COMMENT &quot;first value&quot;) COMMENT &quot;my first view&quot; AS SELECT c1 as k1, k2, k3 FROM example_table WHERE k1 = 20160112 GROUP BY k1,k2,k3" db-types="Doris" />
+    <sql-case id="create_view_if_not_exists_doris" value="CREATE VIEW IF NOT EXISTS example_view AS SELECT * FROM example_table" db-types="Doris" />
 </sql-cases>
