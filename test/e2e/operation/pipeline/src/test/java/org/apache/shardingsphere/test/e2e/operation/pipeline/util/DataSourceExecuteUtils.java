@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -55,18 +54,15 @@ public final class DataSourceExecuteUtils {
      * @param dataSource data source
      * @param sql SQL
      * @param params parameters
-     * @throws SQLWrapperException SQL wrapper exception
+     * @throws SQLException SQL exception
      */
-    // TODO Throw SQLException
-    public static void execute(final DataSource dataSource, final String sql, final Object[] params) {
+    public static void execute(final DataSource dataSource, final String sql, final Object[] params) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             for (int i = 0; i < params.length; i++) {
                 preparedStatement.setObject(i + 1, params[i]);
             }
             preparedStatement.execute();
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
         }
     }
     
