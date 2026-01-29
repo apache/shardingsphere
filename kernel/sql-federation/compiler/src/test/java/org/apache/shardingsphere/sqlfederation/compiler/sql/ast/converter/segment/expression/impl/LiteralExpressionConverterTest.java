@@ -50,55 +50,55 @@ class LiteralExpressionConverterTest {
     
     @Test
     void assertConvertNullLiteral() {
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, null)).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, null), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getTypeName(), is(SqlTypeName.NULL));
     }
     
     @Test
     void assertConvertTrimFlags() {
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "both")).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "both"), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getValueAs(String.class), is("both"));
-        SqlLiteral leading = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "LEADING")).orElse(null);
+        SqlLiteral leading = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "LEADING"), null).orElse(null);
         assertNotNull(leading);
         assertThat(leading.getValueAs(String.class), is("LEADING"));
-        SqlLiteral trailing = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "trailing")).orElse(null);
+        SqlLiteral trailing = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "trailing"), null).orElse(null);
         assertNotNull(trailing);
         assertThat(trailing.getValueAs(String.class), is("trailing"));
     }
     
     @Test
     void assertConvertTimeUnitName() {
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "year")).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "year"), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getValueAs(String.class), is("year"));
     }
     
     @Test
     void assertConvertApproximateNumber() {
-        SqlNumericLiteral actual = (SqlNumericLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, new Float("1.5"))).orElse(null);
+        SqlNumericLiteral actual = (SqlNumericLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, new Float("1.5")), null).orElse(null);
         assertNotNull(actual);
         assertFalse(actual.isExact());
     }
     
     @Test
     void assertConvertExactNumber() {
-        SqlNumericLiteral actual = (SqlNumericLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, 10)).orElse(null);
+        SqlNumericLiteral actual = (SqlNumericLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, 10), null).orElse(null);
         assertNotNull(actual);
         assertTrue(actual.isExact());
     }
     
     @Test
     void assertConvertStringLiteral() {
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "text")).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, "text"), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getValueAs(String.class), is("text"));
     }
     
     @Test
     void assertConvertBooleanLiteral() {
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, true)).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, true), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getValueAs(Boolean.class), is(true));
     }
@@ -108,7 +108,7 @@ class LiteralExpressionConverterTest {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2020, Calendar.JANUARY, 1, 0, 0, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, calendar)).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, calendar), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getTypeName(), is(SqlTypeName.DATE));
     }
@@ -118,7 +118,7 @@ class LiteralExpressionConverterTest {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2020, Calendar.JANUARY, 1, 1, 1, 1);
         calendar.set(Calendar.MILLISECOND, 1);
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, calendar)).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, calendar), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getTypeName(), is(SqlTypeName.TIMESTAMP));
     }
@@ -126,15 +126,15 @@ class LiteralExpressionConverterTest {
     @Test
     void assertConvertTimestampDate() {
         Timestamp timestamp = Timestamp.valueOf("2023-01-02 03:04:05");
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, timestamp)).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, timestamp), null).orElse(null);
         assertNotNull(actual);
-        assertThat(actual.getTypeName(), is(SqlTypeName.TIMESTAMP));
+        assertThat(actual.getTypeName(), is(SqlTypeName.TIMESTAMP_TZ));
     }
     
     @Test
     void assertConvertTimeDate() {
         Time time = new Time(new TimeString("01:02:03").getMillisOfDay());
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, time)).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, time), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getTypeName(), is(SqlTypeName.TIME));
     }
@@ -142,28 +142,28 @@ class LiteralExpressionConverterTest {
     @Test
     void assertConvertUtilDate() {
         java.sql.Date date = java.sql.Date.valueOf("2020-01-01");
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, date)).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, date), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getTypeName(), is(SqlTypeName.DATE));
     }
     
     @Test
     void assertConvertLocalDate() {
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, LocalDate.of(2020, 1, 1))).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, LocalDate.of(2020, 1, 1)), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getTypeName(), is(SqlTypeName.DATE));
     }
     
     @Test
     void assertConvertLocalTime() {
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, LocalTime.of(1, 2, 3))).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, LocalTime.of(1, 2, 3)), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getTypeName(), is(SqlTypeName.TIME));
     }
     
     @Test
     void assertConvertLocalDateTime() {
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, LocalDateTime.of(2020, 1, 1, 1, 1, 1))).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, LocalDateTime.of(2020, 1, 1, 1, 1, 1)), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getTypeName(), is(SqlTypeName.TIMESTAMP));
     }
@@ -171,26 +171,26 @@ class LiteralExpressionConverterTest {
     @Test
     void assertConvertZonedDateTime() {
         ZonedDateTime zonedDateTime = ZonedDateTime.of(LocalDateTime.of(2020, 1, 1, 1, 1, 1), ZoneId.of("UTC"));
-        assertThrows(CalciteException.class, () -> LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, zonedDateTime)));
+        assertThrows(CalciteException.class, () -> LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, zonedDateTime), null));
     }
     
     @Test
     void assertConvertBinary() {
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, new byte[]{1, 2})).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, new byte[]{1, 2}), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getTypeName(), is(SqlTypeName.BINARY));
     }
     
     @Test
     void assertConvertEnumLiteral() {
-        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, SampleEnum.VALUE)).orElse(null);
+        SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, SampleEnum.VALUE), null).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getValueAs(String.class), is("VALUE"));
     }
     
     @Test
     void assertConvertReturnsEmptyForUnsupportedType() {
-        Optional<?> actual = LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, new Object()));
+        Optional<?> actual = LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, new Object()), null);
         assertFalse(actual.isPresent());
     }
 }
