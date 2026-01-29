@@ -92,7 +92,7 @@ public final class ExpressionConverter {
             return Optional.empty();
         }
         if (segment instanceof LiteralExpressionSegment) {
-            return LiteralExpressionConverter.convert((LiteralExpressionSegment) segment);
+            return LiteralExpressionConverter.convert((LiteralExpressionSegment) segment, null);
         }
         if (segment instanceof CommonExpressionSegment) {
             // TODO

@@ -114,7 +114,7 @@ class ExpressionConverterTest {
     void assertConvertDelegatesToAllSupportedConverters() {
         SqlNode expectedLiteralNode = mock(SqlNode.class);
         LiteralExpressionSegment literalSegment = new LiteralExpressionSegment(0, 0, "literal");
-        when(LiteralExpressionConverter.convert(literalSegment)).thenReturn(Optional.of(expectedLiteralNode));
+        when(LiteralExpressionConverter.convert(literalSegment, null)).thenReturn(Optional.of(expectedLiteralNode));
         SqlNode expectedListNode = mock(SqlNode.class);
         ListExpression listSegment = new ListExpression(0, 0);
         when(ListExpressionConverter.convert(listSegment)).thenReturn(Optional.of(expectedListNode));

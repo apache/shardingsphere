@@ -140,7 +140,7 @@ class MySQLDateBinaryProtocolValueTest {
     @Test
     void assertWriteWithElevenBytes() {
         MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
-        actual.write(payload, Timestamp.valueOf("1970-01-14 12:10:30.1"));
+        actual.write(payload, Timestamp.valueOf("1970-01-14 12:10:30.123"));
         verify(payload).writeInt1(11);
         verify(payload).writeInt2(1970);
         verify(payload).writeInt1(1);
@@ -148,6 +148,49 @@ class MySQLDateBinaryProtocolValueTest {
         verify(payload).writeInt1(12);
         verify(payload).writeInt1(10);
         verify(payload).writeInt1(30);
-        verify(payload).writeInt4(100000);
+        verify(payload).writeInt4(123000);
+    }
+    
+    @Test
+    void assertWriteLocalDateTimeWithMaxNanos() {
+        MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
+        LocalDateTime dateTime = LocalDateTime.of(1970, 1, 14, 12, 10, 29, 999_999_999);
+        actual.write(payload, dateTime);
+        verify(payload).writeInt1(11);
+        verify(payload).writeInt2(1970);
+        verify(payload).writeInt1(1);
+        verify(payload).writeInt1(14);
+        verify(payload).writeInt1(12);
+        verify(payload).writeInt1(10);
+        verify(payload).writeInt1(29);
+        verify(payload).writeInt4(999999);
+    }
+    
+    @Test
+    void assertWriteLocalDateTimeWithBoundaryNanos() {
+        MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
+        actual.write(payload, LocalDateTime.of(1970, 1, 14, 12, 10, 29, 1000));
+        verify(payload).writeInt1(11);
+        verify(payload).writeInt2(1970);
+        verify(payload).writeInt1(1);
+        verify(payload).writeInt1(14);
+        verify(payload).writeInt1(12);
+        verify(payload).writeInt1(10);
+        verify(payload).writeInt1(29);
+        verify(payload).writeInt4(1);
+    }
+    
+    @Test
+    void assertWriteLocalDateTimeWithMicrosecondPrecision() {
+        MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
+        actual.write(payload, LocalDateTime.of(1970, 1, 14, 12, 10, 29, 123456789));
+        verify(payload).writeInt1(11);
+        verify(payload).writeInt2(1970);
+        verify(payload).writeInt1(1);
+        verify(payload).writeInt1(14);
+        verify(payload).writeInt1(12);
+        verify(payload).writeInt1(10);
+        verify(payload).writeInt1(29);
+        verify(payload).writeInt4(123456);
     }
 }

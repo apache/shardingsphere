@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Optional;
@@ -100,6 +101,9 @@ public final class JDBCStreamQueryResult extends AbstractStreamQueryResult {
         }
         if (Time.class == type) {
             return resultSet.getTime(columnIndex);
+        }
+        if (LocalTime.class == type) {
+            return resultSet.getObject(columnIndex, LocalTime.class);
         }
         if (Timestamp.class == type) {
             return resultSet.getTimestamp(columnIndex);
