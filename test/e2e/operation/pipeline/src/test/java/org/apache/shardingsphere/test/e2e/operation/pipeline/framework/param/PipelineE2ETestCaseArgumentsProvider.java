@@ -52,14 +52,16 @@ public final class PipelineE2ETestCaseArgumentsProvider implements ArgumentsProv
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, databaseSettings.type());
         Collection<String> databaseImages = E2ETestEnvironment.getInstance().getDockerEnvironment().getDatabaseImages(databaseType);
         return settings.fetchSingle() && !databaseImages.isEmpty()
-                ? provideArguments(databaseSettings.scenarioFiles(), databaseSettings.tableStructures(), databaseType, databaseImages.iterator().next())
-                : databaseImages.stream().flatMap(each -> provideArguments(databaseSettings.scenarioFiles(), databaseSettings.tableStructures(), databaseType, each).stream()).toList();
+                ? provideArguments(databaseType, databaseImages.iterator().next(), databaseSettings.scenarioFiles(), databaseSettings.tableStructures(), databaseSettings.storageContainerCount())
+                : databaseImages.stream().flatMap(each -> provideArguments(databaseType, each, databaseSettings.scenarioFiles(),
+                        databaseSettings.tableStructures(), databaseSettings.storageContainerCount()).stream()).toList();
     }
     
-    private Collection<Arguments> provideArguments(final String[] scenarioFiles, final String[] tableStructures, final DatabaseType databaseType, final String databaseContainerImage) {
+    private Collection<Arguments> provideArguments(final DatabaseType databaseType, final String databaseContainerImage,
+                                                   final String[] scenarioFiles, final String[] tableStructures, final int storageContainerCount) {
         if (scenarioFiles.length > 0) {
-            return Arrays.stream(scenarioFiles).map(each -> Arguments.of(new PipelineTestParameter(databaseType, databaseContainerImage, each, null))).toList();
+            return Arrays.stream(scenarioFiles).map(each -> Arguments.of(new PipelineTestParameter(databaseType, databaseContainerImage, each, null, storageContainerCount))).toList();
         }
-        return Arrays.stream(tableStructures).map(each -> Arguments.of(new PipelineTestParameter(databaseType, databaseContainerImage, null, each))).toList();
+        return Arrays.stream(tableStructures).map(each -> Arguments.of(new PipelineTestParameter(databaseType, databaseContainerImage, null, each, storageContainerCount))).toList();
     }
 }
