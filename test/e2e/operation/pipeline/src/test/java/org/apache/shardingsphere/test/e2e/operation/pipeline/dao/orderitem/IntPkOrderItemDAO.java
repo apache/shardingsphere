@@ -65,7 +65,7 @@ public final class IntPkOrderItemDAO {
         List<Object[]> paramsList = PipelineCaseHelper.generateOrderItemInsertData(new AutoIncrementKeyGenerateAlgorithm(), recordCount);
         String sql = sqlBuilder.buildPreparedInsertSQL(schemaPrefix);
         log.info("Batch insert order_item SQL: {}, params list size: {}", sql, paramsList.size());
-        DataSourceExecuteUtils.execute(dataSource, sql, paramsList);
+        DataSourceExecuteUtils.executeBatch(dataSource, sql, paramsList);
     }
     
     /**

@@ -72,7 +72,7 @@ public final class IntPkLargeOrderDAO {
         List<Object[]> paramsList = PipelineCaseHelper.generateOrderInsertData(databaseType, new AutoIncrementKeyGenerateAlgorithm(), recordCount);
         String sql = sqlBuilder.buildPreparedInsertSQL(qualifiedTableName);
         log.info("Batch insert int pk large order SQL: {}, params list size: {}", sql, paramsList.size());
-        DataSourceExecuteUtils.execute(dataSource, sql, paramsList);
+        DataSourceExecuteUtils.executeBatch(dataSource, sql, paramsList);
     }
     
     /**
