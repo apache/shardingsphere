@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -68,6 +69,18 @@ public final class BatchExecutionUnit {
         } else {
             result.addAll(Lists.partition(executionUnit.getSqlUnit().getParameters(), executionUnit.getSqlUnit().getParameters().size() / actualCallAddBatchTimes));
         }
+        return result;
+    }
+    
+    /**
+     * Get original batch indices.
+     * Returns the original addBatch call indices in the order they appear in getParameterSets().
+     *
+     * @return list of original batch indices
+     */
+    public List<Integer> getOriginalBatchIndices() {
+        List<Integer> result = new ArrayList<>(jdbcAndActualAddBatchCallTimesMap.size());
+        result.addAll(jdbcAndActualAddBatchCallTimesMap.keySet());
         return result;
     }
 }

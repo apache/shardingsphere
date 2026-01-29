@@ -31,7 +31,8 @@ public interface PreparedStatementParametersReplayCallback {
      *
      * @param preparedStatement prepared statement
      * @param params parameters
+     * @param originalBatchIndex original batch index from addBatch calls, used to retrieve correct parameter metadata
      * @throws SQLException SQL exception
      */
-    void replay(PreparedStatement preparedStatement, List<Object> params) throws SQLException;
+    void replay(PreparedStatement preparedStatement, List<Object> params, int originalBatchIndex) throws SQLException;
 }

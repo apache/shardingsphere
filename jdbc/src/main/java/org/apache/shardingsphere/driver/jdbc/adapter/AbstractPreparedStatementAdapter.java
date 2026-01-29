@@ -54,7 +54,9 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     @Getter
     private final List<PreparedStatementParameter> parameterRecords = new ArrayList<>();
     
-    private final List<PreparedStatementParameter> batchParameterRecords = new ArrayList<>();
+    private final List<List<PreparedStatementParameter>> allBatchParameterRecords = new ArrayList<>();
+    
+    private DatabaseType cachedDatabaseType;
     
     @Override
     public final void setNull(final int parameterIndex, final int sqlType) {
@@ -293,29 +295,40 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
         return result;
     }
     
-    protected final void replaySetParameter(final PreparedStatement preparedStatement, final List<Object> params) throws SQLException {
+    protected final void replaySetParameter(final PreparedStatement preparedStatement, final List<Object> params, final int batchIndex) throws SQLException {
         DatabaseType databaseType = getDatabaseType(preparedStatement);
         DialectPreparedStatementParameterReplayer replayer = DatabaseTypedSPILoader.getService(
                 DialectPreparedStatementParameterReplayer.class, databaseType);
         int index = 0;
         for (Object value : params) {
             index++;
-            PreparedStatementParameter param = findParameterRecord(index, value);
+            PreparedStatementParameter param = findParameterRecord(index, value, batchIndex);
             replayer.replay(preparedStatement, param);
         }
     }
     
     private DatabaseType getDatabaseType(final PreparedStatement preparedStatement) {
+        if (null != cachedDatabaseType) {
+            return cachedDatabaseType;
+        }
         try {
             String url = preparedStatement.getConnection().getMetaData().getURL();
-            return DatabaseTypeFactory.get(url);
+            cachedDatabaseType = DatabaseTypeFactory.get(url);
+            return cachedDatabaseType;
         } catch (final SQLException ex) {
             return DatabaseTypeFactory.get("SQL92");
         }
     }
     
-    private PreparedStatementParameter findParameterRecord(final int index, final Object value) {
-        List<PreparedStatementParameter> records = batchParameterRecords.isEmpty() ? parameterRecords : batchParameterRecords;
+    private PreparedStatementParameter findParameterRecord(final int index, final Object value, final int batchIndex) {
+        List<PreparedStatementParameter> records;
+        if (batchIndex >= 0 && batchIndex < allBatchParameterRecords.size()) {
+            records = allBatchParameterRecords.get(batchIndex);
+        } else if (!allBatchParameterRecords.isEmpty()) {
+            records = allBatchParameterRecords.get(0);
+        } else {
+            records = parameterRecords;
+        }
         for (PreparedStatementParameter each : records) {
             if (each.getIndex() == index) {
                 return new PreparedStatementParameter(index, each.getSetterMethodType(), value, each.getLength());
@@ -329,9 +342,11 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
      * Should be called before clearParameters in addBatch.
      */
     protected void saveBatchParameterRecords() {
-        if (batchParameterRecords.isEmpty()) {
-            batchParameterRecords.addAll(parameterRecords);
+        List<PreparedStatementParameter> batchRecords = new ArrayList<>(parameterRecords.size());
+        for (PreparedStatementParameter each : parameterRecords) {
+            batchRecords.add(new PreparedStatementParameter(each.getIndex(), each.getSetterMethodType(), each.getValue(), each.getLength()));
         }
+        allBatchParameterRecords.add(batchRecords);
     }
     
     /**
@@ -339,7 +354,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
      * Should be called in clearBatch.
      */
     protected void clearBatchParameterRecords() {
-        batchParameterRecords.clear();
+        allBatchParameterRecords.clear();
     }
     
     @Override
