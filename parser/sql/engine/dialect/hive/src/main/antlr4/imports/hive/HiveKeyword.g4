@@ -723,6 +723,10 @@ EXECUTE
     : E X E C U T E
     ;
 
+CHERRY_PICK
+    : C H E R R Y '-' P I C K
+    ;
+
 EXISTS
     : E X I S T S
     ;
