@@ -69,7 +69,7 @@ public final class StringPkSmallOrderDAO {
         List<Object[]> paramsList = PipelineCaseHelper.generateSmallOrderInsertData(new UUIDKeyGenerateAlgorithm(), recordCount);
         String sql = sqlBuilder.buildPreparedInsertSQL(qualifiedTableName);
         log.info("Batch insert string pk small order SQL: {}, params list size: {}", sql, paramsList.size());
-        DataSourceExecuteUtils.execute(dataSource, sql, paramsList);
+        DataSourceExecuteUtils.executeBatch(dataSource, sql, paramsList);
     }
     
     /**

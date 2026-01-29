@@ -108,8 +108,8 @@ class CDCE2EIT {
             log.info("init data begin: {}", LocalDateTime.now());
             IntPkLargeOrderDAO orderDAO = new IntPkLargeOrderDAO(jdbcDataSource, containerComposer.getDatabaseType(), orderQualifiedTable);
             orderDAO.batchInsert(PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
-            DataSourceExecuteUtils.execute(jdbcDataSource, "INSERT INTO t_address(id, address_name) VALUES (?,?)", Arrays.asList(new Object[]{1, "a"}, new Object[]{2, "b"}));
-            DataSourceExecuteUtils.execute(jdbcDataSource, "INSERT INTO t_single(id) VALUES (?)", Arrays.asList(new Object[]{1}, new Object[]{2}, new Object[]{3}));
+            DataSourceExecuteUtils.executeBatch(jdbcDataSource, "INSERT INTO t_address(id, address_name) VALUES (?,?)", Arrays.asList(new Object[]{1, "a"}, new Object[]{2, "b"}));
+            DataSourceExecuteUtils.executeBatch(jdbcDataSource, "INSERT INTO t_single(id) VALUES (?)", Arrays.asList(new Object[]{1}, new Object[]{2}, new Object[]{3}));
             log.info("init data end: {}", LocalDateTime.now());
             PipelineDataSource targetDataSource = DataSourceTestUtils.createStandardDataSource(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
                     containerComposer.getUsername(), containerComposer.getPassword());
