@@ -46,6 +46,7 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLH
 import org.apache.shardingsphere.database.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -99,12 +100,9 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             authenticateMismatchedMethod((MySQLPacketPayload) payload);
         }
         Grantee grantee = new Grantee(currentAuthResult.getUsername(), getHostAddress(context));
-        if (!login(rule, grantee, authResponse)) {
-            throw new AccessDeniedException(currentAuthResult.getUsername(), grantee.getHostname(), 0 != authResponse.length);
-        }
-        if (!authorizeDatabase(rule, grantee, currentAuthResult.getDatabase())) {
-            throw new DatabaseAccessDeniedException(currentAuthResult.getUsername(), grantee.getHostname(), currentAuthResult.getDatabase());
-        }
+        ShardingSpherePreconditions.checkState(login(rule, grantee, authResponse), () -> new AccessDeniedException(currentAuthResult.getUsername(), grantee.getHostname(), 0 != authResponse.length));
+        ShardingSpherePreconditions.checkState(authorizeDatabase(rule, grantee, currentAuthResult.getDatabase()),
+                () -> new DatabaseAccessDeniedException(currentAuthResult.getUsername(), grantee.getHostname(), currentAuthResult.getDatabase()));
         writeOKPacket(context);
         return AuthenticationResultBuilder.finished(grantee.getUsername(), grantee.getHostname(), currentAuthResult.getDatabase());
     }
@@ -123,9 +121,8 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         setMultiStatementsOption(context, handshakeResponsePacket);
         setCharacterSet(context, handshakeResponsePacket);
         String database = handshakeResponsePacket.getDatabase();
-        if (!Strings.isNullOrEmpty(database) && !ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(database)) {
-            throw new UnknownDatabaseException(database);
-        }
+        ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(database) || ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase(database),
+                () -> new UnknownDatabaseException(database));
         String username = handshakeResponsePacket.getUsername();
         String hostname = getHostAddress(context);
         ShardingSphereUser user = rule.findUser(new Grantee(username, hostname)).orElseGet(() -> new ShardingSphereUser(username, "", hostname));
