@@ -63,7 +63,15 @@ public final class FirebirdBlobInfoRegistry {
         }
         BLOB_COLUMNS.put(tableKey, Collections.unmodifiableMap(normalizedColumns));
     }
-    
+
+    /**
+     * Determine whether column is a Firebird blob column.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param columnName column name
+     * @return whether column is a blob column
+     */
     public static boolean isBlobColumn(final String schemaName, final String tableName, final String columnName) {
         if (null == tableName || null == columnName) {
             return false;

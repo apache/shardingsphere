@@ -28,11 +28,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -40,13 +38,13 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdNonFixedLengthColumnSizeLoaderTest {
+class FirebirdBlobColumnLoaderTest {
     
     private static final Collection<String> TABLES = Collections.singleton("test_table");
     
@@ -57,38 +55,40 @@ class FirebirdNonFixedLengthColumnSizeLoaderTest {
     private Connection connection;
     
     @Mock
-    private DatabaseMetaData databaseMetaData;
+    private PreparedStatement preparedStatement;
     
     @Mock
-    private ResultSet columnsResultSet;
+    private ResultSet resultSet;
     
     private MetaDataLoaderMaterial material;
     
     @BeforeEach
-    void setUp() throws SQLException {
+    void setUp() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
         material = new MetaDataLoaderMaterial(TABLES, "logic_ds", dataSource, databaseType, "schema");
-        when(dataSource.getConnection()).thenReturn(connection);
-        when(connection.getMetaData()).thenReturn(databaseMetaData);
-        when(connection.getCatalog()).thenReturn("catalog");
-        when(connection.getSchema()).thenReturn("schema");
-        when(databaseMetaData.getColumns("catalog", "schema", "TEST_TABLE", "%")).thenReturn(columnsResultSet);
     }
-
+    
     @Test
-    void assertLoadReturnsNonFixedLengthSizes() throws SQLException {
-        when(columnsResultSet.next()).thenReturn(true, true, false);
-        when(columnsResultSet.getString("TABLE_NAME")).thenReturn("TEST_TABLE", "TEST_TABLE");
-        when(columnsResultSet.getInt("DATA_TYPE")).thenReturn(Types.CHAR, Types.VARBINARY);
-        when(columnsResultSet.getString("COLUMN_NAME")).thenReturn("char_col", "varbinary_col");
-        when(columnsResultSet.getInt("COLUMN_SIZE")).thenReturn(128, 64);
-        when(columnsResultSet.wasNull()).thenReturn(false, false);
-        Map<String, Map<String, Integer>> actual = new FirebirdNonFixedLengthColumnSizeLoader(material).load();
+    void assertLoadReturnsBlobColumns() throws SQLException {
+        when(dataSource.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getString("COLUMN_NAME")).thenReturn(" blob_col ", "  ");
+        when(resultSet.getObject("SUB_TYPE")).thenReturn(2).thenReturn((Object) null);
+        Map<String, Map<String, Integer>> actual = new FirebirdBlobColumnLoader(material).load();
         assertThat(actual, hasKey("test_table"));
-        Map<String, Integer> actualTableSizes = actual.get("test_table");
-        assertThat(actualTableSizes.size(), is(2));
-        assertThat(actualTableSizes.get("CHAR_COL"), is(128));
-        assertFalse(actualTableSizes.containsKey("BIGINT_COL"));
-        assertThat(actualTableSizes.get("VARBINARY_COL"), is(64));
+        Map<String, Integer> actualTableColumns = actual.get("test_table");
+        assertThat(actualTableColumns.size(), is(1));
+        assertThat(actualTableColumns.get("BLOB_COL"), is(2));
+        verify(preparedStatement).setString(1, "TEST_TABLE");
+    }
+    
+    @Test
+    void assertLoadReturnsEmptyWhenNoTables() throws SQLException {
+        material = new MetaDataLoaderMaterial(Collections.emptyList(), "logic_ds", dataSource,
+                TypedSPILoader.getService(DatabaseType.class, "Firebird"), "schema");
+        Map<String, Map<String, Integer>> actual = new FirebirdBlobColumnLoader(material).load();
+        assertTrue(actual.isEmpty());
     }
 }

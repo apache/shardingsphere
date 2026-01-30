@@ -46,7 +46,7 @@ class FirebirdPrepareStatementReturnPacketTest {
         ShardingSphereColumn column = new ShardingSphereColumn("col", Types.INTEGER, false, false, false, true, false, true);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
         FirebirdReturnColumnPacket columnPacket =
-                new FirebirdReturnColumnPacket(Collections.singleton(FirebirdSQLInfoPacketType.DESCRIBE_END), 1, table, column, "", "", "", null);
+                new FirebirdReturnColumnPacket(Collections.singleton(FirebirdSQLInfoPacketType.DESCRIBE_END), 1, table, column, "", "", "", null, false, null);
         packet.getDescribeSelect().add(columnPacket);
         packet.getDescribeBind().add(columnPacket);
         packet.write(payload);
