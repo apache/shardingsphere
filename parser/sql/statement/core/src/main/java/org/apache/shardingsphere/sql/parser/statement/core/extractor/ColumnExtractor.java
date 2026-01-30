@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
 /**
@@ -64,7 +65,10 @@ public final class ColumnExtractor {
      * @return column segments
      */
     public static Collection<ColumnSegment> extract(final ExpressionSegment expression) {
-        Collection<ColumnSegment> result = new LinkedList<>();
+        Collection<ColumnSegment> result = new LinkedHashSet<>();
+        if (expression instanceof ColumnSegment) {
+            result.add((ColumnSegment) expression);
+        }
         if (expression instanceof BinaryOperationExpression) {
             extractColumnsInBinaryOperationExpression((BinaryOperationExpression) expression, result);
         }
