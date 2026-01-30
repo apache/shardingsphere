@@ -18,24 +18,26 @@
 package org.apache.shardingsphere.proxy.frontend.mysql;
 
 import io.netty.channel.Channel;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.netty.MySQLSequenceIdInboundHandler;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler;
+import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
@@ -45,18 +47,14 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ProxyContext.class, MySQLStatementIdGenerator.class})
-@MockitoSettings(strictness = Strictness.LENIENT)
 class MySQLFrontendEngineTest {
     
-    private MySQLFrontendEngine engine;
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
+    private final DatabaseProtocolFrontendEngine engine = DatabaseTypedSPILoader.getService(DatabaseProtocolFrontendEngine.class, databaseType);
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private Channel channel;
-    
-    @BeforeEach
-    void setUp() {
-        engine = new MySQLFrontendEngine();
-    }
     
     @Test
     void assertInitChannel() {
@@ -73,5 +71,10 @@ class MySQLFrontendEngineTest {
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
         engine.release(connectionSession);
         verify(MySQLStatementIdGenerator.getInstance()).unregisterConnection(connectionId);
+    }
+    
+    @Test
+    void assertHandleException() {
+        assertDoesNotThrow(() -> engine.handleException(mock(), mock()));
     }
 }
