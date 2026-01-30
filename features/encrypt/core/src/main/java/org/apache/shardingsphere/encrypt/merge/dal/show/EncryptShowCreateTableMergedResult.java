@@ -39,6 +39,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Encrypt show create table merged result.
+ */
 public final class EncryptShowCreateTableMergedResult extends DecoratorMergedResult {
     
     private static final String COMMA = ", ";
@@ -74,11 +77,7 @@ public final class EncryptShowCreateTableMergedResult extends DecoratorMergedRes
         }
         CreateTableStatement createTableStatement = (CreateTableStatement) sqlParserEngine.parse(createTableSQL, false);
         List<ColumnDefinitionSegment> columnDefinitions = new ArrayList<>(createTableStatement.getColumnDefinitions());
-        StringBuilder result = new StringBuilder();
-        if (columnDefinitions.isEmpty()) {
-            return createTableSQL;
-        }
-        result.append(createTableSQL.substring(0, columnDefinitions.get(0).getStartIndex()));
+        StringBuilder result = new StringBuilder(createTableSQL.substring(0, columnDefinitions.get(0).getStartIndex()));
         List<String> definitions = new ArrayList<>();
         for (ColumnDefinitionSegment each : columnDefinitions) {
             processColumnDefinition(each, encryptTable.get(), createTableSQL, definitions);
@@ -107,8 +106,7 @@ public final class EncryptShowCreateTableMergedResult extends DecoratorMergedRes
         if (encryptTable.isCipherColumn(columnName)) {
             String logicColumn = encryptTable.getLogicColumnByCipherColumn(columnName);
             return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnSegment.getStartIndex())
-                    + columnSegment.getIdentifier().getQuoteCharacter().wrap(logicColumn)
-                    + createTableSQL.substring(columnSegment.getStopIndex() + 1, columnDefinition.getStopIndex() + 1));
+                    + columnSegment.getIdentifier().getQuoteCharacter().wrap(logicColumn) + createTableSQL.substring(columnSegment.getStopIndex() + 1, columnDefinition.getStopIndex() + 1));
         }
         return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnDefinition.getStopIndex() + 1));
     }

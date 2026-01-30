@@ -56,10 +56,6 @@
 #    t_encrypt:
 #      columns:
 #        user_id:
-#          # SPEX ADDED: BEGIN
-#          plain:
-#            name: user_plain
-#          # SPEX ADDED: END
 #          cipher:
 #            name: user_cipher
 #            encryptorName: aes_encryptor
@@ -67,47 +63,6 @@
 #          cipher:
 #            name: order_encrypt
 #            encryptorName: aes_encryptor
-
-######################################################################################################
-# Local reproduce config (MySQL)
-#
-# Prerequisites:
-# - MySQL is running on 127.0.0.1:3306
-# - Physical schema `encrypt_db` exists and contains table `t_ccc_24owners_info`
-######################################################################################################
-
-databaseName: encrypt_db
-
-dataSources:
-  ds_0:
-    url: jdbc:mysql://127.0.0.1:3306/encrypt_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: root
-    password: root
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 50
-    minPoolSize: 1
-
-rules:
-  - !ENCRYPT
-    encryptors:
-      aes_encryptor:
-        type: AES
-        props:
-          aes-key-value: 123456abc
-          digest-algorithm-name: SHA-1
-    tables:
-      t_ccc_24owners_info:
-        columns:
-          ADDRESS:
-            cipher:
-              name: ADDRESS_CIPHER
-              encryptorName: aes_encryptor
-          DCMTEL:
-            cipher:
-              name: DCMTEL_CIPHER
-              encryptorName: aes_encryptor
 
 ######################################################################################################
 #
@@ -149,10 +104,6 @@ rules:
 #    t_encrypt:
 #      columns:
 #        user_id:
-#          # SPEX ADDED: BEGIN
-#          plain:
-#            name: user_plain
-#          # SPEX ADDED: END
 #          cipher:
 #            name: user_cipher
 #            encryptorName: aes_encryptor
