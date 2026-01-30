@@ -129,4 +129,35 @@ class ResponsePacketBuilderTest {
         assertThat(actualCharacterSet, is(MySQLCharacterSets.BINARY.getId()));
         assertThat(actualFlags, is(expectedFlags));
     }
+    
+    @Test
+    void assertBuildQueryResponsePacketsWithBinaryTypeNameOnly() {
+        QueryHeader queryHeader = new QueryHeader("schema3", "table3", "columnLabel3", "columnName3", Types.VARCHAR, "VARBINARY", 12, 0, true, false, false, false);
+        QueryResponseHeader queryResponseHeader = new QueryResponseHeader(Collections.singletonList(queryHeader));
+        Collection<DatabasePacket> actual = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, SESSION_CHARACTER_SET, 4);
+        List<DatabasePacket> actualPackets = new ArrayList<>(actual);
+        assertThat(actualPackets.size(), is(3));
+        MySQLColumnDefinition41Packet columnDefinitionPacket = (MySQLColumnDefinition41Packet) actualPackets.get(1);
+        ByteBuf buffer = Unpooled.buffer();
+        columnDefinitionPacket.write(new MySQLPacketPayload(buffer, StandardCharsets.UTF_8));
+        buffer.readerIndex(0);
+        MySQLPacketPayload payload = new MySQLPacketPayload(buffer, StandardCharsets.UTF_8);
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readIntLenenc();
+        int actualCharacterSet = payload.readInt2();
+        payload.readInt4();
+        payload.readInt1();
+        int actualFlags = payload.readInt2();
+        int actualDecimals = payload.readInt1();
+        assertThat(actualCharacterSet, is(SESSION_CHARACTER_SET));
+        assertThat(actualFlags, is(MySQLColumnDefinitionFlag.BINARY_COLLATION.getValue()));
+        assertThat(actualDecimals, is(queryHeader.getDecimals()));
+        MySQLEofPacket eofPacket = (MySQLEofPacket) actualPackets.get(2);
+        assertThat(eofPacket.getStatusFlags(), is(4));
+    }
 }
