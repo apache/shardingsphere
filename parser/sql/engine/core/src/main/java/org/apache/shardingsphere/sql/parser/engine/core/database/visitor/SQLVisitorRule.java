@@ -231,7 +231,7 @@ public enum SQLVisitorRule {
     
     DROP_VIEW("DropView", SQLStatementType.DDL),
     
-    SHOW_VIEW("ShowView", SQLStatementType.DAL),
+    DORIS_SHOW_VIEW("ShowView", SQLStatementType.DAL),
     
     ANALYZE("Analyze", SQLStatementType.DDL),
     
