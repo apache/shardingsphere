@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.mariadb.type.MariaDBDatabaseType;
 import org.apache.shardingsphere.database.connector.mysql.type.MySQLDatabaseType;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussData
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -53,25 +51,6 @@ import static org.mockito.Mockito.mock;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class PipelineCaseHelper {
-    
-    /**
-     * Generate insert data, contains full fields.
-     *
-     * @param databaseType database type
-     * @param insertRows insert rows
-     * @return insert data list
-     */
-    // TODO Delete
-    public static Pair<List<Object[]>, List<Object[]>> generateFullInsertData(final DatabaseType databaseType, final int insertRows) {
-        if (insertRows < 0) {
-            return Pair.of(null, null);
-        }
-        AutoIncrementKeyGenerateAlgorithm orderKeyGenerate = new AutoIncrementKeyGenerateAlgorithm();
-        AutoIncrementKeyGenerateAlgorithm orderItemKeyGenerate = new AutoIncrementKeyGenerateAlgorithm();
-        List<Object[]> orderData = generateOrderInsertData(databaseType, orderKeyGenerate, insertRows);
-        List<Object[]> orderItemData = generateOrderItemInsertData(orderItemKeyGenerate, insertRows);
-        return Pair.of(orderData, orderItemData);
-    }
     
     /**
      * Generate small order insert data.
@@ -214,7 +193,6 @@ public final class PipelineCaseHelper {
      * @param recordCount record count
      * @throws SQLException sql exception
      */
-    // TODO Delete
     public static void batchInsertOrderRecordsWithGeneralColumns(final Connection connection, final KeyGenerateAlgorithm keyGenerateAlgorithm, final String tableName,
                                                                  final int recordCount) throws SQLException {
         log.info("init data begin: {}", LocalDateTime.now());
