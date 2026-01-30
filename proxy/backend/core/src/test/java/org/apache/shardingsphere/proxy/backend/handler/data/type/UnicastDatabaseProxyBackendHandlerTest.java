@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -36,6 +37,7 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseProxyConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
@@ -68,7 +70,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(DatabaseProxyConnectorFactory.class)
+@StaticMockSettings({DatabaseProxyConnectorFactory.class, ProxyContext.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class UnicastDatabaseProxyBackendHandlerTest {
     
@@ -130,11 +132,14 @@ class UnicastDatabaseProxyBackendHandlerTest {
     void assertExecuteWithNullCurrentDatabaseChoosesFirstAvailable() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(connectionSession.getConnectionContext().getCurrentDatabaseName()).thenReturn(Optional.empty());
+        ShardingSphereUser user = mock(ShardingSphereUser.class, RETURNS_DEEP_STUBS);
+        when(user.isAdmin()).thenReturn(true);
         AuthorityRule authorityRule = mock(AuthorityRule.class, RETURNS_DEEP_STUBS);
-        ShardingSpherePrivileges privileges = mock(ShardingSpherePrivileges.class);
-        when(privileges.hasPrivileges("bar_db")).thenReturn(true);
-        when(authorityRule.findPrivileges(any())).thenReturn(Optional.of(privileges));
+        when(authorityRule.findUser(any())).thenReturn(Optional.of(user));
         ContextManager contextManager = mockContextManagerWithAuthority(authorityRule, Arrays.asList("foo_db", "bar_db"), Collections.singletonList("bar_db"));
+        when(contextManager.getDatabase("foo_db").containsDataSource()).thenReturn(false);
+        when(contextManager.getDatabase("bar_db").containsDataSource()).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(DatabaseProxyConnectorFactory.newInstance(any(QueryContext.class), any(ProxyDatabaseConnectionManager.class), eq(false)))
                 .thenReturn(mock(DatabaseProxyConnector.class, RETURNS_DEEP_STUBS));
         QueryContext queryContext = new QueryContext(mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), EXECUTE_SQL, Collections.emptyList(), new HintValueContext(),
