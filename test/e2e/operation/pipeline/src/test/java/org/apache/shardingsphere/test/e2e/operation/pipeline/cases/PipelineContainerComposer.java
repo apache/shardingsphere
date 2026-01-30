@@ -49,7 +49,6 @@ import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStora
 import org.apache.shardingsphere.test.e2e.env.container.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.command.ExtraSQLCommand;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.PipelineBaseContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.docker.PipelineDockerContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.container.compose.natived.PipelineNativeContainerComposer;
@@ -58,7 +57,6 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.util.ProxyDatabaseT
 import org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
-import javax.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -72,7 +70,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -105,8 +102,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     private final PipelineBaseContainerComposer containerComposer;
     
-    private final ExtraSQLCommand extraSQLCommand;
-    
     private final DatabaseType databaseType;
     
     private final String username;
@@ -132,9 +127,6 @@ public final class PipelineContainerComposer implements AutoCloseable {
             username = E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getUser();
             password = E2ETestEnvironment.getInstance().getNativeDatabaseEnvironment().getPassword();
         }
-        extraSQLCommand = null != testParam.getScenario()
-                ? JAXB.unmarshal(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class)
-                : null;
         containerComposer.start();
         sourceDataSource = StorageContainerUtils.generateDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password, 2);
         proxyDataSource = StorageContainerUtils.generateDataSource(
