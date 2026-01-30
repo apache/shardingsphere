@@ -39,7 +39,7 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
     
     private FirebirdStatusVector statusVector;
     
-    private boolean writeZeroStatementId = false;
+    private boolean writeZeroStatementId;
     
     /**
      * Get generic response packet.
@@ -72,6 +72,12 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         return this;
     }
     
+    /**
+     * Set ID value.
+     *
+     * @param objectId ID value to set
+     * @return this instance with updated ID
+     */
     public FirebirdGenericResponsePacket setId(final long objectId) {
         id = objectId;
         return this;
@@ -117,6 +123,12 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         return statusVector == null ? "" : statusVector.getErrorMessage();
     }
     
+    /**
+     * Set flag to write zero statement id (handle) once.
+     *
+     * @param writeZeroStatementId whether to write zero statement id
+     * @return this instance with updated flag
+     */
     public FirebirdGenericResponsePacket setWriteZeroStatementId(final boolean writeZeroStatementId) {
         this.writeZeroStatementId = writeZeroStatementId;
         return this;

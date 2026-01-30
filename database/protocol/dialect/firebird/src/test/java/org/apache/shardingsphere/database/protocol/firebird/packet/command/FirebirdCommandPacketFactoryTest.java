@@ -60,7 +60,7 @@ class FirebirdCommandPacketFactoryTest {
     void assertNewInstanceWithInfoDatabase() {
         assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.INFO_DATABASE, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdInfoPacket.class));
     }
-
+    
     @Test
     void assertNewInstanceWithInfoBlob() {
         assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.INFO_BLOB, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdInfoPacket.class));

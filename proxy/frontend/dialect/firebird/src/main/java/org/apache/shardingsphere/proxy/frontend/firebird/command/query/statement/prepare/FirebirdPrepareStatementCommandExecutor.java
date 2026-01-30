@@ -465,9 +465,10 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         FirebirdBlobColumnMetaDataResolver blobResolver = new FirebirdBlobColumnMetaDataResolver(connectionSession.getCurrentDatabaseName());
         FirebirdBlobColumnMetaData blobMetaData = blobResolver.resolve(table, column);
         Integer columnLength = blobMetaData.isBlobColumn() ? null : resolveColumnLength(table, column);
-        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner, columnLength, blobMetaData.isBlobColumn(), blobMetaData.getBlobSubtype()));
+        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner, columnLength, blobMetaData.isBlobColumn(),
+                blobMetaData.getBlobSubtype()));
     }
-
+    
     private Integer resolveColumnLength(final ShardingSphereTable table, final ShardingSphereColumn column) {
         if (null == table || null == column || !isDynamicLengthType(column.getDataType())) {
             return null;
@@ -475,7 +476,7 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         OptionalInt columnSize = FirebirdNonFixedLengthColumnSizeRegistry.findColumnSize(connectionSession.getCurrentDatabaseName(), table.getName(), column.getName());
         return columnSize.isPresent() ? columnSize.getAsInt() : null;
     }
-
+    
     private boolean isDynamicLengthType(final int dataType) {
         switch (dataType) {
             case Types.CHAR:

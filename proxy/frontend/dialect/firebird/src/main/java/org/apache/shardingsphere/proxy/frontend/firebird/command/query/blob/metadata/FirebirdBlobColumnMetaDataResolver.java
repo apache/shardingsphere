@@ -24,6 +24,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import java.sql.Types;
 import java.util.OptionalInt;
 
+/**
+ * Resolver for Firebird BLOB column metadata.
+ */
 public final class FirebirdBlobColumnMetaDataResolver {
     
     private final String databaseName;
@@ -32,6 +35,13 @@ public final class FirebirdBlobColumnMetaDataResolver {
         this.databaseName = databaseName;
     }
     
+    /**
+     * Resolve BLOB-related metadata for the given table column.
+     *
+     * @param table table metadata
+     * @param column column metadata
+     * @return resolved BLOB column metadata
+     */
     public FirebirdBlobColumnMetaData resolve(final ShardingSphereTable table, final ShardingSphereColumn column) {
         boolean blobColumn = isBlobColumn(table, column);
         Integer blobSubtype = resolveBlobSubtype(table, column, blobColumn);

@@ -74,7 +74,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
     public Collection<DatabasePacket> execute() throws SQLException {
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
         List<Object> params = packet.getParameterValues();
-        List<Long> blobIdsToRemove = bindBlobParameters(params);
+        final List<Long> blobIdsToRemove = bindBlobParameters(params);
         SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).bindParameters(params);

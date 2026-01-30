@@ -20,16 +20,18 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Binary protocol value for blob for Firebird.
+ * Binary protocol value for BLOB for Firebird.
  */
 public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProtocolValue {
     
@@ -37,10 +39,21 @@ public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProt
     
     private static final Map<Long, byte[]> STORE = new ConcurrentHashMap<>();
     
+    /**
+     * Get stored BLOB content by internal BLOB id.
+     *
+     * @param blobId internal BLOB id
+     * @return stored bytes or {@code null} if missing
+     */
     public static byte[] getBlobContent(final long blobId) {
         return STORE.get(blobId);
     }
     
+    /**
+     * Remove stored BLOB content by internal BLOB id.
+     *
+     * @param blobId internal BLOB id
+     */
     public static void removeBlobContent(final long blobId) {
         STORE.remove(blobId);
     }
@@ -51,7 +64,7 @@ public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProt
         return id;
     }
     
-    private static byte[] readAllBytes(final InputStream input) {
+    private static byte[] readAllBytes(final InputStream input) throws IOException {
         try (InputStream in = input; ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             byte[] buf = new byte[8192];
             int n;
@@ -61,8 +74,6 @@ public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProt
                 }
             }
             return out.toByteArray();
-        } catch (Exception ex) {
-            throw new IllegalStateException("Failed to read blob stream", ex);
         }
     }
     
@@ -71,8 +82,7 @@ public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProt
         byte[] bytes = new byte[payload.readInt4()];
         payload.getByteBuf().readBytes(bytes);
         payload.skipPadding(bytes.length);
-        String s = new String(bytes, payload.getCharset());
-        return s;
+        return new String(bytes, payload.getCharset());
     }
     
     @Override
@@ -84,13 +94,14 @@ public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProt
         } else if (value instanceof Long) {
             blobId = (Long) value;
         } else if (value instanceof byte[]) {
-            byte[] bytes = (byte[]) value;
-            blobId = register(bytes);
+            blobId = register((byte[]) value);
         } else if (value instanceof Blob) {
             try {
                 blobId = register(readAllBytes(((Blob) value).getBinaryStream()));
-            } catch (Exception ex) {
-                throw new IllegalStateException("Failed to read java.sql.Blob", ex);
+            } catch (final SQLException ex) {
+                throw new IllegalStateException("Failed to read java.sql.Blob stream", ex);
+            } catch (final IOException ex) {
+                throw new IllegalStateException("Failed to read java.sql.Blob content", ex);
             }
         } else if (value instanceof Clob) {
             try {
@@ -98,7 +109,7 @@ public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProt
                 int len = (int) Math.min(Integer.MAX_VALUE, clob.length());
                 String str = clob.getSubString(1L, len);
                 blobId = register(str.getBytes(payload.getCharset()));
-            } catch (Exception ex) {
+            } catch (final SQLException ex) {
                 throw new IllegalStateException("Failed to read java.sql.Clob", ex);
             }
         } else {

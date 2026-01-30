@@ -63,7 +63,7 @@ public final class FirebirdBlobInfoRegistry {
         }
         BLOB_COLUMNS.put(tableKey, Collections.unmodifiableMap(normalizedColumns));
     }
-
+    
     /**
      * Determine whether column is a Firebird blob column.
      *

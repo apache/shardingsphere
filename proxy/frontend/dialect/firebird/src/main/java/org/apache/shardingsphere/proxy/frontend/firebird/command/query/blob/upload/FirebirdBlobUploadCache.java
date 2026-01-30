@@ -31,17 +31,17 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdBlobUploadCache {
-
+    
     private static final FirebirdBlobUploadCache INSTANCE = new FirebirdBlobUploadCache();
-
+    
     private final Map<Integer, Map<Integer, FirebirdBlobUpload>> uploadsByHandle = new ConcurrentHashMap<>(16);
-
+    
     private final Map<Integer, Map<Long, FirebirdBlobUpload>> uploadsById = new ConcurrentHashMap<>(16);
-
+    
     public static FirebirdBlobUploadCache getInstance() {
         return INSTANCE;
     }
-
+    
     /**
      * Register connection for BLOB uploads.
      *
@@ -51,7 +51,7 @@ public final class FirebirdBlobUploadCache {
         uploadsByHandle.put(connectionId, new ConcurrentHashMap<>(4));
         uploadsById.put(connectionId, new ConcurrentHashMap<>(4));
     }
-
+    
     /**
      * Unregister connection for BLOB uploads.
      *
@@ -61,7 +61,7 @@ public final class FirebirdBlobUploadCache {
         uploadsByHandle.remove(connectionId);
         uploadsById.remove(connectionId);
     }
-
+    
     /**
      * Register a new BLOB upload by handle and id.
      *
@@ -74,7 +74,7 @@ public final class FirebirdBlobUploadCache {
         getHandleMap(connectionId).put(blobHandle, upload);
         getIdMap(connectionId).put(blobId, upload);
     }
-
+    
     /**
      * Append segment data by handle.
      *
@@ -91,7 +91,7 @@ public final class FirebirdBlobUploadCache {
         upload.append(segment);
         return OptionalInt.of(upload.getSize());
     }
-
+    
     /**
      * Close upload by handle.
      *
@@ -107,7 +107,7 @@ public final class FirebirdBlobUploadCache {
         upload.markClosed();
         return OptionalInt.of(upload.getSize());
     }
-
+    
     /**
      * Get blob id by handle.
      *
@@ -122,7 +122,7 @@ public final class FirebirdBlobUploadCache {
         }
         return OptionalLong.of(upload.getBlobId());
     }
-
+    
     /**
      * Get buffered blob data.
      *
@@ -137,7 +137,7 @@ public final class FirebirdBlobUploadCache {
         }
         return Optional.of(upload.getBytes());
     }
-
+    
     /**
      * Check if upload is closed.
      *
@@ -149,7 +149,7 @@ public final class FirebirdBlobUploadCache {
         FirebirdBlobUpload upload = getIdMap(connectionId).get(blobId);
         return null != upload && upload.isClosed();
     }
-
+    
     /**
      * Remove upload by blob id.
      *
@@ -163,11 +163,11 @@ public final class FirebirdBlobUploadCache {
         }
         getHandleMap(connectionId).remove(upload.getBlobHandle());
     }
-
+    
     private Map<Integer, FirebirdBlobUpload> getHandleMap(final int connectionId) {
         return uploadsByHandle.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4));
     }
-
+    
     private Map<Long, FirebirdBlobUpload> getIdMap(final int connectionId) {
         return uploadsById.computeIfAbsent(connectionId, key -> new ConcurrentHashMap<>(4));
     }

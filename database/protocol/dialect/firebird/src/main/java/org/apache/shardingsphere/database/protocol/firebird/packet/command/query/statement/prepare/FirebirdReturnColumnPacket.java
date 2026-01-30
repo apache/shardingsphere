@@ -33,27 +33,27 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 public final class FirebirdReturnColumnPacket extends FirebirdPacket {
-
+    
     private final Collection<FirebirdSQLInfoPacketType> requestedItems;
-
+    
     private final int index;
-
+    
     private final ShardingSphereTable table;
-
+    
     private final ShardingSphereColumn column;
-
+    
     private final String tableAlias;
-
+    
     private final String columnAlias;
-
+    
     private final String owner;
-
+    
     private final Integer columnLength;
-
+    
     private final boolean blobColumn;
-
+    
     private final Integer blobSubType;
-
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         FirebirdBinaryColumnType columnType = blobColumn ? FirebirdBinaryColumnType.BLOB : FirebirdBinaryColumnType.valueOfJDBCType(column.getDataType());

@@ -29,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -40,8 +39,6 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -74,7 +71,7 @@ class FirebirdNonFixedLengthColumnSizeLoaderTest {
         when(connection.getSchema()).thenReturn("schema");
         when(databaseMetaData.getColumns("catalog", "schema", "TEST_TABLE", "%")).thenReturn(columnsResultSet);
     }
-
+    
     @Test
     void assertLoadReturnsNonFixedLengthSizes() throws SQLException {
         when(columnsResultSet.next()).thenReturn(true, true, false);

@@ -75,7 +75,7 @@ class FirebirdCommandExecutorFactoryTest {
     void assertNewInstanceWithInfoDatabase() {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.INFO_DATABASE, mock(FirebirdInfoPacket.class), connectionSession), isA(FirebirdDatabaseInfoExecutor.class));
     }
-
+    
     @Test
     void assertNewInstanceWithInfoBlob() {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.INFO_BLOB, mock(FirebirdInfoPacket.class), connectionSession), isA(FirebirdBlobInfoExecutor.class));

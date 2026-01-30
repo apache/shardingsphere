@@ -71,7 +71,7 @@ class FirebirdReturnColumnPacketTest {
         packet.write(payload);
         verify(payload).writeInt4LE(4);
     }
-
+    
     @Test
     void assertWriteUsesBlobSubtype() {
         ShardingSphereColumn column = new ShardingSphereColumn("col", Types.BLOB, false, false, false, true, false, true);

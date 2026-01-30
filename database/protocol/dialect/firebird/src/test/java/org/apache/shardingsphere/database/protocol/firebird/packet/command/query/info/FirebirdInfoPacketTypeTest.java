@@ -42,7 +42,7 @@ class FirebirdInfoPacketTypeTest {
         assertThat(type.getCode(), is(FirebirdCommonInfoPacketType.END.getCode()));
         assertTrue(type.isCommon());
     }
-
+    
     @Test
     void assertBlobInfoPacketType() {
         FirebirdInfoPacketType type = FirebirdBlobInfoPacketType.TOTAL_LENGTH;
