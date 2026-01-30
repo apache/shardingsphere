@@ -27,7 +27,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Pipeline E2E condition.
@@ -46,7 +45,7 @@ public final class PipelineE2ECondition {
             return false;
         }
         PipelineE2ESettings settings = context.getRequiredTestClass().getAnnotation(PipelineE2ESettings.class);
-        Collection<DatabaseType> databaseTypes = Arrays.stream(settings.database()).map(each -> TypedSPILoader.getService(DatabaseType.class, each.type())).collect(Collectors.toList());
+        Collection<DatabaseType> databaseTypes = Arrays.stream(settings.database()).map(each -> TypedSPILoader.getService(DatabaseType.class, each.type())).toList();
         if (!databaseTypes.isEmpty() && Type.NATIVE == E2ETestEnvironment.getInstance().getRunEnvironment().getType()) {
             return true;
         }

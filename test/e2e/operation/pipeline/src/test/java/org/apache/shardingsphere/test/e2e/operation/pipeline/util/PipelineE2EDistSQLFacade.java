@@ -112,7 +112,7 @@ public final class PipelineE2EDistSQLFacade {
      * @return job ids
      */
     public List<String> listJobIds() {
-        return listJobs().stream().map(a -> a.get("id").toString()).collect(Collectors.toList());
+        return listJobs().stream().map(a -> a.get("id").toString()).toList();
     }
     
     /**
@@ -219,7 +219,7 @@ public final class PipelineE2EDistSQLFacade {
         for (int i = 0; i < 10; i++) {
             List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(sql);
             log.info("Wait job Incremental stage started, job status records: {}", jobStatusRecords);
-            List<String> statusList = jobStatusRecords.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toList());
+            List<String> statusList = jobStatusRecords.stream().map(each -> String.valueOf(each.get("status"))).toList();
             if (statusList.stream().allMatch(each -> each.equals(jobStatus.name()))) {
                 return;
             }
@@ -309,7 +309,7 @@ public final class PipelineE2EDistSQLFacade {
                 containerComposer.sleepSeconds(3);
                 continue;
             }
-            List<String> checkEndTimeList = checkStatusRecords.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
+            List<String> checkEndTimeList = checkStatusRecords.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).toList();
             if (checkEndTimeList.size() == checkStatusRecords.size()) {
                 break;
             } else {

@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @Slf4j
 public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
@@ -97,7 +96,7 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
         Record firstRecord = records.get(0);
         MetaData metaData = firstRecord.getMetaData();
         PipelineTableMetaData tableMetaData = loadTableMetaData(metaData.getSchema(), metaData.getTable());
-        List<String> columnNames = firstRecord.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList());
+        List<String> columnNames = firstRecord.getAfterList().stream().map(TableColumn::getName).toList();
         String tableName = buildTableNameWithSchema(metaData.getSchema(), metaData.getTable());
         String insertSQL = SQLBuilderUtils.buildInsertSQL(columnNames, tableName);
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
@@ -127,7 +126,7 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
                     updateCount = preparedStatement.executeUpdate();
                     if (1 != updateCount || printSQL) {
                         log.info("Execute insert, update count: {}, sql: {}, values: {}", updateCount, sql,
-                                ingestedRecord.getAfterList().stream().map(each -> convertValueFromAny(tableMetaData, each)).collect(Collectors.toList()));
+                                ingestedRecord.getAfterList().stream().map(each -> convertValueFromAny(tableMetaData, each)).toList());
                     }
                     break;
                 case UPDATE:
@@ -139,7 +138,7 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
                     updateCount = preparedStatement.executeUpdate();
                     if (1 != updateCount || printSQL) {
                         log.info("Execute update, update count: {}, sql: {}, values: {}", updateCount, sql,
-                                ingestedRecord.getAfterList().stream().map(each -> convertValueFromAny(tableMetaData, each)).collect(Collectors.toList()));
+                                ingestedRecord.getAfterList().stream().map(each -> convertValueFromAny(tableMetaData, each)).toList());
                     }
                     break;
                 case DELETE:
@@ -170,7 +169,7 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
     }
     
     private String buildSQL(final Record ingestedRecord) {
-        List<String> columnNames = ingestedRecord.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList());
+        List<String> columnNames = ingestedRecord.getAfterList().stream().map(TableColumn::getName).toList();
         MetaData metaData = ingestedRecord.getMetaData();
         String tableName = buildTableNameWithSchema(metaData.getSchema(), metaData.getTable());
         switch (ingestedRecord.getDataChangeType()) {
