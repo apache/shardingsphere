@@ -117,16 +117,15 @@ class RegisterCenterMetaDataContextsInitFactoryTest {
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.emptyList());
         when(ShardingSphereStatisticsFactory.create(any(), any())).thenReturn(new ShardingSphereStatistics());
         ShardingSphereDatabase fooDatabase = createDatabase("foo_db",
-                Collections.singleton(new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.singleton(new ShardingSphereView("local_view", "select 1")),
-                        databaseType)));
+                Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType, Collections.emptyList(), Collections.singleton(new ShardingSphereView("local_view", "select 1")))));
         ShardingSphereDatabase barDatabase = createDatabase("bar_db", Collections.emptyList());
         ComputeNodeInstanceContext instanceContext = mockComputeNodeInstanceContext(mock(JDBCInstanceMetaData.class));
         when(ShardingSphereDatabasesFactory.create(anyMap(), any(ConfigurationProperties.class), eq(instanceContext), any(DatabaseType.class))).thenReturn(Arrays.asList(fooDatabase, barDatabase));
         Map<String, DatabaseConfiguration> databaseConfigs = createDatabaseConfigsWithoutStorageUnits();
         Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), Boolean.FALSE.toString()));
         Collection<ShardingSphereSchema> persistedSchemas = Arrays.asList(
-                new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.singleton(new ShardingSphereView("persisted_view", "select 2")), databaseType),
-                new ShardingSphereSchema("missing_schema", Collections.emptyList(), Collections.singleton(new ShardingSphereView("ignored_view", "select 3")), databaseType));
+                new ShardingSphereSchema("foo_schema", databaseType, Collections.emptyList(), Collections.singleton(new ShardingSphereView("persisted_view", "select 2"))),
+                new ShardingSphereSchema("missing_schema", databaseType, Collections.emptyList(), Collections.singleton(new ShardingSphereView("ignored_view", "select 3"))));
         try (
                 MockedConstruction<PropertiesPersistService> ignoredService = mockConstruction(PropertiesPersistService.class, (mock, context) -> when(mock.load()).thenReturn(props));
                 MockedConstruction<MetaDataPersistFacade> ignoredFacade = mockConstruction(MetaDataPersistFacade.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS),

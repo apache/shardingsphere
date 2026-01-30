@@ -74,7 +74,7 @@ public final class SchemaMetaDataPersistService {
         if (schema.isEmpty()) {
             add(databaseName, schemaName);
         }
-        ShardingSphereSchema currentSchema = new ShardingSphereSchema(schemaName, tableMetaDataPersistService.load(databaseName, schemaName), Collections.emptyList(), schema.getProtocolType());
+        ShardingSphereSchema currentSchema = new ShardingSphereSchema(schemaName, schema.getProtocolType(), tableMetaDataPersistService.load(databaseName, schemaName), Collections.emptyList());
         tableMetaDataPersistService.persist(databaseName, schemaName, GenericSchemaManager.getToBeAddedTables(schema, currentSchema));
         GenericSchemaManager.getToBeDroppedTables(schema, currentSchema).forEach(each -> tableMetaDataPersistService.drop(databaseName, schemaName, each.getName()));
     }
@@ -88,8 +88,7 @@ public final class SchemaMetaDataPersistService {
      */
     public Collection<ShardingSphereSchema> load(final String databaseName, final DatabaseType protocolType) {
         return repository.getChildrenKeys(NodePathGenerator.toPath(new SchemaMetaDataNodePath(databaseName, null))).stream()
-                .map(each -> new ShardingSphereSchema(each, tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each),
-                        protocolType))
+                .map(each -> new ShardingSphereSchema(each, protocolType, tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each)))
                 .collect(Collectors.toList());
     }
 }
