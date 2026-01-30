@@ -45,17 +45,17 @@ import java.util.Optional;
  * Encrypt show create table merged result.
  */
 public final class EncryptShowCreateTableMergedResult extends DecoratorMergedResult {
-
+    
     private static final String COMMA = ", ";
-
+    
     private final EncryptRule rule;
-
+    
     private final String tableName;
-
+    
     private final int tableNameResultSetIndex;
-
+    
     private final SQLParserEngine sqlParserEngine;
-
+    
     public EncryptShowCreateTableMergedResult(final RuleMetaData globalRuleMetaData, final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
         super(mergedResult);
         ShardingSpherePreconditions.checkState(1 == sqlStatementContext.getTablesContext().getSimpleTables().size(),
@@ -66,7 +66,7 @@ public final class EncryptShowCreateTableMergedResult extends DecoratorMergedRes
         tableNameResultSetIndex = attribute.getNameResultSetIndex();
         sqlParserEngine = globalRuleMetaData.getSingleRule(SQLParserRule.class).getSQLParserEngine(sqlStatementContext.getSqlStatement().getDatabaseType());
     }
-
+    
     @Override
     public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         if (tableNameResultSetIndex != columnIndex) {
@@ -100,7 +100,7 @@ public final class EncryptShowCreateTableMergedResult extends DecoratorMergedRes
         result.append(createTableSQL.substring(lastStopIndex + 1));
         return result.toString();
     }
-
+    
     private Optional<String> findLogicColumnDefinition(final ColumnDefinitionSegment columnDefinition, final EncryptTable encryptTable, final String createTableSQL) {
         ColumnSegment columnSegment = columnDefinition.getColumnName();
         String columnName = columnSegment.getIdentifier().getValue();
@@ -114,8 +114,9 @@ public final class EncryptShowCreateTableMergedResult extends DecoratorMergedRes
         }
         return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnDefinition.getStopIndex() + 1));
     }
-
-    private void processColumnDefinition(final ColumnDefinitionSegment columnDefinition, final EncryptTable encryptTable, final String createTableSQL, final List<String> definitions, final Collection<String> existedVisibleColumnsLowerCase) {
+    
+    private void processColumnDefinition(final ColumnDefinitionSegment columnDefinition, final EncryptTable encryptTable, final String createTableSQL, final List<String> definitions,
+                                         final Collection<String> existedVisibleColumnsLowerCase) {
         String columnName = columnDefinition.getColumnName().getIdentifier().getValue();
         if (shouldSkipColumn(encryptTable, columnName)) {
             return;
@@ -129,31 +130,31 @@ public final class EncryptShowCreateTableMergedResult extends DecoratorMergedRes
         definitions.add(columnDefinitionStr);
         existedVisibleColumnsLowerCase.add(toLowerCase(visibleColumnName));
     }
-
+    
     private boolean shouldSkipColumn(final EncryptTable encryptTable, final String columnName) {
         return encryptTable.isDerivedColumn(columnName);
     }
-
+    
     private String getVisibleColumnName(final EncryptTable encryptTable, final String columnName) {
         if (encryptTable.isCipherColumn(columnName)) {
             return encryptTable.getLogicColumnByCipherColumn(columnName);
         }
         return columnName;
     }
-
+    
     private boolean isColumnAlreadyAdded(
-            final Collection<String> existedVisibleColumnsLowerCase,
-            final String columnName) {
+                                         final Collection<String> existedVisibleColumnsLowerCase,
+                                         final String columnName) {
         return existedVisibleColumnsLowerCase.contains(toLowerCase(columnName));
     }
-
+    
     private String generateColumnDefinition(final ColumnDefinitionSegment columnDefinition, final EncryptTable encryptTable, final String columnName, final String createTableSQL) {
         if (encryptTable.isCipherColumn(columnName)) {
             return findLogicColumnDefinition(columnDefinition, encryptTable, createTableSQL).orElse("");
         }
         return createTableSQL.substring(columnDefinition.getStartIndex(), columnDefinition.getStopIndex() + 1);
     }
-
+    
     private Collection<String> collectExistedVisibleColumnsLowerCase(final Collection<ColumnDefinitionSegment> columnDefinitions, final EncryptTable encryptTable) {
         Collection<String> result = new HashSet<>();
         for (ColumnDefinitionSegment each : columnDefinitions) {
@@ -165,7 +166,7 @@ public final class EncryptShowCreateTableMergedResult extends DecoratorMergedRes
         }
         return result;
     }
-
+    
     private int getLastStopIndex(final List<ColumnDefinitionSegment> columnDefinitions, final List<ConstraintDefinitionSegment> constraintDefinitions) {
         int last = columnDefinitions.get(columnDefinitions.size() - 1).getStopIndex();
         for (ConstraintDefinitionSegment each : constraintDefinitions) {
@@ -173,11 +174,11 @@ public final class EncryptShowCreateTableMergedResult extends DecoratorMergedRes
         }
         return last;
     }
-
+    
     private String toLowerCase(final String value) {
         return null == value ? null : value.toLowerCase(Locale.ENGLISH);
     }
-
+    
     private Optional<String> findLogicConstraintDefinition(final ConstraintDefinitionSegment constraint, final EncryptTable encryptTable, final String createTableSQL) {
         Collection<ColumnSegment> columns = new ArrayList<>(constraint.getIndexColumns());
         columns.addAll(constraint.getPrimaryKeyColumns());
@@ -206,7 +207,7 @@ public final class EncryptShowCreateTableMergedResult extends DecoratorMergedRes
         rewritten.append(createTableSQL.substring(cursor, constraint.getStopIndex() + 1));
         return Optional.of(rewritten.toString());
     }
-
+    
     private Optional<String> findLogicColumnByActualColumn(final EncryptTable encryptTable, final String actualColumnName) {
         if (encryptTable.isCipherColumn(actualColumnName)) {
             return Optional.of(encryptTable.getLogicColumnByCipherColumn(actualColumnName));
