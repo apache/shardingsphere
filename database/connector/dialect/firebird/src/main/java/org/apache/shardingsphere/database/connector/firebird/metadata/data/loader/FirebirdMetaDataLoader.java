@@ -22,7 +22,8 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.loader.Me
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.type.TableMetaDataLoader;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
-import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdSizeRegistry;
+import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
+import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -41,12 +42,25 @@ public final class FirebirdMetaDataLoader implements DialectMetaDataLoader {
         for (String each : material.getActualTableNames()) {
             TableMetaDataLoader.load(material.getDataSource(), each, material.getStorageType()).ifPresent(tableMetaData::add);
         }
-        Map<String, Map<String, Integer>> columnSizes = new FirebirdColumnSizeLoader(material).load();
-        for (String each : material.getActualTableNames()) {
-            Map<String, Integer> tableSizes = columnSizes.getOrDefault(each, Collections.emptyMap());
-            FirebirdSizeRegistry.refreshTable(material.getDefaultSchemaName(), each, tableSizes);
-        }
+        loadBlobColumns(material);
+        loadNonFixedLengthColumnSizes(material);
         return Collections.singleton(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaData));
+    }
+    
+    private void loadNonFixedLengthColumnSizes(final MetaDataLoaderMaterial material) throws SQLException {
+        Map<String, Map<String, Integer>> nonFixedColumnSizes = new FirebirdNonFixedLengthColumnSizeLoader(material).load();
+        for (String each : material.getActualTableNames()) {
+            Map<String, Integer> tableSizes = nonFixedColumnSizes.getOrDefault(each, Collections.emptyMap());
+            FirebirdNonFixedLengthColumnSizeRegistry.refreshTable(material.getDefaultSchemaName(), each, tableSizes);
+        }
+    }
+    
+    private void loadBlobColumns(final MetaDataLoaderMaterial material) throws SQLException {
+        Map<String, Map<String, Integer>> blobColumns = new FirebirdBlobColumnLoader(material).load();
+        for (String each : material.getActualTableNames()) {
+            Map<String, Integer> tableColumns = blobColumns.getOrDefault(each, Collections.emptyMap());
+            FirebirdBlobInfoRegistry.refreshTable(material.getDefaultSchemaName(), each, tableColumns);
+        }
     }
     
     @Override

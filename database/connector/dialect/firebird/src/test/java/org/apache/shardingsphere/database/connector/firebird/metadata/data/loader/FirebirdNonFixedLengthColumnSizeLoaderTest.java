@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ExtendWith(MockitoExtension.class)
-class FirebirdColumnSizeLoaderTest {
+class FirebirdNonFixedLengthColumnSizeLoaderTest {
     
     private static final Collection<String> TABLES = Collections.singleton("test_table");
     
@@ -93,7 +93,7 @@ class FirebirdColumnSizeLoaderTest {
         when(blobResultSet.next()).thenReturn(true, true, false);
         when(blobResultSet.getString("COLUMN_NAME")).thenReturn(" blob_col ", "   ");
         when(blobResultSet.getInt("SEGMENT_SIZE")).thenReturn(2048, 4096);
-        Map<String, Map<String, Integer>> actual = new FirebirdColumnSizeLoader(material).load();
+        Map<String, Map<String, Integer>> actual = new FirebirdNonFixedLengthColumnSizeLoader(material).load();
         assertThat(actual, hasKey("test_table"));
         Map<String, Integer> tableSizes = actual.get("test_table");
         assertThat(tableSizes.size(), is(2));
