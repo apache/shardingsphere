@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdOpenBlobCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +35,7 @@ import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,11 +62,13 @@ class FirebirdOpenBlobCommandExecutorTest {
     
     @Test
     void assertExecute() {
+        when(packet.getBlobId()).thenReturn(99L);
         FirebirdOpenBlobCommandExecutor executor = new FirebirdOpenBlobCommandExecutor(packet, connectionSession);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         DatabasePacket response = actual.iterator().next();
-        assertThat(response, instanceOf(FirebirdGenericResponsePacket.class));
+        assertThat(response, isA(FirebirdGenericResponsePacket.class));
         assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(1));
+        assertThat(((FirebirdGenericResponsePacket) response).getId(), is(99L));
     }
 }

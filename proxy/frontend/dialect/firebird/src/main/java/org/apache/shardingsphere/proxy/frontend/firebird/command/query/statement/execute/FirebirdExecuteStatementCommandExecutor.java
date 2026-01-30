@@ -38,10 +38,12 @@ import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 
 import java.sql.SQLException;
@@ -49,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Firebird execute statement command executor.
@@ -69,6 +72,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
     public Collection<DatabasePacket> execute() throws SQLException {
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
         List<Object> params = packet.getParameterValues();
+        final List<Long> blobIdsToRemove = bindBlobParameters(params);
         SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).bindParameters(params);
@@ -84,12 +88,55 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
         } else {
             responseType = ResponseType.UPDATE;
         }
+        if (responseHeader instanceof UpdateResponseHeader) {
+            clearBlobUploads(blobIdsToRemove);
+        }
         Collection<DatabasePacket> result = new LinkedList<>();
         if (packet.isStoredProcedure() && proxyBackendHandler.next()) {
             result.add(getSQLResponse());
         }
         result.add(new FirebirdGenericResponsePacket());
         return result;
+    }
+    
+    private List<Long> bindBlobParameters(final List<Object> params) {
+        List<FirebirdBinaryColumnType> parameterTypes = packet.getParameterTypes();
+        List<Long> blobIds = new LinkedList<>();
+        int paramCount = Math.min(parameterTypes.size(), params.size());
+        for (int i = 0; i < paramCount; i++) {
+            if (parameterTypes.get(i) != FirebirdBinaryColumnType.BLOB) {
+                continue;
+            }
+            Object paramValue = params.get(i);
+            if (!(paramValue instanceof Long)) {
+                params.set(i, null);
+                continue;
+            }
+            long blobId = (Long) paramValue;
+            if (blobId <= 0L) {
+                params.set(i, null);
+                continue;
+            }
+            if (!FirebirdBlobUploadCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId)) {
+                params.set(i, null);
+                continue;
+            }
+            Optional<byte[]> blobData = FirebirdBlobUploadCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId);
+            if (!blobData.isPresent()) {
+                params.set(i, null);
+                continue;
+            }
+            byte[] bytes = blobData.get();
+            params.set(i, bytes);
+            blobIds.add(blobId);
+        }
+        return blobIds;
+    }
+    
+    private void clearBlobUploads(final List<Long> blobIds) {
+        for (Long each : blobIds) {
+            FirebirdBlobUploadCache.getInstance().removeUpload(connectionSession.getConnectionId(), each);
+        }
     }
     
     private FirebirdSQLResponsePacket getSQLResponse() throws SQLException {
