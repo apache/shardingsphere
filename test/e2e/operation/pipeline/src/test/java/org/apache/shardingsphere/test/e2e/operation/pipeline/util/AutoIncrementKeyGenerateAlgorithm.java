@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public final class AutoIncrementKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
@@ -31,7 +30,7 @@ public final class AutoIncrementKeyGenerateAlgorithm implements KeyGenerateAlgor
     
     @Override
     public Collection<Integer> generateKeys(final AlgorithmSQLContext context, final int keyGenerateCount) {
-        return IntStream.range(0, keyGenerateCount).mapToObj(each -> idGen.getAndIncrement()).collect(Collectors.toList());
+        return IntStream.range(0, keyGenerateCount).mapToObj(each -> idGen.getAndIncrement()).toList();
     }
     
     @Override
