@@ -88,11 +88,11 @@ class AlterViewPushDownMetaDataRefresherTest {
         when(TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType)).thenReturn("foo_view");
         ShardingSphereView existingView = new ShardingSphereView("foo_view", "SELECT 1");
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(rule)),
-                Collections.singleton(new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.singleton(existingView), databaseType)));
+                Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType, Collections.emptyList(), Collections.singleton(existingView))));
         when(TableRefreshUtils.isSingleTable("bar_view", database)).thenReturn(true);
         ShardingSphereTable renamedTable = new ShardingSphereTable("bar_view", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", Collections.singleton(renamedTable), Collections.emptyList(),
-                databaseType));
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(
+                "foo_schema", new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(renamedTable), Collections.emptyList()));
         when(GenericSchemaBuilder.build(eq(Collections.singletonList("bar_view")), eq(database.getProtocolType()), any())).thenReturn(schemas);
         refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         ArgumentCaptor<Collection<ShardingSphereTable>> alteredCaptor = ArgumentCaptor.forClass(Collection.class);
@@ -114,10 +114,10 @@ class AlterViewPushDownMetaDataRefresherTest {
         sqlStatement.setViewDefinition("SELECT * FROM t_order");
         when(TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType)).thenReturn("foo_view");
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(rule)),
-                Collections.singleton(new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.emptyList(), databaseType)));
+                Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType, Collections.emptyList(), Collections.emptyList())));
         ShardingSphereTable table = new ShardingSphereTable("foo_view", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList(),
-                databaseType));
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(
+                "foo_schema", new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.emptyList()));
         when(GenericSchemaBuilder.build(eq(Collections.singletonList("foo_view")), eq(database.getProtocolType()), any())).thenReturn(schemas);
         refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         ArgumentCaptor<Collection<ShardingSphereTable>> alteredCaptor = ArgumentCaptor.forClass(Collection.class);

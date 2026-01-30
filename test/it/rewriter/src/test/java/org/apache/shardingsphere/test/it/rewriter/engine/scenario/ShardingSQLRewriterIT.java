@@ -99,7 +99,7 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
         tables.add(new ShardingSphereTable("t_order_type", Arrays.asList(
                 new ShardingSphereColumn("type_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("type_name", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        return Collections.singleton(new ShardingSphereSchema(schemaName, tables, Collections.emptyList(), mock(DatabaseType.class)));
+        return Collections.singleton(new ShardingSphereSchema(schemaName, mock(DatabaseType.class), tables, Collections.emptyList()));
     }
     
     @Override

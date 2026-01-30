@@ -137,8 +137,7 @@ class DatabaseMetaDataPersistFacadeTest {
         ShardingSphereTable table = new ShardingSphereTable("foo_table",
                 Collections.singleton(new ShardingSphereColumn("foo_column", 0, false, false, false, true, false, true)),
                 Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.singleton(new ShardingSphereView("foo_view", "select 1")),
-                databaseType);
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.singleton(new ShardingSphereView("foo_view", "select 1")));
         ShardingSphereDatabase database = createDatabase("foo_db", Collections.singleton(schema));
         databaseMetaDataFacade.renameSchema(createMetaData(database), database, "foo_schema", "bar_schema");
         verify(tableMetaDataService).persist("foo_db", "bar_schema", schema.getAllTables());
@@ -215,8 +214,8 @@ class DatabaseMetaDataPersistFacadeTest {
     @Test
     void assertPersistCreatedDatabaseSchemas() {
         ShardingSphereSchema emptySchema = new ShardingSphereSchema("foo_empty", mock(DatabaseType.class));
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema",
-                Collections.singleton(new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList(), databaseType);
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType,
+                Collections.singleton(new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
         databaseMetaDataFacade.persistCreatedDatabaseSchemas(createDatabase("foo_db", Arrays.asList(emptySchema, schema)));
         verify(schemaMetaDataService).add("foo_db", "foo_empty");
         verify(tableMetaDataService).persist("foo_db", "foo_schema", schema.getAllTables());

@@ -69,9 +69,8 @@ class SingleDropSchemaSupportedCheckerTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema",
-                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList(),
-                mock(DatabaseType.class));
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class),
+                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList());
         when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
         return result;
     }

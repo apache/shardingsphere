@@ -114,8 +114,8 @@ class LocalConfigurationMetaDataContextsInitFactoryTest {
     @Test
     void assertCreateWithPersistSchemasDisabled() throws SQLException {
         Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap("foo_db", mock(DatabaseConfiguration.class));
-        ShardingSphereSchema schema = new ShardingSphereSchema("non_empty_schema", Collections.singleton(new ShardingSphereTable("t_order",
-                Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList(), mock(DatabaseType.class));
+        ShardingSphereSchema schema = new ShardingSphereSchema("non_empty_schema", mock(DatabaseType.class),
+                Collections.singleton(new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
         ShardingSphereDatabase database = createDatabase("foo_db", Collections.singleton(schema), Collections.emptyMap(), Collections.emptyList());
         ComputeNodeInstanceContext instanceContext = mock(ComputeNodeInstanceContext.class, RETURNS_DEEP_STUBS);
         when(ShardingSphereDatabasesFactory.create(eq(databaseConfigs), any(ConfigurationProperties.class), eq(instanceContext), any(DatabaseType.class)))

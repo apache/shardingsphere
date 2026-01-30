@@ -43,7 +43,7 @@ class SQLFederationSchemaTest {
     void assertNew() {
         Collection<ShardingSphereTable> tables = Arrays.asList(createTable("foo_table"), createTable("foo_view"));
         Collection<ShardingSphereView> views = Collections.singleton(new ShardingSphereView("foo_view", "SELECT 1"));
-        SQLFederationSchema actual = new SQLFederationSchema("foo_schema", new ShardingSphereSchema("foo_schema", tables, views, databaseType), databaseType);
+        SQLFederationSchema actual = new SQLFederationSchema("foo_schema", new ShardingSphereSchema("foo_schema", databaseType, tables, views), databaseType);
         assertThat(actual.getName(), is("foo_schema"));
         assertThat(actual.getTableMap().get("foo_table"), isA(SQLFederationTable.class));
         assertThat(actual.getTableMap().get("foo_view"), isA(ViewTable.class));

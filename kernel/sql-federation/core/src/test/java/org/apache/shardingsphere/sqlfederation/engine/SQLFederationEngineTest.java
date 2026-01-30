@@ -490,7 +490,7 @@ class SQLFederationEngineTest {
     }
     
     private ShardingSphereMetaData createMetaData(final Collection<ShardingSphereTable> tables, final Properties props) {
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", tables, Collections.emptyList(), databaseType);
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType, tables, Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
         SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, false, cacheOption);

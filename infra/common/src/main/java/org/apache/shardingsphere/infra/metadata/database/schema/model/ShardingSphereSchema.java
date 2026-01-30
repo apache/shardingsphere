@@ -50,7 +50,7 @@ public final class ShardingSphereSchema {
         views = new ConcurrentHashMap<>();
     }
     
-    public ShardingSphereSchema(final String name, final Collection<ShardingSphereTable> tables, final Collection<ShardingSphereView> views, final DatabaseType protocolType) {
+    public ShardingSphereSchema(final String name, final DatabaseType protocolType, final Collection<ShardingSphereTable> tables, final Collection<ShardingSphereView> views) {
         this.name = name;
         this.protocolType = protocolType;
         this.tables = new ConcurrentHashMap<>(tables.size(), 1F);

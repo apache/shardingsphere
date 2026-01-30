@@ -133,7 +133,7 @@ class ContextManagerTest {
         when(result.containsSchema("foo_schema")).thenReturn(true);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("foo_tbl");
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList(), databaseType);
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.emptyList());
         when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getStorageType()).thenReturn(databaseType);
@@ -245,7 +245,7 @@ class ContextManagerTest {
         setPersistServiceFacade(persistServiceFacade);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("foo_tbl");
-        ShardingSphereSchema reloadedSchema = new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList(), mock(DatabaseType.class));
+        ShardingSphereSchema reloadedSchema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class), Collections.singleton(table), Collections.emptyList());
         try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
             schemaBuilderMock.when(() -> GenericSchemaBuilder.build(any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class)))
                     .thenReturn(Collections.singletonMap("foo_schema", reloadedSchema));
@@ -272,7 +272,7 @@ class ContextManagerTest {
         setPersistServiceFacade(persistServiceFacade);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("foo_tbl");
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList(), databaseType);
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.emptyList());
         try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
             schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anySet(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class)))
                     .thenReturn(Collections.singletonMap("foo_schema", schema));
