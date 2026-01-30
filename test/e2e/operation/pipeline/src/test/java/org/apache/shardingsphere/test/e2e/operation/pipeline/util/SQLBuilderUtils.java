@@ -42,9 +42,7 @@ public final class SQLBuilderUtils {
         }
         result.setLength(result.length() - 1);
         result.append(") ").append("VALUES").append("(");
-        for (int i = 0; i < columnNames.size(); i++) {
-            result.append("?,");
-        }
+        result.append("?,".repeat(columnNames.size()));
         result.setLength(result.length() - 1);
         result.append(")");
         return String.format(result.toString(), tableName);

@@ -64,11 +64,13 @@ import static org.mockito.Mockito.mock;
         @PipelineE2EDatabaseSettings(type = "PostgreSQL")})
 class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
-    private static final String ORDER_TABLE_SHARDING_RULE_FORMAT = "CREATE SHARDING TABLE RULE t_order(\n"
-            + "STORAGE_UNITS(ds_2,ds_3,ds_4),\n"
-            + "SHARDING_COLUMN=%s,\n"
-            + "TYPE(NAME=\"hash_mod\",PROPERTIES(\"sharding-count\"=\"6\"))\n"
-            + ");";
+    private static final String ORDER_TABLE_SHARDING_RULE_FORMAT = """
+            CREATE SHARDING TABLE RULE t_order(
+            STORAGE_UNITS(ds_2,ds_3,ds_4),
+            SHARDING_COLUMN=%s,
+            TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="6"))
+            )
+            """;
     
     private static final String SOURCE_TABLE_NAME = "t_order";
     

@@ -46,7 +46,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @Slf4j
 public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
@@ -97,7 +96,7 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
         Record firstRecord = records.get(0);
         MetaData metaData = firstRecord.getMetaData();
         PipelineTableMetaData tableMetaData = loadTableMetaData(metaData.getSchema(), metaData.getTable());
-        List<String> columnNames = firstRecord.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList());
+        List<String> columnNames = firstRecord.getAfterList().stream().map(TableColumn::getName).toList();
         String tableName = buildTableNameWithSchema(metaData.getSchema(), metaData.getTable());
         String insertSQL = SQLBuilderUtils.buildInsertSQL(columnNames, tableName);
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
@@ -127,7 +126,7 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
                     updateCount = preparedStatement.executeUpdate();
                     if (1 != updateCount || printSQL) {
                         log.info("Execute insert, update count: {}, sql: {}, values: {}", updateCount, sql,
-                                ingestedRecord.getAfterList().stream().map(each -> convertValueFromAny(tableMetaData, each)).collect(Collectors.toList()));
+                                ingestedRecord.getAfterList().stream().map(each -> convertValueFromAny(tableMetaData, each)).toList());
                     }
                     break;
                 case UPDATE:
@@ -139,7 +138,7 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
                     updateCount = preparedStatement.executeUpdate();
                     if (1 != updateCount || printSQL) {
                         log.info("Execute update, update count: {}, sql: {}, values: {}", updateCount, sql,
-                                ingestedRecord.getAfterList().stream().map(each -> convertValueFromAny(tableMetaData, each)).collect(Collectors.toList()));
+                                ingestedRecord.getAfterList().stream().map(each -> convertValueFromAny(tableMetaData, each)).toList());
                     }
                     break;
                 case DELETE:
@@ -170,19 +169,15 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
     }
     
     private String buildSQL(final Record ingestedRecord) {
-        List<String> columnNames = ingestedRecord.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList());
+        List<String> columnNames = ingestedRecord.getAfterList().stream().map(TableColumn::getName).toList();
         MetaData metaData = ingestedRecord.getMetaData();
         String tableName = buildTableNameWithSchema(metaData.getSchema(), metaData.getTable());
-        switch (ingestedRecord.getDataChangeType()) {
-            case INSERT:
-                return SQLBuilderUtils.buildInsertSQL(columnNames, tableName);
-            case UPDATE:
-                return SQLBuilderUtils.buildUpdateSQL(columnNames, tableName, "?");
-            case DELETE:
-                return SQLBuilderUtils.buildDeleteSQL(tableName, "order_id");
-            default:
-                throw new UnsupportedOperationException("");
-        }
+        return switch (ingestedRecord.getDataChangeType()) {
+            case INSERT -> SQLBuilderUtils.buildInsertSQL(columnNames, tableName);
+            case UPDATE -> SQLBuilderUtils.buildUpdateSQL(columnNames, tableName, "?");
+            case DELETE -> SQLBuilderUtils.buildDeleteSQL(tableName, "order_id");
+            default -> throw new UnsupportedOperationException("");
+        };
     }
     
     private TableColumn getOrderIdTableColumn(final List<TableColumn> tableColumns) {
@@ -202,21 +197,22 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
         if (null == result) {
             return null;
         }
-        switch (columnMetaData.getDataType()) {
-            case Types.TIME:
+        return switch (columnMetaData.getDataType()) {
+            case Types.TIME -> {
                 if ("TIME".equalsIgnoreCase(columnMetaData.getDataTypeName())) {
                     // Time.valueOf() will lose nanos
-                    return LocalTime.ofNanoOfDay((Long) result);
+                    yield LocalTime.ofNanoOfDay((Long) result);
                 }
-                return result;
-            case Types.DATE:
+                yield result;
+            }
+            case Types.DATE -> {
                 if ("DATE".equalsIgnoreCase(columnMetaData.getDataTypeName())) {
                     LocalDate localDate = LocalDate.ofEpochDay((Long) result);
-                    return Date.valueOf(localDate);
+                    yield Date.valueOf(localDate);
                 }
-                return result;
-            default:
-                return result;
-        }
+                yield result;
+            }
+            default -> result;
+        };
     }
 }

@@ -47,10 +47,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 public final class PipelineE2EDistSQLFacade {
     
-    private static final String PIPELINE_RULE_SQL_TEMPLATE = "ALTER %s RULE(\n"
-            + "READ(WORKER_THREAD=20, BATCH_SIZE=1000, SHARDING_SIZE=100000, RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))),\n"
-            + "WRITE(WORKER_THREAD=20, BATCH_SIZE=1000, RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))),\n"
-            + "STREAM_CHANNEL(TYPE(NAME='MEMORY', PROPERTIES('block-queue-size'=1000))))";
+    private static final String PIPELINE_RULE_SQL_TEMPLATE = """
+            ALTER %s RULE(
+            READ(WORKER_THREAD=20, BATCH_SIZE=1000, SHARDING_SIZE=100000, RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))),
+            WRITE(WORKER_THREAD=20, BATCH_SIZE=1000, RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))),
+            STREAM_CHANNEL(TYPE(NAME='MEMORY', PROPERTIES('block-queue-size'=1000))))
+            """;
     
     private final PipelineContainerComposer containerComposer;
     
@@ -112,7 +114,7 @@ public final class PipelineE2EDistSQLFacade {
      * @return job ids
      */
     public List<String> listJobIds() {
-        return listJobs().stream().map(a -> a.get("id").toString()).collect(Collectors.toList());
+        return listJobs().stream().map(a -> a.get("id").toString()).toList();
     }
     
     /**
@@ -219,7 +221,7 @@ public final class PipelineE2EDistSQLFacade {
         for (int i = 0; i < 10; i++) {
             List<Map<String, Object>> jobStatusRecords = containerComposer.queryForListWithLog(sql);
             log.info("Wait job Incremental stage started, job status records: {}", jobStatusRecords);
-            List<String> statusList = jobStatusRecords.stream().map(each -> String.valueOf(each.get("status"))).collect(Collectors.toList());
+            List<String> statusList = jobStatusRecords.stream().map(each -> String.valueOf(each.get("status"))).toList();
             if (statusList.stream().allMatch(each -> each.equals(jobStatus.name()))) {
                 return;
             }
@@ -309,7 +311,7 @@ public final class PipelineE2EDistSQLFacade {
                 containerComposer.sleepSeconds(3);
                 continue;
             }
-            List<String> checkEndTimeList = checkStatusRecords.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).collect(Collectors.toList());
+            List<String> checkEndTimeList = checkStatusRecords.stream().map(map -> map.get("check_end_time").toString()).filter(each -> !Strings.isNullOrEmpty(each)).toList();
             if (checkEndTimeList.size() == checkStatusRecords.size()) {
                 break;
             } else {
