@@ -39,7 +39,7 @@ public final class OpenGaussStorageContainerCreateOption implements StorageConta
     
     @Override
     public String getDefaultImageName() {
-        return "opengauss/opengauss:3.1.0";
+        return "enmotech/opengauss:3.1.0";
     }
     
     @Override
