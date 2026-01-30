@@ -72,7 +72,7 @@ public final class UnicastDatabaseProxyBackendHandler implements DatabaseProxyBa
         AuthorityRule authorityRule = queryContext.getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Collection<String> storageUnitContainedDatabaseNames = databaseNames.stream()
                 .filter(each -> ProxyContext.getInstance().getContextManager().getDatabase(each).containsDataSource())
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getConnectionContext().getGrantee());
         Collection<String> authorizedDatabases = storageUnitContainedDatabaseNames.stream().filter(authorityChecker::isAuthorized).collect(Collectors.toSet());
         Optional<String> result = authorizedDatabases.isEmpty() ? storageUnitContainedDatabaseNames.stream().findFirst() : authorizedDatabases.stream().findFirst();
