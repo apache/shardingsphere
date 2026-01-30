@@ -98,9 +98,6 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     }
     
     private Collection<ExpressionSegment> getAllExpressions(final Collection<WhereSegment> whereSegments) {
-        if (1 == whereSegments.size()) {
-            return ExpressionExtractor.extractAllExpressions(whereSegments.iterator().next().getExpr());
-        }
         Collection<ExpressionSegment> result = new LinkedList<>();
         for (WhereSegment each : whereSegments) {
             Collection<ExpressionSegment> expressions = ExpressionExtractor.extractAllExpressions(each.getExpr());

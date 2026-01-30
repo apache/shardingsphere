@@ -52,7 +52,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof WhereContextAvailable;
+        return sqlStatementContext instanceof WhereContextAvailable && !encryptConditions.isEmpty();
     }
     
     @Override

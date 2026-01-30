@@ -121,7 +121,7 @@ public final class ExpressionExtractor {
             if (expressionSegment instanceof BinaryOperationExpression) {
                 BinaryOperationExpression binaryExpression = (BinaryOperationExpression) expressionSegment;
                 Optional<LogicalOperator> logicalOperator = LogicalOperator.valueFrom(binaryExpression.getOperator());
-                if (logicalOperator.isPresent() && (LogicalOperator.OR == logicalOperator.get() || LogicalOperator.AND == logicalOperator.get())) {
+                if (logicalOperator.isPresent()) {
                     stack.push(binaryExpression.getRight());
                     stack.push(binaryExpression.getLeft());
                 } else {
