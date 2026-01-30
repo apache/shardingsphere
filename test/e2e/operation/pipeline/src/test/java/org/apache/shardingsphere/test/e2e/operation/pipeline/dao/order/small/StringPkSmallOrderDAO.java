@@ -20,15 +20,20 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.small;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.small.sqlbuilder.StringPkSmallOrderSQLBuilder;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * String PK small order DAO. Small table means the table has few columns.
@@ -66,10 +71,23 @@ public final class StringPkSmallOrderDAO {
      * @throws SQLException SQL exception
      */
     public void batchInsert(final int recordCount) throws SQLException {
-        List<Object[]> paramsList = PipelineCaseHelper.generateSmallOrderInsertData(new UUIDKeyGenerateAlgorithm(), recordCount);
+        List<Object[]> paramsList = generateInsertData(recordCount);
         String sql = sqlBuilder.buildPreparedInsertSQL(qualifiedTableName);
         log.info("Batch insert string pk small order SQL: {}, params list size: {}", sql, paramsList.size());
         DataSourceExecuteUtils.executeBatch(dataSource, sql, paramsList);
+    }
+    
+    private List<Object[]> generateInsertData(final int recordCount) {
+        List<Object[]> result = new ArrayList<>(recordCount);
+        KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
+        for (int i = 0; i < recordCount; i++) {
+            Object[] params = new Object[3];
+            params[0] = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
+            params[1] = ThreadLocalRandom.current().nextInt(0, 6);
+            params[2] = "OK";
+            result.add(params);
+        }
+        return result;
     }
     
     /**

@@ -53,25 +53,6 @@ import static org.mockito.Mockito.mock;
 public final class PipelineCaseHelper {
     
     /**
-     * Generate small order insert data.
-     *
-     * @param keyGenerateAlgorithm key generate algorithm
-     * @param recordCount record count
-     * @return small order insert data
-     */
-    public static List<Object[]> generateSmallOrderInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int recordCount) {
-        List<Object[]> result = new ArrayList<>(recordCount);
-        for (int i = 0; i < recordCount; i++) {
-            Object[] params = new Object[3];
-            params[0] = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
-            params[1] = ThreadLocalRandom.current().nextInt(0, 6);
-            params[2] = "OK";
-            result.add(params);
-        }
-        return result;
-    }
-    
-    /**
      * Generate order insert data.
      *
      * @param databaseType database type

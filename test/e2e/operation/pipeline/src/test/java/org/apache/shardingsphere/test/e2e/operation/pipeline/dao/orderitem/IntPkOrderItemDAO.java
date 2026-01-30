@@ -67,14 +67,15 @@ public final class IntPkOrderItemDAO {
      * @throws SQLException SQL exception
      */
     public void batchInsert(final int recordCount) throws SQLException {
-        List<Object[]> paramsList = generateInsertData(new AutoIncrementKeyGenerateAlgorithm(), recordCount);
+        List<Object[]> paramsList = generateInsertData(recordCount);
         String sql = sqlBuilder.buildPreparedInsertSQL(schemaPrefix);
         log.info("Batch insert order_item SQL: {}, params list size: {}", sql, paramsList.size());
         DataSourceExecuteUtils.executeBatch(dataSource, sql, paramsList);
     }
     
-    private static List<Object[]> generateInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int recordCount) {
+    private List<Object[]> generateInsertData(final int recordCount) {
         List<Object[]> result = new ArrayList<>(recordCount);
+        KeyGenerateAlgorithm keyGenerateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
         ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < recordCount; i++) {
             Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
