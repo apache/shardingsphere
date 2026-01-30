@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.condition;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.constant.EncryptConstants;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
@@ -26,6 +26,7 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.LogicalOperator;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -53,28 +54,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class EncryptConditionEngine {
     
-    private static final Collection<String> LOGICAL_OPERATORS = new CaseInsensitiveSet<>();
-    
-    private static final Collection<String> SUPPORTED_COMPARE_OPERATORS = new CaseInsensitiveSet<>();
-    
     private final EncryptRule rule;
-    
-    static {
-        LOGICAL_OPERATORS.add("AND");
-        LOGICAL_OPERATORS.add("&&");
-        LOGICAL_OPERATORS.add("OR");
-        LOGICAL_OPERATORS.add("||");
-        SUPPORTED_COMPARE_OPERATORS.add("=");
-        SUPPORTED_COMPARE_OPERATORS.add("<>");
-        SUPPORTED_COMPARE_OPERATORS.add("!=");
-        SUPPORTED_COMPARE_OPERATORS.add(">");
-        SUPPORTED_COMPARE_OPERATORS.add("<");
-        SUPPORTED_COMPARE_OPERATORS.add(">=");
-        SUPPORTED_COMPARE_OPERATORS.add("<=");
-        SUPPORTED_COMPARE_OPERATORS.add("IS");
-        SUPPORTED_COMPARE_OPERATORS.add("LIKE");
-        SUPPORTED_COMPARE_OPERATORS.add("NOT LIKE");
-    }
     
     /**
      * Create encrypt conditions.
@@ -146,10 +126,10 @@ public final class EncryptConditionEngine {
     
     private Collection<EncryptCondition> createBinaryEncryptCondition(final BinaryOperationExpression expression, final String tableName) {
         String operator = expression.getOperator();
-        if (LOGICAL_OPERATORS.contains(operator)) {
+        if (LogicalOperator.valueFrom(operator).isPresent()) {
             return Collections.emptyList();
         }
-        ShardingSpherePreconditions.checkContains(SUPPORTED_COMPARE_OPERATORS, operator, () -> new UnsupportedEncryptSQLException(operator));
+        ShardingSpherePreconditions.checkContains(EncryptConstants.SUPPORTED_BINARY_OPERATORS, operator, () -> new UnsupportedEncryptSQLException(operator));
         return createCompareEncryptCondition(tableName, expression);
     }
     
