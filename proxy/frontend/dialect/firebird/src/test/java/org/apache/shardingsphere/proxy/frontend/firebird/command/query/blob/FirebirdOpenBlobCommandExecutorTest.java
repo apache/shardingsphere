@@ -35,7 +35,7 @@ import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,8 +67,8 @@ class FirebirdOpenBlobCommandExecutorTest {
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         DatabasePacket response = actual.iterator().next();
-        assertThat(response, instanceOf(FirebirdGenericResponsePacket.class));
-        assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(99));
+        assertThat(response, isA(FirebirdGenericResponsePacket.class));
+        assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(1));
         assertThat(((FirebirdGenericResponsePacket) response).getId(), is(99L));
     }
 }

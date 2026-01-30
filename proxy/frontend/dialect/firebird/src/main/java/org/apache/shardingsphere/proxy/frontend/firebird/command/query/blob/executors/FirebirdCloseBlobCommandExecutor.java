@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -28,14 +27,12 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.uplo
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 /**
  * Close blob command executor for Firebird.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class FirebirdCloseBlobCommandExecutor implements CommandExecutor {
     
     private final FirebirdCloseBlobCommandPacket packet;
@@ -45,11 +42,8 @@ public final class FirebirdCloseBlobCommandExecutor implements CommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() {
         OptionalLong blobId = FirebirdBlobUploadCache.getInstance().getBlobId(connectionSession.getConnectionId(), packet.getBlobHandle());
-        OptionalInt size = FirebirdBlobUploadCache.getInstance().closeUpload(connectionSession.getConnectionId(), packet.getBlobHandle());
+        FirebirdBlobUploadCache.getInstance().closeUpload(connectionSession.getConnectionId(), packet.getBlobHandle());
         long responseBlobId = blobId.isPresent() ? blobId.getAsLong() : 0L;
-        int bufferSize = size.isPresent() ? size.getAsInt() : 0;
-        log.info("Firebird BLOB closed: connectionId={}, blobHandle={}, blobId={}, size={}",
-                connectionSession.getConnectionId(), packet.getBlobHandle(), responseBlobId, bufferSize);
         FirebirdGenericResponsePacket response = new FirebirdGenericResponsePacket().setWriteZeroStatementId(true).setId(responseBlobId);
         return Collections.singleton(response);
     }

@@ -33,7 +33,7 @@ import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
@@ -61,7 +61,7 @@ class FirebirdGetBlobSegmentCommandExecutorTest {
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         DatabasePacket actualResponse = actual.iterator().next();
-        assertThat(actualResponse, instanceOf(FirebirdGenericResponsePacket.class));
+        assertThat(actualResponse, isA(FirebirdGenericResponsePacket.class));
         assertThat(((FirebirdGenericResponsePacket) actualResponse).getHandle(), is(99));
         byte[] actualRemainingSegment = FirebirdBlobRegistry.getSegment();
         assertNotNull(actualRemainingSegment);

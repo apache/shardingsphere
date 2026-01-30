@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.database.protocol.binary.BinaryRow;
@@ -58,7 +57,6 @@ import java.util.Optional;
  * Firebird execute statement command executor.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class FirebirdExecuteStatementCommandExecutor implements CommandExecutor {
     
     private final FirebirdExecuteStatementPacket packet;
@@ -91,8 +89,6 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
             responseType = ResponseType.UPDATE;
         }
         if (responseHeader instanceof UpdateResponseHeader) {
-            UpdateResponseHeader updateResponseHeader = (UpdateResponseHeader) responseHeader;
-            log.info("Firebird update count: {}", updateResponseHeader.getUpdateCount());
             clearBlobUploads(blobIdsToRemove);
         }
         Collection<DatabasePacket> result = new LinkedList<>();
@@ -113,29 +109,21 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
             }
             Object paramValue = params.get(i);
             if (!(paramValue instanceof Long)) {
-                log.info("Firebird BLOB parameter index={} bound as null (unexpected type)", i + 1);
                 params.set(i, null);
                 continue;
             }
             long blobId = (Long) paramValue;
             if (blobId <= 0L) {
-                log.info("Firebird BLOB parameter index={} bound as null (blobId=0)", i + 1);
                 params.set(i, null);
                 continue;
             }
             Optional<byte[]> blobData = FirebirdBlobUploadCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId);
             if (!blobData.isPresent()) {
-                log.info("Firebird BLOB parameter index={} bound as null (missing blobId={})", i + 1, blobId);
                 params.set(i, null);
                 continue;
             }
             byte[] bytes = blobData.get();
-            boolean closed = FirebirdBlobUploadCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId);
-            if (!closed) {
-                log.info("Firebird BLOB parameter index={} binding while upload still open (blobId={})", i + 1, blobId);
-            }
             params.set(i, bytes);
-            log.info("Firebird BLOB parameter index={} bound as byte[] length={}", i + 1, bytes.length);
             blobIds.add(blobId);
         }
         return blobIds;
