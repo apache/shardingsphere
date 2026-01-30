@@ -127,7 +127,6 @@ class ResponsePacketBuilderTest {
                         4,
                         SESSION_CHARACTER_SET,
                         MySQLColumnDefinitionFlag.BINARY_COLLATION.getValue(),
-                        0)
-        );
+                        0));
     }
 }
