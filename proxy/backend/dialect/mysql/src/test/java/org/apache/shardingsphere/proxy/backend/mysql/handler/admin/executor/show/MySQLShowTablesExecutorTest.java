@@ -167,7 +167,7 @@ class MySQLShowTablesExecutorTest {
         tables.add(new ShardingSphereTable("t_account_bak", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_account_detail", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("T_TEST", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", tables, Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, tables, Collections.emptyList());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(String.format(DATABASE_PATTERN, 0));
         when(database.getProtocolType()).thenReturn(databaseType);

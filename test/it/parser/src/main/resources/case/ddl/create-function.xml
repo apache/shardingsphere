@@ -152,4 +152,20 @@
             </function>
         </alias-expression>
     </create-function>
+    <create-function sql-case-id="create_function_doris_with_owner">
+        <function-name name="udf_add" start-index="16" stop-index="32">
+            <owner name="analytics" start-index="16" stop-index="24" />
+        </function-name>
+        <parameter-data-types>
+            <data-type name="INT" start-index="34" stop-index="36" />
+        </parameter-data-types>
+        <return-type name="INT" start-index="47" stop-index="49" />
+        <properties>
+            <property key="file" value="file:///path/to/lib.so" />
+            <property key="symbol" value="analytics.udf.Add" />
+            <property key="type" value="JAVA_UDF" />
+        </properties>
+    </create-function>
+    <create-function sql-case-id="create_function_doris_routine_body" />
+    <create-function sql-case-id="create_function_doris_aggregate_intermediate" />
 </sql-parser-test-cases>

@@ -59,9 +59,9 @@ class SQLParseCountAdviceTest {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
-    @ParameterizedTest(name = "{index}: type={0}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("sqlStatements")
-    void assertParseSQL(final String type, final SQLStatement sqlStatement, final String expected) {
+    void assertParseSQL(final String name, final SQLStatement sqlStatement, final String expected) {
         new SQLParseCountAdvice().afterMethod(new TargetAdviceObjectFixture(), mock(TargetAdviceMethod.class), new Object[]{}, sqlStatement, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is(expected));
     }

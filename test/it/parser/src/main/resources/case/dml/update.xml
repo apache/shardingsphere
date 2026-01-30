@@ -63,6 +63,97 @@
         </where>
     </update>
 
+    <update sql-case-id="update_set_default_oracle">
+        <table start-index="7" stop-index="15">
+            <simple-table name="employees" start-index="7" stop-index="15" />
+        </table>
+        <set start-index="17" stop-index="36">
+            <assignment start-index="21" stop-index="36">
+                <column name="status" start-index="21" stop-index="26" />
+                <assignment-value>
+                    <column name="DEFAULT" start-index="30" stop-index="36" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="38" stop-index="58">
+            <expr>
+                <binary-operation-expression start-index="44" stop-index="58">
+                    <left>
+                        <column name="employee_id" start-index="44" stop-index="54" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="58" stop-index="58" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </update>
+
+    <update sql-case-id="update_table_collection_oracle">
+        <table start-index="7" stop-index="44">
+            <subquery-table start-index="7" stop-index="44">
+                <subquery>
+                    <select>
+                        <projections start-index="20" stop-index="29">
+                            <column-projection name="nested_col" start-index="20" stop-index="29" />
+                        </projections>
+                        <from start-index="31" stop-index="43">
+                            <simple-table name="t_nested" start-index="36" stop-index="43" />
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </table>
+        <set start-index="46" stop-index="69">
+            <assignment start-index="50" stop-index="69">
+                <column name="nested_col" start-index="50" stop-index="59" />
+                <assignment-value>
+                    <column name="DEFAULT" start-index="63" stop-index="69" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_with_subquery_target_oracle">
+        <table start-index="7" stop-index="31">
+            <subquery-table start-index="7" stop-index="31">
+                <subquery>
+                    <select>
+                        <projections start-index="15" stop-index="15">
+                            <shorthand-projection start-index="15" stop-index="15" />
+                        </projections>
+                        <from start-index="17" stop-index="30">
+                            <simple-table name="employees" start-index="22" stop-index="30" />
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </table>
+        <set start-index="33" stop-index="46">
+            <assignment start-index="36" stop-index="46">
+                <column name="salary" start-index="37" stop-index="42" />
+                <assignment-value>
+                    <literal-expression value="1" start-index="46" stop-index="46" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_with_dblink_oracle">
+        <table start-index="7" stop-index="22">
+            <simple-table name="employees" start-index="7" stop-index="22" />
+        </table>
+        <set start-index="24" stop-index="42">
+            <assignment start-index="24" stop-index="42">
+                <column name="salary" start-index="28" stop-index="33" />
+                <assignment-value>
+                    <column name="salary" start-index="37" stop-index="42" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
     <update sql-case-id="update_with_alias" parameters="'update', 1, 1">
         <table start-index="7" stop-index="18" >
             <simple-table name="t_order" alias="o" start-index="7" stop-index="18" />
@@ -262,6 +353,49 @@
                 </assignment-value>
             </assignment>
         </set>
+    </update>
+
+    <update sql-case-id="update_without_condition_sql92">
+        <table start-index="7" stop-index="15">
+            <simple-table name="t_order" alias="o" start-index="7" stop-index="15" />
+        </table>
+        <set start-index="17" stop-index="41">
+            <assignment start-index="21" stop-index="41">
+                <column name="status" start-index="21" stop-index="28">
+                    <owner name="o" start-index="21" stop-index="21" />
+                </column>
+                <assignment-value>
+                    <literal-expression value="finished" start-index="32" stop-index="41" />
+                </assignment-value>
+            </assignment>
+        </set>
+    </update>
+
+    <update sql-case-id="update_with_where_sql92">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13" />
+        </table>
+        <set start-index="15" stop-index="30">
+            <assignment start-index="19" stop-index="30">
+                <column name="status" start-index="19" stop-index="24" />
+                <assignment-value>
+                    <literal-expression value="x" start-index="28" stop-index="30" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="32" stop-index="49">
+            <expr>
+                <binary-operation-expression start-index="38" stop-index="49">
+                    <left>
+                        <column name="order_id" start-index="38" stop-index="45" />
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="49" stop-index="49" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
     </update>
 
     <update sql-case-id="update_with_extra_keywords" parameters="'update', 1, 1">

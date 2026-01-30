@@ -72,7 +72,7 @@ class AlterViewFederationMetaDataRefresherTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertRefreshWithRenameView() {
-        ShardingSphereSchema schema = new ShardingSphereSchema(schemaName, Collections.emptyList(), Collections.singleton(new ShardingSphereView("foo_view", "SELECT * FROM foo_tbl")));
+        ShardingSphereSchema schema = new ShardingSphereSchema(schemaName, databaseType, Collections.emptyList(), Collections.singleton(new ShardingSphereView("foo_view", "SELECT * FROM foo_tbl")));
         when(database.getSchema(schemaName)).thenReturn(schema);
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_view"))));
         sqlStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_view"))));

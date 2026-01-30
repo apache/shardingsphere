@@ -10,16 +10,11 @@ ShardingSphere's support for Presto JDBC Driver is in an optional module.
 
 ## Prerequisites
 
-To use a `standardJdbcUrl` like `jdbc:presto://localhost:8080/iceberg/demo_ds_0` for the data node in the ShardingSphere configuration file,
+To use a `jdbcUrl` like `jdbc:presto://localhost:8080/iceberg/demo_ds_0` for the data node in the ShardingSphere configuration file,
 Possible Maven dependencies are as follows,
 
 ```xml
 <dependencies>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-jdbc</artifactId>
-        <version>${shardingsphere.version}</version>
-    </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-jdbc-dialect-presto</artifactId>
@@ -67,11 +62,11 @@ Taking DBeaver Community as an example, if you use Ubuntu 24.04, you can quickly
 
 ```shell
 sudo apt update && sudo apt upgrade -y
-sudo snap install dbeaver-ce
+sudo snap install dbeaver-ce --classic
 snap run dbeaver-ce
 ```
 
-In DBeaver Community, use `standardJdbcUrl` of `jdbc:presto://localhost:8080/iceberg`, `username` of `test` to connect to Presto, and leave `password` blank.
+In DBeaver Community, use `jdbcUrl` of `jdbc:presto://localhost:8080/iceberg`, `username` of `test` to connect to Presto, and leave `password` blank.
 Execute the following SQL,
 
 ```sql
@@ -81,7 +76,7 @@ CREATE SCHEMA iceberg.demo_ds_1;
 CREATE SCHEMA iceberg.demo_ds_2;
 ```
 
-Use the `standardJdbcUrl` of `jdbc:presto://localhost:8080/iceberg/demo_ds_0`, 
+Use the `jdbcUrl` of `jdbc:presto://localhost:8080/iceberg/demo_ds_0`, 
 `jdbc:presto://localhost:8080/iceberg/demo_ds_1` and `jdbc:presto://localhost:8080/iceberg/demo_ds_2` to connect to Presto and execute the following SQL,
 
 ```sql
@@ -98,25 +93,59 @@ truncate table t_order;
 
 ### Create ShardingSphere data source in business project
 
-After the business project introduces the dependencies involved in `Prerequisites`, 
-write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project.
+After including the dependencies related to the `Prerequisites` in the business project, add the following additional dependencies,
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-url-classpath</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sharding-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-authority-simple</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
+Write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project.
 
 ```yaml
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.facebook.presto.jdbc.PrestoDriver
-    standardJdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_0
+    jdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_0
     username: test
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.facebook.presto.jdbc.PrestoDriver
-    standardJdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_1
+    jdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_1
     username: test
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.facebook.presto.jdbc.PrestoDriver
-    standardJdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_2
+    jdbcUrl: jdbc:presto://localhost:8080/iceberg/demo_ds_2
     username: test
 rules:
   - !SHARDING

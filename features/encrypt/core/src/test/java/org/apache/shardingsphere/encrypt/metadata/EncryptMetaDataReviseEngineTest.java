@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.metadata;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
@@ -50,7 +51,8 @@ class EncryptMetaDataReviseEngineTest {
     @Test
     void assertRevise() {
         Map<String, SchemaMetaData> schemaMetaData = Collections.singletonMap("foo_db", new SchemaMetaData("foo_db", Collections.singleton(createTableMetaData())));
-        Map<String, ShardingSphereSchema> actual = new MetaDataReviseEngine(Collections.singleton(mockEncryptRule())).revise(schemaMetaData, mock(GenericSchemaBuilderMaterial.class));
+        Map<String, ShardingSphereSchema> actual = new MetaDataReviseEngine(Collections.singleton(mockEncryptRule()), mock(DatabaseType.class))
+                .revise(schemaMetaData, mock(GenericSchemaBuilderMaterial.class));
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("foo_db"));
         assertThat(actual.get("foo_db").getAllTables().size(), is(1));

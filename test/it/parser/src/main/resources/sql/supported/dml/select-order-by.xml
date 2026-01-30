@@ -17,7 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="select_order_by_asc_and_index_desc" value="SELECT * FROM t_order o ORDER BY o.order_id, 2 DESC" db-types="Doris" />
+    <sql-case id="select_order_by_asc_and_index_desc" value="SELECT * FROM t_order o ORDER BY o.order_id, 2 DESC" db-types="Doris,Firebird" />
+    <sql-case id="select_order_by_asc_and_index_desc_sql92" value="SELECT * FROM t_order o ORDER BY o.order_id, 2 DESC" db-types="SQL92" />
     <sql-case id="select_order_by_desc_and_index_asc" value="SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.status = 'init' ORDER BY o.order_id DESC, 1" />
     <sql-case id="select_order_by_with_ordered_column" value="SELECT o.order_id AS gen_order_id_ FROM t_order o ORDER BY o.order_id" />
     <sql-case id="select_order_by_with_date" value="SELECT i.* FROM t_order o, t_order_item i WHERE o.order_id = i.order_id AND o.status = 'init' ORDER BY i.creation_date DESC, o.order_id DESC, i.item_id" />
@@ -34,5 +35,6 @@
     <sql-case id="select_order_by_with_table_star_table_name" value="SELECT t_order.* FROM t_order ORDER BY t_order.order_id" db-types="H2,MySQL" />
     <sql-case id="select_order_by_with_star_no_table_alias" value="SELECT * FROM t_order ORDER BY order_id" db-types="H2,MySQL" />
     <sql-case id="select_order_by_with_table_star_without_table_name" value="SELECT i.*, o.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id ORDER BY item_id" db-types="H2,MySQL" />
-    <sql-case id="select_order_by_expression_binary_operation" value="select * from t_order order by 1+1" db-types="MySQL,Presto,Doris" />
+    <sql-case id="select_order_by_expression_binary_operation" value="select * from t_order order by 1+1" db-types="MySQL,Presto,Doris,Firebird" />
+    <sql-case id="select_order_by_position_oracle" value="SELECT order_id, user_id FROM t_order ORDER BY 1" db-types="Oracle" />
 </sql-cases>

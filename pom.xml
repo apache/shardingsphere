@@ -51,7 +51,10 @@
     
     <properties>
         <!-- Environments -->
-        <java.version>1.8</java.version>
+        <java.version>8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <remoteresources.skip>true</remoteresources.skip>
@@ -332,6 +335,17 @@
                 <version>${netty.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-codec-protobuf</artifactId>
+                <version>${netty.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.protobuf.nano</groupId>
+                        <artifactId>protobuf-javanano</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             
             <dependency>

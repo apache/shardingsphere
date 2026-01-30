@@ -18,4 +18,6 @@
 
 <sql-cases>
     <sql-case id="drop_resource_group" value="DROP RESOURCE GROUP rg" db-types="MySQL,Doris" />
+    <sql-case id="drop_sql_block_rule_single" value="DROP SQL_BLOCK_RULE test_rule1" db-types="Doris" />
+    <sql-case id="drop_sql_block_rule_multiple" value="DROP SQL_BLOCK_RULE test_rule1, test_rule2" db-types="Doris" />
 </sql-cases>

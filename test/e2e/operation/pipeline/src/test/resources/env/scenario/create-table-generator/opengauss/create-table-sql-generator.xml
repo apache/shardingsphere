@@ -35,7 +35,7 @@
                 WITH (orientation=row, compression=no)
             </sql>
             <sql>
-                ALTER TABLE public.t_order ADD CONSTRAINT t_order_pkey PRIMARY KEY (order_id)
+                ALTER TABLE t_order ADD CONSTRAINT t_order_pkey PRIMARY KEY (order_id)
             </sql>
         </output>
     </create-table-generator-assertion>
@@ -56,12 +56,12 @@
                 order_id integer NOT NULL,
                 user_id integer NOT NULL,
                 status character varying(45),
-                creation_date date
+                creation_date timestamp(0) without time zone
                 )
                 WITH (orientation=row, compression=no)
             </sql>
             <sql>
-                ALTER TABLE public.t_order_item ADD CONSTRAINT t_order_item_pkey PRIMARY KEY (item_id)
+                ALTER TABLE t_order_item ADD CONSTRAINT t_order_item_pkey PRIMARY KEY (item_id)
             </sql>
         </output>
     </create-table-generator-assertion>

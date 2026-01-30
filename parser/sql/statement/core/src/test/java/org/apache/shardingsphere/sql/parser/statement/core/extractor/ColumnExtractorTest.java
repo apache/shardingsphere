@@ -78,10 +78,9 @@ class ColumnExtractorTest {
         assertThat(toColumnNames(ColumnExtractor.extractColumnSegments(createWhereSegments())), is(Arrays.asList("foo_name", "bar_pwd")));
     }
     
-    @ParameterizedTest(name = "SelectStatement: {0}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideSelectStatements")
-    void assertExtractFromSelectStatement(final String name, final SelectStatement selectStatement, final boolean containsSubQuery,
-                                          final List<String> expectedColumnNames) {
+    void assertExtractFromSelectStatement(final String name, final SelectStatement selectStatement, final boolean containsSubQuery, final List<String> expectedColumnNames) {
         Collection<ColumnSegment> columnSegments = new LinkedList<>();
         ColumnExtractor.extractFromSelectStatement(columnSegments, selectStatement, containsSubQuery);
         assertThat(toColumnNames(columnSegments), is(expectedColumnNames));

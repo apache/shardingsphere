@@ -121,7 +121,7 @@ An example of adding a MySQL JDBC Driver dependency is as follows. The relevant 
 
 Contributors must have installed on their devices,
 
-1. OpenJDK 11 or higher
+1. OpenJDK 17 or higher
 
 2. Docker Engine that can run Linux Containers
 
@@ -167,8 +167,7 @@ newgrp docker
 
 sudo tee /etc/docker/daemon.json <<EOF
 {
-  "log-driver": "local",
-  "min-api-version": "1.24"
+  "log-driver": "local"
 }
 EOF
 
@@ -204,6 +203,7 @@ After enabling WSL2, download and install `rancher-sandbox/rancher-desktop` usin
 and configure `dockerd(moby)` to use the `Container Engine`.
 
 ```shell
+[Environment]::SetEnvironmentVariable('DOCKER_API_VERSION','1.44','Machine')
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
 # Open a new PowerShell 7 terminal
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false

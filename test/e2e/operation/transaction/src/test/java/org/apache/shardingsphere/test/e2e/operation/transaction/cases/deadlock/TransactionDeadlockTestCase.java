@@ -33,6 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -79,7 +80,8 @@ public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON
-                assertThat(ex.getMessage(), containsString("Lock wait timeout exceeded; try restarting transaction"));
+                assertThat(ex.getMessage(),
+                        anyOf(containsString("Lock wait timeout exceeded; try restarting transaction"), containsString("Deadlock found when trying to get lock; try restarting transaction")));
             }
         }
         log.info("The deadlock test case execution time is: {}", System.currentTimeMillis() - startTime);

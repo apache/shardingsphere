@@ -26,10 +26,13 @@ import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableR
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.export.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -53,6 +56,7 @@ import org.mockito.MockedStatic;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -78,7 +82,8 @@ class DistSQLQueryProxyBackendHandlerTest {
     
     @Test
     void assertExecuteWithUnknownDatabase() {
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData();
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()),
+                new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
         MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(connectionSession.getUsedDatabaseName()).thenReturn("unknown");
@@ -98,7 +103,7 @@ class DistSQLQueryProxyBackendHandlerTest {
     @Test
     void assertExecute() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, mock(), mock(), Collections.singleton(new ShardingSphereSchema("foo_db", createTables(), Collections.emptyList())));
+                "foo_db", databaseType, mock(), mock(), Collections.singleton(new ShardingSphereSchema("foo_db", databaseType, createTables(), Collections.emptyList())));
         ContextManager contextManager = mock(ContextManager.class);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         assertDoesNotThrow(() -> new DistSQLQueryProxyBackendHandler(createSqlStatement(), mock(), mock(ConnectionSession.class, RETURNS_DEEP_STUBS), contextManager).execute());

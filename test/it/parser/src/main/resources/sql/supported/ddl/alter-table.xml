@@ -244,6 +244,8 @@
     <sql-case id="alter_table_modify_constraint_rely1" value="ALTER TABLE time MODIFY CONSTRAINT pk_time RELY" db-types="Oracle" />
     <sql-case id="alter_table_modify_constraint_rely2" value="ALTER TABLE times MODIFY CONSTRAINT time_pk RELY" db-types="Oracle" />
     <sql-case id="alter_table_modify_constraint_rely3" value="ALTER TABLE sales MODIFY CONSTRAINT sales_time_fk RELY" db-types="Oracle" />
+    <sql-case id="alter_table_modify_primary_key_rely" value="ALTER TABLE sales MODIFY PRIMARY KEY RELY" db-types="Oracle" />
+    <sql-case id="alter_table_modify_collection_retrieval_locator" value="ALTER TABLE nested_table_parent MODIFY NESTED TABLE child_tbl RETURN AS LOCATOR" db-types="Oracle" />
     <sql-case id="alter_table_enable_row_movement" value="ALTER TABLE table ENABLE ROW MOVEMENT" db-types="Oracle" />
     <sql-case id="alter_table_set_interval" value="ALTER TABLE transactions SET INTERVAL()" db-types="Oracle" />
     <sql-case id="alter_table_add_primary_key_xmldata" value="ALTER TABLE xwarehouses ADD (PRIMARY KEY(XMLDATA.&quot;WarehouseId&quot;))" db-types="Oracle" />
@@ -374,8 +376,26 @@
     <sql-case id="alter_drop_tag_basic" value="ALTER TABLE test DROP TAG tag1;" db-types="Hive" />
     <sql-case id="alter_drop_tag_if_exists" value="ALTER TABLE test DROP TAG IF EXISTS tag1;" db-types="Hive" />
     <sql-case id="alter_table_rename_table_doris" value="ALTER TABLE table1 RENAME table2" db-types="Doris" />
+    <sql-case id="alter_table_without_actions_doris" value="ALTER TABLE t_order" db-types="Doris" />
     <sql-case id="alter_table_rename_column_doris" value="ALTER TABLE example_table RENAME COLUMN c1 c2" db-types="Doris" />
     <sql-case id="alter_table_rename_rollup" value="ALTER TABLE example_table RENAME ROLLUP rollup1 rollup2" db-types="Doris" />
     <sql-case id="alter_table_rename_partition" value="ALTER TABLE example_table RENAME PARTITION partition1 partition2" db-types="Doris" />
     <sql-case id="alter_table_with_algorithm_lock_doris" value="ALTER TABLE t_order ADD COLUMN col_alg INT, ALGORITHM=INSTANT, LOCK=NONE" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_lock_mysql" value="ALTER TABLE t_order ADD COLUMN col_alg INT, ALGORITHM=INPLACE, LOCK=EXCLUSIVE" db-types="MySQL" />
+    <sql-case id="alter_table_drop_column_doris" value="ALTER TABLE t_order DROP COLUMN old_col" db-types="Doris" />
+    <sql-case id="alter_table_drop_index_doris" value="ALTER TABLE t_order DROP INDEX idx_old" db-types="Doris" />
+    <sql-case id="alter_table_convert_charset_collate_doris" value="ALTER TABLE t_order CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_bin" db-types="Doris" />
+    <sql-case id="alter_table_add_check_constraint_doris" value="ALTER TABLE t_order ADD CONSTRAINT ck_order CHECK (order_id &gt; 0)" db-types="Doris" />
+    <sql-case id="alter_table_drop_constraint_doris" value="ALTER TABLE t_order DROP CONSTRAINT ck_order" db-types="Doris" />
+    <sql-case id="alter_table_rename_index_doris" value="ALTER TABLE t_order RENAME INDEX idx_old TO idx_new" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_default_doris" value="ALTER TABLE t_order ADD COLUMN col_alg_def INT, ALGORITHM=DEFAULT" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_inplace_doris" value="ALTER TABLE t_order ADD COLUMN col_alg_inplace INT, ALGORITHM=INPLACE" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_copy_doris" value="ALTER TABLE t_order ADD COLUMN col_alg_copy INT, ALGORITHM=COPY" db-types="Doris" />
+    <sql-case id="alter_table_with_lock_default_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_default INT, LOCK=DEFAULT" db-types="Doris" />
+    <sql-case id="alter_table_with_algorithm_default_mysql" value="ALTER TABLE t_order ADD COLUMN col_alg_def INT, ALGORITHM=DEFAULT" db-types="MySQL" />
+    <sql-case id="alter_table_with_algorithm_instant_mysql" value="ALTER TABLE t_order ADD COLUMN col_alg_instant INT, ALGORITHM=INSTANT" db-types="MySQL" />
+    <sql-case id="alter_table_with_lock_none_mysql" value="ALTER TABLE t_order ADD COLUMN col_lock_none INT, LOCK=NONE" db-types="MySQL" />
+    <sql-case id="alter_table_with_lock_default_mysql" value="ALTER TABLE t_order ADD COLUMN col_lock_default INT, LOCK=DEFAULT" db-types="MySQL" />
+    <sql-case id="alter_table_with_lock_shared_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_shared INT, LOCK=SHARED" db-types="Doris" />
+    <sql-case id="alter_table_with_lock_exclusive_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_exclusive INT, LOCK=EXCLUSIVE" db-types="Doris" />
 </sql-cases>

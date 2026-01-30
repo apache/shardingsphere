@@ -67,4 +67,5 @@
     <sql-case id="create_procedure_with_explain_table" value="create procedure p1() begin explain t1; end;" db-types="MySQL"/>
     <sql-case id="create_procedure_with_analyze_table_update" value="CREATE PROCEDURE p() ANALYZE TABLE v UPDATE HISTOGRAM ON w;" db-types="MySQL"/>
     <sql-case id="create_procedure_with_analyze_table" value="CREATE PROCEDURE p() BEGIN ANALYZE TABLE v; END;" db-types="MySQL"/>
+    <sql-case id="create_procedure_doris_control_flow" value="CREATE PROCEDURE doris_proc_control() BEGIN DECLARE a INT DEFAULT 0; IF a = 0 THEN SET a = 1; ELSE SET a = 2; END IF; WHILE a &lt; 3 DO SET a = a + 1; END WHILE; REPEAT SET a = a - 1; UNTIL a = 0 END REPEAT; loop_label: LOOP LEAVE loop_label; END LOOP; CASE a WHEN 0 THEN SET a = 0; ELSE SET a = 1; END CASE; SELECT a; END" db-types="Doris"/>
 </sql-cases>

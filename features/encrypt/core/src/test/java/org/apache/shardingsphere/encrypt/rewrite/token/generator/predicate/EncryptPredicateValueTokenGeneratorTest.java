@@ -37,9 +37,11 @@ class EncryptPredicateValueTokenGeneratorTest {
     
     @Test
     void assertIsGenerateSQLToken() {
+        UpdateStatementContext updateStatementContext = EncryptGeneratorFixtureBuilder.createUpdateStatementContext();
+        Collection<EncryptCondition> encryptConditions = getEncryptConditions(updateStatementContext);
         EncryptPredicateValueTokenGenerator generator = new EncryptPredicateValueTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule(),
-                new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), Collections.emptyList());
-        assertTrue(generator.isGenerateSQLToken(EncryptGeneratorFixtureBuilder.createUpdateStatementContext()));
+                new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), encryptConditions);
+        assertTrue(generator.isGenerateSQLToken(updateStatementContext));
     }
     
     @Test

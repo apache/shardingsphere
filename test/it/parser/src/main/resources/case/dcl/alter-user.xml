@@ -34,6 +34,25 @@
     <alter-user sql-case-id="alter_user_with_password_option" />
     <alter-user sql-case-id="alter_user_with_password_options" />
     <alter-user sql-case-id="alter_user_with_lock_option" />
+    <alter-user sql-case-id="alter_user_account_unlock_mysql" />
+    <alter-user sql-case-id="alter_user_with_max_connections_per_hour_mysql" />
+    <alter-user sql-case-id="alter_user_with_max_user_connections_mysql" />
+    <alter-user sql-case-id="alter_user_require_none_mysql" />
+    <alter-user sql-case-id="alter_user_require_ssl_mysql" />
+    <alter-user sql-case-id="alter_user_require_x509_mysql" />
+    <alter-user sql-case-id="alter_user_require_tls_specified_mysql" />
+    <alter-user sql-case-id="alter_user_password_expire_interval_mysql" />
+    <alter-user sql-case-id="alter_user_password_expire_never_mysql" />
+    <alter-user sql-case-id="alter_user_password_history_mysql" />
+    <alter-user sql-case-id="alter_user_password_reuse_interval_mysql" />
+    <alter-user sql-case-id="alter_user_password_require_optional_mysql" />
+    <alter-user sql-case-id="alter_user_password_require_yes_mysql" />
+    <alter-user sql-case-id="alter_user_failed_login_and_lock_time_mysql" />
+    <alter-user sql-case-id="alter_user_password_lock_time_unbounded_mysql" />
+    <alter-user sql-case-id="alter_user_identified_with_plugin_mysql" />
+    <alter-user sql-case-id="alter_user_identified_with_plugin_as_mysql" />
+    <alter-user sql-case-id="alter_user_identified_with_plugin_by_mysql" />
+    <alter-user sql-case-id="alter_user_identified_with_plugin_by_random_mysql" />
     <alter-user sql-case-id="alter_user_with_options" />
     <alter-user sql-case-id="alter_external_user" />
     <alter-user sql-case-id="alter_global_user" />
@@ -71,4 +90,8 @@
     <alter-user sql-case-id="alter_user_identified_with_single_quoted" />
     <alter-user sql-case-id="alter_user_with_factor" />
     <alter-user sql-case-id="alter_user_with_password_doris" />
+    <alter-user sql-case-id="alter_user_doris_password_policy" />
+    <alter-user sql-case-id="alter_user_doris_account_lock_unlock" />
+    <alter-user sql-case-id="alter_user_doris_require_ssl" />
+    <alter-user sql-case-id="alter_user_doris_resource_limits" />
 </sql-parser-test-cases>

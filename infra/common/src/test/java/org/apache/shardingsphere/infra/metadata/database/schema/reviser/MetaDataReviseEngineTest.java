@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser;
 
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -30,10 +31,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class MetaDataReviseEngineTest {
     
-    private final MetaDataReviseEngine engine = new MetaDataReviseEngine(Collections.emptyList());
+    private final MetaDataReviseEngine engine = new MetaDataReviseEngine(Collections.emptyList(), mock(DatabaseType.class));
     
     @Test
     void assertRevise() {

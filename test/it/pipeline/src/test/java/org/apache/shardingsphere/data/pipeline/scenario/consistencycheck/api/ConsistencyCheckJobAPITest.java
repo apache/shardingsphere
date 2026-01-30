@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api;
 
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.pojo.ConsistencyCheckJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJob
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobConfigurationManager;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
 import org.apache.shardingsphere.data.pipeline.core.registrycenter.repository.PipelineGovernanceFacade;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
@@ -40,6 +42,7 @@ import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfiguratio
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -52,6 +55,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 
 class ConsistencyCheckJobAPITest {
     
@@ -85,7 +92,11 @@ class ConsistencyCheckJobAPITest {
         Collection<String> actualCheckJobIds = governanceFacade.getJobFacade().getCheck().listCheckJobIds(parentJobId);
         assertThat(actualCheckJobIds.size(), is(1));
         assertThat(actualCheckJobIds.iterator().next(), is(expectCheckJobId));
-        jobAPI.drop(parentJobId);
+        try (MockedStatic<PipelineDistributedBarrier> mocked = mockStatic(PipelineDistributedBarrier.class, RETURNS_DEEP_STUBS)) {
+            PipelineDistributedBarrier barrier = mock(PipelineDistributedBarrier.class, RETURNS_DEEP_STUBS);
+            mocked.when(() -> PipelineDistributedBarrier.getInstance(any(PipelineContextKey.class))).thenReturn(barrier);
+            jobAPI.drop(parentJobId);
+        }
         assertFalse(governanceFacade.getJobFacade().getConfiguration().isExisted(expectCheckJobId));
     }
     
@@ -107,12 +118,16 @@ class ConsistencyCheckJobAPITest {
             assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId), is(expectedSequence++));
         }
         expectedSequence = 2;
-        for (int i = 0; i < 2; i++) {
+        try (MockedStatic<PipelineDistributedBarrier> mocked = mockStatic(PipelineDistributedBarrier.class, RETURNS_DEEP_STUBS)) {
+            PipelineDistributedBarrier barrier = mock(PipelineDistributedBarrier.class, RETURNS_DEEP_STUBS);
+            mocked.when(() -> PipelineDistributedBarrier.getInstance(any(PipelineContextKey.class))).thenReturn(barrier);
+            for (int i = 0; i < 2; i++) {
+                jobAPI.drop(parentJobId);
+                String latestCheckJobId = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
+                assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId), is(expectedSequence--));
+            }
             jobAPI.drop(parentJobId);
-            String latestCheckJobId = governanceFacade.getJobFacade().getCheck().getLatestCheckJobId(parentJobId);
-            assertThat(ConsistencyCheckJobId.parseSequence(latestCheckJobId), is(expectedSequence--));
         }
-        jobAPI.drop(parentJobId);
         assertFalse(governanceFacade.getJobFacade().getCheck().findLatestCheckJobId(parentJobId).isPresent());
     }
     

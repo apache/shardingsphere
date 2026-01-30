@@ -32,6 +32,7 @@
     <sql-case id="create_view_as_simple_select3" value="CREATE VIEW emp AS SELECT empno, ename, mgr, deptno FROM company.emp" db-types="Oracle" />
     <sql-case id="create_view_as_simple_select4" value="CREATE VIEW emp_v AS SELECT empno, ename, deptno FROM emp" db-types="Oracle" />
     <sql-case id="create_view_as_simple_select5" value="CREATE VIEW hr_verify AS SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL, MANAGER_ID FROM EMPLOYEES" db-types="Oracle" />
+    <sql-case id="create_or_replace_view_simple_oracle" value="CREATE OR REPLACE VIEW v_or_replace AS SELECT 1 FROM dual" db-types="Oracle" />
     <sql-case id="create_view_as_select_with_condition1" value="CREATE VIEW emp_emp AS SELECT e1.ename, e2.empno, e2.deptno FROM emp e1, emp e2 WHERE e1.empno = e2.empno" db-types="Oracle" />
     <sql-case id="create_view_as_select_with_condition2" value="CREATE VIEW lowsal AS SELECT * FROM employees  WHERE salary &lt; 10000" db-types="Oracle" />
     <sql-case id="create_view_as_select_with_condition3" value="CREATE VIEW employees_departments AS SELECT employee_id, last_name, department_id FROM employees, departments WHERE employees.department_id = departments.department_id" db-types="Oracle" />

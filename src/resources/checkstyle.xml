@@ -223,7 +223,7 @@
         <module name="TodoComment" />
         <module name="TrailingComment" />
         <module name="UncommentedMain">
-            <property name="excludedClasses" value="\.Bootstrap" />
+            <property name="excludedClasses" value="\.Bootstrap$|ShardingSphereVersion$" />
         </module>
         <module name="UpperEll" />
         

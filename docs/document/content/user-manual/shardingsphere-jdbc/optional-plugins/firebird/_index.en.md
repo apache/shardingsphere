@@ -10,16 +10,11 @@ ShardingSphere's support for Firebird JDBC Driver is in an optional module.
 
 ## Prerequisites
 
-To use a `standardJdbcUrl` like `jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_0.fdb` for the data node in the ShardingSphere configuration file,
+To use a `jdbcUrl` like `jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_0.fdb` for the data node in the ShardingSphere configuration file,
 the possible Maven dependencies are as follows,
 
 ```xml
 <dependencies>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-jdbc</artifactId>
-        <version>${shardingsphere.version}</version>
-    </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-jdbc-dialect-firebird</artifactId>
@@ -84,27 +79,61 @@ class Solution {
 
 ### Create ShardingSphere data source in business project
 
-After the business project introduces the dependencies involved in the `prerequisites`, 
-write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project.
+After including the dependencies related to the `Prerequisites` in the business project, add the following additional dependencies,
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-url-classpath</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sharding-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-authority-simple</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
+Write the ShardingSphere data source configuration file `demo.yaml` on the classpath of the business project.
 
 ```yaml
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.firebirdsql.jdbc.FBDriver
-    standardJdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_0.fdb
+    jdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_0.fdb
     username: alice
     password: masterkey
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.firebirdsql.jdbc.FBDriver
-    standardJdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_1.fdb
+    jdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_1.fdb
     username: alice
     password: masterkey
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.firebirdsql.jdbc.FBDriver
-    standardJdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_2.fdb
+    jdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_2.fdb
     username: alice
     password: masterkey
 rules:

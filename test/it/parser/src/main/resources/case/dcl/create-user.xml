@@ -34,6 +34,25 @@
     <create-user sql-case-id="create_user_with_password_option" />
     <create-user sql-case-id="create_user_with_password_options" />
     <create-user sql-case-id="create_user_with_lock_option" />
+    <create-user sql-case-id="create_user_account_unlock_mysql" />
+    <create-user sql-case-id="create_user_with_max_connections_per_hour_mysql" />
+    <create-user sql-case-id="create_user_with_max_user_connections_mysql" />
+    <create-user sql-case-id="create_user_require_none_mysql" />
+    <create-user sql-case-id="create_user_require_ssl_mysql" />
+    <create-user sql-case-id="create_user_require_x509_mysql" />
+    <create-user sql-case-id="create_user_require_tls_specified_mysql" />
+    <create-user sql-case-id="create_user_password_expire_interval_mysql" />
+    <create-user sql-case-id="create_user_password_expire_never_mysql" />
+    <create-user sql-case-id="create_user_password_history_mysql" />
+    <create-user sql-case-id="create_user_password_reuse_interval_mysql" />
+    <create-user sql-case-id="create_user_password_require_optional_mysql" />
+    <create-user sql-case-id="create_user_password_require_yes_mysql" />
+    <create-user sql-case-id="create_user_failed_login_and_lock_time_mysql" />
+    <create-user sql-case-id="create_user_password_lock_time_unbounded_mysql" />
+    <create-user sql-case-id="create_user_identified_with_plugin_mysql" />
+    <create-user sql-case-id="create_user_identified_with_plugin_as_mysql" />
+    <create-user sql-case-id="create_user_identified_with_plugin_by_mysql" />
+    <create-user sql-case-id="create_user_identified_with_plugin_by_random_mysql" />
     <create-user sql-case-id="create_user_with_options" />
     <create-user sql-case-id="create_external_user" />
     <create-user sql-case-id="create_global_user" />
@@ -81,6 +100,7 @@
     <create-user sql-case-id="create_user_password_reuse_interval_default_doris" />
     <create-user sql-case-id="create_user_password_require_current_optional_doris" />
     <create-user sql-case-id="create_user_password_require_current_yes_doris" />
+    <create-user sql-case-id="create_user_password_require_current_default_doris" />
     <create-user sql-case-id="create_user_failed_login_and_lock_time_doris" />
     <create-user sql-case-id="create_user_password_lock_time_unbounded_doris" />
 </sql-parser-test-cases>

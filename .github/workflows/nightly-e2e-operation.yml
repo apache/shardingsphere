@@ -21,6 +21,11 @@ on:
   schedule:
     - cron: '0 19 * * 1-5' # Once a day between Monday and Friday. UTC time
   workflow_dispatch:
+    inputs:
+      operation:
+        description: 'operation'
+        required: true
+        default: '[ "transaction", "pipeline", "showprocesslist" ]'
 
 concurrency:
   group: nightly-e2e-operation-${{ github.workflow }}-${{ github.ref }}
@@ -44,8 +49,8 @@ jobs:
       max-parallel: 15
       fail-fast: false
       matrix:
-        java-version: [ 11, 21 ]
-        operation: [ transaction, pipeline, showprocesslist ]
+        java-version: [ 17, 21 ]
+        operation: ${{ fromJson(github.event.inputs.operation || '[ "transaction", "pipeline", "showprocesslist" ]') }}
         image: [
           { type: "e2e.docker.database.mysql.images", version: "mysql:5.7" },
           { type: "e2e.docker.database.mysql.images", version: "mysql:8.0" },
@@ -67,19 +72,12 @@ jobs:
             image: { type: "e2e.docker.database.opengauss.images", version: "opengauss/opengauss:3.1.0" }
     steps:
       - uses: actions/checkout@v6.0.1
-      - name: Retrieve Maven Caches
-        uses: actions/cache@v5.0.1
-        with:
-          path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-${{ github.sha }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Setup JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
+          cache: 'maven'
       - name: Build ${{ matrix.operation }} E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.operation }} -Pe2e.env.docker -DskipTests
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}

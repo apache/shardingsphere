@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.general;
 
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -38,14 +38,14 @@ import java.sql.SQLException;
  * E2E IT for time types of MySQL, includes.
  * 1) datetime,timestamp,date default null
  */
-@PipelineE2ESettings(fetchSingle = true, database = @PipelineE2ESettings.PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/common/none.xml"))
+@PipelineE2ESettings(fetchSingle = true, database = @PipelineE2ESettings.PipelineE2EDatabaseSettings(type = "MySQL"))
 class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertIllegalTimeTypesValueMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql = "CREATE TABLE `time_e2e` ( `id` int NOT NULL, `t_timestamp` timestamp NULL DEFAULT NULL, `t_datetime` datetime DEFAULT NULL, `t_date` date DEFAULT NULL, "
                     + "`t_year` year DEFAULT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;";
             containerComposer.sourceExecuteWithLog(sql);
@@ -53,12 +53,13 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);
             startMigration(containerComposer, "time_e2e", "time_e2e");
-            String jobId = listJobId(containerComposer).get(0);
-            containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
+            String jobId = distSQLFacade.listJobIds().get(0);
+            distSQLFacade.waitJobPreparingStageFinished(jobId);
             insertOneRecordWithZeroValue(containerComposer, 2);
-            containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-            loadAllSingleTables(containerComposer);
-            assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
+            distSQLFacade.waitJobIncrementalStageFinished(jobId);
+            distSQLFacade.loadAllSingleTables();
+            distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
         }
     }
     
@@ -74,7 +75,7 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
         }
     }
     
-    private static boolean isEnabled() {
-        return PipelineE2ECondition.isEnabled(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+    private static boolean isEnabled(final ExtensionContext context) {
+        return PipelineE2ECondition.isEnabled(context);
     }
 }

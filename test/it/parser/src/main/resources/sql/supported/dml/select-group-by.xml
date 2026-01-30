@@ -46,4 +46,5 @@
     <sql-case id="select_from_input_table" value="SELECT count(*) FROM input GROUP BY PartitionId, clusterid, tumblingwindow;" db-types="SQLServer"/>
     <sql-case id="select_group_by_top_column_value" value="SELECT TOP 10 hash_unique_bigint_id FROM dbo.TelemetryDS WHERE Timestamp BETWEEN @StartTime AND @EndTime GROUP BY hash_unique_bigint_id ORDER BY MAX(max_elapsed_time_microsec) DESC" db-types="SQLServer" />
     <sql-case id="select_group_by_count_with_tumblingwindow_function" value="SELECT count(*) FROM input GROUP BY clusterid,tumblingwindow(minutes, 5)" db-types="SQLServer" />
+    <sql-case id="select_group_by_rollup_oracle" value="SELECT dept, SUM(salary) FROM employees GROUP BY ROLLUP(dept)" db-types="Oracle" />
 </sql-cases>

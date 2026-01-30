@@ -66,8 +66,8 @@ class CreateIndexPushDownMetaDataRefresherTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertRefreshCreateIndex() {
-        ShardingSphereSchema schema = new ShardingSphereSchema(
-                "foo_schema", Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType,
+                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
         ShardingSphereDatabase database = createDatabase(Collections.singleton(schema));
         refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, createCreateIndexStatement(), new ConfigurationProperties(new Properties()));
         ArgumentCaptor<Collection<ShardingSphereTable>> alteredTablesCaptor = ArgumentCaptor.forClass(Collection.class);

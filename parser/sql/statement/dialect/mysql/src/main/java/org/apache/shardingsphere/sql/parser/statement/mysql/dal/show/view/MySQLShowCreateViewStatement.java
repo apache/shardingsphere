@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.view;
 
-import com.sphereex.dbplusengine.sql.parser.statement.core.statement.attribute.type.ViewInResultSetSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ViewInResultSetSQLStatementAttribute;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.DatabaseSelectRequiredSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
@@ -30,15 +31,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowCreateViewStatement extends DALStatement {
     
-    private final String viewName;
+    private final SimpleTableSegment viewName;
     
-    public MySQLShowCreateViewStatement(final DatabaseType databaseType, final String viewName) {
+    public MySQLShowCreateViewStatement(final DatabaseType databaseType, final SimpleTableSegment viewName) {
         super(databaseType);
         this.viewName = viewName;
     }
     
     @Override
     public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new ViewInResultSetSQLStatementAttribute(2, viewName));
+        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new ViewInResultSetSQLStatementAttribute(2, getViewName().getTableName().getIdentifier().getValue()));
     }
 }

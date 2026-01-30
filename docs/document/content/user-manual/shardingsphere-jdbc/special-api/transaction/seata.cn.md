@@ -18,11 +18,6 @@ ShardingSphere 的 Seata 集成仅在 `apache/incubator-seata:v2.5.0` 或更高�
     <dependencies>
       <dependency>
          <groupId>org.apache.shardingsphere</groupId>
-         <artifactId>shardingsphere-jdbc</artifactId>
-         <version>${shardingsphere.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.shardingsphere</groupId>
          <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
          <version>${shardingsphere.version}</version>
       </dependency>
@@ -206,9 +201,39 @@ config {
 
 ### 在业务项目添加 JDBC Driver 和创建 ShardingSphere 配置文件
 
-在业务项目引入前提条件涉及的依赖后，额外添加 MySQL JDBC Driver 的 Maven 依赖，
+在业务项目引入`前提条件`涉及的依赖后，额外引入如下依赖，
 
 ```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-url-classpath</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sharding-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-authority-simple</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
 <dependency>
     <groupId>com.mysql</groupId>
     <artifactId>mysql-connector-j</artifactId>
@@ -223,19 +248,19 @@ dataSources:
    ds_0:
       dataSourceClassName: com.zaxxer.hikari.HikariDataSource
       driverClassName: com.mysql.cj.jdbc.Driver
-      standardJdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0?sslMode=REQUIRED
+      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_0?sslMode=REQUIRED
       username: root
       password: example
    ds_1:
       dataSourceClassName: com.zaxxer.hikari.HikariDataSource
       driverClassName: com.mysql.cj.jdbc.Driver
-      standardJdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1?sslMode=REQUIRED
+      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_1?sslMode=REQUIRED
       username: root
       password: example
    ds_2:
       dataSourceClassName: com.zaxxer.hikari.HikariDataSource
       driverClassName: com.mysql.cj.jdbc.Driver
-      standardJdbcUrl: jdbc:mysql://localhost:3306/demo_ds_2?sslMode=REQUIRED
+      jdbcUrl: jdbc:mysql://localhost:3306/demo_ds_2?sslMode=REQUIRED
       username: root
       password: example
 rules:
@@ -617,4 +642,4 @@ org.apache.seata.common.loader.EnhancedServiceNotFoundException: not found servi
 ```
 
 根据 https://github.com/apache/incubator-seata/issues/6886 ，抛出此异常是 Seata Client 的预期行为。
-用户可通过在业务项目的 classpath 放置 `logback.xml` 对 Seata Client 的日志加以配置。
+若使用 logback 作为 SLF4J 的实现，用户可通过在业务项目的 classpath 放置 `logback.xml` 对 Seata Client 的日志加以配置。

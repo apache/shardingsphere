@@ -50,6 +50,15 @@
         </projections>
     </select>
 
+    <select sql-case-id="select_count_star_alias_sql92">
+        <from>
+            <simple-table name="t_order" start-index="28" stop-index="34" />
+        </from>
+        <projections start-index="7" stop-index="21">
+            <aggregation-projection type="COUNT" alias="cnt" expression="COUNT(*)" start-index="7" stop-index="14" />
+        </projections>
+    </select>
+
     <select sql-case-id="select_count_with_sub">
         <from>
             <simple-table name="t_order" start-index="37" stop-index="43" />

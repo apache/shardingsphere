@@ -68,8 +68,9 @@ class PostgreSQLDataRowPacketTest {
     void assertWriteWithBytes() {
         PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(new byte[]{'a'}));
         actual.write(payload);
-        verify(payload).writeInt4(new byte[]{'a'}.length);
-        verify(payload).writeBytes(new byte[]{'a'});
+        byte[] expectedBytes = buildExpectedByteaText(new byte[]{'a'});
+        verify(payload).writeInt4(expectedBytes.length);
+        verify(payload).writeBytes(expectedBytes);
     }
     
     @Test
@@ -121,5 +122,18 @@ class PostgreSQLDataRowPacketTest {
     @Test
     void assertGetIdentifier() {
         assertThat(new PostgreSQLDataRowPacket(Collections.emptyList()).getIdentifier(), is(PostgreSQLMessagePacketType.DATA_ROW));
+    }
+    
+    private byte[] buildExpectedByteaText(final byte[] value) {
+        byte[] result = new byte[value.length * 2 + 2];
+        result[0] = '\\';
+        result[1] = 'x';
+        byte[] hexDigits = "0123456789abcdef".getBytes(StandardCharsets.US_ASCII);
+        for (int i = 0; i < value.length; i++) {
+            int unsignedByte = value[i] & 0xFF;
+            result[2 + i * 2] = hexDigits[unsignedByte >>> 4];
+            result[3 + i * 2] = hexDigits[unsignedByte & 0x0F];
+        }
+        return result;
     }
 }

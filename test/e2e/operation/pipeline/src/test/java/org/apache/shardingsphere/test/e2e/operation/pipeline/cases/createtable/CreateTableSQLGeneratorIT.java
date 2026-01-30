@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.createtable;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.type.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.entity.CreateTableSQLGeneratorAssertionEntity;
@@ -33,6 +32,7 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.Pip
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -51,9 +51,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @PipelineE2ESettings(database = {
-        @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/create-table-generator/mysql/create-table-sql-generator.xml"),
-        @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/scenario/create-table-generator/postgresql/create-table-sql-generator.xml"),
-        @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/scenario/create-table-generator/opengauss/create-table-sql-generator.xml")})
+        @PipelineE2EDatabaseSettings(type = "MySQL"),
+        @PipelineE2EDatabaseSettings(type = "PostgreSQL"),
+        @PipelineE2EDatabaseSettings(type = "openGauss")})
 class CreateTableSQLGeneratorIT {
     
     private static final String DEFAULT_SCHEMA = "public";
@@ -74,8 +74,9 @@ class CreateTableSQLGeneratorIT {
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertGenerateCreateTableSQL(final PipelineTestParameter testParam) throws SQLException {
         startStorageContainer(testParam.getDatabaseType(), testParam.getDatabaseContainerImage());
+        String resourcePath = String.format("env/scenario/create-table-generator/%s/create-table-sql-generator.xml", testParam.getDatabaseType().getType().toLowerCase());
         CreateTableSQLGeneratorAssertionsRootEntity rootEntity = JAXB.unmarshal(
-                Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParam.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
+                Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(resourcePath)), CreateTableSQLGeneratorAssertionsRootEntity.class);
         DataSource dataSource = storageContainer.createAccessDataSource(DEFAULT_DATABASE);
         try (
                 Connection connection = dataSource.getConnection();
@@ -115,8 +116,7 @@ class CreateTableSQLGeneratorIT {
         return result;
     }
     
-    private static boolean isEnabled() {
-        return PipelineE2ECondition.isEnabled(TypedSPILoader.getService(DatabaseType.class, "MySQL"),
-                TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), TypedSPILoader.getService(DatabaseType.class, "openGauss"));
+    private static boolean isEnabled(final ExtensionContext context) {
+        return PipelineE2ECondition.isEnabled(context);
     }
 }

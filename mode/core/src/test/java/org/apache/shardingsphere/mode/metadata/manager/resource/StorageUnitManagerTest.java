@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.manager.resource;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -67,7 +68,7 @@ class StorageUnitManagerTest {
         SwitchingResource switchingResource = new SwitchingResource(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyList(), Collections.emptyMap());
         when(resourceSwitchManager.switchByRegisterStorageUnit(any(ResourceMetaData.class), any(Map.class), anyBoolean())).thenReturn(switchingResource);
         ShardingSphereDatabase reloadDatabase = mock(ShardingSphereDatabase.class);
-        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema")));
+        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         MetaDataContexts reloadMetaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(reloadMetaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(reloadDatabase);
         try (
@@ -101,7 +102,7 @@ class StorageUnitManagerTest {
         ShardingSphereDatabase reloadDatabase = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         MetaDataContexts reloadMetaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(reloadMetaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(reloadDatabase);
-        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema")));
+        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createBySwitchResource(eq(DATABASE_NAME), eq(true), eq(switchingResource), eq(metaDataContexts))).thenReturn(reloadMetaDataContexts))) {
@@ -132,7 +133,7 @@ class StorageUnitManagerTest {
         ShardingSphereDatabase reloadDatabase = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         MetaDataContexts reloadMetaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(reloadMetaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(reloadDatabase);
-        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema")));
+        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createBySwitchResource(eq(DATABASE_NAME), eq(false), eq(switchingResource), eq(metaDataContexts))).thenReturn(reloadMetaDataContexts))) {

@@ -49,7 +49,7 @@ public final class GenericSchemaManager {
     }
     
     private static ShardingSphereSchema getToBeAlteredSchemaWithTablesAdded(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
-        return new ShardingSphereSchema(currentSchema.getName(), getToBeAddedTables(reloadSchema, currentSchema), new LinkedList<>());
+        return new ShardingSphereSchema(currentSchema.getName(), reloadSchema.getProtocolType(), getToBeAddedTables(reloadSchema, currentSchema), new LinkedList<>());
     }
     
     /**
@@ -79,7 +79,7 @@ public final class GenericSchemaManager {
     }
     
     private static ShardingSphereSchema getToBeAlteredSchemaWithTablesDropped(final ShardingSphereSchema reloadSchema, final ShardingSphereSchema currentSchema) {
-        return new ShardingSphereSchema(currentSchema.getName(), getToBeDroppedTables(reloadSchema, currentSchema), new LinkedList<>());
+        return new ShardingSphereSchema(currentSchema.getName(), reloadSchema.getProtocolType(), getToBeDroppedTables(reloadSchema, currentSchema), new LinkedList<>());
     }
     
     /**

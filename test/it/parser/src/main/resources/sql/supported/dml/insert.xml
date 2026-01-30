@@ -44,6 +44,7 @@
     <sql-case id="insert_without_columns_and_with_generate_key_column" value="INSERT INTO t_order_item VALUES(?, ?, ?, 'insert', '2017-08-08')" />
     <sql-case id="insert_without_columns_and_without_generate_key_column" value="INSERT INTO t_order_item VALUES(?, ?, 'insert', '2017-08-08')" />
     <sql-case id="insert_set_without_generate_key_column" value="INSERT INTO t_order_item SET order_id = ?, user_id = ?, status = 'insert', creation_date='2017-08-08'" db-types="MySQL" />
+    <sql-case id="insert_set_with_row_alias" value="INSERT INTO t_order SET a = 1 AS new_alias(a)" db-types="MySQL" />
     <sql-case id="insert_with_batch" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?), (?, ?, ?)" db-types="MySQL, SQLServer, PostgreSQL,openGauss,Doris" />
     <sql-case id="insert_with_batch_and_irregular_parameters" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, 1, 'insert'), (?, ?, ?)" db-types="MySQL, SQLServer, PostgreSQL,openGauss,Doris" />
     <sql-case id="insert_with_batch_and_composite_expression" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, SUBSTR(?, 1)), (?, ?, SUBSTR(?, 1))" db-types="H2,MySQL" />
@@ -92,6 +93,7 @@
     <sql-case id="insert_with_multitable_element" value="INSERT ALL INTO sales (prod_id, cust_id, time_id, amount) VALUES (product_id, customer_id, weekly_start_date, sales_sun) INTO sales (prod_id, cust_id, time_id, amount) VALUES (product_id, customer_id, sales_mon, weekly_start_date+1) SELECT product_id, customer_id, weekly_start_date, sales_sun, sales_mon FROM sales_input_table" db-types="Oracle" />
     <sql-case id="insert_all_with_multi_table_with_conditional_when" value="INSERT ALL WHEN order_total &lt;= 100000 THEN INTO small_orders WHEN order_total > 1000000 AND order_total &lt;= 200000 THEN INTO medium_orders WHEN order_total > 200000 THEN INTO large_orders SELECT order_id, order_total, sales_rep_id, customer_id FROM orders" db-types="Oracle" />
     <sql-case id="insert_all_with_multi_table_with_conditional_when_with_conditional_else" value="INSERT ALL WHEN order_total &lt;= 100000 THEN INTO small_orders WHEN order_total > 100000 AND order_total &lt;= 200000 THEN INTO medium_orders ELSE INTO large_orders SELECT order_id, order_total, sales_rep_id, customer_id FROM orders" db-types="Oracle" />
+    <sql-case id="insert_first_with_conditional_when_else" value="INSERT FIRST WHEN order_total &lt;= 100 THEN INTO small_orders VALUES (order_total) ELSE INTO big_orders VALUES (order_total) SELECT order_total FROM orders" db-types="Oracle" />
     <sql-case id="insert_with_rank_column" value="INSERT INTO sales (rank) VALUES (1)" db-types="Oracle" />
     <sql-case id="insert_with_schema" value="INSERT INTO db1.t_order VALUES (1,2,3)" />
     <sql-case id="insert_on_duplicate_key_update_nothing" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') ON DUPLICATE KEY UPDATE NOTHING" db-types="openGauss" />
@@ -159,6 +161,7 @@
     <sql-case id="insert_with_aes_encrypt" value="INSERT INTO t_order_item(item_id,encrypt) VALUES (1,AES_ENCRYPT('text','key_str'))" db-types="MySQL" />
     <sql-case id="insert_on_duplicate_key_update_with_values" value="INSERT INTO table (a,b,c) VALUES (1,2,3),(4,5,6) ON DUPLICATE KEY UPDATE c=VALUES(a)+VALUES(b);" db-types="MySQL" />
     <sql-case id="insert_returning_expressions" value="INSERT INTO t2 (id) VALUES (2),(3) RETURNING id,t&amp;t" db-types="MySQL,Firebird" />
+    <sql-case id="insert_default_firebird" value="INSERT INTO t_order (id) VALUES (DEFAULT)" db-types="Firebird"/>
     <sql-case id="insert_with_geom_collection_function" value="INSERT INTO t1 VALUES (GEOMCOLLECTION(POINT(0, 0)))" db-types="MySQL" />
     <sql-case id="insert_select_with_brackets" value="insert into t_order (order_id) (select order_id from t_order_item)" db-types="MySQL" />
     <sql-case id="insert_into_four_level_naming" value="INSERT INTO MyLinkServer.AdventureWorks2022.HumanResources.Department (Name, GroupName) VALUES (N'Public Relations', N'Executive General and Administration');" db-types="SQLServer"/>
@@ -199,4 +202,8 @@
     <sql-case id="insert_into_with_partition" value="INSERT INTO TABLE sales PARTITION (region='Asia') VALUES (1001, 'Laptop', 5999);" db-types="Hive" />
     <sql-case id="insert_into_without_val1" value="INSERT INTO TABLE sales PARTITION (region) VALUES (1001, 'Laptop', 5999);" db-types="Hive" />
     <sql-case id="insert_into_with_null" value="INSERT INTO TABLE user_info VALUES (301, NULL, 'New York'), (302, 'Charlie', NULL);" db-types="Hive" />
+    <sql-case id="insert_with_columns_sql92" value="INSERT INTO t_order(order_id, status) VALUES (1, 'ok')" db-types="SQL92" />
+    <sql-case id="insert_without_columns_sql92" value="INSERT INTO t_order VALUES (1, 'ok')" db-types="SQL92" />
+    <sql-case id="insert_with_default_sql92" value="INSERT INTO t_order(status) VALUES (DEFAULT)" db-types="SQL92" />
+    <sql-case id="insert_table_collection_oracle" value="INSERT INTO TABLE(SELECT t.nested_col FROM t_nested t) VALUES (1)" db-types="Oracle" />
 </sql-cases>

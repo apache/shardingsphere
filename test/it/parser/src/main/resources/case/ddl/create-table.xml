@@ -559,6 +559,68 @@
             <column name="column3" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_inline_foreign_key_sql92">
+        <table name="t_order_item" start-index="13" stop-index="24" />
+        <column-definition type="INT" start-index="27" stop-index="37">
+            <column name="item_id" />
+        </column-definition>
+        <column-definition type="INT" start-index="40" stop-index="117">
+            <column name="order_id" />
+            <referenced-table name="t_order" start-index="64" stop-index="70" />
+        </column-definition>
+        <column-definition type="INT" start-index="120" stop-index="130">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="133" stop-index="150">
+            <column name="status" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="153" stop-index="171">
+            <column name="column1" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="174" stop-index="192">
+            <column name="column2" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="195" stop-index="213">
+            <column name="column3" />
+        </column-definition>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_constraint_sql92">
+        <table name="t_constraint" start-index="13" stop-index="24" />
+        <column-definition type="INT" primary-key="true" start-index="27" stop-index="50">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="53" stop-index="70">
+            <column name="status" />
+        </column-definition>
+        <constraint-definition start-index="73" stop-index="119" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_decimal_scale_sql92">
+        <table name="t_decimal" start-index="13" stop-index="21" />
+        <column-definition type="DECIMAL" start-index="24" stop-index="43">
+            <column name="amount" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_named_pk_sql92">
+        <table name="t_pk" start-index="13" stop-index="16" />
+        <column-definition type="INT" start-index="19" stop-index="24">
+            <column name="id" />
+        </column-definition>
+        <constraint-definition constraint-name="pk_t_pk" start-index="27" stop-index="61">
+            <primary-key-column name="id" start-index="59" stop-index="60" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_check_constraint_sql92">
+        <table name="t_chk" start-index="13" stop-index="17" />
+        <column-definition type="INT" start-index="20" stop-index="29">
+            <column name="status" />
+        </column-definition>
+        <constraint-definition start-index="32" stop-index="70" />
+    </create-table>
     
     <create-table sql-case-id="create_table_with_inline_constraints">
         <table name="t_order" start-index="13" stop-index="19" />
@@ -2069,6 +2131,45 @@
                 <simple-table name="t_order" start-index="42" stop-index="48" />
             </from>
         </select>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_comment_doris" db-types="Doris">
+        <table name="t_comment" start-index="13" stop-index="21" />
+        <column-definition type="INT" start-index="24" stop-index="29">
+            <column name="id" start-index="24" stop-index="25" />
+        </column-definition>
+        <create-table-option start-index="32" stop-index="72">
+            <engine name="olap" start-index="32" stop-index="42" />
+            <comment text="'doris table comment'" start-index="52" stop-index="72" />
+        </create-table-option>
+    </create-table>
+    
+    <create-table sql-case-id="create_table_with_unique_constraint_doris" db-types="Doris">
+        <table name="t_unique" start-index="13" stop-index="20" />
+        <column-definition type="INT" start-index="23" stop-index="28">
+            <column name="id" start-index="23" stop-index="24" />
+        </column-definition>
+        <constraint-definition start-index="31" stop-index="41">
+            <index-column name="id" start-index="39" stop-index="40" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_foreign_key_constraint_doris" db-types="Doris">
+        <table name="t_fk" start-index="13" stop-index="16" />
+        <column-definition type="INT" start-index="19" stop-index="24">
+            <column name="id" start-index="19" stop-index="20" />
+        </column-definition>
+        <constraint-definition constraint-name="fk_order" start-index="27" stop-index="88">
+            <referenced-table name="ref_table" start-index="75" stop-index="83" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_inline_reference_doris" db-types="Doris">
+        <table name="t_col_fk" start-index="13" stop-index="20" />
+        <column-definition type="INT" start-index="23" stop-index="53">
+            <column name="id" start-index="23" stop-index="24" />
+            <referenced-table name="ref_table" start-index="41" stop-index="49" />
+        </column-definition>
     </create-table>
 
     <create-table sql-case-id="create_table_with_select_without_query" db-types="Oracle">
@@ -3752,6 +3853,49 @@
         <table name="t_blob_segment" start-index="13" stop-index="26" />
         <column-definition type="BLOB SUB_TYPE 0 SEGMENT SIZE 80" start-index="29" stop-index="67">
             <column name="payload" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_firebird_len">
+        <table name="t_firebird_len" start-index="13" stop-index="26" />
+        <column-definition type="INT" primary-key="true" start-index="29" stop-index="46">
+            <column name="id" />
+        </column-definition>
+        <column-definition type="DECIMAL" start-index="49" stop-index="68">
+            <column name="amount" />
+        </column-definition>
+        <column-definition type="CHAR" start-index="71" stop-index="82">
+            <column name="code" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_firebird_constraint">
+        <table name="t_firebird_constraint" start-index="13" stop-index="33" />
+        <column-definition type="INT" start-index="36" stop-index="41">
+            <column name="id" />
+        </column-definition>
+        <constraint-definition constraint-name="pk_t" start-index="44" stop-index="75">
+            <primary-key-column name="id" start-index="73" stop-index="74" />
+        </constraint-definition>
+        <constraint-definition constraint-name="fk_t" start-index="78" stop-index="139">
+            <referenced-table name="t_firebird_len" start-index="122" stop-index="135" />
+        </constraint-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_ref_column_oracle">
+        <table name="ref_table" start-index="13" stop-index="21" />
+        <column-definition type="person_t" start-index="24" stop-index="43">
+            <column name="ref_col" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_varchar2_char_length_oracle">
+        <table name="dt_len" start-index="13" stop-index="18" />
+        <column-definition type="VARCHAR2" start-index="21" stop-index="39">
+            <column name="c" />
+            <data-type value="VARCHAR2">
+                <data-type-length precision="10" type="CHAR" />
+            </data-type>
         </column-definition>
     </create-table>
 </sql-parser-test-cases>

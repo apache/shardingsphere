@@ -46,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.Ro
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XACommitStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XAPrepareStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.xa.XARollbackStatement;
@@ -139,7 +140,7 @@ public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitStartTransaction(final StartTransactionContext ctx) {
-        return new BeginTransactionStatement(getDatabaseType());
+        return new StartTransactionStatement(getDatabaseType());
     }
     
     @Override

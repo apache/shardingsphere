@@ -102,7 +102,7 @@ class RouteSQLRewriteEngineTest {
         Map<String, StorageUnit> storageUnits = mockStorageUnits(databaseType);
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
         when(result.getName()).thenReturn("foo_db");
-        when(result.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("test")));
+        when(result.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("test", mock(DatabaseType.class))));
         return result;
     }
     
@@ -126,6 +126,32 @@ class RouteSQLRewriteEngineTest {
         assertThat(actual.getSqlRewriteUnits().size(), is(1));
         assertThat(actual.getSqlRewriteUnits().values().iterator().next().getSql(), is("SELECT ? UNION ALL SELECT ?"));
         assertThat(actual.getSqlRewriteUnits().values().iterator().next().getParameters(), is(Arrays.asList(1, 1)));
+    }
+    
+    @Test
+    void assertRewriteWithStandardParameterBuilderWhenDistinctRow() {
+        SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(statementContext.getOrderByContext().getItems()).thenReturn(Collections.emptyList());
+        when(statementContext.getPaginationContext().isHasPagination()).thenReturn(false);
+        when(statementContext.getProjectionsContext().isDistinctRow()).thenReturn(true);
+        DatabaseType databaseType = mock(DatabaseType.class);
+        when(statementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
+        when(statementContext.getSqlStatement().getLock().isPresent()).thenReturn(false);
+        ShardingSphereDatabase database = mockDatabase(databaseType);
+        QueryContext queryContext = mockQueryContext(statementContext, "SELECT ?");
+        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(database, queryContext);
+        RouteContext routeContext = new RouteContext();
+        RouteUnit firstRouteUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_0")));
+        RouteUnit secondRouteUnit = new RouteUnit(new RouteMapper("ds", "ds_0"), Collections.singletonList(new RouteMapper("tbl", "tbl_1")));
+        routeContext.getRouteUnits().add(firstRouteUnit);
+        routeContext.getRouteUnits().add(secondRouteUnit);
+        RouteSQLRewriteResult actual = new RouteSQLRewriteEngine(
+                new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()), database, mock(RuleMetaData.class)).rewrite(sqlRewriteContext, routeContext, queryContext);
+        assertThat(actual.getSqlRewriteUnits().size(), is(2));
+        assertThat(actual.getSqlRewriteUnits().get(firstRouteUnit).getSql(), is("SELECT ?"));
+        assertThat(actual.getSqlRewriteUnits().get(firstRouteUnit).getParameters(), is(Collections.singletonList(1)));
+        assertThat(actual.getSqlRewriteUnits().get(secondRouteUnit).getSql(), is("SELECT ?"));
+        assertThat(actual.getSqlRewriteUnits().get(secondRouteUnit).getParameters(), is(Collections.singletonList(1)));
     }
     
     @Test

@@ -82,7 +82,7 @@ class SQLStatementCompilerIT {
         tables.add(createMultiTypesSecondTableMetaData());
         CalciteSchema calciteSchema = CalciteSchema.createRootSchema(true);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
-        calciteSchema.add(SCHEMA_NAME, new SQLFederationSchema(SCHEMA_NAME, new ShardingSphereSchema("foo_db", tables, Collections.emptyList()), databaseType));
+        calciteSchema.add(SCHEMA_NAME, new SQLFederationSchema(SCHEMA_NAME, new ShardingSphereSchema("foo_db", databaseType, tables, Collections.emptyList()), databaseType));
         sqlStatementCompiler = new SQLStatementCompiler(
                 new SQLFederationRelConverter(new CompilerContext(mock(SQLParserRule.class), calciteSchema, new CalciteConnectionConfigImpl(new Properties()), getOperatorTables()),
                         Collections.singletonList("federate_jdbc"), databaseType, EnumerableConvention.INSTANCE),

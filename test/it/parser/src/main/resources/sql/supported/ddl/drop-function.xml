@@ -25,4 +25,6 @@
     <sql-case id="drop_temporary_function_with_if_exists" value="DROP TEMPORARY FUNCTION IF EXISTS parse_json;" db-types="Hive" />
     <sql-case id="drop_function_basic" value="DROP FUNCTION calculate_score;" db-types="Hive" />
     <sql-case id="drop_function_with_if_exists" value="DROP FUNCTION IF EXISTS db1.calculate_score;" db-types="Hive" />
+    <sql-case id="drop_function_doris" value="DROP FUNCTION udf_drop" db-types="Doris" />
+    <sql-case id="drop_function_mysql" value="DROP FUNCTION func1" db-types="MySQL" />
 </sql-cases>

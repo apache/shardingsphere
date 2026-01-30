@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 
 class SQLStatementUtilsTest {
     
-    @ParameterizedTest(name = "{index}: {0}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideStatements")
     void assertGetType(final String name, final SQLStatement sqlStatement, final SQLStatementType expectedType) {
         assertThat(SQLStatementUtils.getType(sqlStatement), is(expectedType));

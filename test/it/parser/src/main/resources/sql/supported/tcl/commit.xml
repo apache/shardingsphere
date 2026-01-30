@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="commit" value="COMMIT" db-types="MySQL,Oracle,SQLServer,PostgreSQL,openGauss,Doris" />
+    <sql-case id="commit" value="COMMIT" db-types="MySQL,Oracle,SQLServer,PostgreSQL,openGauss,Doris,Firebird" />
     <sql-case id="commit_transaction" value="COMMIT TRANSACTION" db-types="SQLServer" />
     <sql-case id="commit_with_name" value="COMMIT TRANSACTION transaction1" db-types="SQLServer" />
     <sql-case id="commit_with_comment" value="COMMIT COMMENT 'comment1'" db-types="Oracle" />
@@ -28,4 +28,5 @@
     <sql-case id="commit_work" value="COMMIT WORK" db-types="Oracle" />
     <sql-case id="commit_write_batch" value="COMMIT WRITE BATCH" db-types="Oracle" />
     <sql-case id="commit_work_force" value="COMMIT WORK FORCE '22.14.67'" db-types="Oracle" />
+    <sql-case id="commit_sql92" value="COMMIT" db-types="SQL92" />
 </sql-cases>

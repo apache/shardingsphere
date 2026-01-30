@@ -251,6 +251,6 @@ class DatabaseMetaDataManagerTest {
     private ShardingSphereSchema createToBeAlteredSchema() {
         ShardingSphereTable beforeChangedTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereView beforeChangedView = new ShardingSphereView("foo_view", "");
-        return new ShardingSphereSchema("foo_schema", Collections.singleton(beforeChangedTable), Collections.singleton(beforeChangedView));
+        return new ShardingSphereSchema("foo_schema", mock(DatabaseType.class), Collections.singleton(beforeChangedTable), Collections.singleton(beforeChangedView));
     }
 }

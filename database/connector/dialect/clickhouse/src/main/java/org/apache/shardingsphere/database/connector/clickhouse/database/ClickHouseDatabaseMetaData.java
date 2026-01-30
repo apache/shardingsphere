@@ -43,6 +43,11 @@ public final class ClickHouseDatabaseMetaData implements DialectDatabaseMetaData
     }
     
     @Override
+    public boolean isCaseSensitive() {
+        return true;
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "ClickHouse";
     }

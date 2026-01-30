@@ -59,6 +59,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.CommentStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
@@ -400,8 +404,18 @@ public final class TableExtractor {
             extractTablesFromUpdate((UpdateStatement) sqlStatement);
         } else if (sqlStatement instanceof DeleteStatement) {
             extractTablesFromDelete((DeleteStatement) sqlStatement);
+        } else if (sqlStatement instanceof CreateTableStatement) {
+            extractTablesFromTableSegment(((CreateTableStatement) sqlStatement).getTable());
+        } else if (sqlStatement instanceof AlterTableStatement) {
+            extractTablesFromTableSegment(((AlterTableStatement) sqlStatement).getTable());
+        } else if (sqlStatement instanceof CommentStatement) {
+            extractTablesFromTableSegment(((CommentStatement) sqlStatement).getTable());
         } else if (sqlStatement instanceof CreateViewStatement) {
             extractTablesFromCreateViewStatement((CreateViewStatement) sqlStatement);
+        } else if (sqlStatement instanceof CreateIndexStatement) {
+            extractTablesFromTableSegment(((CreateIndexStatement) sqlStatement).getTable());
+        } else if (sqlStatement instanceof DropIndexStatement) {
+            ((DropIndexStatement) sqlStatement).getSimpleTable().ifPresent(this::extractTablesFromTableSegment);
         }
     }
     

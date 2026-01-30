@@ -27,6 +27,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
+        <maven.compiler.release>17</maven.compiler.release>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
     

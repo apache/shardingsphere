@@ -488,6 +488,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             if (null != ctx.FALSE()) {
                 operatorToken = ctx.FALSE().getSymbol();
             }
+            if (null != ctx.UNKNOWN()) {
+                operatorToken = ctx.UNKNOWN().getSymbol();
+            }
             int startIndex = null == operatorToken ? ctx.IS().getSymbol().getStopIndex() + 2 : operatorToken.getStartIndex();
             rightText = rightText + ctx.start.getInputStream().getText(new Interval(startIndex, ctx.stop.getStopIndex()));
             ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 2, ctx.stop.getStopIndex(), rightText);
@@ -1328,6 +1331,12 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         if (null != ctx.TILDE_()) {
             return new UnaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.simpleExpr(0)), "~", ctx.getText());
+        }
+        if (null != ctx.PLUS_()) {
+            return new UnaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.simpleExpr(0)), "+", ctx.getText());
+        }
+        if (null != ctx.MINUS_()) {
+            return new UnaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.simpleExpr(0)), "-", ctx.getText());
         }
         if (null != ctx.variable()) {
             return visit(ctx.variable());

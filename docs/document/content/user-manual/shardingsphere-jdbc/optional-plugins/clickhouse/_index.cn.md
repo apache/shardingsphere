@@ -10,16 +10,11 @@ ShardingSphere 对 ClickHouse JDBC Driver 的支持位于可选模块中。
 
 ## 前提条件
 
-要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:ch://localhost:8123/demo_ds_0` 的 `standardJdbcUrl`，
+要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:ch://localhost:8123/demo_ds_0` 的 `jdbcUrl`，
 可能的 Maven 依赖关系如下，
 
 ```xml
 <dependencies>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-jdbc</artifactId>
-        <version>${shardingsphere.version}</version>
-    </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-jdbc-dialect-clickhouse</artifactId>
@@ -53,15 +48,15 @@ services:
 ### 创建业务表
 
 通过第三方工具在 ClickHouse 内创建业务库与业务表。
-以 DBeaver Community 为例，若使用 Ubuntu 22.04.4，可通过 Snapcraft 快速安装，
+以 DBeaver Community 为例，若使用 Ubuntu 24.04，可通过 Snapcraft 快速安装，
 
 ```shell
 sudo apt update && sudo apt upgrade -y
-sudo snap install dbeaver-ce
+sudo snap install dbeaver-ce --classic
 snap run dbeaver-ce
 ```
 
-在 DBeaver Community 内，使用 `jdbc:ch://localhost:8123/default` 的 `standardJdbcUrl`，`default` 的`username` 连接至 ClickHouse，
+在 DBeaver Community 内，使用 `jdbc:ch://localhost:8123/default` 的 `jdbcUrl`，`default` 的`username` 连接至 ClickHouse，
 `password` 留空。
 执行如下 SQL，
 
@@ -73,7 +68,7 @@ CREATE DATABASE demo_ds_2;
 ```
 
 分别使用 `jdbc:ch://localhost:8123/demo_ds_0` ，
-`jdbc:ch://localhost:8123/demo_ds_1` 和 `jdbc:ch://localhost:8123/demo_ds_2` 的 `standardJdbcUrl` 连接至 ClickHouse 来执行如下 SQL，
+`jdbc:ch://localhost:8123/demo_ds_1` 和 `jdbc:ch://localhost:8123/demo_ds_2` 的 `jdbcUrl` 连接至 ClickHouse 来执行如下 SQL，
 
 ```sql
 -- noinspection SqlNoDataSourceInspectionForFile
@@ -92,26 +87,61 @@ TRUNCATE TABLE t_order;
 
 ### 在业务项目创建 ShardingSphere 数据源
 
-在业务项目引入`前提条件`涉及的依赖后，在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件`demo.yaml`，
+在业务项目引入`前提条件`涉及的依赖后，额外引入如下依赖，
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-url-classpath</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sharding-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-authority-simple</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
+在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件 `demo.yaml`，
 
 ```yaml
 dataSources:
     ds_0:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        standardJdbcUrl: jdbc:ch://localhost:8123/demo_ds_0
+        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_0
         username: default
         password:
     ds_1:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        standardJdbcUrl: jdbc:ch://localhost:8123/demo_ds_1
+        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_1
         username: default
         password:
     ds_2:
         dataSourceClassName: com.zaxxer.hikari.HikariDataSource
         driverClassName: com.clickhouse.jdbc.ClickHouseDriver
-        standardJdbcUrl: jdbc:ch://localhost:8123/demo_ds_2
+        jdbcUrl: jdbc:ch://localhost:8123/demo_ds_2
         username: default
         password:
 rules:

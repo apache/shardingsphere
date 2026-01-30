@@ -82,7 +82,7 @@ class AlterIndexPushDownMetaDataRefresherTest {
     void assertRefreshRenameIndex() {
         ShardingSphereTable table = new ShardingSphereTable(
                 "foo_tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("idx_old", Collections.emptyList(), false)), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema("bar_schema", Collections.singleton(table), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("bar_schema", databaseType, Collections.singleton(table), Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
         AlterIndexStatement sqlStatement = createAlterStatement();

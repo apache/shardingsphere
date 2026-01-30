@@ -167,7 +167,7 @@ public final class MetaDataContextsFactory {
     
     private ShardingSphereDatabase createFromRegisterCenter(final String databaseName, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                             final MetaDataContexts originalMetaDataContext) {
-        Collection<ShardingSphereSchema> schemas = persistFacade.getDatabaseMetaDataFacade().getSchema().load(databaseName);
+        Collection<ShardingSphereSchema> schemas = persistFacade.getDatabaseMetaDataFacade().getSchema().load(databaseName, protocolType);
         boolean persistSchemasEnabled = originalMetaDataContext.getMetaData().getProps().getValue(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED);
         if (!persistSchemasEnabled) {
             for (ShardingSphereSchema schema : schemas) {

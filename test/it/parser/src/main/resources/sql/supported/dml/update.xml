@@ -22,6 +22,7 @@
     <sql-case id="update_with_unicode_escape_alias" value="UPDATE t_order AS u SET status = ? WHERE u.order_id = ? AND u.user_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="update_equal_with_geography" value="UPDATE t_order SET start_time = ?, status = 0, start_point = ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')'), rule = ?::jsonb, discount_type = ?, order_type = ? WHERE user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="update_without_condition" value="UPDATE t_order o SET o.status = 'finished'" db-types="MySQL,H2,Doris" />
+    <sql-case id="update_without_condition_sql92" value="UPDATE t_order o SET o.status = 'finished'" db-types="SQL92" />
     <sql-case id="update_with_extra_keywords" value="UPDATE LOW_PRIORITY IGNORE t_order SET status = ? WHERE order_id = ? AND user_id = ?" db-types="MySQL,Doris" />
     <sql-case id="update_with_special_character" value="UPDATE `t_order` SET `status` = ? WHERE `order_id` = ? AND user_id = ?" db-types="MySQL,Doris" />
     <sql-case id="update_without_parameters" value="UPDATE t_order SET status = 'update' WHERE order_id = 1000 AND user_id = 10" />
@@ -48,6 +49,8 @@
     <sql-case id="update_with_translate_function" value="UPDATE translate_tab SET char_col = TRANSLATE (nchar_col USING CHAR_CS);" db-types="Oracle"/>
     <sql-case id="update_with_dot_column_name" value="UPDATE employees SET salary =.salary + 10  WHERE employee_id BETWEEN 1 and 10; " db-types="Oracle" />
     <sql-case id="update_with_set_value_clause" value="UPDATE ot1 SET VALUE(ot1.x) = t1(20) WHERE VALUE(ot1.x) = t1(10);" db-types="Oracle" />
+    <sql-case id="update_with_subquery_target_oracle" value="UPDATE (SELECT * FROM employees) SET salary = 1" db-types="Oracle" />
+    <sql-case id="update_with_dblink_oracle" value="UPDATE employees@remote SET salary = salary" db-types="Oracle" />
     <sql-case id="update_with_open_row_set_function" value="UPDATE T SET XmlCol = ( SELECT * FROM OPENROWSET(BULK 'C:\SampleFolder\SampleData3.txt', SINGLE_BLOB) AS x) WHERE IntCol = 1" db-types="SQLServer"/>
     <sql-case id="update_with_point_type" value="UPDATE dbo.Cities SET Location.SetXY(23.5, 23.5) WHERE Name = 'Anchorage'" db-types="SQLServer"/>
     <sql-case id="update_with_table_hint" value="UPDATE Production.Product WITH (TABLOCK) SET ListPrice = ListPrice * 1.10 WHERE ProductNumber LIKE 'BK-%'" db-types="SQLServer"/>
@@ -74,4 +77,7 @@
     <sql-case id="update_multiple_cols" value="UPDATE customers SET email = 'new@example.com', status = 'active' WHERE customer_id = 1001;" db-types="Hive" />
     <sql-case id="update_basic" value="UPDATE products SET stock = 0;" db-types="Hive" />
     <sql-case id="update_with_null" value="UPDATE user_profiles SET last_login = NULL;" db-types="Hive" />
+    <sql-case id="update_with_where_sql92" value="UPDATE t_order SET status = 'x' WHERE order_id = 1" db-types="SQL92" />
+    <sql-case id="update_set_default_oracle" value="UPDATE employees SET status = DEFAULT WHERE employee_id = 1" db-types="Oracle" />
+    <sql-case id="update_table_collection_oracle" value="UPDATE TABLE(SELECT nested_col FROM t_nested) SET nested_col = DEFAULT" db-types="Oracle" />
 </sql-cases>

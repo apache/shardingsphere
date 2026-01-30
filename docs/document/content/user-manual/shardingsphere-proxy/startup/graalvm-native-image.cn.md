@@ -119,7 +119,7 @@ services:
 
 贡献者必须在设备安装，
 
-1. OpenJDK 11 或更高版本
+1. OpenJDK 17 或更高版本
 2. 可运行 Linux Containers 的 Docker Engine
 
 下文分别讨论在 Ubuntu 与 Windows 下可能的所需操作。
@@ -163,8 +163,7 @@ newgrp docker
 
 sudo tee /etc/docker/daemon.json <<EOF
 {
-  "log-driver": "local",
-  "min-api-version": "1.24"
+  "log-driver": "local"
 }
 EOF
 
@@ -200,6 +199,7 @@ wsl --install
 并设置使用 `dockerd(moby)` 的 `Container Engine`。
 
 ```shell
+[Environment]::SetEnvironmentVariable('DOCKER_API_VERSION','1.44','Machine')
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
 # 打开新的 PowerShell 7 终端
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false

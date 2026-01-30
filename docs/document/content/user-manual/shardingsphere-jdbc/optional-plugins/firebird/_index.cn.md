@@ -10,16 +10,11 @@ ShardingSphere 对 Firebird JDBC Driver 的支持位于可选模块中。
 
 ## 前提条件
 
-要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_0.fdb` 的 `standardJdbcUrl`，
+要在 ShardingSphere 的配置文件为数据节点使用类似 `jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_0.fdb` 的 `jdbcUrl`，
 可能的 Maven 依赖关系如下，
 
 ```xml
 <dependencies>
-    <dependency>
-        <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-jdbc</artifactId>
-        <version>${shardingsphere.version}</version>
-    </dependency>
     <dependency>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-jdbc-dialect-firebird</artifactId>
@@ -84,26 +79,61 @@ class Solution {
 
 ### 在业务项目创建 ShardingSphere 数据源
 
-在业务项目引入`前提条件`涉及的依赖后，在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件`demo.yaml`，
+在业务项目引入`前提条件`涉及的依赖后，额外引入如下依赖，
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-data-source-pool-hikari</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-infra-url-classpath</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-standalone-mode-repository-memory</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-sharding-core</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-authority-simple</artifactId>
+    <version>${shardingsphere.version}</version>
+</dependency>
+```
+
+在业务项目的 classpath 上编写 ShardingSphere 数据源的配置文件 `demo.yaml`，
 
 ```yaml
 dataSources:
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.firebirdsql.jdbc.FBDriver
-    standardJdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_0.fdb
+    jdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_0.fdb
     username: alice
     password: masterkey
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.firebirdsql.jdbc.FBDriver
-    standardJdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_1.fdb
+    jdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_1.fdb
     username: alice
     password: masterkey
   ds_2:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.firebirdsql.jdbc.FBDriver
-    standardJdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_2.fdb
+    jdbcUrl: jdbc:firebird://localhost:3050//var/lib/firebird/data/demo_ds_2.fdb
     username: alice
     password: masterkey
 rules:

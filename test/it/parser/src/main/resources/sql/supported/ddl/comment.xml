@@ -42,4 +42,6 @@
     <sql-case id="comment_on_procedure" value="COMMENT ON PROCEDURE my_proc (integer, integer) IS 'Runs a report';" db-types="PostgreSQL" />
     <sql-case id="comment_on_tablespace" value="COMMENT ON TABLESPACE my_tablespace IS 'Tablespace for indexes';" db-types="PostgreSQL" />
     <sql-case id="comment_on_text_search_template" value="COMMENT ON TEXT SEARCH TEMPLATE snowball IS 'Snowball stemmer';" db-types="PostgreSQL" />
+    <sql-case id="comment_table_firebird" value="COMMENT ON TABLE t_order IS 'order table'" db-types="Firebird" />
+    <sql-case id="comment_column_firebird" value="COMMENT ON COLUMN t_order.status IS 'status column'" db-types="Firebird" />
 </sql-cases>

@@ -17,15 +17,20 @@
   -->
 
 <sql-cases>
-    <sql-case id="set_transaction" value="SET TRANSACTION ISOLATION LEVEL REPEATABLE READ" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Doris" />
+    <sql-case id="set_transaction" value="SET TRANSACTION ISOLATION LEVEL REPEATABLE READ" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Doris,Firebird" />
     <sql-case id="set_global_transaction" value="SET GLOBAL TRANSACTION ISOLATION LEVEL REPEATABLE READ" db-types="MySQL,Doris" />
+    <sql-case id="set_session_transaction" value="SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="MySQL" />
+    <sql-case id="set_session_transaction_read_only_mysql" value="SET SESSION TRANSACTION READ ONLY" db-types="MySQL" />
+    <sql-case id="set_session_transaction_read_write_mysql" value="SET SESSION TRANSACTION READ WRITE" db-types="MySQL" />
     <sql-case id="set_session_transaction_doris" value="SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="Doris" />
+    <sql-case id="set_session_transaction_read_only_doris" value="SET SESSION TRANSACTION READ ONLY" db-types="Doris" />
+    <sql-case id="set_global_transaction_read_only_doris" value="SET GLOBAL TRANSACTION READ ONLY" db-types="Doris" />
     <sql-case id="set_transaction_read_only" value="SET TRANSACTION READ ONLY" db-types="MySQL,Oracle,Doris" />
-    <sql-case id="set_transaction_read_write" value="SET TRANSACTION READ WRITE" db-types="Doris" />
+    <sql-case id="set_transaction_read_write" value="SET TRANSACTION READ WRITE" db-types="MySQL,Doris" />
     <sql-case id="set_transaction_read_write_with_name" value="SET TRANSACTION READ WRITE NAME 'Toronto'" db-types="Oracle" />
     <sql-case id="set_transaction_isolation_level_serializable" value="SET TRANSACTION ISOLATION LEVEL SERIALIZABLE" db-types="Oracle, SQLServer,Doris" />
-    <sql-case id="set_transaction_isolation_level_read_committed" value="SET TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="Oracle, SQLServer,Doris" />
-    <sql-case id="set_transaction_isolation_level_read_uncommitted" value="SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED" db-types="Doris" />
+    <sql-case id="set_transaction_isolation_level_read_committed" value="SET TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="MySQL,Oracle, SQLServer,Doris" />
+    <sql-case id="set_transaction_isolation_level_read_uncommitted" value="SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED" db-types="MySQL,Doris" />
     <sql-case id="set_transaction_isolation_level_snapshot" value="SET TRANSACTION ISOLATION LEVEL SNAPSHOT" db-types="SQLServer" />
     <sql-case id="set_transaction_use_rollback_segment" value="SET TRANSACTION USE ROLLBACK SEGMENT rbs_ts" db-types="Oracle" />
     <sql-case id="set_transaction_with_name" value="SET TRANSACTION NAME 'comment1'" db-types="Oracle" />
@@ -37,4 +42,5 @@
     <sql-case id="xa_prepare" value="XA prepare 'abcdef7'" db-types="MySQL,Doris" />
     <sql-case id="xa_commit" value="XA commit 'abcdef7'" db-types="MySQL,Doris" />
     <sql-case id="xa_rollback" value="XA rollback 'abcdef7'" db-types="MySQL,Doris" />
+    <sql-case id="set_transaction_sql92" value="SET TRANSACTION ISOLATION LEVEL READ COMMITTED" db-types="SQL92" />
 </sql-cases>

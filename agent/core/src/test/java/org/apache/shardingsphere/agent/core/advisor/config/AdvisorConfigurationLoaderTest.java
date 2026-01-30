@@ -23,9 +23,9 @@ import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlAdvi
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlTargetObjectFixture;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,12 +46,12 @@ class AdvisorConfigurationLoaderTest {
     
     @Test
     void assertLoadAndMergeAdvisorConfigurations() throws IOException {
-        File jarFile = File.createTempFile("advisor-config", ".jar");
-        try (JarOutputStream jarOutputStream = new JarOutputStream(Files.newOutputStream(jarFile.toPath()))) {
+        Path jarFile = Files.createTempFile("advisor-config", ".jar");
+        try (JarOutputStream jarOutputStream = new JarOutputStream(Files.newOutputStream(jarFile))) {
             writeAdvisorResource(jarOutputStream, "fixture", "constructor");
             writeAdvisorResource(jarOutputStream, "another", "method");
         }
-        try (JarFile jar = new JarFile(jarFile)) {
+        try (JarFile jar = new JarFile(jarFile.toFile())) {
             Map<String, AdvisorConfiguration> actual = AdvisorConfigurationLoader.load(Collections.singleton(jar), Arrays.asList("FIXTURE", "ANOTHER", "MISSING"));
             assertThat(actual.size(), is(1));
             AdvisorConfiguration config = actual.get(TARGET);
@@ -60,7 +60,7 @@ class AdvisorConfigurationLoaderTest {
             assertAdvisor(config.getAdvisors(), ElementMatchers.isConstructor(), "FIXTURE");
             assertAdvisor(config.getAdvisors(), ElementMatchers.named("call"), "ANOTHER");
         } finally {
-            assertTrue(jarFile.delete());
+            assertTrue(Files.deleteIfExists(jarFile));
         }
     }
     

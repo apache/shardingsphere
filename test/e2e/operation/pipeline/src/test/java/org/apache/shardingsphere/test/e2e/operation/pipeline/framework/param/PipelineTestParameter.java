@@ -31,12 +31,7 @@ public final class PipelineTestParameter {
     
     private final String databaseContainerImage;
     
-    // TODO It's not scenario. Remove it later
-    private final String scenario;
+    private final String tableStructure;
     
     private final int storageContainerCount;
-    
-    public PipelineTestParameter(final DatabaseType databaseType, final String databaseContainerImage, final String scenario) {
-        this(databaseType, databaseContainerImage, scenario, 1);
-    }
 }

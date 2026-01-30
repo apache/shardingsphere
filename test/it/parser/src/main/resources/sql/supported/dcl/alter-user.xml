@@ -34,8 +34,31 @@
     <sql-case id="alter_user_with_password_option" value="ALTER USER user1 PASSWORD EXPIRE DEFAULT" db-types="MySQL" />
     <sql-case id="alter_user_with_password_options" value="ALTER USER user1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT" db-types="MySQL" />
     <sql-case id="alter_user_with_lock_option" value="ALTER USER user1 ACCOUNT LOCK" db-types="MySQL" />
+    <sql-case id="alter_user_account_unlock_mysql" value="ALTER USER user_unlock ACCOUNT UNLOCK" db-types="MySQL" />
+    <sql-case id="alter_user_with_max_connections_per_hour_mysql" value="ALTER USER user_conn_limit WITH MAX_CONNECTIONS_PER_HOUR 10" db-types="MySQL" />
+    <sql-case id="alter_user_with_max_user_connections_mysql" value="ALTER USER user_user_conn_limit WITH MAX_USER_CONNECTIONS 5" db-types="MySQL" />
+    <sql-case id="alter_user_require_none_mysql" value="ALTER USER user_none REQUIRE NONE" db-types="MySQL" />
+    <sql-case id="alter_user_require_ssl_mysql" value="ALTER USER user_ssl REQUIRE SSL" db-types="MySQL" />
+    <sql-case id="alter_user_require_x509_mysql" value="ALTER USER user_x509 REQUIRE X509" db-types="MySQL" />
+    <sql-case id="alter_user_require_tls_specified_mysql" value="ALTER USER user_tls REQUIRE SUBJECT 'subj' ISSUER 'issuer' CIPHER 'cipher_name'" db-types="MySQL" />
+    <sql-case id="alter_user_password_expire_interval_mysql" value="ALTER USER user_expire_interval PASSWORD EXPIRE INTERVAL 30 DAY" db-types="MySQL" />
+    <sql-case id="alter_user_password_expire_never_mysql" value="ALTER USER user_expire_never PASSWORD EXPIRE NEVER" db-types="MySQL" />
+    <sql-case id="alter_user_password_history_mysql" value="ALTER USER user_history PASSWORD HISTORY 5" db-types="MySQL" />
+    <sql-case id="alter_user_password_reuse_interval_mysql" value="ALTER USER user_reuse PASSWORD REUSE INTERVAL 10 DAY" db-types="MySQL" />
+    <sql-case id="alter_user_password_require_optional_mysql" value="ALTER USER user_require_optional PASSWORD REQUIRE CURRENT OPTIONAL" db-types="MySQL" />
+    <sql-case id="alter_user_password_require_yes_mysql" value="ALTER USER user_require_yes PASSWORD REQUIRE CURRENT" db-types="MySQL" />
+    <sql-case id="alter_user_failed_login_and_lock_time_mysql" value="ALTER USER user_failed_lock PASSWORD EXPIRE DEFAULT FAILED_LOGIN_ATTEMPTS 5 PASSWORD_LOCK_TIME 7" db-types="MySQL" />
+    <sql-case id="alter_user_password_lock_time_unbounded_mysql" value="ALTER USER user_lock_unbounded PASSWORD EXPIRE DEFAULT PASSWORD_LOCK_TIME UNBOUNDED" db-types="MySQL" />
+    <sql-case id="alter_user_identified_with_plugin_mysql" value="ALTER USER user_plugin IDENTIFIED WITH 'ldap'" db-types="MySQL" />
+    <sql-case id="alter_user_identified_with_plugin_as_mysql" value="ALTER USER user_plugin_as IDENTIFIED WITH 'ldap' AS 'pwd'" db-types="MySQL" />
+    <sql-case id="alter_user_identified_with_plugin_by_mysql" value="ALTER USER user_plugin_by IDENTIFIED WITH 'ldap' BY 'pwd'" db-types="MySQL" />
+    <sql-case id="alter_user_identified_with_plugin_by_random_mysql" value="ALTER USER user_plugin_rand IDENTIFIED WITH 'ldap' BY RANDOM PASSWORD" db-types="MySQL" />
     <sql-case id="alter_user_with_options" value="ALTER USER user1 WITH MAX_QUERIES_PER_HOUR 1 MAX_UPDATES_PER_HOUR 1 PASSWORD EXPIRE DEFAULT PASSWORD HISTORY DEFAULT ACCOUNT LOCK" db-types="MySQL" />
     <sql-case id="alter_user_with_password_doris" value="ALTER USER user1 IDENTIFIED BY 'pwd_doris'" db-types="Doris" />
+    <sql-case id="alter_user_doris_password_policy" value="ALTER USER user_history PASSWORD EXPIRE DEFAULT PASSWORD HISTORY 5 PASSWORD REUSE INTERVAL 10 DAY" db-types="Doris" />
+    <sql-case id="alter_user_doris_account_lock_unlock" value="ALTER USER user_lock ACCOUNT LOCK PASSWORD EXPIRE" db-types="Doris" />
+    <sql-case id="alter_user_doris_require_ssl" value="ALTER USER user_ssl REQUIRE SSL" db-types="Doris" />
+    <sql-case id="alter_user_doris_resource_limits" value="ALTER USER user_limits WITH MAX_QUERIES_PER_HOUR 10 MAX_UPDATES_PER_HOUR 5" db-types="Doris" />
     <sql-case id="alter_external_user" value="ALTER USER user1 IDENTIFIED EXTERNALLY" db-types="Oracle" />
     <sql-case id="alter_global_user" value="ALTER USER user1 IDENTIFIED GLOBALLY AS 'CN=user1'" db-types="Oracle" />
     <sql-case id="alter_user_with_tablespace_option" value="ALTER USER user1 DEFAULT TABLESPACE tablespace1" db-types="Oracle" />

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.decider;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
+import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dal.ExplainStatementContext;
@@ -26,15 +28,26 @@ import org.apache.shardingsphere.infra.datanode.DataNodes;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.ShardingConditionEngine;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.AlwaysFalseShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
+import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
+import org.apache.shardingsphere.sharding.rule.BindingTableCheckedConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
+import org.apache.shardingsphere.sharding.rule.checker.ShardingRuleChecker;
 import org.apache.shardingsphere.sqlfederation.spi.SQLFederationDecider;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Sharding SQL federation decider.
@@ -61,7 +74,11 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
             return false;
         }
         appendTableDataNodes(rule, database, tableNames, includedDataNodes);
-        if (isAllShardingTables(selectStatementContext, tableNames) && isSubqueryAllSameShardingConditions(selectStatementContext, parameters, globalRuleMetaData, database, rule)) {
+        boolean allShardingTables = isAllShardingTables(selectStatementContext, tableNames);
+        if (allShardingTables && isSubqueryAllSameShardingConditions(selectStatementContext, parameters, globalRuleMetaData, database, rule)) {
+            return false;
+        }
+        if (allShardingTables && isSingleOrJoinWithSameEqualityShardingCondition(selectStatementContext, parameters, globalRuleMetaData, database, rule, tableNames)) {
             return false;
         }
         if (selectStatementContext.isContainsSubquery() || selectStatementContext.isContainsHaving()
@@ -75,6 +92,73 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
             return true;
         }
         return tableNames.size() > 1 && !rule.isBindingTablesUseShardingColumnsJoin(selectStatementContext, tableNames);
+    }
+    
+    private boolean isSingleOrJoinWithSameEqualityShardingCondition(final SelectStatementContext selectStatementContext, final List<Object> parameters, final RuleMetaData globalRuleMetaData,
+                                                                    final ShardingSphereDatabase database, final ShardingRule rule, final Collection<String> tableNames) {
+        if (selectStatementContext.isContainsSubquery() || selectStatementContext.isContainsCombine()) {
+            return false;
+        }
+        // TODO consider supporting JOIN optimization when config database and table sharding strategy @duanzhengqiang
+        if (isConfigDatabaseAndTableShardingStrategy(tableNames, rule)) {
+            return false;
+        }
+        ShardingConditions shardingConditions = createShardingConditions(selectStatementContext, parameters, globalRuleMetaData, database, rule);
+        shardingConditions.merge();
+        if (!shardingConditions.isSameShardingCondition()) {
+            return false;
+        }
+        if (!isAllEqualitySameShardingValues(shardingConditions, tableNames)) {
+            return false;
+        }
+        if (1 == tableNames.size() && !selectStatementContext.isContainsJoinQuery()) {
+            return true;
+        }
+        Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups = Collections.singleton(new ShardingTableReferenceRuleConfiguration("", Joiner.on(",").join(tableNames)));
+        BindingTableCheckedConfiguration configuration = new BindingTableCheckedConfiguration(rule.getDataSourceNames(), rule.getShardingAlgorithms(), rule.getConfiguration().getShardingAlgorithms(),
+                bindingTableGroups, rule.getDefaultDatabaseShardingStrategyConfig(), rule.getDefaultTableShardingStrategyConfig(), rule.getDefaultShardingColumn());
+        return new ShardingRuleChecker(rule).isValidBindingTableConfiguration(rule.getShardingTables(), configuration);
+    }
+    
+    private boolean isConfigDatabaseAndTableShardingStrategy(final Collection<String> tableNames, final ShardingRule rule) {
+        for (String each : tableNames) {
+            Optional<ShardingTable> shardingTable = rule.findShardingTable(each);
+            if (!shardingTable.isPresent()) {
+                continue;
+            }
+            boolean isConfigDatabaseShardingStrategy = !(rule.getDatabaseShardingStrategyConfiguration(shardingTable.get()) instanceof NoneShardingStrategyConfiguration);
+            boolean isConfigTableShardingStrategy = !(rule.getTableShardingStrategyConfiguration(shardingTable.get()) instanceof NoneShardingStrategyConfiguration);
+            if (isConfigDatabaseShardingStrategy && isConfigTableShardingStrategy) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isAllEqualitySameShardingValues(final ShardingConditions shardingConditions, final Collection<String> tableNames) {
+        Object sampleValue = null;
+        Collection<String> shardingTableNames = new CaseInsensitiveSet<>(tableNames);
+        for (ShardingCondition each : shardingConditions.getConditions()) {
+            for (ShardingConditionValue value : each.getValues()) {
+                if (value instanceof RangeShardingConditionValue || value instanceof AlwaysFalseShardingConditionValue) {
+                    return false;
+                }
+                if (value instanceof ListShardingConditionValue) {
+                    ListShardingConditionValue<?> values = (ListShardingConditionValue<?>) value;
+                    if (1 != values.getValues().size()) {
+                        return false;
+                    }
+                    Object currentValue = values.getValues().iterator().next();
+                    if (null == sampleValue) {
+                        sampleValue = currentValue;
+                    } else if (!sampleValue.equals(currentValue)) {
+                        return false;
+                    }
+                    shardingTableNames.remove(value.getTableName());
+                }
+            }
+        }
+        return shardingTableNames.isEmpty();
     }
     
     private boolean isSubqueryAllSameShardingConditions(final SelectStatementContext selectStatementContext, final List<Object> parameters, final RuleMetaData globalRuleMetaData,

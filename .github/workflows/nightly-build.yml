@@ -48,7 +48,10 @@ jobs:
     steps:
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
@@ -57,7 +60,7 @@ jobs:
       - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: 17
       - name: Build Project
         run: |
           ./mvnw -B clean install -Prelease,default-dep
@@ -85,10 +88,13 @@ jobs:
       - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: 17
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
@@ -123,7 +129,7 @@ jobs:
       - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: 17
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.HUB }}
@@ -131,7 +137,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
@@ -161,7 +170,7 @@ jobs:
       - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: 17
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.HUB }}
@@ -169,7 +178,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
@@ -189,10 +201,13 @@ jobs:
       - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: 17
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
@@ -248,19 +263,30 @@ jobs:
       - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: 17
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
-      - name: Prepare Environments
-        run: sh .github/workflows/resources/scripts/nightly-build-example/init-mysql-container.sh
       - name: Build with Maven
         run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
       - name: Generate Examples
         run: ./mvnw -B clean install -f examples/shardingsphere-jdbc-example-generator/pom.xml -Pexample-generator -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
+      - name: Prepare Environments
+        run: |
+          INIT_SQL_PATH="examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/init.sql"
+          if [ -f "$INIT_SQL_PATH" ]; then
+            echo "Executing generated init.sql for feature: ${{ matrix.feature }}"
+            sh .github/workflows/resources/scripts/nightly-build-example/init-mysql-container.sh "$INIT_SQL_PATH"
+          else
+            echo "Warning: init.sql not found at $INIT_SQL_PATH"
+            exit 1
+          fi
       - name: Test Examples
         run : ./mvnw -B test -f examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/pom.xml -Pexample-generator -Dexec.cleanupDaemonThreads=false
       - name: Package Examples

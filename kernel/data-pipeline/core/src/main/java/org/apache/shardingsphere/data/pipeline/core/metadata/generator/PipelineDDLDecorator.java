@@ -25,11 +25,13 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ConstraintSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
@@ -74,7 +76,7 @@ public final class PipelineDDLDecorator {
         String result = decorateActualSQL(targetDatabaseName, targetTableName, parserEngine, sql.trim());
         // TODO remove it after set search_path is supported.
         if ("openGauss".equals(databaseType.getType())) {
-            return decorateOpenGauss(targetDatabaseName, schemaName, result, parserEngine);
+            return decorateOpenGauss(schemaName, result, parserEngine);
         }
         return Optional.of(result);
     }
@@ -145,27 +147,30 @@ public final class PipelineDDLDecorator {
     }
     
     // TODO remove it after set search_path is supported.
-    private Optional<String> decorateOpenGauss(final String databaseName, final String schemaName, final String queryContext, final SQLParserEngine parserEngine) {
+    private Optional<String> decorateOpenGauss(final String schemaName, final String queryContext, final SQLParserEngine parserEngine) {
         if (queryContext.toLowerCase().startsWith(SET_SEARCH_PATH_PREFIX)) {
             return Optional.empty();
         }
-        return Optional.of(replaceTableNameWithPrefix(queryContext, schemaName, databaseName, parserEngine));
+        return Optional.of(replaceTableNameWithPrefix(queryContext, schemaName, parserEngine));
     }
     
-    private String replaceTableNameWithPrefix(final String sql, final String schemaName, final String databaseName, final SQLParserEngine parserEngine) {
-        SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, sql);
-        if (sqlStatementContext.getSqlStatement() instanceof CreateTableStatement || sqlStatementContext.getSqlStatement() instanceof CreateIndexStatement
-                || sqlStatementContext.getSqlStatement() instanceof AlterTableStatement || sqlStatementContext.getSqlStatement() instanceof CommentStatement) {
-            if (sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()) {
+    private String replaceTableNameWithPrefix(final String sql, final String schemaName, final SQLParserEngine parserEngine) {
+        SQLStatement sqlStatement = parserEngine.parse(sql, true);
+        if (sqlStatement instanceof CreateTableStatement || sqlStatement instanceof CreateIndexStatement
+                || sqlStatement instanceof AlterTableStatement || sqlStatement instanceof CommentStatement) {
+            TableExtractor tableExtractor = new TableExtractor();
+            tableExtractor.extractTablesFromSQLStatement(sqlStatement);
+            Optional<SimpleTableSegment> simpleTableSegment = tableExtractor.getTableContext().stream()
+                    .filter(each -> each instanceof SimpleTableSegment).map(each -> (SimpleTableSegment) each).findFirst();
+            if (!simpleTableSegment.isPresent()) {
                 return sql;
             }
-            Optional<String> sqlSchemaName = sqlStatementContext.getTablesContext().getSchemaName();
+            Optional<String> sqlSchemaName = simpleTableSegment.get().getOwner().map(optional -> optional.getIdentifier().getValue());
             if (sqlSchemaName.isPresent() && sqlSchemaName.get().equals(schemaName)) {
                 return sql;
             }
             Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
-            TableNameSegment tableNameSegment = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName();
-            replaceMap.put(tableNameSegment, schemaName + "." + tableNameSegment.getIdentifier().getValue());
+            replaceMap.put(simpleTableSegment.get(), schemaName + "." + simpleTableSegment.get().getTableName().getIdentifier().getValue());
             return doDecorateActualTable(replaceMap, sql);
         }
         return sql;

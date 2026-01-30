@@ -19,4 +19,5 @@
 <sql-cases>
     <sql-case id="alter_server_options" value="ALTER SERVER foo OPTIONS (host 'foo', dbname 'foodb');" db-types="PostgreSQL" />
     <sql-case id="alter_server_version" value="ALTER SERVER foo VERSION '8.4';" db-types="PostgreSQL" />
+    <sql-case id="alter_server_doris_options" value="ALTER SERVER s0 OPTIONS (USER 'doris_admin')" db-types="Doris,MySQL" />
 </sql-cases>

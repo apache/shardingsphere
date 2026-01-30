@@ -44,6 +44,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -71,7 +72,7 @@ class CreateViewPushDownMetaDataRefresherTest {
     private MutableDataNodeRuleAttribute mutableDataNodeRuleAttribute;
     
     @Test
-    void assertRefreshCreateViewWithSingleTableMapping() throws Exception {
+    void assertRefreshCreateViewWithSingleTableMapping() throws SQLException {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
@@ -81,7 +82,8 @@ class CreateViewPushDownMetaDataRefresherTest {
         when(TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType)).thenReturn("foo_view");
         when(TableRefreshUtils.isSingleTable("foo_view", database)).thenReturn(true);
         ShardingSphereTable loadedTable = new ShardingSphereTable("foo_view", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", Collections.singleton(loadedTable), Collections.emptyList()));
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(
+                "foo_schema", new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(loadedTable), Collections.emptyList()));
         when(GenericSchemaBuilder.build(eq(Collections.singletonList("foo_view")), eq(database.getProtocolType()), any())).thenReturn(schemas);
         refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         verify(mutableDataNodeRuleAttribute).put("logic_ds", "foo_schema", "foo_view");
@@ -89,7 +91,7 @@ class CreateViewPushDownMetaDataRefresherTest {
     }
     
     @Test
-    void assertRefreshCreateViewWithoutSingleTableMapping() throws Exception {
+    void assertRefreshCreateViewWithoutSingleTableMapping() throws SQLException {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
@@ -98,7 +100,8 @@ class CreateViewPushDownMetaDataRefresherTest {
         sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_view"))));
         when(TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType)).thenReturn("foo_view");
         ShardingSphereTable loadedTable = new ShardingSphereTable("foo_view", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", Collections.singleton(loadedTable), Collections.emptyList()));
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(
+                "foo_schema", new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(loadedTable), Collections.emptyList()));
         when(GenericSchemaBuilder.build(eq(Collections.singletonList("foo_view")), eq(database.getProtocolType()), any())).thenReturn(schemas);
         refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         verify(mutableDataNodeRuleAttribute, never()).put("logic_ds", "foo_schema", "foo_view");

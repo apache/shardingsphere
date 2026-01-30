@@ -225,7 +225,8 @@ class StatisticsManagerTest {
     @Test
     void assertAlterRowStatisticsWhenMetaDataMissing() {
         ShardingSphereStatistics statistics = createStatisticsWithTable();
-        MetaDataContexts metaDataContexts = new MetaDataContexts(new ShardingSphereMetaData(), statistics);
+        MetaDataContexts metaDataContexts = new MetaDataContexts(new ShardingSphereMetaData(Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()),
+                new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties())), statistics);
         YamlRowStatistics yamlRowStatistics = new YamlRowStatistics();
         yamlRowStatistics.setUniqueKey("uk_1");
         yamlRowStatistics.setRows(Collections.singletonList("1"));
@@ -347,7 +348,7 @@ class StatisticsManagerTest {
         ShardingSphereTable table = new ShardingSphereTable(TABLE, Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, true, false, true)), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA, Collections.singleton(table), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA, databaseType, Collections.singleton(table), Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 DATABASE, databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
         return new ShardingSphereMetaData(
@@ -362,7 +363,7 @@ class StatisticsManagerTest {
     }
     
     private ShardingSphereMetaData createMetaDataWithSchemaWithoutTable() {
-        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA);
+        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA, mock(DatabaseType.class));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 DATABASE, databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
         return new ShardingSphereMetaData(

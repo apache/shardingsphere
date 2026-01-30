@@ -24,13 +24,12 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.mask.rule.MaskRule;
 
 /**
  * DQL result decorator for mask.
  */
 @RequiredArgsConstructor
-public final class MaskDQLResultDecorator implements ResultDecorator<MaskRule> {
+public final class MaskDQLResultDecorator implements ResultDecorator {
     
     private final ShardingSphereDatabase database;
     
@@ -39,7 +38,7 @@ public final class MaskDQLResultDecorator implements ResultDecorator<MaskRule> {
     private final SelectStatementContext selectStatementContext;
     
     @Override
-    public MergedResult decorate(final MergedResult mergedResult, final QueryContext queryContext, final MaskRule rule) {
+    public MergedResult decorate(final MergedResult mergedResult, final QueryContext queryContext) {
         return new MaskMergedResult(database, metaData, selectStatementContext, mergedResult);
     }
 }

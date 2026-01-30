@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sqlfederation.executor.enumerable.enumerator.m
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -66,8 +67,8 @@ class MemoryTableStatisticsBuilderTest {
     void assertBuildTableData() {
         DialectDriverQuerySystemCatalogOption option = mock(DialectDriverQuerySystemCatalogOption.class);
         when(option.isTableDataTable("pg_tables")).thenReturn(true);
-        ShardingSphereSchema schema1 = new ShardingSphereSchema("public", Collections.singleton(mockTable("t_order")), Collections.emptyList());
-        ShardingSphereSchema schema2 = new ShardingSphereSchema("logic", Collections.singleton(mockTable("t_user")), Collections.emptyList());
+        ShardingSphereSchema schema1 = new ShardingSphereSchema("public", mock(DatabaseType.class), Collections.singleton(mockTable("t_order")), Collections.emptyList());
+        ShardingSphereSchema schema2 = new ShardingSphereSchema("logic", mock(DatabaseType.class), Collections.singleton(mockTable("t_user")), Collections.emptyList());
         ShardingSphereDatabase database = mockDatabase("foo_db", Arrays.asList(schema1, schema2));
         ShardingSphereMetaData metaData = createMetaData(Collections.singleton(database), new RuleMetaData(Collections.emptyList()));
         TableStatistics actual = MemoryTableStatisticsBuilder.buildTableStatistics(mockTable("pg_tables"), metaData, option);

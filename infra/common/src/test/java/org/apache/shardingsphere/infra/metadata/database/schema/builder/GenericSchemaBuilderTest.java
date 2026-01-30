@@ -93,7 +93,7 @@ class GenericSchemaBuilderTest {
         when(MetaDataLoader.load(any())).thenReturn(createSchemaMetaDataMap(tableNames, material));
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, databaseType, material);
         assertThat(actual.size(), is(1));
-        assertTables(new ShardingSphereSchema("foo_schema", actual.values().iterator().next().getAllTables(), Collections.emptyList()));
+        assertTables(new ShardingSphereSchema("foo_schema", databaseType, actual.values().iterator().next().getAllTables(), Collections.emptyList()));
     }
     
     @Test
@@ -115,7 +115,7 @@ class GenericSchemaBuilderTest {
                 Collections.singletonMap("foo_schema", material.getStorageUnits().get("foo_schema")), Collections.singleton(rule), new ConfigurationProperties(new Properties()), "foo_schema");
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(databaseType, newMaterial);
         assertThat(actual.size(), is(1));
-        assertTables(new ShardingSphereSchema("foo_schema", actual.values().iterator().next().getAllTables(), Collections.emptyList()));
+        assertTables(new ShardingSphereSchema("foo_schema", databaseType, actual.values().iterator().next().getAllTables(), Collections.emptyList()));
     }
     
     @Test

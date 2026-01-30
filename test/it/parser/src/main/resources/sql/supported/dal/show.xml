@@ -28,6 +28,8 @@
     <sql-case id="show_columns_with_schema" value="SHOW COLUMNS FROM `t_order` FROM `sharding_db`" db-types="MySQL" />
     <sql-case id="show_columns_with_like_pattern" value="SHOW COLUMNS FROM `t_order` LIKE 'order_%'" db-types="MySQL" />
     <sql-case id="show_columns_with_where_expr" value="SHOW COLUMNS FROM `t_order` WHERE field = ?" db-types="MySQL" />
+    <sql-case id="show_columns_with_like_doris" value="SHOW COLUMNS FROM t_order LIKE 'order_%'" db-types="Doris" />
+    <sql-case id="show_columns_with_where_doris" value="SHOW COLUMNS FROM t_order WHERE field = 'order_id'" db-types="Doris" />
     <sql-case id="show_columns_by_fields_from_table" value="SHOW FIELDS FROM `t_order`" db-types="MySQL" />
     <sql-case id="show_columns_by_fields_from_table_with_owner" value="SHOW FIELDS FROM `sharding_db`.`t_order`" db-types="MySQL" />
     <sql-case id="show_columns_by_fields_with_schema" value="SHOW FIELDS FROM `t_order` FROM `sharding_db`" db-types="MySQL" />
@@ -55,6 +57,7 @@
     <sql-case id="show_procedure_status_with_where_expr" value="SHOW PROCEDURE STATUS where name = ?" db-types="MySQL" />
     <sql-case id="show_procedure_status_with_where_expr_no_parameter" value="SHOW PROCEDURE STATUS where name = 'procedure1'" db-types="MySQL" />
     <sql-case id="show_replicas" value="SHOW REPLICAS" db-types="MySQL" />
+    <sql-case id="show_replicas_doris" value="SHOW REPLICAS" db-types="Doris" />
     <sql-case id="show_procedure_code_func" value="SHOW PROCEDURE CODE TEST_FUNC" db-types="MySQL,Doris" />
     <sql-case id="show_procedure_code_owner_func" value="SHOW PROCEDURE CODE TEST_USER.TEST_FUNC" db-types="MySQL,Doris" />
     <sql-case id="show_relay-log_events" value="SHOW RELAYLOG EVENTS FOR CHANNEL TEST_CHANNEL" db-types="MySQL" />
@@ -94,6 +97,8 @@
     <sql-case id="show_events_with_like_pattern" value="SHOW EVENTS FROM `sharding_db` LIKE 'sharding_%'" db-types="MySQL" />
     <sql-case id="show_events_with_where_expr" value="SHOW EVENTS FROM `sharding_db` WHERE db = ?" db-types="MySQL" />
     <sql-case id="show_events_with_where_expr_no_parameter" value="SHOW EVENTS FROM `sharding_db` WHERE db = 'sharding_db'" db-types="MySQL" />
+    <sql-case id="show_events_doris_simple" value="SHOW EVENTS" db-types="Doris" />
+    <sql-case id="show_events_doris_with_filter" value="SHOW EVENTS FROM `example_db` WHERE db = 'example_db'" db-types="Doris" />
     <sql-case id="show_tables" value="SHOW TABLES" db-types="MySQL" />
     <sql-case id="show_extended_full_tables" value="SHOW EXTENDED FULL TABLES" db-types="MySQL" />
     <sql-case id="show_tables_from_schema" value="SHOW TABLES FROM `sharding_db`" db-types="MySQL" />
@@ -115,11 +120,11 @@
     <sql-case id="show_variables_with_like_pattern" value="SHOW SESSION VARIABLES LIKE '%size%'" db-types="MySQL,Doris" />
     <sql-case id="show_variables_with_where_expr" value="SHOW GLOBAL VARIABLES WHERE variable_name = ?" db-types="MySQL,Doris" />
     <sql-case id="show_variables_with_where_expr_no_parameter" value="SHOW VARIABLES WHERE variable_name = 'max_join_size'" db-types="MySQL,Doris" />
-    <sql-case id="show_binlog_events_with_log_name" value="SHOW BINLOG EVENTS IN 'log_name'" db-types="MySQL" />
-    <sql-case id="show_binlog_events_with_from_pos" value="SHOW BINLOG EVENTS FROM 1" db-types="MySQL" />
-    <sql-case id="show_binlog_events_with_limit" value="SHOW BINLOG EVENTS LIMIT 1,2" db-types="MySQL" />
-    <sql-case id="show_engine_status" value="SHOW ENGINE INNODB STATUS" db-types="MySQL" />
-    <sql-case id="show_engine_mutex" value="SHOW ENGINE INNODB MUTEX" db-types="MySQL" />
+    <sql-case id="show_binlog_events_with_log_name" value="SHOW BINLOG EVENTS IN 'log_name'" db-types="MySQL,Doris" />
+    <sql-case id="show_binlog_events_with_from_pos" value="SHOW BINLOG EVENTS FROM 1" db-types="MySQL,Doris" />
+    <sql-case id="show_binlog_events_with_limit" value="SHOW BINLOG EVENTS LIMIT 1,2" db-types="MySQL,Doris" />
+    <sql-case id="show_engine_status" value="SHOW ENGINE INNODB STATUS" db-types="MySQL,Doris" />
+    <sql-case id="show_engine_mutex" value="SHOW ENGINE INNODB MUTEX" db-types="MySQL,Doris" />
     <sql-case id="show_binary_logs" value="SHOW BINARY LOGS" db-types="MySQL" />
     <sql-case id="show_master_logs" value="SHOW MASTER LOGS" db-types="MySQL" />
     <sql-case id="show_engines" value="SHOW ENGINES" db-types="MySQL,Doris" />
@@ -261,4 +266,11 @@
     <sql-case id="show_slave_hosts_doris" value="SHOW SLAVE HOSTS" db-types="Doris" />
     <sql-case id="show_replica_status_doris" value="SHOW REPLICA STATUS" db-types="Doris" />
     <sql-case id="show_relaylog_events_doris" value="SHOW RELAYLOG EVENTS" db-types="Doris" />
+    <sql-case id="show_sql_block_rule" value="SHOW SQL_BLOCK_RULE" db-types="Doris" />
+    <sql-case id="show_sql_block_rule_for" value="SHOW SQL_BLOCK_RULE FOR test_rule2" db-types="Doris" />
+    <sql-case id="show_routine_load_task" value="SHOW ROUTINE LOAD TASK WHERE JobName = &quot;test1&quot;" db-types="Doris" />
+    <sql-case id="show_routine_load" value="SHOW ROUTINE LOAD" db-types="Doris" />
+    <sql-case id="show_all_routine_load" value="SHOW ALL ROUTINE LOAD" db-types="Doris" />
+    <sql-case id="show_routine_load_for_job" value="SHOW ROUTINE LOAD FOR test1" db-types="Doris" />
+    <sql-case id="show_all_routine_load_for_job_with_db" value="SHOW ALL ROUTINE LOAD FOR example_db.test1" db-types="Doris" />
 </sql-cases>

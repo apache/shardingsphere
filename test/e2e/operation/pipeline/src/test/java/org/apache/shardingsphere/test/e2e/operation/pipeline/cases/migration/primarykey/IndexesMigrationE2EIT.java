@@ -20,14 +20,12 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.pr
 import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
@@ -37,7 +35,9 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.Pip
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -45,7 +45,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.function.Consumer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -61,8 +60,8 @@ import static org.mockito.Mockito.mock;
  * 4) multiple columns unique key, first column type is BIGINT.
  */
 @PipelineE2ESettings(fetchSingle = true, database = {
-        @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/common/none.xml"),
-        @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/common/none.xml")})
+        @PipelineE2EDatabaseSettings(type = "MySQL"),
+        @PipelineE2EDatabaseSettings(type = "PostgreSQL")})
 class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static final String ORDER_TABLE_SHARDING_RULE_FORMAT = "CREATE SHARDING TABLE RULE t_order(\n"
@@ -79,7 +78,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertNoUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql;
             String consistencyCheckAlgorithmType;
             if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
@@ -100,7 +99,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
                 }
                 Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
                 insertOneOrder(containerComposer, orderId);
-                containerComposer.assertOrderRecordExist(dataSource, "t_order", orderId);
+                containerComposer.assertRecordExists(dataSource, "t_order", orderId);
             };
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, incrementalTaskFn);
         }
@@ -163,7 +162,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertMultiPrimaryKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql;
             String consistencyCheckAlgorithmType;
             if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
@@ -177,7 +176,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
                 insertOneOrder(containerComposer, uniqueKey);
                 doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next());
-                containerComposer.assertOrderRecordExist(dataSource, "t_order", uniqueKey);
+                containerComposer.assertRecordExists(dataSource, "t_order", uniqueKey);
             });
         }
     }
@@ -186,7 +185,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertMultiUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql;
             String consistencyCheckAlgorithmType;
             if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
@@ -200,7 +199,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
                 insertOneOrder(containerComposer, uniqueKey);
                 doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next());
-                containerComposer.assertOrderRecordExist(dataSource, "t_order", uniqueKey);
+                containerComposer.assertRecordExists(dataSource, "t_order", uniqueKey);
             });
         }
     }
@@ -209,7 +208,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertSpecialTypeSingleColumnUniqueKeyMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql;
             String consistencyCheckAlgorithmType;
             if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
@@ -225,7 +224,7 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             assertMigrationSuccess(containerComposer, sql, "order_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, dataSource -> {
                 insertOneOrder(containerComposer, uniqueKey);
                 // TODO Select by byte[] from proxy doesn't work, so unhex function is used for now
-                containerComposer.assertOrderRecordExist(dataSource, String.format("SELECT 1 FROM t_order WHERE order_id=UNHEX('%s')", Hex.encodeHexString(uniqueKey)));
+                containerComposer.assertRecordExists(dataSource, String.format("SELECT 1 FROM t_order WHERE order_id=UNHEX('%s')", Hex.encodeHexString(uniqueKey)));
             });
         }
     }
@@ -236,26 +235,26 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
         try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
             PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, keyGenerateAlgorithm, SOURCE_TABLE_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
         }
-        addMigrationProcessConfig(containerComposer);
+        PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
+        distSQLFacade.alterPipelineRule();
         addMigrationSourceResource(containerComposer);
         addMigrationTargetResource(containerComposer);
         containerComposer.proxyExecuteWithLog(String.format(ORDER_TABLE_SHARDING_RULE_FORMAT, shardingColumn), 2);
         startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
-        String jobId = listJobId(containerComposer).get(0);
-        containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        String jobId = distSQLFacade.listJobIds().get(0);
+        distSQLFacade.waitJobPreparingStageFinished(jobId);
         DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
         incrementalTaskFn.accept(jdbcDataSource);
-        containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+        distSQLFacade.waitJobIncrementalStageFinished(jobId);
         if (null != consistencyCheckAlgorithmType) {
-            assertCheckMigrationSuccess(containerComposer, jobId, consistencyCheckAlgorithmType);
+            distSQLFacade.startCheckAndVerify(jobId, consistencyCheckAlgorithmType);
         }
-        commitMigrationByJobId(containerComposer, jobId);
+        distSQLFacade.commit(jobId);
         assertThat(containerComposer.getTargetTableRecordsCount(jdbcDataSource, SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT + 1));
-        List<String> lastJobIds = listJobId(containerComposer);
-        assertTrue(lastJobIds.isEmpty());
+        assertTrue(distSQLFacade.listJobIds().isEmpty());
     }
     
-    private static boolean isEnabled() {
-        return PipelineE2ECondition.isEnabled(TypedSPILoader.getService(DatabaseType.class, "MySQL"), TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+    private static boolean isEnabled(final ExtensionContext context) {
+        return PipelineE2ECondition.isEnabled(context);
     }
 }

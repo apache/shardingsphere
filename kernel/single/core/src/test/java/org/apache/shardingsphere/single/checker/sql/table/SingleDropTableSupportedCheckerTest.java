@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.checker.sql.table;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedDropCascadeTableException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -58,7 +59,7 @@ class SingleDropTableSupportedCheckerTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema",
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class),
                 Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList());
         when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
         return result;

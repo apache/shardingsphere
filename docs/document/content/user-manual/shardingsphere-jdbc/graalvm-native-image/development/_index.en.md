@@ -79,8 +79,7 @@ newgrp docker
 
 sudo tee /etc/docker/daemon.json <<EOF
 {
-  "log-driver": "local",
-  "min-api-version": "1.24"
+  "log-driver": "local"
 }
 EOF
 
@@ -126,6 +125,7 @@ After enabling WSL2, download and install `rancher-sandbox/rancher-desktop` usin
 and configure it to use the `dockerd(moby)` `Container Engine`.
 
 ```shell
+[Environment]::SetEnvironmentVariable('DOCKER_API_VERSION','1.44','Machine')
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
 # Open a new PowerShell 7 terminal
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
@@ -153,6 +153,7 @@ they will need to uninstall Docker Engine using the script provided by Microsoft
 You can execute the following command in PowerShell 7:
 
 ```shell
+[Environment]::SetEnvironmentVariable('DOCKER_API_VERSION','1.44','Machine')
 iex "& { $(irm https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1) } -Force"
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
 # Open a new PowerShell 7 terminal
@@ -355,7 +356,8 @@ without it being registered for runtime reflection. Add com.oracle.svm.core.code
   java.management@24.0.2/javax.management.StandardMBean.<init>(StandardMBean.java:268)
 ```
 
-The relevant warning cannot be avoided on `GraalVM CE For JDK 24.0.2`.
-Because the no-argument constructor of `com.oracle.svm.core.code.CodeCachePoolMXBean` is marked as an element that is only visible during Native Image generation and cannot be used at Runtime, 
-regardless of the actual Platform,
-through the Java class `org.graalvm.nativeimage.Platform.HOSTED_ONLY`.
+The related warnings cannot be avoided at this time.
+This is because the parameterless constructor of `com.oracle.svm.core.code.CodeCachePoolMXBean` is marked, via the Java class `org.graalvm.nativeimage.Platform.HOSTED_ONLY`, as an element that is visible only during Native Image generation and unusable at runtime, regardless of the actual platform.
+
+Tracing upwards, in `com.alibaba:druid:1.2.20`, which `org.apache.seata:seata-all:2.5.0` depends on,
+`com.alibaba.druid.proxy.DruidDriver` calls `java.lang.management.ManagementFactory#getPlatformMBeanServer()` without confirming whether JMX is available under the GraalVM Native Image.

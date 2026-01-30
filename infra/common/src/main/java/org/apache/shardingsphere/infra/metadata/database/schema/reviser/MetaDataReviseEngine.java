@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.model.Con
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereConstraint;
@@ -48,6 +49,8 @@ public final class MetaDataReviseEngine {
     
     private final Collection<ShardingSphereRule> rules;
     
+    private final DatabaseType protocolType;
+    
     /**
      * Revise meta data.
      *
@@ -57,12 +60,12 @@ public final class MetaDataReviseEngine {
      */
     public Map<String, ShardingSphereSchema> revise(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         if (schemaMetaDataMap.isEmpty()) {
-            return Collections.singletonMap(material.getDefaultSchemaName(), new ShardingSphereSchema(material.getDefaultSchemaName()));
+            return Collections.singletonMap(material.getDefaultSchemaName(), new ShardingSphereSchema(material.getDefaultSchemaName(), protocolType));
         }
         Map<String, ShardingSphereSchema> result = new HashMap<>(schemaMetaDataMap.size(), 1F);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
             SchemaMetaData schemaMetaData = new SchemaMetaDataReviseEngine(rules, material.getProps()).revise(entry.getValue());
-            result.put(entry.getKey(), new ShardingSphereSchema(entry.getKey(), convertToTables(schemaMetaData.getTables()), new LinkedList<>()));
+            result.put(entry.getKey(), new ShardingSphereSchema(entry.getKey(), protocolType, convertToTables(schemaMetaData.getTables()), new LinkedList<>()));
         }
         return result;
     }

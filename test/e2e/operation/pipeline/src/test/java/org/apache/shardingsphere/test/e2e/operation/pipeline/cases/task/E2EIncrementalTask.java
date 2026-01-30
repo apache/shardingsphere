@@ -25,12 +25,14 @@ import org.apache.shardingsphere.database.connector.mysql.type.MySQLDatabaseType
 import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussDatabaseType;
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.SQLBuilderUtils;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -74,6 +76,15 @@ public final class E2EIncrementalTask implements Runnable {
     
     @Override
     public void run() {
+        try {
+            run0();
+        } catch (final SQLException ex) {
+            log.error("Increment task runnable execute failed.", ex);
+            throw new SQLWrapperException(ex);
+        }
+    }
+    
+    private void run0() throws SQLException {
         List<Object[]> orderInsertData = PipelineCaseHelper.generateOrderInsertData(databaseType, primaryKeyGenerateAlgorithm, loopCount);
         List<Object> primaryKeys = new LinkedList<>();
         for (Object[] each : orderInsertData) {
@@ -97,7 +108,7 @@ public final class E2EIncrementalTask implements Runnable {
         log.info("increment task runnable execute successfully.");
     }
     
-    private void insertOrder(final Object[] orderInsertData) {
+    private void insertOrder(final Object[] orderInsertData) throws SQLException {
         String sql;
         if (databaseType instanceof MySQLDatabaseType) {
             sql = SQLBuilderUtils.buildInsertSQL(MYSQL_COLUMN_NAMES, orderTableName);
@@ -111,7 +122,7 @@ public final class E2EIncrementalTask implements Runnable {
         DataSourceExecuteUtils.execute(dataSource, sql, orderInsertData);
     }
     
-    private void doIncrementalChanges(final Object orderId, final List<IncrementalAction> actions) {
+    private void doIncrementalChanges(final Object orderId, final List<IncrementalAction> actions) throws SQLException {
         for (IncrementalAction each : actions) {
             switch (each) {
                 case PLAIN_UPDATE:
@@ -129,7 +140,7 @@ public final class E2EIncrementalTask implements Runnable {
         }
     }
     
-    private void updateOrderById(final Object orderId) {
+    private void updateOrderById(final Object orderId) throws SQLException {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int randomInt = random.nextInt(-100, 100);
         if (databaseType instanceof MySQLDatabaseType) {
@@ -171,13 +182,13 @@ public final class E2EIncrementalTask implements Runnable {
         return new ArrayList<>(columnNames.subList(2, columnNames.size()));
     }
     
-    private void deleteOrderById(final Object orderId) {
+    private void deleteOrderById(final Object orderId) throws SQLException {
         String sql = SQLBuilderUtils.buildDeleteSQL(orderTableName, "order_id");
         log.info("delete sql: {}, params: {}", sql, orderId);
         DataSourceExecuteUtils.execute(dataSource, sql, new Object[]{orderId});
     }
     
-    private void setNullToAllFields(final Object orderId) {
+    private void setNullToAllFields(final Object orderId) throws SQLException {
         if (databaseType instanceof MySQLDatabaseType) {
             String sql = SQLBuilderUtils.buildUpdateSQL(ignoreShardingColumns(MYSQL_COLUMN_NAMES), orderTableName, "null");
             log.info("update sql: {}", sql);

@@ -40,7 +40,10 @@ jobs:
       - uses: actions/checkout@v6.0.1
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
@@ -91,14 +94,17 @@ jobs:
       - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 11
+          java-version: 17
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: java
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
@@ -143,7 +149,10 @@ jobs:
       - uses: actions/checkout@v6.0.1
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
@@ -162,7 +171,10 @@ jobs:
       - uses: actions/checkout@v6.0.1
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
@@ -184,25 +196,28 @@ jobs:
     timeout-minutes: 80
     steps:
       - uses: actions/checkout@v6.0.1
-      - name: Setup JDK 11
+      - name: Setup JDK
         uses: actions/setup-java@v5.1.0
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
       - uses: actions/cache@v5.0.1
         with:
-          path: ~/.m2/repository
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/apache/shardingsphere
+            ~/.m2/repository/org/apache/shardingsphere/elasticjob
           key: shardingsphere-maven-third-party-e2e-cache-${{ github.sha }}
           restore-keys: |
             shardingsphere-maven-third-party-e2e-cache-
             shardingsphere-maven-third-party-
       - name: Install Project
         run: ./mvnw clean install -DskipTests -T1C
-      - name: Set up JDK 8 for Jacoco
+      - name: Set up JDK for Jacoco
         uses: actions/setup-java@v5.1.0
         with:
           distribution: temurin
-          java-version: 8
+          java-version: 17
       - name: Build with maven and execute jacoco aggregation script
         run: |
           ./mvnw -V -B -ntp verify -Djacoco.skip=false -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&

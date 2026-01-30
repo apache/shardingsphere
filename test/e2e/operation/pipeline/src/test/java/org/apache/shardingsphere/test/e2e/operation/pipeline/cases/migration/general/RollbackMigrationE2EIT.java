@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.general;
 
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.AbstractMigrationE2EIT;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
@@ -28,7 +26,9 @@ import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.Pip
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -36,14 +36,14 @@ import java.sql.Connection;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@PipelineE2ESettings(fetchSingle = true, database = @PipelineE2ESettings.PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/common/none.xml"))
+@PipelineE2ESettings(fetchSingle = true, database = @PipelineE2ESettings.PipelineE2EDatabaseSettings(type = "MySQL"))
 class RollbackMigrationE2EIT extends AbstractMigrationE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    void assertIllegalTimeTypesValueMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+    void assertRollbackSuccess(final PipelineTestParameter testParam) throws Exception {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql = "CREATE TABLE t_order (order_id BIGINT PRIMARY KEY, user_id INT, status VARCHAR(50))";
             containerComposer.sourceExecuteWithLog(sql);
             try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
@@ -52,13 +52,14 @@ class RollbackMigrationE2EIT extends AbstractMigrationE2EIT {
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);
             startMigration(containerComposer, "t_order", "t_order");
-            String jobId = listJobId(containerComposer).get(0);
-            containerComposer.proxyExecuteWithLog(String.format("ROLLBACK MIGRATION %s", jobId), 2);
-            assertTrue(listJobId(containerComposer).isEmpty());
+            PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
+            String jobId = distSQLFacade.listJobIds().get(0);
+            distSQLFacade.rollback(jobId);
+            assertTrue(distSQLFacade.listJobIds().isEmpty());
         }
     }
     
-    private static boolean isEnabled() {
-        return PipelineE2ECondition.isEnabled(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+    private static boolean isEnabled(final ExtensionContext context) {
+        return PipelineE2ECondition.isEnabled(context);
     }
 }

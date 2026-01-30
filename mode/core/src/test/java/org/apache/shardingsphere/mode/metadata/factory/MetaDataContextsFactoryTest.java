@@ -79,6 +79,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyMap;
@@ -104,8 +105,9 @@ class MetaDataContextsFactoryTest {
     void setUp() throws SQLException {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
                 databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
-        when(ShardingSphereDatabasesFactory.create(anyMap(), anyMap(), any(), any())).thenReturn(Collections.singleton(database));
-        when(ShardingSphereDatabasesFactory.create(anyMap(), any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class))).thenReturn(Collections.singleton(database));
+        when(ShardingSphereDatabasesFactory.create(anyMap(), anyMap(), any(), any(), any())).thenReturn(Collections.singleton(database));
+        when(ShardingSphereDatabasesFactory.create(anyMap(), any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class),
+                any(DatabaseType.class))).thenReturn(Collections.singleton(database));
         when(ShardingSphereDatabaseFactory.create(anyString(), any(DatabaseType.class), any(DatabaseConfiguration.class), any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class)))
                 .thenAnswer(invocation -> createDatabaseFromConfiguration(invocation.getArgument(0), invocation.getArgument(1), invocation.getArgument(2), Collections.emptyList()));
         when(GlobalRulesBuilder.buildRules(anyCollection(), anyCollection(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(new MockedRule()));
@@ -189,7 +191,7 @@ class MetaDataContextsFactoryTest {
     @Test
     void assertCreateByAlterRuleLoadsSchemasFromRepositoryWhenPersistenceDisabled() throws SQLException {
         Collection<ShardingSphereSchema> loadedSchemas = Arrays.asList(createSchemaWithTable("foo_schema", "persisted_table"), createSchemaWithTable("new_schema", "new_table"));
-        when(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().load("foo_db")).thenReturn(loadedSchemas);
+        when(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().load(eq("foo_db"), any())).thenReturn(loadedSchemas);
         ShardingSphereSchema originSchema = createSchemaWithTable("foo_schema", "origin_table");
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, createResourceMetaDataWithSingleUnit(),
                 new RuleMetaData(Collections.emptyList()), Collections.singleton(originSchema));
@@ -215,7 +217,7 @@ class MetaDataContextsFactoryTest {
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), Boolean.TRUE.toString()))));
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
         Collection<ShardingSphereSchema> loadedSchemas = Collections.singleton(createSchemaWithTable("persisted_schema", "persisted_table"));
-        when(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().load("foo_db")).thenReturn(loadedSchemas);
+        when(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().load("foo_db", mock(DatabaseType.class))).thenReturn(loadedSchemas);
         MetaDataContexts actual = new MetaDataContextsFactory(metaDataPersistFacade, mock())
                 .createByAlterRule("foo_db", true, Collections.singleton(new MockedRuleConfiguration("persist_rule")), originalMetaDataContexts);
         ShardingSphereSchema persistedSchema = loadedSchemas.iterator().next();
@@ -276,6 +278,6 @@ class MetaDataContextsFactoryTest {
     private ShardingSphereSchema createSchemaWithTable(final String schemaName, final String tableName) {
         Collection<ShardingSphereColumn> columns = Collections.singletonList(new ShardingSphereColumn("id", 0, true, false, false, true, false, true));
         ShardingSphereTable table = new ShardingSphereTable(tableName, columns, Collections.emptyList(), Collections.emptyList());
-        return new ShardingSphereSchema(schemaName, Collections.singleton(table), Collections.emptyList());
+        return new ShardingSphereSchema(schemaName, databaseType, Collections.singleton(table), Collections.emptyList());
     }
 }

@@ -25,6 +25,7 @@
     <sql-case id="select_cast" value="SELECT CAST(c AT TIME ZONE 'UTC' AS DATETIME)" db-types="MySQL" />
     <sql-case id="select_cast_multiset" value="select CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ) from customer;" db-types="Oracle" />
     <sql-case id="select_convert_function" value="SELECT CONVERT('2020-10-01', DATE)" db-types="MySQL" />
+    <sql-case id="select_convert_function_using_binary" value="SELECT CONVERT('abc' USING BINARY)" db-types="MySQL" />
     <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL,Doris,Hive" />
     <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from -4 for 2)" db-types="MySQL" />
     <sql-case id="select_substr" value="SELECT SUBSTR('foobarbar' from 4)" db-types="MySQL,Presto" />
@@ -45,11 +46,13 @@
     <sql-case id="select_extract_function_week" value="SELECT EXTRACT(WEEK FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_extract_function_quarter" value="SELECT EXTRACT(QUARTER FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_extract_function_for_oracle" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40') FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_extract_function_doris" value="SELECT EXTRACT(YEAR FROM '2020-01-01')" db-types="Doris" />
     <sql-case id="select_mod_function" value="SELECT MOD(order_id, 1) from t_order" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_sys_xml_agg" value="SELECT SYS_XMLAGG(SYS_XMLGEN(last_name)) XMLAGG FROM employees WHERE last_name LIKE 'R%' ORDER BY xmlagg;" db-types="Oracle" />
     <sql-case id="select_set_function" value="SELECT customer_id, SET(cust_address_ntab) address FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
     <sql-case id="select_pivot" value="SELECT pivotAlias.* FROM (SELECT * FROM sales) PIVOT (SUM(amount) FOR month IN ('Jan', 'Feb')) pivotAlias" db-types="Oracle"/>
     <sql-case id="select_unpivot" value="SELECT * FROM (SELECT * FROM sales) UNPIVOT ((cert_type, cert_number) FOR cert_source IN ((primary_cert_type, primary_cert_no), (alt_cert_type1, alt_cert_no1), (alt_cert_type2, alt_cert_no2)))" db-types="Oracle"/>
+    <sql-case id="select_feature_compare_oracle" value="SELECT FEATURE_COMPARE(model USING *) FROM dual" db-types="Oracle" />
     <sql-case id="select_string_split_function" value="SELECT value as tag, COUNT(*) AS [number_of_articles] FROM Product CROSS APPLY STRING_SPLIT(Tags, ',') GROUP BY value HAVING COUNT(*) > 2 ORDER BY COUNT(*) DESC"  db-types="SQLServer"/>
     <sql-case id="select_from_open_json_function" value="SELECT * FROM OPENJSON(@array) WITH (  month VARCHAR(3), temp int, month_id tinyint '$.sql:identity()') as months" db-types="SQLServer"/>
     <sql-case id="select_from_open_json_function_with_path" value="SELECT [key], value FROM OPENJSON(@json,'$.path.to.&quot;sub-object&quot;')" db-types="SQLServer"/>
@@ -166,6 +169,7 @@
     <sql-case id="select_json_parse_error_to_null" value="SELECT JSON_PARSE('invalid json')" db-types="Doris" />
     <sql-case id="select_json_parse_error_to_value" value="SELECT JSON_PARSE('invalid json', '{}')" db-types="Doris" />
     <sql-case id="select_json_separator_doris" value="SELECT JSON_SEPARATOR(order_id, '$.a') FROM t_order" db-types="Doris,Hive" />
+    <sql-case id="select_json_unquoted_separator_doris" value="SELECT JSON_UNQUOTED_SEPARATOR(order_id, '$.a') FROM t_order" db-types="Doris" />
     <sql-case id="select_json_unquoted_separator" value="SELECT data ->> '$.name' FROM t_json" db-types="Hive" />
     <sql-case id="select_std" value="SELECT STD(1)" db-types="MySQL" />
     <sql-case id="select_stddev" value="SELECT STDDEV(1)" db-types="MySQL" />
@@ -196,7 +200,7 @@
     <sql-case id="select_is_free_lock" value="SELECT IS_FREE_LOCK('lock1')" db-types="MySQL" />
     <sql-case id="select_is_used_lock" value="SELECT IS_USED_LOCK('lock1')" db-types="MySQL" />
     <sql-case id="select_is_null" value="SELECT ISNULL(1+1)" db-types="MySQL" />
-    <sql-case id="select_is_not_null" value="SELECT 1 IS NOT NULL" db-types="MySQL" />
+    <sql-case id="select_is_not_null" value="SELECT 1 IS NOT NULL" db-types="MySQL,Firebird" />
     <sql-case id="select_is_uuid" value="SELECT IS_UUID('6ccd780c-baba-1026-9564-5b8c656024db')" db-types="MySQL" />
     <sql-case id="select_random_bytes" value="SELECT RANDOM_BYTES(16)" db-types="MySQL" />
     <sql-case id="select_rank" value="SELECT RANK() FROM numbers" db-types="MySQL" />
@@ -246,6 +250,10 @@
     <sql-case id="select_json_storage_size" value="SELECT JSON_STORAGE_SIZE(json_col) FROM t" db-types="MySQL" />
     <sql-case id="select_json_table" value="SELECT * FROM JSON_TABLE('[{&quot;name&quot;: 2}]','$[*]' COLUMNS( name INT PATH '$.name' error on empty)) as t" db-types="MySQL" />
     <sql-case id="select_json_table_with_path" value="SELECT * FROM JSON_TABLE('[]', '$[*]' COLUMNS (p NCHAR PATH '$.a')) AS t" db-types="MySQL" />
+    <sql-case id="select_json_separator_mysql" value="SELECT JSON_SEPARATOR(order_id, '$.a') FROM t_order" db-types="MySQL" />
+    <sql-case id="select_json_unquoted_separator_mysql" value="SELECT JSON_UNQUOTED_SEPARATOR(order_id, '$.a') FROM t_order" db-types="MySQL" />
+    <sql-case id="select_timestampadd_mysql" value="SELECT TIMESTAMPADD(DAY, 1, order_date) FROM t_order" db-types="MySQL" />
+    <sql-case id="select_timestampdiff_mysql" value="SELECT TIMESTAMPDIFF(MINUTE, start_time, end_time) FROM t_order" db-types="MySQL" />
     <sql-case id="select_json_type" value="SELECT JSON_TYPE('[1,2,3]')" db-types="MySQL" />
     <sql-case id="select_json_unquote" value="SELECT JSON_UNQUOTE('&quot;abc&quot;')" db-types="MySQL" />
     <sql-case id="select_json_valid" value="SELECT JSON_VALID('{&quot;a&quot;: 1}')" db-types="MySQL" />
@@ -307,8 +315,13 @@
     <sql-case id="select_period_diff" value="SELECT PERIOD_DIFF(200802,200703)" db-types="MySQL" />
     <sql-case id="select_percent_rank" value="SELECT PERCENT_RANK() OVER (ORDER BY salary) FROM employees;" db-types="MySQL" />
     <sql-case id="select_pi" value="SELECT PI()" db-types="MySQL" />
-    <sql-case id="select_regexp" value="SELECT 'a' REGEXP '^[a-d]'" db-types="MySQL,Hive" />
+    <sql-case id="select_regexp" value="SELECT 'a' REGEXP '^[a-d]'" db-types="MySQL,Hive,Doris" />
     <sql-case id="select_with_json_object_function" value="SELECT JSON_OBJECT('name' VALUE 'John', 'age' VALUE 30) AS json_data FROM DUAL" db-types="Oracle" />
     <sql-case id="select_regexp_function" value="SELECT REGEXP('billie eillish', '^billie')" db-types="Doris" />
     <sql-case id="select_regexp_function_with_null" value="SELECT REGEXP(NULL, '^billie')" db-types="Doris" />
+    <sql-case id="select_current_time_precision_mysql" value="SELECT CURRENT_TIME(3)" db-types="MySQL" />
+    <sql-case id="select_odbc_fn_now_mysql" value="SELECT {fn NOW()}" db-types="MySQL" />
+    <sql-case id="select_translate_nchar_cs_oracle" value="SELECT TRANSLATE(col USING NCHAR_CS) FROM translate_tab" db-types="Oracle" />
+    <sql-case id="select_approx_rank_oracle" value="SELECT APPROX_RANK(0.5) FROM dual" db-types="Oracle" />
+    <sql-case id="select_isschemavalid_function_oracle" value="SELECT ISSCHEMAVALID(xml_doc, 'schema.xsd') FROM dual" db-types="Oracle" />
 </sql-cases>

@@ -141,7 +141,7 @@ class ExecutionContextBuilderTest {
                 new ShardingSphereColumn("c_date", Types.TIMESTAMP, false, false, false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_other", Collections.singletonList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
-        return Collections.singleton(new ShardingSphereSchema("name", tables, Collections.emptyList()));
+        return Collections.singleton(new ShardingSphereSchema("name", mock(DatabaseType.class), tables, Collections.emptyList()));
     }
     
     private Collection<ShardingSphereSchema> buildSchemasWithoutPrimaryKey() {
@@ -151,6 +151,6 @@ class ExecutionContextBuilderTest {
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_other", Collections.singletonList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false)), Collections.emptySet(), Collections.emptyList()));
-        return Collections.singleton(new ShardingSphereSchema("name", tables, Collections.emptyList()));
+        return Collections.singleton(new ShardingSphereSchema("name", mock(DatabaseType.class), tables, Collections.emptyList()));
     }
 }

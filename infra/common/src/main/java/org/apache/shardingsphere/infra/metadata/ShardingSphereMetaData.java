@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseFactory;
@@ -39,7 +40,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -60,9 +60,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
     
     private final TemporaryConfigurationProperties temporaryProps;
     
-    public ShardingSphereMetaData() {
-        this(Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
-    }
+    private final DatabaseType protocolType;
     
     public ShardingSphereMetaData(final Collection<ShardingSphereDatabase> databases, final ResourceMetaData globalResourceMetaData,
                                   final RuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
@@ -71,6 +69,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
         temporaryProps = new TemporaryConfigurationProperties(props.getProps());
+        protocolType = databases.isEmpty() ? DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), props) : databases.iterator().next().getProtocolType();
     }
     
     /**

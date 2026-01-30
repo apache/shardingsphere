@@ -20,10 +20,13 @@ package org.apache.shardingsphere.agent.plugin.metrics.prometheus;
 import io.prometheus.client.CollectorRegistry;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
@@ -44,6 +47,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Collections;
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
@@ -91,7 +96,8 @@ class PrometheusPluginLifecycleServiceTest {
     }
     
     private ContextManager mockContextManager() {
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData();
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()),
+                new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
         MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
         ComputeNodeInstanceContext computeNodeInstanceContext = new ComputeNodeInstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new ModeConfiguration("Standalone", null), new EventBusContext());

@@ -22,12 +22,12 @@
     <sql-case id="clickhouse_update_left_join" value="UPDATE t_order o LEFT JOIN t_order_item i ON o.order_id = i.order_id SET o.status = 1, i.status = 2 WHERE o.order_id = ? AND i.user_id = ?" db-types="ClickHouse" />
     <sql-case id="clickhouse_delete_with_owner" value="ALTER TABLE db1.t_order DELETE WHERE order_id = ?" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_distinct_join_using" value="SELECT DISTINCT *, o.*, sum(i.amount) AS total_amount, o.status AS status_alias, o.order_id + i.order_id AS merged_id, toString(o.user_id) AS user_text FROM t_order o JOIN t_order_item i USING (order_id) WHERE o.status = ? AND i.amount &gt; 100 GROUP BY o.order_id, i.order_id, o.status, o.user_id HAVING sum(i.amount) &gt; 1000 ORDER BY total_amount DESC, merged_id" db-types="ClickHouse" />
-    <sql-case id="clickhouse_select_literals" value="SELECT 0x1A AS hex_lit, 0b101 AS bit_lit, TRUE AS bool_lit, NULL AS nil FROM t_order" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_literals" value="SELECT 0x1A AS hex_lit, 0b101 AS bit_lit, TRUE AS bool_lit, NULL AS nil FROM t_order" db-types="ClickHouse,Firebird" />
     <sql-case id="clickhouse_select_functions_right_join" value="SELECT POSITION('a' IN 'abc') AS pos, CAST(order_id AS DATETIME64(3)) AS price, CAST(1 AS INT8) AS tiny, INTERVAL 2 DAY AS inter, COUNT(DISTINCT user_id) AS cnt FROM t_order ORDER BY 1" db-types="ClickHouse" />
-    <sql-case id="clickhouse_select_not_predicate" value="SELECT * FROM t_order WHERE NOT (status &gt; 0)" db-types="ClickHouse" />
-    <sql-case id="clickhouse_select_not_like" value="SELECT * FROM t_order WHERE status NOT LIKE 'A%'" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_not_predicate" value="SELECT * FROM t_order WHERE NOT (status &gt; 0)" db-types="ClickHouse,Firebird" />
+    <sql-case id="clickhouse_select_not_like" value="SELECT * FROM t_order WHERE status NOT LIKE 'A%'" db-types="ClickHouse,Firebird" />
     <sql-case id="clickhouse_select_in_list_and_subquery" value="SELECT * FROM t_order WHERE user_id IN (1, 2, 3) AND order_id IN (SELECT order_id FROM t_order_item) AND status IS NOT NULL" db-types="ClickHouse" />
-    <sql-case id="clickhouse_select_subquery_compare" value="SELECT * FROM t_order WHERE amount = (SELECT 1)" db-types="ClickHouse" />
+    <sql-case id="clickhouse_select_subquery_compare" value="SELECT * FROM t_order WHERE amount = (SELECT 1)" db-types="ClickHouse,Firebird" />
     <sql-case id="clickhouse_select_param_projection" value="SELECT ? AS param_alias" db-types="ClickHouse" case-types="PLACEHOLDER" />
     <sql-case id="clickhouse_select_subquery_projection" value="SELECT (SELECT 1) AS sub_val FROM t_order" db-types="ClickHouse" />
     <sql-case id="clickhouse_update_without_where" value="UPDATE t_order SET status = 0" db-types="ClickHouse" />
@@ -45,7 +45,7 @@
     <sql-case id="clickhouse_select_is_false" value="SELECT * FROM t_order WHERE is_deleted IS FALSE" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_parenthesized_right_cross_join" value="SELECT * FROM (t_order o RIGHT JOIN t_order_item i ON o.order_id = i.order_id) CROSS JOIN t_user u" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_compare_any_subquery_paren" value="SELECT * FROM t_order WHERE (status = 1)" db-types="ClickHouse" />
-    <sql-case id="clickhouse_insert_default_value" value="INSERT INTO t_order VALUES (DEFAULT)" db-types="ClickHouse" />
+    <sql-case id="clickhouse_insert_default_value" value="INSERT INTO t_order VALUES (DEFAULT)" db-types="ClickHouse,Firebird" />
     <sql-case id="clickhouse_select_addition_no_alias" value="SELECT order_id + 1 FROM t_order" db-types="ClickHouse" />
     <sql-case id="clickhouse_select_hex_bit_literals" value="SELECT * FROM t_order WHERE hex_col = X'1A' AND bit_col = B'101'" db-types="ClickHouse" />
     <sql-case id="clickhouse_update_set_default" value="UPDATE t_order SET status = DEFAULT WHERE order_id = 1" db-types="ClickHouse" />

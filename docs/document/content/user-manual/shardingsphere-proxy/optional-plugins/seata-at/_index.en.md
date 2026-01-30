@@ -281,15 +281,15 @@ done
 ### Create ShardingSphere virtual database
 
 Use third-party tools to create ShardingSphere virtual database in ShardingSphere Proxy. 
-Taking DBeaver Community as an example, if you use Ubuntu 22.04.4, you can quickly install it through Snapcraft.
+Taking DBeaver Community as an example, if you use Ubuntu 24.04, you can quickly install it through Snapcraft.
 
 ```shell
 sudo apt update && sudo apt upgrade -y
-sudo snap install dbeaver-ce
+sudo snap install dbeaver-ce --classic
 snap run dbeaver-ce
 ```
 
-In DBeaver Community, use the `standardJdbcUrl` of `jdbc:postgresql://127.0.0.1:3308/postgres` to connect to ShardingSphere Proxy, 
+In DBeaver Community, use the `jdbcUrl` of `jdbc:postgresql://127.0.0.1:3308/postgres` to connect to ShardingSphere Proxy, 
 and the username and password are both `root`. 
 The required JDBC Driver corresponds to the `proxy-frontend-database-protocol-type` set by ShardingSphere Proxy.
 Execute the following SQL,
@@ -299,7 +299,7 @@ Execute the following SQL,
 CREATE DATABASE sharding_db;
 ```
 
-In DBeaver Community, use the `standardJdbcUrl` of `jdbc:postgresql://127.0.0.1:3308/sharding_db` to connect to ShardingSphere Proxy, 
+In DBeaver Community, use the `jdbcUrl` of `jdbc:postgresql://127.0.0.1:3308/sharding_db` to connect to ShardingSphere Proxy, 
 and the username and password are both `root`. Execute the following SQL,
 
 ```sql

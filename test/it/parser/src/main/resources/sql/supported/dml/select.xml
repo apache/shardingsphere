@@ -30,6 +30,7 @@
     <sql-case id="select_with_st_aswkb_st_geom_form_text" value="SELECT ST_AsWKB(ST_GeomFromText('POINT(0 0)')) IN (SELECT b FROM t1) AS result" db-types="MySQL" />
     <sql-case id="select_null_in_subquery" value="SELECT NULL IN(SELECT (f1 between 0 and 1) FROM (SELECT f1 FROM t WHERE (@b:=NULL) - f2) as dt)" db-types="MySQL,Doris" />
     <sql-case id="select_with_collate" value="SELECT NAME_CONST('var', 'value') COLLATE latin1_general_cs" db-types="MySQL" />
+    <sql-case id="select_collate_parameter_marker" value="SELECT name COLLATE ? FROM t_order" db-types="MySQL,Doris" case-types="PLACEHOLDER" />
     <sql-case id="select_with_hex_function" value="SELECT HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | 0x38))" db-types="MySQL" />
     <sql-case id="select_distinct_with_grouping_function" value="SELECT DISTINCT f1 FROM t1 GROUP BY f1 WITH ROLLUP ORDER BY f1, ANY_VALUE(GROUPING(f1))" db-types="MySQL" />
     <sql-case id="select_convert_function1" value="SELECT CONVERT(TIMESTAMP &quot;2004-01-22 21:45:33&quot; USING latin1)" db-types="MySQL" />
@@ -77,6 +78,8 @@
     <sql-case id="select_keyword_table_name_with_square_brackets" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN [select] c ON o.status = c.status WHERE o.user_id IN (?, ?) AND o.order_id BETWEEN ? AND ? AND c.status = ? ORDER BY i.item_id" db-types="SQLServer" />
     <sql-case id="select_alias_as_keyword" value="SELECT length.item_id password FROM t_order_item length where length.item_id = ? " db-types="MySQL,H2,SQLServer,Oracle" />
     <sql-case id="select_with_force_index_join" value="SELECT i.* FROM t_order o FORCE INDEX(order_index) JOIN t_order_item i ON o.order_id=i.order_id WHERE o.order_id = ?" db-types="MySQL,Doris" />
+    <sql-case id="select_with_index_hint_for_order_by_mysql" value="SELECT * FROM t1 USE INDEX FOR ORDER BY (i1) ORDER BY col1" db-types="MySQL" />
+    <sql-case id="select_with_index_hint_for_group_by_mysql" value="SELECT * FROM t1 USE INDEX FOR GROUP BY (i1) GROUP BY col1" db-types="MySQL" />
     <sql-case id="select_equal_with_geography" value="SELECT * FROM t_order WHERE rule = ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_in_with_geography" value="SELECT * FROM t_order WHERE rule IN (?::jsonb, ?::jsonb) AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND user_id = ? AND order_id = ?" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_between_with_geography" value="SELECT * FROM t_order WHERE rule BETWEEN ?::jsonb AND ?::jsonb AND start_point=ST_GeographyFromText('SRID=4326;POINT('||?||' '||?||')') AND order_id = ?" db-types="PostgreSQL,openGauss" />
@@ -84,17 +87,22 @@
     <sql-case id="select_special_function_nested" value="SELECT sum(if(status=0, 1, 0)) func_status FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" />
     <sql-case id="select_with_interval_function" value="SELECT INTERVAL(status,1,5) func_status FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" />
     <sql-case id="select_with_left_function" value="SELECT CONCAT(LEFT(status, 7), 'test') FROM t_order_item WHERE user_id = 10" db-types="MySQL" />
+    <sql-case id="select_table_statement" value="TABLE t_order" db-types="MySQL" />
+    <sql-case id="select_order_by_position_mysql" value="SELECT * FROM t_order ORDER BY 1 DESC" db-types="MySQL" />
     <sql-case id="select_database" value="SELECT DATABASE()" db-types="MySQL" />
     <sql-case id="select_quarter" value="SELECT QUARTER('2008-04-01')" db-types="MySQL" />
     <sql-case id="select_with_mod_function" value="SELECT * FROM t_order WHERE MOD(order_id, 1) = 1" db-types="MySQL" />
     <sql-case id="select_with_date_format_function" value="SELECT * FROM t_order WHERE DATE_FORMAT(current_date, '%Y-%m-%d') = '2019-12-18'" db-types="MySQL" />
     <sql-case id="select_with_spatial_function" value="SELECT * FROM t_order WHERE ST_DISTANCE_SPHERE(POINT(113.358772, 23.1273723), POINT(user_id,order_id)) != 0" db-types="MySQL" />
-    <sql-case id="select_current_user" value="SELECT CURRENT_USER" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_current_user" value="SELECT CURRENT_USER" db-types="PostgreSQL,openGauss,Firebird" />
     <sql-case id="select_with_match_against" value="SELECT * FROM t_order_item WHERE MATCH(t_order_item.description) AGAINST (? IN NATURAL LANGUAGE MODE) AND user_id = ?" db-types="MySQL,Doris" />
     <sql-case id="select_not_match_against_doris" value="SELECT * FROM t_order WHERE NOT MATCH(description) AGAINST('abc' IN NATURAL LANGUAGE MODE)" db-types="Doris" />
     <sql-case id="select_straight_join_doris" value="SELECT STRAIGHT_JOIN * FROM t_order" db-types="Doris" />
     <sql-case id="select_for_update_doris" value="SELECT * FROM t_order FOR UPDATE" db-types="Doris" />
     <sql-case id="select_union_doris" value="SELECT 1 UNION SELECT 2" db-types="Doris" />
+    <sql-case id="select_cte_with_columns_doris" value="WITH c AS (SELECT 1) SELECT * FROM c" db-types="Doris" />
+    <sql-case id="select_udf_call_doris" value="SELECT my_udf(user_id) FROM t_order" db-types="Doris" />
+    <sql-case id="select_system_variable_scope_doris" value="SELECT @@GLOBAL.time_zone, @@SESSION.autocommit" db-types="Doris" />
     <sql-case id="select_function_with_owner_doris" value="SELECT analytics.custom_fn()" db-types="Doris" />
     <sql-case id="select_with_json_separator" value="select content_json->>'$.nation' as nation,content_json->>'$.title' as title from tb_content_json b where b.content_id=1" db-types="MySQL" />
     <sql-case id="select_with_json_value_return_type" value="SELECT * FROM t_order WHERE JSON_VALUE(items, '$.name' RETURNING VARCHAR(100)) = 'jack'" db-types="MySQL" />
@@ -139,6 +147,7 @@
     <sql-case id="select_with_partitioned_table" value="SELECT * FROM sales PARTITION (sales_q2_2000) s WHERE s.amount_sold > 1500 ORDER BY cust_id, time_id, channel_id" db-types="Oracle" />
     <sql-case id="select_with_binding_tables_without_join" value="SELECT last_name, job_id, departments.department_id, department_name FROM employees, departments WHERE employees.department_id = departments.department_id ORDER BY last_name, job_id" db-types="Oracle" />
     <sql-case id="select_with_lateral_clause" value="SELECT * FROM employees e, LATERAL(SELECT * FROM departments d WHERE e.department_id = d.department_id)" db-types="Oracle" />
+    <sql-case id="select_function_table_oracle" value="SELECT * FROM pipelined_func(1) pf" db-types="Oracle" />
     <sql-case id="select_with_containers" value="SELECT * FROM CONTAINERS(employees)" db-types="Oracle" />
     <sql-case id="select_with_hierarchical_connect_by" value="SELECT last_name, employee_id, manager_id FROM employees CONNECT BY employee_id = manager_id ORDER BY last_name" db-types="Oracle" />
     <sql-case id="select_current_date_function_with_shorthand_regular_function" value="SELECT * FROM t_order WHERE date = CURRENT_DATE" db-types="MySQL" />
@@ -183,7 +192,7 @@
     <sql-case id="select_aggregate_rank" value="SELECT RANK(15500) WITHIN GROUP (ORDER BY salary DESC) 'Rank of 15500' FROM employees;" db-types="Oracle" />
     <sql-case id="select_rowid" value="SELECT ROWID FROM employees WHERE ROWIDTOCHAR(ROWID) LIKE '%JAAB%' ORDER BY ROWID;" db-types="Oracle" />
     <sql-case id="select_linear_regression_function" value="SELECT job_id, employee_id ID, salary, REGR_SLOPE(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) slope, REGR_INTERCEPT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) intcpt, REGR_R2(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) rsqr, REGR_COUNT(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) count, REGR_AVGX(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) avgx, REGR_AVGY(SYSDATE-hire_date, salary) OVER (PARTITION BY job_id) avgy FROM employees WHERE department_id in (50, 80) ORDER BY job_id, employee_id;" db-types="Oracle" />
-    <sql-case id="select_lpad_function" value="SELECT LPAD('Page 1',15,'*.') 'LPAD example' FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_lpad_function" value="SELECT LPAD('Page 1',15,'*.') 'LPAD example' FROM DUAL;" db-types="Oracle,Firebird" />
     <sql-case id="select_to_char_function" value="SELECT TO_CHAR(ts_col, 'DD-MON-YYYY HH24:MI:SSxFF') AS ts_col FROM date_tab ORDER BY ts_col;" />
     <sql-case id="select_xmlelement_xmlagg_function" value="SELECT XMLELEMENT('Department', XMLAGG(XMLELEMENT('Employee', e.job_id||' '||e.last_name) ORDER BY last_name)) as 'Dept_list' FROM employees e WHERE e.department_id = 30;" db-types="Oracle" />
     <sql-case id="select_xmlcast_function" value="SELECT XMLCAST(des.COLUMN_VALUE AS VARCHAR2(256)) FROM purchaseorder;" db-types="Oracle" />
@@ -192,16 +201,20 @@
     <sql-case id="select_xmlforest_function" value="SELECT XMLFOREST(e.employee_id AS EVALNAME 'ID', e.last_name AS name, e.salary) FROM employees e WHERE employee_id = 204;" db-types="Oracle" />
     <sql-case id="select_xmlparse_function" value="SELECT XMLPARSE(DOCUMENT 'DEPTXML' WELLFORMED) AS dept FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_xmlpi_function" value="SELECT XMLPI(NAME &quot;Order analysisComp&quot;, 'imported, reconfigured, disassembled') AS 'XMLPI' FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_xmlpi_evalname_function" value="SELECT XMLPI(EVALNAME 'target', 'value') FROM dual;" db-types="Oracle" />
     <sql-case id="select_xmlquery_function" value="SELECT XMLQUERY('//student[@age=20]' PASSING BY VALUE xcol AS x RETURNING CONTENT NULL ON EMPTY) FROM x_table;" db-types="Oracle" />
     <sql-case id="select_xmlroot_function" value="SELECT XMLROOT(XMLType('143598'), VERSION '1.0', STANDALONE YES) AS 'XMLROOT' FROM DUAL;" db-types="Oracle" />
     <sql-case id="select_xmlserialize_function" value="SELECT XMLSERIALIZE(DOCUMENT c2 AS BLOB ENCODING 'UTF-8' VERSION 'a' INDENT SIZE = 0 SHOW DEFAULTS) FROM b;" db-types="Oracle" />
     <sql-case id="select_from_xmltable_function" value="SELECT warehouse_name warehouse, warehouse2.Water, warehouse2.Rail FROM warehouses, XMLTABLE('/Warehouse' PASSING warehouses.warehouse_spec COLUMNS &quot;Water&quot; varchar2(6) PATH 'WaterAccess',&quot;Rail&quot; varchar2(6) PATH 'RailAccess') warehouse2;" db-types="Oracle" />
+    <sql-case id="select_from_xmltable_with_namespaces_oracle" value="SELECT * FROM XMLTABLE(XMLNAMESPACES(DEFAULT 'uri0', 'uri1' AS ns1, 'uri2' AS ns2), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy') xt" db-types="Oracle" />
+    <sql-case id="select_with_xmlnamespaces_multiple_default_oracle" value="SELECT * FROM XMLTABLE(XMLNAMESPACES(DEFAULT 'uri0', DEFAULT 'uri1'), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy') xt" db-types="Oracle" />
+    <sql-case id="select_from_regular_function_table_oracle" value="SELECT * FROM my_func(1, 2) f" db-types="Oracle" />
     <sql-case id="select_with_null_keyword_in_projection" value="select null as order_id, item_id from t_order" db-types="MySQL" />
     <sql-case id="select_literal_type_cast_money" value="SELECT '$99'::money" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_positional_parameter_type_cast_money" value="SELECT $1::money" db-types="PostgreSQL,openGauss" case-types="Placeholder" />
     <sql-case id="select_string_constant_type_cast" value="SELECT int4 '1', money '2'" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_constant_with_nested_type_cast" value="SELECT CAST(MONEY '1' AS VARCHAR)::CHAR(10)::VARCHAR::CHAR(4)" db-types="PostgreSQL,openGauss"  />
-    <sql-case id="select_projection_with_parameter" value="SELECT 1 AS id, ? AS status, SYSDATE AS create_time, TRUNC(SYSDATE) AS create_date FROM DUAL" db-types="Oracle"  />
+    <sql-case id="select_projection_with_parameter" value="SELECT 1 AS id, ? AS status, SYSDATE AS create_time, TRUNC(SYSDATE) AS create_date FROM DUAL" db-types="Oracle,Firebird"  />
     <sql-case id="select_with_chinese_comma" value="SELECT 1， 2，3 FROM DUAL" db-types="Oracle"  />
     <sql-case id="select_with_chinese_whitespace" value="SELECT 1， 2，3 FROM　DUAL" db-types="Oracle"  />
     <sql-case id="select_with_auto_keyword" value="SELECT * FROM t_auto WHERE auto = ?" db-types="MySQL"/>
@@ -244,6 +257,7 @@
     <sql-case id="select_date_literal_doris" value="SELECT DATE '2020-01-01'" db-types="Doris" />
     <sql-case id="select_hex_literal_doris" value="SELECT 0x1AF" db-types="Doris" />
     <sql-case id="select_bit_literal_doris" value="SELECT b'1010'" db-types="Doris" />
+    <sql-case id="select_bit_literal_upper_doris" value="SELECT B'1101'" db-types="Doris" />
     <sql-case id="select_collate_clause_doris" value="SELECT 'a' COLLATE utf8mb4_bin" db-types="Doris" />
     <sql-case id="select_true_literal_doris" value="SELECT TRUE" db-types="Doris,Hive" />
     <sql-case id="select_false_literal_doris" value="SELECT FALSE" db-types="Doris" />
@@ -251,6 +265,11 @@
     <sql-case id="select_with_percentile_functions" value="SELECT department_id, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary DESC) 'Median cont', PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY salary DESC) 'Median disc' FROM employees GROUP BY department_id" db-types="Oracle" />
     <sql-case id="select_with_keep_clause" value="SELECT salary,MIN(salary) KEEP (DENSE_RANK FIRST ORDER BY commission_pct) OVER (PARTITION BY department_id) 'Worst', MAX(salary) KEEP (DENSE_RANK LAST ORDER BY commission_pct) OVER (PARTITION BY department_id) 'Best' FROM employees ORDER BY department_id" db-types="Oracle" />
     <sql-case id="select_with_corr_function" value="SELECT employee_id, CORR(SYSDATE - hire_date, salary) FROM employees WHERE department_id in (50, 80) ORDER BY employee_id" db-types="Oracle" />
+    <sql-case id="select_with_db_link" value="SELECT * FROM hr.employees@remote" db-types="Oracle" />
+    <sql-case id="select_with_sample_clause_oracle" value="SELECT * FROM employees SAMPLE(10)" db-types="Oracle" />
+    <sql-case id="select_with_order_by_index_oracle" value="SELECT * FROM t_order ORDER BY 1 NULLS LAST" db-types="Oracle" />
+    <sql-case id="select_is_nan_oracle" value="SELECT to_binary_float('NaN') FROM dual WHERE to_binary_float('NaN') IS NAN" db-types="Oracle" />
+    <sql-case id="select_group_by_rollup_oracle_with_rollup" value="SELECT department_id, COUNT(*) FROM employees GROUP BY ROLLUP(department_id)" db-types="Oracle" />
     <sql-case id="select_with_trim_function_multi" value="select TRIM('  derby '), TRIM(BOTH ' ' FROM '  derby '), TRIM(TRAILING ' ' FROM '  derby '), TRIM(cast (null as char(1)) FROM '  derby '), TRIM(' ' FROM cast(null as varchar(30))), TRIM('y' FROM ' derby') FROM employees" db-types="Oracle" />
     <sql-case id="select_with_trim_function_simple" value="SELECT TRIM( '.,! ' FROM '     #     test    .') AS Result" db-types="SQLServer" />
     <sql-case id="select_with_trim_function_leading" value="SELECT TRIM(LEADING '.,! ' FROM  '     .#     test    .') AS Result" db-types="SQLServer,Presto" />
@@ -279,7 +298,7 @@
     <sql-case id="select_wm_concat_function4" value="SELECT NAME,WM_CONCAT(DECODE(SUBSTR((TO_CHAR(NAME)),0,1),'.','0'||TO_CHAR(NAME),TO_CHAR(NAME))) WM_NAME FROM TEST_TABLE WHERE NAME ='TEST' GROUP BY NAME" db-types="Oracle" />
     <sql-case id="select_with_user_updatable_columns" value="SELECT column_name, updatable FROM user_updatable_columns WHERE table_name = 'LOCATIONS_VIEW' ORDER BY column_name, updatable" db-types="Oracle" />
     <sql-case id="select_with_script_variables" value="SELECT x.$(ColumnName) FROM Person.Person x WHERE x.BusinessEntityID > 5" db-types="SQLServer" />
-    <sql-case id="select_not_expression" value="select !0,NOT 0=1,!(0=0),1 AND 1,1 &amp;&amp; 0,0 OR 1,1 || NULL, 1=1 or 1=1 and 1=0" db-types="MySQL" />
+    <sql-case id="select_not_expression" value="select !0,NOT 0=1,!(0=0),1 AND 1,1 &amp;&amp; 0,0 OR 1,1 || NULL, 1=1 or 1=1 and 1=0" db-types="MySQL,Doris" />
     <sql-case id="select_with_unreserved_column" value="SELECT name, server_id, provider FROM sys.servers" db-types="SQLServer" />
     <sql-case id="select_with_count_temp_table" value="SELECT COUNT(*) AS [Number of rows] FROM #Test" db-types="SQLServer"/>
     <sql-case id="select_with_bracket_alias" value="SELECT obj1.name AS [XEvent-name], col2.name AS [XEvent-column], obj1.description AS [Descr-name], col2.description AS [Descr-column] FROM sys.dm_xe_objects AS obj1 INNER JOIN sys.dm_xe_object_columns AS col2 ON col2.object_name = obj1.name ORDER BY obj1.name, col2.name" db-types="SQLServer"/>
@@ -402,4 +421,78 @@
     <sql-case id="select_querytraceon_hint" value="SELECT * FROM Person OPTION (QUERYTRACEON 4199, QUERYTRACEON 4137);" db-types="SQLServer"/>
     <sql-case id="select_with_sample_clause" value="SELECT 1 AS C1 FROM T_ORDER SAMPLE BLOCK (1.43302, 8) SEED(9) T_ORDER" db-types="Oracle" />
     <sql-case id="select_from_function_table_doris" value="SELECT * FROM table_func(1, 2)" db-types="Doris" />
+    <sql-case id="select_from_function_expr_table_doris" value="SELECT * FROM generate_series(1, 3) AS gs" db-types="Doris" />
+    <sql-case id="select_interval_firebird" value="SELECT INTERVAL 1 DAY FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_having_firebird" value="SELECT user_id, COUNT(*) AS cnt FROM t_order GROUP BY user_id HAVING COUNT(*) > 1" db-types="Firebird"/>
+    <sql-case id="select_function_table_firebird" value="SELECT * FROM foo(1)" db-types="Firebird"/>
+    <sql-case id="select_cast_int_firebird" value="SELECT CAST(user_id AS INT) FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_gen_id_with_identifier_firebird" value="SELECT GEN_ID(seq, 1) FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_gen_id_with_parameters_firebird" value="SELECT GEN_ID(?, ?) FROM t_order" db-types="Firebird" case-types="Placeholder"/>
+    <sql-case id="select_variable_default_firebird" value="SELECT DEFAULT FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_parenthesized_column_firebird" value="SELECT (user_id) FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_schema_table_firebird" value="SELECT * FROM schema1.t_order" db-types="Firebird"/>
+    <sql-case id="select_where_and_like_firebird" value="SELECT * FROM t_order WHERE user_id = 1 AND status LIKE 'A%'" db-types="Firebird"/>
+    <sql-case id="select_safe_eq_firebird" value="SELECT 1 &lt;=&gt; 1" db-types="Firebird"/>
+    <sql-case id="select_in_list_firebird" value="SELECT * FROM t_order WHERE id IN (1,2)" db-types="Firebird"/>
+    <sql-case id="select_not_in_list_firebird" value="SELECT * FROM t_order WHERE id NOT IN (1,2)" db-types="Firebird"/>
+    <sql-case id="select_not_between_firebird" value="SELECT * FROM t_order WHERE id NOT BETWEEN 1 AND 5" db-types="Firebird"/>
+    <sql-case id="select_case_expr_firebird" value="SELECT CASE WHEN 1=1 THEN 1 END FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_cast_literal_firebird" value="SELECT CAST(1 AS VARCHAR(10)) FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_variable_identifier_firebird" value="SELECT LOCAL.var FROM t_order" db-types="Firebird"/>
+    <sql-case id="select_comma_join_firebird" value="SELECT * FROM t_order a, t_order_item b" db-types="Firebird"/>
+    <sql-case id="select_union_firebird" value="SELECT 1 UNION SELECT 2" db-types="Firebird"/>
+    <sql-case id="select_subquery_table_firebird" value="SELECT * FROM (SELECT 1) sub" db-types="Firebird"/>
+    <sql-case id="select_subquery_with_with_firebird" value="SELECT * FROM (WITH t AS (SELECT 1) SELECT * FROM t) sub" db-types="Firebird"/>
+    <sql-case id="select_not_expression_sql92" value="SELECT NOT (1=1) FROM t_order" db-types="SQL92" />
+    <sql-case id="select_where_is_true_sql92" value="SELECT * FROM t_order WHERE active IS TRUE" db-types="SQL92" />
+    <sql-case id="select_where_is_false_sql92" value="SELECT * FROM t_order WHERE active IS FALSE" db-types="SQL92" />
+    <sql-case id="select_where_is_not_null_sql92" value="SELECT * FROM t_order WHERE status IS NOT NULL" db-types="SQL92" />
+    <sql-case id="select_compare_subquery_sql92" value="SELECT * FROM t_order WHERE order_id = (SELECT 1)" db-types="SQL92" />
+    <sql-case id="select_distinct_simple_sql92" value="SELECT DISTINCT user_id FROM t_order" db-types="SQL92" />
+    <sql-case id="select_distinct_with_count_sql92" value="SELECT COUNT(DISTINCT order_id) c FROM t_order WHERE order_id &lt; 1100" db-types="SQL92" />
+    <sql-case id="select_having_sql92" value="SELECT user_id, COUNT(*) AS cnt FROM t_order GROUP BY user_id HAVING COUNT(*) &gt; 1" db-types="SQL92" />
+    <sql-case id="select_cast_int_sql92" value="SELECT CAST(user_id AS INT) FROM t_order" db-types="SQL92" />
+    <sql-case id="select_all_param_alias_schema_sql92" value="SELECT ALL ? AS &quot;aid&quot; FROM schema1.t_order WHERE (order_id = 1) OR active IS NULL" db-types="SQL92" />
+    <sql-case id="select_like_between_and_sql92" value="SELECT status FROM t_order WHERE status LIKE '1%' AND order_id BETWEEN 1 AND 10" db-types="SQL92" />
+    <sql-case id="select_where_is_null_sql92" value="SELECT * FROM t_order WHERE status IS NULL" db-types="SQL92" />
+    <sql-case id="select_safe_eq_sql92" value="SELECT order_id FROM t_order WHERE order_id &lt;=&gt; 1" db-types="SQL92" />
+    <sql-case id="select_in_list_sql92" value="SELECT order_id FROM t_order WHERE order_id IN (1, 2)" db-types="SQL92" />
+    <sql-case id="select_not_in_subquery_sql92" value="SELECT order_id FROM t_order WHERE order_id NOT IN (SELECT 1)" db-types="SQL92" />
+    <sql-case id="select_in_subquery_sql92" value="SELECT order_id FROM t_order WHERE order_id IN (SELECT 1)" db-types="SQL92" />
+    <sql-case id="select_not_between_sql92" value="SELECT order_id FROM t_order WHERE order_id NOT BETWEEN 1 AND 2" db-types="SQL92" />
+    <sql-case id="select_addition_expr_sql92" value="SELECT order_id + 1 FROM t_order" db-types="SQL92" />
+    <sql-case id="select_interval_expression_sql92" value="SELECT INTERVAL 1 DAY" db-types="SQL92" />
+    <sql-case id="select_position_function_sql92" value="SELECT POSITION('a' IN 'aaa')" db-types="SQL92" />
+    <sql-case id="select_null_literal_sql92" value="SELECT NULL FROM t_order" db-types="SQL92" />
+    <sql-case id="select_case_expression_sql92" value="SELECT CASE 1 WHEN 1 THEN 1 END FROM t_order" db-types="SQL92" />
+    <sql-case id="select_without_from_sql92" value="SELECT 1" db-types="SQL92" />
+    <sql-case id="select_inner_join_sql92" value="SELECT * FROM t_order INNER JOIN t_order_item ON t_order.order_id = t_order_item.order_id" db-types="SQL92" />
+    <sql-case id="select_subquery_projection_sql92" value="SELECT (SELECT 1) sub FROM t_order" db-types="SQL92" />
+    <sql-case id="select_hex_literal_sql92" value="SELECT 0x1 FROM t_order" db-types="SQL92" />
+    <sql-case id="select_bit_literal_sql92" value="SELECT B'1' FROM t_order" db-types="SQL92" />
+    <sql-case id="select_cast_literal_sql92" value="SELECT CAST(1 AS INT) FROM t_order" db-types="SQL92" />
+    <sql-case id="select_boolean_literal_sql92" value="SELECT TRUE FROM t_order" db-types="SQL92" />
+    <sql-case id="select_subquery_table_sql92" value="SELECT * FROM (SELECT 1) t" db-types="SQL92" />
+    <sql-case id="select_comma_join_sql92" value="SELECT * FROM t_order o, t_order_item i" db-types="SQL92" />
+    <sql-case id="select_cross_join_sql92" value="SELECT * FROM t_order CROSS JOIN t_order_item" db-types="SQL92" />
+    <sql-case id="select_where_is_true_mysql" value="SELECT * FROM t_order WHERE active IS TRUE" db-types="MySQL" />
+    <sql-case id="select_where_is_false_mysql" value="SELECT * FROM t_order WHERE active IS FALSE" db-types="MySQL" />
+    <sql-case id="select_where_is_unknown_mysql" value="SELECT * FROM t_order WHERE active IS UNKNOWN" db-types="MySQL" />
+    <sql-case id="select_null_safe_equal_mysql" value="SELECT * FROM t_order WHERE order_id &lt;=&gt; ?" db-types="MySQL" case-types="PLACEHOLDER" />
+    <sql-case id="select_three_part_column_mysql" value="SELECT db1.t_order.status FROM db1.t_order" db-types="MySQL" />
+    <sql-case id="select_string_literal_concat_mysql" value="SELECT 'ab' 'cd'" db-types="MySQL" />
+    <sql-case id="select_where_is_true_oracle" value="SELECT * FROM employees WHERE active IS TRUE" db-types="Oracle" />
+    <sql-case id="select_in_without_parentheses_oracle" value="SELECT * FROM t_order WHERE status IN 'shipped'" db-types="Oracle" />
+    <sql-case id="select_from_shards_oracle" value="SELECT * FROM SHARDS(employees)" db-types="Oracle" />
+    <sql-case id="select_with_table_dblink_oracle" value="SELECT * FROM t_order@db_link" db-types="Oracle" />
+    <sql-case id="select_into_variable_oracle" value="SELECT status INTO status_var FROM t_order WHERE order_id = 1" db-types="Oracle" />
+    <sql-case id="select_table_collection_expr_oracle" value="SELECT * FROM TABLE(1 + 1)" db-types="Oracle" />
+    <sql-case id="select_with_xmlnamespaces_clause_oracle" value="SELECT * FROM XMLTABLE(XMLNAMESPACES(DEFAULT 'uri', 'urn:ns1' AS ns1), '/root' PASSING xmlcol COLUMNS dummy VARCHAR2(10) PATH 'dummy') xt" db-types="Oracle" />
+    <sql-case id="select_from_xmltable_with_default_oracle" value="SELECT * FROM XMLTABLE('x' PASSING xmlcol COLUMNS c1 VARCHAR2(10) PATH 'p' DEFAULT 0) xt" db-types="Oracle" />
+    <sql-case id="select_table_collection_column_oracle" value="SELECT * FROM TABLE(nested_col)" db-types="Oracle" />
+    <sql-case id="select_table_collection_function_oracle" value="SELECT * FROM TABLE(get_nested()) t" db-types="Oracle" />
+    <sql-case id="select_xmlcdata_function_oracle" value="SELECT XMLCDATA('text') FROM dual" db-types="Oracle" />
+    <sql-case id="select_format_function_oracle" value="SELECT FORMAT('abc', '999') FROM dual" db-types="Oracle" />
+    <sql-case id="select_first_value_oracle" value="SELECT FIRST_VALUE(salary) OVER (ORDER BY salary) FROM employees" db-types="Oracle" />
+    <sql-case id="select_datetime_lbe_literal_oracle" value="SELECT {ts '2020-02-02 10:00:00'} FROM dual" db-types="Oracle" />
 </sql-cases>

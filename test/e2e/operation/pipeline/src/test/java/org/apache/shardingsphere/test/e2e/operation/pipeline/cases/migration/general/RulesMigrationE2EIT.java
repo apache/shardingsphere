@@ -18,22 +18,21 @@
 package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.general;
 
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.PipelineContainerComposer;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.AbstractMigrationE2EIT;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.small.StringPkSmallOrderDAO;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ECondition;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.param.PipelineTestParameter;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.util.PipelineE2EDistSQLFacade;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import java.sql.Connection;
 import java.util.concurrent.Callable;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,8 +44,8 @@ import static org.hamcrest.Matchers.is;
  * 2) only encrypt rule.
  */
 @PipelineE2ESettings(fetchSingle = true, database = {
-        @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/primary_key/text_primary_key/mysql.xml"),
-        @PipelineE2EDatabaseSettings(type = "MariaDB", scenarioFiles = "env/scenario/primary_key/text_primary_key/mysql.xml")
+        @PipelineE2EDatabaseSettings(type = "MySQL"),
+        @PipelineE2EDatabaseSettings(type = "MariaDB")
 })
 class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     
@@ -58,7 +57,7 @@ class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertNoRuleMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             assertMigrationSuccess(containerComposer, null);
         }
     }
@@ -67,7 +66,7 @@ class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertOnlyEncryptRuleMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
-        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
+        try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             assertMigrationSuccess(containerComposer, () -> {
                 createTargetOrderTableEncryptRule(containerComposer);
                 return null;
@@ -76,26 +75,26 @@ class RulesMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     private void assertMigrationSuccess(final PipelineContainerComposer containerComposer, final Callable<Void> addRuleFn) throws Exception {
-        containerComposer.createSourceOrderTable(SOURCE_TABLE_NAME);
-        try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
-            PipelineCaseHelper.batchInsertOrderRecordsWithGeneralColumns(connection, new UUIDKeyGenerateAlgorithm(), SOURCE_TABLE_NAME, PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
-        }
+        StringPkSmallOrderDAO orderDAO = new StringPkSmallOrderDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType(), new QualifiedTable(null, SOURCE_TABLE_NAME));
+        orderDAO.createTable();
+        orderDAO.batchInsert(PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
         addMigrationSourceResource(containerComposer);
         addMigrationTargetResource(containerComposer);
         if (null != addRuleFn) {
             addRuleFn.call();
         }
         startMigration(containerComposer, SOURCE_TABLE_NAME, TARGET_TABLE_NAME);
-        String jobId = listJobId(containerComposer).get(0);
-        containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
-        loadAllSingleTables(containerComposer);
-        assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
-        commitMigrationByJobId(containerComposer, jobId);
+        PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
+        String jobId = distSQLFacade.listJobIds().get(0);
+        distSQLFacade.waitJobPreparingStageFinished(jobId);
+        distSQLFacade.waitJobIncrementalStageFinished(jobId);
+        distSQLFacade.loadAllSingleTables();
+        distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
+        distSQLFacade.commit(jobId);
         assertThat(containerComposer.getTargetTableRecordsCount(containerComposer.getProxyDataSource(), SOURCE_TABLE_NAME), is(PipelineContainerComposer.TABLE_INIT_ROW_COUNT));
     }
     
-    private static boolean isEnabled() {
-        return PipelineE2ECondition.isEnabled(TypedSPILoader.getService(DatabaseType.class, "MySQL"), TypedSPILoader.getService(DatabaseType.class, "MariaDB"));
+    private static boolean isEnabled(final ExtensionContext context) {
+        return PipelineE2ECondition.isEnabled(context);
     }
 }

@@ -96,9 +96,6 @@ fi
 
 JAVA_MEM_OPTS=" -server ${JAVA_MEM_COMMON_OPTS} -Xss1m -XX:AutoBoxCacheMax=4096 -XX:+UseNUMA -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m ${VERSION_OPTS} -Dio.netty.leakDetection.level=DISABLED "
 
-
-
-
 MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 
 unset -v PORT
@@ -129,7 +126,7 @@ if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
 fi
 
 print_version() {
-    $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion
+    $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} org.apache.shardingsphere.infra.version.ShardingSphereVersion
     exit 0
 }
 

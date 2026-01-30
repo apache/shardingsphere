@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.it.rewriter.engine.scenario;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -34,6 +35,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
+
+import static org.mockito.Mockito.mock;
 
 @SQLRewriterITSettings("scenario/encrypt/case")
 class EncryptSQLRewriterIT extends SQLRewriterIT {
@@ -70,7 +73,7 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("email", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("telephone", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        return Collections.singleton(new ShardingSphereSchema(schemaName, tables, Collections.emptyList()));
+        return Collections.singleton(new ShardingSphereSchema(schemaName, mock(DatabaseType.class), tables, Collections.emptyList()));
     }
     
     @Override
