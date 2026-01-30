@@ -27,15 +27,17 @@ import java.util.Optional;
  */
 public enum LogicalOperator {
     
-    AND, OR;
+    AND, OR, NOT, XOR;
     
-    private static final Map<String, LogicalOperator> LOGICAL_OPERATORS = new CaseInsensitiveMap<>(4, 1F);
+    private static final Map<String, LogicalOperator> LOGICAL_OPERATORS = new CaseInsensitiveMap<>(6, 1F);
     
     static {
         LOGICAL_OPERATORS.put("AND", AND);
         LOGICAL_OPERATORS.put("&&", AND);
         LOGICAL_OPERATORS.put("OR", OR);
         LOGICAL_OPERATORS.put("||", OR);
+        LOGICAL_OPERATORS.put("!", NOT);
+        LOGICAL_OPERATORS.put("XOR", XOR);
     }
     
     /**
