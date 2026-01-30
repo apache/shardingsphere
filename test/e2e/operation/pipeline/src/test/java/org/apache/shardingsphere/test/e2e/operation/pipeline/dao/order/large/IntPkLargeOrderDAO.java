@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large.sqlbuilder.IntPkLargeOrderSQLBuilder;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
 
@@ -38,15 +38,12 @@ public final class IntPkLargeOrderDAO {
     
     private final DataSource dataSource;
     
-    private final DatabaseType databaseType;
-    
     private final IntPkLargeOrderSQLBuilder sqlBuilder;
     
     private final String qualifiedTableName;
     
     public IntPkLargeOrderDAO(final DataSource dataSource, final DatabaseType databaseType, final QualifiedTable qualifiedTable) {
         this.dataSource = dataSource;
-        this.databaseType = databaseType;
         this.sqlBuilder = DatabaseTypedSPILoader.getService(IntPkLargeOrderSQLBuilder.class, databaseType);
         this.qualifiedTableName = qualifiedTable.format();
     }
@@ -69,10 +66,21 @@ public final class IntPkLargeOrderDAO {
      * @throws SQLException SQL exception
      */
     public void batchInsert(final int recordCount) throws SQLException {
-        List<Object[]> paramsList = PipelineCaseHelper.generateOrderInsertData(databaseType, new AutoIncrementKeyGenerateAlgorithm(), recordCount);
+        List<Object[]> paramsList = generateInsertData(new AutoIncrementKeyGenerateAlgorithm(), recordCount);
         String sql = sqlBuilder.buildPreparedInsertSQL(qualifiedTableName);
         log.info("Batch insert int pk large order SQL: {}, params list size: {}", sql, paramsList.size());
         DataSourceExecuteUtils.executeBatch(dataSource, sql, paramsList);
+    }
+    
+    /**
+     * Generate insert data.
+     *
+     * @param keyGenerateAlgorithm key generate algorithm
+     * @param recordCount record count
+     * @return insert data
+     */
+    public List<Object[]> generateInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int recordCount) {
+        return sqlBuilder.generateInsertData(keyGenerateAlgorithm, recordCount);
     }
     
     /**
