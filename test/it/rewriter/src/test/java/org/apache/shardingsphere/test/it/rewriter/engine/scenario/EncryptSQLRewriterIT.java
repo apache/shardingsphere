@@ -73,7 +73,7 @@ class EncryptSQLRewriterIT extends SQLRewriterIT {
                 new ShardingSphereColumn("email", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("telephone", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("creation_date", Types.DATE, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList()));
-        return Collections.singleton(new ShardingSphereSchema(schemaName, tables, Collections.emptyList(), mock(DatabaseType.class)));
+        return Collections.singleton(new ShardingSphereSchema(schemaName, mock(DatabaseType.class), tables, Collections.emptyList()));
     }
     
     @Override

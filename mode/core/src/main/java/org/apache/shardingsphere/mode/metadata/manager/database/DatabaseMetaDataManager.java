@@ -118,7 +118,7 @@ public final class DatabaseMetaDataManager {
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
         ShardingSphereSchema schema = database.getSchema(schemaName);
         // TODO @haoran
-        ShardingSphereSchema renamedSchema = new ShardingSphereSchema(renamedSchemaName, schema.getAllTables(), schema.getAllViews(), database.getProtocolType());
+        ShardingSphereSchema renamedSchema = new ShardingSphereSchema(renamedSchemaName, database.getProtocolType(), schema.getAllTables(), schema.getAllViews());
         database.addSchema(renamedSchema);
         database.dropSchema(schemaName);
         database.reloadRules();

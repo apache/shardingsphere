@@ -49,9 +49,8 @@ class MySQLShardingLogicTablesMergedResultTest {
     @BeforeEach
     void setUp() {
         rule = createShardingRule();
-        schema = new ShardingSphereSchema("foo_db",
-                Collections.singleton(new ShardingSphereTable("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList(),
-                mock(DatabaseType.class));
+        schema = new ShardingSphereSchema("foo_db", mock(DatabaseType.class),
+                Collections.singleton(new ShardingSphereTable("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
     }
     
     private ShardingRule createShardingRule() {

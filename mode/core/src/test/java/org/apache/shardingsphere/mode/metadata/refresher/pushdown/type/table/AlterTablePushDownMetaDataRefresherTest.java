@@ -83,8 +83,8 @@ class AlterTablePushDownMetaDataRefresherTest {
         when(TableRefreshUtils.getTableName(sqlStatement.getTable().getTableName().getIdentifier(), databaseType)).thenReturn("foo_tbl");
         when(TableRefreshUtils.isSingleTable(any(), any())).thenReturn(true);
         ShardingSphereTable renamedTable = new ShardingSphereTable("bar_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", Collections.singleton(renamedTable), Collections.emptyList(),
-                databaseType));
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema",
+                new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(renamedTable), Collections.emptyList()));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
         when(GenericSchemaBuilder.build(eq(Collections.singletonList("bar_tbl")), eq(database.getProtocolType()), any())).thenReturn(schemas);
@@ -109,8 +109,8 @@ class AlterTablePushDownMetaDataRefresherTest {
         when(TableRefreshUtils.getTableName(sqlStatement.getTable().getTableName().getIdentifier(), databaseType)).thenReturn("foo_tbl");
         when(TableRefreshUtils.isSingleTable("foo_tbl", database)).thenReturn(false);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList(),
-                databaseType));
+        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(
+                "foo_schema", new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.emptyList()));
         when(GenericSchemaBuilder.build(eq(Collections.singletonList("foo_tbl")), eq(database.getProtocolType()), any())).thenReturn(schemas);
         refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         ArgumentCaptor<Collection<ShardingSphereTable>> alteredTablesCaptor = ArgumentCaptor.forClass(Collection.class);

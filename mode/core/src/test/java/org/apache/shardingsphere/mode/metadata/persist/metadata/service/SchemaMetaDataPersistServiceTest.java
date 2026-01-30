@@ -80,7 +80,7 @@ class SchemaMetaDataPersistServiceTest {
     void assertAlterByRefreshWithTables() {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("foo_tbl");
-        persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", Collections.singleton(table), Collections.emptyList(), mock(DatabaseType.class)));
+        persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", mock(DatabaseType.class), Collections.singleton(table), Collections.emptyList()));
         verify(repository, never()).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
         verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.singletonList(table));
     }
@@ -89,7 +89,7 @@ class SchemaMetaDataPersistServiceTest {
     void assertAlterByRefreshWithViews() {
         ShardingSphereView view = mock(ShardingSphereView.class);
         when(view.getName()).thenReturn("foo_view");
-        persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", Collections.emptyList(), Collections.singleton(view), mock(DatabaseType.class)));
+        persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", mock(DatabaseType.class), Collections.emptyList(), Collections.singleton(view)));
         verify(repository, never()).persist("/metadata/foo_db/schemas/foo_schema/tables", "");
         verify(tableMetaDataPersistService).persist("foo_db", "foo_schema", Collections.emptyList());
     }

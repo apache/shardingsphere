@@ -96,7 +96,7 @@ class HavingCorrelatedSubqueryBinderIT {
     private Collection<ShardingSphereSchema> mockSchemas(final DatabaseType databaseType) {
         Collection<ShardingSphereSchema> result = new LinkedList<>();
         String defaultSchemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName("foo_db");
-        result.add(new ShardingSphereSchema(defaultSchemaName, mockTables(), Collections.emptyList(), databaseType));
+        result.add(new ShardingSphereSchema(defaultSchemaName, databaseType, mockTables(), Collections.emptyList()));
         return result;
     }
     
