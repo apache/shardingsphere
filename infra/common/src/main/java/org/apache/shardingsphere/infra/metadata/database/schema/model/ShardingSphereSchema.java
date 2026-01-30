@@ -35,28 +35,28 @@ public final class ShardingSphereSchema {
     @Getter
     private final String name;
     
+    @Getter
+    private final DatabaseType protocolType;
+    
     private final Map<ShardingSphereIdentifier, ShardingSphereTable> tables;
     
     private final Map<ShardingSphereIdentifier, ShardingSphereView> views;
     
-    @Getter
-    private final DatabaseType protocolType;
-    
     @SuppressWarnings("CollectionWithoutInitialCapacity")
     public ShardingSphereSchema(final String name, final DatabaseType protocolType) {
         this.name = name;
+        this.protocolType = protocolType;
         tables = new ConcurrentHashMap<>();
         views = new ConcurrentHashMap<>();
-        this.protocolType = protocolType;
     }
     
     public ShardingSphereSchema(final String name, final Collection<ShardingSphereTable> tables, final Collection<ShardingSphereView> views, final DatabaseType protocolType) {
         this.name = name;
+        this.protocolType = protocolType;
         this.tables = new ConcurrentHashMap<>(tables.size(), 1F);
         this.views = new ConcurrentHashMap<>(views.size(), 1F);
         tables.forEach(each -> this.tables.put(new ShardingSphereIdentifier(each.getName()), each));
         views.forEach(each -> this.views.put(new ShardingSphereIdentifier(each.getName()), each));
-        this.protocolType = protocolType;
     }
     
     /**
