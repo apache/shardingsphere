@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.execute;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.FirebirdExecuteStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdSQLResponsePacket;
@@ -44,7 +45,10 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.AfterEach;
@@ -52,6 +56,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -62,6 +67,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -108,6 +114,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
     @BeforeEach
     void setUp() {
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
+        FirebirdBlobUploadCache.getInstance().registerConnection(CONNECTION_ID);
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         when(packet.getStatementId()).thenReturn(STATEMENT_ID);
         ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
@@ -115,9 +122,9 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(new ShardingSphereMetaData(Collections.emptyList(),
                 new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties())));
-        when(selectContext.getSqlStatement()).thenReturn(new org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement(DATABASE_TYPE));
+        when(selectContext.getSqlStatement()).thenReturn(new SelectStatement(DATABASE_TYPE));
         registry.addPreparedStatement(1, new FirebirdServerPreparedStatement("SELECT * FROM tbl", selectContext, new HintValueContext()));
-        when(updateContext.getSqlStatement()).thenReturn(new org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement(DATABASE_TYPE));
+        when(updateContext.getSqlStatement()).thenReturn(new UpdateStatement(DATABASE_TYPE));
         registry.addPreparedStatement(2, new FirebirdServerPreparedStatement("UPDATE tbl SET col=1", updateContext, new HintValueContext()));
     }
     
@@ -125,6 +132,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
     void tearDown() {
         FirebirdFetchStatementCache.getInstance().unregisterStatement(CONNECTION_ID, STATEMENT_ID);
         FirebirdFetchStatementCache.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdBlobUploadCache.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
     @Test
@@ -154,11 +162,32 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(packet.getParameterTypes()).thenReturn(Collections.emptyList());
         when(packet.getParameterValues()).thenReturn(new ArrayList<>());
         FirebirdExecuteStatementCommandExecutor executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement(DATABASE_TYPE)));
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(DATABASE_TYPE)));
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), any(QueryContext.class), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(executor.getResponseType(), is(ResponseType.UPDATE));
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
         assertThat(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID), nullValue());
+    }
+    
+    @Test
+    void assertSkipUnclosedBlobParameter() throws SQLException {
+        int blobHandle = 7;
+        long blobId = 11L;
+        FirebirdBlobUploadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobUploadCache.getInstance().appendSegment(CONNECTION_ID, blobHandle, new byte[]{1, 2});
+        List<Object> params = new ArrayList<>();
+        params.add(blobId);
+        when(packet.getStatementId()).thenReturn(2);
+        when(packet.getParameterTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.BLOB));
+        when(packet.getParameterValues()).thenReturn(params);
+        FirebirdExecuteStatementCommandExecutor executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(DATABASE_TYPE)));
+        ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
+        when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
+        executor.execute();
+        List<Object> actualParams = queryContextCaptor.getValue().getParameters();
+        assertThat(actualParams.size(), is(1));
+        assertThat(actualParams.get(0), nullValue());
     }
 }

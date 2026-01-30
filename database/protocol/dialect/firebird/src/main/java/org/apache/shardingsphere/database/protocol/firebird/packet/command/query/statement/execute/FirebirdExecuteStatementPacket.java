@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.Fi
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
@@ -82,8 +81,7 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
                 FirebirdBinaryColumnType parameterType = parameterTypes.get(i);
                 FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(parameterType);
                 if (parameterType == FirebirdBinaryColumnType.BLOB) {
-                    FirebirdPacketPayload blobPayload = FirebirdBlobRegistry.buildSegmentPayload(payload.getByteBuf().alloc(), payload.getCharset());
-                    parameterValues.add(blobPayload == null ? null : binaryProtocolValue.read(blobPayload));
+                    parameterValues.add(payload.readInt8());
                 } else {
                     parameterValues.add(binaryProtocolValue.read(payload));
                 }

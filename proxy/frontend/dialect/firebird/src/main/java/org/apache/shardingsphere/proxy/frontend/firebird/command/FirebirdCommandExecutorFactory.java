@@ -40,13 +40,14 @@ import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdUnsupportedCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdCancelBlobCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdCloseBlobCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdCreateBlobCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdGetBlobSegmentCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdOpenBlobCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdPutBlobSegmentCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdSeekBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdCancelBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdCloseBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdCreateBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdGetBlobSegmentCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdOpenBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdPutBlobSegmentCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdSeekBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdBlobInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdDatabaseInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdSQLInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.allocate.FirebirdAllocateStatementCommandExecutor;
@@ -76,6 +77,8 @@ public final class FirebirdCommandExecutorFactory {
         switch (commandPacketType) {
             case INFO_DATABASE:
                 return new FirebirdDatabaseInfoExecutor((FirebirdInfoPacket) commandPacket, connectionSession);
+            case INFO_BLOB:
+                return new FirebirdBlobInfoExecutor((FirebirdInfoPacket) commandPacket);
             case TRANSACTION:
                 return new FirebirdStartTransactionCommandExecutor((FirebirdStartTransactionPacket) commandPacket, connectionSession);
             case CREATE_BLOB:
@@ -85,7 +88,7 @@ public final class FirebirdCommandExecutorFactory {
             case OPEN_BLOB2:
                 return new FirebirdOpenBlobCommandExecutor((FirebirdOpenBlobCommandPacket) commandPacket, connectionSession);
             case GET_SEGMENT:
-                return new FirebirdGetBlobSegmentCommandExecutor((FirebirdGetBlobSegmentCommandPacket) commandPacket, connectionSession);
+                return new FirebirdGetBlobSegmentCommandExecutor((FirebirdGetBlobSegmentCommandPacket) commandPacket);
             case PUT_SEGMENT:
                 return new FirebirdPutBlobSegmentCommandExecutor((FirebirdPutBlobSegmentCommandPacket) commandPacket, connectionSession);
             case CANCEL_BLOB:

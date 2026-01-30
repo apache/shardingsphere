@@ -62,6 +62,11 @@ class FirebirdCommandPacketFactoryTest {
     }
     
     @Test
+    void assertNewInstanceWithInfoBlob() {
+        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.INFO_BLOB, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdInfoPacket.class));
+    }
+    
+    @Test
     void assertNewInstanceWithTransaction() {
         assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.TRANSACTION, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdStartTransactionPacket.class));
     }

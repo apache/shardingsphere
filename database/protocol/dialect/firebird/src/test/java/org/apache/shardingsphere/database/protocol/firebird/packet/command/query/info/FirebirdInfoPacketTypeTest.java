@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info;
 
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.blob.FirebirdBlobInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.junit.jupiter.api.Test;
@@ -40,5 +41,12 @@ class FirebirdInfoPacketTypeTest {
         FirebirdInfoPacketType type = FirebirdCommonInfoPacketType.END;
         assertThat(type.getCode(), is(FirebirdCommonInfoPacketType.END.getCode()));
         assertTrue(type.isCommon());
+    }
+    
+    @Test
+    void assertBlobInfoPacketType() {
+        FirebirdInfoPacketType type = FirebirdBlobInfoPacketType.TOTAL_LENGTH;
+        assertThat(type.getCode(), is(FirebirdBlobInfoPacketType.TOTAL_LENGTH.getCode()));
+        assertFalse(type.isCommon());
     }
 }

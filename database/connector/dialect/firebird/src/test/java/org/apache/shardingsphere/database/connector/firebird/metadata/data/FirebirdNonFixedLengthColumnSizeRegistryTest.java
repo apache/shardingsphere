@@ -29,23 +29,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class FirebirdSizeRegistryTest {
+class FirebirdNonFixedLengthColumnSizeRegistryTest {
     
     @Test
     void assertRefreshAndFindColumnSize() {
         Map<String, Integer> columnSizes = Collections.singletonMap("varchar_col", 64);
-        FirebirdSizeRegistry.refreshTable("schema_a", "table_a", columnSizes);
-        OptionalInt actual = FirebirdSizeRegistry.findColumnSize("schema_a", "table_a", "VARCHAR_COL");
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("schema_a", "table_a", columnSizes);
+        OptionalInt actual = FirebirdNonFixedLengthColumnSizeRegistry.findColumnSize("schema_a", "table_a", "VARCHAR_COL");
         assertTrue(actual.isPresent());
         assertThat(actual.getAsInt(), is(64));
-        FirebirdSizeRegistry.refreshTable("schema_a", "table_a", Collections.emptyMap());
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("schema_a", "table_a", Collections.emptyMap());
     }
     
     @Test
     void assertRefreshTableRemovesEntryWhenEmptyColumnSizesProvided() {
-        FirebirdSizeRegistry.refreshTable("schema_b", "table_b", Collections.singletonMap("col", 32));
-        FirebirdSizeRegistry.refreshTable("schema_b", "table_b", Collections.emptyMap());
-        assertFalse(FirebirdSizeRegistry.findColumnSize("schema_b", "table_b", "COL").isPresent());
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("schema_b", "table_b", Collections.singletonMap("col", 32));
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("schema_b", "table_b", Collections.emptyMap());
+        assertFalse(FirebirdNonFixedLengthColumnSizeRegistry.findColumnSize("schema_b", "table_b", "COL").isPresent());
     }
     
     @Test
@@ -53,19 +53,19 @@ class FirebirdSizeRegistryTest {
         Map<String, Integer> columnSizes = new HashMap<>(2, 1F);
         columnSizes.put("valid", 12);
         columnSizes.put(null, 24);
-        FirebirdSizeRegistry.refreshTable("schema_c", "table_c", columnSizes);
-        OptionalInt actual = FirebirdSizeRegistry.findColumnSize("schema_c", "table_c", "VaLiD");
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("schema_c", "table_c", columnSizes);
+        OptionalInt actual = FirebirdNonFixedLengthColumnSizeRegistry.findColumnSize("schema_c", "table_c", "VaLiD");
         assertTrue(actual.isPresent());
         assertThat(actual.getAsInt(), is(12));
-        assertFalse(FirebirdSizeRegistry.findColumnSize("schema_c", "table_c", null).isPresent());
-        FirebirdSizeRegistry.refreshTable("schema_c", "table_c", Collections.emptyMap());
+        assertFalse(FirebirdNonFixedLengthColumnSizeRegistry.findColumnSize("schema_c", "table_c", null).isPresent());
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("schema_c", "table_c", Collections.emptyMap());
     }
     
     @Test
     void assertRefreshTableRemovesWhenAllColumnsInvalid() {
         Map<String, Integer> columnSizes = new HashMap<>(1, 1F);
         columnSizes.put(null, 48);
-        FirebirdSizeRegistry.refreshTable("schema_d", "table_d", columnSizes);
-        assertFalse(FirebirdSizeRegistry.findColumnSize("schema_d", "table_d", "any").isPresent());
+        FirebirdNonFixedLengthColumnSizeRegistry.refreshTable("schema_d", "table_d", columnSizes);
+        assertFalse(FirebirdNonFixedLengthColumnSizeRegistry.findColumnSize("schema_d", "table_d", "any").isPresent());
     }
 }
