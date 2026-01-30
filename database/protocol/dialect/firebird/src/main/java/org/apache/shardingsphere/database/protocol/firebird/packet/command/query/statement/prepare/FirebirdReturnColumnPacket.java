@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import java.util.Collection;
 
 /**
- * Firebird allocate statement packet.
+ * Firebird return column packet.
  */
 @RequiredArgsConstructor
 public final class FirebirdReturnColumnPacket extends FirebirdPacket {

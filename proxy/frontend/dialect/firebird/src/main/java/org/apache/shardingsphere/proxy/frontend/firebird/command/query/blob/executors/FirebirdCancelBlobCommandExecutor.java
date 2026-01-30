@@ -23,10 +23,12 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.generic.Fireb
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.OptionalLong;
 
 /**
  * Cancel blob command executor for Firebird.
@@ -40,6 +42,11 @@ public final class FirebirdCancelBlobCommandExecutor implements CommandExecutor 
     
     @Override
     public Collection<DatabasePacket> execute() {
+        int blobHandle = packet.getBlobHandle();
+        OptionalLong blobId = FirebirdBlobUploadCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
+        if (blobId.isPresent()) {
+            FirebirdBlobUploadCache.getInstance().removeUpload(connectionSession.getConnectionId(), blobId.getAsLong());
+        }
         int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
     }
