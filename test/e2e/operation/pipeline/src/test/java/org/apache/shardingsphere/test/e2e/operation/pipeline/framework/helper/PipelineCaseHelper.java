@@ -168,23 +168,6 @@ public final class PipelineCaseHelper {
     }
     
     /**
-     * Generate order item insert data.
-     *
-     * @param keyGenerateAlgorithm key generate algorithm
-     * @param recordCount record count
-     * @return order item insert data
-     */
-    public static List<Object[]> generateOrderItemInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int recordCount) {
-        List<Object[]> result = new ArrayList<>(recordCount);
-        for (int i = 0; i < recordCount; i++) {
-            Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
-            int userId = generateInt(0, 100);
-            result.add(new Object[]{keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next(), orderId, userId, "SUCCESS"});
-        }
-        return result;
-    }
-    
-    /**
      * Batch insert order records with general columns.
      *
      * @param tableName table name
