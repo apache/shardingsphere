@@ -56,7 +56,7 @@
                 order_id integer NOT NULL,
                 user_id integer NOT NULL,
                 status character varying(45),
-                creation_date timestamp(0) without time zone
+                creation_date date
                 )
                 WITH (orientation=row, compression=no)
             </sql>
