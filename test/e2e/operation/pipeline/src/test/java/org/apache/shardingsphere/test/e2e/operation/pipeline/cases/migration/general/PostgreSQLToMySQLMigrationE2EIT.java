@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.ge
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
@@ -48,6 +47,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -115,7 +115,7 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
                 preparedStatement.setObject(5, LocalDate.now());
                 preparedStatement.setObject(6, LocalTime.now().withNano(0));
                 preparedStatement.setObject(7, new byte[]{1, 2, 3, 4, 5});
-                preparedStatement.setObject(8, new BigDecimal(i * RandomUtils.nextInt(1, 100) + ".22"));
+                preparedStatement.setObject(8, new BigDecimal(i * ThreadLocalRandom.current().nextInt(1, 100) + ".22"));
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
@@ -140,7 +140,7 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
         try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
             connection.createStatement().execute("CREATE TABLE IF NOT EXISTS t_order (order_id BIGINT PRIMARY KEY,user_id INT,status VARCHAR(32), c_datetime DATETIME(6),c_date DATE,c_time TIME,"
                     + "c_bytea BLOB,c_decimal DECIMAL(10,2))");
-            if (waitForTableExistence(connection, "t_order")) {
+            if (waitForTableExistence(connection)) {
                 connection.createStatement().execute("TRUNCATE TABLE t_order");
             } else {
                 throw new SQLException("Table t_order does not exist");
@@ -148,9 +148,9 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
         }
     }
     
-    private static boolean waitForTableExistence(final Connection connection, final String tableName) {
+    private static boolean waitForTableExistence(final Connection connection) {
         try {
-            Awaitility.waitAtMost(60L, TimeUnit.SECONDS).ignoreExceptions().pollInterval(3L, TimeUnit.SECONDS).until(() -> tableExists(connection, tableName));
+            Awaitility.waitAtMost(60L, TimeUnit.SECONDS).ignoreExceptions().pollInterval(3L, TimeUnit.SECONDS).until(() -> tableExists(connection, "t_order"));
             return true;
         } catch (final ConditionTimeoutException ex) {
             return false;
