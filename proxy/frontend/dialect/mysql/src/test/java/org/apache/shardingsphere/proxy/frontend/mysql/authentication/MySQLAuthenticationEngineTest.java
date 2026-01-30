@@ -200,8 +200,9 @@ class MySQLAuthenticationEngineTest {
         Authenticator authenticator = mock(Authenticator.class);
         when(authenticator.authenticate(eq(user), any(Object[].class))).thenReturn(true);
         when(authenticator.getAuthenticationMethodName()).thenReturn(MySQLAuthenticationMethod.NATIVE.getMethodName());
-        try (MockedConstruction<AuthenticatorFactory> ignored = mockConstruction(AuthenticatorFactory.class,
-                (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(authenticator))) {
+        try (
+                MockedConstruction<AuthenticatorFactory> ignored = mockConstruction(AuthenticatorFactory.class,
+                        (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(authenticator))) {
             authenticationEngine.authenticate(channelHandlerContext, payload);
         }
         assertThat(getAuthResponse(), is(authResponse));
@@ -324,8 +325,9 @@ class MySQLAuthenticationEngineTest {
         Authenticator authenticator = mock(Authenticator.class);
         when(authenticator.authenticate(eq(user), any(Object[].class))).thenReturn(true);
         when(authenticator.getAuthenticationMethodName()).thenReturn(MySQLAuthenticationMethod.NATIVE.getMethodName());
-        try (MockedConstruction<AuthenticatorFactory> ignoredFactory = mockConstruction(AuthenticatorFactory.class,
-                (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(authenticator));
+        try (
+                MockedConstruction<AuthenticatorFactory> ignoredFactory = mockConstruction(AuthenticatorFactory.class,
+                        (mock, mockContext) -> when(mock.newInstance(user)).thenReturn(authenticator));
                 MockedConstruction<AuthorityChecker> ignoredChecker = mockConstruction(AuthorityChecker.class,
                         (mock, mockContext) -> when(mock.isAuthorized("foo_db")).thenReturn(true))) {
             AuthenticationResult actual = authenticationEngine.authenticate(context, payload);
