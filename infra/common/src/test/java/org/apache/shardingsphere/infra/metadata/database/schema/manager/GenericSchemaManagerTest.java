@@ -78,7 +78,7 @@ class GenericSchemaManagerTest {
     @Test
     void assertGetToBeDroppedTables() {
         ShardingSphereSchema reloadSchema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema currentSchema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class), 
+        ShardingSphereSchema currentSchema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class),
                 Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList());
         Collection<ShardingSphereTable> actual = GenericSchemaManager.getToBeDroppedTables(reloadSchema, currentSchema);
         assertThat(actual.size(), is(1));
