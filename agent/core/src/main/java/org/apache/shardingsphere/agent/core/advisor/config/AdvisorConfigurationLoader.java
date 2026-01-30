@@ -23,6 +23,7 @@ import org.apache.shardingsphere.agent.core.advisor.config.yaml.loader.YamlAdvis
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.swapper.YamlAdvisorsConfigurationSwapper;
 import org.apache.shardingsphere.agent.core.plugin.classloader.AgentPluginClassLoader;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
@@ -57,6 +58,12 @@ public final class AdvisorConfigurationLoader {
             }
             Optional.ofNullable(advisorsResourceStream)
                     .ifPresent(optional -> mergeConfigurations(result, YamlAdvisorsConfigurationSwapper.swap(YamlAdvisorsConfigurationLoader.load(optional), each)));
+            if (null != advisorsResourceStream) {
+                try {
+                    advisorsResourceStream.close();
+                } catch (final IOException ignored) {
+                }
+            }
         }
         return result;
     }
