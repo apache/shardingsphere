@@ -44,6 +44,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -71,7 +72,7 @@ class CreateViewPushDownMetaDataRefresherTest {
     private MutableDataNodeRuleAttribute mutableDataNodeRuleAttribute;
     
     @Test
-    void assertRefreshCreateViewWithSingleTableMapping() throws Exception {
+    void assertRefreshCreateViewWithSingleTableMapping() throws SQLException {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
@@ -90,7 +91,7 @@ class CreateViewPushDownMetaDataRefresherTest {
     }
     
     @Test
-    void assertRefreshCreateViewWithoutSingleTableMapping() throws Exception {
+    void assertRefreshCreateViewWithoutSingleTableMapping() throws SQLException {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
