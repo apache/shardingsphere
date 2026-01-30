@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
 
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdGetBlobSegmentCommandExecutor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -34,38 +33,39 @@ import java.util.Collection;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdGetBlobSegmentCommandExecutorTest {
     
-    private static final int CONNECTION_ID = 1;
-    
     @Mock
     private FirebirdGetBlobSegmentCommandPacket packet;
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private ConnectionSession connectionSession;
-    
     @BeforeEach
     void setup() {
-        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
-        when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
+        FirebirdBlobRegistry.setSegment(new byte[]{1, 2, 3});
     }
     
     @AfterEach
     void tearDown() {
-        FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        FirebirdBlobRegistry.clearSegment();
     }
     
     @Test
     void assertExecute() {
-        FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet, connectionSession);
+        when(packet.getSegmentLength()).thenReturn(2);
+        when(packet.getBlobHandle()).thenReturn(99);
+        FirebirdGetBlobSegmentCommandExecutor executor = new FirebirdGetBlobSegmentCommandExecutor(packet);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
-        DatabasePacket response = actual.iterator().next();
-        assertThat(response, instanceOf(FirebirdGenericResponsePacket.class));
-        assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(1));
+        DatabasePacket actualResponse = actual.iterator().next();
+        assertThat(actualResponse, isA(FirebirdGenericResponsePacket.class));
+        assertThat(((FirebirdGenericResponsePacket) actualResponse).getHandle(), is(99));
+        byte[] actualRemainingSegment = FirebirdBlobRegistry.getSegment();
+        assertNotNull(actualRemainingSegment);
+        assertThat(actualRemainingSegment.length, is(1));
+        assertThat(actualRemainingSegment[0], is((byte) 3));
     }
 }

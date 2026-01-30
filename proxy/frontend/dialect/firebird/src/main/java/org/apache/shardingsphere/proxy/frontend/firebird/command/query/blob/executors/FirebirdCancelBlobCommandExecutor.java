@@ -15,31 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.OptionalLong;
 
 /**
- * Seek blob command executor for Firebird.
+ * Cancel blob command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdSeekBlobCommandExecutor implements CommandExecutor {
+public final class FirebirdCancelBlobCommandExecutor implements CommandExecutor {
     
-    private final FirebirdSeekBlobCommandPacket packet;
+    private final FirebirdCancelBlobCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket> execute() {
+        int blobHandle = packet.getBlobHandle();
+        OptionalLong blobId = FirebirdBlobUploadCache.getInstance().getBlobId(connectionSession.getConnectionId(), blobHandle);
+        if (blobId.isPresent()) {
+            FirebirdBlobUploadCache.getInstance().removeUpload(connectionSession.getConnectionId(), blobId.getAsLong());
+        }
         int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
     }

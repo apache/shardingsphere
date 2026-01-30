@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Registry for Firebird sizes.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FirebirdSizeRegistry {
+public final class FirebirdNonFixedLengthColumnSizeRegistry {
     
     private static final Map<String, Map<String, Integer>> COLUMN_SIZES = new ConcurrentHashMap<>();
     

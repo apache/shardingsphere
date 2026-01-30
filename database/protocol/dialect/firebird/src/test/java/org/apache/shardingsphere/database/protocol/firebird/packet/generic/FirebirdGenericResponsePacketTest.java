@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.generic;
 
 import io.netty.buffer.ByteBuf;
-import org.apache.shardingsphere.database.protocol.firebird.err.FirebirdStatusVector;
 import org.apache.shardingsphere.database.protocol.firebird.packet.FirebirdPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
@@ -28,13 +27,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.atLeastOnce;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdGenericResponsePacketTest {
@@ -48,9 +47,6 @@ class FirebirdGenericResponsePacketTest {
     @Mock
     private FirebirdPacket data;
     
-    @Mock
-    private FirebirdStatusVector vector;
-    
     @Test
     void assertGetHandleAndId() {
         FirebirdGenericResponsePacket packet = FirebirdGenericResponsePacket.getPacket().setHandle(1).setId(2);
@@ -60,10 +56,10 @@ class FirebirdGenericResponsePacketTest {
     
     @Test
     void assertGetErrorStatusVector() {
-        SQLException ex = new SQLException("foo", "42000", ISCConstants.isc_random + 1);
+        SQLException ex = new SQLException("foo_error", "42000", ISCConstants.isc_random + 1);
         FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket().setErrorStatusVector(ex);
         assertThat(packet.getErrorCode(), is(ex.getErrorCode()));
-        assertThat(packet.getErrorMessage(), is("foo"));
+        assertThat(packet.getErrorMessage(), is("foo_error"));
     }
     
     @Test
@@ -78,16 +74,17 @@ class FirebirdGenericResponsePacketTest {
     }
     
     @Test
-    void assertWriteWithDataAndStatusVector() throws ReflectiveOperationException {
+    void assertWriteWithDataAndStatusVector() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.writeZero(4)).thenReturn(byteBuf);
         when(byteBuf.readableBytes()).thenReturn(4, 8);
-        FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket().setHandle(1).setId(2).setData(data);
-        Field field = FirebirdGenericResponsePacket.class.getDeclaredField("statusVector");
-        field.setAccessible(true);
-        field.set(packet, vector);
+        SQLException ex = new SQLException("foo_error", "42000", ISCConstants.isc_arith_except);
+        FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket().setHandle(1).setId(2).setData(data).setErrorStatusVector(ex);
         packet.write(payload);
         verify(data).write(payload);
-        verify(vector).write(payload);
+        verify(payload, atLeastOnce()).writeInt4(ISCConstants.isc_arg_gds);
+        verify(payload, atLeastOnce()).writeInt4(ISCConstants.isc_arg_string);
+        verify(payload).writeString("foo_error");
+        verify(payload, atLeastOnce()).writeInt4(ISCConstants.isc_arg_end);
     }
 }

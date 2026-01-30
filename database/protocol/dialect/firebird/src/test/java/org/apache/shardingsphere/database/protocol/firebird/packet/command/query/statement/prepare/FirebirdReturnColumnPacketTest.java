@@ -54,7 +54,7 @@ class FirebirdReturnColumnPacketTest {
                 FirebirdSQLInfoPacketType.RELATION,
                 FirebirdSQLInfoPacketType.RELATION_ALIAS,
                 FirebirdSQLInfoPacketType.OWNER,
-                FirebirdSQLInfoPacketType.DESCRIBE_END), 1, table, column, "t", "c", "o", 99);
+                FirebirdSQLInfoPacketType.DESCRIBE_END), 1, table, column, "t", "c", "o", 99, false, null);
         when(payload.getCharset()).thenReturn(java.nio.charset.StandardCharsets.UTF_8);
         packet.write(payload);
         verify(payload).writeInt1(FirebirdSQLInfoPacketType.SQLDA_SEQ.getCode());
@@ -67,8 +67,18 @@ class FirebirdReturnColumnPacketTest {
         ShardingSphereColumn column = new ShardingSphereColumn("col", Types.INTEGER, false, false, false, true, false, true);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
         FirebirdReturnColumnPacket packet = new FirebirdReturnColumnPacket(Collections.singletonList(FirebirdSQLInfoPacketType.LENGTH),
-                1, table, column, "t", "c", "o", null);
+                1, table, column, "t", "c", "o", null, false, null);
         packet.write(payload);
         verify(payload).writeInt4LE(4);
+    }
+    
+    @Test
+    void assertWriteUsesBlobSubtype() {
+        ShardingSphereColumn column = new ShardingSphereColumn("col", Types.BLOB, false, false, false, true, false, true);
+        ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
+        FirebirdReturnColumnPacket packet = new FirebirdReturnColumnPacket(Collections.singletonList(FirebirdSQLInfoPacketType.SUB_TYPE),
+                1, table, column, "t", "c", "o", null, true, 7);
+        packet.write(payload);
+        verify(payload).writeInt4LE(7);
     }
 }

@@ -22,7 +22,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.data.loader.Me
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -33,17 +32,10 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Loader for Firebird column sizes.
+ * Loader for Firebird column sizes with not fixed length.
  */
 @RequiredArgsConstructor
-final class FirebirdColumnSizeLoader {
-    
-    private static final String LOAD_BLOB_SEGMENT_SIZES_SQL = "SELECT TRIM(rf.RDB$FIELD_NAME) AS COLUMN_NAME, "
-            + "COALESCE(f.RDB$SEGMENT_LENGTH, 0) AS SEGMENT_SIZE "
-            + "FROM RDB$RELATION_FIELDS rf "
-            + "JOIN RDB$FIELDS f ON rf.RDB$FIELD_SOURCE = f.RDB$FIELD_NAME "
-            + "WHERE TRIM(UPPER(rf.RDB$RELATION_NAME)) = ? "
-            + "AND f.RDB$FIELD_TYPE = 261";
+final class FirebirdNonFixedLengthColumnSizeLoader {
     
     private final MetaDataLoaderMaterial material;
     
@@ -66,7 +58,6 @@ final class FirebirdColumnSizeLoader {
     private Map<String, Integer> loadTableColumnSizes(final MetaDataLoaderConnection connection, final String formattedTableName) throws SQLException {
         Map<String, Integer> result = new HashMap<>();
         loadColumnSizesFromMetaData(connection, formattedTableName, result);
-        loadBlobSegmentSizes(connection, formattedTableName, result);
         return result.isEmpty() ? Collections.emptyMap() : Collections.unmodifiableMap(result);
     }
     
@@ -77,7 +68,7 @@ final class FirebirdColumnSizeLoader {
                     continue;
                 }
                 int dataType = resultSet.getInt("DATA_TYPE");
-                if (!isDynamicLengthType(dataType)) {
+                if (!isNonFixedLengthType(dataType)) {
                     continue;
                 }
                 String columnName = resultSet.getString("COLUMN_NAME");
@@ -91,27 +82,10 @@ final class FirebirdColumnSizeLoader {
         }
     }
     
-    private void loadBlobSegmentSizes(final MetaDataLoaderConnection connection, final String formattedTableName, final Map<String, Integer> result) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(LOAD_BLOB_SEGMENT_SIZES_SQL)) {
-            preparedStatement.setString(1, formattedTableName.toUpperCase(Locale.ENGLISH));
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    String columnName = resultSet.getString("COLUMN_NAME");
-                    if (null == columnName) {
-                        continue;
-                    }
-                    String trimmedColumnName = columnName.trim();
-                    if (trimmedColumnName.isEmpty()) {
-                        continue;
-                    }
-                    result.put(trimmedColumnName.toUpperCase(Locale.ENGLISH), resultSet.getInt("SEGMENT_SIZE"));
-                }
-            }
-        }
-    }
-    
-    private boolean isDynamicLengthType(final int dataType) {
+    private boolean isNonFixedLengthType(final int dataType) {
         switch (dataType) {
+            // Binary types are included for metadata loading only.
+            // They are not used in statement prepare/describe yet.
             case Types.CHAR:
             case Types.NCHAR:
             case Types.VARCHAR:
