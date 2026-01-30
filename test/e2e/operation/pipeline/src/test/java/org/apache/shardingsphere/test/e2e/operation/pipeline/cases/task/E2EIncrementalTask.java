@@ -26,6 +26,7 @@ import org.apache.shardingsphere.database.connector.opengauss.type.OpenGaussData
 import org.apache.shardingsphere.database.connector.postgresql.type.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large.IntPkLargeOrderDAO;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.SQLBuilderUtils;
@@ -66,7 +67,7 @@ public final class E2EIncrementalTask implements Runnable {
     
     private final DataSource dataSource;
     
-    private final String orderTableName;
+    private final String orderQualifiedTableName;
     
     private final KeyGenerateAlgorithm primaryKeyGenerateAlgorithm;
     
@@ -85,7 +86,7 @@ public final class E2EIncrementalTask implements Runnable {
     }
     
     private void run0() throws SQLException {
-        List<Object[]> orderInsertData = PipelineCaseHelper.generateOrderInsertData(databaseType, primaryKeyGenerateAlgorithm, loopCount);
+        List<Object[]> orderInsertData = new IntPkLargeOrderDAO(dataSource, databaseType, orderQualifiedTableName).generateInsertData(primaryKeyGenerateAlgorithm, loopCount);
         List<Object> primaryKeys = new LinkedList<>();
         for (Object[] each : orderInsertData) {
             primaryKeys.add(each[0]);
@@ -108,14 +109,15 @@ public final class E2EIncrementalTask implements Runnable {
         log.info("increment task runnable execute successfully.");
     }
     
+    // TODO Refactor into SPI
     private void insertOrder(final Object[] orderInsertData) throws SQLException {
         String sql;
         if (databaseType instanceof MySQLDatabaseType) {
-            sql = SQLBuilderUtils.buildInsertSQL(MYSQL_COLUMN_NAMES, orderTableName);
+            sql = SQLBuilderUtils.buildInsertSQL(MYSQL_COLUMN_NAMES, orderQualifiedTableName);
         } else if (databaseType instanceof PostgreSQLDatabaseType) {
-            sql = SQLBuilderUtils.buildInsertSQL(POSTGRESQL_COLUMN_NAMES, orderTableName);
+            sql = SQLBuilderUtils.buildInsertSQL(POSTGRESQL_COLUMN_NAMES, orderQualifiedTableName);
         } else if (databaseType instanceof OpenGaussDatabaseType) {
-            sql = SQLBuilderUtils.buildInsertSQL(OPENGAUSS_COLUMN_NAMES, orderTableName);
+            sql = SQLBuilderUtils.buildInsertSQL(OPENGAUSS_COLUMN_NAMES, orderQualifiedTableName);
         } else {
             throw new UnsupportedOperationException("");
         }
@@ -144,7 +146,7 @@ public final class E2EIncrementalTask implements Runnable {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int randomInt = random.nextInt(-100, 100);
         if (databaseType instanceof MySQLDatabaseType) {
-            String sql = SQLBuilderUtils.buildUpdateSQL(ignoreShardingColumns(MYSQL_COLUMN_NAMES), orderTableName, "?");
+            String sql = SQLBuilderUtils.buildUpdateSQL(ignoreShardingColumns(MYSQL_COLUMN_NAMES), orderQualifiedTableName, "?");
             int randomUnsignedInt = random.nextInt(10, 100);
             LocalDateTime now = LocalDateTime.now();
             Object[] parameters = {"中文测试", randomInt, randomInt, randomInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt,
@@ -156,7 +158,7 @@ public final class E2EIncrementalTask implements Runnable {
             return;
         }
         if (databaseType instanceof PostgreSQLDatabaseType) {
-            String sql = SQLBuilderUtils.buildUpdateSQL(ignoreShardingColumns(POSTGRESQL_COLUMN_NAMES), orderTableName, "?");
+            String sql = SQLBuilderUtils.buildUpdateSQL(ignoreShardingColumns(POSTGRESQL_COLUMN_NAMES), orderQualifiedTableName, "?");
             Object[] parameters = {"中文测试", randomInt, BigDecimal.valueOf(10000), random.nextBoolean(), new byte[]{-1, 0, 1}, "char", "varchar", PipelineCaseHelper.generateFloat(),
                     PipelineCaseHelper.generateDouble(), PipelineCaseHelper.generateJsonString(10, true), PipelineCaseHelper.generateJsonString(20, true), "text-update", LocalDate.now(),
                     LocalTime.now(), Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now(), orderId};
@@ -166,7 +168,7 @@ public final class E2EIncrementalTask implements Runnable {
         }
         if (databaseType instanceof OpenGaussDatabaseType) {
             LocalDateTime now = LocalDateTime.now();
-            String sql = SQLBuilderUtils.buildUpdateSQL(ignoreShardingColumns(OPENGAUSS_COLUMN_NAMES), orderTableName, "?");
+            String sql = SQLBuilderUtils.buildUpdateSQL(ignoreShardingColumns(OPENGAUSS_COLUMN_NAMES), orderQualifiedTableName, "?");
             Object[] parameters = {"中文测试", randomInt, random.nextInt(-999, 999), PipelineCaseHelper.generateFloat(), PipelineCaseHelper.generateDouble(), BigDecimal.valueOf(10000),
                     random.nextBoolean(), "update-char", "update-text", new byte[]{-1, 0, 1}, new byte[]{1, 0}, now.toLocalDate().plusDays(1), now.toLocalTime().plusHours(6), "2023-03-01", now,
                     OffsetDateTime.now(), "1 years 1 mons 1 days 1 hours 1 mins 1 secs", "{4, 5, 6}", PipelineCaseHelper.generateJsonString(1, true), PipelineCaseHelper.generateJsonString(1, false),
@@ -183,14 +185,14 @@ public final class E2EIncrementalTask implements Runnable {
     }
     
     private void deleteOrderById(final Object orderId) throws SQLException {
-        String sql = SQLBuilderUtils.buildDeleteSQL(orderTableName, "order_id");
+        String sql = SQLBuilderUtils.buildDeleteSQL(orderQualifiedTableName, "order_id");
         log.info("delete sql: {}, params: {}", sql, orderId);
         DataSourceExecuteUtils.execute(dataSource, sql, new Object[]{orderId});
     }
     
     private void setNullToAllFields(final Object orderId) throws SQLException {
         if (databaseType instanceof MySQLDatabaseType) {
-            String sql = SQLBuilderUtils.buildUpdateSQL(ignoreShardingColumns(MYSQL_COLUMN_NAMES), orderTableName, "null");
+            String sql = SQLBuilderUtils.buildUpdateSQL(ignoreShardingColumns(MYSQL_COLUMN_NAMES), orderQualifiedTableName, "null");
             log.info("update sql: {}", sql);
             DataSourceExecuteUtils.execute(dataSource, sql, new Object[]{orderId});
         }

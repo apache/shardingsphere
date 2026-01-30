@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large.sqlbuilder.IntPkLargeOrderSQLBuilder;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
@@ -42,10 +41,10 @@ public final class IntPkLargeOrderDAO {
     
     private final String qualifiedTableName;
     
-    public IntPkLargeOrderDAO(final DataSource dataSource, final DatabaseType databaseType, final QualifiedTable qualifiedTable) {
+    public IntPkLargeOrderDAO(final DataSource dataSource, final DatabaseType databaseType, final String qualifiedTableName) {
         this.dataSource = dataSource;
         this.sqlBuilder = DatabaseTypedSPILoader.getService(IntPkLargeOrderSQLBuilder.class, databaseType);
-        this.qualifiedTableName = qualifiedTable.format();
+        this.qualifiedTableName = qualifiedTableName;
     }
     
     /**
