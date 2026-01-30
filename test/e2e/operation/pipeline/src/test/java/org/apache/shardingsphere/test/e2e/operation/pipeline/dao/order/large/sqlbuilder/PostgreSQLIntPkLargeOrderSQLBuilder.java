@@ -17,6 +17,21 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large.sqlbuilder;
 
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.Mockito.mock;
+
 public final class PostgreSQLIntPkLargeOrderSQLBuilder implements IntPkLargeOrderSQLBuilder {
     
     @Override
@@ -49,11 +64,33 @@ public final class PostgreSQLIntPkLargeOrderSQLBuilder implements IntPkLargeOrde
     @Override
     public String buildPreparedInsertSQL(final String qualifiedTableName) {
         return String.format("""
-                INSERT INTO %s
-                (order_id, user_id, status, t_int2, t_numeric, t_bool, t_bytea, t_char, t_varchar,
-                t_float, t_double, t_json, t_jsonb, t_text, t_date, t_time, t_timestamp, t_timestamptz)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO %s (
+                order_id, user_id, status,
+                t_int2, t_numeric, t_bool,
+                t_bytea, t_char, t_varchar,
+                t_float, t_double,
+                t_json, t_jsonb, t_text,
+                t_date, t_time, t_timestamp, t_timestamptz
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, qualifiedTableName);
+    }
+    
+    @Override
+    public List<Object[]> generateInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int recordCount) {
+        List<Object[]> result = new ArrayList<>(recordCount);
+        for (int i = 0; i < recordCount; i++) {
+            Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
+            Object[] params = new Object[]{
+                    orderId, PipelineCaseHelper.generateInt(0, 100), PipelineCaseHelper.generateString(6),
+                    PipelineCaseHelper.generateInt(-128, 127), BigDecimal.valueOf(PipelineCaseHelper.generateDouble()), true,
+                    "bytea".getBytes(), PipelineCaseHelper.generateString(2), PipelineCaseHelper.generateString(2),
+                    PipelineCaseHelper.generateFloat(), PipelineCaseHelper.generateDouble(),
+                    PipelineCaseHelper.generateJsonString(8, false), PipelineCaseHelper.generateJsonString(12, true), "☠️x☺️x✋x☹️",
+                    LocalDate.now(), LocalTime.now(), Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now()
+            };
+            result.add(params);
+        }
+        return result;
     }
     
     @Override

@@ -66,7 +66,7 @@ class PostgreSQLMigrationGeneralE2EIT extends AbstractMigrationE2EIT {
             distSQLFacade.alterPipelineRule();
             createSourceSchema(containerComposer, PipelineContainerComposer.SCHEMA_NAME);
             IntPkLargeOrderDAO orderDAO = new IntPkLargeOrderDAO(containerComposer.getSourceDataSource(),
-                    containerComposer.getDatabaseType(), containerComposer.createQualifiedTableWithSchema(SOURCE_TABLE_NAME));
+                    containerComposer.getDatabaseType(), containerComposer.createQualifiedTableWithSchema(SOURCE_TABLE_NAME).format());
             orderDAO.createTable();
             IntPkOrderItemDAO orderItemDAO = new IntPkOrderItemDAO(containerComposer.getSourceDataSource(), containerComposer.getDatabaseType(), PipelineContainerComposer.SCHEMA_NAME);
             orderItemDAO.createTable();

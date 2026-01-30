@@ -18,6 +18,9 @@
 package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large.sqlbuilder;
 
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
+
+import java.util.List;
 
 public interface IntPkLargeOrderSQLBuilder extends DatabaseTypedSPI {
     
@@ -36,6 +39,15 @@ public interface IntPkLargeOrderSQLBuilder extends DatabaseTypedSPI {
      * @return prepared insert SQL
      */
     String buildPreparedInsertSQL(String qualifiedTableName);
+    
+    /**
+     * Generate insert data.
+     *
+     * @param keyGenerateAlgorithm key generate algorithm
+     * @param recordCount record count
+     * @return insert data
+     */
+    List<Object[]> generateInsertData(KeyGenerateAlgorithm keyGenerateAlgorithm, int recordCount);
     
     /**
      * Build prepared simple insert SQL.

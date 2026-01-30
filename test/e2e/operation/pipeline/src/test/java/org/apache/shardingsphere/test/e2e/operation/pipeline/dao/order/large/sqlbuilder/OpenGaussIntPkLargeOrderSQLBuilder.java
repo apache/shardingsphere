@@ -17,6 +17,23 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large.sqlbuilder;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static org.mockito.Mockito.mock;
+
 public final class OpenGaussIntPkLargeOrderSQLBuilder implements IntPkLargeOrderSQLBuilder {
     
     @Override
@@ -74,11 +91,47 @@ public final class OpenGaussIntPkLargeOrderSQLBuilder implements IntPkLargeOrder
     public String buildPreparedInsertSQL(final String qualifiedTableName) {
         return String.format("""
                 INSERT INTO %s (
-                order_id, user_id, status, c_int, c_smallint, c_float, c_double, c_numeric, c_boolean, c_char, c_text, c_bytea, c_raw, c_date, c_time,
-                c_smalldatetime, c_timestamp, c_timestamptz, c_interval, c_array, c_json, c_jsonb, c_uuid, c_hash32, c_tsvector, c_tsquery, c_bit,
-                c_int4range, c_daterange, c_tsrange, c_reltime, c_abstime, c_point, c_lseg, c_box, c_circle, c_bitvarying, c_cidr, c_inet, c_macaddr, c_hll, c_money
+                order_id, user_id, status,
+                c_int, c_smallint,
+                c_float, c_double, c_numeric, c_boolean,
+                c_char, c_text, c_bytea, c_raw,
+                c_date, c_time, c_smalldatetime, c_timestamp, c_timestamptz, c_interval,
+                c_array, c_json, c_jsonb,
+                c_uuid, c_hash32,
+                c_tsvector, c_tsquery, c_bit,
+                c_int4range, c_daterange, c_tsrange,
+                c_reltime, c_abstime,
+                c_point, c_lseg, c_box, c_circle, c_bitvarying,
+                c_cidr, c_inet, c_macaddr,
+                c_hll, c_money
                 ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, qualifiedTableName);
+    }
+    
+    @Override
+    public List<Object[]> generateInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int recordCount) {
+        List<Object[]> result = new ArrayList<>(recordCount);
+        for (int i = 0; i < recordCount; i++) {
+            Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
+            byte[] bytesValue = {Byte.MIN_VALUE, -1, 0, 1, Byte.MAX_VALUE};
+            Object[] params = new Object[]{
+                    orderId, PipelineCaseHelper.generateInt(0, 1000), "'status'" + i,
+                    PipelineCaseHelper.generateInt(-1000, 9999), PipelineCaseHelper.generateInt(0, 100),
+                    PipelineCaseHelper.generateFloat(), PipelineCaseHelper.generateDouble(), BigDecimal.valueOf(PipelineCaseHelper.generateDouble()), false,
+                    PipelineCaseHelper.generateString(6), "texts", bytesValue, bytesValue,
+                    LocalDate.now(), LocalTime.now(), "2001-10-01", Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now(), "0 years 0 mons 1 days 2 hours 3 mins 4 secs", "{1, 2, 3}",
+                    PipelineCaseHelper.generateJsonString(8, false), PipelineCaseHelper.generateJsonString(8, true),
+                    UUID.randomUUID().toString(), DigestUtils.md5Hex(orderId.toString()),
+                    "'rat' 'sat'", "tsquery", "0000",
+                    "[1,1000)", "[2020-01-02,2021-01-01)", "[2020-01-01 00:00:00,2021-01-01 00:00:00)",
+                    "1 years 1 mons 10 days -06:00:00", "2000-01-02 00:00:00+00",
+                    "(1.0,1.0)", "[(0.0,0.0),(2.0,2.0)]", "(3.0,3.0),(1.0,1.0)", "<(5.0,5.0),5.0>", "1111",
+                    "192.168.0.0/16", "192.168.1.1", "08:00:2b:01:02:03",
+                    "\\x484c4c00000000002b05000000000000000000000000000000000000", 999
+            };
+            result.add(params);
+        }
+        return result;
     }
     
     @Override

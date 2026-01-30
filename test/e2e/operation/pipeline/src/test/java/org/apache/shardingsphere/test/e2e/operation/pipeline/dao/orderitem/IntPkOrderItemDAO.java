@@ -20,14 +20,19 @@ package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.dao.orderitem.sqlbuilder.IntPkOrderItemSQLBuilder;
-import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.operation.pipeline.util.DataSourceExecuteUtils;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static org.mockito.Mockito.mock;
 
 @Slf4j
 public final class IntPkOrderItemDAO {
@@ -62,10 +67,22 @@ public final class IntPkOrderItemDAO {
      * @throws SQLException SQL exception
      */
     public void batchInsert(final int recordCount) throws SQLException {
-        List<Object[]> paramsList = PipelineCaseHelper.generateOrderItemInsertData(new AutoIncrementKeyGenerateAlgorithm(), recordCount);
+        List<Object[]> paramsList = generateInsertData(recordCount);
         String sql = sqlBuilder.buildPreparedInsertSQL(schemaPrefix);
         log.info("Batch insert order_item SQL: {}, params list size: {}", sql, paramsList.size());
         DataSourceExecuteUtils.executeBatch(dataSource, sql, paramsList);
+    }
+    
+    private List<Object[]> generateInsertData(final int recordCount) {
+        List<Object[]> result = new ArrayList<>(recordCount);
+        KeyGenerateAlgorithm keyGenerateAlgorithm = new AutoIncrementKeyGenerateAlgorithm();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        for (int i = 0; i < recordCount; i++) {
+            Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
+            int userId = random.nextInt(0, 100);
+            result.add(new Object[]{keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next(), orderId, userId, "SUCCESS"});
+        }
+        return result;
     }
     
     /**

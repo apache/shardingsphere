@@ -106,7 +106,7 @@ class CDCE2EIT {
             initSchemaAndTable(containerComposer, containerComposer.getProxyDataSource(), orderQualifiedTable, 3);
             PipelineDataSource jdbcDataSource = new PipelineDataSource(containerComposer.generateShardingSphereDataSourceFromProxy(), containerComposer.getDatabaseType());
             log.info("init data begin: {}", LocalDateTime.now());
-            IntPkLargeOrderDAO orderDAO = new IntPkLargeOrderDAO(jdbcDataSource, containerComposer.getDatabaseType(), orderQualifiedTable);
+            IntPkLargeOrderDAO orderDAO = new IntPkLargeOrderDAO(jdbcDataSource, containerComposer.getDatabaseType(), orderQualifiedTable.format());
             orderDAO.batchInsert(PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
             DataSourceExecuteUtils.executeBatch(jdbcDataSource, "INSERT INTO t_address(id, address_name) VALUES (?,?)", Arrays.asList(new Object[]{1, "a"}, new Object[]{2, "b"}));
             DataSourceExecuteUtils.executeBatch(jdbcDataSource, "INSERT INTO t_single(id) VALUES (?)", Arrays.asList(new Object[]{1}, new Object[]{2}, new Object[]{3}));
@@ -144,7 +144,7 @@ class CDCE2EIT {
     
     private void initSchemaAndTable(final PipelineContainerComposer containerComposer, final DataSource dataSource, final QualifiedTable orderQualifiedTable, final int seconds) throws SQLException {
         containerComposer.createSchema(dataSource, seconds);
-        new IntPkLargeOrderDAO(dataSource, containerComposer.getDatabaseType(), orderQualifiedTable).createTable();
+        new IntPkLargeOrderDAO(dataSource, containerComposer.getDatabaseType(), orderQualifiedTable.format()).createTable();
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
