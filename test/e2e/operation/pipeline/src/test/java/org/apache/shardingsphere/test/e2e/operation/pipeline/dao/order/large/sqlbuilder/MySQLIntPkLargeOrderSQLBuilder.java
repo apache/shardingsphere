@@ -17,6 +17,18 @@
 
 package org.apache.shardingsphere.test.e2e.operation.pipeline.dao.order.large.sqlbuilder;
 
+import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
+import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.test.e2e.operation.pipeline.framework.helper.PipelineCaseHelper;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.Year;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.Mockito.mock;
+
 public final class MySQLIntPkLargeOrderSQLBuilder implements IntPkLargeOrderSQLBuilder {
     
     @Override
@@ -62,13 +74,40 @@ public final class MySQLIntPkLargeOrderSQLBuilder implements IntPkLargeOrderSQLB
     @Override
     public String buildPreparedInsertSQL(final String qualifiedTableName) {
         return String.format("""
-                INSERT INTO %s
-                (order_id, user_id, status, t_mediumint, t_smallint, t_tinyint, t_unsigned_int, t_unsigned_mediumint,
-                t_unsigned_smallint, t_unsigned_tinyint, t_float, t_double, t_decimal, t_timestamp, t_datetime, t_date, t_time, t_year,
-                t_bit, t_binary, t_varbinary, t_blob, t_mediumblob, t_char, t_text, t_mediumtext, t_enum, t_set, t_json)
-                VALUES
-                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO %s (
+                order_id, user_id, status,
+                t_mediumint, t_smallint, t_tinyint, t_unsigned_int, t_unsigned_mediumint, t_unsigned_smallint, t_unsigned_tinyint,
+                t_float, t_double, t_decimal,
+                t_timestamp, t_datetime, t_date, t_time, t_year,
+                t_bit, t_binary, t_varbinary, t_blob, t_mediumblob,
+                t_char, t_text, t_mediumtext,
+                t_enum, t_set,
+                t_json
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, qualifiedTableName);
+    }
+    
+    @Override
+    public List<Object[]> generateInsertData(final KeyGenerateAlgorithm keyGenerateAlgorithm, final int recordCount) {
+        List<Object[]> result = new ArrayList<>(recordCount);
+        for (int i = 0; i < recordCount; i++) {
+            int randomInt = PipelineCaseHelper.generateInt(-100, 100);
+            Object orderId = keyGenerateAlgorithm.generateKeys(mock(AlgorithmSQLContext.class), 1).iterator().next();
+            int randomUnsignedInt = PipelineCaseHelper.generateInt(0, 100);
+            LocalDateTime now = LocalDateTime.now();
+            Object[] params = {
+                    orderId, PipelineCaseHelper.generateInt(0, 100), PipelineCaseHelper.generateString(6),
+                    randomInt, randomInt, randomInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt,
+                    PipelineCaseHelper.generateFloat(), PipelineCaseHelper.generateDouble(), BigDecimal.valueOf(PipelineCaseHelper.generateDouble()),
+                    now, now, now.toLocalDate(), now.toLocalTime(), Year.now().getValue(),
+                    "1", "t", "e", "s", "t",
+                    PipelineCaseHelper.generateString(2), "☠️x☺️x✋x☹️", PipelineCaseHelper.generateString(1),
+                    "1", "2",
+                    PipelineCaseHelper.generateJsonString(32, false)
+            };
+            result.add(params);
+        }
+        return result;
     }
     
     @Override
