@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -29,12 +29,12 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Put blob segment command executor for Firebird.
+ * Cancel blob command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdPutBlobSegmentCommandExecutor implements CommandExecutor {
+public final class FirebirdCancelBlobCommandExecutor implements CommandExecutor {
     
-    private final FirebirdPutBlobSegmentCommandPacket packet;
+    private final FirebirdCancelBlobCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     

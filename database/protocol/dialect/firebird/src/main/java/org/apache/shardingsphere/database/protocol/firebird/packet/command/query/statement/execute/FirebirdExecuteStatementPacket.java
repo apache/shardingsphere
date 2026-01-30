@@ -82,8 +82,7 @@ public final class FirebirdExecuteStatementPacket extends FirebirdCommandPacket 
                 FirebirdBinaryColumnType parameterType = parameterTypes.get(i);
                 FirebirdBinaryProtocolValue binaryProtocolValue = FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(parameterType);
                 if (parameterType == FirebirdBinaryColumnType.BLOB) {
-                    FirebirdPacketPayload blobPayload = FirebirdBlobRegistry.buildSegmentPayload(payload.getByteBuf().alloc(), payload.getCharset());
-                    parameterValues.add(blobPayload == null ? null : binaryProtocolValue.read(blobPayload));
+                    parameterValues.add(payload.readInt8());
                 } else {
                     parameterValues.add(binaryProtocolValue.read(payload));
                 }

@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol.FirebirdBlobBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -29,18 +31,20 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Seek blob command executor for Firebird.
+ * Open blob command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdSeekBlobCommandExecutor implements CommandExecutor {
+public final class FirebirdOpenBlobCommandExecutor implements CommandExecutor {
     
-    private final FirebirdSeekBlobCommandPacket packet;
+    private final FirebirdOpenBlobCommandPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket> execute() {
+        byte[] blobContent = FirebirdBlobBinaryProtocolValue.getBlobContent(packet.getBlobId());
+        FirebirdBlobRegistry.setSegment(blobContent == null ? new byte[0] : blobContent);
         int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
-        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId).setId(packet.getBlobId()));
     }
 }

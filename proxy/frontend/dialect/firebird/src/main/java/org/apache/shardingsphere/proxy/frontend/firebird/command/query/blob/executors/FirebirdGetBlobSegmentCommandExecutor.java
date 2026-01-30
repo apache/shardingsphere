@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentResponsePacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -36,11 +37,19 @@ public final class FirebirdGetBlobSegmentCommandExecutor implements CommandExecu
     
     private final FirebirdGetBlobSegmentCommandPacket packet;
     
-    private final ConnectionSession connectionSession;
-    
     @Override
     public Collection<DatabasePacket> execute() {
-        int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
-        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
+        byte[] segment = FirebirdBlobRegistry.getSegment();
+        int segmentLength = segment == null ? 0 : Math.min(packet.getSegmentLength(), segment.length);
+        byte[] payloadSegment = segmentLength == 0 ? new byte[0] : Arrays.copyOf(segment, segmentLength);
+        if (segment != null && segmentLength > 0) {
+            if (segmentLength >= segment.length) {
+                FirebirdBlobRegistry.clearSegment();
+            } else {
+                FirebirdBlobRegistry.setSegment(Arrays.copyOfRange(segment, segmentLength, segment.length));
+            }
+        }
+        FirebirdGetBlobSegmentResponsePacket responsePacket = new FirebirdGetBlobSegmentResponsePacket(payloadSegment);
+        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(packet.getBlobHandle()).setData(responsePacket));
     }
 }

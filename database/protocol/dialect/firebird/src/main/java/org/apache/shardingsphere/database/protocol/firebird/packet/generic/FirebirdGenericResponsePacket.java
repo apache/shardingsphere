@@ -39,6 +39,8 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
     
     private FirebirdStatusVector statusVector;
     
+    private boolean writeZeroStatementId = false;
+    
     /**
      * Get generic response packet.
      *
@@ -66,6 +68,11 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
      * @return this instance with updated ID
      */
     public FirebirdGenericResponsePacket setId(final int objectId) {
+        id = objectId;
+        return this;
+    }
+    
+    public FirebirdGenericResponsePacket setId(final long objectId) {
         id = objectId;
         return this;
     }
@@ -110,10 +117,17 @@ public final class FirebirdGenericResponsePacket extends FirebirdPacket {
         return statusVector == null ? "" : statusVector.getErrorMessage();
     }
     
+    public FirebirdGenericResponsePacket setWriteZeroStatementId(final boolean writeZeroStatementId) {
+        this.writeZeroStatementId = writeZeroStatementId;
+        return this;
+    }
+    
     @Override
     protected void write(final FirebirdPacketPayload payload) {
         payload.writeInt4(FirebirdCommandPacketType.RESPONSE.getValue());
-        payload.writeInt4(handle);
+        // TODO Replace temporary handle zeroing with proper statement handle management (e.g. statement cache).
+        payload.writeInt4(writeZeroStatementId ? 0 : handle);
+        writeZeroStatementId = false;
         payload.writeInt8(id);
         if (null != data) {
             payload.getByteBuf().writeZero(4);

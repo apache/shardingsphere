@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdSizeRegistry;
+import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoReturnValue;
@@ -55,6 +55,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.metadata.FirebirdBlobColumnMetaData;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.metadata.FirebirdBlobColumnMetaDataResolver;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
@@ -460,18 +462,20 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
         String tableAliasString = null == tableAlias ? table.getName() : tableAlias.getValue();
         String columnAliasString = null == columnAlias ? column.getName() : columnAlias.getValue();
         String owner = connectionSession.getConnectionContext().getGrantee().getUsername();
-        Integer columnLength = (null != column && isDynamicLengthType(column.getDataType())) ? resolveColumnLength(table, column) : null;
-        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner, columnLength));
+        FirebirdBlobColumnMetaDataResolver blobResolver = new FirebirdBlobColumnMetaDataResolver(connectionSession.getCurrentDatabaseName());
+        FirebirdBlobColumnMetaData blobMetaData = blobResolver.resolve(table, column);
+        Integer columnLength = blobMetaData.isBlobColumn() ? null : resolveColumnLength(table, column);
+        describeColumns.add(new FirebirdReturnColumnPacket(requestedItems, idx, table, column, tableAliasString, columnAliasString, owner, columnLength, blobMetaData.isBlobColumn(), blobMetaData.getBlobSubtype()));
     }
-    
+
     private Integer resolveColumnLength(final ShardingSphereTable table, final ShardingSphereColumn column) {
-        if (null == table || null == column) {
+        if (null == table || null == column || !isDynamicLengthType(column.getDataType())) {
             return null;
         }
-        OptionalInt columnSize = FirebirdSizeRegistry.findColumnSize(connectionSession.getCurrentDatabaseName(), table.getName(), column.getName());
+        OptionalInt columnSize = FirebirdNonFixedLengthColumnSizeRegistry.findColumnSize(connectionSession.getCurrentDatabaseName(), table.getName(), column.getName());
         return columnSize.isPresent() ? columnSize.getAsInt() : null;
     }
-    
+
     private boolean isDynamicLengthType(final int dataType) {
         switch (dataType) {
             case Types.CHAR:
@@ -480,9 +484,6 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
             case Types.NVARCHAR:
             case Types.LONGVARCHAR:
             case Types.LONGNVARCHAR:
-            case Types.BINARY:
-            case Types.VARBINARY:
-            case Types.LONGVARBINARY:
                 return true;
             default:
                 return false;
