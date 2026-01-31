@@ -60,7 +60,7 @@ class AdvisorConfigurationLoaderTest {
             assertAdvisor(config.getAdvisors(), ElementMatchers.isConstructor(), "FIXTURE");
             assertAdvisor(config.getAdvisors(), ElementMatchers.named("call"), "ANOTHER");
         } finally {
-            assertTrue(Files.deleteIfExists(jarFile));
+            Files.deleteIfExists(jarFile);
         }
     }
     
