@@ -70,9 +70,6 @@ public final class PostgreSQLErrorPacketFactory {
         if (cause instanceof PostgreSQLException && null != ((PostgreSQLException) cause).getServerErrorMessage()) {
             return createErrorResponsePacket(((PostgreSQLException) cause).getServerErrorMessage());
         }
-        if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
-            return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
-        }
         String sqlState = Strings.isNullOrEmpty(cause.getSQLState()) || XOpenSQLState.GENERAL_ERROR.getValue().equals(cause.getSQLState())
                 ? PostgreSQLVendorError.SYSTEM_ERROR.getSqlState().getValue()
                 : cause.getSQLState();
