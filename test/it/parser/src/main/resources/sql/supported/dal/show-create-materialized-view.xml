@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="show_create_materialized_view_simple" value="SHOW CREATE MATERIALIZED VIEW sync_agg_mv ON lineitem" db-types="Doris" />
+    <sql-case id="show_create_materialized_view_simple" value="SHOW CREATE MATERIALIZED VIEW db1.my_mv ON db2.my_table" db-types="Doris" />
 </sql-cases>

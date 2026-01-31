@@ -24,8 +24,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowCreateMaterializedViewStatementTestCase;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Show create materialized view statement assert for Doris.
@@ -41,11 +41,26 @@ public final class DorisShowCreateMaterializedViewStatementAssert {
      * @param expected expected show create materialized view statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DorisShowCreateMaterializedViewStatement actual, final DorisShowCreateMaterializedViewStatementTestCase expected) {
-        if (null != expected.getMaterializedViewName()) {
-            assertThat(assertContext.getText("Materialized view name does not match: "), actual.getMaterializedViewName(), is(expected.getMaterializedViewName()));
+        assertMaterializedView(assertContext, actual, expected);
+        assertTable(assertContext, actual, expected);
+    }
+    
+    private static void assertMaterializedView(final SQLCaseAssertContext assertContext, final DorisShowCreateMaterializedViewStatement actual,
+                                               final DorisShowCreateMaterializedViewStatementTestCase expected) {
+        if (null != expected.getMaterializedView()) {
+            assertNotNull(actual.getMaterializedView(), assertContext.getText("Actual materialized view should exist."));
+            TableAssert.assertIs(assertContext, actual.getMaterializedView(), expected.getMaterializedView());
+        } else {
+            assertNull(actual.getMaterializedView(), assertContext.getText("Actual materialized view should not exist."));
         }
-        if (null != expected.getTableName()) {
-            TableAssert.assertIs(assertContext, actual.getTableName(), expected.getTableName());
+    }
+    
+    private static void assertTable(final SQLCaseAssertContext assertContext, final DorisShowCreateMaterializedViewStatement actual, final DorisShowCreateMaterializedViewStatementTestCase expected) {
+        if (null != expected.getTable()) {
+            assertNotNull(actual.getTable(), assertContext.getText("Actual table should exist."));
+            TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
+        } else {
+            assertNull(actual.getTable(), assertContext.getText("Actual table should not exist."));
         }
     }
 }

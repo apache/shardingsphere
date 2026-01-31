@@ -238,7 +238,7 @@ cancelBuildIndex
     ;
 
 cancelMaterializedViewTask
-    : CANCEL MATERIALIZED VIEW TASK taskId ON identifier
+    : CANCEL MATERIALIZED VIEW TASK taskId ON tableName
     ;
 
 taskId
@@ -426,7 +426,7 @@ resumeMaterializedView
     ;
 
 dropMaterializedView
-    : DROP MATERIALIZED VIEW ifExists? identifier ON tableName
+    : DROP MATERIALIZED VIEW ifExists? tableName ON tableName
     ;
 
 refreshMaterializedView

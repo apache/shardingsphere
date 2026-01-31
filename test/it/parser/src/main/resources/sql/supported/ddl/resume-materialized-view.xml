@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="resume_materialized_view_with_simple_name" value="RESUME MATERIALIZED VIEW JOB ON mv1" db-types="Doris" />
+    <sql-case id="resume_materialized_view_with_simple_name" value="RESUME MATERIALIZED VIEW JOB ON db2.test_mv" db-types="Doris" />
 </sql-cases>

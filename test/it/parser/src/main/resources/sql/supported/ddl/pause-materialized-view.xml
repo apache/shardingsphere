@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="pause_materialized_view_with_simple_name" value="PAUSE MATERIALIZED VIEW JOB ON mv1" db-types="Doris" />
+    <sql-case id="pause_materialized_view_with_simple_name" value="PAUSE MATERIALIZED VIEW JOB ON db1.my_mv" db-types="Doris" />
 </sql-cases>

@@ -18,6 +18,8 @@
 
 <sql-parser-test-cases>
     <pause-materialized-view sql-case-id="pause_materialized_view_with_simple_name">
-        <materialized-view-name start-index="31" stop-index="33" name="mv1" />
+        <materialized-view-name start-index="31" stop-index="39" name="my_mv">
+            <owner name="db1" start-index="31" stop-index="33" />
+        </materialized-view-name>
     </pause-materialized-view>
 </sql-parser-test-cases>

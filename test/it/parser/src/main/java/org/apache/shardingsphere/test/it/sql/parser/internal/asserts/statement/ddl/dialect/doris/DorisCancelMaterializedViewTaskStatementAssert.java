@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCancelMaterializedViewTaskStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCancelMaterializedViewTaskStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -43,7 +44,7 @@ public final class DorisCancelMaterializedViewTaskStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DorisCancelMaterializedViewTaskStatement actual, final DorisCancelMaterializedViewTaskStatementTestCase expected) {
         assertTaskId(assertContext, actual, expected);
-        assertMaterializedViewName(assertContext, actual, expected);
+        assertMaterializedView(assertContext, actual, expected);
     }
     
     private static void assertTaskId(final SQLCaseAssertContext assertContext, final DorisCancelMaterializedViewTaskStatement actual, final DorisCancelMaterializedViewTaskStatementTestCase expected) {
@@ -55,13 +56,13 @@ public final class DorisCancelMaterializedViewTaskStatementAssert {
         }
     }
     
-    private static void assertMaterializedViewName(final SQLCaseAssertContext assertContext, final DorisCancelMaterializedViewTaskStatement actual,
-                                                   final DorisCancelMaterializedViewTaskStatementTestCase expected) {
-        if (null == expected.getMaterializedViewName()) {
-            assertNull(actual.getMaterializedViewName(), assertContext.getText("Actual materialized view name should not exist."));
+    private static void assertMaterializedView(final SQLCaseAssertContext assertContext, final DorisCancelMaterializedViewTaskStatement actual,
+                                               final DorisCancelMaterializedViewTaskStatementTestCase expected) {
+        if (null != expected.getMaterializedView()) {
+            assertNotNull(actual.getMaterializedView(), assertContext.getText("Actual materialized view should exist."));
+            TableAssert.assertIs(assertContext, actual.getMaterializedView(), expected.getMaterializedView());
         } else {
-            assertNotNull(actual.getMaterializedViewName(), assertContext.getText("Actual materialized view name should exist."));
-            assertThat(assertContext.getText("Materialized view name assertion error: "), actual.getMaterializedViewName(), is(expected.getMaterializedViewName()));
+            assertNull(actual.getMaterializedView(), assertContext.getText("Actual materialized view should not exist."));
         }
     }
 }

@@ -284,8 +284,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitDropMaterializedView(final DropMaterializedViewContext ctx) {
         DorisDropMaterializedViewStatement result = new DorisDropMaterializedViewStatement(getDatabaseType());
-        result.setMaterializedViewName(((IdentifierValue) visit(ctx.identifier())).getValue());
-        result.setTableName((SimpleTableSegment) visit(ctx.tableName()));
+        result.setMaterializedView((SimpleTableSegment) visit(ctx.tableName(0)));
+        result.setTable((SimpleTableSegment) visit(ctx.tableName(1)));
         result.setIfExists(null != ctx.ifExists());
         return result;
     }
@@ -308,7 +308,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitCancelMaterializedViewTask(final CancelMaterializedViewTaskContext ctx) {
         DorisCancelMaterializedViewTaskStatement result = new DorisCancelMaterializedViewTaskStatement(getDatabaseType());
         result.setTaskId(ctx.taskId().getText());
-        result.setMaterializedViewName(((IdentifierValue) visit(ctx.identifier())).getValue());
+        result.setMaterializedView((SimpleTableSegment) visit(ctx.tableName()));
         return result;
     }
     

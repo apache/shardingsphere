@@ -139,7 +139,7 @@ showCreateView
     ;
 
 showCreateMaterializedView
-    : SHOW CREATE MATERIALIZED VIEW identifier ON tableName
+    : SHOW CREATE MATERIALIZED VIEW tableName ON tableName
     ;
 
 showAlterTableMaterializedView

@@ -17,5 +17,9 @@
   -->
 
 <sql-parser-test-cases>
-    <doris-cancel-materialized-view-task sql-case-id="doris_cancel_materialized_view_task" task-id="1" mv-name="mv1" />
+    <doris-cancel-materialized-view-task sql-case-id="doris_cancel_materialized_view_task" task-id="1">
+        <materialized-view start-index="35" stop-index="41" name="mv1">
+            <owner start-index="35" stop-index="37" name="db1" />
+        </materialized-view>
+    </doris-cancel-materialized-view-task>
 </sql-parser-test-cases>

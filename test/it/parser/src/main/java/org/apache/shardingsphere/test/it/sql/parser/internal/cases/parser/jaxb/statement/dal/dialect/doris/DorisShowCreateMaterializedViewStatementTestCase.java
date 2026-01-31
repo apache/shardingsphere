@@ -34,9 +34,9 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class DorisShowCreateMaterializedViewStatementTestCase extends SQLParserTestCase {
     
-    @XmlElement(name = "materialized-view-name")
-    private String materializedViewName;
+    @XmlElement(name = "materialized-view")
+    private ExpectedSimpleTable materializedView;
     
-    @XmlElement(name = "table-name")
-    private ExpectedSimpleTable tableName;
+    @XmlElement(name = "table")
+    private ExpectedSimpleTable table;
 }

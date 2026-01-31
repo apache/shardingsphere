@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="doris_cancel_materialized_view_task" value="CANCEL MATERIALIZED VIEW TASK 1 ON mv1" db-types="Doris" />
+    <sql-case id="doris_cancel_materialized_view_task" value="CANCEL MATERIALIZED VIEW TASK 1 ON db1.mv1" db-types="Doris" />
 </sql-cases>

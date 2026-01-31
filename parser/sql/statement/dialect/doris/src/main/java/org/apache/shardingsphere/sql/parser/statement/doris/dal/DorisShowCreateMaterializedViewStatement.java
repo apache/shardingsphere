@@ -30,9 +30,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Setter
 public final class DorisShowCreateMaterializedViewStatement extends DALStatement {
     
-    private String materializedViewName;
+    private SimpleTableSegment materializedView;
     
-    private SimpleTableSegment tableName;
+    private SimpleTableSegment table;
     
     public DorisShowCreateMaterializedViewStatement(final DatabaseType databaseType) {
         super(databaseType);

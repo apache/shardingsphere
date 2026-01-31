@@ -20,8 +20,10 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Cancel materialized view task statement test case for Doris.
@@ -33,6 +35,6 @@ public final class DorisCancelMaterializedViewTaskStatementTestCase extends SQLP
     @XmlAttribute(name = "task-id")
     private String taskId;
     
-    @XmlAttribute(name = "mv-name")
-    private String materializedViewName;
+    @XmlElement(name = "materialized-view")
+    private ExpectedSimpleTable materializedView;
 }

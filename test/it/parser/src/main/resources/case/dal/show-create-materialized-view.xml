@@ -18,7 +18,11 @@
 
 <sql-parser-test-cases>
     <doris-show-create-materialized-view sql-case-id="show_create_materialized_view_simple">
-        <materialized-view-name>sync_agg_mv</materialized-view-name>
-        <table-name start-index="45" stop-index="52" name="lineitem" />
+        <materialized-view start-index="30" stop-index="38" name="my_mv">
+            <owner start-index="30" stop-index="32" name="db1" />
+        </materialized-view>
+        <table start-index="43" stop-index="54" name="my_table">
+            <owner start-index="43" stop-index="45" name="db2" />
+        </table>
     </doris-show-create-materialized-view>
 </sql-parser-test-cases>

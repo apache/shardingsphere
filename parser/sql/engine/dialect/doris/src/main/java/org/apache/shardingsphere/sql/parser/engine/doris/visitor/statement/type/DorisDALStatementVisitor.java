@@ -883,8 +883,8 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowCreateMaterializedView(final ShowCreateMaterializedViewContext ctx) {
         DorisShowCreateMaterializedViewStatement result = new DorisShowCreateMaterializedViewStatement(getDatabaseType());
-        result.setMaterializedViewName(((IdentifierValue) visit(ctx.identifier())).getValue());
-        result.setTableName((SimpleTableSegment) visit(ctx.tableName()));
+        result.setMaterializedView((SimpleTableSegment) visit(ctx.tableName(0)));
+        result.setTable((SimpleTableSegment) visit(ctx.tableName(1)));
         return result;
     }
     

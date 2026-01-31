@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.statement.doris.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
@@ -31,7 +32,7 @@ public final class DorisCancelMaterializedViewTaskStatement extends DDLStatement
     
     private String taskId;
     
-    private String materializedViewName;
+    private SimpleTableSegment materializedView;
     
     public DorisCancelMaterializedViewTaskStatement(final DatabaseType databaseType) {
         super(databaseType);

@@ -22,6 +22,6 @@
     <sql-case id="refresh_mat_view_point" value="REFRESH MATERIALIZED VIEW matview_schema.mv_nodata2;" db-types="PostgreSQL" />
     <sql-case id="refresh_mat_view" value="REFRESH MATERIALIZED VIEW mvtest_mv;" db-types="PostgreSQL" />
     <sql-case id="refresh_materialized_view_with_partitions" value="REFRESH MATERIALIZED VIEW mv1 PARTITIONS(p_19950801_19950901,p_19950901_19951001)" db-types="Doris" />
-    <sql-case id="refresh_materialized_view_complete" value="REFRESH MATERIALIZED VIEW mv1 COMPLETE" db-types="Doris" />
+    <sql-case id="refresh_materialized_view_complete" value="REFRESH MATERIALIZED VIEW db3.sales_mv COMPLETE" db-types="Doris" />
     <sql-case id="refresh_materialized_view_auto" value="REFRESH MATERIALIZED VIEW mv1 AUTO" db-types="Doris" />
 </sql-cases>

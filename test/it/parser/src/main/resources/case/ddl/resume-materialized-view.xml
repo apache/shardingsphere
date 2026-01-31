@@ -18,6 +18,8 @@
 
 <sql-parser-test-cases>
     <doris-resume-materialized-view sql-case-id="resume_materialized_view_with_simple_name">
-        <materialized-view-name start-index="32" stop-index="34" name="mv1" />
+        <materialized-view-name start-index="32" stop-index="42" name="test_mv">
+            <owner name="db2" start-index="32" stop-index="34" />
+        </materialized-view-name>
     </doris-resume-materialized-view>
 </sql-parser-test-cases>

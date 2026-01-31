@@ -30,9 +30,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DD
 @Setter
 public final class DorisDropMaterializedViewStatement extends DDLStatement {
     
-    private String materializedViewName;
+    private SimpleTableSegment materializedView;
     
-    private SimpleTableSegment tableName;
+    private SimpleTableSegment table;
     
     private boolean ifExists;
     
