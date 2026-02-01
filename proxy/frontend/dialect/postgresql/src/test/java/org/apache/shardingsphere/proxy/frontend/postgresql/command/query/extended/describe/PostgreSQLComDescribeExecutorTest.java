@@ -97,9 +97,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -446,6 +444,7 @@ class PostgreSQLComDescribeExecutorTest {
         assertThat(actualIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertDescribeSelectPreparedStatementWithPresetRowDescription() throws SQLException {
         when(packet.getType()).thenReturn('S');
@@ -457,9 +456,14 @@ class PostgreSQLComDescribeExecutorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLColumnType.INT4));
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
-        PostgreSQLServerPreparedStatement preparedStatement = spy(
-                new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, parameterIndexes));
-        doReturn(Optional.empty(), Optional.of(PostgreSQLNoDataPacket.getInstance()), Optional.of(PostgreSQLNoDataPacket.getInstance())).when(preparedStatement).describeRows();
+        PostgreSQLServerPreparedStatement preparedStatement = mock(PostgreSQLServerPreparedStatement.class);
+        when(preparedStatement.describeRows()).thenReturn(Optional.empty(), Optional.of(PostgreSQLNoDataPacket.getInstance()));
+        when(preparedStatement.describeParameters()).thenReturn(new PostgreSQLParameterDescriptionPacket(parameterTypes));
+        when(preparedStatement.getSql()).thenReturn(sql);
+        when(preparedStatement.getSqlStatementContext()).thenReturn(sqlStatementContext);
+        when(preparedStatement.getHintValueContext()).thenReturn(new HintValueContext());
+        when(preparedStatement.getParameterTypes()).thenReturn(parameterTypes);
+        when(preparedStatement.getActualParameterMarkerIndexes()).thenReturn(parameterIndexes);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ConnectionContext connectionContext = mock(ConnectionContext.class);
@@ -570,7 +574,6 @@ class PostgreSQLComDescribeExecutorTest {
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
     }
     
-    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     private void prepareJDBCBackendConnectionWithNullMetaData(final String sql) throws SQLException {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
@@ -581,7 +584,6 @@ class PostgreSQLComDescribeExecutorTest {
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
     }
     
-    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     private void prepareJDBCBackendConnectionWithPreparedStatement(final String sql) throws SQLException {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
@@ -591,7 +593,6 @@ class PostgreSQLComDescribeExecutorTest {
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
     }
     
-    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     private void prepareJDBCBackendConnectionWithParamTypes(final String sql, final int[] paramTypes, final String[] paramTypeNames) throws SQLException {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
