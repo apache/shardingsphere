@@ -75,7 +75,7 @@ class PostgreSQLCommandExecutorFactoryTest {
     @Mock
     private PortalContext portalContext;
     
-    @ParameterizedTest(name = "[{index}] {0}")
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideNonAggregatedCommandCases")
     void assertNonAggregatedCommand(final String name, final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket packet,
                                     final Class<? extends CommandExecutor> expectedClass) throws SQLException {
