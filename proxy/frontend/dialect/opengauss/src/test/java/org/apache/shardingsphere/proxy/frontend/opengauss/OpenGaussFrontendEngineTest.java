@@ -32,16 +32,19 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.stream.Stream;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -76,36 +79,13 @@ class OpenGaussFrontendEngineTest {
         assertThat(databaseProtocolFrontendEngine.getAuthenticationEngine(), isA(OpenGaussAuthenticationEngine.class));
     }
     
-    @Test
-    void assertHandleExceptionWhenNeedMarkOccurred() {
-        ConnectionContext connectionContext = mockConnectionContext(true, false);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("handleExceptionTestCases")
+    void assertHandleException(final String testName, final boolean inTransaction, final boolean exceptionOccur, final Exception exception, final boolean expectedExceptionOccur) {
+        ConnectionContext connectionContext = mockConnectionContext(inTransaction, exceptionOccur);
         ConnectionSession connectionSession = mockConnectionSession(connectionContext);
-        databaseProtocolFrontendEngine.handleException(connectionSession, new Exception("error"));
-        assertTrue(connectionContext.getTransactionContext().isExceptionOccur());
-    }
-    
-    @Test
-    void assertHandleExceptionWhenNotInTransaction() {
-        ConnectionContext connectionContext = mockConnectionContext(false, false);
-        ConnectionSession connectionSession = mockConnectionSession(connectionContext);
-        databaseProtocolFrontendEngine.handleException(connectionSession, new Exception("error"));
-        assertFalse(connectionContext.getTransactionContext().isExceptionOccur());
-    }
-    
-    @Test
-    void assertHandleExceptionWhenAlreadyOccurred() {
-        ConnectionContext connectionContext = mockConnectionContext(true, true);
-        ConnectionSession connectionSession = mockConnectionSession(connectionContext);
-        databaseProtocolFrontendEngine.handleException(connectionSession, new Exception("error"));
-        assertTrue(connectionContext.getTransactionContext().isExceptionOccur());
-    }
-    
-    @Test
-    void assertHandleExceptionWithInTransactionException() {
-        ConnectionContext connectionContext = mockConnectionContext(true, false);
-        ConnectionSession connectionSession = mockConnectionSession(connectionContext);
-        databaseProtocolFrontendEngine.handleException(connectionSession, new InTransactionException());
-        assertFalse(connectionContext.getTransactionContext().isExceptionOccur());
+        databaseProtocolFrontendEngine.handleException(connectionSession, exception);
+        assertThat(connectionContext.getTransactionContext().isExceptionOccur(), is(expectedExceptionOccur));
     }
     
     @Test
@@ -133,5 +113,14 @@ class OpenGaussFrontendEngineTest {
         }
         result.getTransactionContext().setExceptionOccur(exceptionOccur);
         return result;
+    }
+    
+    private static Stream<Arguments> handleExceptionTestCases() {
+        return Stream.of(
+                Arguments.of("mark exception when transaction and not occurred", true, false, new Exception("error"), true),
+                Arguments.of("skip marking when not in transaction", false, false, new Exception("error"), false),
+                Arguments.of("keep marked when already occurred", true, true, new Exception("error"), true),
+                Arguments.of("skip marking for InTransactionException", true, false, new InTransactionException(), false)
+        );
     }
 }
