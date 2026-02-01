@@ -104,7 +104,7 @@ class PortalTest {
     
     @Mock
     private ProxyDatabaseConnectionManager databaseConnectionManager;
-
+    
     @BeforeEach
     void setup() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
@@ -183,7 +183,7 @@ class PortalTest {
         assertThat(actualPacketsIterator.next(), isA(PostgreSQLDataRowPacket.class));
         assertThat(actualPacketsIterator.next(), isA(PostgreSQLPortalSuspendedPacket.class));
     }
-
+    
     private Portal createPortal(final SQLStatementContext sqlStatementContext, final List<PostgreSQLValueFormat> resultFormats) throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
                 "", sqlStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList());
@@ -255,7 +255,7 @@ class PortalTest {
         verify(databaseConnectionManager).unmarkResourceInUse(proxyBackendHandler);
         verify(proxyBackendHandler).close();
     }
-
+    
     @SuppressWarnings("unchecked")
     @Test
     void assertDescribeWithEmptyResultFormats() throws SQLException, ReflectiveOperationException {
@@ -275,7 +275,7 @@ class PortalTest {
             assertThat(each.getDataFormat(), is(PostgreSQLValueFormat.TEXT.getCode()));
         }
     }
-
+    
     @Test
     void assertExecuteWithBinaryFormatAndBitBoolCells() throws SQLException {
         QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
@@ -305,7 +305,7 @@ class PortalTest {
         assertThat(varcharBinaryCell.getColumnType(), is(PostgreSQLColumnType.VARCHAR));
         assertThat(varcharBinaryCell.getData(), is("foo"));
     }
-
+    
     @Test
     void assertExecuteSetStatementWithAssignValue() throws SQLException, ReflectiveOperationException {
         UpdateResponseHeader responseHeader = mock(UpdateResponseHeader.class);
@@ -323,7 +323,7 @@ class PortalTest {
         assertThat(actualPackets.get(0), isA(PostgreSQLCommandCompletePacket.class));
         assertThat(actualValue, is("utf8"));
     }
-
+    
     @Test
     void assertExecuteUpdateUsesUpdateCountWhenCommandUnknown() throws SQLException, ReflectiveOperationException {
         UpdateResponseHeader responseHeader = mock(UpdateResponseHeader.class);
