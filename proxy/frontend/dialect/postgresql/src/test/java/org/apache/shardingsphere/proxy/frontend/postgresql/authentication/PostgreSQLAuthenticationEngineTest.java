@@ -75,7 +75,6 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -171,8 +170,8 @@ class PostgreSQLAuthenticationEngineTest {
     @Test
     void assertStartupUsesPasswordAuthenticator() {
         UserConfiguration userConfig = new UserConfiguration(USERNAME, PASSWORD, "", PostgreSQLAuthenticationMethod.PASSWORD.getMethodName(), false);
-        HashMap<String, AlgorithmConfiguration> authenticators = new HashMap<>(1);
-        authenticators.put(PostgreSQLAuthenticationMethod.PASSWORD.getMethodName(), new AlgorithmConfiguration(PostgreSQLAuthenticationMethod.PASSWORD.getMethodName(), new Properties()));
+        Map<String, AlgorithmConfiguration> authenticators = Collections.singletonMap(
+                PostgreSQLAuthenticationMethod.PASSWORD.getMethodName(), new AlgorithmConfiguration(PostgreSQLAuthenticationMethod.PASSWORD.getMethodName(), new Properties()));
         AuthorityRule authorityRule = createAuthorityRule(userConfig, authenticators, PostgreSQLAuthenticationMethod.PASSWORD.getMethodName());
         MetaDataContexts metaDataContexts = createMetaDataContexts(authorityRule, false, null);
         ContextManager contextManager = mockContextManager(metaDataContexts);
