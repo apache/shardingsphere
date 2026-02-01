@@ -52,6 +52,9 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -63,11 +66,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -80,7 +83,7 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class PostgreSQLComQueryExecutorTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
     @Mock
     private PortalContext portalContext;
@@ -100,10 +103,9 @@ class PostgreSQLComQueryExecutorTest {
     void setUp() throws SQLException {
         when(queryPacket.getSQL()).thenReturn("select 1");
         when(queryPacket.getHintValueContext()).thenReturn(new HintValueContext());
-        SQLStatement sqlStatement = new SQLStatement(databaseType);
-        when(ProxySQLComQueryParser.parse(queryPacket.getSQL(), databaseType, connectionSession)).thenReturn(sqlStatement);
-        when(ProxyBackendHandlerFactory.newInstance(databaseType, queryPacket.getSQL(), sqlStatement, connectionSession, queryPacket.getHintValueContext()))
-                .thenReturn(proxyBackendHandler);
+        SQLStatement sqlStatement = new SQLStatement(DATABASE_TYPE);
+        when(ProxySQLComQueryParser.parse(queryPacket.getSQL(), DATABASE_TYPE, connectionSession)).thenReturn(sqlStatement);
+        when(ProxyBackendHandlerFactory.newInstance(DATABASE_TYPE, queryPacket.getSQL(), sqlStatement, connectionSession, queryPacket.getHintValueContext())).thenReturn(proxyBackendHandler);
         queryExecutor = new PostgreSQLComQueryExecutor(portalContext, queryPacket, connectionSession);
     }
     
@@ -137,16 +139,24 @@ class PostgreSQLComQueryExecutorTest {
         assertThat(queryExecutor.getResponseType(), is(ResponseType.QUERY));
     }
     
-    @Test
-    void assertExecuteUpdateWithCommitStatement() throws SQLException, ReflectiveOperationException {
-        UpdateResponseHeader updateResponseHeader = new UpdateResponseHeader(new CommitStatement(databaseType));
-        when(proxyBackendHandler.execute()).thenReturn(updateResponseHeader);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("updateScenarios")
+    void assertExecuteUpdate(final String testName, final SQLStatement sqlStatement, final Class<? extends DatabasePacket> expectedPacketType,
+                             final String expectedTag, final boolean expectCloseAll) throws SQLException, ReflectiveOperationException {
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(sqlStatement));
         Collection<DatabasePacket> actual = queryExecutor.execute();
-        PostgreSQLCommandCompletePacket commandCompletePacket = (PostgreSQLCommandCompletePacket) actual.iterator().next();
+        DatabasePacket packet = actual.iterator().next();
         assertThat(actual.size(), is(1));
-        assertThat(getSqlCommand(commandCompletePacket), is("COMMIT"));
+        assertThat(packet, isA(expectedPacketType));
+        if (packet instanceof PostgreSQLCommandCompletePacket && null != expectedTag) {
+            assertThat(getSqlCommand((PostgreSQLCommandCompletePacket) packet), is(expectedTag));
+        }
         assertThat(queryExecutor.getResponseType(), is(ResponseType.UPDATE));
-        verify(portalContext).closeAll();
+        if (expectCloseAll) {
+            verify(portalContext).closeAll();
+        } else {
+            verify(portalContext, never()).closeAll();
+        }
     }
     
     @Test
@@ -156,7 +166,7 @@ class PostgreSQLComQueryExecutorTest {
         List<VariableAssignSegment> variableAssigns = new ArrayList<>(2);
         variableAssigns.add(new VariableAssignSegment(0, 0, searchPathVariable, null));
         variableAssigns.add(new VariableAssignSegment(1, 1, workMemVariable, "'64MB'"));
-        UpdateResponseHeader updateResponseHeader = new UpdateResponseHeader(new SetStatement(databaseType, variableAssigns));
+        UpdateResponseHeader updateResponseHeader = new UpdateResponseHeader(new SetStatement(DATABASE_TYPE, variableAssigns));
         when(proxyBackendHandler.execute()).thenReturn(updateResponseHeader);
         Collection<DatabasePacket> actual = queryExecutor.execute();
         Iterator<DatabasePacket> iterator = actual.iterator();
@@ -174,59 +184,9 @@ class PostgreSQLComQueryExecutorTest {
     }
     
     @Test
-    void assertExecuteUpdateWithRollbackStatement() throws SQLException, ReflectiveOperationException {
-        UpdateResponseHeader updateResponseHeader = new UpdateResponseHeader(new RollbackStatement(databaseType));
-        when(proxyBackendHandler.execute()).thenReturn(updateResponseHeader);
-        Collection<DatabasePacket> actual = queryExecutor.execute();
-        PostgreSQLCommandCompletePacket commandCompletePacket = (PostgreSQLCommandCompletePacket) actual.iterator().next();
-        assertThat(getSqlCommand(commandCompletePacket), is("ROLLBACK"));
-        assertThat(queryExecutor.getResponseType(), is(ResponseType.UPDATE));
-        verify(portalContext).closeAll();
-    }
-    
-    @Test
-    void assertExecuteUpdateWithRecognizedCommand() throws SQLException, ReflectiveOperationException {
-        UpdateResponseHeader updateResponseHeader = new UpdateResponseHeader(new InsertStatement(databaseType));
-        when(proxyBackendHandler.execute()).thenReturn(updateResponseHeader);
-        Collection<DatabasePacket> actual = queryExecutor.execute();
-        PostgreSQLCommandCompletePacket commandCompletePacket = (PostgreSQLCommandCompletePacket) actual.iterator().next();
-        assertThat(getSqlCommand(commandCompletePacket), is("INSERT"));
-        assertThat(queryExecutor.getResponseType(), is(ResponseType.UPDATE));
-        verify(portalContext, never()).closeAll();
-    }
-    
-    @Test
-    void assertExecuteUpdateWithEmptyStatement() throws SQLException {
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new EmptyStatement(databaseType)));
-        Collection<DatabasePacket> actual = queryExecutor.execute();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), isA(PostgreSQLEmptyQueryResponsePacket.class));
-        assertThat(queryExecutor.getResponseType(), is(ResponseType.UPDATE));
-        verify(portalContext, never()).closeAll();
-    }
-    
-    @Test
-    void assertExecuteUpdateWithUnrecognizedStatement() throws SQLException, ReflectiveOperationException {
-        UpdateResponseHeader updateResponseHeader = new UpdateResponseHeader(new SQLStatement(databaseType));
-        when(proxyBackendHandler.execute()).thenReturn(updateResponseHeader);
-        Collection<DatabasePacket> actual = queryExecutor.execute();
-        PostgreSQLCommandCompletePacket commandCompletePacket = (PostgreSQLCommandCompletePacket) actual.iterator().next();
-        assertThat(actual.size(), is(1));
-        assertThat(getSqlCommand(commandCompletePacket), is(""));
-        assertThat(queryExecutor.getResponseType(), is(ResponseType.UPDATE));
-        verify(portalContext, never()).closeAll();
-    }
-    
-    @Test
-    void assertNextReturnsTrue() throws SQLException {
+    void assertNext() throws SQLException {
         when(proxyBackendHandler.next()).thenReturn(true);
         assertTrue(queryExecutor.next());
-    }
-    
-    @Test
-    void assertNextReturnsFalse() throws SQLException {
-        when(proxyBackendHandler.next()).thenReturn(false);
-        assertFalse(queryExecutor.next());
     }
     
     @Test
@@ -257,5 +217,15 @@ class PostgreSQLComQueryExecutorTest {
     
     private String getParameterStatusValue(final PostgreSQLParameterStatusPacket packet) throws ReflectiveOperationException {
         return (String) Plugins.getMemberAccessor().get(PostgreSQLParameterStatusPacket.class.getDeclaredField("value"), packet);
+    }
+    
+    private static Stream<Arguments> updateScenarios() {
+        return Stream.of(
+                Arguments.of("commit statement", new CommitStatement(DATABASE_TYPE), PostgreSQLCommandCompletePacket.class, "COMMIT", true),
+                Arguments.of("rollback statement", new RollbackStatement(DATABASE_TYPE), PostgreSQLCommandCompletePacket.class, "ROLLBACK", true),
+                Arguments.of("recognized command", new InsertStatement(DATABASE_TYPE), PostgreSQLCommandCompletePacket.class, "INSERT", false),
+                Arguments.of("empty statement", new EmptyStatement(DATABASE_TYPE), PostgreSQLEmptyQueryResponsePacket.class, null, false),
+                Arguments.of("unrecognized statement", new SQLStatement(DATABASE_TYPE), PostgreSQLCommandCompletePacket.class, "", false)
+        );
     }
 }
