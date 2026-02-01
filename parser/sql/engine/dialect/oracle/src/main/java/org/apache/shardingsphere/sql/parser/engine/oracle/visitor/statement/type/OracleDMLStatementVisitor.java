@@ -107,6 +107,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Update
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UsingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WithClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.HierarchicalQueryClauseContext;
 import org.apache.shardingsphere.sql.parser.engine.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
@@ -150,6 +151,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HierarchicalQuerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.table.MultiTableConditionalIntoElseSegment;
@@ -441,10 +443,12 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
+        if (null != ctx.hierarchicalQueryClause()) {
+            result.setHierarchicalQuery((HierarchicalQuerySegment) visit(ctx.hierarchicalQueryClause()));
+        }
         if (null != ctx.groupByClause()) {
             result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
-        // TODO Visit hierarchicalQueryClause
         if (null != ctx.modelClause()) {
             result.setModel((ModelSegment) visit(ctx.modelClause()));
         }
@@ -649,6 +653,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }
+        if (null != ctx.hierarchicalQueryClause()) {
+            result.setHierarchicalQuery((HierarchicalQuerySegment) visit(ctx.hierarchicalQueryClause()));
+        }
         if (null != ctx.groupByClause()) {
             result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
             if (null != ctx.groupByClause().havingClause()) {
@@ -657,6 +664,31 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         }
         if (null != ctx.modelClause()) {
             result.setModel((ModelSegment) visit(ctx.modelClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitHierarchicalQueryClause(final HierarchicalQueryClauseContext ctx) {
+        if (null == ctx || null == ctx.getStart() || null == ctx.getStop()) {
+            return null;
+        }
+        HierarchicalQuerySegment result = new HierarchicalQuerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        result.setNoCycle(null != ctx.NOCYCLE());
+        if (ctx.expr().isEmpty()) {
+            return result;
+        }
+        boolean connectByFirst = "CONNECT".equalsIgnoreCase(ctx.getStart().getText());
+        if (connectByFirst) {
+            result.setConnectBy((ExpressionSegment) visit(ctx.expr(0)));
+            if (ctx.expr().size() > 1) {
+                result.setStartWith((ExpressionSegment) visit(ctx.expr(1)));
+            }
+        } else {
+            result.setStartWith((ExpressionSegment) visit(ctx.expr(0)));
+            if (ctx.expr().size() > 1) {
+                result.setConnectBy((ExpressionSegment) visit(ctx.expr(1)));
+            }
         }
         return result;
     }

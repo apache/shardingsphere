@@ -224,7 +224,69 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterMarkerValue(globalParameterMarkerSegments.size(), ParameterMarkerType.QUESTION);
+        return new ParameterMarkerValue(getParameterMarkerIndex(ctx), ParameterMarkerType.QUESTION);
+    }
+    
+    private int getParameterMarkerIndex(final ParameterMarkerContext ctx) {
+        int startIndex = ctx.getStart().getStartIndex();
+        if (startIndex <= 0) {
+            return 0;
+        }
+        String sql = ctx.getStart().getInputStream().getText(new Interval(0, startIndex - 1));
+        return countParameterMarkers(sql);
+    }
+    
+    private int countParameterMarkers(final String sql) {
+        int result = 0;
+        boolean inStringLiteral = false;
+        boolean inLineComment = false;
+        boolean inBlockComment = false;
+        int i = 0;
+        while (i < sql.length()) {
+            char ch = sql.charAt(i);
+            if (inLineComment) {
+                if ('\n' == ch || '\r' == ch) {
+                    inLineComment = false;
+                }
+                i++;
+                continue;
+            }
+            if (inBlockComment) {
+                if ('*' == ch && i + 1 < sql.length() && '/' == sql.charAt(i + 1)) {
+                    inBlockComment = false;
+                    i += 2;
+                } else {
+                    i++;
+                }
+                continue;
+            }
+            if ('\'' == ch) {
+                if (inStringLiteral && i + 1 < sql.length() && '\'' == sql.charAt(i + 1)) {
+                    i += 2;
+                } else {
+                    inStringLiteral = !inStringLiteral;
+                    i++;
+                }
+                continue;
+            }
+            if (!inStringLiteral) {
+                if ('-' == ch && i + 1 < sql.length() && '-' == sql.charAt(i + 1)) {
+                    inLineComment = true;
+                    i += 2;
+                    continue;
+                }
+                if ('/' == ch && i + 1 < sql.length() && '*' == sql.charAt(i + 1)) {
+                    inBlockComment = true;
+                    i += 2;
+                    continue;
+                }
+            }
+            if (!inStringLiteral && '?' == ch) {
+                result++;
+            }
+            i++;
+        }
+        return result;
     }
     
     @Override

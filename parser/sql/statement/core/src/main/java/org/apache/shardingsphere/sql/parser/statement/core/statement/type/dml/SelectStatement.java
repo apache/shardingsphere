@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.Gro
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HierarchicalQuerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ModelSegment;
@@ -53,6 +54,8 @@ public final class SelectStatement extends DMLStatement {
     private TableSegment from;
     
     private WhereSegment where;
+    
+    private HierarchicalQuerySegment hierarchicalQuery;
     
     private GroupBySegment groupBy;
     
@@ -100,6 +103,15 @@ public final class SelectStatement extends DMLStatement {
      */
     public Optional<WhereSegment> getWhere() {
         return Optional.ofNullable(where);
+    }
+    
+    /**
+     * Get hierarchical query.
+     *
+     * @return hierarchical query segment
+     */
+    public Optional<HierarchicalQuerySegment> getHierarchicalQuery() {
+        return Optional.ofNullable(hierarchicalQuery);
     }
     
     /**
