@@ -169,14 +169,14 @@ class FirebirdAuthenticationEngineTest {
                 when(authData.getSalt()).thenReturn(expectedSalt);
                 when(authData.getPublicKeyHex()).thenReturn("publicKey");
             });
-                 MockedConstruction<FirebirdConnectPacket> ignored = mockConstruction(FirebirdConnectPacket.class, (mockConnect, construction) -> {
-                     when(mockConnect.getUserProtocols()).thenReturn(userProtocols);
-                     when(mockConnect.getLogin()).thenReturn("root");
-                     when(mockConnect.getHost()).thenReturn("host");
-                     when(mockConnect.getDatabase()).thenReturn("db");
-                     when(mockConnect.getAuthData()).thenReturn("client_key");
-                     when(mockConnect.getPlugin()).thenReturn(connectPlugin);
-                 })) {
+                    MockedConstruction<FirebirdConnectPacket> ignored = mockConstruction(FirebirdConnectPacket.class, (mockConnect, construction) -> {
+                        when(mockConnect.getUserProtocols()).thenReturn(userProtocols);
+                        when(mockConnect.getLogin()).thenReturn("root");
+                        when(mockConnect.getHost()).thenReturn("host");
+                        when(mockConnect.getDatabase()).thenReturn("db");
+                        when(mockConnect.getAuthData()).thenReturn("client_key");
+                        when(mockConnect.getPlugin()).thenReturn(connectPlugin);
+                    })) {
                 AuthenticationResult actual = authenticationEngine.authenticate(context, payload);
                 assertFalse(actual.isFinished());
                 assertThat(actual.getUsername(), is("root"));
@@ -246,9 +246,9 @@ class FirebirdAuthenticationEngineTest {
             when(attachPacket.getEncoding()).thenReturn(encoding);
             when(attachPacket.getEncPassword()).thenReturn(encryptedPassword);
             when(attachPacket.getAuthData()).thenReturn(attachAuthData);
-        }); 
-             MockedConstruction<AuthenticatorFactory> ignoredFactory = mockConstruction(AuthenticatorFactory.class, (factory, construction)
-                     -> Optional.ofNullable(user).ifPresent(optional -> when(factory.newInstance(optional)).thenReturn(authenticator)))) {
+        });
+                MockedConstruction<AuthenticatorFactory> ignoredFactory = mockConstruction(AuthenticatorFactory.class,
+                        (factory, construction) -> Optional.ofNullable(user).ifPresent(optional -> when(factory.newInstance(optional)).thenReturn(authenticator)))) {
             AuthenticationResult actual = authenticationEngine.authenticate(context, payload);
             assertThat(actual.isFinished(), is(expectFinished));
             assertThat(actual.getUsername(), is(expectedUsername));
@@ -288,8 +288,7 @@ class FirebirdAuthenticationEngineTest {
         return Stream.of(
                 Arguments.of("pluginMismatch", "", FirebirdAuthenticationMethod.SRP, FirebirdAuthenticationMethod.SRP256, true, false),
                 Arguments.of("srpPlugin", "SRP512", FirebirdAuthenticationMethod.SRP512, FirebirdAuthenticationMethod.SRP512, true, true),
-                Arguments.of("legacyPlugin", "LEGACY_AUTH", FirebirdAuthenticationMethod.LEGACY_AUTH, FirebirdAuthenticationMethod.LEGACY_AUTH, false, false)
-        );
+                Arguments.of("legacyPlugin", "LEGACY_AUTH", FirebirdAuthenticationMethod.LEGACY_AUTH, FirebirdAuthenticationMethod.LEGACY_AUTH, false, false));
     }
     
     private static Stream<Arguments> attachArguments() {
@@ -297,7 +296,6 @@ class FirebirdAuthenticationEngineTest {
                 Arguments.of("attachWithUser", true, new ShardingSphereUser("root", "pwd", ""), "root", "db", "UTF8", false, true, true, "db", "root", "cipher_pwd", "client_auth"),
                 Arguments.of("attachWithoutUser", true, null, "absent", "db", "NONE", false, false, true, "db", "absent", null, null),
                 Arguments.of("attachUnknownDatabase", false, new ShardingSphereUser("root", "pwd", ""), "root", "missing_db", "UTF8", true, false, false, "", "root", null, null),
-                Arguments.of("attachEmptyDatabase", false, null, "root", "", "NONE", false, false, true, "", "root", null, null)
-        );
+                Arguments.of("attachEmptyDatabase", false, null, "root", "", "NONE", false, false, true, "", "root", null, null));
     }
 }
