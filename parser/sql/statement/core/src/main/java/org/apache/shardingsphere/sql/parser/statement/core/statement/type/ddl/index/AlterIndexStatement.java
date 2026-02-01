@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index;
 
+import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -44,6 +45,7 @@ public final class AlterIndexStatement extends DDLStatement {
     
     private SimpleTableSegment simpleTable;
     
+    @Getter
     private SQLStatementAttributes attributes;
     
     public AlterIndexStatement(final DatabaseType databaseType) {

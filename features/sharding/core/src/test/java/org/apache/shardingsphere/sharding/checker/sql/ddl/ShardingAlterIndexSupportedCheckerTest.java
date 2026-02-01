@@ -59,6 +59,7 @@ class ShardingAlterIndexSupportedCheckerTest {
         AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType);
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
+        sqlStatement.buildAttributes();
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
@@ -66,22 +67,24 @@ class ShardingAlterIndexSupportedCheckerTest {
         when(table.containsIndex("t_order_index_new")).thenReturn(false);
         assertDoesNotThrow(() -> new ShardingAlterIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
-    
+
     @Test
     void assertCheckWhenIndexNotExistRenameIndexNotExistForPostgreSQL() {
         AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType);
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
+        sqlStatement.buildAttributes();
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         assertThrows(IndexNotFoundException.class, () -> new ShardingAlterIndexSupportedChecker().check(rule, database, mock(), new CommonSQLStatementContext(sqlStatement)));
     }
-    
+
     @Test
     void assertCheckAlterIndexWhenIndexExistRenameIndexExistForPostgreSQL() {
         AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType);
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
+        sqlStatement.buildAttributes();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
