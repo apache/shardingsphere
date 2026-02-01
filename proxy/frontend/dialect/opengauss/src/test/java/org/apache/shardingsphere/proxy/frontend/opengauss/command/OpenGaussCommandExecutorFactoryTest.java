@@ -147,6 +147,23 @@ class OpenGaussCommandExecutorFactoryTest {
         assertThat(actualPackets.get(4), isA(PostgreSQLComTerminationExecutor.class));
     }
     
+    @Test
+    void assertAggregatedPacketContainsBatchBindPacket() throws SQLException {
+        OpenGaussComBatchBindPacket batchBindPacket = mock(OpenGaussComBatchBindPacket.class);
+        when(batchBindPacket.getIdentifier()).thenReturn(OpenGaussCommandPacketType.BATCH_BIND_COMMAND);
+        PostgreSQLComParsePacket parsePacket = mock(PostgreSQLComParsePacket.class);
+        when(parsePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.PARSE_COMMAND);
+        PostgreSQLAggregatedCommandPacket packet = mock(PostgreSQLAggregatedCommandPacket.class);
+        when(packet.isContainsBatchedStatements()).thenReturn(true);
+        when(packet.getPackets()).thenReturn(Arrays.asList(batchBindPacket, parsePacket));
+        CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(null, packet, connectionSession, portalContext);
+        assertThat(actual, isA(PostgreSQLAggregatedCommandExecutor.class));
+        List<CommandExecutor> actualPackets = getExecutorsFromAggregatedCommandExecutor((PostgreSQLAggregatedCommandExecutor) actual);
+        assertThat(actualPackets.size(), is(2));
+        assertThat(actualPackets.get(0), isA(OpenGaussComBatchBindExecutor.class));
+        assertThat(actualPackets.get(1), isA(PostgreSQLComParseExecutor.class));
+    }
+    
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private List<CommandExecutor> getExecutorsFromAggregatedCommandExecutor(final PostgreSQLAggregatedCommandExecutor executor) {
