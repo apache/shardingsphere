@@ -225,7 +225,6 @@ class PostgreSQLComQueryExecutorTest {
                 Arguments.of("rollback statement", new RollbackStatement(DATABASE_TYPE), PostgreSQLCommandCompletePacket.class, "ROLLBACK", true),
                 Arguments.of("recognized command", new InsertStatement(DATABASE_TYPE), PostgreSQLCommandCompletePacket.class, "INSERT", false),
                 Arguments.of("empty statement", new EmptyStatement(DATABASE_TYPE), PostgreSQLEmptyQueryResponsePacket.class, null, false),
-                Arguments.of("unrecognized statement", new SQLStatement(DATABASE_TYPE), PostgreSQLCommandCompletePacket.class, "", false)
-        );
+                Arguments.of("unrecognized statement", new SQLStatement(DATABASE_TYPE), PostgreSQLCommandCompletePacket.class, "", false));
     }
 }
