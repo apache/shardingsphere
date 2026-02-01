@@ -84,7 +84,9 @@ class DropMaskRuleExecutorTest {
     }
     
     private DropMaskRuleStatement createSQLStatement(final boolean ifExists, final String tableName) {
-        return new DropMaskRuleStatement(ifExists, Collections.singleton(tableName));
+        DropMaskRuleStatement result = new DropMaskRuleStatement(ifExists, Collections.singleton(tableName));
+        result.buildAttributes();
+        return result;
     }
     
     private MaskRuleConfiguration createCurrentRuleConfiguration() {

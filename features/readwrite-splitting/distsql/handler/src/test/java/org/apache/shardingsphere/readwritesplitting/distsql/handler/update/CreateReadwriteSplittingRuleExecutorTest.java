@@ -163,7 +163,8 @@ class CreateReadwriteSplittingRuleExecutorTest {
         when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
         ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment(
                 "static_rule", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), new AlgorithmSegment("TEST", new Properties()));
-        CreateReadwriteSplittingRuleStatement sqlStatement = createSQLStatement(false, staticSegment);
+        CreateReadwriteSplittingRuleStatement sqlStatement = new CreateReadwriteSplittingRuleStatement(false, Collections.singleton(staticSegment));
+        sqlStatement.buildAttributes();
         executor.setDatabase(database);
         executor.checkBeforeUpdate(sqlStatement);
         executor.setRule(mock(ReadwriteSplittingRule.class));
@@ -188,7 +189,9 @@ class CreateReadwriteSplittingRuleExecutorTest {
     }
     
     private CreateReadwriteSplittingRuleStatement createSQLStatement(final boolean ifNotExists, final ReadwriteSplittingRuleSegment... ruleSegments) {
-        return new CreateReadwriteSplittingRuleStatement(ifNotExists, Arrays.asList(ruleSegments));
+        CreateReadwriteSplittingRuleStatement result = new CreateReadwriteSplittingRuleStatement(ifNotExists, Arrays.asList(ruleSegments));
+        result.buildAttributes();
+        return result;
     }
     
     private CreateReadwriteSplittingRuleStatement createSQLStatementWithDuplicateWriteDataSources(final String ruleName0, final String ruleName1, final String loadBalancerName) {

@@ -109,11 +109,15 @@ class DropEncryptRuleExecutorTest {
     }
     
     private DropEncryptRuleStatement createSQLStatement(final String tableName) {
-        return new DropEncryptRuleStatement(false, Collections.singleton(tableName));
+        DropEncryptRuleStatement result = new DropEncryptRuleStatement(false, Collections.singleton(tableName));
+        result.buildAttributes();
+        return result;
     }
     
     private DropEncryptRuleStatement createSQLStatement(final boolean ifExists, final String tableName) {
-        return new DropEncryptRuleStatement(ifExists, Collections.singleton(tableName));
+        DropEncryptRuleStatement result = new DropEncryptRuleStatement(ifExists, Collections.singleton(tableName));
+        result.buildAttributes();
+        return result;
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {

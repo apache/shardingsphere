@@ -83,12 +83,14 @@ class CreateIndexPushDownMetaDataRefresherTest {
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         result.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_foo"))));
         result.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("order_id")));
+        result.buildAttributes();
         return result;
     }
     
     @Test
     void assertRefreshThrowsWhenIndexCountInvalid() {
         CreateIndexStatement sqlStatement = new CreateIndexStatement(databaseType);
+        sqlStatement.buildAttributes();
         assertThrows(IllegalArgumentException.class, () -> refresher.refresh(metaDataManagerPersistService,
                 createDatabase(Collections.emptyList()), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties())));
         verifyNoInteractions(metaDataManagerPersistService);

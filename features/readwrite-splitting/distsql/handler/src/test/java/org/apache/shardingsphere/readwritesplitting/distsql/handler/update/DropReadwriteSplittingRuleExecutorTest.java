@@ -73,7 +73,9 @@ class DropReadwriteSplittingRuleExecutorTest {
     
     @Test
     void assertCheckSQLStatementWithIfExists() throws RuleDefinitionException {
-        executor.checkBeforeUpdate(new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")));
+        DropReadwriteSplittingRuleStatement sqlStatement = new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds"));
+        sqlStatement.buildAttributes();
+        executor.checkBeforeUpdate(sqlStatement);
     }
     
     @Test
@@ -125,7 +127,9 @@ class DropReadwriteSplittingRuleExecutorTest {
     }
     
     private DropReadwriteSplittingRuleStatement createSQLStatement() {
-        return new DropReadwriteSplittingRuleStatement(false, Collections.singleton("readwrite_ds"));
+        DropReadwriteSplittingRuleStatement result = new DropReadwriteSplittingRuleStatement(false, Collections.singleton("readwrite_ds"));
+        result.buildAttributes();
+        return result;
     }
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {
