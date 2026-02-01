@@ -646,8 +646,7 @@ class PostgreSQLComDescribeExecutorTest {
         return Stream.of(
                 Arguments.of("insert without columns", "S_meta_1", "INSERT INTO t_order VALUES (?, 0, 'char', ?), (2, ?, ?, '')", 4, 2, 2),
                 Arguments.of("insert with columns", "S_meta_2", "INSERT INTO t_order (id, k, c, pad) VALUES (1, ?, ?, ?), (?, 2, ?, '')", 5, 2, 3),
-                Arguments.of("insert with case-insensitive columns", "S_meta_3", "INSERT INTO t_order (iD, k, c, PaD) VALUES (1, ?, ?, ?), (?, 2, ?, '')", 5, 2, 3)
-        );
+                Arguments.of("insert with case-insensitive columns", "S_meta_3", "INSERT INTO t_order (iD, k, c, PaD) VALUES (1, ?, ?, ?), (?, 2, ?, '')", 5, 2, 3));
     }
     
     private static Stream<Arguments> provideReturningCases() {
@@ -668,8 +667,7 @@ class PostgreSQLComDescribeExecutorTest {
                 Arguments.of("returning without parameters", "S_returning_only",
                         "INSERT INTO t_order VALUES (1) RETURNING id",
                         Collections.emptyList(),
-                        Collections.singletonList(expectedColumn("id", Types.INTEGER, 4, "int4")))
-        );
+                        Collections.singletonList(expectedColumn("id", Types.INTEGER, 4, "int4"))));
     }
     
     private static PostgreSQLColumnDescription expectedColumn(final String columnName, final int jdbcType, final int columnLength, final String columnTypeName) {
@@ -690,7 +688,6 @@ class PostgreSQLComDescribeExecutorTest {
                 expectedColumn("c", Types.CHAR, -1, "char"),
                 expectedColumn("pad", Types.CHAR, -1, "char"),
                 expectedColumn("t_order", Types.VARCHAR, -1, "varchar"),
-                expectedColumn("alias_t_order", Types.VARCHAR, -1, "varchar")
-        );
+                expectedColumn("alias_t_order", Types.VARCHAR, -1, "varchar"));
     }
 }
