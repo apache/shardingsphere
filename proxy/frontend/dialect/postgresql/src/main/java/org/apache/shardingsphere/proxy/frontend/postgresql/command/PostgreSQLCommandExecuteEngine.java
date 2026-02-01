@@ -85,18 +85,14 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
         processSimpleQuery(context, databaseConnectionManager, queryCommandExecutor);
     }
     
-    private void processSimpleQuery(final ChannelHandlerContext context, final ProxyDatabaseConnectionManager databaseConnectionManager,
-                                    final QueryCommandExecutor queryExecutor) throws SQLException {
-        if (ResponseType.UPDATE == queryExecutor.getResponseType()) {
-            context.write(databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction() ? PostgreSQLReadyForQueryPacket.IN_TRANSACTION
-                    : PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
-            return;
-        }
-        long dataRows = writeDataPackets(context, databaseConnectionManager, queryExecutor);
+    private void processSimpleQuery(final ChannelHandlerContext context,
+                                    final ProxyDatabaseConnectionManager databaseConnectionManager, final QueryCommandExecutor queryExecutor) throws SQLException {
         if (ResponseType.QUERY == queryExecutor.getResponseType()) {
+            long dataRows = writeDataPackets(context, databaseConnectionManager, queryExecutor);
             context.write(new PostgreSQLCommandCompletePacket(PostgreSQLCommand.SELECT.name(), dataRows));
         }
-        context.write(databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction() ? PostgreSQLReadyForQueryPacket.IN_TRANSACTION
+        context.write(databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()
+                ? PostgreSQLReadyForQueryPacket.IN_TRANSACTION
                 : PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
     }
     
