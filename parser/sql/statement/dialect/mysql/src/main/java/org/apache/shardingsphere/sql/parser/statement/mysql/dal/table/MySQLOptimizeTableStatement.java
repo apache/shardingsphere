@@ -33,6 +33,8 @@ import java.util.Collection;
 @Getter
 public final class MySQLOptimizeTableStatement extends DALStatement {
     
+    private SQLStatementAttributes attributes;
+    
     private final Collection<SimpleTableSegment> tables;
     
     public MySQLOptimizeTableStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables) {
@@ -41,7 +43,7 @@ public final class MySQLOptimizeTableStatement extends DALStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(tables), new TableBroadcastRouteSQLStatementAttribute());
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables), new TableBroadcastRouteSQLStatementAttribute());
     }
 }

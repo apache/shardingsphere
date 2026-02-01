@@ -36,6 +36,8 @@ import java.util.LinkedList;
 @Setter
 public final class SQLServerDenyUserStatement extends DCLStatement {
     
+    private SQLStatementAttributes attributes;
+    
     private SimpleTableSegment table;
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();
@@ -45,7 +47,7 @@ public final class SQLServerDenyUserStatement extends DCLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(table));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table));
     }
 }

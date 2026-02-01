@@ -33,8 +33,10 @@ public abstract class ShowDatabaseRulesStatement extends RuleQueryStatement {
     
     private final FromDatabaseSegment fromDatabase;
     
+    private SQLStatementAttributes attributes;
+    
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

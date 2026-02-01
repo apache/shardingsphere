@@ -47,6 +47,8 @@ public class SQLStatement implements ASTNode {
     
     private final DatabaseType databaseType;
     
+    private SQLStatementAttributes attributes;
+    
     /**
      * Get count of parameters.
      *
@@ -69,11 +71,9 @@ public class SQLStatement implements ASTNode {
     }
     
     /**
-     * Get SQL statement attributes.
-     *
-     * @return SQL statement attributes
+     * Build SQL statement attributes.
      */
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes();
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes();
     }
 }

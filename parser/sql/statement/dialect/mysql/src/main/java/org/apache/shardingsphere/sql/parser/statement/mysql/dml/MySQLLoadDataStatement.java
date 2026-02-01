@@ -31,6 +31,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DM
 @Getter
 public final class MySQLLoadDataStatement extends DMLStatement {
     
+    private SQLStatementAttributes attributes;
+    
     private final SimpleTableSegment table;
     
     public MySQLLoadDataStatement(final DatabaseType databaseType, final SimpleTableSegment table) {
@@ -39,7 +41,7 @@ public final class MySQLLoadDataStatement extends DMLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(table), new UnsupportedDistributeSQLStatementAttribute());
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table), new UnsupportedDistributeSQLStatementAttribute());
     }
 }

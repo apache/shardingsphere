@@ -34,6 +34,8 @@ import java.util.Optional;
 @Getter
 public final class MySQLShowIndexStatement extends DALStatement {
     
+    private SQLStatementAttributes attributes;
+    
     private final SimpleTableSegment table;
     
     private final FromDatabaseSegment fromDatabase;
@@ -54,7 +56,7 @@ public final class MySQLShowIndexStatement extends DALStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase), new TableSQLStatementAttribute(table));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase), new TableSQLStatementAttribute(table));
     }
 }

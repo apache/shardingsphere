@@ -44,6 +44,8 @@ public final class AlterIndexStatement extends DDLStatement {
     
     private SimpleTableSegment simpleTable;
     
+    private SQLStatementAttributes attributes;
+    
     public AlterIndexStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
@@ -76,8 +78,8 @@ public final class AlterIndexStatement extends DDLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(simpleTable), new AlterIndexIndexSQLStatementAttribute());
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(simpleTable), new AlterIndexIndexSQLStatementAttribute());
     }
     
     private class AlterIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {

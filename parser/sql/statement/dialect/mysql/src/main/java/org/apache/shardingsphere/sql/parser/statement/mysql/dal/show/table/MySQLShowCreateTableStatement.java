@@ -32,6 +32,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowCreateTableStatement extends DALStatement {
     
+    private SQLStatementAttributes attributes;
+    
     private final SimpleTableSegment table;
     
     public MySQLShowCreateTableStatement(final DatabaseType databaseType, final SimpleTableSegment table) {
@@ -40,7 +42,7 @@ public final class MySQLShowCreateTableStatement extends DALStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new TableInResultSetSQLStatementAttribute(2), new TableSQLStatementAttribute(table));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new TableInResultSetSQLStatementAttribute(2), new TableSQLStatementAttribute(table));
     }
 }

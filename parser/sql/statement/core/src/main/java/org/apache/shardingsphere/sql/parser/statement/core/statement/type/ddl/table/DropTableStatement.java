@@ -41,12 +41,14 @@ public final class DropTableStatement extends DDLStatement {
     
     private boolean containsCascade;
     
+    private SQLStatementAttributes attributes;
+    
     public DropTableStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }
 }

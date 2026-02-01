@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLKillStatement extends DALStatement {
     
+    private SQLStatementAttributes attributes;
+    
     private final String processId;
     
     private final String scope;
@@ -40,7 +42,7 @@ public final class MySQLKillStatement extends DALStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

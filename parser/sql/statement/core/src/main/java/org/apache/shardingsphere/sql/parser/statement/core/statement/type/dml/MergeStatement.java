@@ -64,6 +64,8 @@ public final class MergeStatement extends DMLStatement {
     
     private Collection<MergeWhenAndThenSegment> whenAndThens = new LinkedList<>();
     
+    private SQLStatementAttributes attributes;
+    
     public MergeStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
@@ -123,7 +125,7 @@ public final class MergeStatement extends DMLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new WithSQLStatementAttribute(with));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
 }

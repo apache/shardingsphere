@@ -58,6 +58,8 @@ public final class DistSQLParserEngine {
             throw new SQLParsingException(sql);
         }
         SQLVisitor visitor = facade.getVisitorClass().getDeclaredConstructor().newInstance();
-        return (SQLStatement) visitor.visit(parseASTNode.getRootNode());
+        SQLStatement result = (SQLStatement) visitor.visit(parseASTNode.getRootNode());
+        result.buildAttributes();
+        return result;
     }
 }

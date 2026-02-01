@@ -39,12 +39,14 @@ public final class CancelBuildIndexStatement extends DDLStatement {
     
     private final List<String> jobIds = new LinkedList<>();
     
+    private SQLStatementAttributes attributes;
+    
     public CancelBuildIndexStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(table));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table));
     }
 }

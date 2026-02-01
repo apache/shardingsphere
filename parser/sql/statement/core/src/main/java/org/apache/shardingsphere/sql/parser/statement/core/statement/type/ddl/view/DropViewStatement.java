@@ -39,12 +39,14 @@ public final class DropViewStatement extends DDLStatement {
     
     private boolean ifExists;
     
+    private SQLStatementAttributes attributes;
+    
     public DropViewStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(views));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(views));
     }
 }

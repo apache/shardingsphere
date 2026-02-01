@@ -66,6 +66,8 @@ public final class UpdateStatement extends DMLStatement {
     
     private OutputSegment output;
     
+    private SQLStatementAttributes attributes;
+    
     public UpdateStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
@@ -170,7 +172,7 @@ public final class UpdateStatement extends DMLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new WithSQLStatementAttribute(with));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
 }

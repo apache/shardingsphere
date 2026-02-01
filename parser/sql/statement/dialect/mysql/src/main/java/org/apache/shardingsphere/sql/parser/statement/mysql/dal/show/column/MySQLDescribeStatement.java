@@ -34,6 +34,8 @@ import java.util.Optional;
 @Getter
 public final class MySQLDescribeStatement extends DALStatement {
     
+    private SQLStatementAttributes attributes;
+    
     private final SimpleTableSegment table;
     
     private final ColumnSegment columnWildcard;
@@ -54,7 +56,7 @@ public final class MySQLDescribeStatement extends DALStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1), new TableSQLStatementAttribute(table));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1), new TableSQLStatementAttribute(table));
     }
 }

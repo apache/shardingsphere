@@ -36,6 +36,8 @@ public final class ShowStorageUnitsStatement extends ResourceQueryStatement {
     
     private final String likePattern;
     
+    private SQLStatementAttributes attributes;
+    
     /**
      * Get like pattern.
      *
@@ -46,7 +48,7 @@ public final class ShowStorageUnitsStatement extends ResourceQueryStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

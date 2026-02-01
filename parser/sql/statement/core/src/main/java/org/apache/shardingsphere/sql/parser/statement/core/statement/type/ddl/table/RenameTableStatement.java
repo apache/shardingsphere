@@ -36,18 +36,20 @@ public final class RenameTableStatement extends DDLStatement {
     
     private final Collection<RenameTableDefinitionSegment> renameTables;
     
+    private SQLStatementAttributes attributes;
+    
     public RenameTableStatement(final DatabaseType databaseType, final Collection<RenameTableDefinitionSegment> renameTables) {
         super(databaseType);
         this.renameTables = renameTables;
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
+    public void buildAttributes() {
         Collection<SimpleTableSegment> tables = new LinkedList<>();
         for (RenameTableDefinitionSegment each : renameTables) {
             tables.add(each.getTable());
             tables.add(each.getRenameTable());
         }
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }
 }

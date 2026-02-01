@@ -37,5 +37,6 @@ public final class SQLStatementCopyUtils {
         boundSQLStatement.addParameterMarkers(originalSQLStatement.getParameterMarkers());
         boundSQLStatement.getVariableNames().addAll(originalSQLStatement.getVariableNames());
         boundSQLStatement.getComments().addAll(originalSQLStatement.getComments());
+        boundSQLStatement.buildAttributes();
     }
 }

@@ -30,6 +30,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowStatusStatement extends DALStatement {
     
+    private SQLStatementAttributes attributes;
+    
     private final ShowFilterSegment filter;
     
     public MySQLShowStatusStatement(final DatabaseType databaseType, final ShowFilterSegment filter) {
@@ -38,7 +40,7 @@ public final class MySQLShowStatusStatement extends DALStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

@@ -32,6 +32,8 @@ import java.util.Collection;
 @Getter
 public final class MySQLFlushStatement extends FlushStatement {
     
+    private SQLStatementAttributes attributes;
+    
     private final Collection<SimpleTableSegment> tables;
     
     private final boolean flushTable;
@@ -43,7 +45,7 @@ public final class MySQLFlushStatement extends FlushStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }
 }

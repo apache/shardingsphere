@@ -31,6 +31,8 @@ import java.util.Optional;
  */
 public final class MySQLShowDatabasesStatement extends DALStatement {
     
+    private SQLStatementAttributes attributes;
+    
     private final ShowFilterSegment filter;
     
     public MySQLShowDatabasesStatement(final DatabaseType databaseType, final ShowFilterSegment filter) {
@@ -48,7 +50,7 @@ public final class MySQLShowDatabasesStatement extends DALStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute(), new AllowNotUseDatabaseSQLStatementAttribute(true));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute(), new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

@@ -33,13 +33,15 @@ public final class SetStatement extends DALStatement {
     
     private final List<VariableAssignSegment> variableAssigns;
     
+    private SQLStatementAttributes attributes;
+    
     public SetStatement(final DatabaseType databaseType, final List<VariableAssignSegment> variableAssigns) {
         super(databaseType);
         this.variableAssigns = variableAssigns;
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

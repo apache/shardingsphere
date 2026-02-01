@@ -26,8 +26,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 /**
  * Use database statement for MySQL.
  */
-@Getter
+@Getter(exclude = "attributes")
 public final class MySQLUseStatement extends DALStatement {
+    
+    private SQLStatementAttributes attributes;
     
     private final String database;
     
@@ -37,7 +39,15 @@ public final class MySQLUseStatement extends DALStatement {
     }
     
     @Override
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
+    }
+    
+    @Override
     public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
+        if (null == attributes) {
+            buildAttributes();
+        }
+        return attributes;
     }
 }

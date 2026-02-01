@@ -45,6 +45,8 @@ public final class CommentStatement extends DDLStatement {
     
     private IndexTypeSegment indexType;
     
+    private SQLStatementAttributes attributes;
+    
     public CommentStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
@@ -59,7 +61,7 @@ public final class CommentStatement extends DDLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(null == table ? Collections.emptyList() : Collections.singletonList(table)));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(null == table ? Collections.emptyList() : Collections.singletonList(table)));
     }
 }

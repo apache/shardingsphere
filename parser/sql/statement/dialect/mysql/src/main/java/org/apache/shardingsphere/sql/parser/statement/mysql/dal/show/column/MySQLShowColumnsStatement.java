@@ -36,6 +36,8 @@ import java.util.Optional;
 @Getter
 public final class MySQLShowColumnsStatement extends DALStatement {
     
+    private SQLStatementAttributes attributes;
+    
     private final SimpleTableSegment table;
     
     private final FromDatabaseSegment fromDatabase;
@@ -68,7 +70,7 @@ public final class MySQLShowColumnsStatement extends DALStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1), new FromDatabaseSQLStatementAttribute(fromDatabase), new TableSQLStatementAttribute(table));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1), new FromDatabaseSQLStatementAttribute(fromDatabase), new TableSQLStatementAttribute(table));
     }
 }

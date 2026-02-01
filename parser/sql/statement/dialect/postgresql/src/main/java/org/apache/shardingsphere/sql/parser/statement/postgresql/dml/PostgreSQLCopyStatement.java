@@ -37,6 +37,8 @@ import java.util.Optional;
 @Getter
 public final class PostgreSQLCopyStatement extends DMLStatement {
     
+    private SQLStatementAttributes attributes;
+    
     private final SimpleTableSegment table;
     
     private final Collection<ColumnSegment> columns;
@@ -70,8 +72,8 @@ public final class PostgreSQLCopyStatement extends DMLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(
                 new TableSQLStatementAttribute(null == table ? Collections.emptyList() : Collections.singletonList(table)), new UnsupportedDistributeSQLStatementAttribute());
     }
 }

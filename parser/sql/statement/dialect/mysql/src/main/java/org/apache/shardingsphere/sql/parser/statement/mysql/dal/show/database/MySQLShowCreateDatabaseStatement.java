@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowCreateDatabaseStatement extends DALStatement {
     
+    private SQLStatementAttributes attributes;
+    
     private final String databaseName;
     
     public MySQLShowCreateDatabaseStatement(final DatabaseType databaseType, final String databaseName) {
@@ -37,7 +39,7 @@ public final class MySQLShowCreateDatabaseStatement extends DALStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

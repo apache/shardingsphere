@@ -31,6 +31,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowTriggersStatement extends DALStatement {
     
+    private SQLStatementAttributes attributes;
+    
     private final FromDatabaseSegment fromDatabase;
     
     private final ShowFilterSegment filter;
@@ -42,8 +44,8 @@ public final class MySQLShowTriggersStatement extends DALStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
+    public void buildAttributes() {
         String databaseName = null == fromDatabase ? null : fromDatabase.getDatabase().getIdentifier().getValue();
-        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true, databaseName));
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true, databaseName));
     }
 }

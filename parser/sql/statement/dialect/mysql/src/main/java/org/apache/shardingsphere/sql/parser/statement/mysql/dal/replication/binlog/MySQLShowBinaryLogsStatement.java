@@ -27,12 +27,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
  */
 public final class MySQLShowBinaryLogsStatement extends DALStatement {
     
+    private SQLStatementAttributes attributes;
+    
     public MySQLShowBinaryLogsStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }
