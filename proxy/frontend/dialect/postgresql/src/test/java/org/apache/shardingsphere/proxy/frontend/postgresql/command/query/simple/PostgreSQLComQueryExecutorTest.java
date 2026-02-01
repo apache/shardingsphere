@@ -172,11 +172,11 @@ class PostgreSQLComQueryExecutorTest {
         Iterator<DatabasePacket> iterator = actual.iterator();
         PostgreSQLCommandCompletePacket commandCompletePacket = (PostgreSQLCommandCompletePacket) iterator.next();
         PostgreSQLParameterStatusPacket firstStatusPacket = (PostgreSQLParameterStatusPacket) iterator.next();
-        PostgreSQLParameterStatusPacket secondStatusPacket = (PostgreSQLParameterStatusPacket) iterator.next();
         assertThat(actual.size(), is(3));
         assertThat(getSqlCommand(commandCompletePacket), is("SET"));
         assertThat(getParameterStatusKey(firstStatusPacket), is("search_path"));
         assertNull(getParameterStatusValue(firstStatusPacket));
+        PostgreSQLParameterStatusPacket secondStatusPacket = (PostgreSQLParameterStatusPacket) iterator.next();
         assertThat(getParameterStatusKey(secondStatusPacket), is("work_mem"));
         assertThat(getParameterStatusValue(secondStatusPacket), is("64MB"));
         assertThat(queryExecutor.getResponseType(), is(ResponseType.UPDATE));
