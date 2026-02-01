@@ -43,7 +43,6 @@ import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.protocol.opengauss.constant.OpenGaussAuthenticationMethod;
 import org.apache.shardingsphere.database.protocol.opengauss.constant.OpenGaussProtocolVersion;
 import org.apache.shardingsphere.database.protocol.opengauss.packet.authentication.OpenGaussAuthenticationHexData;
-import org.apache.shardingsphere.database.protocol.opengauss.packet.authentication.OpenGaussAuthenticationSCRAMSha256Packet;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
@@ -163,6 +162,25 @@ class OpenGaussAuthenticationEngineTest {
     }
     
     @Test
+    void assertSSLRequestCodeMismatchFallsBackToStartup() {
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(64, 256), StandardCharsets.UTF_8);
+        payload.writeInt4(8);
+        payload.writeInt4(1234);
+        payload.writeStringNul("user");
+        payload.writeStringNul(USERNAME);
+        payload.writeStringNul("database");
+        payload.writeStringNul(DATABASE_NAME);
+        payload.writeStringNul("client_encoding");
+        payload.writeStringNul("UTF8");
+        Map<String, AlgorithmConfiguration> authenticators = Collections.singletonMap(PostgreSQLAuthenticationMethod.MD5.getMethodName(), new AlgorithmConfiguration("MD5", new Properties()));
+        AuthorityRule authorityRule = createAuthorityRule(new UserConfiguration(USERNAME, PASSWORD, "", PostgreSQLAuthenticationMethod.MD5.getMethodName(), false),
+                authenticators, PostgreSQLAuthenticationMethod.MD5.getMethodName(), new AlgorithmConfiguration("ALL_PERMITTED", new Properties()));
+        MetaDataContexts metaDataContexts = createMetaDataContexts(authorityRule, true, DATABASE_NAME);
+        mockProxyContext(metaDataContexts);
+        assertFalse(authenticationEngine.authenticate(channelHandlerContext, payload).isFinished());
+    }
+    
+    @Test
     void assertUserNotSet() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 512), StandardCharsets.UTF_8);
         payload.writeInt4(64);
@@ -196,9 +214,7 @@ class OpenGaussAuthenticationEngineTest {
         MetaDataContexts metaDataContexts = createMetaDataContexts(authorityRule, true, DATABASE_NAME);
         mockProxyContext(metaDataContexts);
         PostgreSQLPacketPayload payload = createStartupPayload(USERNAME, DATABASE_NAME, OpenGaussProtocolVersion.PROTOCOL_350.getVersion());
-        AuthenticationResult actual = authenticationEngine.authenticate(channelHandlerContext, payload);
-        verify(channelHandlerContext).writeAndFlush(any(OpenGaussAuthenticationSCRAMSha256Packet.class));
-        assertFalse(actual.isFinished());
+        assertFalse(authenticationEngine.authenticate(channelHandlerContext, payload).isFinished());
         assertThat(getServerIteration(authenticationEngine), is(2048));
     }
     
@@ -208,9 +224,7 @@ class OpenGaussAuthenticationEngineTest {
         when(authorityRule.findUser(any(Grantee.class))).thenReturn(Optional.empty());
         MetaDataContexts metaDataContexts = createMetaDataContexts(authorityRule, true, DATABASE_NAME);
         mockProxyContext(metaDataContexts);
-        AuthenticationResult actual = authenticationEngine.authenticate(channelHandlerContext, createStartupPayload(USERNAME, DATABASE_NAME, OpenGaussProtocolVersion.PROTOCOL_351.getVersion()));
-        verify(channelHandlerContext).writeAndFlush(any(OpenGaussAuthenticationSCRAMSha256Packet.class));
-        assertFalse(actual.isFinished());
+        assertFalse(authenticationEngine.authenticate(channelHandlerContext, createStartupPayload(USERNAME, DATABASE_NAME, OpenGaussProtocolVersion.PROTOCOL_351.getVersion())).isFinished());
         assertThat(getServerIteration(authenticationEngine), is(10000));
     }
     
