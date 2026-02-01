@@ -21,6 +21,7 @@ import io.netty.buffer.Unpooled;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.protocol.opengauss.packet.command.OpenGaussCommandPacketType;
 import org.apache.shardingsphere.database.protocol.opengauss.packet.command.bind.OpenGaussComBatchBindPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedCommandPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.proxy.frontend.opengauss.command.query.extended
 import org.apache.shardingsphere.proxy.frontend.opengauss.command.query.simple.OpenGaussComQueryExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLUnsupportedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedBatchedStatementsCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind.PostgreSQLComBindExecutor;
@@ -120,18 +122,18 @@ class OpenGaussCommandExecutorFactoryTest {
     
     @Test
     void assertAggregatedPacketIsBatchedStatements() throws SQLException {
-        PostgreSQLComParsePacket parsePacket = mock(PostgreSQLComParsePacket.class);
+        final PostgreSQLComParsePacket parsePacket = mock(PostgreSQLComParsePacket.class);
         when(parsePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.PARSE_COMMAND);
-        PostgreSQLComBindPacket bindPacket = mock(PostgreSQLComBindPacket.class);
-        PostgreSQLComDescribePacket describePacket = mock(PostgreSQLComDescribePacket.class);
-        PostgreSQLComExecutePacket executePacket = mock(PostgreSQLComExecutePacket.class);
-        PostgreSQLComClosePacket closePacket = mock(PostgreSQLComClosePacket.class);
+        final PostgreSQLComBindPacket bindPacket = mock(PostgreSQLComBindPacket.class);
+        final PostgreSQLComDescribePacket describePacket = mock(PostgreSQLComDescribePacket.class);
+        final PostgreSQLComExecutePacket executePacket = mock(PostgreSQLComExecutePacket.class);
+        final PostgreSQLComClosePacket closePacket = mock(PostgreSQLComClosePacket.class);
         when(closePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.CLOSE_COMMAND);
-        PostgreSQLComSyncPacket syncPacket = mock(PostgreSQLComSyncPacket.class);
+        final PostgreSQLComSyncPacket syncPacket = mock(PostgreSQLComSyncPacket.class);
         when(syncPacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.SYNC_COMMAND);
-        PostgreSQLComTerminationPacket terminationPacket = mock(PostgreSQLComTerminationPacket.class);
+        final PostgreSQLComTerminationPacket terminationPacket = mock(PostgreSQLComTerminationPacket.class);
         when(terminationPacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.TERMINATE);
-        PostgreSQLAggregatedCommandPacket packet = mock(PostgreSQLAggregatedCommandPacket.class);
+        final PostgreSQLAggregatedCommandPacket packet = mock(PostgreSQLAggregatedCommandPacket.class);
         when(packet.isContainsBatchedStatements()).thenReturn(true);
         when(packet.getPackets()).thenReturn(
                 Arrays.asList(parsePacket, bindPacket, describePacket, executePacket, bindPacket, describePacket, executePacket, closePacket, syncPacket, terminationPacket));
@@ -146,6 +148,29 @@ class OpenGaussCommandExecutorFactoryTest {
         assertThat(actualPacketsIterator.next(), isA(PostgreSQLComSyncExecutor.class));
         assertThat(actualPacketsIterator.next(), isA(PostgreSQLComTerminationExecutor.class));
         assertFalse(actualPacketsIterator.hasNext());
+    }
+    
+    @Test
+    void assertAggregatedPacketWithBatchBindPacket() throws SQLException {
+        final OpenGaussComBatchBindPacket batchBindPacket = mock(OpenGaussComBatchBindPacket.class);
+        when(batchBindPacket.getIdentifier()).thenReturn(OpenGaussCommandPacketType.BATCH_BIND_COMMAND);
+        final PostgreSQLComParsePacket parsePacket = mock(PostgreSQLComParsePacket.class);
+        when(parsePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.PARSE_COMMAND);
+        final PostgreSQLAggregatedCommandPacket packet = mock(PostgreSQLAggregatedCommandPacket.class);
+        when(packet.isContainsBatchedStatements()).thenReturn(true);
+        when(packet.getPackets()).thenReturn(Arrays.asList(batchBindPacket, parsePacket));
+        CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(null, packet, connectionSession, portalContext);
+        assertThat(actual, isA(PostgreSQLAggregatedCommandExecutor.class));
+        Iterator<CommandExecutor> actualPacketsIterator = getExecutorsFromAggregatedCommandExecutor((PostgreSQLAggregatedCommandExecutor) actual).iterator();
+        assertThat(actualPacketsIterator.next(), isA(OpenGaussComBatchBindExecutor.class));
+        assertThat(actualPacketsIterator.next(), isA(PostgreSQLComParseExecutor.class));
+        assertFalse(actualPacketsIterator.hasNext());
+    }
+    
+    @Test
+    void assertUnsupportedCommandExecutor() throws SQLException {
+        assertThat(OpenGaussCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.PASSWORD, mock(PostgreSQLCommandPacket.class), connectionSession, portalContext),
+                isA(PostgreSQLUnsupportedCommandExecutor.class));
     }
     
     @SuppressWarnings("unchecked")

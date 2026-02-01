@@ -120,7 +120,6 @@ class OpenGaussFrontendEngineTest {
                 Arguments.of("mark exception when transaction and not occurred", true, false, new Exception("error"), true),
                 Arguments.of("skip marking when not in transaction", false, false, new Exception("error"), false),
                 Arguments.of("keep marked when already occurred", true, true, new Exception("error"), true),
-                Arguments.of("skip marking for InTransactionException", true, false, new InTransactionException(), false)
-        );
+                Arguments.of("skip marking for InTransactionException", true, false, new InTransactionException(), false));
     }
 }
