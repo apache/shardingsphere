@@ -18,33 +18,86 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.core.exception.transaction.InTransactionException;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLPortalContextRegistry;
+import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.util.Collections;
 import java.util.concurrent.ConcurrentMap;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class PostgreSQLFrontendEngineTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
+    private final DatabaseProtocolFrontendEngine engine = DatabaseTypedSPILoader.getService(DatabaseProtocolFrontendEngine.class, databaseType);
+    
     @Test
     void assertRelease() {
-        ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
         int connectionId = 1;
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
         PostgreSQLPortalContextRegistry.getInstance().get(connectionId);
-        PostgreSQLFrontendEngine frontendEngine = new PostgreSQLFrontendEngine();
         ConnectionThreadExecutorGroup.getInstance().register(connectionId);
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionId);
-        frontendEngine.release(connectionSession);
+        engine.release(connectionSession);
         assertTrue(getPortalContexts().isEmpty());
+    }
+    
+    @Test
+    void assertHandleExceptionWhenNeedMarkOccurred() {
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        ConnectionContext connectionContext = mockConnectionSession(connectionSession, true, false);
+        engine.handleException(connectionSession, new Exception("error"));
+        assertTrue(connectionContext.getTransactionContext().isExceptionOccur());
+    }
+    
+    @Test
+    void assertHandleExceptionWhenNotInTransaction() {
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        ConnectionContext connectionContext = mockConnectionSession(connectionSession, false, false);
+        engine.handleException(connectionSession, new Exception("error"));
+        assertFalse(connectionContext.getTransactionContext().isExceptionOccur());
+    }
+    
+    @Test
+    void assertHandleExceptionWhenAlreadyOccurred() {
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        ConnectionContext connectionContext = mockConnectionSession(connectionSession, true, true);
+        engine.handleException(connectionSession, new Exception("error"));
+        assertTrue(connectionContext.getTransactionContext().isExceptionOccur());
+    }
+    
+    @Test
+    void assertHandleExceptionWithInTransactionException() {
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        ConnectionContext connectionContext = mockConnectionSession(connectionSession, true, false);
+        engine.handleException(connectionSession, new InTransactionException());
+        assertFalse(connectionContext.getTransactionContext().isExceptionOccur());
+    }
+    
+    private ConnectionContext mockConnectionSession(final ConnectionSession connectionSession, final boolean inTransaction, final boolean exceptionOccur) {
+        TransactionStatus transactionStatus = new TransactionStatus();
+        transactionStatus.setInTransaction(inTransaction);
+        ConnectionContext result = new ConnectionContext(Collections::emptyList);
+        result.getTransactionContext().setExceptionOccur(exceptionOccur);
+        when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
+        when(connectionSession.getConnectionContext()).thenReturn(result);
+        return result;
     }
     
     @SuppressWarnings("unchecked")

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 /**
  * Use database statement for MySQL.
  */
-@Getter(exclude = "attributes")
+@Getter
 public final class MySQLUseStatement extends DALStatement {
     
     private SQLStatementAttributes attributes;
