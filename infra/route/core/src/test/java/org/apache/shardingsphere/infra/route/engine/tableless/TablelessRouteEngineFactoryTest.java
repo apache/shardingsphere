@@ -151,7 +151,9 @@ class TablelessRouteEngineFactoryTest {
     void assertNewInstanceForCloseAllStatement() {
         CursorHeldSQLStatementContext closeStatementContext = mock(CursorHeldSQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(closeStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
-        when(closeStatementContext.getSqlStatement()).thenReturn(new CloseStatement(databaseType, null, true));
+        CloseStatement closeStatement = new CloseStatement(databaseType, null, true);
+        closeStatement.buildAttributes();
+        when(closeStatementContext.getSqlStatement()).thenReturn(closeStatement);
         QueryContext queryContext = new QueryContext(closeStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
         assertThat(actual, isA(TablelessDataSourceBroadcastRouteEngine.class));

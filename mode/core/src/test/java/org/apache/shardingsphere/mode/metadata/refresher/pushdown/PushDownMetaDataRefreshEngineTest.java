@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.refresher.util.SchemaRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -63,7 +64,7 @@ class PushDownMetaDataRefreshEngineTest {
     
     @Test
     void assertIsNeedRefreshWhenRefresherAbsent() {
-        SQLStatement sqlStatement = new SQLStatement(databaseType);
+        SQLStatement sqlStatement = new UpdateStatement(databaseType);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         when(TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatement.getClass())).thenReturn(Optional.empty());
         when(TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatement.getClass().getSuperclass())).thenReturn(Optional.empty());
@@ -73,7 +74,7 @@ class PushDownMetaDataRefreshEngineTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertIsNeedRefreshWhenRefresherFound() {
-        SQLStatement sqlStatement = new SQLStatement(databaseType);
+        SQLStatement sqlStatement = new UpdateStatement(databaseType);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         PushDownMetaDataRefresher<SQLStatement> refresher = mock(PushDownMetaDataRefresher.class);
         when(TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatement.getClass())).thenReturn(Optional.of(refresher));
@@ -84,7 +85,7 @@ class PushDownMetaDataRefreshEngineTest {
     @Test
     void assertRefreshUsesStorageUnitTypeAndLogicDataSource() throws SQLException {
         when(SchemaRefreshUtils.getSchemaName(database, sqlStatementContext)).thenReturn("foo_schema");
-        SQLStatement sqlStatement = new SQLStatement(databaseType);
+        SQLStatement sqlStatement = new UpdateStatement(databaseType);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         StorageUnit storageUnit = mock(StorageUnit.class);
         DatabaseType storageType = mock(DatabaseType.class);
@@ -103,7 +104,7 @@ class PushDownMetaDataRefreshEngineTest {
     @Test
     void assertRefreshUsesStatementDatabaseTypeWhenRouteUnitsAbsent() throws SQLException {
         when(SchemaRefreshUtils.getSchemaName(database, sqlStatementContext)).thenReturn("foo_schema");
-        SQLStatement sqlStatement = new SQLStatement(databaseType);
+        SQLStatement sqlStatement = new UpdateStatement(databaseType);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         PushDownMetaDataRefresher<SQLStatement> refresher = mock(PushDownMetaDataRefresher.class);

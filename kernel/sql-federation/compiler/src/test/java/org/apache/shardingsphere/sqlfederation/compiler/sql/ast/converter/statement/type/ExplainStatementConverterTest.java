@@ -31,13 +31,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.Collections;
 
@@ -79,8 +80,9 @@ class ExplainStatementConverterTest {
     
     @Test
     void assertConvertUnsupportedSQLStatementThrowsException() {
-        ExplainStatement explainStatement = new ExplainStatement(databaseType, new SQLStatement(databaseType) {
-        });
+        DCLStatement mockStatement = Mockito.mock(DCLStatement.class, Mockito.withSettings().defaultAnswer(Mockito.CALLS_REAL_METHODS));
+        Mockito.when(mockStatement.getDatabaseType()).thenReturn(databaseType);
+        ExplainStatement explainStatement = new ExplainStatement(databaseType, mockStatement);
         assertThrows(IllegalStateException.class, () -> new ExplainStatementConverter().convert(explainStatement));
     }
     

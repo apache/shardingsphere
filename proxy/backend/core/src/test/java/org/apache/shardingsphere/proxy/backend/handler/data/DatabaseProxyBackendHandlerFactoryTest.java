@@ -80,7 +80,9 @@ class DatabaseProxyBackendHandlerFactoryTest {
     @Test
     void assertNewInstanceReturnedUnicastDatabaseProxyBackendHandlerWithQueryWithoutFrom() {
         String sql = "SELECT 1";
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new SelectStatement(databaseType));
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.buildAttributes();
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(selectStatement);
         DatabaseProxyBackendHandler actual = DatabaseProxyBackendHandlerFactory.newInstance(
                 new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), mock(), false);
         assertThat(actual, isA(UnicastDatabaseProxyBackendHandler.class));

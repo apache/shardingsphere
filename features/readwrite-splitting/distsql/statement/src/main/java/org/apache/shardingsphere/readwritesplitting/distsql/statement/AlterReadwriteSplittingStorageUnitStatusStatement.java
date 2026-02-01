@@ -39,8 +39,10 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatement extends Upd
     
     private final boolean enable;
     
+    private SQLStatementAttributes attributes;
+    
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

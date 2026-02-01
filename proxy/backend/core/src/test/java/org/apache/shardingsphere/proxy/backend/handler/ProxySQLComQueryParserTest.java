@@ -28,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -68,7 +69,7 @@ class ProxySQLComQueryParserTest {
     void assertParseWithMissingDatabaseUseDefaultType() {
         when(connectionSession.getUsedDatabaseName()).thenReturn("missing_db");
         SQLParserEngine parserEngine = mock(SQLParserEngine.class);
-        SQLStatement expected = new SQLStatement(databaseType);
+        SQLStatement expected = new UpdateStatement(databaseType);
         SQLParserRule parserRule = mockParserRule(parserEngine);
         mockProxyContext(parserRule, false, null);
         when(parserEngine.parse(anyString(), eq(false))).thenReturn(expected);
@@ -80,7 +81,7 @@ class ProxySQLComQueryParserTest {
         DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         when(connectionSession.getUsedDatabaseName()).thenReturn("logic_db");
         SQLParserEngine parserEngine = mock(SQLParserEngine.class);
-        SQLStatement expected = new SQLStatement(protocolType);
+        SQLStatement expected = new UpdateStatement(protocolType);
         SQLParserRule parserRule = mockParserRule(parserEngine);
         mockProxyContext(parserRule, true, protocolType);
         when(parserEngine.parse(anyString(), eq(false))).thenReturn(expected);

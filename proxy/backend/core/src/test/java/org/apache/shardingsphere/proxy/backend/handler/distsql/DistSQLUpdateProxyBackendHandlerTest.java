@@ -61,8 +61,9 @@ class DistSQLUpdateProxyBackendHandlerTest {
     @Test
     void assertEmptyStorageUnit() {
         when(contextManager.getDatabase("foo_db")).thenReturn(new ShardingSphereDatabase("foo_db", databaseType, mock(), mock(), Collections.emptyList()));
-        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(
-                new RefreshTableMetaDataStatement(), mockQueryContext(), mockConnectionSession("foo_db"), contextManager);
+        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement();
+        sqlStatement.buildAttributes();
+        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(sqlStatement, mockQueryContext(), mockConnectionSession("foo_db"), contextManager);
         assertThrows(EmptyStorageUnitException.class, backendHandler::execute);
     }
     
@@ -71,8 +72,9 @@ class DistSQLUpdateProxyBackendHandlerTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
         when(contextManager.getDatabase("foo_db")).thenReturn(new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, mock(), Collections.emptyList()));
-        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(
-                new RefreshTableMetaDataStatement("t_order", "ds_1", null), mockQueryContext(), mockConnectionSession("foo_db"), contextManager);
+        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement("t_order", "ds_1", null);
+        sqlStatement.buildAttributes();
+        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(sqlStatement, mockQueryContext(), mockConnectionSession("foo_db"), contextManager);
         assertThrows(MissingRequiredStorageUnitsException.class, backendHandler::execute);
     }
     
@@ -81,8 +83,9 @@ class DistSQLUpdateProxyBackendHandlerTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
         when(contextManager.getDatabase("foo_db")).thenReturn(new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, mock(), Collections.emptyList()));
-        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(
-                new RefreshTableMetaDataStatement("t_order", "ds_0", "bar_db"), mockQueryContext(), mockConnectionSession("foo_db"), contextManager);
+        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement("t_order", "ds_0", "bar_db");
+        sqlStatement.buildAttributes();
+        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(sqlStatement, mockQueryContext(), mockConnectionSession("foo_db"), contextManager);
         assertThrows(SchemaNotFoundException.class, backendHandler::execute);
     }
     
@@ -96,8 +99,9 @@ class DistSQLUpdateProxyBackendHandlerTest {
         when(database.getSchema("foo_db")).thenReturn(schema);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
-        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(
-                new RefreshTableMetaDataStatement("t_order", "ds_0", "foo_db"), mockQueryContext(), mockConnectionSession("foo_db"), contextManager);
+        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement("t_order", "ds_0", "foo_db");
+        sqlStatement.buildAttributes();
+        DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(sqlStatement, mockQueryContext(), mockConnectionSession("foo_db"), contextManager);
         assertThrows(TableNotFoundException.class, backendHandler::execute);
     }
     
@@ -110,7 +114,9 @@ class DistSQLUpdateProxyBackendHandlerTest {
         when(database.getProtocolType()).thenReturn(databaseType);
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
-        ResponseHeader actual = new DistSQLUpdateProxyBackendHandler(new RefreshTableMetaDataStatement(), mockQueryContext(), mockConnectionSession("foo_db"), contextManager).execute();
+        RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement();
+        sqlStatement.buildAttributes();
+        ResponseHeader actual = new DistSQLUpdateProxyBackendHandler(sqlStatement, mockQueryContext(), mockConnectionSession("foo_db"), contextManager).execute();
         assertThat(actual, isA(UpdateResponseHeader.class));
     }
     

@@ -153,13 +153,17 @@ class AlterReadwriteSplittingRuleExecutorTest {
     private AlterReadwriteSplittingRuleStatement createSQLStatement(final String loadBalancerTypeName) {
         ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("readwrite_ds", "write_ds", Arrays.asList("read_ds_0", "ds_read_ds_1"),
                 new AlgorithmSegment(loadBalancerTypeName, new Properties()));
-        return new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment));
+        AlterReadwriteSplittingRuleStatement result = new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment));
+        result.buildAttributes();
+        return result;
     }
     
     private AlterReadwriteSplittingRuleStatement createSQLStatement(final String ruleName, final String writeDataSource, final Collection<String> readDataSources,
                                                                     final String loadBalancerName, final Properties props) {
         ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment(ruleName, writeDataSource, readDataSources, new AlgorithmSegment(loadBalancerName, props));
-        return new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment));
+        AlterReadwriteSplittingRuleStatement result = new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment));
+        result.buildAttributes();
+        return result;
     }
     
     private AlterReadwriteSplittingRuleStatement createSQLStatementWithDuplicateWriteDataSources(final String ruleName0, final String ruleName1, final String loadBalancerName) {
@@ -167,7 +171,9 @@ class AlterReadwriteSplittingRuleExecutorTest {
                 new AlgorithmSegment(loadBalancerName, new Properties()));
         ReadwriteSplittingRuleSegment ruleSegment1 = new ReadwriteSplittingRuleSegment(ruleName1, "write_ds", Arrays.asList("read_ds_2", "read_ds_3"),
                 new AlgorithmSegment(loadBalancerName, new Properties()));
-        return new AlterReadwriteSplittingRuleStatement(Arrays.asList(ruleSegment0, ruleSegment1));
+        AlterReadwriteSplittingRuleStatement result = new AlterReadwriteSplittingRuleStatement(Arrays.asList(ruleSegment0, ruleSegment1));
+        result.buildAttributes();
+        return result;
     }
     
     private AlterReadwriteSplittingRuleStatement createSQLStatementWithDuplicateReadDataSources(final String ruleName0, final String ruleName1, final String loadBalancerName) {
@@ -175,7 +181,9 @@ class AlterReadwriteSplittingRuleExecutorTest {
                 new AlgorithmSegment(loadBalancerName, new Properties()));
         ReadwriteSplittingRuleSegment ruleSegment1 = new ReadwriteSplittingRuleSegment(ruleName1, "write_ds_1", Arrays.asList("read_ds_0", "read_ds_1"),
                 new AlgorithmSegment(loadBalancerName, new Properties()));
-        return new AlterReadwriteSplittingRuleStatement(Arrays.asList(ruleSegment0, ruleSegment1));
+        AlterReadwriteSplittingRuleStatement result = new AlterReadwriteSplittingRuleStatement(Arrays.asList(ruleSegment0, ruleSegment1));
+        result.buildAttributes();
+        return result;
     }
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {

@@ -38,6 +38,8 @@ public final class MySQLDescribeStatement extends DALStatement {
     
     private final ColumnSegment columnWildcard;
     
+    private SQLStatementAttributes attributes;
+    
     public MySQLDescribeStatement(final DatabaseType databaseType, final SimpleTableSegment table, final ColumnSegment columnWildcard) {
         super(databaseType);
         this.table = table;
@@ -54,7 +56,7 @@ public final class MySQLDescribeStatement extends DALStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1), new TableSQLStatementAttribute(table));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1), new TableSQLStatementAttribute(table));
     }
 }

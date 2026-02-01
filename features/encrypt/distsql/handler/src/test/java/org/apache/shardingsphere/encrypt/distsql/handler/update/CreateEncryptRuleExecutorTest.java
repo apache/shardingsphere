@@ -97,7 +97,9 @@ class CreateEncryptRuleExecutorTest {
                 new EncryptColumnItemSegment("like_column", new AlgorithmSegment("CHAR_DIGEST_LIKE", new Properties())));
         EncryptRuleSegment userRuleSegment = new EncryptRuleSegment("t_user", Collections.singleton(tUserColumnSegment));
         EncryptRuleSegment orderRuleSegment = new EncryptRuleSegment("t_order", Collections.singleton(tOrderColumnSegment));
-        return new CreateEncryptRuleStatement(true, Arrays.asList(userRuleSegment, orderRuleSegment));
+        CreateEncryptRuleStatement result = new CreateEncryptRuleStatement(true, Arrays.asList(userRuleSegment, orderRuleSegment));
+        result.buildAttributes();
+        return result;
     }
     
     @Test
@@ -117,7 +119,9 @@ class CreateEncryptRuleExecutorTest {
                 new EncryptColumnItemSegment("like_column", null));
         Collection<EncryptRuleSegment> rules = new LinkedList<>();
         rules.add(new EncryptRuleSegment("t_user", Collections.singleton(encryptColumnSegment)));
-        return new CreateEncryptRuleStatement(ifNotExists, rules);
+        CreateEncryptRuleStatement result = new CreateEncryptRuleStatement(ifNotExists, rules);
+        result.buildAttributes();
+        return result;
     }
     
     private CreateEncryptRuleStatement createSQLStatement(final boolean ifNotExists, final String encryptorName) {
@@ -134,7 +138,9 @@ class CreateEncryptRuleExecutorTest {
         Collection<EncryptRuleSegment> rules = new LinkedList<>();
         rules.add(tUserRuleSegment);
         rules.add(tOrderRuleSegment);
-        return new CreateEncryptRuleStatement(ifNotExists, rules);
+        CreateEncryptRuleStatement result = new CreateEncryptRuleStatement(ifNotExists, rules);
+        result.buildAttributes();
+        return result;
     }
     
     private CreateEncryptRuleStatement createConflictColumnNameSQLStatement() {
@@ -143,7 +149,9 @@ class CreateEncryptRuleExecutorTest {
                 new EncryptColumnItemSegment("user_id", new AlgorithmSegment("test", new Properties())),
                 new EncryptColumnItemSegment("like_column", new AlgorithmSegment("test", new Properties())));
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment));
-        return new CreateEncryptRuleStatement(false, Collections.singleton(ruleSegment));
+        CreateEncryptRuleStatement result = new CreateEncryptRuleStatement(false, Collections.singleton(ruleSegment));
+        result.buildAttributes();
+        return result;
     }
     
     private EncryptRuleConfiguration getCurrentRuleConfiguration() {

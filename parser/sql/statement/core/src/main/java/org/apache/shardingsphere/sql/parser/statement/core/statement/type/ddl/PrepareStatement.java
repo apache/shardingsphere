@@ -45,6 +45,8 @@ public final class PrepareStatement extends DDLStatement {
     
     private DeleteStatement delete;
     
+    private SQLStatementAttributes attributes;
+    
     public PrepareStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
@@ -86,12 +88,12 @@ public final class PrepareStatement extends DDLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
+    public void buildAttributes() {
         TableExtractor tableExtractor = new TableExtractor();
         Optional.ofNullable(select).ifPresent(tableExtractor::extractTablesFromSelect);
         Optional.ofNullable(insert).ifPresent(tableExtractor::extractTablesFromInsert);
         Optional.ofNullable(update).ifPresent(tableExtractor::extractTablesFromUpdate);
         Optional.ofNullable(delete).ifPresent(tableExtractor::extractTablesFromDelete);
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(tableExtractor.getRewriteTables()));
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tableExtractor.getRewriteTables()));
     }
 }

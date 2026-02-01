@@ -46,6 +46,7 @@ class DropBroadcastTableRuleExecutorTest {
     @Test
     void assertExecuteUpdateWithoutToBeDroppedTables() {
         DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(false, Collections.singleton("foo_tbl"));
+        sqlStatement.buildAttributes();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         BroadcastRule rule = mock(BroadcastRule.class, RETURNS_DEEP_STUBS);
         assertThrows(MissingRequiredRuleException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(database, rule), null).executeUpdate());
@@ -54,6 +55,7 @@ class DropBroadcastTableRuleExecutorTest {
     @Test
     void assertExecuteUpdate() throws SQLException {
         DropBroadcastTableRuleStatement sqlStatement = new DropBroadcastTableRuleStatement(true, new ArrayList<>(Arrays.asList("foo_tbl", "bar_tbl")));
+        sqlStatement.buildAttributes();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
         BroadcastRule rule = mock(BroadcastRule.class, RETURNS_DEEP_STUBS);

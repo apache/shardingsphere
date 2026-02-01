@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.distsql.statement.type.ral.queryable.export;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
@@ -35,6 +36,9 @@ public final class ExportDatabaseConfigurationStatement extends QueryableRALStat
     
     private final FromDatabaseSegment fromDatabase;
     
+    @Getter
+    private SQLStatementAttributes attributes;
+    
     /**
      * Get file path.
      *
@@ -45,7 +49,7 @@ public final class ExportDatabaseConfigurationStatement extends QueryableRALStat
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

@@ -86,6 +86,7 @@ class ShardingDropTableRouteContextCheckerTest {
         DropTableStatement sqlStatement = new DropTableStatement(databaseType);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item")));
         sqlStatement.getTables().add(table);
+        sqlStatement.buildAttributes();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("db_schema");
         when(database.getSchema("db_schema").containsTable("t_order_item")).thenReturn(true);
@@ -126,6 +127,7 @@ class ShardingDropTableRouteContextCheckerTest {
         DropTableStatement sqlStatement = new DropTableStatement(databaseType);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         sqlStatement.getTables().add(table);
+        sqlStatement.buildAttributes();
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getShardingTable("t_order")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_order"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
@@ -142,6 +144,7 @@ class ShardingDropTableRouteContextCheckerTest {
         DropTableStatement sqlStatement = new DropTableStatement(databaseType);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
         sqlStatement.getTables().add(table);
+        sqlStatement.buildAttributes();
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getShardingTable("t_order")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_order"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
@@ -157,6 +160,7 @@ class ShardingDropTableRouteContextCheckerTest {
         DropTableStatement sqlStatement = new DropTableStatement(databaseType);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config")));
         sqlStatement.getTables().add(table);
+        sqlStatement.buildAttributes();
         when(shardingRule.getShardingTable("t_config")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_config"));
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singleton(new RouteMapper("t_config", "t_config"))));

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContex
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -49,7 +49,7 @@ class SchemaRefreshUtilsTest {
         when(tablesContext.getSchemaName()).thenReturn(Optional.empty());
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new SQLStatement(TypedSPILoader.getService(DatabaseType.class, "FIXTURE")));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new DeleteStatement(TypedSPILoader.getService(DatabaseType.class, "FIXTURE")));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("FOO_DB");
         assertThat(SchemaRefreshUtils.getSchemaName(database, sqlStatementContext), is("foo_db"));

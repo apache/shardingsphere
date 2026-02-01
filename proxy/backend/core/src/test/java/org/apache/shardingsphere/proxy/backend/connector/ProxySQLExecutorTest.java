@@ -254,11 +254,13 @@ class ProxySQLExecutorTest {
     private CommonSQLStatementContext createCreateTableStatementContext(final DatabaseType databaseType) {
         CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        sqlStatement.buildAttributes();
         return new CommonSQLStatementContext(sqlStatement);
     }
     
     private SQLStatementContext createTruncateStatementContext(final DatabaseType databaseType) {
         TruncateStatement sqlStatement = new TruncateStatement(databaseType, Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
+        sqlStatement.buildAttributes();
         return new CommonSQLStatementContext(sqlStatement);
     }
     

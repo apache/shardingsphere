@@ -33,13 +33,15 @@ public final class TruncateStatement extends DDLStatement {
     
     private final Collection<SimpleTableSegment> tables;
     
+    private SQLStatementAttributes attributes;
+    
     public TruncateStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables) {
         super(databaseType);
         this.tables = tables;
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }
 }

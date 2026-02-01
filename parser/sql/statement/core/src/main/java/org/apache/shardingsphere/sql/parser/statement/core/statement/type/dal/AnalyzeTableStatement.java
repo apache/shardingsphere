@@ -34,13 +34,15 @@ public final class AnalyzeTableStatement extends DALStatement {
     
     private final Collection<SimpleTableSegment> tables;
     
+    private SQLStatementAttributes attributes;
+    
     public AnalyzeTableStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables) {
         super(databaseType);
         this.tables = tables;
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(tables), new TableBroadcastRouteSQLStatementAttribute());
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables), new TableBroadcastRouteSQLStatementAttribute());
     }
 }

@@ -47,7 +47,7 @@ class MultiSQLSplitterTest {
     
     private static Stream<Arguments> provideHasSameTypeArguments() {
         return Stream.of(
-                Arguments.of("nonDmlSample", new SQLStatement(DATABASE_TYPE), Arrays.asList("select * from t_order;", "select * from t_order_item;"), false),
+                Arguments.of("nonDmlSample", new UpdateStatement(DATABASE_TYPE), Arrays.asList("select * from t_order;", "select * from t_order_item;"), false),
                 Arguments.of("singleStatementFalse", new UpdateStatement(DATABASE_TYPE), Collections.singletonList("update t_order set status='OK' where id=1"), false),
                 Arguments.of("insertWithBlockComment", new InsertStatement(DATABASE_TYPE),
                         Arrays.asList("   /*comment*/ INSERT INTO t_order VALUES (1);", "/*remark*/ insert into t_order values (2)"), true),

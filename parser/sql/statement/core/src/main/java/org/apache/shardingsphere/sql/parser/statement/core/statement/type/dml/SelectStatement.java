@@ -80,6 +80,8 @@ public final class SelectStatement extends DMLStatement {
     
     private WithTableHintSegment withTableHint;
     
+    private SQLStatementAttributes attributes;
+    
     public SelectStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
@@ -220,7 +222,7 @@ public final class SelectStatement extends DMLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new WithSQLStatementAttribute(with), new AllowNotUseDatabaseSQLStatementAttribute(null == from));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with), new AllowNotUseDatabaseSQLStatementAttribute(null == from));
     }
 }

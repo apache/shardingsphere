@@ -63,6 +63,7 @@ class AlterMaskRuleExecutorTest {
         MaskColumnSegment columnSegment = new MaskColumnSegment("order_id", new AlgorithmSegment("MD5", new Properties()));
         MaskRuleSegment ruleSegment = new MaskRuleSegment("t_order", Collections.singleton(columnSegment));
         AlterMaskRuleStatement sqlStatement = new AlterMaskRuleStatement(Collections.singleton(ruleSegment));
+        sqlStatement.buildAttributes();
         MaskRule rule = mock(MaskRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         ContextManager contextManager = mockContextManager(rule);
@@ -90,7 +91,9 @@ class AlterMaskRuleExecutorTest {
     private AlterMaskRuleStatement createSQLStatement() {
         MaskColumnSegment columnSegment = new MaskColumnSegment("user_id", new AlgorithmSegment("MD5", new Properties()));
         MaskRuleSegment ruleSegment = new MaskRuleSegment("t_mask", Collections.singleton(columnSegment));
-        return new AlterMaskRuleStatement(Collections.singleton(ruleSegment));
+        AlterMaskRuleStatement result = new AlterMaskRuleStatement(Collections.singleton(ruleSegment));
+        result.buildAttributes();
+        return result;
     }
     
     private MaskRuleConfiguration createCurrentRuleConfiguration() {

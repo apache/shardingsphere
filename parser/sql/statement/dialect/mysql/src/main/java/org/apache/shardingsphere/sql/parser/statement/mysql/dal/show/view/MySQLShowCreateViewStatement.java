@@ -33,13 +33,16 @@ public final class MySQLShowCreateViewStatement extends DALStatement {
     
     private final SimpleTableSegment viewName;
     
+    private SQLStatementAttributes attributes;
+    
     public MySQLShowCreateViewStatement(final DatabaseType databaseType, final SimpleTableSegment viewName) {
         super(databaseType);
         this.viewName = viewName;
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new ViewInResultSetSQLStatementAttribute(2, getViewName().getTableName().getIdentifier().getValue()));
+    public void buildAttributes() {
+        attributes =
+                new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new ViewInResultSetSQLStatementAttribute(2, getViewName().getTableName().getIdentifier().getValue()));
     }
 }

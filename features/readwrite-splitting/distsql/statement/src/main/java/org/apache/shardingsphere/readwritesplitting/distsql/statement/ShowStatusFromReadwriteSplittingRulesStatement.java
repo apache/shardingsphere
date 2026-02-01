@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.statement;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.type.rql.resource.ResourceQueryStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
@@ -35,6 +36,9 @@ public final class ShowStatusFromReadwriteSplittingRulesStatement extends Resour
     
     private final String ruleName;
     
+    @Getter
+    private SQLStatementAttributes attributes;
+    
     /**
      * Get rule name.
      *
@@ -45,7 +49,7 @@ public final class ShowStatusFromReadwriteSplittingRulesStatement extends Resour
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

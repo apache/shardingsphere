@@ -100,6 +100,7 @@ class LoadSingleTableExecutorTest {
         when(schema.containsTable("foo_tbl")).thenReturn(true);
         when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("foo_ds", "foo_schema", "foo_tbl")));
+        sqlStatement.buildAttributes();
         assertThrows(InvalidDataNodeFormatException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class)), null).executeUpdate());
     }
     
@@ -109,6 +110,7 @@ class LoadSingleTableExecutorTest {
         when(database.getResourceMetaData().getNotExistedDataSources(any())).thenReturn(Collections.emptyList());
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Arrays.asList(
                 new SingleTableSegment("*", "*"), new SingleTableSegment("*", "*", "*"), new SingleTableSegment("foo_ds", "*"), new SingleTableSegment("foo_ds", "foo_tbl")));
+        sqlStatement.buildAttributes();
         assertThrows(TableExistsException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class)), null).executeUpdate());
     }
     
@@ -120,6 +122,7 @@ class LoadSingleTableExecutorTest {
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(PhysicalDataSourceAggregator.getAggregatedDataSources(any(), any())).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("foo_ds", "foo_tbl")));
+        sqlStatement.buildAttributes();
         assertThrows(TableNotFoundException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(mock(SingleRule.class)), null).executeUpdate());
     }
     
@@ -134,6 +137,7 @@ class LoadSingleTableExecutorTest {
         when(SingleTableLoadUtils.convertToDataNodes(eq("foo_db"), any(), any())).thenReturn(Collections.singleton(new DataNode("foo_ds.foo_tbl")));
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration(currentTables, null);
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("*", "bar_tbl")));
+        sqlStatement.buildAttributes();
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         ContextManager contextManager = mockContextManager(rule);
@@ -153,6 +157,7 @@ class LoadSingleTableExecutorTest {
         when(SingleTableLoadUtils.convertToDataNodes(eq("foo_db"), any(), any())).thenReturn(Collections.singleton(new DataNode("foo_ds.foo_tbl")));
         SingleRuleConfiguration currentConfig = new SingleRuleConfiguration(currentTables, null);
         LoadSingleTableStatement sqlStatement = new LoadSingleTableStatement(Collections.singleton(new SingleTableSegment("*", "bar_tbl")));
+        sqlStatement.buildAttributes();
         SingleRule rule = mock(SingleRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         ContextManager contextManager = mockContextManager(null);

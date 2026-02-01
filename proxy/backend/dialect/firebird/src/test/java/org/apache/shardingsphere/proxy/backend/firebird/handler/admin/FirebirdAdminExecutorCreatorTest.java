@@ -55,7 +55,9 @@ class FirebirdAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithSetStatement() {
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new SetStatement(databaseType, Collections.emptyList()));
+        SetStatement sqlStatement = new SetStatement(databaseType, Collections.emptyList());
+        sqlStatement.buildAttributes();
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new FirebirdAdminExecutorCreator().create(sqlStatementContext, "SET NAMES utf8", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(FirebirdSetVariableAdminExecutor.class));
@@ -63,8 +65,9 @@ class FirebirdAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithShowSQLStatement() {
-        Optional<DatabaseAdminExecutor> actual = new FirebirdAdminExecutorCreator().create(
-                new CommonSQLStatementContext(new ShowStatement(databaseType, "server_version")), "SHOW server_version", "", Collections.emptyList());
+        ShowStatement sqlStatement = new ShowStatement(databaseType, "server_version");
+        sqlStatement.buildAttributes();
+        Optional<DatabaseAdminExecutor> actual = new FirebirdAdminExecutorCreator().create(new CommonSQLStatementContext(sqlStatement), "SHOW server_version", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(FirebirdShowVariableExecutor.class));
     }

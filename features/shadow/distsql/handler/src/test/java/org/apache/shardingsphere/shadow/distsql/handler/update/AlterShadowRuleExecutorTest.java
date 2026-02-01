@@ -82,7 +82,9 @@ class AlterShadowRuleExecutorTest {
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
-        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(new AlterShadowRuleStatement(Arrays.asList(ruleSegment, ruleSegment))));
+        AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Arrays.asList(ruleSegment, ruleSegment));
+        sqlStatement.buildAttributes();
+        assertThrows(DuplicateRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test
@@ -91,7 +93,9 @@ class AlterShadowRuleExecutorTest {
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(new AlterShadowRuleStatement(Collections.singleton(ruleSegment))));
+        AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Collections.singleton(ruleSegment));
+        sqlStatement.buildAttributes();
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test
@@ -99,6 +103,7 @@ class AlterShadowRuleExecutorTest {
         List<String> dataSources = Arrays.asList("ds", "ds0");
         when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(dataSources);
         AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Collections.singleton(new ShadowRuleSegment("initRuleName1", "ds3", null, null)));
+        sqlStatement.buildAttributes();
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
@@ -111,6 +116,7 @@ class AlterShadowRuleExecutorTest {
         AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Arrays.asList(
                 new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singleton(segment)))));
+        sqlStatement.buildAttributes();
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
@@ -123,6 +129,7 @@ class AlterShadowRuleExecutorTest {
         AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Arrays.asList(
                 new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singleton(segment)))));
+        sqlStatement.buildAttributes();
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
@@ -137,6 +144,7 @@ class AlterShadowRuleExecutorTest {
         AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Arrays.asList(
                 new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment1))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singleton(segment2)))));
+        sqlStatement.buildAttributes();
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
@@ -150,6 +158,7 @@ class AlterShadowRuleExecutorTest {
         AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Arrays.asList(
                 new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment1))),
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singleton(segment2)))));
+        sqlStatement.buildAttributes();
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);

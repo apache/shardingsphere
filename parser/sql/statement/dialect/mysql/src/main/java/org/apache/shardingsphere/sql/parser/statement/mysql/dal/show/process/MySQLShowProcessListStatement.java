@@ -31,13 +31,15 @@ public final class MySQLShowProcessListStatement extends DALStatement {
     
     private final boolean full;
     
+    private SQLStatementAttributes attributes;
+    
     public MySQLShowProcessListStatement(final DatabaseType databaseType, final boolean full) {
         super(databaseType);
         this.full = full;
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

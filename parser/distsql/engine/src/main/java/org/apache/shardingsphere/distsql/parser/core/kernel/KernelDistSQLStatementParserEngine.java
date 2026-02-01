@@ -37,7 +37,9 @@ public final class KernelDistSQLStatementParserEngine {
      */
     public SQLStatement parse(final String sql) {
         ASTNode astNode = SQLParserFactory.newInstance(sql, KernelDistSQLLexer.class, KernelDistSQLParser.class).parse();
-        return getSQLStatement(sql, (ParseASTNode) astNode);
+        SQLStatement result = getSQLStatement(sql, (ParseASTNode) astNode);
+        result.buildAttributes();
+        return result;
     }
     
     private SQLStatement getSQLStatement(final String sql, final ParseASTNode parseASTNode) {

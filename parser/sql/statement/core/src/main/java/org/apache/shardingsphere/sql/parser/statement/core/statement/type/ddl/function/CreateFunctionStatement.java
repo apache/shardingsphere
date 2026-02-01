@@ -46,6 +46,8 @@ public class CreateFunctionStatement extends DDLStatement {
     
     private final List<ExpressionSegment> dynamicSqlStatementExpressions = new ArrayList<>();
     
+    private SQLStatementAttributes attributes;
+    
     public CreateFunctionStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
@@ -69,8 +71,8 @@ public class CreateFunctionStatement extends DDLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(
                 new TableSQLStatementAttribute(getRoutineBody().map(optional -> new TableExtractor().extractExistTableFromRoutineBody(optional)).orElseGet(Collections::emptyList)));
     }
 }

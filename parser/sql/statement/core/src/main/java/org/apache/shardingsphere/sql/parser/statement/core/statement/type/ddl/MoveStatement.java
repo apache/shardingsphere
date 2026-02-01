@@ -36,6 +36,8 @@ public final class MoveStatement extends DDLStatement {
     
     private final DirectionSegment direction;
     
+    private SQLStatementAttributes attributes;
+    
     public MoveStatement(final DatabaseType databaseType, final CursorNameSegment cursorName, final DirectionSegment direction) {
         super(databaseType);
         this.cursorName = cursorName;
@@ -52,7 +54,7 @@ public final class MoveStatement extends DDLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new CursorSQLStatementAttribute(cursorName));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new CursorSQLStatementAttribute(cursorName));
     }
 }

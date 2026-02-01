@@ -66,6 +66,8 @@ public final class CreateIndexStatement extends DDLStatement {
     
     private String comment;
     
+    private SQLStatementAttributes attributes;
+    
     public CreateIndexStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
@@ -98,8 +100,8 @@ public final class CreateIndexStatement extends DDLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(table), new CreateIndexIndexSQLStatementAttribute());
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table), new CreateIndexIndexSQLStatementAttribute());
     }
     
     private class CreateIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {

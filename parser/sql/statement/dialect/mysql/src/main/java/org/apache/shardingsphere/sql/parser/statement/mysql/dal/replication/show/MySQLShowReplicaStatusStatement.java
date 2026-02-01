@@ -31,13 +31,15 @@ public final class MySQLShowReplicaStatusStatement extends DALStatement {
     
     private final String channel;
     
+    private SQLStatementAttributes attributes;
+    
     public MySQLShowReplicaStatusStatement(final DatabaseType databaseType, final String channel) {
         super(databaseType);
         this.channel = channel;
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

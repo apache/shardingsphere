@@ -35,6 +35,8 @@ public final class MySQLShowEventsStatement extends DALStatement {
     
     private final ShowFilterSegment filter;
     
+    private SQLStatementAttributes attributes;
+    
     public MySQLShowEventsStatement(final DatabaseType databaseType, final FromDatabaseSegment fromDatabase, final ShowFilterSegment filter) {
         super(databaseType);
         this.fromDatabase = fromDatabase;
@@ -42,7 +44,7 @@ public final class MySQLShowEventsStatement extends DALStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }
