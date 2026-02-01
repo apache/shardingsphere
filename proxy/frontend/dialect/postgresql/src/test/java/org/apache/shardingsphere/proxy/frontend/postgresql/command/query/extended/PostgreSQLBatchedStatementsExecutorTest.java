@@ -128,7 +128,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
     }
     
     @Test
-    void assertExecuteBatchWhenExecuteBatchThrowsSQLException() throws SQLException, ReflectiveOperationException {
+    void assertExecuteBatchWhenExecuteBatchThrowsSQLException() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1/db");
         when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
@@ -160,6 +160,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
         inOrder.verify(preparedStatement).close();
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertCreateExecutorWithoutParameterSets() throws ReflectiveOperationException {
         ContextManager contextManager = mockContextManager(databaseType);
@@ -176,6 +177,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
         assertNull(anyExecutionContext);
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void assertPrepareForRestOfParametersWithoutParameterAware() throws ReflectiveOperationException {
         ContextManager contextManager = mockContextManager(databaseType);
@@ -231,7 +233,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
     }
     
     private ConnectionSession mockConnectionSession() {
-        ConnectionSession result = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
+        ConnectionSession result = mock(ConnectionSession.class);
         when(result.getCurrentDatabaseName()).thenReturn("db");
         when(result.getUsedDatabaseName()).thenReturn("db");
         when(result.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
