@@ -32,13 +32,15 @@ public final class MySQLShowErrorsStatement extends DALStatement {
     
     private final LimitSegment limit;
     
+    private SQLStatementAttributes attributes;
+    
     public MySQLShowErrorsStatement(final DatabaseType databaseType, final LimitSegment limit) {
         super(databaseType);
         this.limit = limit;
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

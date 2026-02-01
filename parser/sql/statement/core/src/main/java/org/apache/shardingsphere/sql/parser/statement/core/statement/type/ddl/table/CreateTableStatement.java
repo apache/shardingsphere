@@ -63,6 +63,8 @@ public final class CreateTableStatement extends DDLStatement {
     
     private final List<ColumnSegment> columns = new LinkedList<>();
     
+    private SQLStatementAttributes attributes;
+    
     public CreateTableStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
@@ -95,8 +97,8 @@ public final class CreateTableStatement extends DDLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(getTables()), new CreateTableConstraintSQLStatementAttribute(), new CreateTableIndexSQLStatementAttribute());
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(getTables()), new CreateTableConstraintSQLStatementAttribute(), new CreateTableIndexSQLStatementAttribute());
     }
     
     private Collection<SimpleTableSegment> getTables() {

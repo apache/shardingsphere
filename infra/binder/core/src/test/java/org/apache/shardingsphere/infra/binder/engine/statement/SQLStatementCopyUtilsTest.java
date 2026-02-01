@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,8 +45,8 @@ class SQLStatementCopyUtilsTest {
     
     @BeforeEach
     void setUp() {
-        originalStatement = new SQLStatement(databaseType);
-        targetStatement = new SQLStatement(databaseType);
+        originalStatement = new UpdateStatement(databaseType);
+        targetStatement = new UpdateStatement(databaseType);
     }
     
     @Test

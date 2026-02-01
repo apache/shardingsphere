@@ -32,13 +32,15 @@ public final class MySQLShowCollationStatement extends DALStatement {
     
     private final ShowFilterSegment filter;
     
+    private SQLStatementAttributes attributes;
+    
     public MySQLShowCollationStatement(final DatabaseType databaseType, final ShowFilterSegment filter) {
         super(databaseType);
         this.filter = filter;
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

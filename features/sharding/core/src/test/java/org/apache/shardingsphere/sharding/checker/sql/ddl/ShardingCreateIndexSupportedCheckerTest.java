@@ -59,6 +59,7 @@ class ShardingCreateIndexSupportedCheckerTest {
         CreateIndexStatement sqlStatement = new CreateIndexStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
+        sqlStatement.buildAttributes();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("t_order")).thenReturn(true);
         assertDoesNotThrow(() -> new ShardingCreateIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
@@ -69,6 +70,7 @@ class ShardingCreateIndexSupportedCheckerTest {
         CreateIndexStatement sqlStatement = new CreateIndexStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
+        sqlStatement.buildAttributes();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("t_order")).thenReturn(false);
         assertThrows(NoSuchTableException.class, () -> new ShardingCreateIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
@@ -79,6 +81,7 @@ class ShardingCreateIndexSupportedCheckerTest {
         CreateIndexStatement sqlStatement = new CreateIndexStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
+        sqlStatement.buildAttributes();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("t_order")).thenReturn(true);
         when(schema.containsIndex("t_order", "t_order_index")).thenReturn(true);
@@ -91,6 +94,7 @@ class ShardingCreateIndexSupportedCheckerTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("content")));
         sqlStatement.setAnonymousIndexStartIndex(10);
+        sqlStatement.buildAttributes();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("t_order")).thenReturn(true);
         assertDoesNotThrow(() -> new ShardingCreateIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
@@ -102,6 +106,7 @@ class ShardingCreateIndexSupportedCheckerTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("content")));
         sqlStatement.setAnonymousIndexStartIndex(10);
+        sqlStatement.buildAttributes();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("t_order")).thenReturn(false);
         assertThrows(NoSuchTableException.class, () -> new ShardingCreateIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
@@ -113,6 +118,7 @@ class ShardingCreateIndexSupportedCheckerTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("content")));
         sqlStatement.setAnonymousIndexStartIndex(10);
+        sqlStatement.buildAttributes();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("t_order")).thenReturn(true);
         when(schema.containsIndex("t_order", "content_idx")).thenReturn(true);

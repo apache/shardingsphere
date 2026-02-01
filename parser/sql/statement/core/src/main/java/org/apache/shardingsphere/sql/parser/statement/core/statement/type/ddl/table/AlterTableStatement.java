@@ -104,6 +104,8 @@ public final class AlterTableStatement extends DDLStatement {
     
     private final Collection<RenamePartitionDefinitionSegment> renamePartitionDefinitions = new LinkedList<>();
     
+    private SQLStatementAttributes attributes;
+    
     public AlterTableStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
@@ -163,8 +165,8 @@ public final class AlterTableStatement extends DDLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(getTables()), new AlterTableConstraintSQLStatementAttribute(), new AlterTableIndexSQLStatementAttribute());
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(getTables()), new AlterTableConstraintSQLStatementAttribute(), new AlterTableIndexSQLStatementAttribute());
     }
     
     private Collection<SimpleTableSegment> getTables() {

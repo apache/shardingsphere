@@ -31,13 +31,15 @@ public final class MySQLShowCreateDatabaseStatement extends DALStatement {
     
     private final String databaseName;
     
+    private SQLStatementAttributes attributes;
+    
     public MySQLShowCreateDatabaseStatement(final DatabaseType databaseType, final String databaseName) {
         super(databaseType);
         this.databaseName = databaseName;
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

@@ -58,6 +58,7 @@ class ShardingAlterTableSupportedCheckerTest {
         AlterTableStatement sqlStatement = new AlterTableStatement(databaseType);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
+        sqlStatement.buildAttributes();
         CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         when(rule.containsShardingTable(Arrays.asList("t_order", "t_order_new"))).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingAlterTableSupportedChecker().check(rule, database, mock(), sqlStatementContext));

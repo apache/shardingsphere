@@ -66,7 +66,9 @@ class ParseDistSQLExecutorTest {
     void assertGetRowDataForMySQL() throws SQLException {
         String sql = "SELECT * FROM t_order";
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(new ParseStatement(sql), mock(), connectionSession, contextManager);
+        ParseStatement parseStatement = new ParseStatement(sql);
+        parseStatement.buildAttributes();
+        DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(parseStatement, mock(), connectionSession, contextManager);
         handler.execute();
         handler.next();
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL")).parse(sql, false);
@@ -78,7 +80,9 @@ class ParseDistSQLExecutorTest {
     void assertGetRowDataForPostgreSQL() throws SQLException {
         String sql = "SELECT * FROM t_order";
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(new ParseStatement(sql), mock(), connectionSession, contextManager);
+        ParseStatement parseStatement = new ParseStatement(sql);
+        parseStatement.buildAttributes();
+        DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(parseStatement, mock(), connectionSession, contextManager);
         handler.execute();
         handler.next();
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")).parse(sql, false);
@@ -89,7 +93,9 @@ class ParseDistSQLExecutorTest {
     void assertExecute() {
         String sql = "wrong sql";
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(new ParseStatement(sql), mock(), connectionSession, contextManager);
+        ParseStatement parseStatement = new ParseStatement(sql);
+        parseStatement.buildAttributes();
+        DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(parseStatement, mock(), connectionSession, contextManager);
         assertThrows(DialectSQLParsingException.class, handler::execute);
     }
 }

@@ -46,13 +46,15 @@ public final class BuildIndexStatement extends DDLStatement {
     
     private final Collection<PartitionSegment> partitions = new LinkedList<>();
     
+    private SQLStatementAttributes attributes;
+    
     public BuildIndexStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(table), new BuildIndexIndexSQLStatementAttribute());
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table), new BuildIndexIndexSQLStatementAttribute());
     }
     
     private class BuildIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {

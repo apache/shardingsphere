@@ -53,6 +53,8 @@ public final class DeleteStatement extends DMLStatement {
     
     private OutputSegment output;
     
+    private SQLStatementAttributes attributes;
+    
     public DeleteStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
@@ -112,7 +114,7 @@ public final class DeleteStatement extends DMLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new WithSQLStatementAttribute(with));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
 }

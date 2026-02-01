@@ -34,13 +34,15 @@ public final class MySQLResetStatement extends DALStatement {
     
     private final List<ResetOptionSegment> options;
     
+    private SQLStatementAttributes attributes;
+    
     public MySQLResetStatement(final DatabaseType databaseType, final List<ResetOptionSegment> options) {
         super(databaseType);
         this.options = options;
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

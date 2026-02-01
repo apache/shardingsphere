@@ -62,7 +62,9 @@ class KernelProcessorTest {
     
     @Test
     void assertGenerateExecutionContext() {
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new SelectStatement(databaseType));
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.buildAttributes();
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(selectStatement);
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);

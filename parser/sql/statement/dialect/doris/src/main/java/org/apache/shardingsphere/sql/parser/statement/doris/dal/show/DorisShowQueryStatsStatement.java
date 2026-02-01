@@ -45,6 +45,8 @@ public final class DorisShowQueryStatsStatement extends DALStatement {
     
     private final boolean verbose;
     
+    private SQLStatementAttributes attributes;
+    
     public DorisShowQueryStatsStatement(final DatabaseType databaseType, final DatabaseSegment database, final FromTableSegment fromTable, final boolean all, final boolean verbose) {
         super(databaseType);
         this.database = database;
@@ -81,10 +83,10 @@ public final class DorisShowQueryStatsStatement extends DALStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
+    public void buildAttributes() {
         String databaseName = null == database ? null : database.getIdentifier().getValue();
         SimpleTableSegment table = null == fromTable ? null : fromTable.getTable();
-        return new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new TableSQLStatementAttribute(table),
+        attributes = new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new TableSQLStatementAttribute(table),
                 new TablelessDataSourceBroadcastRouteSQLStatementAttribute(), new AllowNotUseDatabaseSQLStatementAttribute(true, databaseName));
     }
 }

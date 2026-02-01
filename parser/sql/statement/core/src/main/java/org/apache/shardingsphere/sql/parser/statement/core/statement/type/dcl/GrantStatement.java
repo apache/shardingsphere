@@ -34,12 +34,14 @@ public class GrantStatement extends DCLStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();
     
+    private SQLStatementAttributes attributes;
+    
     public GrantStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }
 }

@@ -111,6 +111,7 @@ class EncryptCreateTableTokenGeneratorTest {
         CreateTableStatement result = new CreateTableStatement(databaseType);
         result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))));
         result.getColumnDefinitions().add(new ColumnDefinitionSegment(25, 78, new ColumnSegment(25, 42, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false, ""));
+        result.buildAttributes();
         return result;
     }
 }

@@ -213,6 +213,7 @@ class SingleSQLRouterTest {
         TableNameSegment tableNameSegment = new TableNameSegment(1, 2, new IdentifierValue("t_order"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         createTableStatement.setTable(new SimpleTableSegment(tableNameSegment));
+        createTableStatement.buildAttributes();
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);

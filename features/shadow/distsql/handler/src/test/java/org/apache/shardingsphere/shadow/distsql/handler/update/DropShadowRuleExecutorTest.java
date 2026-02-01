@@ -95,11 +95,15 @@ class DropShadowRuleExecutorTest {
     }
     
     private DropShadowRuleStatement createSQLStatement(final String... ruleName) {
-        return new DropShadowRuleStatement(false, Arrays.asList(ruleName));
+        DropShadowRuleStatement result = new DropShadowRuleStatement(false, Arrays.asList(ruleName));
+        result.buildAttributes();
+        return result;
     }
     
     private DropShadowRuleStatement createSQLStatement(final boolean ifExists, final String... ruleName) {
-        return new DropShadowRuleStatement(ifExists, Arrays.asList(ruleName));
+        DropShadowRuleStatement result = new DropShadowRuleStatement(ifExists, Arrays.asList(ruleName));
+        result.buildAttributes();
+        return result;
     }
     
     private ShadowRuleConfiguration createCurrentRuleConfiguration() {

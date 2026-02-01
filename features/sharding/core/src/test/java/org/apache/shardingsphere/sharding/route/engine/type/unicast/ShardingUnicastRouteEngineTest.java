@@ -93,6 +93,7 @@ class ShardingUnicastRouteEngineTest {
     @Test
     void assertRoutingForBroadcastTableWithCursorStatement() {
         CursorStatement sqlStatement = new CursorStatement(databaseType, null, null);
+        sqlStatement.buildAttributes();
         RouteContext actual = new ShardingUnicastRouteEngine(sqlStatement, Collections.singleton("t_config"), new ConnectionContext(Collections::emptySet)).route(rule);
         assertThat(actual.getRouteUnits().size(), is(1));
         assertThat(actual.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is("ds_0"));

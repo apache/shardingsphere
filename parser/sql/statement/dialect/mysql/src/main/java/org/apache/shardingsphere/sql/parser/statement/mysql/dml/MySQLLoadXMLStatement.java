@@ -33,13 +33,15 @@ public final class MySQLLoadXMLStatement extends DMLStatement {
     
     private final SimpleTableSegment table;
     
+    private SQLStatementAttributes attributes;
+    
     public MySQLLoadXMLStatement(final DatabaseType databaseType, final SimpleTableSegment table) {
         super(databaseType);
         this.table = table;
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(table), new UnsupportedDistributeSQLStatementAttribute());
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table), new UnsupportedDistributeSQLStatementAttribute());
     }
 }

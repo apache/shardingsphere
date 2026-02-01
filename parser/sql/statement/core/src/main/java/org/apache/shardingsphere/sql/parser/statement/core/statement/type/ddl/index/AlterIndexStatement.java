@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index;
 
+import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -43,6 +44,9 @@ public final class AlterIndexStatement extends DDLStatement {
     private IndexSegment renameIndex;
     
     private SimpleTableSegment simpleTable;
+    
+    @Getter
+    private SQLStatementAttributes attributes;
     
     public AlterIndexStatement(final DatabaseType databaseType) {
         super(databaseType);
@@ -76,8 +80,8 @@ public final class AlterIndexStatement extends DDLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(simpleTable), new AlterIndexIndexSQLStatementAttribute());
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(simpleTable), new AlterIndexIndexSQLStatementAttribute());
     }
     
     private class AlterIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {

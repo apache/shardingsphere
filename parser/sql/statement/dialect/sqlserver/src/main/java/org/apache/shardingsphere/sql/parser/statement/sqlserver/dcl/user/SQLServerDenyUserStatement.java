@@ -40,12 +40,14 @@ public final class SQLServerDenyUserStatement extends DCLStatement {
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();
     
+    private SQLStatementAttributes attributes;
+    
     public SQLServerDenyUserStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(table));
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table));
     }
 }

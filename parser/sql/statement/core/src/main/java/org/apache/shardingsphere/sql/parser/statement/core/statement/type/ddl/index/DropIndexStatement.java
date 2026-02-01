@@ -52,6 +52,8 @@ public final class DropIndexStatement extends DDLStatement {
     
     private LockTableSegment lockTable;
     
+    private SQLStatementAttributes attributes;
+    
     public DropIndexStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
@@ -84,8 +86,8 @@ public final class DropIndexStatement extends DDLStatement {
     }
     
     @Override
-    public SQLStatementAttributes getAttributes() {
-        return new SQLStatementAttributes(new TableSQLStatementAttribute(simpleTable), new DropIndexIndexSQLStatementAttribute());
+    public void buildAttributes() {
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(simpleTable), new DropIndexIndexSQLStatementAttribute());
     }
     
     private class DropIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {
