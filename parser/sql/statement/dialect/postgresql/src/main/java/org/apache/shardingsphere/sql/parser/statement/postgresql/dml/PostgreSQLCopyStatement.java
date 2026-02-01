@@ -37,13 +37,13 @@ import java.util.Optional;
 @Getter
 public final class PostgreSQLCopyStatement extends DMLStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final SimpleTableSegment table;
     
     private final Collection<ColumnSegment> columns;
     
     private final PrepareStatementQuerySegment prepareStatementQuery;
+    
+    private SQLStatementAttributes attributes;
     
     public PostgreSQLCopyStatement(final DatabaseType databaseType,
                                    final SimpleTableSegment table, final Collection<ColumnSegment> columns, final PrepareStatementQuerySegment prepareStatementQuery) {

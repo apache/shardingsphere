@@ -66,7 +66,7 @@ class ShardingDropIndexSupportedCheckerTest {
         when(table.containsIndex("t_order_index_new")).thenReturn(true);
         assertDoesNotThrow(() -> new ShardingDropIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
-
+    
     @Test
     void assertCheckWhenIndexNotExistForPostgreSQL() {
         DropIndexStatement sqlStatement = new DropIndexStatement(databaseType);

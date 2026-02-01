@@ -29,9 +29,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowEngineStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final String engineName;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLShowEngineStatement(final DatabaseType databaseType, final String engineName) {
         super(databaseType);

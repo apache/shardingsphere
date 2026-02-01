@@ -87,7 +87,7 @@ class ShardingDropIndexRouteContextCheckerTest {
         when(queryContext.getSqlStatementContext()).thenReturn(new CommonSQLStatementContext(sqlStatement));
         assertDoesNotThrow(() -> new ShardingDropIndexRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
-
+    
     @Test
     void assertCheckWithDifferentRouteResultShardingTableIndexForPostgreSQL() {
         DropIndexStatement sqlStatement = new DropIndexStatement(databaseType);

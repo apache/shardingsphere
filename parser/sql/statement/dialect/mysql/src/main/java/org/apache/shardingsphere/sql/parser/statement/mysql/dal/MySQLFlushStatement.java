@@ -32,11 +32,11 @@ import java.util.Collection;
 @Getter
 public final class MySQLFlushStatement extends FlushStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final Collection<SimpleTableSegment> tables;
     
     private final boolean flushTable;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLFlushStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables, final boolean flushTable) {
         super(databaseType);

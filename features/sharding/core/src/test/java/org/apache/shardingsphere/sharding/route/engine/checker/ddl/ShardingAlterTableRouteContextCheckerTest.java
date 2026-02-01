@@ -80,7 +80,7 @@ class ShardingAlterTableRouteContextCheckerTest {
         when(queryContext.getSqlStatementContext()).thenReturn(new CommonSQLStatementContext(sqlStatement));
         assertDoesNotThrow(() -> new ShardingAlterTableRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
-
+    
     @Test
     void assertCheckWithDifferentRouteResultShardingTableForPostgreSQL() {
         AlterTableStatement sqlStatement = new AlterTableStatement(databaseType);

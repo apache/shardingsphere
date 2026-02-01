@@ -36,11 +36,11 @@ import java.util.LinkedList;
 @Setter
 public final class SQLServerDenyUserStatement extends DCLStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private SimpleTableSegment table;
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();
+    
+    private SQLStatementAttributes attributes;
     
     public SQLServerDenyUserStatement(final DatabaseType databaseType) {
         super(databaseType);

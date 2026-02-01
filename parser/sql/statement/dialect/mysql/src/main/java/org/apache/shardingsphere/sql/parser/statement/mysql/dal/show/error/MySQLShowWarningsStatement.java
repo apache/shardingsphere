@@ -30,9 +30,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowWarningsStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final LimitSegment limit;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLShowWarningsStatement(final DatabaseType databaseType, final LimitSegment limit) {
         super(databaseType);

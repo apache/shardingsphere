@@ -31,11 +31,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowTriggersStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final FromDatabaseSegment fromDatabase;
     
     private final ShowFilterSegment filter;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLShowTriggersStatement(final DatabaseType databaseType, final FromDatabaseSegment fromDatabase, final ShowFilterSegment filter) {
         super(databaseType);

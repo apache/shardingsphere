@@ -36,11 +36,11 @@ import java.util.Optional;
 @Getter
 public final class MySQLShowTableStatusStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final FromDatabaseSegment fromDatabase;
     
     private final ShowFilterSegment filter;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLShowTableStatusStatement(final DatabaseType databaseType, final FromDatabaseSegment fromDatabase, final ShowFilterSegment filter) {
         super(databaseType);

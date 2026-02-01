@@ -67,7 +67,7 @@ class ShardingAlterIndexSupportedCheckerTest {
         when(table.containsIndex("t_order_index_new")).thenReturn(false);
         assertDoesNotThrow(() -> new ShardingAlterIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
-
+    
     @Test
     void assertCheckWhenIndexNotExistRenameIndexNotExistForPostgreSQL() {
         AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType);
@@ -78,7 +78,7 @@ class ShardingAlterIndexSupportedCheckerTest {
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         assertThrows(IndexNotFoundException.class, () -> new ShardingAlterIndexSupportedChecker().check(rule, database, mock(), new CommonSQLStatementContext(sqlStatement)));
     }
-
+    
     @Test
     void assertCheckAlterIndexWhenIndexExistRenameIndexExistForPostgreSQL() {
         AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType);

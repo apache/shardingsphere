@@ -34,11 +34,11 @@ import java.util.Optional;
 @Getter
 public final class MySQLDescribeStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final SimpleTableSegment table;
     
     private final ColumnSegment columnWildcard;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLDescribeStatement(final DatabaseType databaseType, final SimpleTableSegment table, final ColumnSegment columnWildcard) {
         super(databaseType);

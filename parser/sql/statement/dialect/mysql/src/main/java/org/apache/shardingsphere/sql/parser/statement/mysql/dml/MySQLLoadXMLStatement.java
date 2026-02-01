@@ -31,9 +31,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DM
 @Getter
 public final class MySQLLoadXMLStatement extends DMLStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final SimpleTableSegment table;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLLoadXMLStatement(final DatabaseType databaseType, final SimpleTableSegment table) {
         super(databaseType);

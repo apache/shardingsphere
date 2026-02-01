@@ -33,9 +33,9 @@ import java.util.Collection;
 @Getter
 public final class MySQLOptimizeTableStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final Collection<SimpleTableSegment> tables;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLOptimizeTableStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables) {
         super(databaseType);

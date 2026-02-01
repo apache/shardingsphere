@@ -29,9 +29,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowReplicaStatusStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final String channel;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLShowReplicaStatusStatement(final DatabaseType databaseType, final String channel) {
         super(databaseType);

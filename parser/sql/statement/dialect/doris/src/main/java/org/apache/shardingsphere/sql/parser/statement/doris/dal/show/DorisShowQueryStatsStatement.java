@@ -37,8 +37,6 @@ import java.util.Optional;
 @Getter
 public final class DorisShowQueryStatsStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final DatabaseSegment database;
     
     private final FromTableSegment fromTable;
@@ -46,6 +44,8 @@ public final class DorisShowQueryStatsStatement extends DALStatement {
     private final boolean all;
     
     private final boolean verbose;
+    
+    private SQLStatementAttributes attributes;
     
     public DorisShowQueryStatsStatement(final DatabaseType databaseType, final DatabaseSegment database, final FromTableSegment fromTable, final boolean all, final boolean verbose) {
         super(databaseType);

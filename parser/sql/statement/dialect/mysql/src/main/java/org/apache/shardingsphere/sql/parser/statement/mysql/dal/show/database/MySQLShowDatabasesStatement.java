@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database;
 
+import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -31,9 +32,10 @@ import java.util.Optional;
  */
 public final class MySQLShowDatabasesStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final ShowFilterSegment filter;
+    
+    @Getter
+    private SQLStatementAttributes attributes;
     
     public MySQLShowDatabasesStatement(final DatabaseType databaseType, final ShowFilterSegment filter) {
         super(databaseType);

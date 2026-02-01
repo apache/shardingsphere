@@ -234,6 +234,7 @@ class ProxyBackendHandlerFactoryTest {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "PREVIEW INSERT INTO account VALUES(1, 1, 1)";
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
+        sqlStatement.buildAttributes();
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
         assertThat(actual, isA(DistSQLQueryProxyBackendHandler.class));
     }

@@ -34,11 +34,11 @@ import java.util.Optional;
 @Getter
 public final class MySQLShowIndexStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final SimpleTableSegment table;
     
     private final FromDatabaseSegment fromDatabase;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLShowIndexStatement(final DatabaseType databaseType, final SimpleTableSegment table, final FromDatabaseSegment fromDatabase) {
         super(databaseType);

@@ -29,9 +29,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowCreateDatabaseStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final String databaseName;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLShowCreateDatabaseStatement(final DatabaseType databaseType, final String databaseName) {
         super(databaseType);

@@ -29,11 +29,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLKillStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final String processId;
     
     private final String scope;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLKillStatement(final DatabaseType databaseType, final String processId, final String scope) {
         super(databaseType);

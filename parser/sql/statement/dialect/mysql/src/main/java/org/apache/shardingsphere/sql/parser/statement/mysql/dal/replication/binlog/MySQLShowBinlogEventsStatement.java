@@ -30,11 +30,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowBinlogEventsStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final String logName;
     
     private final LimitSegment limit;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLShowBinlogEventsStatement(final DatabaseType databaseType, final String logName, final LimitSegment limit) {
         super(databaseType);

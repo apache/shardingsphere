@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.hive.dal.show;
 
+import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TablelessDataSourceBroadcastRouteSQLStatementAttribute;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
  */
 public final class HiveShowTblpropertiesStatement extends DALStatement {
     
+    @Getter
     private SQLStatementAttributes attributes;
     
     public HiveShowTblpropertiesStatement(final DatabaseType databaseType) {

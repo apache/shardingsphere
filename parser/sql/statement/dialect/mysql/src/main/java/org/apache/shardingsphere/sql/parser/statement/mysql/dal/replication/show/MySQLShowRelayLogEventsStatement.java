@@ -30,13 +30,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowRelayLogEventsStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final String logName;
     
     private final LimitSegment limit;
     
     private final String channel;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLShowRelayLogEventsStatement(final DatabaseType databaseType, final String logName, final LimitSegment limit, final String channel) {
         super(databaseType);

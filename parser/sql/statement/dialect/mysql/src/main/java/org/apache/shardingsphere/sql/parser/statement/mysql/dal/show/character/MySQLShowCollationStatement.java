@@ -30,9 +30,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowCollationStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final ShowFilterSegment filter;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLShowCollationStatement(final DatabaseType databaseType, final ShowFilterSegment filter) {
         super(databaseType);

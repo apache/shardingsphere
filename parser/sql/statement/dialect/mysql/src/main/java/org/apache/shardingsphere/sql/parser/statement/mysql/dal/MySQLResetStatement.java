@@ -32,9 +32,9 @@ import java.util.List;
 @Getter
 public final class MySQLResetStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final List<ResetOptionSegment> options;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLResetStatement(final DatabaseType databaseType, final List<ResetOptionSegment> options) {
         super(databaseType);

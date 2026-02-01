@@ -76,8 +76,9 @@ class ShowShardingTableNodesExecutorTest {
     }
     
     private void assertOrder(final ShardingRule rule) throws SQLException {
-        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(new ShowShardingTableNodesStatement("t_order", null),
-                "foo_db", mockContextManager(rule), mock(DistSQLConnectionContext.class));
+        ShowShardingTableNodesStatement sqlStatement = new ShowShardingTableNodesStatement("t_order", null);
+        sqlStatement.buildAttributes();
+        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(sqlStatement, "foo_db", mockContextManager(rule), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(1));
@@ -95,8 +96,9 @@ class ShowShardingTableNodesExecutorTest {
     }
     
     private void assertOrderItem(final ShardingRule rule) throws SQLException {
-        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(new ShowShardingTableNodesStatement("t_order_item", null),
-                "foo_db", mockContextManager(rule), mock(DistSQLConnectionContext.class));
+        ShowShardingTableNodesStatement sqlStatement = new ShowShardingTableNodesStatement("t_order_item", null);
+        sqlStatement.buildAttributes();
+        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(sqlStatement, "foo_db", mockContextManager(rule), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = engine.getRows();
         assertThat(actual.size(), is(1));
@@ -106,8 +108,9 @@ class ShowShardingTableNodesExecutorTest {
     }
     
     private void assertAll(final ShardingRule rule) throws SQLException {
-        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(new ShowShardingTableNodesStatement(null, null),
-                "foo_db", mockContextManager(rule), mock(DistSQLConnectionContext.class));
+        ShowShardingTableNodesStatement sqlStatement = new ShowShardingTableNodesStatement(null, null);
+        sqlStatement.buildAttributes();
+        DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(sqlStatement, "foo_db", mockContextManager(rule), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
         List<LocalDataQueryResultRow> actual = new ArrayList<>(engine.getRows());
         assertThat(actual.size(), is(2));

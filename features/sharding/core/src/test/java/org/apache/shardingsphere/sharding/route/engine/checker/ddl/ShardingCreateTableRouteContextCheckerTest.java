@@ -81,7 +81,7 @@ class ShardingCreateTableRouteContextCheckerTest {
         when(queryContext.getSqlStatementContext()).thenReturn(new CommonSQLStatementContext(sqlStatement));
         assertDoesNotThrow(() -> new ShardingCreateTableRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
-
+    
     @Test
     void assertCheckWithDifferentRouteResultShardingTableForPostgreSQL() {
         CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
@@ -97,7 +97,7 @@ class ShardingCreateTableRouteContextCheckerTest {
         assertThrows(ShardingDDLRouteException.class,
                 () -> new ShardingCreateTableRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
-
+    
     @Test
     void assertCheckWithSameRouteResultBroadcastTableForPostgreSQL() {
         CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);

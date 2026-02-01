@@ -29,9 +29,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowCreateEventStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final String eventName;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLShowCreateEventStatement(final DatabaseType databaseType, final String eventName) {
         super(databaseType);

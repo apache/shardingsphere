@@ -29,9 +29,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowProcessListStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final boolean full;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLShowProcessListStatement(final DatabaseType databaseType, final boolean full) {
         super(databaseType);

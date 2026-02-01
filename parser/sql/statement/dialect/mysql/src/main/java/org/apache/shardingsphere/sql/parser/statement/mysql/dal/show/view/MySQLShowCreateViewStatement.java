@@ -31,9 +31,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 @Getter
 public final class MySQLShowCreateViewStatement extends DALStatement {
     
-    private SQLStatementAttributes attributes;
-    
     private final SimpleTableSegment viewName;
+    
+    private SQLStatementAttributes attributes;
     
     public MySQLShowCreateViewStatement(final DatabaseType databaseType, final SimpleTableSegment viewName) {
         super(databaseType);
