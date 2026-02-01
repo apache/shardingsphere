@@ -106,7 +106,8 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         if (sqlStatement instanceof SetStatement) {
             return createParameterStatusResponse((SetStatement) sqlStatement);
         }
-        return Collections.singletonList(sqlStatement instanceof EmptyStatement ? new PostgreSQLEmptyQueryResponsePacket()
+        return Collections.singletonList(sqlStatement instanceof EmptyStatement
+                ? new PostgreSQLEmptyQueryResponsePacket()
                 : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(PostgreSQLCommand::getTag).orElse(""), updateResponseHeader.getUpdateCount()));
     }
     
