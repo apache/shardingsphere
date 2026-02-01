@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.admin.PostgreSQLUnsupportedCommandPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedCommandPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.close.PostgreSQLComClosePacket;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.Pos
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLUnsupportedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedBatchedStatementsCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind.PostgreSQLComBindExecutor;
@@ -166,6 +168,12 @@ class PostgreSQLCommandExecutorFactoryTest {
         assertThat(actualPacketsIterator.next(), isA(PostgreSQLComFlushExecutor.class));
         assertThat(actualPacketsIterator.next(), isA(PostgreSQLComSyncExecutor.class));
         assertFalse(actualPacketsIterator.hasNext());
+    }
+
+    @Test
+    void assertUnsupportedCommandPacket() throws SQLException {
+        PostgreSQLCommandPacket packet = new PostgreSQLUnsupportedCommandPacket(PostgreSQLCommandPacketType.PASSWORD);
+        assertThat(PostgreSQLCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.PASSWORD, packet, connectionSession, portalContext), isA(PostgreSQLUnsupportedCommandExecutor.class));
     }
     
     @SuppressWarnings("unchecked")
