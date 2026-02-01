@@ -40,10 +40,9 @@ import org.apache.shardingsphere.database.exception.postgresql.exception.authori
 import org.apache.shardingsphere.database.exception.postgresql.exception.authority.UnknownUsernameException;
 import org.apache.shardingsphere.database.exception.postgresql.exception.protocol.ProtocolViolationException;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
-import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.PostgreSQLSSLUnwillingPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.PostgreSQLSSLWillingPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.authentication.PostgreSQLPasswordAuthenticationPacket;
@@ -102,7 +101,7 @@ class PostgreSQLAuthenticationEngineTest {
     
     private static final String DATABASE_NAME = "sharding_db";
     
-    private PostgreSQLAuthenticationEngine authenticationEngine;
+    private final PostgreSQLAuthenticationEngine authenticationEngine = new PostgreSQLAuthenticationEngine();
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext channelHandlerContext;
@@ -110,7 +109,6 @@ class PostgreSQLAuthenticationEngineTest {
     @SuppressWarnings("unchecked")
     @BeforeEach
     void setup() {
-        authenticationEngine = new PostgreSQLAuthenticationEngine();
         when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
     }
     
@@ -126,9 +124,8 @@ class PostgreSQLAuthenticationEngineTest {
         ByteBuf byteBuf = createByteBuf(8, 8);
         byteBuf.writeInt(8);
         byteBuf.writeInt(80877103);
-        PacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         ChannelHandlerContext context = mock(ChannelHandlerContext.class);
-        AuthenticationResult actual = authenticationEngine.authenticate(context, payload);
+        AuthenticationResult actual = authenticationEngine.authenticate(context, new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8));
         verify(context).writeAndFlush(any(PostgreSQLSSLUnwillingPacket.class));
         assertFalse(actual.isFinished());
     }
@@ -138,10 +135,9 @@ class PostgreSQLAuthenticationEngineTest {
         ByteBuf byteBuf = createByteBuf(8, 8);
         byteBuf.writeInt(8);
         byteBuf.writeInt(80877103);
-        PacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         ChannelHandlerContext context = mock(ChannelHandlerContext.class, RETURNS_DEEP_STUBS);
         when(ProxySSLContext.getInstance().isSSLEnabled()).thenReturn(true);
-        AuthenticationResult actual = authenticationEngine.authenticate(context, payload);
+        AuthenticationResult actual = authenticationEngine.authenticate(context, new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8));
         verify(context).writeAndFlush(any(PostgreSQLSSLWillingPacket.class));
         verify(context.pipeline()).addFirst(eq(SslHandler.class.getSimpleName()), any(SslHandler.class));
         assertFalse(actual.isFinished());
@@ -152,13 +148,12 @@ class PostgreSQLAuthenticationEngineTest {
         ByteBuf byteBuf = createByteBuf(8, 8);
         byteBuf.writeInt(8);
         byteBuf.writeInt(80877104);
-        PacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         ProxyContext proxyContext = mock(ProxyContext.class);
         ContextManager contextManager = mock(ContextManager.class);
         when(contextManager.getMetaDataContexts()).thenReturn(createMetaDataContexts(mock(AuthorityRule.class), false, null));
         when(ProxyContext.getInstance()).thenReturn(proxyContext);
         when(proxyContext.getContextManager()).thenReturn(contextManager);
-        assertThrows(EmptyUsernameException.class, () -> authenticationEngine.authenticate(channelHandlerContext, payload));
+        assertThrows(EmptyUsernameException.class, () -> authenticationEngine.authenticate(channelHandlerContext, new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8)));
     }
     
     @Test
