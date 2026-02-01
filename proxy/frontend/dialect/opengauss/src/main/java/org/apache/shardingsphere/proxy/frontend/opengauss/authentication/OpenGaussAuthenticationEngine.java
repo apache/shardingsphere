@@ -144,10 +144,10 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
     }
     
     private boolean login(final Authenticator authenticator, final ShardingSphereUser user, final String digest) {
-        if (PostgreSQLAuthenticationMethod.MD5.getMethodName().equals(authenticator.getAuthenticationMethodName())) {
-            return authenticator.authenticate(user, new Object[]{digest, md5Salt});
-        }
-        return authenticator.authenticate(user, new Object[]{digest, authHexData.getSalt(), authHexData.getNonce(), serverIteration});
+        Object[] authInfo = PostgreSQLAuthenticationMethod.MD5.getMethodName().equals(authenticator.getAuthenticationMethodName())
+                ? new Object[]{digest, md5Salt}
+                : new Object[]{digest, authHexData.getSalt(), authHexData.getNonce(), serverIteration};
+        return authenticator.authenticate(user, authInfo);
     }
     
     private AuthenticationResult processStartupMessage(final ChannelHandlerContext context, final PostgreSQLPacketPayload payload, final AuthorityRule rule) {
