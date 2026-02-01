@@ -176,8 +176,7 @@ class PostgreSQLAuthenticationEngineTest {
         MetaDataContexts metaDataContexts = createMetaDataContexts(authorityRule, false, null);
         ContextManager contextManager = mockContextManager(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        PostgreSQLPacketPayload payload = createStartupPayload(USERNAME, DATABASE_NAME);
-        AuthenticationResult actual = authenticationEngine.authenticate(channelHandlerContext, payload);
+        AuthenticationResult actual = authenticationEngine.authenticate(channelHandlerContext, createStartupPayload(USERNAME, DATABASE_NAME));
         ArgumentCaptor<Object> argumentCaptor = ArgumentCaptor.forClass(Object.class);
         verify(channelHandlerContext).writeAndFlush(argumentCaptor.capture());
         assertThat(argumentCaptor.getValue().getClass(), is((Object) PostgreSQLPasswordAuthenticationPacket.class));
@@ -202,12 +201,11 @@ class PostgreSQLAuthenticationEngineTest {
     
     @Test
     void assertLoginFailed() {
-        PostgreSQLPacketPayload payload = createStartupPayload(USERNAME, DATABASE_NAME);
         AuthorityRule authorityRule = createAuthorityRule(new UserConfiguration(USERNAME, PASSWORD, "", null, false), Collections.emptyMap(), null);
         MetaDataContexts metaDataContexts = createMetaDataContexts(authorityRule, true, DATABASE_NAME);
         ContextManager contextManager = mockContextManager(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        authenticationEngine.authenticate(channelHandlerContext, payload);
+        authenticationEngine.authenticate(channelHandlerContext, createStartupPayload(USERNAME, DATABASE_NAME));
         byte[] md5Salt = getMd5Salt(authenticationEngine);
         PostgreSQLPacketPayload passwordPayload = createPasswordMessage(createMd5Digest(USERNAME, "wrong" + PASSWORD, md5Salt));
         assertThrows(InvalidPasswordException.class, () -> authenticationEngine.authenticate(channelHandlerContext, passwordPayload));
@@ -242,7 +240,6 @@ class PostgreSQLAuthenticationEngineTest {
     
     @Test
     void assertLoginWithoutPrivilege() {
-        PostgreSQLPacketPayload payload = createStartupPayload(USERNAME, DATABASE_NAME);
         AuthorityRule authorityRule = mock(AuthorityRule.class);
         ShardingSphereUser user = new ShardingSphereUser(USERNAME, PASSWORD, "");
         ShardingSpherePrivileges privileges = mock(ShardingSpherePrivileges.class);
@@ -253,7 +250,7 @@ class PostgreSQLAuthenticationEngineTest {
         MetaDataContexts metaDataContexts = createMetaDataContexts(authorityRule, true, DATABASE_NAME);
         ContextManager contextManager = mockContextManager(metaDataContexts);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        authenticationEngine.authenticate(channelHandlerContext, payload);
+        authenticationEngine.authenticate(channelHandlerContext, createStartupPayload(USERNAME, DATABASE_NAME));
         byte[] md5Salt = getMd5Salt(authenticationEngine);
         PostgreSQLPacketPayload passwordPayload = createPasswordMessage(createMd5Digest(USERNAME, PASSWORD, md5Salt));
         assertThrows(PrivilegeNotGrantedException.class, () -> authenticationEngine.authenticate(channelHandlerContext, passwordPayload));
