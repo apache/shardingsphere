@@ -176,7 +176,6 @@ class OpenGaussCommandExecutorFactoryTest {
         return Stream.of(
                 Arguments.of("batch bind command", OpenGaussCommandPacketType.BATCH_BIND_COMMAND, mock(OpenGaussComBatchBindPacket.class), OpenGaussComBatchBindExecutor.class),
                 Arguments.of("simple query command", PostgreSQLCommandPacketType.SIMPLE_QUERY, queryPacket, OpenGaussComQueryExecutor.class),
-                Arguments.of("unsupported password command", PostgreSQLCommandPacketType.PASSWORD, mock(PostgreSQLCommandPacket.class), PostgreSQLUnsupportedCommandExecutor.class)
-        );
+                Arguments.of("unsupported password command", PostgreSQLCommandPacketType.PASSWORD, mock(PostgreSQLCommandPacket.class), PostgreSQLUnsupportedCommandExecutor.class));
     }
 }
