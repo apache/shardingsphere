@@ -237,56 +237,83 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     }
     
     private int countParameterMarkers(final String sql) {
-        int result = 0;
-        boolean inStringLiteral = false;
-        boolean inLineComment = false;
-        boolean inBlockComment = false;
-        int i = 0;
-        while (i < sql.length()) {
-            char ch = sql.charAt(i);
-            if (inLineComment) {
-                if ('\n' == ch || '\r' == ch) {
-                    inLineComment = false;
-                }
-                i++;
+        ParameterMarkerScanState state = new ParameterMarkerScanState();
+        while (state.index < sql.length()) {
+            if (advanceInLineComment(sql, state)) {
                 continue;
             }
-            if (inBlockComment) {
-                if ('*' == ch && i + 1 < sql.length() && '/' == sql.charAt(i + 1)) {
-                    inBlockComment = false;
-                    i += 2;
-                } else {
-                    i++;
-                }
+            if (advanceInBlockComment(sql, state)) {
                 continue;
             }
-            if ('\'' == ch) {
-                if (inStringLiteral && i + 1 < sql.length() && '\'' == sql.charAt(i + 1)) {
-                    i += 2;
-                } else {
-                    inStringLiteral = !inStringLiteral;
-                    i++;
-                }
+            if (advanceInOrToggleStringLiteral(sql, state)) {
                 continue;
             }
-            if (!inStringLiteral) {
-                if ('-' == ch && i + 1 < sql.length() && '-' == sql.charAt(i + 1)) {
-                    inLineComment = true;
-                    i += 2;
-                    continue;
-                }
-                if ('/' == ch && i + 1 < sql.length() && '*' == sql.charAt(i + 1)) {
-                    inBlockComment = true;
-                    i += 2;
-                    continue;
-                }
+            if (enterLineOrBlockComment(sql, state)) {
+                continue;
             }
-            if (!inStringLiteral && '?' == ch) {
-                result++;
+            if (!state.inStringLiteral && sql.charAt(state.index) == '?') {
+                state.result++;
             }
-            i++;
+            state.index++;
         }
-        return result;
+        return state.result;
+    }
+    
+    private boolean advanceInLineComment(final String sql, final ParameterMarkerScanState state) {
+        if (!state.inLineComment) {
+            return false;
+        }
+        char ch = sql.charAt(state.index);
+        if ('\n' == ch || '\r' == ch) {
+            state.inLineComment = false;
+        }
+        state.index++;
+        return true;
+    }
+    
+    private boolean advanceInBlockComment(final String sql, final ParameterMarkerScanState state) {
+        if (!state.inBlockComment) {
+            return false;
+        }
+        char ch = sql.charAt(state.index);
+        if ('*' == ch && state.index + 1 < sql.length() && '/' == sql.charAt(state.index + 1)) {
+            state.inBlockComment = false;
+            state.index += 2;
+        } else {
+            state.index++;
+        }
+        return true;
+    }
+    
+    private boolean advanceInOrToggleStringLiteral(final String sql, final ParameterMarkerScanState state) {
+        if (sql.charAt(state.index) != '\'') {
+            return false;
+        }
+        if (state.inStringLiteral && state.index + 1 < sql.length() && '\'' == sql.charAt(state.index + 1)) {
+            state.index += 2;
+        } else {
+            state.inStringLiteral = !state.inStringLiteral;
+            state.index++;
+        }
+        return true;
+    }
+    
+    private boolean enterLineOrBlockComment(final String sql, final ParameterMarkerScanState state) {
+        if (state.inStringLiteral) {
+            return false;
+        }
+        char ch = sql.charAt(state.index);
+        if ('-' == ch && state.index + 1 < sql.length() && '-' == sql.charAt(state.index + 1)) {
+            state.inLineComment = true;
+            state.index += 2;
+            return true;
+        }
+        if ('/' == ch && state.index + 1 < sql.length() && '*' == sql.charAt(state.index + 1)) {
+            state.inBlockComment = true;
+            state.index += 2;
+            return true;
+        }
+        return false;
     }
     
     @Override
@@ -1378,5 +1405,18 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
      */
     protected void decreaseCursorForLoopLevel() {
         --cursorForLoopLevel;
+    }
+    
+    private static final class ParameterMarkerScanState {
+        
+        private int index;
+        
+        private int result;
+        
+        private boolean inStringLiteral;
+        
+        private boolean inLineComment;
+        
+        private boolean inBlockComment;
     }
 }
