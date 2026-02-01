@@ -118,7 +118,6 @@ class FirebirdFrontendEngineTest {
                 Arguments.of("mark when in transaction", true, false, new Exception("error"), true),
                 Arguments.of("skip when in transaction exception", true, false, new InTransactionException(), false),
                 Arguments.of("skip when not in transaction", false, false, new Exception("error"), false),
-                Arguments.of("keep marked when already occurred", true, true, new Exception("error"), true)
-        );
+                Arguments.of("keep marked when already occurred", true, true, new Exception("error"), true));
     }
 }
