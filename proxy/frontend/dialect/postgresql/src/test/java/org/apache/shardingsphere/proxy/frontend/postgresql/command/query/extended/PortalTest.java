@@ -246,6 +246,7 @@ class PortalTest {
         when(proxyBackendHandler.next()).thenReturn(false);
         String sql = "set client_encoding = utf8";
         SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "client_encoding"), null)));
+        setStatement.buildAttributes();
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
                 sql, new CommonSQLStatementContext(setStatement), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);

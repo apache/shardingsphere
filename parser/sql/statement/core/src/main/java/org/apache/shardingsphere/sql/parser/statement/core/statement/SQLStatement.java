@@ -76,4 +76,16 @@ public class SQLStatement implements ASTNode {
     public void buildAttributes() {
         attributes = new SQLStatementAttributes();
     }
+    
+    /**
+     * Get SQL statement attributes.
+     *
+     * @return SQL statement attributes
+     */
+    public SQLStatementAttributes getAttributes() {
+        if (null == attributes) {
+            buildAttributes();
+        }
+        return attributes;
+    }
 }
