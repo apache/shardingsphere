@@ -594,7 +594,6 @@ class PostgreSQLComDescribeExecutorTest {
     }
     
     private void prepareJDBCBackendConnectionWithParamTypes(final String sql, final int[] paramTypes, final String[] paramTypeNames) throws SQLException {
-        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
         for (int i = 0; i < paramTypes.length; i++) {
             int index = i + 1;
@@ -605,6 +604,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(preparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
         ResultSetMetaData resultSetMetaData = prepareResultSetMetaDataForSingleColumn();
         when(preparedStatement.getMetaData()).thenReturn(resultSetMetaData);
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
@@ -652,8 +652,8 @@ class PostgreSQLComDescribeExecutorTest {
     private static Stream<Arguments> provideReturningCases() {
         return Stream.of(
                 Arguments.of("returning complex columns", "S_returning_complex",
-                        "INSERT INTO t_order (k, c, pad) VALUES (?, ?, ?) RETURNING" +
-                                " id, id alias_id, 'anonymous', 'OK' literal_string, 1 literal_int, 4294967296 literal_bigint, 1.1 literal_numeric, t_order.*, t_order, t_order alias_t_order",
+                        "INSERT INTO t_order (k, c, pad) VALUES (?, ?, ?) RETURNING"
+                                + " id, id alias_id, 'anonymous', 'OK' literal_string, 1 literal_int, 4294967296 literal_bigint, 1.1 literal_numeric, t_order.*, t_order, t_order alias_t_order",
                         Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.CHAR, PostgreSQLColumnType.CHAR),
                         getExpectedReturningColumns()),
                 Arguments.of("returning numeric literal", "S_numeric_returning",
