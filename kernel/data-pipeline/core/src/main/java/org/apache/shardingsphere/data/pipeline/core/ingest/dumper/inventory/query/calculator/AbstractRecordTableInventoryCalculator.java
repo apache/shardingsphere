@@ -299,7 +299,7 @@ public abstract class AbstractRecordTableInventoryCalculator<S, C> extends Abstr
             for (Object each : uniqueKeysValues) {
                 preparedStatement.setObject(parameterIndex++, each);
             }
-            if (null != param.getShardingColumnsNames() && !param.getShardingColumnsNames().isEmpty()) {
+            if (!param.getShardingColumnsNames().isEmpty()) {
                 List<Object> shardingColumnsValues = param.getShardingColumnsValues();
                 ShardingSpherePreconditions.checkNotNull(shardingColumnsValues,
                         () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getTable(), new RuntimeException("Sharding columns values is null when names not empty.")));
