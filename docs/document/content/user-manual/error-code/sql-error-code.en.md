@@ -135,7 +135,6 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 18106       | 01007     | Source data source lacks '%s' privilege(s).                                    |
 | 18107       | HY000     | Source data source required '%s = %s', now is '%s'.                            |
 | 18108       | 42S02     | User '%s' does exist.                                                          |
-| 18109       | 08000     | Check privileges failed on source data source.                                 |
 | 18110       | HY000     | Importer job write data failed.                                                |
 | 18111       | 08000     | Get binlog position failed by job '%s'.                                        |
 | 18112       | HY000     | Can not find consistency check job of '%s'.                                    |
