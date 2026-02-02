@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.Pipeli
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.PriorityQueue;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -39,8 +40,8 @@ class CSNRecordsComparatorTest {
         queue.add(new CSNRecords(1L, channelProgressPair, Collections.emptyList()));
         queue.add(new CSNRecords(2L, channelProgressPair, Collections.emptyList()));
         assertThat(queue.size(), is(3));
-        assertThat(queue.poll().getCsn(), is(1L));
-        assertThat(queue.poll().getCsn(), is(2L));
-        assertThat(queue.poll().getCsn(), is(3L));
+        assertThat(Objects.requireNonNull(queue.poll()).getCsn(), is(1L));
+        assertThat(Objects.requireNonNull(queue.poll()).getCsn(), is(2L));
+        assertThat(Objects.requireNonNull(queue.poll()).getCsn(), is(3L));
     }
 }
