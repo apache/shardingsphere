@@ -133,7 +133,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 18104       | HY000     | Can not split by unique key '%s' for table '%s'.                               |
 | 18105       | HY000     | Target table '%s' is not empty.                                                |
 | 18106       | 01007     | Source data source lacks '%s' privilege(s).                                    |
-| 18107       | HY000     | Source data source required '%s = %s', now is '%s'.                            |
 | 18108       | 42S02     | User '%s' does exist.                                                          |
 | 18110       | HY000     | Importer job write data failed.                                                |
 | 18111       | 08000     | Get binlog position failed by job '%s'.                                        |
