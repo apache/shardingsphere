@@ -70,4 +70,38 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_with_connect_by" parameters="2, 1">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <subquery-table start-index="14" stop-index="167">
+                <subquery>
+                    <select>
+                        <projections start-index="22" stop-index="97">
+                            <expression-projection alias="order_id" text="REGEXP_SUBSTR('5214|1521|5152|1616|218|8226', '[^|]+', 1, LEVEL)" start-index="22" stop-index="97" />
+                        </projections>
+                        <from>
+                            <simple-table name="dual" start-index="104" stop-index="107" />
+                        </from>
+                    </select>
+                </subquery>
+            </subquery-table>
+        </from>
+        <where start-index="169" stop-index="185">
+            <expr>
+                <binary-operation-expression start-index="175" stop-index="185">
+                    <left>
+                        <column name="ROWNUM" start-index="175" stop-index="180" />
+                    </left>
+                    <operator>&lt;=</operator>
+                    <right>
+                        <literal-expression value="1" start-index="185" stop-index="185" />
+                        <parameter-marker-expression parameter-index="1" start-index="185" stop-index="185" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 </sql-parser-test-cases>

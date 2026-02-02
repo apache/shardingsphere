@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="select_start_with_connect_by" value="SELECT * FROM (SELECT level, o.* FROM t_order o WHERE o.order_id = 1 START WITH o.user_id = 1 CONNECT BY PRIOR user_id = user_id ORDER BY level) temp WHERE ROWNUM = 1" db-types="Oracle" />
+    <sql-case id="select_with_connect_by" value="SELECT * FROM (SELECT REGEXP_SUBSTR('5214|1521|5152|1616|218|8226', '[^|]+', 1, LEVEL) AS order_id FROM dual CONNECT BY REGEXP_SUBSTR(?, '[^|]+', 1, LEVEL) IS NOT NULL) WHERE ROWNUM &lt;= ?" db-types="Oracle"/>
 </sql-cases>
