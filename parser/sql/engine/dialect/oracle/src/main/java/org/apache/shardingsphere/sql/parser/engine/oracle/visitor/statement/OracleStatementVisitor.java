@@ -623,7 +623,7 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             return createBinaryOperationExpressionFromLike(ctx);
         }
         if (null != ctx.PRIOR()) {
-            return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
+            return null == ctx.predicate() ? new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx)) : visit(ctx.predicate());
         }
         if (null == ctx.bitExpr(0)) {
             return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
