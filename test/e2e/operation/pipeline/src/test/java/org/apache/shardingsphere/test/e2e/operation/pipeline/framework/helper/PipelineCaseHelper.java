@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.shardingsphere.data.pipeline.cdc.util.RandomStrings;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.keygen.spi.KeyGenerateAlgorithm;
 
@@ -55,7 +55,7 @@ public final class PipelineCaseHelper {
      * @return random alphanumeric string
      */
     public static String generateString(final int strLength) {
-        return RandomStringUtils.randomAlphanumeric(strLength);
+        return RandomStrings.randomAlphanumeric(strLength);
     }
     
     /**

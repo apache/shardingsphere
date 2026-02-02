@@ -23,10 +23,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckId;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
+import org.apache.shardingsphere.data.pipeline.cdc.util.RandomStrings;
 import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.execute.AbstractPipelineLifecycleRunnable;
@@ -55,7 +55,7 @@ import java.util.stream.Collectors;
 public final class CDCImporter extends AbstractPipelineLifecycleRunnable implements Importer {
     
     @Getter
-    private final String importerId = RandomStringUtils.randomAlphanumeric(8);
+    private final String importerId = RandomStrings.randomAlphanumeric(8);
     
     private final List<CDCChannelProgressPair> channelProgressPairs;
     
