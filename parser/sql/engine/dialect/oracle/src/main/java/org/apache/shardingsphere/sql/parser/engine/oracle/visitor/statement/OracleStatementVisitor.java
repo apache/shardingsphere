@@ -533,7 +533,10 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         if (null != ctx.LIKE()) {
             return createBinaryOperationExpressionFromLike(ctx);
         }
-        return visit(ctx.bitExpr(0));
+        if (null != ctx.bitExpr(0)) {
+            return visit(ctx.bitExpr(0));
+        }
+        return visitChildren(ctx);
     }
     
     private InExpression createInSegment(final PredicateContext ctx) {

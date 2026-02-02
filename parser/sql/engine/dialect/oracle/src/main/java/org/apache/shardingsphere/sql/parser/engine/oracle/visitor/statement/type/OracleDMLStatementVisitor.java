@@ -53,6 +53,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupB
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupingExprListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GroupingSetsClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.HavingClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.HierarchicalQueryClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InnerCrossJoinClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InsertIntoClauseContext;
@@ -444,7 +445,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (null != ctx.groupByClause()) {
             result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
-        // TODO Visit hierarchicalQueryClause
+        if (null != ctx.hierarchicalQueryClause()) {
+            visit(ctx.hierarchicalQueryClause());
+        }
         if (null != ctx.modelClause()) {
             result.setModel((ModelSegment) visit(ctx.modelClause()));
         }
@@ -655,10 +658,23 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                 result.setHaving((HavingSegment) visit(ctx.groupByClause().havingClause()));
             }
         }
+        if (null != ctx.hierarchicalQueryClause()) {
+            visit(ctx.hierarchicalQueryClause());
+        }
         if (null != ctx.modelClause()) {
             result.setModel((ModelSegment) visit(ctx.modelClause()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitHierarchicalQueryClause(final HierarchicalQueryClauseContext ctx) {
+        if (null != ctx && null != ctx.expr()) {
+            for (ExprContext each : ctx.expr()) {
+                visit(each);
+            }
+        }
+        return null;
     }
     
     @Override
