@@ -245,7 +245,7 @@ public final class ResultSetUtils {
             case "java.sql.Timestamp":
                 return new Timestamp(value.getTime());
             case "java.time.LocalDate":
-                return new java.sql.Date(value.getTime()).toLocalDate();
+                return value.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             case "java.lang.String":
                 return value.toString();
             default:
