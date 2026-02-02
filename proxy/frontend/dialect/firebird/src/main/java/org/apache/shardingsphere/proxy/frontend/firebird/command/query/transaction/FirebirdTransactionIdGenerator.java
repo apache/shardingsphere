@@ -63,16 +63,6 @@ public final class FirebirdTransactionIdGenerator {
     }
     
     /**
-     * Get current transaction ID for connection.
-     *
-     * @param connectionId connection ID
-     * @return transaction ID
-     */
-    public int getTransactionId(final int connectionId) {
-        return connectionRegistry.get(connectionId).get();
-    }
-    
-    /**
      * Unregister connection.
      *
      * @param connectionId connection ID
