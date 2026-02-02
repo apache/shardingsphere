@@ -30,10 +30,13 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
@@ -61,6 +64,9 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -159,20 +165,62 @@ class FirebirdCommandExecuteEngineTest {
     }
     
     @Test
+    void assertGetOtherPacket() {
+        assertFalse(engine.getOtherPacket(connectionSession).isPresent());
+    }
+    
+    @Test
+    void assertWriteQueryDataWithNonQueryResponseType() throws SQLException {
+        when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.UPDATE);
+        engine.writeQueryData(context, databaseConnectionManager, queryCommandExecutor, 0);
+        verify(queryCommandExecutor, never()).next();
+        verify(databaseConnectionManager, never()).getConnectionResourceLock();
+        verify(context, never()).flush();
+    }
+    
+    @Test
+    void assertWriteQueryDataWithInactiveChannel() throws SQLException {
+        when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.QUERY);
+        when(channel.isActive()).thenReturn(false);
+        engine.writeQueryData(context, databaseConnectionManager, queryCommandExecutor, 0);
+        verify(queryCommandExecutor, never()).next();
+        verify(databaseConnectionManager, never()).getConnectionResourceLock();
+        verify(context, never()).flush();
+    }
+    
+    @Test
     void assertWriteQueryData() throws SQLException {
         when(databaseConnectionManager.getConnectionResourceLock()).thenReturn(connectionResourceLock);
         when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.QUERY);
         when(channel.isActive()).thenReturn(true);
         when(queryCommandExecutor.next()).thenReturn(true, false);
         when(queryCommandExecutor.getQueryRowPacket()).thenReturn(rowPacket);
-        MetaDataContexts metaDataContexts =
-                new MetaDataContexts(new ShardingSphereMetaData(Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()),
-                        new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties())), new ShardingSphereStatistics());
-        when(mockContextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(mockContextManager);
+        mockProxyContextFlushThreshold(2);
         engine.writeQueryData(context, databaseConnectionManager, queryCommandExecutor, 0);
         verify(connectionResourceLock).doAwait(context);
         verify(context).write(rowPacket);
         verify(context).flush();
+    }
+    
+    @Test
+    void assertWriteQueryDataWithFlushThreshold() throws SQLException {
+        when(databaseConnectionManager.getConnectionResourceLock()).thenReturn(connectionResourceLock);
+        when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.QUERY);
+        when(channel.isActive()).thenReturn(true);
+        when(queryCommandExecutor.next()).thenReturn(true, false);
+        when(queryCommandExecutor.getQueryRowPacket()).thenReturn(rowPacket);
+        mockProxyContextFlushThreshold(1);
+        engine.writeQueryData(context, databaseConnectionManager, queryCommandExecutor, 0);
+        verify(connectionResourceLock).doAwait(context);
+        verify(context).write(rowPacket);
+        verify(context, times(2)).flush();
+    }
+    
+    private void mockProxyContextFlushThreshold(final int threshold) {
+        Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD.getKey(), String.valueOf(threshold)));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(new ShardingSphereMetaData(Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()),
+                new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(props)), new ShardingSphereStatistics());
+        when(mockContextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(mockContextManager);
     }
 }
