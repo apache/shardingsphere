@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,18 +49,16 @@ public final class AdvisorConfigurationLoader {
      */
     public static Map<String, AdvisorConfiguration> load(final Collection<JarFile> pluginJars, final Collection<String> pluginTypes) {
         Map<String, AdvisorConfiguration> result = new HashMap<>();
-        AgentPluginClassLoader agentPluginClassLoader = new AgentPluginClassLoader(Thread.currentThread().getContextClassLoader(), pluginJars);
-        for (String each : pluginTypes) {
-            InputStream advisorsResourceStream = getResourceStream(agentPluginClassLoader, each);
-            if (null == advisorsResourceStream) {
-                LOGGER.log(Level.WARNING, "The configuration file for advice of plugin `{0}` is not found", new String[]{each});
-            }
-            Optional.ofNullable(advisorsResourceStream)
-                    .ifPresent(optional -> mergeConfigurations(result, YamlAdvisorsConfigurationSwapper.swap(YamlAdvisorsConfigurationLoader.load(optional), each)));
-            if (null != advisorsResourceStream) {
-                try {
-                    advisorsResourceStream.close();
-                } catch (final IOException ignored) {
+        try (AgentPluginClassLoader agentPluginClassLoader = new AgentPluginClassLoader(Thread.currentThread().getContextClassLoader(), pluginJars)) {
+            for (String each : pluginTypes) {
+                try (InputStream advisorsResourceStream = getResourceStream(agentPluginClassLoader, each)) {
+                    if (null == advisorsResourceStream) {
+                        LOGGER.log(Level.WARNING, "The configuration file for advice of plugin `{0}` is not found", new String[]{each});
+                        continue;
+                    }
+                    mergeConfigurations(result, YamlAdvisorsConfigurationSwapper.swap(YamlAdvisorsConfigurationLoader.load(advisorsResourceStream), each));
+                } catch (final IOException ex) {
+                    LOGGER.log(Level.WARNING, "Load the configuration file for advice of plugin `{0}` error, reason is: {1}", new String[]{each, ex.getMessage()});
                 }
             }
         }
