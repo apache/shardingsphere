@@ -345,8 +345,8 @@ The following components are provided under the EPL License. See project link fo
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
     jakarta.transaction-api 1.3.3: https://github.com/jakartaee/transactions, EPL 2.0
-    logback-classic 1.2.13: https://github.com/qos-ch/logback, EPL 1.0
-    logback-core 1.2.13: https://github.com/qos-ch/logback, EPL 1.0
+    logback-classic 1.3.16: https://github.com/qos-ch/logback, EPL 1.0
+    logback-core 1.3.16: https://github.com/qos-ch/logback, EPL 1.0
     mchange-commons-java 0.2.15: https://github.com/swaldman/mchange-commons-java, EPL 1.0
     h2 2.2.224: https://github.com/h2database/h2database, EPL 1.0
 

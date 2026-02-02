@@ -299,7 +299,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.13</version>
+            <version>1.3.16</version>
         </dependency>
     </dependencies>
 
