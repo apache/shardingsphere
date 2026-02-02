@@ -224,7 +224,96 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {
-        return new ParameterMarkerValue(globalParameterMarkerSegments.size(), ParameterMarkerType.QUESTION);
+        return new ParameterMarkerValue(getParameterMarkerIndex(ctx), ParameterMarkerType.QUESTION);
+    }
+    
+    private int getParameterMarkerIndex(final ParameterMarkerContext ctx) {
+        int startIndex = ctx.getStart().getStartIndex();
+        if (startIndex <= 0) {
+            return 0;
+        }
+        String sql = ctx.getStart().getInputStream().getText(new Interval(0, startIndex - 1));
+        return countParameterMarkers(sql);
+    }
+    
+    private int countParameterMarkers(final String sql) {
+        ParameterMarkerScanState state = new ParameterMarkerScanState();
+        while (state.index < sql.length()) {
+            if (advanceInLineComment(sql, state)) {
+                continue;
+            }
+            if (advanceInBlockComment(sql, state)) {
+                continue;
+            }
+            if (advanceInOrToggleStringLiteral(sql, state)) {
+                continue;
+            }
+            if (enterLineOrBlockComment(sql, state)) {
+                continue;
+            }
+            if (!state.inStringLiteral && sql.charAt(state.index) == '?') {
+                state.result++;
+            }
+            state.index++;
+        }
+        return state.result;
+    }
+    
+    private boolean advanceInLineComment(final String sql, final ParameterMarkerScanState state) {
+        if (!state.inLineComment) {
+            return false;
+        }
+        char ch = sql.charAt(state.index);
+        if ('\n' == ch || '\r' == ch) {
+            state.inLineComment = false;
+        }
+        state.index++;
+        return true;
+    }
+    
+    private boolean advanceInBlockComment(final String sql, final ParameterMarkerScanState state) {
+        if (!state.inBlockComment) {
+            return false;
+        }
+        char ch = sql.charAt(state.index);
+        if ('*' == ch && state.index + 1 < sql.length() && '/' == sql.charAt(state.index + 1)) {
+            state.inBlockComment = false;
+            state.index += 2;
+        } else {
+            state.index++;
+        }
+        return true;
+    }
+    
+    private boolean advanceInOrToggleStringLiteral(final String sql, final ParameterMarkerScanState state) {
+        if (sql.charAt(state.index) != '\'') {
+            return false;
+        }
+        if (state.inStringLiteral && state.index + 1 < sql.length() && '\'' == sql.charAt(state.index + 1)) {
+            state.index += 2;
+        } else {
+            state.inStringLiteral = !state.inStringLiteral;
+            state.index++;
+        }
+        return true;
+    }
+    
+    private boolean enterLineOrBlockComment(final String sql, final ParameterMarkerScanState state) {
+        if (state.inStringLiteral) {
+            return false;
+        }
+        char ch = sql.charAt(state.index);
+        if ('-' == ch && state.index + 1 < sql.length() && '-' == sql.charAt(state.index + 1)) {
+            state.inLineComment = true;
+            state.index += 2;
+            return true;
+        }
+        if ('/' == ch && state.index + 1 < sql.length() && '*' == sql.charAt(state.index + 1)) {
+            state.inBlockComment = true;
+            state.index += 2;
+            return true;
+        }
+        return false;
     }
     
     @Override
@@ -532,6 +621,12 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         }
         if (null != ctx.LIKE()) {
             return createBinaryOperationExpressionFromLike(ctx);
+        }
+        if (null != ctx.PRIOR()) {
+            return null == ctx.predicate() ? new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx)) : visit(ctx.predicate());
+        }
+        if (null == ctx.bitExpr(0)) {
+            return new CommonExpressionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), getOriginalText(ctx));
         }
         return visit(ctx.bitExpr(0));
     }
@@ -1316,5 +1411,18 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
      */
     protected void decreaseCursorForLoopLevel() {
         --cursorForLoopLevel;
+    }
+    
+    private static final class ParameterMarkerScanState {
+        
+        private int index;
+        
+        private int result;
+        
+        private boolean inStringLiteral;
+        
+        private boolean inLineComment;
+        
+        private boolean inBlockComment;
     }
 }
