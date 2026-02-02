@@ -58,16 +58,6 @@ public final class FirebirdBlobIdGenerator {
     }
     
     /**
-     * Get current blob ID for connection.
-     *
-     * @param connectionId connection ID
-     * @return blob ID
-     */
-    public long getBlobId(final int connectionId) {
-        return connectionRegistry.get(connectionId).get();
-    }
-    
-    /**
      * Unregister connection.
      *
      * @param connectionId connection ID
