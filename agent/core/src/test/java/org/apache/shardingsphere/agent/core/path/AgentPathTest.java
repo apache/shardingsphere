@@ -54,8 +54,9 @@ class AgentPathTest {
     @Test
     void assertGetRootPath() throws IOException {
         Path jarPath = createAgentJar(tempDir.resolve("agent-path.jar"));
-        URLClassLoader customClassLoader = new URLClassLoader(new URL[]{jarPath.toUri().toURL()}, null);
-        try (SystemClassLoaderContext ignored = new SystemClassLoaderContext(customClassLoader)) {
+        try (
+                URLClassLoader customClassLoader = new URLClassLoader(new URL[]{jarPath.toUri().toURL()}, null);
+                SystemClassLoaderContext ignored = new SystemClassLoaderContext(customClassLoader)) {
             assertThat(AgentPath.getRootPath(), is(jarPath.getParent().toFile()));
         }
     }
