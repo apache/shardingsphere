@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.ack;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.shardingsphere.data.pipeline.cdc.util.RandomStrings;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public final class CDCAckId {
      * @return ack id
      */
     public static CDCAckId build(final String importerId) {
-        return new CDCAckId(importerId, RandomStringUtils.randomAlphanumeric(16));
+        return new CDCAckId(importerId, RandomStrings.randomAlphanumeric(16));
     }
     
     /**
