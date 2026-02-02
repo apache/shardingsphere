@@ -670,9 +670,6 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitHierarchicalQueryClause(final HierarchicalQueryClauseContext ctx) {
-        if (null == ctx || null == ctx.getStart() || null == ctx.getStop()) {
-            return null;
-        }
         HierarchicalQuerySegment result = new HierarchicalQuerySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         result.setNoCycle(null != ctx.NOCYCLE());
         if (ctx.expr().isEmpty()) {
