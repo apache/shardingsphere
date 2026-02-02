@@ -186,7 +186,7 @@ class ResultSetUtilsTest {
     void assertConvertDateValueToLocalDateWithDifferentTimestamps() throws SQLException {
         Date epochDate = new Date(0L);
         LocalDate epochResult = (LocalDate) ResultSetUtils.convertValue(epochDate, LocalDate.class);
-        assertThat(epochResult, is(new java.sql.Date(epochDate.getTime()).toLocalDate()));
+        assertThat(epochResult, is(LocalDate.of(1970, 1, 1)));
         Date christmasDate = new Date(1703462400000L);
         LocalDate christmasResult = (LocalDate) ResultSetUtils.convertValue(christmasDate, LocalDate.class);
         assertThat(christmasResult, is(new java.sql.Date(christmasDate.getTime()).toLocalDate()));
