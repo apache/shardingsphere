@@ -6,7 +6,7 @@
 
 ### Bug Fixes
 
-1.SQL Parser:Support Oracle SQL parser correctly extract REGEXP_SUBSTR parameters - [#37924](https://github.com/apache/shardingsphere/pull/37924)
+​	1. SQL Parser: Support Oracle SQL parser correctly extract REGEXP_SUBSTR parameters - [#37924](https://github.com/apache/shardingsphere/pull/37924)
 
 ## Release 5.5.3
 
