@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.que
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -56,7 +57,7 @@ public abstract class AbstractStreamingTableInventoryCalculator<S> extends Abstr
         private final TableInventoryCalculateParameter param;
         
         @Override
-        public Iterator<S> iterator() {
+        public @NonNull Iterator<S> iterator() {
             return new ResultIterator(param);
         }
     }
