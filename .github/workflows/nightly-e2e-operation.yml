@@ -59,7 +59,7 @@ jobs:
           { type: "e2e.docker.database.postgresql.images", version: "postgres:12-alpine" },
           { type: "e2e.docker.database.postgresql.images", version: "postgres:13-alpine" },
           { type: "e2e.docker.database.postgresql.images", version: "postgres:14-alpine" },
-          { type: "e2e.docker.database.opengauss.images", version: "enmotech/opengauss:3.1.0" }
+          { type: "e2e.docker.database.opengauss.images", version: "enmotech/opengauss-lite:5.1.0" }
         ]
         exclude:
           - operation: transaction
@@ -69,7 +69,7 @@ jobs:
           - operation: showprocesslist
             image: { type: "e2e.docker.database.postgresql.images", version: "postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine" }
           - operation: showprocesslist
-            image: { type: "e2e.docker.database.opengauss.images", version: "enmotech/opengauss:3.1.0" }
+            image: { type: "e2e.docker.database.opengauss.images", version: "enmotech/opengauss-lite:5.1.0" }
     steps:
       - uses: actions/checkout@v6.0.1
       - name: Setup JDK ${{ matrix.java-version }}
