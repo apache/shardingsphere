@@ -862,7 +862,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         column.put("cltype", "numeric(5,2)");
         Map<String, Object> unmatchedColumn = createUnmatchedColumn();
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/properties.ftl"))).thenReturn(Arrays.asList(column, unmatchedColumn));
-        Map<String, Object> editModeTypesEntry = createEditModeTypesEntry("alpha");
+        Map<String, Object> editModeTypesEntry = createEditModeTypesEntry();
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.singleton(editModeTypesEntry));
         appender.append(context);
         Collection<?> columns = (Collection<?>) context.get("columns");
@@ -916,10 +916,10 @@ class PostgreSQLColumnPropertiesAppenderTest {
         return result;
     }
     
-    private Map<String, Object> createEditModeTypesEntry(final String... editTypes) {
+    private Map<String, Object> createEditModeTypesEntry() {
         Map<String, Object> entry = new LinkedHashMap<>();
         entry.put("main_oid", "1");
-        entry.put("edit_types", mockSQLArray(editTypes));
+        entry.put("edit_types", mockSQLArray(new String[]{"alpha"}));
         return entry;
     }
     
