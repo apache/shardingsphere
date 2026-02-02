@@ -52,7 +52,9 @@
     <properties>
         <!-- Environments -->
         <java.version>8</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <compile.java.version>21</compile.java.version>
+        <!-- Compile with JDK 21, but maintain JDK 8 runtime compatibility -->
+        <maven.compiler.source>${compile.java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.version.range>[3.0.4,)</maven.version.range>
@@ -784,7 +786,7 @@
                                         <version>${maven.version.range}</version>
                                     </requireMavenVersion>
                                     <requireJavaVersion>
-                                        <version>${java.version}</version>
+                                        <version>[${compile.java.version},)</version>
                                     </requireJavaVersion>
                                 </rules>
                                 <fail>${maven.enforcer.fail}</fail>

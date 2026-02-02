@@ -41,7 +41,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
-        java-version: [ 17, 21, '25-ea' ]
+        java-version: [ 21, '25-ea' ]
     steps:
       - name: Support Long Paths in Windows
         if: matrix.os == 'windows-latest'

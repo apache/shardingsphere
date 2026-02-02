@@ -100,7 +100,7 @@ jobs:
         uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 21
           cache: 'maven'
       - name: Build ${{ matrix.operation }} E2E Image
         if: (env.skip_current_step == 'false')
