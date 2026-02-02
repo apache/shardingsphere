@@ -63,7 +63,8 @@ public final class PipelineContextManager {
     }
     
     /**
-     * Remove context.
+     * Remove ContextManager.
+     * It's invoked on <code>ContextManager.close</code>, so removed context is not necessary to close.
      *
      * @param key key
      */
