@@ -136,22 +136,19 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     }
     
     private Object readColumn(final ByteBuffer data) {
-        readColumnName(data);
+        skipColumnName(data);
         String columnType = readColumnType(data);
         data.get();
         return readColumnData(data, columnType);
     }
     
-    private String readColumnName(final ByteBuffer data) {
-        StringBuilder eventType = new StringBuilder();
+    private void skipColumnName(final ByteBuffer data) {
         while (data.hasRemaining()) {
             char c = (char) data.get();
             if ('[' == c) {
-                return eventType.toString();
+                return;
             }
-            eventType.append(c);
         }
-        return eventType.toString();
     }
     
     private String readColumnType(final ByteBuffer data) {

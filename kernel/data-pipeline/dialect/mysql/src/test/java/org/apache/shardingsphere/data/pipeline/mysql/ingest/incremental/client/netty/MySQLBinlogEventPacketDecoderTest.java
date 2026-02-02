@@ -256,10 +256,10 @@ class MySQLBinlogEventPacketDecoderTest {
     @Test
     void assertDecodeFormatDescriptionEventWithZeroChecksumAndExtraBytes() {
         MySQLBinlogEventPacketDecoder decoderWithoutChecksum = new MySQLBinlogEventPacketDecoder(0, new ConcurrentHashMap<>(), true);
-        ByteBuf byteBuf = createFormatDescriptionEventByteBuf(0, 4);
+        ByteBuf byteBuf = createFormatDescriptionEventByteBuf(4);
         decoderWithoutChecksum.decode(channelHandlerContext, byteBuf, new LinkedList<>());
         assertThat(byteBuf.readableBytes(), is(0));
-        ByteBuf byteBufWithWarning = createFormatDescriptionEventByteBuf(0, 3);
+        ByteBuf byteBufWithWarning = createFormatDescriptionEventByteBuf(3);
         decoderWithoutChecksum.decode(channelHandlerContext, byteBufWithWarning, new LinkedList<>());
         assertThat(byteBufWithWarning.readableBytes(), is(0));
     }
@@ -303,9 +303,10 @@ class MySQLBinlogEventPacketDecoderTest {
         return result;
     }
     
-    private ByteBuf createFormatDescriptionEventByteBuf(final int checksumLength, final int extraBytesLength) {
+    private ByteBuf createFormatDescriptionEventByteBuf(final int extraBytesLength) {
         ByteBuf result = Unpooled.buffer();
         int bodyLength = 2 + 50 + 4 + 1 + (MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT.getValue() - 1) + 1 + 1 + extraBytesLength;
+        int checksumLength = 0;
         int eventSize = MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH + bodyLength + checksumLength;
         result.writeByte(0);
         result.writeIntLE(1);

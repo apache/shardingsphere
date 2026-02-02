@@ -48,7 +48,7 @@ public final class Range<T> {
      * @return closed range
      */
     public static <T> Range<T> closed(final T lowerBound, final T upperBound) {
-        return new Range<T>(lowerBound, true, upperBound);
+        return new Range<>(lowerBound, true, upperBound);
     }
     
     /**
@@ -60,7 +60,7 @@ public final class Range<T> {
      * @return open-closed range
      */
     public static <T> Range<T> openClosed(final T lowerBound, final T upperBound) {
-        return new Range<T>(lowerBound, false, upperBound);
+        return new Range<>(lowerBound, false, upperBound);
     }
     
     @Override

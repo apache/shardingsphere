@@ -19,10 +19,10 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,7 +54,7 @@ public final class PipelineTableMetaData {
     @Getter
     private final Collection<PipelineIndexMetaData> uniqueIndexes;
     
-    public PipelineTableMetaData(final String name, final Map<ShardingSphereIdentifier, PipelineColumnMetaData> columnMetaDataMap, final Collection<PipelineIndexMetaData> uniqueIndexes) {
+    public PipelineTableMetaData(final @NonNull String name, final Map<ShardingSphereIdentifier, PipelineColumnMetaData> columnMetaDataMap, final Collection<PipelineIndexMetaData> uniqueIndexes) {
         this.name = name;
         this.columnMetaDataMap = columnMetaDataMap;
         List<PipelineColumnMetaData> columnMetaDataList = new ArrayList<>(columnMetaDataMap.values());

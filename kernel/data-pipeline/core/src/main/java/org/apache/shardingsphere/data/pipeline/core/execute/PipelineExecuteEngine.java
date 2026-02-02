@@ -118,12 +118,11 @@ public final class PipelineExecuteEngine {
     public static void trigger(final Collection<CompletableFuture<?>> futures, final ExecuteCallback executeCallback) {
         BlockingQueue<CompletableFuture<?>> futureQueue = new LinkedBlockingQueue<>();
         for (CompletableFuture<?> each : futures) {
-            each.whenCompleteAsync(new BiConsumer<Object, Throwable>() {
-                
-                @SneakyThrows(InterruptedException.class)
-                @Override
-                public void accept(final Object unused, final Throwable throwable) {
+            each.whenCompleteAsync((BiConsumer<Object, Throwable>) (unused, throwable) -> {
+                try {
                     futureQueue.put(each);
+                } catch (final InterruptedException ex) {
+                    Thread.currentThread().interrupt();
                 }
             }, CALLBACK_EXECUTOR);
         }

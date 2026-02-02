@@ -125,7 +125,7 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
                 columnNames, dumperContext.getUniqueKeyColumns(), QueryType.RANGE_QUERY, null);
         Range<?> range = Range.closed(((UniqueKeyIngestPosition<?>) initialPosition).getLowerBound(), ((UniqueKeyIngestPosition<?>) initialPosition).getUpperBound());
         calculateParam.setRange(range);
-        RecordTableInventoryDumpCalculator dumpCalculator = new RecordTableInventoryDumpCalculator(dumperContext.getBatchSize(), StreamingRangeType.SMALL);
+        RecordTableInventoryDumpCalculator dumpCalculator = new RecordTableInventoryDumpCalculator(dumperContext.getBatchSize());
         long rowCount = 0L;
         try {
             JobRateLimitAlgorithm rateLimitAlgorithm = dumperContext.getRateLimitAlgorithm();
@@ -227,8 +227,8 @@ public final class InventoryDumper extends AbstractPipelineLifecycleRunnable imp
     
     private class RecordTableInventoryDumpCalculator extends AbstractRecordTableInventoryCalculator<List<DataRecord>, DataRecord> {
         
-        RecordTableInventoryDumpCalculator(final int chunkSize, final StreamingRangeType streamingRangeType) {
-            super(chunkSize, streamingRangeType);
+        RecordTableInventoryDumpCalculator(final int chunkSize) {
+            super(chunkSize, StreamingRangeType.SMALL);
         }
         
         @Override

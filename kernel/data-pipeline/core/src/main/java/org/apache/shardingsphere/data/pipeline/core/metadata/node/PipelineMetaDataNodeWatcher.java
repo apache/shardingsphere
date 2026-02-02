@@ -73,12 +73,11 @@ public final class PipelineMetaDataNodeWatcher {
     }
     
     /**
-     * Get instance.
+     * Initialize for context key.
      *
      * @param contextKey context key
-     * @return instance
      */
-    public static PipelineMetaDataNodeWatcher getInstance(final PipelineContextKey contextKey) {
-        return INSTANCE_MAP.computeIfAbsent(contextKey, PipelineMetaDataNodeWatcher::new);
+    public static void init(final PipelineContextKey contextKey) {
+        INSTANCE_MAP.computeIfAbsent(contextKey, PipelineMetaDataNodeWatcher::new);
     }
 }
