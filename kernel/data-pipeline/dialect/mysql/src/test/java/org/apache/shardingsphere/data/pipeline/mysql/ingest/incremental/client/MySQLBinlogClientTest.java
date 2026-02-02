@@ -125,7 +125,7 @@ class MySQLBinlogClientTest {
     @AfterEach
     void tearDown() {
         eventLoopGroup.shutdownGracefully();
-        Thread.interrupted();
+        Thread.currentThread().interrupt();
     }
     
     @Test
