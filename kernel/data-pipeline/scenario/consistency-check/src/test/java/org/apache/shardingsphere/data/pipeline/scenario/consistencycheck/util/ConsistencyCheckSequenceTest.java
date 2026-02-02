@@ -35,7 +35,7 @@ class ConsistencyCheckSequenceTest {
         int currentSequence = ConsistencyCheckSequence.MIN_SEQUENCE;
         assertThat(currentSequence = ConsistencyCheckSequence.getNextSequence(currentSequence), is(2));
         assertThat(currentSequence = ConsistencyCheckSequence.getNextSequence(currentSequence), is(3));
-        assertThat(currentSequence = ConsistencyCheckSequence.getNextSequence(currentSequence), is(1));
+        assertThat(ConsistencyCheckSequence.getNextSequence(currentSequence), is(1));
     }
     
     @Test
