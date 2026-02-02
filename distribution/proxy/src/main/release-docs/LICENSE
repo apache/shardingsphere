@@ -260,7 +260,7 @@ The text of each license is the standard Apache 2.0 license.
     jackson-dataformat-yaml 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
     jackson-datatype-jdk8 2.16.1: http://github.com/FasterXML/jackson-modules-java8, Apache 2.0
     jackson-datatype-jsr310 2.16.1: http://github.com/FasterXML/jackson, Apache 2.0
-    jcl-over-slf4j 1.7.36: https://github.com/qos-ch/slf4j, Apache 2.0
+    jcl-over-slf4j 2.0.17: https://github.com/qos-ch/slf4j, Apache 2.0
     jetcd-api 0.7.7: https://github.com/etcd-io/jetcd, Apache 2.0
     jetcd-common 0.7.7: https://github.com/etcd-io/jetcd, Apache 2.0
     jetcd-core 0.7.7: https://github.com/etcd-io/jetcd, Apache 2.0
@@ -362,5 +362,5 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     bctls-jdk18on 1.79: https://www.bouncycastle.org, MIT
     bcutil-jdk18on 1.79: https://www.bouncycastle.org, MIT
     checker-qual 3.39.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
-    jul-to-slf4j 1.7.36: https://www.slf4j.org, MIT
-    slf4j-api 1.7.36: https://www.slf4j.org, MIT
+    jul-to-slf4j 2.0.17: https://www.slf4j.org, MIT
+    slf4j-api 2.0.17: https://www.slf4j.org, MIT
