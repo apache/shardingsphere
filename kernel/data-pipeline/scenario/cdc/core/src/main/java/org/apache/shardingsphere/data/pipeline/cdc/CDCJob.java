@@ -111,7 +111,7 @@ public final class CDCJob implements PipelineJob {
         Collection<CDCJobItemContext> jobItemContexts = new LinkedList<>();
         for (int shardingItem = 0; shardingItem < jobConfig.getJobShardingCount(); shardingItem++) {
             if (jobRunnerManager.isStopping()) {
-                log.info("Job is stopping, ignore.");
+                log.info("Execute, job is stopping, ignore.");
                 return;
             }
             TransmissionJobItemProgress jobItemProgress = jobItemManager.getProgress(shardingContext.getJobName(), shardingItem).orElse(null);
@@ -238,7 +238,7 @@ public final class CDCJob implements PipelineJob {
         @Override
         public void onSuccess() {
             if (jobItemContext.isStopping()) {
-                log.info("Job is stopping, ignore.");
+                log.info("onSuccess, job is stopping, ignore.");
                 return;
             }
             log.info("All {} tasks finished successful.", identifier);

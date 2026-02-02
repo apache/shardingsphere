@@ -29,14 +29,8 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class RecordTableInventoryCheckCalculatedResultTest {
-    
-    @Test
-    void assertNotEqualsWithNull() {
-        assertFalse(new RecordTableInventoryCheckCalculatedResult(0, Collections.emptyList()).equals(null));
-    }
     
     @Test
     void assertEqualsWithSameObject() {

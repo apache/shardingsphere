@@ -75,21 +75,21 @@ class CRC32TableInventoryCheckCalculatorTest {
     
     @Test
     void assertCalculateSuccess() throws SQLException {
-        PreparedStatement preparedStatement0 = mockPreparedStatement(123L, 10);
+        PreparedStatement preparedStatement0 = mockPreparedStatement(123L);
         when(connection.prepareStatement("SELECT CRC32(foo_col) FROM foo_tbl")).thenReturn(preparedStatement0);
-        PreparedStatement preparedStatement1 = mockPreparedStatement(456L, 10);
+        PreparedStatement preparedStatement1 = mockPreparedStatement(456L);
         when(connection.prepareStatement("SELECT CRC32(bar_col) FROM foo_tbl")).thenReturn(preparedStatement1);
         Iterator<TableInventoryCheckCalculatedResult> actual = new CRC32TableInventoryCheckCalculator().calculate(parameter).iterator();
         assertThat(actual.next().getRecordsCount(), is(10));
         assertFalse(actual.hasNext());
     }
     
-    private PreparedStatement mockPreparedStatement(final long expectedCRC32Result, final int expectedRecordsCount) throws SQLException {
+    private PreparedStatement mockPreparedStatement(final long expectedCRC32Result) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         PreparedStatement result = mock(PreparedStatement.class, RETURNS_DEEP_STUBS);
         when(result.executeQuery()).thenReturn(resultSet);
         when(resultSet.getLong(1)).thenReturn(expectedCRC32Result);
-        when(resultSet.getInt(2)).thenReturn(expectedRecordsCount);
+        when(resultSet.getInt(2)).thenReturn(10);
         return result;
     }
     

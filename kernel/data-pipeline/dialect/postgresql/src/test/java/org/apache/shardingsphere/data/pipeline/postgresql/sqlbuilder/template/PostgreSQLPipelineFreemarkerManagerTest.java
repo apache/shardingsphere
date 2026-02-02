@@ -25,9 +25,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 class PostgreSQLPipelineFreemarkerManagerTest {
     
@@ -51,23 +51,10 @@ class PostgreSQLPipelineFreemarkerManagerTest {
     
     @Test
     void assertCreateTableTemplateRendersNormalizedSequenceNumbers() {
-        Map<String, Object> column = new LinkedHashMap<>(16, 1F);
-        column.put("name", "id");
-        column.put("cltype", "int4");
-        column.put("displaytypname", "integer");
-        column.put("attnotnull", true);
-        column.put("attidentity", "a");
-        column.put("colconstype", "i");
-        column.put("seqincrement", 1L);
-        column.put("seqstart", 1L);
-        column.put("seqmin", 1L);
-        column.put("seqmax", 2147483647L);
-        column.put("seqcache", 1L);
-        column.put("seqcycle", false);
         Map<String, Object> dataModel = new LinkedHashMap<>(8, 1F);
         dataModel.put("schema", "public");
         dataModel.put("name", "t_order");
-        dataModel.put("columns", Collections.singletonList(column));
+        dataModel.put("columns", Collections.singletonList(getColumn()));
         dataModel.put("primary_key", Collections.emptyList());
         dataModel.put("unique_constraint", Collections.emptyList());
         dataModel.put("foreign_key", Collections.emptyList());
@@ -83,5 +70,22 @@ class PostgreSQLPipelineFreemarkerManagerTest {
         String compactSql = PATTERN.matcher(sql).replaceAll("");
         String expectedSql = "CREATETABLEIFNOTEXISTSpublic.t_order(idintegerNOTNULLGENERATEDALWAYSASIDENTITY(INCREMENT1START1MINVALUE1MAXVALUE2147483647CACHE1))";
         assertThat(compactSql, is(expectedSql));
+    }
+    
+    private static Map<String, Object> getColumn() {
+        Map<String, Object> column = new LinkedHashMap<>(16, 1F);
+        column.put("name", "id");
+        column.put("cltype", "int4");
+        column.put("displaytypname", "integer");
+        column.put("attnotnull", true);
+        column.put("attidentity", "a");
+        column.put("colconstype", "i");
+        column.put("seqincrement", 1L);
+        column.put("seqstart", 1L);
+        column.put("seqmin", 1L);
+        column.put("seqmax", 2147483647L);
+        column.put("seqcache", 1L);
+        column.put("seqcycle", false);
+        return column;
     }
 }

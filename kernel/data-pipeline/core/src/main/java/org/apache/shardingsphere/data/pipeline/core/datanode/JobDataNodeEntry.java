@@ -39,7 +39,7 @@ public final class JobDataNodeEntry {
     /**
      * Unmarshal from text.
      *
-     * @param text marshalled entry
+     * @param text marshaled entry
      * @return entry
      */
     public static JobDataNodeEntry unmarshal(final String text) {

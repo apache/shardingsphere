@@ -29,6 +29,7 @@ import java.util.Properties;
 /**
  * QPS job rate limit algorithm.
  */
+@SuppressWarnings("UnstableApiUsage")
 public final class QPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
     private static final String QPS_KEY = "qps";

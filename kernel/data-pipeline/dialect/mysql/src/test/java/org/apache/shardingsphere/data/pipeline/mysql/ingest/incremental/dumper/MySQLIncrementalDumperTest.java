@@ -141,12 +141,7 @@ class MySQLIncrementalDumperTest {
         MySQLBaseRowsBinlogEvent unsupportedEvent = mock(MySQLBaseRowsBinlogEvent.class);
         when(unsupportedEvent.getDatabaseName()).thenReturn("test");
         when(unsupportedEvent.getTableName()).thenReturn("t_order");
-        MySQLWriteRowsBinlogEvent filteredEvent = new MySQLWriteRowsBinlogEvent("binlog-000001", 13L, 2L, "other_db", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"}));
-        MySQLWriteRowsBinlogEvent writeEvent = new MySQLWriteRowsBinlogEvent("binlog-000001", 4L, 5L, "test", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"}));
-        MySQLUpdateRowsBinlogEvent updateEvent = new MySQLUpdateRowsBinlogEvent("binlog-000001", 5L, 6L, "test", "t_order",
-                Collections.singletonList(new Serializable[]{101, 1, "OK"}), Collections.singletonList(new Serializable[]{101, 1, "UPDATED"}));
-        MySQLDeleteRowsBinlogEvent deleteEvent = new MySQLDeleteRowsBinlogEvent("binlog-000001", 6L, 7L, "test", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"}));
-        List<MySQLBaseBinlogEvent> firstPollEvents = Arrays.asList(new PlaceholderBinlogEvent("binlog-000001", 3L, 1L), writeEvent, updateEvent, deleteEvent, filteredEvent, unsupportedEvent);
+        List<MySQLBaseBinlogEvent> firstPollEvents = getMySQLBinlogEvents(unsupportedEvent);
         PipelineChannel channel = mock(PipelineChannel.class);
         MySQLIncrementalDumper dumper = new MySQLIncrementalDumper(dumperContext, new MySQLBinlogPosition("binlog-000001", 4L), channel, metaDataLoader);
         MySQLBinlogClient client = mock(MySQLBinlogClient.class);
@@ -178,5 +173,14 @@ class MySQLIncrementalDumperTest {
         assertThat(((DataRecord) pushed.get(3)).getType(), is(PipelineSQLOperationType.DELETE));
         assertThat(pushed.get(4), isA(PlaceholderRecord.class));
         assertFalse(dumperThread.isAlive());
+    }
+    
+    private List<MySQLBaseBinlogEvent> getMySQLBinlogEvents(final MySQLBaseRowsBinlogEvent unsupportedEvent) {
+        MySQLWriteRowsBinlogEvent filteredEvent = new MySQLWriteRowsBinlogEvent("binlog-000001", 13L, 2L, "other_db", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"}));
+        MySQLWriteRowsBinlogEvent writeEvent = new MySQLWriteRowsBinlogEvent("binlog-000001", 4L, 5L, "test", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"}));
+        MySQLUpdateRowsBinlogEvent updateEvent = new MySQLUpdateRowsBinlogEvent("binlog-000001", 5L, 6L, "test", "t_order",
+                Collections.singletonList(new Serializable[]{101, 1, "OK"}), Collections.singletonList(new Serializable[]{101, 1, "UPDATED"}));
+        MySQLDeleteRowsBinlogEvent deleteEvent = new MySQLDeleteRowsBinlogEvent("binlog-000001", 6L, 7L, "test", "t_order", Collections.singletonList(new Serializable[]{101, 1, "OK"}));
+        return Arrays.asList(new PlaceholderBinlogEvent("binlog-000001", 3L, 1L), writeEvent, updateEvent, deleteEvent, filteredEvent, unsupportedEvent);
     }
 }

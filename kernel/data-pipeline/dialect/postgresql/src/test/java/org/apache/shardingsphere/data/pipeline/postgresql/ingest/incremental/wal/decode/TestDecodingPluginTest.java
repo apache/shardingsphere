@@ -169,12 +169,12 @@ class TestDecodingPluginTest {
         BaseTimestampUtils timestampUtils = new BaseTimestampUtils() {
             
             @Override
-            public Time toTime(final Calendar cal, final String input) throws SQLException {
+            public Time toTime(final Calendar cal, final String input) {
                 return Time.valueOf(input);
             }
             
             @Override
-            public Timestamp toTimestamp(final Calendar cal, final String input) throws SQLException {
+            public Timestamp toTimestamp(final Calendar cal, final String input) {
                 return Timestamp.valueOf(input);
             }
         };
