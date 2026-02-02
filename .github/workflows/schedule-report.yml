@@ -41,7 +41,7 @@ jobs:
       - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 21
       - uses: actions/cache@v5.0.1
         with:
           path: ~/.sonar/cache
@@ -75,7 +75,7 @@ jobs:
         uses: actions/setup-java@v5.1.0
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
       - uses: actions/cache@v5.0.1
         with:
           path: |
@@ -91,7 +91,7 @@ jobs:
         uses: actions/setup-java@v5.1.0
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
       - name: Build with maven and execute jacoco aggregation script
         run: |
           ./mvnw -V -B -ntp verify -Djacoco.skip=false -Dmaven.test.failure.ignore=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false &&

@@ -60,7 +60,7 @@ jobs:
       - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 21
       - name: Build Project
         run: |
           ./mvnw -B clean install -Prelease,default-dep
@@ -88,7 +88,7 @@ jobs:
       - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 21
       - uses: actions/cache@v5.0.1
         with:
           path: |
@@ -129,7 +129,7 @@ jobs:
       - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 21
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.HUB }}
@@ -170,7 +170,7 @@ jobs:
       - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 21
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.HUB }}
@@ -201,7 +201,7 @@ jobs:
       - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 21
       - uses: actions/cache@v5.0.1
         with:
           path: |
@@ -263,7 +263,7 @@ jobs:
       - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 21
       - uses: actions/cache@v5.0.1
         with:
           path: |

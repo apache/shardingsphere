@@ -58,7 +58,7 @@ jobs:
         uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 21
       - uses: actions/cache@v5.0.1
         with:
           path: |
@@ -74,6 +74,6 @@ jobs:
         uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 21
       - name: Run Tests
         run: ./mvnw install -T1C -B -ntp -fae
