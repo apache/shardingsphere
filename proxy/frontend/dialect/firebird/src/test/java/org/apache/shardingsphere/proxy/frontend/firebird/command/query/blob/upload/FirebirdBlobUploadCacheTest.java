@@ -125,7 +125,6 @@ class FirebirdBlobUploadCacheTest {
                 Arguments.of("append missing upload returns empty", (BooleanSupplier) () -> CACHE.appendSegment(3, 5, new byte[]{1}).isPresent()),
                 Arguments.of("close missing upload returns empty", (BooleanSupplier) () -> CACHE.closeUpload(4, 6).isPresent()),
                 Arguments.of("get blob data missing upload returns empty", (BooleanSupplier) () -> CACHE.getBlobData(5, 7L).isPresent()),
-                Arguments.of("get blob id missing upload returns empty", (BooleanSupplier) () -> CACHE.getBlobId(8, 10).isPresent())
-        );
+                Arguments.of("get blob id missing upload returns empty", (BooleanSupplier) () -> CACHE.getBlobId(8, 10).isPresent()));
     }
 }
