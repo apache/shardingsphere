@@ -40,8 +40,8 @@ jobs:
     uses: ./.github/workflows/required-reusable.yml
 
   build-e2e-image:
+    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
     name: Build E2E Image
-    if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]' && needs.detect-changed-files.outputs.changed_operations != '["ignore"]'
     needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 40
