@@ -111,6 +111,8 @@ class FirebirdExecuteStatementCommandExecutorTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private SelectStatementContext selectContext;
     
+    private FirebirdExecuteStatementCommandExecutor executor;
+    
     @BeforeEach
     void setUp() {
         FirebirdFetchStatementCache.getInstance().registerConnection(CONNECTION_ID);
@@ -139,11 +141,11 @@ class FirebirdExecuteStatementCommandExecutorTest {
     void assertIsQueryResponse() throws SQLException {
         when(packet.getStatementId()).thenReturn(1);
         when(packet.getParameterTypes()).thenReturn(Collections.emptyList());
-        when(packet.getParameterValues()).thenReturn(new ArrayList<>());
+        when(packet.getParameterValues()).thenReturn(Collections.emptyList());
         when(packet.isStoredProcedure()).thenReturn(true);
-        FirebirdExecuteStatementCommandExecutor executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
+        executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
         when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(queryHeader)));
-        when(proxyBackendHandler.next()).thenReturn(true, true);
+        when(proxyBackendHandler.next()).thenReturn(true);
         QueryResponseRow row = new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1)));
         when(proxyBackendHandler.getRowData()).thenReturn(row, row);
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), any(QueryContext.class), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
@@ -160,8 +162,8 @@ class FirebirdExecuteStatementCommandExecutorTest {
     void assertIsUpdateResponse() throws SQLException {
         when(packet.getStatementId()).thenReturn(2);
         when(packet.getParameterTypes()).thenReturn(Collections.emptyList());
-        when(packet.getParameterValues()).thenReturn(new ArrayList<>());
-        FirebirdExecuteStatementCommandExecutor executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
+        when(packet.getParameterValues()).thenReturn(Collections.emptyList());
+        executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(DATABASE_TYPE)));
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), any(QueryContext.class), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
         Collection<DatabasePacket> actual = executor.execute();
@@ -176,12 +178,10 @@ class FirebirdExecuteStatementCommandExecutorTest {
         long blobId = 11L;
         FirebirdBlobUploadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
         FirebirdBlobUploadCache.getInstance().appendSegment(CONNECTION_ID, blobHandle, new byte[]{1, 2});
-        List<Object> params = new ArrayList<>();
-        params.add(blobId);
         when(packet.getStatementId()).thenReturn(2);
         when(packet.getParameterTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.BLOB));
-        when(packet.getParameterValues()).thenReturn(params);
-        FirebirdExecuteStatementCommandExecutor executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
+        when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList(blobId)));
+        executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(DATABASE_TYPE)));
         ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
@@ -189,5 +189,90 @@ class FirebirdExecuteStatementCommandExecutorTest {
         List<Object> actualParams = queryContextCaptor.getValue().getParameters();
         assertThat(actualParams.size(), is(1));
         assertThat(actualParams.get(0), nullValue());
+    }
+    
+    @Test
+    void assertSkipNonBlobParameter() throws SQLException {
+        when(packet.getStatementId()).thenReturn(2);
+        when(packet.getParameterTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.LONG));
+        when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList(9)));
+        executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
+        ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(DATABASE_TYPE)));
+        when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
+        executor.execute();
+        List<Object> actualParams = queryContextCaptor.getValue().getParameters();
+        assertThat(actualParams.size(), is(1));
+        assertThat(actualParams.get(0), is(9));
+    }
+    
+    @Test
+    void assertSkipBlobParameterWhenNotLong() throws SQLException {
+        when(packet.getStatementId()).thenReturn(2);
+        when(packet.getParameterTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.BLOB));
+        when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList("text")));
+        executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
+        ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(DATABASE_TYPE)));
+        when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
+        executor.execute();
+        List<Object> actualParams = queryContextCaptor.getValue().getParameters();
+        assertThat(actualParams.size(), is(1));
+        assertThat(actualParams.get(0), nullValue());
+    }
+    
+    @Test
+    void assertSkipBlobParameterWhenNonPositive() throws SQLException {
+        when(packet.getStatementId()).thenReturn(2);
+        when(packet.getParameterTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.BLOB));
+        when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList(0L)));
+        executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
+        ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(DATABASE_TYPE)));
+        when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
+        executor.execute();
+        List<Object> actualParams = queryContextCaptor.getValue().getParameters();
+        assertThat(actualParams.size(), is(1));
+        assertThat(actualParams.get(0), nullValue());
+    }
+    
+    @Test
+    void assertBindBlobParameterAndClearUpload() throws SQLException {
+        int blobHandle = 13;
+        long blobId = 17L;
+        byte[] expectedBytes = new byte[]{3, 4};
+        FirebirdBlobUploadCache.getInstance().registerBlob(CONNECTION_ID, blobHandle, blobId);
+        FirebirdBlobUploadCache.getInstance().appendSegment(CONNECTION_ID, blobHandle, expectedBytes);
+        FirebirdBlobUploadCache.getInstance().closeUpload(CONNECTION_ID, blobHandle);
+        List<Object> params = new ArrayList<>(Collections.singletonList(blobId));
+        when(packet.getStatementId()).thenReturn(2);
+        when(packet.getParameterTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.BLOB));
+        when(packet.getParameterValues()).thenReturn(params);
+        executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
+        ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(DATABASE_TYPE)));
+        when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
+        executor.execute();
+        List<Object> actualParams = queryContextCaptor.getValue().getParameters();
+        assertThat(actualParams.size(), is(1));
+        assertThat(actualParams.get(0), is(expectedBytes));
+        assertFalse(FirebirdBlobUploadCache.getInstance().getBlobData(CONNECTION_ID, blobId).isPresent());
+    }
+    
+    @Test
+    void assertStoredProcedureWithoutResult() throws SQLException {
+        when(packet.getStatementId()).thenReturn(1);
+        when(packet.getParameterTypes()).thenReturn(Collections.emptyList());
+        when(packet.getParameterValues()).thenReturn(Collections.emptyList());
+        when(packet.isStoredProcedure()).thenReturn(true);
+        executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
+        when(proxyBackendHandler.execute()).thenReturn(new QueryResponseHeader(Collections.singletonList(queryHeader)));
+        when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), any(QueryContext.class), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
+        Collection<DatabasePacket> actual = executor.execute();
+        Iterator<DatabasePacket> iterator = actual.iterator();
+        assertThat(executor.getResponseType(), is(ResponseType.QUERY));
+        assertThat(iterator.next(), isA(FirebirdGenericResponsePacket.class));
+        assertFalse(iterator.hasNext());
+        assertThat(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID), is(proxyBackendHandler));
     }
 }

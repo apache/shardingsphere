@@ -122,10 +122,6 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
                 continue;
             }
             Optional<byte[]> blobData = FirebirdBlobUploadCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId);
-            if (!blobData.isPresent()) {
-                params.set(i, null);
-                continue;
-            }
             byte[] bytes = blobData.get();
             params.set(i, bytes);
             blobIds.add(blobId);
