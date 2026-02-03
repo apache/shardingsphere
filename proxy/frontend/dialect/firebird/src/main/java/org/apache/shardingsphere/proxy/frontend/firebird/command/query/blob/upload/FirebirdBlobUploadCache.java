@@ -158,10 +158,9 @@ public final class FirebirdBlobUploadCache {
      */
     public void removeUpload(final int connectionId, final long blobId) {
         FirebirdBlobUpload upload = getIdMap(connectionId).remove(blobId);
-        if (null == upload) {
-            return;
+        if (null != upload) {
+            getHandleMap(connectionId).remove(upload.getBlobHandle());
         }
-        getHandleMap(connectionId).remove(upload.getBlobHandle());
     }
     
     private Map<Integer, FirebirdBlobUpload> getHandleMap(final int connectionId) {
