@@ -18,29 +18,56 @@
 package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FirebirdStatementIdGeneratorTest {
     
-    private static final int CONNECTION_ID = 1;
+    private static final FirebirdStatementIdGenerator GENERATOR = FirebirdStatementIdGenerator.getInstance();
     
-    @BeforeEach
-    void setup() {
-        FirebirdStatementIdGenerator.getInstance().registerConnection(CONNECTION_ID);
-    }
+    private final Collection<Integer> registeredConnectionIds = new HashSet<>(4, 1F);
     
     @AfterEach
     void tearDown() {
-        FirebirdStatementIdGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+        for (Integer each : registeredConnectionIds) {
+            GENERATOR.unregisterConnection(each);
+        }
+        registeredConnectionIds.clear();
+    }
+    
+    @Test
+    void assertRegisterConnection() {
+        GENERATOR.registerConnection(1);
+        registeredConnectionIds.add(1);
+        assertThat(GENERATOR.getStatementId(1), is(0));
     }
     
     @Test
     void assertNextStatementId() {
-        assertThat(FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID), is(1));
-        assertThat(FirebirdStatementIdGenerator.getInstance().nextStatementId(CONNECTION_ID), is(2));
+        GENERATOR.registerConnection(1);
+        registeredConnectionIds.add(1);
+        assertThat(GENERATOR.nextStatementId(1), is(1));
+    }
+    
+    @Test
+    void assertGetStatementId() {
+        GENERATOR.registerConnection(1);
+        registeredConnectionIds.add(1);
+        assertThat(GENERATOR.getStatementId(1), is(0));
+    }
+    
+    @Test
+    void assertUnregisterConnection() {
+        GENERATOR.registerConnection(1);
+        registeredConnectionIds.add(1);
+        GENERATOR.unregisterConnection(1);
+        registeredConnectionIds.remove(1);
+        assertThrows(NullPointerException.class, () -> GENERATOR.getStatementId(1));
     }
 }
