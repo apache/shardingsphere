@@ -962,6 +962,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
                 insertStmt.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
             }
             insertStmt.addParameterMarkers(getParameterMarkerSegments());
+            insertStmt.buildAttributes();
             multiTableInsertInto.getInsertStatements().add(insertStmt);
         }
         result.setMultiTableInsertInto(multiTableInsertInto);
@@ -1029,6 +1030,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
                 insertStmt.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
             }
             insertStmt.addParameterMarkers(getParameterMarkerSegments());
+            insertStmt.buildAttributes();
             multiTableInsertInto.getInsertStatements().add(insertStmt);
         }
         result.setMultiTableInsertInto(multiTableInsertInto);
