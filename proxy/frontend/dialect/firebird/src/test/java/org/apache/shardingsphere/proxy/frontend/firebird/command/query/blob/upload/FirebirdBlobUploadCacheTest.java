@@ -20,12 +20,17 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upl
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+import java.util.function.BooleanSupplier;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -63,24 +68,10 @@ class FirebirdBlobUploadCacheTest {
         assertThat(actualBlobId.getAsLong(), is(4L));
     }
     
-    @Test
-    void assertGetBlobIdWhenUploadMissing() {
-        assertFalse(CACHE.getBlobId(8, 10).isPresent());
-    }
-    
-    @Test
-    void assertAppendSegmentWhenUploadMissing() {
-        assertFalse(CACHE.appendSegment(3, 5, new byte[]{1}).isPresent());
-    }
-    
-    @Test
-    void assertCloseUploadWhenUploadMissing() {
-        assertFalse(CACHE.closeUpload(4, 6).isPresent());
-    }
-    
-    @Test
-    void assertGetBlobDataWhenUploadMissing() {
-        assertFalse(CACHE.getBlobData(5, 7L).isPresent());
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("missingUploadProvider")
+    void assertMissingUploadReturnsEmpty(final String caseName, final BooleanSupplier invocation) {
+        assertFalse(invocation.getAsBoolean(), caseName);
     }
     
     @Test
@@ -127,5 +118,14 @@ class FirebirdBlobUploadCacheTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private Map<Integer, Map<Long, FirebirdBlobUpload>> getIdCache() {
         return (Map<Integer, Map<Long, FirebirdBlobUpload>>) Plugins.getMemberAccessor().get(FirebirdBlobUploadCache.class.getDeclaredField("uploadsById"), CACHE);
+    }
+    
+    private static Stream<Arguments> missingUploadProvider() {
+        return Stream.of(
+                Arguments.of("append missing upload returns empty", (BooleanSupplier) () -> CACHE.appendSegment(3, 5, new byte[]{1}).isPresent()),
+                Arguments.of("close missing upload returns empty", (BooleanSupplier) () -> CACHE.closeUpload(4, 6).isPresent()),
+                Arguments.of("get blob data missing upload returns empty", (BooleanSupplier) () -> CACHE.getBlobData(5, 7L).isPresent()),
+                Arguments.of("get blob id missing upload returns empty", (BooleanSupplier) () -> CACHE.getBlobId(8, 10).isPresent())
+        );
     }
 }
