@@ -23,4 +23,7 @@
     <sql-case id="select_alias_as_single_quote_string" value="SELECT status as 'status' FROM t_order" db-types="MySQL" />
     <sql-case id="select_alias_as_string_double_quote" value="SELECT status as &quot;status&quot; FROM t_order" db-types="MySQL" />
     <sql-case id="select_with_multi_quoted_string" value="SELECT * FROM t_order WHERE name like &quot;%&quot;''&quot;%&quot;" db-types="MySQL" />
+    <sql-case id="select_like_escape_backslash_postgresql" value="SELECT * FROM t_user WHERE name LIKE 'abc\_def' ESCAPE '\'" db-types="PostgreSQL" />
+    <sql-case id="select_like_escape_backslash_oracle" value="SELECT * FROM t_user WHERE name LIKE 'abc\_def' ESCAPE '\'" db-types="Oracle" />
+    <sql-case id="select_like_escape_backslash_sql92" value="SELECT * FROM t_user WHERE name LIKE 'abc\_def' ESCAPE '\'" db-types="SQL92" />
 </sql-cases>
