@@ -3466,6 +3466,93 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_like_escape_backslash_postgresql">
+        <from>
+            <simple-table name="t_user" start-index="14" stop-index="19" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="21" stop-index="57">
+            <expr>
+                <binary-operation-expression start-index="27" stop-index="57">
+                    <left>
+                        <column name="name" start-index="27" stop-index="30" />
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="37" stop-index="57">
+                            <items>
+                                <literal-expression value="abc\_def" start-index="37" stop-index="46" />
+                            </items>
+                            <items>
+                                <literal-expression value="\" start-index="55" stop-index="57" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_like_escape_backslash_oracle">
+        <from>
+            <simple-table name="t_user" start-index="14" stop-index="19" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="21" stop-index="57">
+            <expr>
+                <binary-operation-expression start-index="27" stop-index="57">
+                    <left>
+                        <column name="name" start-index="27" stop-index="30" />
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="37" stop-index="57">
+                            <items>
+                                <literal-expression value="abc\_def" start-index="37" stop-index="46" />
+                            </items>
+                            <items>
+                                <literal-expression value="\" start-index="55" stop-index="57" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_like_escape_backslash_sql92">
+        <from>
+            <simple-table name="t_user" start-index="14" stop-index="19" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="21" stop-index="57">
+            <expr>
+                <binary-operation-expression start-index="27" stop-index="57">
+                    <left>
+                        <column name="name" start-index="27" stop-index="30" />
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="37" stop-index="57">
+                            <items>
+                                <literal-expression value="abc\_def" start-index="37" stop-index="46" />
+                            </items>
+                            <items>
+                                <literal-expression value="\" start-index="55" stop-index="57" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 
     <select sql-case-id="select_with_block_comment" >
         <from>
