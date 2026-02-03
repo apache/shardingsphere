@@ -57,10 +57,13 @@ jobs:
         run: ./mvnw -B clean install -am -pl test/e2e/operation/transaction,test/e2e/operation/pipeline,test/e2e/operation/showprocesslist -Pe2e.env.docker -DskipTests
       - name: Save E2E Image
         run: docker save -o /tmp/apache-shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
-      - uses: actions/upload-artifact@v4
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
         with:
-          name: proxy-e2e-image
-          path: /tmp/apache-shardingsphere-proxy-test.tar
+          name: build-outputs
+          path: |
+            /tmp/apache-shardingsphere-proxy-test.tar
+            ~/.m2/repository/org/apache/shardingsphere
           retention-days: 1
 
   e2e-operation-job:
@@ -105,8 +108,12 @@ jobs:
       - name: Download E2E Image
         uses: actions/download-artifact@v4
         with:
-          name: proxy-e2e-image
+          name: build-outputs
           path: /tmp/
+      - name: Restore Maven Repository
+        run: |
+          mkdir -p ~/.m2/repository/org/apache/shardingsphere
+          cp -r /tmp/org/apache/shardingsphere/* ~/.m2/repository/org/apache/shardingsphere
       - name: Load E2E Image
         run: docker load -i /tmp/apache-shardingsphere-proxy-test.tar
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
