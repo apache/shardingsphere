@@ -62,9 +62,12 @@ jobs:
           distribution: 'temurin'
           java-version: 17
           cache: 'maven'
-      - name: Build E2E Image
+      - name: Maven Install for E2E Image
         # transaction, pipeline, showprocesslist
         run: ./mvnw -B clean install -am -pl test/e2e/operation/transaction,test/e2e/operation/pipeline,test/e2e/operation/showprocesslist -Pe2e.env.docker -DskipTests
+      - name: Package Maven Repository
+        run: |
+          tar -czf /tmp/maven-repo-output.tar.gz -C ~/.m2/repository org/apache/shardingsphere
       - name: Save E2E Image
         run: docker save -o /tmp/apache-shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - name: Upload Build Artifacts
@@ -72,8 +75,8 @@ jobs:
         with:
           name: build-outputs
           path: |
+            /tmp/maven-repo-output.tar.gz
             /tmp/apache-shardingsphere-proxy-test.tar
-            ~/.m2/repository/org/apache/shardingsphere
           retention-days: 1
 
   e2e-operation:
@@ -129,15 +132,15 @@ jobs:
           distribution: 'temurin'
           java-version: 17
           cache: 'maven'
-      - name: Download E2E Image
+      - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-outputs
           path: /tmp/
       - name: Restore Maven Repository
         run: |
-          mkdir -p ~/.m2/repository/org/apache/shardingsphere
-          cp -r /tmp/org/apache/shardingsphere/* ~/.m2/repository/org/apache/shardingsphere
+          mkdir -p ~/.m2/repository
+          tar -xzf /tmp/maven-repo-output.tar.gz -C ~/.m2/repository
       - name: Load E2E Image
         run: docker load -i /tmp/apache-shardingsphere-proxy-test.tar
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
