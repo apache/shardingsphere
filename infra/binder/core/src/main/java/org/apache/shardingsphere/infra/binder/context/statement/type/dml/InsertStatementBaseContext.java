@@ -74,7 +74,7 @@ public final class InsertStatementBaseContext implements SQLStatementContext {
         this.currentDatabaseName = currentDatabaseName;
         valueExpressions = getAllValueExpressions(sqlStatement);
         Collection<TableSegment> tableSegments = getAllSimpleTableSegments();
-        tablesContext = new TablesContext(tableSegments, Collections.emptyMap());
+        tablesContext = new TablesContext(tableSegments);
         List<String> insertColumnNames = getInsertColumnNames();
         schema = getSchema(metaData, currentDatabaseName);
         columnNames = containsInsertColumns()

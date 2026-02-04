@@ -47,7 +47,7 @@ class DatabaseTypeRegistryTest {
     
     @Test
     void assertGetDefaultSchemaNameWhenDatabaseTypeNotContainsDefaultSchema() {
-        assertThat(new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, "BRANCH")).getDefaultSchemaName("FOO"), is("foo"));
+        assertThat(new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, "BRANCH")).getDefaultSchemaName("FOO"), is("FOO"));
     }
     
     @Test
