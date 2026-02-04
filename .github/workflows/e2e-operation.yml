@@ -51,7 +51,7 @@ jobs:
 
   prepare-e2e-artifacts:
     name: Prepare E2E Artifacts
-    if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]' && needs.detect-changed-files.outputs.changed_operations != '["ignore"]'
+    if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]'
     needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 40
@@ -86,7 +86,7 @@ jobs:
 
   e2e-operation:
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
-    if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]' && needs.detect-changed-files.outputs.changed_operations != '["ignore"]'
+    if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]'
     needs: [ detect-changed-files, global-environment, prepare-e2e-artifacts ]
     runs-on: ubuntu-latest
     timeout-minutes: 40
