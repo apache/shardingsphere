@@ -49,17 +49,47 @@ jobs:
     outputs:
       changed_operations: ${{ steps.filter.outputs.changes }}
 
+  build-e2e-image:
+    name: Build E2E Image
+    if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]' && needs.detect-changed-files.outputs.changed_operations != '["ignore"]'
+    needs: global-environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: actions/setup-java@v5.1.0
+        with:
+          distribution: 'temurin'
+          java-version: 17
+          cache: 'maven'
+      - name: Maven Install for E2E Image
+        # transaction, pipeline, showprocesslist
+        run: ./mvnw -B clean install -am -pl test/e2e/operation/transaction,test/e2e/operation/pipeline,test/e2e/operation/showprocesslist -Pe2e.env.docker -DskipTests
+      - name: Package Maven Repository
+        run: |
+          tar -czf /tmp/maven-repo-output.tar.gz -C ~/.m2/repository org/apache/shardingsphere
+      - name: Save E2E Image
+        run: docker save -o /tmp/apache-shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-outputs
+          path: |
+            /tmp/maven-repo-output.tar.gz
+            /tmp/apache-shardingsphere-proxy-test.tar
+          retention-days: 1
+
   e2e-operation:
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]' && needs.detect-changed-files.outputs.changed_operations != '["ignore"]'
-    needs: [ detect-changed-files, global-environment ]
+    needs: [ detect-changed-files, global-environment, build-e2e-image ]
     runs-on: ubuntu-latest
     timeout-minutes: 40
     strategy:
       max-parallel: 15
       fail-fast: false
       matrix:
-        operation: [ transaction, pipeline, showprocesslist ]
+        operation: ${{ fromJSON(needs.detect-changed-files.outputs.changed_operations) }}
         image: [
           { type: "e2e.docker.database.mysql.images", version: "mysql:5.7" },
           { type: "e2e.docker.database.mariadb.images", version: "mariadb:11" },
@@ -76,35 +106,23 @@ jobs:
           - operation: showprocesslist
             image: { type: "e2e.docker.database.opengauss.images", version: "enmotech/opengauss-lite:5.1.0" }
     steps:
-      - env:
-          changed_operations: ${{ needs.detect-changed-files.outputs.changed_operations }}
-          current_operation: ${{ matrix.operation }}
-        name: Check if ${{ matrix.operation }} is Changed
-        run: |
-          echo "skip_current_step=false" >> $GITHUB_ENV
-          if [[ ${changed_operations} == '["ignore"]' ]]; then
-            echo "${current_operation} is ignored by ignore filter"
-            echo "skip_current_step=true" >> $GITHUB_ENV
-          fi
-          
-          if [[ ${changed_operations} == *""$current_operation""* ]]; then
-            echo "${current_operation} is detected by changed filter"
-            else
-              echo "${current_operation} is ignore by filter"
-              echo "skip_current_step=true" >> $GITHUB_ENV
-          fi
       - name: Checkout Project
-        if: (env.skip_current_step == 'false')
         uses: actions/checkout@v6.0.1
-      - if: (env.skip_current_step == 'false')
-        uses: actions/setup-java@v5.1.0
+      - uses: actions/setup-java@v5.1.0
         with:
           distribution: 'temurin'
           java-version: 17
           cache: 'maven'
-      - name: Build ${{ matrix.operation }} E2E Image
-        if: (env.skip_current_step == 'false')
-        run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.operation }} -Pe2e.env.docker -DskipTests
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-outputs
+          path: /tmp/
+      - name: Restore Maven Repository
+        run: |
+          mkdir -p ~/.m2/repository
+          tar -xzf /tmp/maven-repo-output.tar.gz -C ~/.m2/repository
+      - name: Load E2E Image
+        run: docker load -i /tmp/apache-shardingsphere-proxy-test.tar
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
-        if: (env.skip_current_step == 'false')
         run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${{ matrix.image.type }}=${{ matrix.image.version }}
