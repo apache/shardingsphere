@@ -40,12 +40,12 @@ class TablesContextTest {
     
     @Test
     void assertGetTableNamesWithoutTableSegments() {
-        assertTrue(new TablesContext(Collections.emptyList(), Collections.emptyMap()).getTableNames().isEmpty());
+        assertTrue(new TablesContext(Collections.emptyList()).getTableNames().isEmpty());
     }
     
     @Test
     void assertGetTableNamesWithoutSimpleTableSegments() {
-        assertTrue(new TablesContext(Collections.singleton(mock(TableSegment.class)), Collections.emptyMap()).getTableNames().isEmpty());
+        assertTrue(new TablesContext(Collections.singleton(mock(TableSegment.class))).getTableNames().isEmpty());
     }
     
     @Test
