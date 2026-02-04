@@ -13713,4 +13713,67 @@
             </expr>
         </where>
     </select>
+
+    <select sql-case-id="select_pg_database_info">
+        <projections start-index="7" stop-index="250">
+            <column-projection name="datname" alias="Name" start-index="7" stop-index="25">
+                <owner name="d" start-index="7" stop-index="7"/>
+            </column-projection>
+            <expression-projection alias="Owner" text="pg_catalog.pg_get_userbyid(d.datdba)" start-index="28" stop-index="74">
+                <expr>
+                    <function function-name="pg_get_userbyid" text="pg_catalog.pg_get_userbyid(d.datdba)" start-index="28" stop-index="63">
+                        <parameter>
+                            <column name="datdba" start-index="55" stop-index="62">
+                                <owner name="d" start-index="55" stop-index="55"/>
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection alias="Encoding" text="pg_catalog.pg_encoding_to_char(d.encoding)" start-index="77" stop-index="132">
+                <expr>
+                    <function function-name="pg_encoding_to_char" text="pg_catalog.pg_encoding_to_char(d.encoding)" start-index="77" stop-index="118">
+                        <parameter>
+                            <column name="encoding" start-index="108" stop-index="117">
+                                <owner name="d" start-index="108" stop-index="108"/>
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="datcollate" alias="Collate" start-index="135" stop-index="159">
+                <owner name="d" start-index="135" stop-index="135"/>
+            </column-projection>
+            <column-projection name="datctype" alias="Ctype" start-index="162" stop-index="182">
+                <owner name="d" start-index="162" stop-index="162"/>
+            </column-projection>
+            <expression-projection alias="Access privileges" text="pg_catalog.array_to_string(d.datacl, E'\n')" start-index="185" stop-index="250">
+                <expr>
+                    <function function-name="array_to_string" text="pg_catalog.array_to_string(d.datacl, E'\n')" start-index="185" stop-index="227">
+                        <parameter>
+                            <column name="datacl" start-index="212" stop-index="219">
+                                <owner name="d" start-index="212" stop-index="212"/>
+                            </column>
+                        </parameter>
+                        <parameter>
+                            <type-cast-expression>
+                                <expression>
+                                    <literal-expression value="\n" start-index="223" stop-index="226"/>
+                                </expression>
+                                <data-type>E</data-type>
+                            </type-cast-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="252" stop-index="280">
+            <simple-table name="pg_database" alias="d" start-index="257" stop-index="280">
+                <owner name="pg_catalog" start-index="257" stop-index="266"/>
+            </simple-table>
+        </from>
+        <order-by>
+            <index-item index="1" start-index="291" stop-index="291"/>
+        </order-by>
+    </select>
 </sql-parser-test-cases>
