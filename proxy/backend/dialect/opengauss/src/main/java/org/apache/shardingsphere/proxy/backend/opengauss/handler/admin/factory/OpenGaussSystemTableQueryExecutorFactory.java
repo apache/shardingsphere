@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.executor.OpenGaussSelectDatCompatibilityExecutor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -87,10 +88,14 @@ public final class OpenGaussSystemTableQueryExecutorFactory {
         for (SimpleTableSegment each : selectStatementContext.getTablesContext().getSimpleTables()) {
             TableNameSegment tableNameSegment = each.getTableName();
             String tableName = tableNameSegment.getIdentifier().getValue();
-            String schemaName = tableNameSegment.getTableBoundInfo().map(TableSegmentBoundInfo::getOriginalSchema).map(IdentifierValue::getValue).orElse(null);
+            String schemaName = tableNameSegment.getTableBoundInfo().map(TableSegmentBoundInfo::getOriginalSchema).map(IdentifierValue::getValue).orElseGet(() -> getOwnerSchemaName(each));
             Optional.ofNullable(schemaName).ifPresent(optional -> result.computeIfAbsent(optional, key -> new CaseInsensitiveSet<>()).add(tableName));
         }
         return result;
+    }
+    
+    private static String getOwnerSchemaName(final SimpleTableSegment tableSegment) {
+        return tableSegment.getOwner().map(OwnerSegment::getIdentifier).map(IdentifierValue::getValue).orElse(null);
     }
     
     private static boolean isSelectSystemTable(final Map<String, Collection<String>> selectedSchemaTables) {
