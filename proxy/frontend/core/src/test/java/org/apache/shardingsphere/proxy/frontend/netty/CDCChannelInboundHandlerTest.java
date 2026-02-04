@@ -206,6 +206,18 @@ class CDCChannelInboundHandlerTest {
     }
     
     @Test
+    void assertLoginRequestBodyWithoutBasicBody() {
+        channel.writeInbound(CDCRequest.newBuilder().setType(Type.LOGIN).setRequestId("login-without-basic-body")
+                .setLoginRequestBody(LoginRequestBody.newBuilder().setType(LoginRequestBody.LoginType.BASIC).build()).build());
+        CDCResponse greeting = channel.readOutbound();
+        assertTrue(greeting.hasServerGreetingResult());
+        CDCResponse loginResult = channel.readOutbound();
+        assertThat(loginResult.getStatus(), is(Status.FAILED));
+        assertThat(loginResult.getErrorCode(), is(XOpenSQLState.NOT_FOUND.getValue()));
+        assertFalse(channel.isOpen());
+    }
+    
+    @Test
     void assertLoginRequestSucceed() {
         channel.connect(new InetSocketAddress("127.0.0.1", 3307));
         String encryptPassword = Hashing.sha256().hashBytes("root".getBytes()).toString().toUpperCase();
