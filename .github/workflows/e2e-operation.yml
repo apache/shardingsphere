@@ -49,8 +49,8 @@ jobs:
     outputs:
       changed_operations: ${{ steps.filter.outputs.changes }}
 
-  build-e2e-image:
-    name: Build E2E Image
+  prepare-e2e-artifacts:
+    name: Prepare E2E Artifacts
     if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]' && needs.detect-changed-files.outputs.changed_operations != '["ignore"]'
     needs: global-environment
     runs-on: ubuntu-latest
@@ -62,10 +62,15 @@ jobs:
           distribution: 'temurin'
           java-version: 17
           cache: 'maven'
-      - name: Maven Install for E2E Image
-        # transaction, pipeline, showprocesslist
-        run: ./mvnw -B clean install -am -pl test/e2e/operation/transaction,test/e2e/operation/pipeline,test/e2e/operation/showprocesslist -Pe2e.env.docker -DskipTests
-      - name: Package Maven Repository
+      - name: Maven Install
+        env:
+          PREFIX: "test/e2e/operation/"
+          MODULE_LIST: "transaction,pipeline,showprocesslist"
+        run: |
+          FORMATTED_PL=$(echo "$MODULE_LIST" | sed "s|,|,$PREFIX|g" | sed "s|^|$PREFIX|")
+          echo "Ready to build: $FORMATTED_PL"
+          ./mvnw -B clean install -am -pl "$FORMATTED_PL" -Pe2e.env.docker -DskipTests
+      - name: Package shardingsphere Maven Repository
         run: |
           tar -czf /tmp/maven-repo-output.tar.gz -C ~/.m2/repository org/apache/shardingsphere
       - name: Save E2E Image
@@ -82,7 +87,7 @@ jobs:
   e2e-operation:
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
     if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]' && needs.detect-changed-files.outputs.changed_operations != '["ignore"]'
-    needs: [ detect-changed-files, global-environment, build-e2e-image ]
+    needs: [ detect-changed-files, global-environment, prepare-e2e-artifacts ]
     runs-on: ubuntu-latest
     timeout-minutes: 40
     strategy:
@@ -113,12 +118,12 @@ jobs:
           distribution: 'temurin'
           java-version: 17
           cache: 'maven'
-      - name: Download Artifacts
+      - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-outputs
           path: /tmp/
-      - name: Restore Maven Repository
+      - name: Restore shardingsphere Maven Repository
         run: |
           mkdir -p ~/.m2/repository
           tar -xzf /tmp/maven-repo-output.tar.gz -C ~/.m2/repository
