@@ -8,7 +8,7 @@
 
 1. SQL Parser: Support Oracle SQL parser correctly extract REGEXP_SUBSTR parameters - [#37924](https://github.com/apache/shardingsphere/pull/37924)
 2. SQL Parser: Fix escape '\' in SQL causing DialectSQLParsingException - [#37943](https://github.com/apache/shardingsphere/pull/37943)
-3. SQL Parser: Fix error parsing \l command SQL statement when front-end protocol is og - [#37951](https://github.com/apache/shardingsphere/pull/37951)
+3. SQL Parser: Fix error parsing \l command SQL statement when front-end protocol is og - [#37953](https://github.com/apache/shardingsphere/pull/37953)
 
 ## Release 5.5.3
 
