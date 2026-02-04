@@ -106,7 +106,6 @@ class ConnectionLimitContextTest {
         return Stream.of(
                 Arguments.of("allowed", 2, 1, true, 2),
                 Arguments.of("rejected", 2, 2, false, 3),
-                Arguments.of("unlimited", 0, 0, true, 1)
-        );
+                Arguments.of("unlimited", 0, 0, true, 1));
     }
 }
