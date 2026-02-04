@@ -495,4 +495,6 @@
     <sql-case id="select_format_function_oracle" value="SELECT FORMAT('abc', '999') FROM dual" db-types="Oracle" />
     <sql-case id="select_first_value_oracle" value="SELECT FIRST_VALUE(salary) OVER (ORDER BY salary) FROM employees" db-types="Oracle" />
     <sql-case id="select_datetime_lbe_literal_oracle" value="SELECT {ts '2020-02-02 10:00:00'} FROM dual" db-types="Oracle" />
+    <sql-case id="select_order_by_order" value="SELECT id FROM test ORDER BY `order` " db-types="MySQL,Hive,Doris,Presto" />
+    <sql-case id="select_order_by_order_two" value="SELECT id FROM t_test ORDER BY t_test.order" db-types="MySQL,Hive,Doris,SQLServer,Firebird,SQL92,Presto" />
 </sql-cases>
