@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.binder.context.segment.select.projection;
 
+import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -56,6 +58,8 @@ public final class ProjectionsContext {
     
     private final boolean containsLastInsertIdProjection;
     
+    private final Map<String, Integer> columnLabelAndIndexMap;
+    
     public ProjectionsContext(final int startIndex, final int stopIndex, final boolean distinctRow, final Collection<Projection> projections) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
@@ -64,6 +68,7 @@ public final class ProjectionsContext {
         aggregationDistinctProjections = createAggregationDistinctProjections();
         expandProjections = createExpandProjections();
         containsLastInsertIdProjection = isContainsLastInsertIdProjection(projections);
+        columnLabelAndIndexMap = createColumnLabelAndIndexMap(expandProjections);
     }
     
     private Collection<AggregationDistinctProjection> createAggregationDistinctProjections() {
@@ -168,6 +173,15 @@ public final class ProjectionsContext {
             }
         }
         return false;
+    }
+    
+    private Map<String, Integer> createColumnLabelAndIndexMap(final List<Projection> expandProjections) {
+        Map<String, Integer> result = new CaseInsensitiveMap<>(expandProjections.size(), 1F);
+        for (int columnIndex = expandProjections.size(); columnIndex > 0; columnIndex--) {
+            Projection projection = expandProjections.get(columnIndex - 1);
+            result.put(DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : projection.getColumnLabel(), columnIndex);
+        }
+        return result;
     }
     
     /**
