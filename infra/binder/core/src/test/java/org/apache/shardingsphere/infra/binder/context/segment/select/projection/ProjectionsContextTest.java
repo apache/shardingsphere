@@ -41,6 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ProjectionsContextTest {
     
@@ -168,13 +169,16 @@ class ProjectionsContextTest {
     
     @Test
     void assertNotFindColumnProjectionWithNotColumnProjection() {
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(mock(Projection.class)));
+        Projection mockProjection = mock(Projection.class);
+        when(mockProjection.getColumnLabel()).thenReturn("label");
+        when(mockProjection.getExpression()).thenReturn("expression");
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(mockProjection));
         assertFalse(projectionsContext.findColumnProjection(1).isPresent());
     }
     
     @Test
     void assertFindColumnProjection() {
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(mock(ColumnProjection.class)));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(getColumnProjection()));
         assertTrue(projectionsContext.findColumnProjection(1).isPresent());
     }
 }

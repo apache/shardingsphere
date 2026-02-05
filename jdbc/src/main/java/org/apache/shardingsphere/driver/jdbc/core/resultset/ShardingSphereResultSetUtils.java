@@ -20,14 +20,11 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.DerivedColumn;
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,21 +43,11 @@ public final class ShardingSphereResultSetUtils {
      */
     public static Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
         if (sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).containsDerivedProjections()) {
-            return createColumnLabelAndIndexMapWithExpandProjections((SelectStatementContext) sqlStatementContext);
+            return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getColumnLabelAndIndexMap();
         }
         Map<String, Integer> result = new CaseInsensitiveMap<>(resultSetMetaData.getColumnCount(), 1F);
         for (int columnIndex = resultSetMetaData.getColumnCount(); columnIndex > 0; columnIndex--) {
             result.put(resultSetMetaData.getColumnLabel(columnIndex), columnIndex);
-        }
-        return result;
-    }
-    
-    private static Map<String, Integer> createColumnLabelAndIndexMapWithExpandProjections(final SelectStatementContext statementContext) {
-        List<Projection> actualProjections = statementContext.getProjectionsContext().getExpandProjections();
-        Map<String, Integer> result = new CaseInsensitiveMap<>(actualProjections.size(), 1F);
-        for (int columnIndex = actualProjections.size(); columnIndex > 0; columnIndex--) {
-            Projection projection = actualProjections.get(columnIndex - 1);
-            result.put(DerivedColumn.isDerivedColumnName(projection.getColumnLabel()) ? projection.getExpression() : projection.getColumnLabel(), columnIndex);
         }
         return result;
     }

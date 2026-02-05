@@ -78,7 +78,10 @@ class QueryHeaderBuilderEngineTest {
     
     @Test
     void assertBuildWithProjectionsColumnIndexOutOfRange() {
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(mock(Projection.class)));
+        Projection projection = mock(Projection.class);
+        when(projection.getColumnLabel()).thenReturn("label");
+        when(projection.getColumnName()).thenReturn("column");
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projection));
         assertThrows(ColumnIndexOutOfRangeException.class, () -> new QueryHeaderBuilderEngine(databaseType).build(projectionsContext, mock(), mock(), 2));
     }
 }
