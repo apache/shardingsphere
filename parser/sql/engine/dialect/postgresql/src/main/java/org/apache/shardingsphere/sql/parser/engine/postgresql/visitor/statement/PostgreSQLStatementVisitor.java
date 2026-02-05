@@ -1386,7 +1386,9 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (segment instanceof LiteralExpressionSegment) {
             Object literals = ((LiteralExpressionSegment) segment).getLiterals();
             if (null == literals) {
-                throw new SQLParsingException("LIMIT/OFFSET/FETCH clause does not support NULL value");
+                return ctx instanceof SelectOffsetValueContext
+                        ? new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), 0L)
+                        : null;
             }
             return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(literals.toString()));
         }
