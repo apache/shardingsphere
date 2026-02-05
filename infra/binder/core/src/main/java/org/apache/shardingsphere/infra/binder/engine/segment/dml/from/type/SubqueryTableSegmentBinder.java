@@ -72,7 +72,7 @@ public final class SubqueryTableSegmentBinder {
                 boundSubSelect.getProjections().getProjections(), subqueryTableName, binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
         SimpleTableSegmentBinderContext tableBinderContext = new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE);
         tableBinderContext.setFromWithSegment(fromWithSegment);
-        tableBinderContexts.put(new CaseInsensitiveString(subqueryTableName.getValue()), tableBinderContext);
+        tableBinderContexts.put(CaseInsensitiveString.of(subqueryTableName.getValue()), tableBinderContext);
         return result;
     }
 }
