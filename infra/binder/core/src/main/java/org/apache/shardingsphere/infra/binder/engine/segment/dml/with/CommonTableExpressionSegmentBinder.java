@@ -70,7 +70,7 @@ public final class CommonTableExpressionSegmentBinder {
             binderContext.getCommonTableExpressionsSegmentsUniqueAliases().add(segment.getAliasName().get());
         }
         if (recursive && segment.getAliasName().isPresent()) {
-            binderContext.getExternalTableBinderContexts().put(new CaseInsensitiveString(segment.getAliasName().get()),
+            binderContext.getExternalTableBinderContexts().put(CaseInsensitiveString.of(segment.getAliasName().get()),
                     new SimpleTableSegmentBinderContext(segment.getColumns().stream().map(ColumnProjectionSegment::new).collect(Collectors.toList()), TableSourceType.TEMPORARY_TABLE));
         }
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getSubquery());
@@ -96,7 +96,7 @@ public final class CommonTableExpressionSegmentBinder {
         Collection<ProjectionSegment> boundProjectionSegments = definitionColumns.isEmpty() ? subqueryProjections : new LinkedList<>(boundDefinitionColumns);
         SimpleTableSegmentBinderContext tableSegmentBinderContext = new SimpleTableSegmentBinderContext(boundProjectionSegments, TableSourceType.TEMPORARY_TABLE);
         tableSegmentBinderContext.setFromWithSegment(true);
-        result.put(new CaseInsensitiveString(""), tableSegmentBinderContext);
+        result.put(CaseInsensitiveString.of(""), tableSegmentBinderContext);
         return result;
     }
     
@@ -141,8 +141,8 @@ public final class CommonTableExpressionSegmentBinder {
             return;
         }
         if (recursive && segment.getAliasName().isPresent()) {
-            externalTableBinderContexts.removeAll(new CaseInsensitiveString(segment.getAliasName().get()));
+            externalTableBinderContexts.removeAll(CaseInsensitiveString.of(segment.getAliasName().get()));
         }
-        externalTableBinderContexts.putAll(new CaseInsensitiveString(segment.getAliasName().get()), currentTableBinderContexts.values());
+        externalTableBinderContexts.putAll(CaseInsensitiveString.of(segment.getAliasName().get()), currentTableBinderContexts.values());
     }
 }

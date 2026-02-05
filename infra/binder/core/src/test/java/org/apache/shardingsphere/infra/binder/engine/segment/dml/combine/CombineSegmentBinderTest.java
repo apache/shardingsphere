@@ -60,7 +60,7 @@ class CombineSegmentBinderTest {
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(
                 mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS), "foo_db", new HintValueContext(), mock(SQLStatement.class));
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> externalContexts = binderContext.getExternalTableBinderContexts();
-        CaseInsensitiveString tableKey = new CaseInsensitiveString("t_order");
+        CaseInsensitiveString tableKey = CaseInsensitiveString.of("t_order");
         externalContexts.put(tableKey, mock(TableSegmentBinderContext.class));
         Collection<String> cteAliases = binderContext.getCommonTableExpressionsSegmentsUniqueAliases();
         cteAliases.add("existing_cte");

@@ -26,6 +26,8 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.Objects;
+
 /**
  * ShardingSphere identifier.
  */
@@ -39,20 +41,20 @@ public final class ShardingSphereIdentifier {
     private final boolean caseSensitive;
     
     public ShardingSphereIdentifier(final String value) {
-        this.value = new CaseInsensitiveString(value);
+        this.value = null == value ? null : CaseInsensitiveString.of(value);
         standardizeValue = value;
         caseSensitive = false;
     }
     
     public ShardingSphereIdentifier(final String value, final DatabaseType databaseType) {
-        this.value = new CaseInsensitiveString(value);
+        this.value = null == value ? null : CaseInsensitiveString.of(value);
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         standardizeValue = standardizeValue(value, dialectDatabaseMetaData, false);
         caseSensitive = dialectDatabaseMetaData.isCaseSensitive();
     }
     
     public ShardingSphereIdentifier(final IdentifierValue identifierValue, final DatabaseType databaseType) {
-        value = new CaseInsensitiveString(identifierValue.getValue());
+        value = null == identifierValue.getValue() ? null : CaseInsensitiveString.of(identifierValue.getValue());
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
         standardizeValue = standardizeValue(identifierValue.getValue(), dialectDatabaseMetaData, QuoteCharacter.NONE != identifierValue.getQuoteCharacter());
         caseSensitive = dialectDatabaseMetaData.isCaseSensitive();
@@ -83,7 +85,7 @@ public final class ShardingSphereIdentifier {
      * @return identifier value
      */
     public String getValue() {
-        return value.toString();
+        return null == value ? null : value.toString();
     }
     
     @Override
@@ -98,7 +100,7 @@ public final class ShardingSphereIdentifier {
         if (null == standardizeValue || null == other.getStandardizeValue()) {
             return false;
         }
-        return caseSensitive ? standardizeValue.equals(other.getStandardizeValue()) : value.equals(other.value);
+        return caseSensitive ? standardizeValue.equals(other.getStandardizeValue()) : Objects.equals(value, other.value);
     }
     
     @Override
@@ -106,7 +108,10 @@ public final class ShardingSphereIdentifier {
         if (null == standardizeValue) {
             return 0;
         }
-        return caseSensitive ? standardizeValue.hashCode() : value.hashCode();
+        if (caseSensitive) {
+            return standardizeValue.hashCode();
+        }
+        return null == value ? 0 : value.hashCode();
     }
     
     @Override

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
@@ -50,7 +49,7 @@ class OuterJoinExpressionBinderTest {
         TableSegmentBoundInfo tableBoundInfo = new TableSegmentBoundInfo(new IdentifierValue("t_order"), new IdentifierValue("order_id"));
         boundOrderIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(tableBoundInfo,
                 new IdentifierValue("t_order"), new IdentifierValue("order_id"), TableSourceType.PHYSICAL_TABLE));
-        tableBinderContexts.put(new CaseInsensitiveMap.CaseInsensitiveString("t_order"),
+        tableBinderContexts.put(CaseInsensitiveString.of("t_order"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn)), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         column.setOwner(new OwnerSegment(0, 0, new IdentifierValue("t_order")));

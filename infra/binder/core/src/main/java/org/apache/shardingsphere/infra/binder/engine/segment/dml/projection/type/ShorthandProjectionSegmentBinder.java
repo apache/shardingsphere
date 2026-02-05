@@ -66,9 +66,10 @@ public final class ShorthandProjectionSegmentBinder {
     
     private static Collection<ProjectionSegment> getProjectionSegmentsByTableAliasOrName(final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                                          final String tableAliasOrName) {
-        ShardingSpherePreconditions.checkContains(tableBinderContexts.keySet(), new CaseInsensitiveString(tableAliasOrName),
+        ShardingSpherePreconditions.checkNotNull(tableAliasOrName, () -> new IllegalStateException("Table alias or name for shorthand projection segment owner can not be null."));
+        ShardingSpherePreconditions.checkContains(tableBinderContexts.keySet(), CaseInsensitiveString.of(tableAliasOrName),
                 () -> new IllegalStateException(String.format("Can not find table binder context by table alias or name %s.", tableAliasOrName)));
-        return tableBinderContexts.get(new CaseInsensitiveString(tableAliasOrName)).iterator().next().getProjectionSegments();
+        return tableBinderContexts.get(CaseInsensitiveString.of(tableAliasOrName)).iterator().next().getProjectionSegments();
     }
     
     private static void expandVisibleColumns(final Collection<ProjectionSegment> projectionSegments, final ShorthandProjectionSegment segment) {
