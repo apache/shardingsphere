@@ -257,12 +257,11 @@ class SelectStatementContextTest {
         subqueryProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
         subSelectStatement.setProjections(subqueryProjections);
         SubqueryExpressionSegment subqueryExpressionSegment = new SubqueryExpressionSegment(new SubquerySegment(0, 0, subSelectStatement, ""));
-        SubqueryProjectionSegment projectionSegment = mock(SubqueryProjectionSegment.class);
         WhereSegment whereSegment = new WhereSegment(0, 0, subqueryExpressionSegment);
         SelectStatement selectStatement = new SelectStatement(databaseType);
         selectStatement.setWhere(whereSegment);
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, subSelectStatement, "");
-        when(projectionSegment.getSubquery()).thenReturn(subquerySegment);
+        SubqueryProjectionSegment projectionSegment = new SubqueryProjectionSegment(subquerySegment, "");
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(projectionSegment);
         selectStatement.setProjections(projectionsSegment);
