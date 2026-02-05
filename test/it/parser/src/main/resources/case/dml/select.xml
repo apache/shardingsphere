@@ -13713,6 +13713,32 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_order_by_order">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="test" start-index="15" stop-index="18" />
+        </from>
+        <order-by>
+            <column-item name="order" start-delimiter="`" end-delimiter="`" start-index="29" stop-index="35" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_order_by_order_two">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="t_test" start-index="15" stop-index="20" />
+        </from>
+        <order-by>
+            <column-item name="order" start-index="31" stop-index="42">
+                <owner name="t_test" start-index="31" stop-index="36" />
+            </column-item>
+        </order-by>
+    </select>
 
     <select sql-case-id="select_pg_database_info">
         <projections start-index="7" stop-index="250">

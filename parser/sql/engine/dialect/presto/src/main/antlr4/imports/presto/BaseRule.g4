@@ -343,6 +343,7 @@ identifierKeywordsUnambiguous
     | OPEN
     | OPTIONAL
     | OPTIONS
+    | ORDER
     | ORDINALITY
     | ORGANIZATION
     | OTHERS
