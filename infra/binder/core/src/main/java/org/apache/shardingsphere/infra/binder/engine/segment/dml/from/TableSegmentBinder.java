@@ -66,13 +66,17 @@ public final class TableSegmentBinder {
             return DeleteMultiTableSegmentBinder.bind((DeleteMultiTableSegment) segment, binderContext, tableBinderContexts);
         }
         if (segment instanceof FunctionTableSegment) {
-            tableBinderContexts.put(new CaseInsensitiveString(segment.getAliasName().orElseGet(() -> ((FunctionTableSegment) segment).getTableFunction().getText())),
-                    new FunctionTableSegmentBinderContext());
+            String name = segment.getAliasName().orElseGet(() -> ((FunctionTableSegment) segment).getTableFunction().getText());
+            if (null != name) {
+                tableBinderContexts.put(CaseInsensitiveString.of(name), new FunctionTableSegmentBinderContext());
+            }
             return segment;
         }
         if (segment instanceof CollectionTableSegment) {
-            tableBinderContexts.put(new CaseInsensitiveString(segment.getAliasName().orElseGet(() -> ((CollectionTableSegment) segment).getExpressionSegment().getText())),
-                    new FunctionTableSegmentBinderContext());
+            String name = segment.getAliasName().orElseGet(() -> ((CollectionTableSegment) segment).getExpressionSegment().getText());
+            if (null != name) {
+                tableBinderContexts.put(CaseInsensitiveString.of(name), new FunctionTableSegmentBinderContext());
+            }
             return segment;
         }
         return segment;

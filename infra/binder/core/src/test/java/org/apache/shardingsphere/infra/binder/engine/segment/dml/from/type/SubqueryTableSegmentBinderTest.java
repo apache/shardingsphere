@@ -76,8 +76,8 @@ class SubqueryTableSegmentBinderTest {
         SubqueryTableSegment actual = SubqueryTableSegmentBinder.bind(subqueryTableSegment,
                 new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), selectStatement), tableBinderContexts, LinkedHashMultimap.create(), false);
         assertTrue(actual.getAlias().isPresent());
-        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("temp")));
-        List<ProjectionSegment> projectionSegments = new ArrayList<>(tableBinderContexts.get(new CaseInsensitiveString("temp")).iterator().next().getProjectionSegments());
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("temp")));
+        List<ProjectionSegment> projectionSegments = new ArrayList<>(tableBinderContexts.get(CaseInsensitiveString.of("temp")).iterator().next().getProjectionSegments());
         assertThat(projectionSegments.size(), is(3));
         assertThat(projectionSegments.get(0), isA(ColumnProjectionSegment.class));
         assertTrue(((ColumnProjectionSegment) projectionSegments.get(0)).getColumn().getOwner().isPresent());
@@ -110,8 +110,8 @@ class SubqueryTableSegmentBinderTest {
         SubqueryTableSegment actual = SubqueryTableSegmentBinder.bind(subqueryTableSegment,
                 new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), selectStatement), tableBinderContexts, LinkedHashMultimap.create(), false);
         assertTrue(actual.getAlias().isPresent());
-        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("temp")));
-        List<ProjectionSegment> projectionSegments = new ArrayList<>(tableBinderContexts.get(new CaseInsensitiveString("temp")).iterator().next().getProjectionSegments());
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("temp")));
+        List<ProjectionSegment> projectionSegments = new ArrayList<>(tableBinderContexts.get(CaseInsensitiveString.of("temp")).iterator().next().getProjectionSegments());
         assertThat(projectionSegments.size(), is(1));
         assertThat(projectionSegments.get(0), isA(ColumnProjectionSegment.class));
         assertTrue(((ColumnProjectionSegment) projectionSegments.get(0)).getColumn().getOwner().isPresent());
@@ -133,7 +133,7 @@ class SubqueryTableSegmentBinderTest {
         SubqueryTableSegment actual = SubqueryTableSegmentBinder.bind(subqueryTableSegment,
                 new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), selectStatement), tableBinderContexts, LinkedHashMultimap.create(), false);
         assertFalse(actual.getAlias().isPresent());
-        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("")));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("")));
     }
     
     private ShardingSphereMetaData createMetaData() {

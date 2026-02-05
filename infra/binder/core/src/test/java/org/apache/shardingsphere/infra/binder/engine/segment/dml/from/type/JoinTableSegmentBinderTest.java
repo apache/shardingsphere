@@ -74,8 +74,8 @@ class JoinTableSegmentBinderTest {
         assertThat(actual.getLeft(), isA(SimpleTableSegment.class));
         assertThat(actual.getRight(), isA(SimpleTableSegment.class));
         assertJoinTableProjectionSegments(actual.getDerivedJoinTableProjectionSegments());
-        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o")));
-        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("i")));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("o")));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("i")));
     }
     
     private void assertJoinTableProjectionSegments(final Collection<ProjectionSegment> joinTableProjectionSegments) {
@@ -112,8 +112,8 @@ class JoinTableSegmentBinderTest {
         assertThat(actual.getLeft(), isA(SimpleTableSegment.class));
         assertThat(actual.getRight(), isA(SimpleTableSegment.class));
         assertJoinTableProjectionSegments(actual.getDerivedJoinTableProjectionSegments());
-        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("t_order")));
-        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("t_order_item")));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("t_order")));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("t_order_item")));
     }
     
     @Test
@@ -134,8 +134,8 @@ class JoinTableSegmentBinderTest {
         assertThat(actual.getLeft(), isA(SimpleTableSegment.class));
         assertThat(actual.getRight(), isA(SimpleTableSegment.class));
         assertJoinTableProjectionSegmentsWithNaturalJoin(actual.getDerivedJoinTableProjectionSegments());
-        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o")));
-        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("i")));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("o")));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("i")));
     }
     
     private void assertJoinTableProjectionSegmentsWithNaturalJoin(final Collection<ProjectionSegment> joinTableProjectionSegments) {
@@ -170,8 +170,8 @@ class JoinTableSegmentBinderTest {
         assertThat(actual.getLeft(), isA(SimpleTableSegment.class));
         assertThat(actual.getRight(), isA(SimpleTableSegment.class));
         assertJoinTableProjectionSegmentsWithUsing(actual.getDerivedJoinTableProjectionSegments());
-        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o")));
-        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("i")));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("o")));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("i")));
     }
     
     private void assertJoinTableProjectionSegmentsWithUsing(final Collection<ProjectionSegment> joinTableProjectionSegments) {
@@ -207,9 +207,9 @@ class JoinTableSegmentBinderTest {
         assertThat(((JoinTableSegment) actual.getLeft()).getRight(), isA(SimpleTableSegment.class));
         assertThat(actual.getRight(), isA(SimpleTableSegment.class));
         assertThat(actual.getDerivedJoinTableProjectionSegments().size(), is(10));
-        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o")));
-        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("o2")));
-        assertTrue(tableBinderContexts.containsKey(new CaseInsensitiveString("i")));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("o")));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("o2")));
+        assertTrue(tableBinderContexts.containsKey(CaseInsensitiveString.of("i")));
     }
     
     private JoinTableSegment mockLeftJoinSegment() {

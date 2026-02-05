@@ -93,7 +93,7 @@ public final class SimpleTableSegmentBinder {
         Optional<ShardingSphereSchema> schema = schemaName.map(identifierValue -> binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(identifierValue.getValue()));
         checkTableExists(binderContext, schema.orElse(null), tableName.getValue());
         checkTableMetadata(binderContext, schema.orElse(null), schemaName.map(IdentifierValue::getValue).orElse(null), tableName.getValue());
-        tableBinderContexts.put(new CaseInsensitiveString(segment.getAliasName().orElseGet(tableName::getValue)),
+        tableBinderContexts.put(CaseInsensitiveString.of(segment.getAliasName().orElseGet(tableName::getValue)),
                 createSimpleTableBinderContext(segment, schema.orElse(null), databaseName, schemaName.orElse(null), binderContext));
         TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), tableName);
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName.orElse(null)));
@@ -178,7 +178,7 @@ public final class SimpleTableSegmentBinder {
         if (null != schema && SystemSchemaManager.isSystemTable(schema.getName(), tableName)) {
             return;
         }
-        if (binderContext.getExternalTableBinderContexts().containsKey(new CaseInsensitiveString(tableName))) {
+        if (null != tableName && binderContext.getExternalTableBinderContexts().containsKey(CaseInsensitiveString.of(tableName))) {
             return;
         }
         if (binderContext.getCommonTableExpressionsSegmentsUniqueAliases().contains(tableName)) {
@@ -246,7 +246,7 @@ public final class SimpleTableSegmentBinder {
             Collection<ProjectionSegment> projectionSegments = createProjectionSegments((CreateTableStatement) binderContext.getSqlStatement(), databaseName, schemaName, tableName);
             return new SimpleTableSegmentBinderContext(projectionSegments, TableSourceType.PHYSICAL_TABLE);
         }
-        CaseInsensitiveString caseInsensitiveTableName = new CaseInsensitiveString(tableName.getValue());
+        CaseInsensitiveString caseInsensitiveTableName = CaseInsensitiveString.of(tableName.getValue());
         if (binderContext.getExternalTableBinderContexts().containsKey(caseInsensitiveTableName)) {
             TableSegmentBinderContext tableSegmentBinderContext = binderContext.getExternalTableBinderContexts().get(caseInsensitiveTableName).iterator().next();
             Collection<ProjectionSegment> subqueryProjections =

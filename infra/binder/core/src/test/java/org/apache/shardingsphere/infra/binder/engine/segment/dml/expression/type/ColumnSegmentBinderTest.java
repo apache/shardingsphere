@@ -55,12 +55,12 @@ class ColumnSegmentBinderTest {
         ColumnSegment boundOrderIdColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         boundOrderIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
                 new IdentifierValue("t_order"), new IdentifierValue("order_id"), TableSourceType.PHYSICAL_TABLE));
-        tableBinderContexts.put(new CaseInsensitiveString("t_order"),
+        tableBinderContexts.put(CaseInsensitiveString.of("t_order"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn)), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment boundItemIdColumn = new ColumnSegment(0, 0, new IdentifierValue("item_id"));
         boundItemIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
                 new IdentifierValue("t_order_item"), new IdentifierValue("item_id"), TableSourceType.PHYSICAL_TABLE));
-        tableBinderContexts.put(new CaseInsensitiveString("t_order_item"),
+        tableBinderContexts.put(CaseInsensitiveString.of("t_order_item"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundItemIdColumn)), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), mock(SelectStatement.class));
@@ -79,12 +79,12 @@ class ColumnSegmentBinderTest {
         ColumnSegment boundOrderStatusColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
         boundOrderStatusColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
                 new IdentifierValue("t_order"), new IdentifierValue("status"), TableSourceType.PHYSICAL_TABLE));
-        outerTableBinderContexts.put(new CaseInsensitiveString("t_order"),
+        outerTableBinderContexts.put(CaseInsensitiveString.of("t_order"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderStatusColumn)), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment boundOrderItemStatusColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
         boundOrderItemStatusColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
                 new IdentifierValue("t_order_item"), new IdentifierValue("status"), TableSourceType.PHYSICAL_TABLE));
-        outerTableBinderContexts.put(new CaseInsensitiveString("t_order_item"),
+        outerTableBinderContexts.put(CaseInsensitiveString.of("t_order_item"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderItemStatusColumn)), TableSourceType.PHYSICAL_TABLE));
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), mock(SelectStatement.class));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
@@ -103,12 +103,12 @@ class ColumnSegmentBinderTest {
         ColumnSegment boundOrderColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
         boundOrderColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
                 new IdentifierValue("t_order"), new IdentifierValue("status"), TableSourceType.PHYSICAL_TABLE));
-        tableBinderContexts.put(new CaseInsensitiveString("temp"),
+        tableBinderContexts.put(CaseInsensitiveString.of("temp"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderColumn)), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment boundOrderItemColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
         boundOrderItemColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
                 new IdentifierValue("t_order_item"), new IdentifierValue("status"), TableSourceType.PHYSICAL_TABLE));
-        tableBinderContexts.put(new CaseInsensitiveString("temp"),
+        tableBinderContexts.put(CaseInsensitiveString.of("temp"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderItemColumn)), TableSourceType.PHYSICAL_TABLE));
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), mock(SelectStatement.class));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
@@ -122,12 +122,12 @@ class ColumnSegmentBinderTest {
         ColumnSegment boundOrderColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         boundOrderColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
                 new IdentifierValue("t_order"), new IdentifierValue("order_id"), TableSourceType.PHYSICAL_TABLE));
-        tableBinderContexts.put(new CaseInsensitiveString("temp"),
+        tableBinderContexts.put(CaseInsensitiveString.of("temp"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderColumn)), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment boundOrderItemColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
         boundOrderItemColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
                 new IdentifierValue("t_order_item"), new IdentifierValue("status"), TableSourceType.PHYSICAL_TABLE));
-        tableBinderContexts.put(new CaseInsensitiveString("temp"),
+        tableBinderContexts.put(CaseInsensitiveString.of("temp"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderItemColumn)), TableSourceType.PHYSICAL_TABLE));
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), mock(SelectStatement.class));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
@@ -147,12 +147,12 @@ class ColumnSegmentBinderTest {
         ColumnSegment boundOrderIdColumn = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         boundOrderIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
                 new IdentifierValue("t_order"), new IdentifierValue("order_id"), TableSourceType.PHYSICAL_TABLE));
-        tableBinderContexts.put(new CaseInsensitiveString("t_order"),
+        tableBinderContexts.put(CaseInsensitiveString.of("t_order"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundOrderIdColumn)), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment boundItemIdColumn = new ColumnSegment(0, 0, new IdentifierValue("item_id"));
         boundItemIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
                 new IdentifierValue("t_order_item"), new IdentifierValue("item_id"), TableSourceType.PHYSICAL_TABLE));
-        tableBinderContexts.put(new CaseInsensitiveString("t_order_item"),
+        tableBinderContexts.put(CaseInsensitiveString.of("t_order_item"),
                 new SimpleTableSegmentBinderContext(Collections.singleton(new ColumnProjectionSegment(boundItemIdColumn)), TableSourceType.PHYSICAL_TABLE));
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("t_order")));

@@ -55,7 +55,7 @@ class ShorthandProjectionSegmentBinderTest {
         ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
         invisibleColumn.setVisible(false);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        tableBinderContexts.put(new CaseInsensitiveString("o"),
+        tableBinderContexts.put(CaseInsensitiveString.of("o"),
                 new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn),
                         TableSourceType.PHYSICAL_TABLE));
         ShorthandProjectionSegment actual = ShorthandProjectionSegmentBinder.bind(shorthandProjectionSegment, mock(TableSegment.class), tableBinderContexts);
@@ -70,7 +70,7 @@ class ShorthandProjectionSegmentBinderTest {
         ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
         invisibleColumn.setVisible(false);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        tableBinderContexts.put(new CaseInsensitiveString("o"),
+        tableBinderContexts.put(CaseInsensitiveString.of("o"),
                 new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn),
                         TableSourceType.PHYSICAL_TABLE));
         SimpleTableSegment boundTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
@@ -87,7 +87,7 @@ class ShorthandProjectionSegmentBinderTest {
         ColumnProjectionSegment invisibleColumn = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
         invisibleColumn.setVisible(false);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        tableBinderContexts.put(new CaseInsensitiveString("o"),
+        tableBinderContexts.put(CaseInsensitiveString.of("o"),
                 new SimpleTableSegmentBinderContext(Arrays.asList(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))), invisibleColumn),
                         TableSourceType.PHYSICAL_TABLE));
         SubqueryTableSegment boundTableSegment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, mock(SelectStatement.class), ""));
