@@ -118,6 +118,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Win
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WindowDefinitionListContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParserBaseVisitor;
+import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
@@ -1393,29 +1394,32 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         if (null != ctx.ALL()) {
             return null;
         }
-        ASTNode astNode = visit(ctx.cExpr());
-        if (astNode instanceof ParameterMarkerExpressionSegment) {
-            return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
-        }
-        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((ExpressionSegment) astNode).getText()));
+        return toLimitValueSegment(ctx, (ExpressionSegment) visit(ctx.aExpr()));
     }
     
     @Override
     public ASTNode visitSelectOffsetValue(final SelectOffsetValueContext ctx) {
-        ASTNode astNode = visit(ctx.cExpr());
-        if (astNode instanceof ParameterMarkerExpressionSegment) {
-            return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
-        }
-        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((ExpressionSegment) astNode).getText()));
+        return toLimitValueSegment(ctx, (ExpressionSegment) visit(ctx.aExpr()));
     }
     
     @Override
     public ASTNode visitSelectFetchValue(final SelectFetchValueContext ctx) {
-        ASTNode astNode = visit(ctx.cExpr());
-        if (astNode instanceof ParameterMarkerExpressionSegment) {
-            return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
+        return toLimitValueSegment(ctx, (ExpressionSegment) visit(ctx.aExpr()));
+    }
+    
+    private LimitValueSegment toLimitValueSegment(final ParserRuleContext ctx, final ExpressionSegment segment) {
+        if (segment instanceof ParameterMarkerExpressionSegment) {
+            return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
+                    ((ParameterMarkerExpressionSegment) segment).getParameterMarkerIndex());
         }
-        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((ExpressionSegment) astNode).getText()));
+        if (segment instanceof TypeCastExpression) {
+            return toLimitValueSegment(ctx, ((TypeCastExpression) segment).getExpression());
+        }
+        if (segment instanceof LiteralExpressionSegment) {
+            Object literals = ((LiteralExpressionSegment) segment).getLiterals();
+            return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(literals.toString()));
+        }
+        throw new SQLParsingException("Unsupported LIMIT expression: " + segment.getText());
     }
     
     private LimitSegment createLimitSegmentWhenLimitAndOffset(final SelectLimitContext ctx) {
