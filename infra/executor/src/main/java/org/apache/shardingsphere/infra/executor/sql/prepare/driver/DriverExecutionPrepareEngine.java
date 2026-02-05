@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.Driver
 import org.apache.shardingsphere.infra.executor.sql.prepare.AbstractExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -106,8 +107,9 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     private ExecutionGroup<T> createExecutionGroup(final String databaseName, final String dataSourceName, final List<ExecutionUnit> executionUnits, final C connection, final int connectionOffset,
                                                    final ConnectionMode connectionMode) throws SQLException {
         List<T> inputs = new LinkedList<>();
-        ShardingSpherePreconditions.checkState(metaData.containsDatabase(databaseName), () -> new UnknownDatabaseException(databaseName));
-        Map<String, StorageUnit> storageUnits = metaData.getDatabase(databaseName).getResourceMetaData().getStorageUnits();
+        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
+        ShardingSpherePreconditions.checkNotNull(database, () -> new UnknownDatabaseException(databaseName));
+        Map<String, StorageUnit> storageUnits = database.getResourceMetaData().getStorageUnits();
         DatabaseType databaseType = storageUnits.containsKey(dataSourceName) ? storageUnits.get(dataSourceName).getStorageType() : storageUnits.values().iterator().next().getStorageType();
         for (ExecutionUnit each : executionUnits) {
             inputs.add((T) sqlExecutionUnitBuilder.build(each, statementManager, connection, connectionOffset, connectionMode, option, databaseType));
