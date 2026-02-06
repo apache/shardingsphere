@@ -80,8 +80,8 @@ public final class TableRowDataPersistService {
     public TableStatistics load(final String databaseName, final String schemaName, final ShardingSphereTable table) {
         TableStatistics result = new TableStatistics(table.getName());
         YamlRowStatisticsSwapper swapper = new YamlRowStatisticsSwapper(new ArrayList<>(table.getAllColumns()));
-        for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new StatisticsTableNodePath(databaseName, schemaName, table.getName())))) {
-            String yamlRow = repository.query(NodePathGenerator.toPath(new StatisticsDataNodePath(databaseName, schemaName, table.getName(), each)));
+        for (String each : repository.getChildrenKeys(NodePathGenerator.toPath(new StatisticsTableNodePath(databaseName, schemaName, table.getName().toLowerCase())))) {
+            String yamlRow = repository.query(NodePathGenerator.toPath(new StatisticsDataNodePath(databaseName, schemaName, table.getName().toLowerCase(), each)));
             if (!Strings.isNullOrEmpty(yamlRow)) {
                 result.getRows().add(swapper.swapToObject(YamlEngine.unmarshal(yamlRow, YamlRowStatistics.class)));
             }
