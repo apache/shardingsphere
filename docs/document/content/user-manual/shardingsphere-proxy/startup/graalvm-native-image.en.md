@@ -203,13 +203,13 @@ After enabling WSL2, download and install `rancher-sandbox/rancher-desktop` usin
 and configure `dockerd(moby)` to use the `Container Engine`.
 
 ```shell
-[Environment]::SetEnvironmentVariable('DOCKER_API_VERSION','1.44','Machine')
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
 # Open a new PowerShell 7 terminal
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 
 @'
 {
+  "min-api-version": "1.41",
   "features": {
     "containerd-snapshotter": true
   },

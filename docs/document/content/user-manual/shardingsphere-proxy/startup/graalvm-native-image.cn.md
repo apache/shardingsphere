@@ -199,13 +199,13 @@ wsl --install
 并设置使用 `dockerd(moby)` 的 `Container Engine`。
 
 ```shell
-[Environment]::SetEnvironmentVariable('DOCKER_API_VERSION','1.44','Machine')
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
 # 打开新的 PowerShell 7 终端
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 
 @'
 {
+  "min-api-version": "1.41",
   "features": {
     "containerd-snapshotter": true
   },
