@@ -277,4 +277,36 @@ class PreparedStatementAdapterTest {
         shardingSpherePreparedStatement.clearParameters();
         assertTrue(shardingSpherePreparedStatement.getParameters().isEmpty());
     }
+    
+    @Test
+    void assertBatchParameterRecordsPreservedAfterClearParameters() {
+        shardingSpherePreparedStatement.setInt(1, 100);
+        shardingSpherePreparedStatement.setString(2, "test");
+        assertThat(shardingSpherePreparedStatement.getParameterRecords().size(), is(2));
+        shardingSpherePreparedStatement.saveBatchParameterRecords();
+        shardingSpherePreparedStatement.clearParameters();
+        assertTrue(shardingSpherePreparedStatement.getParameters().isEmpty());
+        assertTrue(shardingSpherePreparedStatement.getParameterRecords().isEmpty());
+        shardingSpherePreparedStatement.setInt(1, 200);
+        shardingSpherePreparedStatement.setString(2, "test2");
+        shardingSpherePreparedStatement.saveBatchParameterRecords();
+        shardingSpherePreparedStatement.clearBatchParameterRecords();
+    }
+    
+    @Test
+    void assertMultiBatchWithDifferentSetterTypes() {
+        shardingSpherePreparedStatement.setInt(1, 100);
+        shardingSpherePreparedStatement.setString(2, "value1");
+        shardingSpherePreparedStatement.saveBatchParameterRecords();
+        shardingSpherePreparedStatement.clearParameters();
+        shardingSpherePreparedStatement.setNull(1, java.sql.Types.INTEGER);
+        shardingSpherePreparedStatement.setNull(2, java.sql.Types.VARCHAR);
+        shardingSpherePreparedStatement.saveBatchParameterRecords();
+        shardingSpherePreparedStatement.clearParameters();
+        shardingSpherePreparedStatement.setInt(1, 300);
+        shardingSpherePreparedStatement.setBytes(2, new byte[]{1, 2, 3});
+        shardingSpherePreparedStatement.saveBatchParameterRecords();
+        shardingSpherePreparedStatement.clearParameters();
+        shardingSpherePreparedStatement.clearBatchParameterRecords();
+    }
 }

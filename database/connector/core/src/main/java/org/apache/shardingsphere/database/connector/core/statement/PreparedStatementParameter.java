@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.callback.replay;
+package org.apache.shardingsphere.database.connector.core.statement;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Prepared statement parameters replay callback.
+ * Prepared statement parameter.
+ * Records the original setter method and its arguments for replay.
  */
-public interface PreparedStatementParametersReplayCallback {
+@RequiredArgsConstructor
+@Getter
+public final class PreparedStatementParameter {
     
-    /**
-     * Replay to set prepared statement parameters.
-     *
-     * @param preparedStatement prepared statement
-     * @param params parameters
-     * @param originalBatchIndex original batch index from addBatch calls, used to retrieve correct parameter metadata
-     * @throws SQLException SQL exception
-     */
-    void replay(PreparedStatement preparedStatement, List<Object> params, int originalBatchIndex) throws SQLException;
+    private final int index;
+    
+    private final SetterMethodType setterMethodType;
+    
+    private final Object value;
+    
+    private final long length;
+    
+    public PreparedStatementParameter(final int index, final SetterMethodType setterMethodType, final Object value) {
+        this(index, setterMethodType, value, -1L);
+    }
 }

@@ -244,6 +244,31 @@ public final class BatchPreparedStatementExecutor {
     }
     
     /**
+     * Get original batch indices for a statement.
+     *
+     * @param statement statement
+     * @return original batch indices
+     */
+    public List<Integer> getOriginalBatchIndices(final Statement statement) {
+        for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
+            Optional<JDBCExecutionUnit> result = findJDBCExecutionUnit(statement, each);
+            if (result.isPresent()) {
+                return getOriginalBatchIndices(result.get());
+            }
+        }
+        return Collections.emptyList();
+    }
+    
+    private List<Integer> getOriginalBatchIndices(final JDBCExecutionUnit executionUnit) {
+        for (BatchExecutionUnit each : batchExecutionUnits) {
+            if (isSameDataSourceAndSQL(each, executionUnit)) {
+                return each.getOriginalBatchIndices();
+            }
+        }
+        return Collections.emptyList();
+    }
+    
+    /**
      * Clear.
      */
     public void clear() {

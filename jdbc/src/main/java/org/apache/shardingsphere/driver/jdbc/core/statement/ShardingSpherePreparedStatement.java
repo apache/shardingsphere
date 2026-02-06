@@ -276,7 +276,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private void replaySetParameter(final List<PreparedStatement> statements, final List<List<Object>> parameterSets) throws SQLException {
         for (int i = 0; i < statements.size(); i++) {
-            replaySetParameter(statements.get(i), parameterSets.get(i));
+            replaySetParameter(statements.get(i), parameterSets.get(i), -1);
         }
     }
     
@@ -322,6 +322,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         this.queryContext = queryContext;
         executeBatchExecutor.addBatch(queryContext, usedDatabase);
         findGeneratedKey().ifPresent(optional -> generatedValues.addAll(optional.getGeneratedValues()));
+        saveBatchParameterRecords();
         clearParameters();
     }
     
@@ -330,7 +331,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         try {
             return executeBatchExecutor.executeBatch(usedDatabase, sqlStatementContext, generatedValues, statementOption,
                     (StatementAddCallback<PreparedStatement>) (statements, parameterSets) -> this.statements.addAll(statements),
-                    this::replaySetParameter,
+                    (preparedStatement, params, batchIndex) -> replaySetParameter(preparedStatement, params, batchIndex),
                     () -> {
                         currentBatchGeneratedKeysResultSet = getGeneratedKeys();
                         statements.clear();
@@ -350,6 +351,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         currentResultSet = null;
         closeCurrentBatchGeneratedKeysResultSet();
         executeBatchExecutor.clear();
+        clearBatchParameterRecords();
         clearParameters();
     }
     
