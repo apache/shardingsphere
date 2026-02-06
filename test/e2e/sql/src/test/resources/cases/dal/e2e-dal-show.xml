@@ -46,4 +46,10 @@
     <test-case db-types="MySQL" scenario-types="db,tbl" sql="SHOW CREATE TABLE t_order">
         <assertion expected-data-file="show_create_table.xml" />
     </test-case>
+
+    <test-case sql="SELECT * FROM t_user LIMIT 1" db-types="MySQL" scenario-types="encrypt" adapters="jdbc,proxy">
+        <assertion expected-data-file="encrypt/mysql/show_create_table.xml">
+            <assertion-sql sql="SHOW CREATE TABLE t_user" />
+        </assertion>
+    </test-case>
 </e2e-test-cases>

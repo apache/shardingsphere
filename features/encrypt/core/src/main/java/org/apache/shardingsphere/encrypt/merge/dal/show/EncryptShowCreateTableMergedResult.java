@@ -28,12 +28,14 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableInResultSetSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,25 +78,98 @@ public final class EncryptShowCreateTableMergedResult extends DecoratorMergedRes
         CreateTableStatement createTableStatement = (CreateTableStatement) sqlParserEngine.parse(createTableSQL, false);
         List<ColumnDefinitionSegment> columnDefinitions = new ArrayList<>(createTableStatement.getColumnDefinitions());
         StringBuilder result = new StringBuilder(createTableSQL.substring(0, columnDefinitions.get(0).getStartIndex()));
+        List<String> definitions = new ArrayList<>();
         for (ColumnDefinitionSegment each : columnDefinitions) {
-            findLogicColumnDefinition(each, encryptTable.get(), createTableSQL).ifPresent(optional -> result.append(optional).append(COMMA));
+            processColumnDefinition(each, encryptTable.get(), createTableSQL, definitions);
         }
-        // TODO decorate encrypt column index when we support index rewrite
-        result.delete(result.length() - COMMA.length(), result.length()).append(createTableSQL.substring(columnDefinitions.get(columnDefinitions.size() - 1).getStopIndex() + 1));
+        List<ConstraintDefinitionSegment> constraintDefinitions = new ArrayList<>(createTableStatement.getConstraintDefinitions());
+        for (ConstraintDefinitionSegment each : constraintDefinitions) {
+            findLogicConstraintDefinition(each, encryptTable.get(), createTableSQL).ifPresent(definitions::add);
+        }
+        for (int i = 0; i < definitions.size(); i++) {
+            if (i > 0) {
+                result.append(COMMA);
+            }
+            result.append(definitions.get(i));
+        }
+        int lastStopIndex = getLastStopIndex(columnDefinitions, constraintDefinitions);
+        result.append(createTableSQL.substring(lastStopIndex + 1));
         return result.toString();
     }
     
     private Optional<String> findLogicColumnDefinition(final ColumnDefinitionSegment columnDefinition, final EncryptTable encryptTable, final String createTableSQL) {
         ColumnSegment columnSegment = columnDefinition.getColumnName();
         String columnName = columnSegment.getIdentifier().getValue();
+        if (encryptTable.isDerivedColumn(columnName)) {
+            return Optional.empty();
+        }
         if (encryptTable.isCipherColumn(columnName)) {
             String logicColumn = encryptTable.getLogicColumnByCipherColumn(columnName);
             return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnSegment.getStartIndex())
                     + columnSegment.getIdentifier().getQuoteCharacter().wrap(logicColumn) + createTableSQL.substring(columnSegment.getStopIndex() + 1, columnDefinition.getStopIndex() + 1));
         }
+        return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnDefinition.getStopIndex() + 1));
+    }
+    
+    private void processColumnDefinition(final ColumnDefinitionSegment columnDefinition, final EncryptTable encryptTable, final String createTableSQL, final List<String> definitions) {
+        String columnName = columnDefinition.getColumnName().getIdentifier().getValue();
         if (encryptTable.isDerivedColumn(columnName)) {
+            return;
+        }
+        String columnDefinitionStr = generateColumnDefinition(columnDefinition, encryptTable, createTableSQL);
+        if (!columnDefinitionStr.isEmpty()) {
+            definitions.add(columnDefinitionStr);
+        }
+    }
+    
+    private String generateColumnDefinition(final ColumnDefinitionSegment columnDefinition, final EncryptTable encryptTable, final String createTableSQL) {
+        return findLogicColumnDefinition(columnDefinition, encryptTable, createTableSQL).orElse("");
+    }
+    
+    private int getLastStopIndex(final List<ColumnDefinitionSegment> columnDefinitions, final List<ConstraintDefinitionSegment> constraintDefinitions) {
+        int last = 0;
+        if (!columnDefinitions.isEmpty()) {
+            last = columnDefinitions.get(columnDefinitions.size() - 1).getStopIndex();
+        }
+        for (ConstraintDefinitionSegment each : constraintDefinitions) {
+            last = Math.max(last, each.getStopIndex());
+        }
+        return last;
+    }
+    
+    private Optional<String> findLogicConstraintDefinition(final ConstraintDefinitionSegment constraint, final EncryptTable encryptTable, final String createTableSQL) {
+        Collection<ColumnSegment> columns = new ArrayList<>(constraint.getIndexColumns());
+        columns.addAll(constraint.getPrimaryKeyColumns());
+        boolean containsDerivedColumn = columns.stream()
+                .anyMatch(each -> encryptTable.isDerivedColumn(each.getIdentifier().getValue()));
+        if (containsDerivedColumn) {
             return Optional.empty();
         }
-        return Optional.of(createTableSQL.substring(columnDefinition.getStartIndex(), columnDefinition.getStopIndex() + 1));
+        boolean containsCipherColumn = columns.stream()
+                .anyMatch(each -> encryptTable.isCipherColumn(each.getIdentifier().getValue()));
+        if (!containsCipherColumn) {
+            return Optional.of(createTableSQL.substring(constraint.getStartIndex(), constraint.getStopIndex() + 1));
+        }
+        List<ColumnSegment> sortedColumns = new ArrayList<>(columns);
+        sortedColumns.sort((a, b) -> Integer.compare(a.getStartIndex(), b.getStartIndex()));
+        StringBuilder rewritten = new StringBuilder();
+        int cursor = constraint.getStartIndex();
+        for (ColumnSegment each : sortedColumns) {
+            rewritten.append(createTableSQL.substring(cursor, each.getStartIndex()));
+            String columnName = each.getIdentifier().getValue();
+            Optional<String> logicColumn = findLogicColumnByActualColumn(encryptTable, columnName);
+            rewritten.append(logicColumn.map(opt -> each.getIdentifier().getQuoteCharacter().wrap(opt))
+                    .orElseGet(() -> createTableSQL.substring(each.getStartIndex(), each.getStopIndex() + 1)));
+            cursor = each.getStopIndex() + 1;
+        }
+        rewritten.append(createTableSQL.substring(cursor, constraint.getStopIndex() + 1));
+        return Optional.of(rewritten.toString());
+    }
+    
+    private Optional<String> findLogicColumnByActualColumn(final EncryptTable encryptTable, final String actualColumnName) {
+        if (encryptTable.isCipherColumn(actualColumnName)) {
+            return Optional.of(encryptTable.getLogicColumnByCipherColumn(actualColumnName));
+        }
+        return Optional.empty();
     }
 }
