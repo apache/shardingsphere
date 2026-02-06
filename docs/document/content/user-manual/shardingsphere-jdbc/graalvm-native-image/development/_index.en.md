@@ -125,13 +125,13 @@ After enabling WSL2, download and install `rancher-sandbox/rancher-desktop` usin
 and configure it to use the `dockerd(moby)` `Container Engine`.
 
 ```shell
-[Environment]::SetEnvironmentVariable('DOCKER_API_VERSION','1.44','Machine')
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
 # Open a new PowerShell 7 terminal
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 
 @'
 {
+  "min-api-version": "1.41",
   "features": {
     "containerd-snapshotter": true
   },
@@ -153,7 +153,6 @@ they will need to uninstall Docker Engine using the script provided by Microsoft
 You can execute the following command in PowerShell 7:
 
 ```shell
-[Environment]::SetEnvironmentVariable('DOCKER_API_VERSION','1.44','Machine')
 iex "& { $(irm https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1) } -Force"
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
 # Open a new PowerShell 7 terminal
@@ -161,6 +160,7 @@ rdctl start --application.start-in-background --container-engine.name=moby --kub
 
 @'
 {
+  "min-api-version": "1.41",
   "features": {
     "containerd-snapshotter": true
   },

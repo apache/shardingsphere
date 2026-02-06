@@ -19,7 +19,6 @@
 
 # This file is only used in the PowerShell 7 of ShardingSphere in GitHub Actions environment and should not be executed manually in a development environment.
 # Background information can be found at https://github.com/apache/shardingsphere/pull/35905 .
-[Environment]::SetEnvironmentVariable('DOCKER_API_VERSION','1.44','Machine')
 iex "& { $(irm https://raw.githubusercontent.com/microsoft/Windows-Containers/refs/heads/Main/helpful_tools/Install-DockerCE/uninstall-docker-ce.ps1) } -Force"
 irm https://raw.githubusercontent.com/jazzdelightsme/WingetPathUpdater/v1.2/WingetPathUpdaterInstall.ps1 | iex
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
@@ -28,6 +27,7 @@ rdctl start --application.start-in-background --container-engine.name=moby --kub
 
 @'
 {
+  "min-api-version": "1.41",
   "features": {
     "containerd-snapshotter": true
   },
