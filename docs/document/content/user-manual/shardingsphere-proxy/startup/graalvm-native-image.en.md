@@ -301,7 +301,7 @@ However, it is not necessary to install Container Runtime.
 
 ##### Native toolchain for static compilation
 
-Developers who want to build a `mostly statically linked GraalVM Native Image` or a `fully statically linked GraalVM Native Image`,
+Developers who want to build a `fully statically linked GraalVM Native Image`,
 will need to build musl from source as described in https://www.graalvm.org/latest/reference-manual/native-image/guides/build-static-executables/ .
 
 #### Build a dynamically linked GraalVM Native Image

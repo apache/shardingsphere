@@ -298,7 +298,7 @@ services:
 
 ##### 静态编译所需的本地工具链
 
-开发者如需构建 `大部分静态链接的 GraalVM Native Image` 或 `完全静态链接的 GraalVM Native Image`，
+开发者如需构建 `完全静态链接的 GraalVM Native Image`，
 则需要按 https://www.graalvm.org/latest/reference-manual/native-image/guides/build-static-executables/ 要求，从源代码构建 musl。
 
 #### 构建动态链接的 GraalVM Native Image
