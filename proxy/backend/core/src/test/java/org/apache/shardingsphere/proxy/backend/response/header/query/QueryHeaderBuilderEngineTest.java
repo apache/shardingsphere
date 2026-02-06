@@ -63,6 +63,7 @@ class QueryHeaderBuilderEngineTest {
         Projection projection = mock(Projection.class);
         when(projection.getColumnName()).thenReturn("c1");
         when(projection.getColumnLabel()).thenReturn("l1");
+        when(projection.getExpression()).thenReturn("c1");
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projection));
         QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
@@ -81,6 +82,7 @@ class QueryHeaderBuilderEngineTest {
         Projection projection = mock(Projection.class);
         when(projection.getColumnLabel()).thenReturn("label");
         when(projection.getColumnName()).thenReturn("column");
+        when(projection.getExpression()).thenReturn("column");
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projection));
         assertThrows(ColumnIndexOutOfRangeException.class, () -> new QueryHeaderBuilderEngine(databaseType).build(projectionsContext, mock(), mock(), 2));
     }

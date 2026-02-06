@@ -95,7 +95,9 @@ public final class SQLFederationEngine implements AutoCloseable {
     private final ProcessEngine processEngine = new ProcessEngine();
     
     @SuppressWarnings("rawtypes")
-    private final Map<ShardingSphereRule, SQLFederationDecider> deciders;
+    private volatile Map<ShardingSphereRule, SQLFederationDecider> deciders;
+    
+    private final ShardingSphereMetaData metaData;
     
     private final String currentDatabaseName;
     
@@ -113,7 +115,7 @@ public final class SQLFederationEngine implements AutoCloseable {
     
     public SQLFederationEngine(final String currentDatabaseName, final String currentSchemaName, final ShardingSphereMetaData metaData,
                                final ShardingSphereStatistics statistics, final JDBCExecutor jdbcExecutor) {
-        deciders = OrderedSPILoader.getServices(SQLFederationDecider.class, metaData.getDatabase(currentDatabaseName).getRuleMetaData().getRules());
+        this.metaData = metaData;
         this.currentDatabaseName = currentDatabaseName;
         this.currentSchemaName = currentSchemaName;
         sqlFederationRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
@@ -127,6 +129,18 @@ public final class SQLFederationEngine implements AutoCloseable {
      */
     public boolean isSQLFederationEnabled() {
         return sqlFederationRule.getConfiguration().isSqlFederationEnabled();
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private Map<ShardingSphereRule, SQLFederationDecider> getDeciders() {
+        if (null == deciders) {
+            synchronized (this) {
+                if (null == deciders) {
+                    deciders = OrderedSPILoader.getServices(SQLFederationDecider.class, metaData.getDatabase(currentDatabaseName).getRuleMetaData().getRules());
+                }
+            }
+        }
+        return deciders;
     }
     
     /**
@@ -152,7 +166,7 @@ public final class SQLFederationEngine implements AutoCloseable {
         }
         ShardingSphereDatabase usedDatabase = queryContext.getUsedDatabase();
         Collection<DataNode> includedDataNodes = new HashSet<>();
-        for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
+        for (Entry<ShardingSphereRule, SQLFederationDecider> entry : getDeciders().entrySet()) {
             boolean isUseSQLFederation = entry.getValue().decide(sqlStatementContext, queryContext.getParameters(), globalRuleMetaData, usedDatabase, entry.getKey(), includedDataNodes);
             if (isUseSQLFederation) {
                 return true;
