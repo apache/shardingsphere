@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.connector.mysql.metadata.database.system;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectKernelSupportedSystemTable;
+import org.apache.shardingsphere.database.connector.core.metadata.database.schema.SystemSchemaProvider;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -34,6 +35,8 @@ class MySQLKernelSupportedSystemTableTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
+    private final SystemSchemaProvider systemSchemaProvider = DatabaseTypedSPILoader.getService(SystemSchemaProvider.class, databaseType);
+    
     private final DialectKernelSupportedSystemTable kernelSupportedSystemTable = DatabaseTypedSPILoader.getService(DialectKernelSupportedSystemTable.class, databaseType);
     
     @Test
@@ -42,5 +45,10 @@ class MySQLKernelSupportedSystemTableTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.keySet().iterator().next(), is("sys"));
         assertThat(actual.get("sys"), hasItem("sys_config"));
+    }
+    
+    @Test
+    void assertSystemSchemaProviderType() {
+        assertThat(systemSchemaProvider.getDatabaseType(), is("MySQL"));
     }
 }

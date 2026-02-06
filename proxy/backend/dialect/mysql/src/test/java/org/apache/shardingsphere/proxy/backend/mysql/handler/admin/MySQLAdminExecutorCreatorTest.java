@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
+import org.apache.shardingsphere.database.connector.core.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
@@ -73,6 +74,10 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -84,6 +89,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -331,7 +339,8 @@ class MySQLAdminExecutorCreatorTest {
     }
     
     @Test
-    void assertCreateWithSelectStatementFromInformationSchemaOfDefaultExecutorTables() {
+    void assertCreateWithSelectStatementFromInformationSchemaOfDefaultExecutorTables() throws SQLException {
+        setUpMySQLSystemSchemaDataSource("information_schema", "ENGINES");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("information_schema");
         when(database.getProtocolType()).thenReturn(databaseType);
@@ -345,6 +354,20 @@ class MySQLAdminExecutorCreatorTest {
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "SELECT ENGINE from ENGINES", "information_schema", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(DatabaseMetaDataExecutor.class));
+    }
+    
+    private void setUpMySQLSystemSchemaDataSource(final String schemaName, final String tableName) throws SQLException {
+        GlobalDataSourceRegistry.getInstance().getCachedDataSources().clear();
+        Connection connection = mock(Connection.class);
+        MockedDataSource dataSource = new MockedDataSource(connection);
+        PreparedStatement tableStatement = mock(PreparedStatement.class);
+        ResultSet tableResultSet = mock(ResultSet.class);
+        when(tableResultSet.next()).thenReturn(true, false);
+        when(tableResultSet.getString("TABLE_NAME")).thenReturn(tableName);
+        when(connection.prepareStatement("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA=?")).thenReturn(tableStatement);
+        doNothing().when(tableStatement).setString(eq(1), anyString());
+        when(tableStatement.executeQuery()).thenReturn(tableResultSet);
+        GlobalDataSourceRegistry.getInstance().getCachedDataSources().put("mysql", dataSource);
     }
     
     @Test

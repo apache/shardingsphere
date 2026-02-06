@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.metadata.database.schema.manager;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,21 +29,22 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SystemSchemaManagerTest {
     
     @Test
-    void assertValueOfSchemaPathSuccess() {
+    void assertValueOfSchemaPathSuccess() throws SQLException {
+        setUpMySQLSystemSchemaDataSource();
         Collection<String> actualInformationSchema = SystemSchemaManager.getTables("MySQL", "information_schema");
-        assertThat(actualInformationSchema.size(), is(95));
+        assertThat(actualInformationSchema.size(), is(3));
+        assertTrue(actualInformationSchema.containsAll(Arrays.asList("columns", "tables", "schemata")));
         Collection<String> actualMySQLSchema = SystemSchemaManager.getTables("MySQL", "mysql");
-        assertThat(actualMySQLSchema.size(), is(40));
+        assertThat(actualMySQLSchema, is(Collections.singletonList("db")));
         Collection<String> actualPerformanceSchema = SystemSchemaManager.getTables("MySQL", "performance_schema");
-        assertThat(actualPerformanceSchema.size(), is(114));
+        assertThat(actualPerformanceSchema, is(Collections.singletonList("events_waits_current")));
         Collection<String> actualSysSchema = SystemSchemaManager.getTables("MySQL", "sys");
-        assertThat(actualSysSchema.size(), is(53));
+        assertThat(actualSysSchema, is(Collections.singletonList("sys_config")));
         Collection<String> actualShardingSphereSchema = SystemSchemaManager.getTables("MySQL", "shardingsphere");
         assertThat(actualShardingSphereSchema.size(), is(1));
         Collection<String> actualPgInformationSchema = SystemSchemaManager.getTables("PostgreSQL", "information_schema");
@@ -55,7 +58,8 @@ class SystemSchemaManagerTest {
     }
     
     @Test
-    void assertIsSystemTable() {
+    void assertIsSystemTable() throws SQLException {
+        setUpMySQLSystemSchemaDataSource();
         assertTrue(SystemSchemaManager.isSystemTable("information_schema", "columns"));
         assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_database"));
         assertTrue(SystemSchemaManager.isSystemTable("pg_catalog", "pg_tables"));
@@ -89,14 +93,16 @@ class SystemSchemaManagerTest {
     }
     
     @Test
-    void assertIsSystemTableWithDatabaseTypeAndNullSchema() {
+    void assertIsSystemTableWithDatabaseTypeAndNullSchema() throws SQLException {
+        setUpMySQLSystemSchemaDataSource();
         assertTrue(SystemSchemaManager.isSystemTable("MySQL", null, "columns"));
         assertTrue(SystemSchemaManager.isSystemTable("PostgreSQL", null, "pg_database"));
         assertFalse(SystemSchemaManager.isSystemTable("MySQL", null, "foo_tbl"));
     }
     
     @Test
-    void assertIsSystemTableWithDatabaseTypeAndSchema() {
+    void assertIsSystemTableWithDatabaseTypeAndSchema() throws SQLException {
+        setUpMySQLSystemSchemaDataSource();
         assertTrue(SystemSchemaManager.isSystemTable("MySQL", "information_schema", "columns"));
         assertTrue(SystemSchemaManager.isSystemTable("PostgreSQL", "pg_catalog", "pg_database"));
         assertTrue(SystemSchemaManager.isSystemTable("MySQL", "shardingsphere", "cluster_information"));
@@ -105,7 +111,8 @@ class SystemSchemaManagerTest {
     }
     
     @Test
-    void assertIsSystemTableWithTableNames() {
+    void assertIsSystemTableWithTableNames() throws SQLException {
+        setUpMySQLSystemSchemaDataSource();
         assertTrue(SystemSchemaManager.isSystemTable("MySQL", "information_schema", Arrays.asList("columns", "tables", "schemata")));
         assertFalse(SystemSchemaManager.isSystemTable("MySQL", "information_schema", Arrays.asList("columns", "nonexistent_table")));
         assertTrue(SystemSchemaManager.isSystemTable("PostgreSQL", "pg_catalog", Arrays.asList("pg_database", "pg_tables")));
@@ -114,11 +121,29 @@ class SystemSchemaManagerTest {
     }
     
     @Test
-    void assertGetAllInputStreams() {
-        java.util.Collection<java.io.InputStream> actual = SystemSchemaManager.getAllInputStreams("MySQL", "information_schema");
-        assertThat(actual.size(), is(95));
-        for (InputStream each : actual) {
-            assertNotNull(each);
+    void assertGetAllInputStreams() throws SQLException {
+        setUpMySQLSystemSchemaDataSource();
+        Collection<InputStream> actual = SystemSchemaManager.getAllInputStreams("MySQL", "information_schema", true);
+        assertThat(actual.size(), is(3));
+        assertTrue(actual.stream().allMatch(SystemSchemaManagerTest::isInputStreamReadable));
+    }
+    
+    private static boolean isInputStreamReadable(final InputStream inputStream) {
+        if (null == inputStream) {
+            return false;
+        }
+        try {
+            return 0 <= inputStream.read();
+        } catch (final IOException ex) {
+            return false;
         }
     }
+    
+    private void setUpMySQLSystemSchemaDataSource() throws SQLException {
+        SystemSchemaManagerTestSupport.setUpMySQLSystemSchemaDataSource("information_schema", Arrays.asList("columns", "tables", "schemata"));
+        SystemSchemaManagerTestSupport.setUpMySQLSystemSchemaDataSource("mysql", Collections.singletonList("db"));
+        SystemSchemaManagerTestSupport.setUpMySQLSystemSchemaDataSource("performance_schema", Collections.singletonList("events_waits_current"));
+        SystemSchemaManagerTestSupport.setUpMySQLSystemSchemaDataSource("sys", Collections.singletonList("sys_config"));
+    }
+    
 }

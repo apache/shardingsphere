@@ -78,7 +78,7 @@ public final class SystemSchemaBuilder {
     private static ShardingSphereSchema createSchema(final String schemaName, final DatabaseType databaseType, final boolean isSystemSchemaMetadataEnabled) {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
         SystemTable systemTable = new SystemTable(databaseType);
-        for (InputStream each : SystemSchemaManager.getAllInputStreams(databaseType.getType(), schemaName)) {
+        for (InputStream each : SystemSchemaManager.getAllInputStreams(databaseType.getType(), schemaName, isSystemSchemaMetadataEnabled)) {
             YamlShardingSphereTable metaData = new Yaml().loadAs(each, YamlShardingSphereTable.class);
             if (isSystemSchemaMetadataEnabled || systemTable.isSupportedSystemTable(schemaName, metaData.getName())) {
                 tables.add(TABLE_SWAPPER.swapToObject(metaData));
