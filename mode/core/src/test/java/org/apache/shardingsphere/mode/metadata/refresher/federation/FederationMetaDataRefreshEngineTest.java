@@ -23,20 +23,20 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.refresher.util.SchemaRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -58,100 +58,68 @@ class FederationMetaDataRefreshEngineTest {
     private SQLStatementContext sqlStatementContext;
     
     @Test
-    void assertIsNeedRefreshWhenRefresherAbsent() {
+    void assertIsNeedRefreshWhenStatementNotSupported() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(new UpdateStatement(databaseType));
-        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, UpdateStatement.class)).thenReturn(Optional.empty());
-        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, DMLStatement.class)).thenReturn(Optional.empty());
         assertFalse(new FederationMetaDataRefreshEngine(sqlStatementContext).isNeedRefresh());
     }
     
-    @SuppressWarnings("unchecked")
     @Test
-    void assertIsNeedRefreshWhenRefresherFoundFromSuperClass() {
-        SQLStatement sqlStatement = mock(SQLStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatement.getClass())).thenReturn(Optional.empty());
-        FederationMetaDataRefresher<SQLStatement> refresher = mock(FederationMetaDataRefresher.class);
-        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, SQLStatement.class)).thenReturn(Optional.of(refresher));
-        assertTrue(new FederationMetaDataRefreshEngine(sqlStatementContext).isNeedRefresh());
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    void assertIsNeedRefreshWhenRefresherFoundFromExactClass() {
-        SQLStatement sqlStatement = mock(SQLStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        FederationMetaDataRefresher<SQLStatement> refresher = mock(FederationMetaDataRefresher.class);
-        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatement.getClass())).thenReturn(Optional.of(refresher));
+    void assertIsNeedRefreshWhenCreateViewStatement() {
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new CreateViewStatement(databaseType));
         assertTrue(new FederationMetaDataRefreshEngine(sqlStatementContext).isNeedRefresh());
     }
     
     @Test
-    void assertIsNeedRefreshWithDifferentStatementTypes() {
-        DeleteStatement deleteStatement = new DeleteStatement(databaseType);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(deleteStatement);
-        FederationMetaDataRefresher<DeleteStatement> refresher = mock(FederationMetaDataRefresher.class);
-        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, DeleteStatement.class)).thenReturn(Optional.of(refresher));
+    void assertIsNeedRefreshWhenAlterViewStatement() {
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new AlterViewStatement(databaseType));
         assertTrue(new FederationMetaDataRefreshEngine(sqlStatementContext).isNeedRefresh());
     }
     
-    @SuppressWarnings("unchecked")
     @Test
-    void assertRefresh() {
-        SQLStatement sqlStatement = mock(SQLStatement.class);
-        when(sqlStatement.getDatabaseType()).thenReturn(databaseType);
+    void assertIsNeedRefreshWhenDropViewStatement() {
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new DropViewStatement(databaseType));
+        assertTrue(new FederationMetaDataRefreshEngine(sqlStatementContext).isNeedRefresh());
+    }
+    
+    @Test
+    void assertRefreshWithCreateViewStatement() {
+        CreateViewStatement sqlStatement = new CreateViewStatement(databaseType);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        FederationMetaDataRefresher<SQLStatement> refresher = mock(FederationMetaDataRefresher.class);
-        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatement.getClass())).thenReturn(Optional.of(refresher));
+        FederationMetaDataRefresher<CreateViewStatement> refresher = mock(FederationMetaDataRefresher.class);
+        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, CreateViewStatement.class)).thenReturn(Optional.of(refresher));
         when(SchemaRefreshUtils.getSchemaName(database, sqlStatementContext)).thenReturn("foo_schema");
         new FederationMetaDataRefreshEngine(sqlStatementContext).refresh(metaDataManagerPersistService, database);
         verify(refresher).refresh(metaDataManagerPersistService, databaseType, database, "foo_schema", sqlStatement);
     }
     
-    @SuppressWarnings("unchecked")
     @Test
-    void assertRefreshWithDifferentSchemaName() {
-        InsertStatement sqlStatement = new InsertStatement(databaseType);
+    void assertRefreshWithAlterViewStatement() {
+        AlterViewStatement sqlStatement = new AlterViewStatement(databaseType);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        FederationMetaDataRefresher<InsertStatement> refresher = mock(FederationMetaDataRefresher.class);
-        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, InsertStatement.class)).thenReturn(Optional.of(refresher));
+        FederationMetaDataRefresher<AlterViewStatement> refresher = mock(FederationMetaDataRefresher.class);
+        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, AlterViewStatement.class)).thenReturn(Optional.of(refresher));
         when(SchemaRefreshUtils.getSchemaName(database, sqlStatementContext)).thenReturn("bar_schema");
         new FederationMetaDataRefreshEngine(sqlStatementContext).refresh(metaDataManagerPersistService, database);
         verify(refresher).refresh(metaDataManagerPersistService, databaseType, database, "bar_schema", sqlStatement);
     }
     
     @Test
-    void assertRefreshThrowsNullPointerExceptionWhenRefresherIsNull() {
+    void assertRefreshWhenRefresherNotFound() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(new UpdateStatement(databaseType));
-        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, UpdateStatement.class)).thenReturn(Optional.empty());
-        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, DMLStatement.class)).thenReturn(Optional.empty());
         FederationMetaDataRefreshEngine engine = new FederationMetaDataRefreshEngine(sqlStatementContext);
-        assertThrows(NullPointerException.class, () -> engine.refresh(metaDataManagerPersistService, database));
+        engine.refresh(metaDataManagerPersistService, database);
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     void assertRefreshMultipleTimesWithSameStatement() {
-        SQLStatement sqlStatement = mock(SQLStatement.class);
-        when(sqlStatement.getDatabaseType()).thenReturn(databaseType);
+        CreateViewStatement sqlStatement = new CreateViewStatement(databaseType);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        FederationMetaDataRefresher<SQLStatement> refresher = mock(FederationMetaDataRefresher.class);
-        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatement.getClass())).thenReturn(Optional.of(refresher));
+        FederationMetaDataRefresher<CreateViewStatement> refresher = mock(FederationMetaDataRefresher.class);
+        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, CreateViewStatement.class)).thenReturn(Optional.of(refresher));
         when(SchemaRefreshUtils.getSchemaName(database, sqlStatementContext)).thenReturn("foo_schema");
         FederationMetaDataRefreshEngine engine = new FederationMetaDataRefreshEngine(sqlStatementContext);
         engine.refresh(metaDataManagerPersistService, database);
         engine.refresh(metaDataManagerPersistService, database);
-        verify(refresher, org.mockito.Mockito.times(2)).refresh(metaDataManagerPersistService, databaseType, database, "foo_schema", sqlStatement);
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Test
-    void assertIsNeedRefreshWhenRefresherFoundForBothClassAndSuperClass() {
-        SQLStatement sqlStatement = mock(SQLStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        FederationMetaDataRefresher<SQLStatement> classRefresher = mock(FederationMetaDataRefresher.class);
-        when(TypedSPILoader.findService(FederationMetaDataRefresher.class, sqlStatement.getClass())).thenReturn(Optional.of(classRefresher));
-        FederationMetaDataRefreshEngine engine = new FederationMetaDataRefreshEngine(sqlStatementContext);
-        assertTrue(engine.isNeedRefresh());
+        verify(refresher, Mockito.times(2)).refresh(metaDataManagerPersistService, databaseType, database, "foo_schema", sqlStatement);
     }
 }
