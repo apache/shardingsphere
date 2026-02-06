@@ -366,7 +366,7 @@ class ProxyBackendTransactionManagerTest {
         verify(savepointManager).releaseSavepoint(connection, "sp");
     }
     
-    private Multimap<String, Connection> mockCachedConnections(Connection... connections) {
+    private Multimap<String, Connection> mockCachedConnections(final Connection... connections) {
         Multimap<String, Connection> result = LinkedHashMultimap.create();
         for (Connection each : connections) {
             result.put("ds1", each);
@@ -374,7 +374,7 @@ class ProxyBackendTransactionManagerTest {
         return result;
     }
     
-    private void mockProxyContext(TransactionType defaultType, ShardingSphereTransactionManagerEngine engine, Map<ShardingSphereRule, TransactionHook> transactionHooks) {
+    private void mockProxyContext(final TransactionType defaultType, final ShardingSphereTransactionManagerEngine engine, final Map<ShardingSphereRule, TransactionHook> transactionHooks) {
         TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getDefaultType()).thenReturn(defaultType);
         when(transactionRule.getResource()).thenReturn(engine);
