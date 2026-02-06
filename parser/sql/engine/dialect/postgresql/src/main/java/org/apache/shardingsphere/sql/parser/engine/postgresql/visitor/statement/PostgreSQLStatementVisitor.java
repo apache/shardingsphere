@@ -119,7 +119,6 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Wi
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WindowDefinitionListContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.WithClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParserBaseVisitor;
-import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
@@ -169,6 +168,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ExpressionLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
@@ -446,7 +446,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         }
         ExpressionSegment caseExpr = null == ctx.caseArg() ? null : (ExpressionSegment) visit(ctx.caseArg().aExpr());
         ExpressionSegment elseExpr = null == ctx.caseDefault() ? null : (ExpressionSegment) visit(ctx.caseDefault().aExpr());
-        return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr);
+        return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr, getOriginalText(ctx));
     }
     
     @Override
@@ -1362,37 +1362,34 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.ALL()) {
             return null;
         }
-        return toLimitValueSegment(ctx, (ExpressionSegment) visit(ctx.aExpr()));
+        return createLimitValueSegment(ctx, (ExpressionSegment) visit(ctx.aExpr()));
     }
     
     @Override
     public ASTNode visitSelectOffsetValue(final SelectOffsetValueContext ctx) {
-        return toLimitValueSegment(ctx, (ExpressionSegment) visit(ctx.aExpr()));
+        return createLimitValueSegment(ctx, (ExpressionSegment) visit(ctx.aExpr()));
     }
     
     @Override
     public ASTNode visitSelectFetchValue(final SelectFetchValueContext ctx) {
-        return toLimitValueSegment(ctx, (ExpressionSegment) visit(ctx.aExpr()));
+        return createLimitValueSegment(ctx, (ExpressionSegment) visit(ctx.aExpr()));
     }
     
-    private LimitValueSegment toLimitValueSegment(final ParserRuleContext ctx, final ExpressionSegment segment) {
+    private LimitValueSegment createLimitValueSegment(final ParserRuleContext ctx, final ExpressionSegment segment) {
         if (segment instanceof ParameterMarkerExpressionSegment) {
-            return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(),
-                    ((ParameterMarkerExpressionSegment) segment).getParameterMarkerIndex());
+            return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) segment).getParameterMarkerIndex());
         }
         if (segment instanceof TypeCastExpression) {
-            return toLimitValueSegment(ctx, ((TypeCastExpression) segment).getExpression());
+            return createLimitValueSegment(ctx, ((TypeCastExpression) segment).getExpression());
         }
         if (segment instanceof LiteralExpressionSegment) {
             Object literals = ((LiteralExpressionSegment) segment).getLiterals();
             if (null == literals) {
-                return ctx instanceof SelectOffsetValueContext
-                        ? new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), 0L)
-                        : null;
+                return ctx instanceof SelectOffsetValueContext ? new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), 0L) : null;
             }
             return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(literals.toString()));
         }
-        throw new SQLParsingException("Unsupported LIMIT expression: " + segment.getText());
+        return new ExpressionLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segment);
     }
     
     private LimitSegment createLimitSegmentWhenLimitAndOffset(final SelectLimitContext ctx) {

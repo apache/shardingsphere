@@ -19,9 +19,15 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.pagination
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.ExpressionPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.ExpressionRowNumberValueSegment;
 
@@ -63,7 +69,83 @@ public final class PaginationContext {
         if (paginationValueSegment instanceof ExpressionRowNumberValueSegment) {
             return ((ExpressionRowNumberValueSegment) paginationValueSegment).getValue(params);
         }
+        if (paginationValueSegment instanceof ExpressionPaginationValueSegment) {
+            Long result = getValueFromExpression(((ExpressionPaginationValueSegment) paginationValueSegment).getExpression(), params);
+            if (null == result) {
+                throw new UnsupportedOperationException("Cannot evaluate pagination expression: " + ((ExpressionPaginationValueSegment) paginationValueSegment).getExpression().getText());
+            }
+            return result;
+        }
         return ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
+    }
+    
+    private Long getValueFromExpression(final ExpressionSegment expressionSegment, final List<Object> params) {
+        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
+            Object obj = null == params || params.isEmpty() ? 0L : params.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+            return null == obj ? null : Long.parseLong(obj.toString());
+        }
+        if (expressionSegment instanceof LiteralExpressionSegment) {
+            Object literals = ((LiteralExpressionSegment) expressionSegment).getLiterals();
+            return null == literals ? null : Long.parseLong(literals.toString());
+        }
+        if (expressionSegment instanceof BinaryOperationExpression) {
+            return getValueFromBinaryOperationExpression((BinaryOperationExpression) expressionSegment, params);
+        }
+        if (expressionSegment instanceof CaseWhenExpression) {
+            return getValueFromCaseWhenExpression((CaseWhenExpression) expressionSegment, params);
+        }
+        return null;
+    }
+    
+    private Long getValueFromBinaryOperationExpression(final BinaryOperationExpression binaryOperationExpression, final List<Object> params) {
+        Long left = getValueFromExpression(binaryOperationExpression.getLeft(), params);
+        Long right = getValueFromExpression(binaryOperationExpression.getRight(), params);
+        if (null == left || null == right) {
+            return null;
+        }
+        switch (binaryOperationExpression.getOperator()) {
+            case "+":
+                return left + right;
+            case "-":
+                return left - right;
+            case "*":
+                return left * right;
+            case "/":
+                return 0L == right ? null : left / right;
+            default:
+                return null;
+        }
+    }
+    
+    private Long getValueFromCaseWhenExpression(final CaseWhenExpression caseWhenExpression, final List<Object> params) {
+        if (null != caseWhenExpression.getCaseExpr()) {
+            return null;
+        }
+        java.util.Iterator<ExpressionSegment> whenIterator = caseWhenExpression.getWhenExprs().iterator();
+        java.util.Iterator<ExpressionSegment> thenIterator = caseWhenExpression.getThenExprs().iterator();
+        while (whenIterator.hasNext() && thenIterator.hasNext()) {
+            Boolean whenValue = getBooleanValueFromExpression(whenIterator.next(), params);
+            if (Boolean.TRUE.equals(whenValue)) {
+                return getValueFromExpression(thenIterator.next(), params);
+            }
+            thenIterator.next();
+        }
+        return null == caseWhenExpression.getElseExpr() ? null : getValueFromExpression(caseWhenExpression.getElseExpr(), params);
+    }
+    
+    private Boolean getBooleanValueFromExpression(final ExpressionSegment expressionSegment, final List<Object> params) {
+        if (expressionSegment instanceof LiteralExpressionSegment) {
+            Object literals = ((LiteralExpressionSegment) expressionSegment).getLiterals();
+            if (literals instanceof Boolean) {
+                return (Boolean) literals;
+            }
+            return null == literals ? null : Boolean.parseBoolean(literals.toString());
+        }
+        if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
+            Object obj = null == params || params.isEmpty() ? null : params.get(((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+            return null == obj ? null : Boolean.parseBoolean(obj.toString());
+        }
+        return null;
     }
     
     /**
