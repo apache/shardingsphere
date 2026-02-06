@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -42,10 +42,11 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.savepoint.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
-import org.mockito.ArgumentMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -55,12 +56,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -69,7 +68,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -82,8 +80,9 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ProxyBackendTransactionManagerTest {
     
-    @Mock
-    private ConnectionSession connectionSession;
+    private final TransactionConnectionContext transactionContext = new TransactionConnectionContext();
+    
+    private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
     
     @Mock
     private ProxyDatabaseConnectionManager databaseConnectionManager;
@@ -101,62 +100,37 @@ class ProxyBackendTransactionManagerTest {
     private Connection connection;
     
     @Mock
-    private Connection anotherConnection;
-    
-    @Mock
     private ConnectionContext connectionContext;
-    
-    @Mock
-    private ContextManager contextManager;
-    
-    @Mock
-    private ShardingSphereTransactionManagerEngine transactionManagerEngine;
     
     @Mock
     private ExclusiveOperatorEngine exclusiveOperatorEngine;
     
-    @Mock
-    private TransactionHook transactionHook;
-    
-    private TransactionConnectionContext transactionContext;
-    
-    private ProxyBackendTransactionManager transactionManager;
-    
-    private Collection<ConnectionPostProcessor> connectionPostProcessors;
-    
     @BeforeEach
     void setUp() {
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
-        transactionContext = new TransactionConnectionContext();
         when(connectionContext.getTransactionContext()).thenReturn(transactionContext);
-        connectionPostProcessors = new LinkedList<>();
         when(databaseConnectionManager.getConnectionPostProcessors()).thenReturn(connectionPostProcessors);
         when(databaseConnectionManager.getCachedConnections()).thenReturn(mockCachedConnections(connection));
-        contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
     }
     
+    @SneakyThrows(ReflectiveOperationException.class)
     @Test
     void assertConstructorUseTransactionManagerFromContext() {
         transactionContext.beginTransaction(TransactionType.XA.name(), distributedTransactionManager);
         mockProxyContext(TransactionType.XA, null, Collections.emptyMap());
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
-        assertThat(getDistributedTransactionManager(), is(distributedTransactionManager));
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Object getDistributedTransactionManager() {
-        return Plugins.getMemberAccessor().get(ProxyBackendTransactionManager.class.getDeclaredField("distributedTransactionManager"), transactionManager);
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        assertThat(Plugins.getMemberAccessor().get(ProxyBackendTransactionManager.class.getDeclaredField("distributedTransactionManager"), transactionManager), is(distributedTransactionManager));
     }
     
     @Test
     void assertBeginLocalWhenTransactionNotStarted() {
-        when(transactionStatus.isInTransaction()).thenReturn(false);
-        Map<ShardingSphereRule, TransactionHook> transactionHooks = createTransactionHooks(transactionHook);
-        mockProxyContext(TransactionType.LOCAL, null, transactionHooks);
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
-        setLocalTransactionManager();
+        TransactionHook transactionHook = mock(TransactionHook.class);
+        mockProxyContext(TransactionType.LOCAL, null, Collections.singletonMap(mock(ShardingSphereRule.class), transactionHook));
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
         transactionManager.begin();
         verify(databaseConnectionManager).closeHandlers(true);
         verify(databaseConnectionManager).closeConnections(false);
@@ -171,11 +145,12 @@ class ProxyBackendTransactionManagerTest {
     @Test
     void assertBeginDistributedWhenAlreadyInTransaction() {
         when(transactionStatus.isInTransaction()).thenReturn(true);
-        Map<ShardingSphereRule, TransactionHook> transactionHooks = createTransactionHooks(transactionHook);
+        ShardingSphereTransactionManagerEngine transactionManagerEngine = mock(ShardingSphereTransactionManagerEngine.class);
         when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(distributedTransactionManager);
-        mockProxyContext(TransactionType.XA, transactionManagerEngine, transactionHooks);
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
-        setLocalTransactionManager();
+        TransactionHook transactionHook = mock(TransactionHook.class);
+        mockProxyContext(TransactionType.XA, transactionManagerEngine, Collections.singletonMap(mock(ShardingSphereRule.class), transactionHook));
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
         transactionManager.begin();
         verify(databaseConnectionManager, never()).closeHandlers(true);
         verify(databaseConnectionManager, never()).closeConnections(false);
@@ -187,10 +162,9 @@ class ProxyBackendTransactionManagerTest {
     
     @Test
     void assertCommitWithoutTransaction() throws SQLException {
-        when(transactionStatus.isInTransaction()).thenReturn(false);
         mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
-        setLocalTransactionManager();
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
         transactionManager.commit();
         verify(localTransactionManager, never()).commit();
         verify(transactionStatus, never()).setInTransaction(false);
@@ -199,13 +173,12 @@ class ProxyBackendTransactionManagerTest {
     @Test
     void assertCommitLocalWithoutLock() throws SQLException {
         when(transactionStatus.isInTransaction()).thenReturn(true);
-        Map<ShardingSphereRule, TransactionHook> transactionHooks = createTransactionHooks(transactionHook);
-        when(transactionHook.isNeedLockWhenCommit(any())).thenReturn(false);
         ConnectionSavepointManager savepointManager = mock(ConnectionSavepointManager.class);
         when(ConnectionSavepointManager.getInstance()).thenReturn(savepointManager);
-        mockProxyContext(TransactionType.LOCAL, null, transactionHooks);
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
-        setLocalTransactionManager();
+        TransactionHook transactionHook = mock(TransactionHook.class);
+        mockProxyContext(TransactionType.LOCAL, null, Collections.singletonMap(mock(ShardingSphereRule.class), transactionHook));
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
         transactionManager.commit();
         verify(transactionHook).beforeCommit(any(), any(DatabaseType.class), anyCollection(), eq(transactionContext));
         verify(localTransactionManager).commit();
@@ -218,19 +191,20 @@ class ProxyBackendTransactionManagerTest {
     void assertCommitWithLockAndDistributedManager() throws SQLException {
         when(transactionStatus.isInTransaction()).thenReturn(true);
         transactionContext.setExceptionOccur(true);
-        Map<ShardingSphereRule, TransactionHook> transactionHooks = createTransactionHooks(transactionHook);
-        when(transactionHook.isNeedLockWhenCommit(any())).thenReturn(true);
         ConnectionSavepointManager savepointManager = mock(ConnectionSavepointManager.class);
         when(ConnectionSavepointManager.getInstance()).thenReturn(savepointManager);
+        ShardingSphereTransactionManagerEngine transactionManagerEngine = mock(ShardingSphereTransactionManagerEngine.class);
         when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(distributedTransactionManager);
         doAnswer(invocation -> {
             ExclusiveOperationVoidCallback callback = invocation.getArgument(2);
             callback.execute();
             return null;
         }).when(exclusiveOperatorEngine).operate(any(), anyLong(), any());
-        mockProxyContext(TransactionType.XA, transactionManagerEngine, transactionHooks);
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
-        setLocalTransactionManager();
+        TransactionHook transactionHook = mock(TransactionHook.class);
+        when(transactionHook.isNeedLockWhenCommit(any())).thenReturn(true);
+        mockProxyContext(TransactionType.XA, transactionManagerEngine, Collections.singletonMap(mock(ShardingSphereRule.class), transactionHook));
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
         transactionManager.commit();
         verify(exclusiveOperatorEngine).operate(any(), anyLong(), any());
         verify(transactionHook).beforeCommit(any(), any(DatabaseType.class), anyCollection(), eq(transactionContext));
@@ -242,10 +216,9 @@ class ProxyBackendTransactionManagerTest {
     
     @Test
     void assertRollbackWithoutTransaction() throws SQLException {
-        when(transactionStatus.isInTransaction()).thenReturn(false);
         mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
-        setLocalTransactionManager();
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
         transactionManager.rollback();
         verify(localTransactionManager, never()).rollback();
         verify(transactionStatus, never()).setInTransaction(false);
@@ -254,12 +227,12 @@ class ProxyBackendTransactionManagerTest {
     @Test
     void assertRollbackLocalWithHooks() throws SQLException {
         when(transactionStatus.isInTransaction()).thenReturn(true);
-        Map<ShardingSphereRule, TransactionHook> transactionHooks = createTransactionHooks(transactionHook);
         ConnectionSavepointManager savepointManager = mock(ConnectionSavepointManager.class);
         when(ConnectionSavepointManager.getInstance()).thenReturn(savepointManager);
-        mockProxyContext(TransactionType.LOCAL, null, transactionHooks);
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
-        setLocalTransactionManager();
+        TransactionHook transactionHook = mock(TransactionHook.class);
+        mockProxyContext(TransactionType.LOCAL, null, Collections.singletonMap(mock(ShardingSphereRule.class), transactionHook));
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
         transactionManager.rollback();
         verify(transactionHook).beforeRollback(any(), any(DatabaseType.class), anyCollection(), eq(transactionContext));
         verify(localTransactionManager).rollback();
@@ -272,11 +245,12 @@ class ProxyBackendTransactionManagerTest {
     @Test
     void assertRollbackDistributedSkipsWhenStatusCleared() throws SQLException {
         when(transactionStatus.isInTransaction()).thenReturn(true, false);
-        Map<ShardingSphereRule, TransactionHook> transactionHooks = createTransactionHooks(transactionHook);
+        ShardingSphereTransactionManagerEngine transactionManagerEngine = mock(ShardingSphereTransactionManagerEngine.class);
         when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(distributedTransactionManager);
-        mockProxyContext(TransactionType.XA, transactionManagerEngine, transactionHooks);
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
-        setLocalTransactionManager();
+        TransactionHook transactionHook = mock(TransactionHook.class);
+        mockProxyContext(TransactionType.XA, transactionManagerEngine, Collections.singletonMap(mock(ShardingSphereRule.class), transactionHook));
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
         transactionManager.rollback();
         verify(transactionHook).beforeRollback(any(), any(DatabaseType.class), anyCollection(), eq(transactionContext));
         verify(distributedTransactionManager, never()).rollback();
@@ -287,13 +261,14 @@ class ProxyBackendTransactionManagerTest {
     @Test
     void assertRollbackDistributedTransaction() throws SQLException {
         when(transactionStatus.isInTransaction()).thenReturn(true);
-        Map<ShardingSphereRule, TransactionHook> transactionHooks = createTransactionHooks(transactionHook);
         ConnectionSavepointManager savepointManager = mock(ConnectionSavepointManager.class);
         when(ConnectionSavepointManager.getInstance()).thenReturn(savepointManager);
+        ShardingSphereTransactionManagerEngine transactionManagerEngine = mock(ShardingSphereTransactionManagerEngine.class);
         when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(distributedTransactionManager);
-        mockProxyContext(TransactionType.XA, transactionManagerEngine, transactionHooks);
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
-        setLocalTransactionManager();
+        TransactionHook transactionHook = mock(TransactionHook.class);
+        mockProxyContext(TransactionType.XA, transactionManagerEngine, Collections.singletonMap(mock(ShardingSphereRule.class), transactionHook));
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        setLocalTransactionManager(transactionManager);
         transactionManager.rollback();
         verify(transactionHook).beforeRollback(any(), any(DatabaseType.class), anyCollection(), eq(transactionContext));
         verify(distributedTransactionManager).rollback();
@@ -308,7 +283,7 @@ class ProxyBackendTransactionManagerTest {
         ConnectionSavepointManager savepointManager = mock(ConnectionSavepointManager.class);
         when(ConnectionSavepointManager.getInstance()).thenReturn(savepointManager);
         mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
         transactionManager.setSavepoint("sp");
         verify(savepointManager).setSavepoint(connection, "sp");
         Connection targetConnection = mock(Connection.class);
@@ -324,7 +299,7 @@ class ProxyBackendTransactionManagerTest {
         when(ConnectionSavepointManager.getInstance()).thenReturn(savepointManager);
         transactionContext.setExceptionOccur(true);
         mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
+        ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
         transactionManager.rollbackTo("sp");
         verify(savepointManager).rollbackToSavepoint(connection, "sp");
         assertFalse(transactionContext.isExceptionOccur());
@@ -332,31 +307,29 @@ class ProxyBackendTransactionManagerTest {
     
     @Test
     void assertRollbackToThrowsCombinedSQLException() throws SQLException {
+        Connection anotherConnection = mock(Connection.class);
         when(databaseConnectionManager.getCachedConnections()).thenReturn(mockCachedConnections(connection, anotherConnection));
         ConnectionSavepointManager savepointManager = mock(ConnectionSavepointManager.class);
         when(ConnectionSavepointManager.getInstance()).thenReturn(savepointManager);
         doThrow(new SQLException("first")).when(savepointManager).rollbackToSavepoint(connection, "sp");
         doThrow(new SQLException("second")).when(savepointManager).rollbackToSavepoint(anotherConnection, "sp");
         mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
-        SQLException actualException = assertThrows(SQLException.class, () -> transactionManager.rollbackTo("sp"));
+        SQLException actualException = assertThrows(SQLException.class, () -> new ProxyBackendTransactionManager(databaseConnectionManager).rollbackTo("sp"));
         assertThat(actualException.getMessage(), is("first"));
-        assertThat(actualException.getNextException(), is(notNullValue()));
         assertThat(actualException.getNextException().getMessage(), is("second"));
     }
     
     @Test
     void assertReleaseSavepointThrowsCombinedSQLException() throws SQLException {
+        Connection anotherConnection = mock(Connection.class);
         when(databaseConnectionManager.getCachedConnections()).thenReturn(mockCachedConnections(connection, anotherConnection));
         ConnectionSavepointManager savepointManager = mock(ConnectionSavepointManager.class);
         when(ConnectionSavepointManager.getInstance()).thenReturn(savepointManager);
         doThrow(new SQLException("first")).when(savepointManager).releaseSavepoint(connection, "sp");
         doThrow(new SQLException("second")).when(savepointManager).releaseSavepoint(anotherConnection, "sp");
         mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
-        SQLException actualException = assertThrows(SQLException.class, () -> transactionManager.releaseSavepoint("sp"));
+        SQLException actualException = assertThrows(SQLException.class, () -> new ProxyBackendTransactionManager(databaseConnectionManager).releaseSavepoint("sp"));
         assertThat(actualException.getMessage(), is("first"));
-        assertThat(actualException.getNextException(), is(notNullValue()));
         assertThat(actualException.getNextException().getMessage(), is("second"));
     }
     
@@ -365,22 +338,15 @@ class ProxyBackendTransactionManagerTest {
         ConnectionSavepointManager savepointManager = mock(ConnectionSavepointManager.class);
         when(ConnectionSavepointManager.getInstance()).thenReturn(savepointManager);
         mockProxyContext(TransactionType.LOCAL, null, Collections.emptyMap());
-        transactionManager = new ProxyBackendTransactionManager(databaseConnectionManager);
-        transactionManager.releaseSavepoint("sp");
+        new ProxyBackendTransactionManager(databaseConnectionManager).releaseSavepoint("sp");
         verify(savepointManager).releaseSavepoint(connection, "sp");
     }
     
     private Multimap<String, Connection> mockCachedConnections(Connection... connections) {
-        Multimap<String, Connection> result = HashMultimap.create();
+        Multimap<String, Connection> result = LinkedHashMultimap.create();
         for (Connection each : connections) {
             result.put("ds1", each);
         }
-        return result;
-    }
-    
-    private Map<ShardingSphereRule, TransactionHook> createTransactionHooks(TransactionHook hook) {
-        Map<ShardingSphereRule, TransactionHook> result = new LinkedHashMap<>(1, 1F);
-        result.put(mock(ShardingSphereRule.class), hook);
         return result;
     }
     
@@ -388,16 +354,15 @@ class ProxyBackendTransactionManagerTest {
         TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getDefaultType()).thenReturn(defaultType);
         when(transactionRule.getResource()).thenReturn(engine);
-        RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(transactionRule));
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(contextManager.getDatabaseType()).thenReturn(mock(DatabaseType.class));
+        ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(transactionRule)));
         when(contextManager.getExclusiveOperatorEngine()).thenReturn(exclusiveOperatorEngine);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(OrderedSPILoader.getServices(eq(TransactionHook.class), ArgumentMatchers.<Collection<ShardingSphereRule>>any())).thenReturn(transactionHooks);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setLocalTransactionManager() {
+    private void setLocalTransactionManager(final ProxyBackendTransactionManager transactionManager) {
         Plugins.getMemberAccessor().set(ProxyBackendTransactionManager.class.getDeclaredField("localTransactionManager"), transactionManager, localTransactionManager);
     }
 }
