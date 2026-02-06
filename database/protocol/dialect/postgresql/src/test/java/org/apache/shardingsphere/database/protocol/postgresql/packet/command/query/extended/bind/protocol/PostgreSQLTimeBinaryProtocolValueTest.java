@@ -17,44 +17,32 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.PostgreSQLBinaryTimestampUtils;
+import io.netty.buffer.ByteBufAllocator;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.codec.decoder.PgBinaryObj;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.postgresql.util.ByteConverter;
 
-import java.sql.Timestamp;
+import java.nio.charset.StandardCharsets;
+import java.sql.Time;
+import java.util.TimeZone;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-@ExtendWith(MockitoExtension.class)
 class PostgreSQLTimeBinaryProtocolValueTest {
     
-    @Mock
-    private PostgreSQLPacketPayload payload;
-    
     @Test
-    void assertGetColumnLength() {
+    void test() {
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufAllocator.DEFAULT.buffer(), StandardCharsets.UTF_8);
         PostgreSQLTimeBinaryProtocolValue actual = new PostgreSQLTimeBinaryProtocolValue();
-        assertThat(actual.getColumnLength(payload, null), is(8));
-    }
-    
-    @Test
-    void assertRead() {
-        PostgreSQLTimeBinaryProtocolValue actual = new PostgreSQLTimeBinaryProtocolValue();
-        when(payload.readInt8()).thenReturn(1L);
-        assertThat(actual.read(payload, 8), is(1L));
-    }
-    
-    @Test
-    void assertWrite() {
-        PostgreSQLTimeBinaryProtocolValue actual = new PostgreSQLTimeBinaryProtocolValue();
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        Time timestamp = new Time(-TimeZone.getDefault().getRawOffset());
         actual.write(payload, timestamp);
-        verify(payload).writeInt8(PostgreSQLBinaryTimestampUtils.toPostgreSQLTime(timestamp));
+        
+        PgBinaryObj read = (PgBinaryObj) actual.read(payload, 8);
+        Assertions.assertEquals("time", read.getType());
+        byte[] target = new byte[8];
+        read.toBytes(target, 0);
+        long l = ByteConverter.int8(target, 0);
+        Assertions.assertEquals(0L, l);
+        payload.getByteBuf().release();
     }
 }

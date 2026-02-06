@@ -26,6 +26,7 @@ public interface PostgreSQLBinaryProtocolValue {
     
     /**
      * Get column length.
+     * return -1 if we cant get column length quickly
      *
      * @param payload payload operation for PostgreSQL packet
      * @param value value of column

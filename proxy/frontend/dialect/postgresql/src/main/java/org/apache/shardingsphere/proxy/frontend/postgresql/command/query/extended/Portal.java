@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLArrayColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
@@ -56,6 +57,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.Em
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -190,6 +192,14 @@ public final class Portal {
     }
     
     private BinaryCell createBinaryCell(final QueryResponseCell cell) {
+        if (cell.getJdbcType() == Types.ARRAY) {
+            return cell.getColumnTypeName()
+                    .map(PostgreSQLArrayColumnType::getTypeOid)
+                    .map(PostgreSQLColumnType::valueOf)
+                    .map(it -> new BinaryCell(it, getCellData(cell)))
+                    .orElseThrow(() -> new IllegalArgumentException("Cannot find PostgreSQL type oid"));
+        }
+        
         return new BinaryCell(PostgreSQLColumnType.valueOfJDBCType(cell.getJdbcType(), cell.getColumnTypeName().orElse(null)), getCellData(cell));
     }
     
