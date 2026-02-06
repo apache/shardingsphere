@@ -71,9 +71,6 @@ public final class PaginationContext {
         }
         if (paginationValueSegment instanceof ExpressionPaginationValueSegment) {
             Long result = getValueFromExpression(((ExpressionPaginationValueSegment) paginationValueSegment).getExpression(), params);
-            if (null == result) {
-                throw new UnsupportedOperationException("Cannot evaluate pagination expression: " + ((ExpressionPaginationValueSegment) paginationValueSegment).getExpression().getText());
-            }
             return result;
         }
         return ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
