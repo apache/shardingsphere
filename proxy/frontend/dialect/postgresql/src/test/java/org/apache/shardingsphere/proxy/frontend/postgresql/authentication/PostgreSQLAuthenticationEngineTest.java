@@ -257,6 +257,22 @@ class PostgreSQLAuthenticationEngineTest {
     }
     
     @Test
+    void assertLoginWithAuthorizedDatabase() {
+        PostgreSQLPacketPayload payload = createStartupPayload(USERNAME, DATABASE_NAME);
+        AuthorityRule authorityRule = createAuthorityRule(new UserConfiguration(USERNAME, PASSWORD, "", null, false), Collections.emptyMap(), null);
+        MetaDataContexts metaDataContexts = createMetaDataContexts(authorityRule, true, DATABASE_NAME);
+        ContextManager contextManager = mockContextManager(metaDataContexts);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        authenticationEngine.authenticate(channelHandlerContext, payload);
+        byte[] md5Salt = getMd5Salt(authenticationEngine);
+        PostgreSQLPacketPayload passwordPayload = createPasswordMessage(createMd5Digest(USERNAME, PASSWORD, md5Salt));
+        AuthenticationResult actual = authenticationEngine.authenticate(channelHandlerContext, passwordPayload);
+        verify(channelHandlerContext).write(any(PostgreSQLAuthenticationOKPacket.class));
+        verify(channelHandlerContext).writeAndFlush(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
+        assertThat(actual.isFinished(), is(true));
+    }
+    
+    @Test
     void assertLoginWithNullDatabase() {
         PostgreSQLPacketPayload payload = createStartupPayload(USERNAME, null);
         AuthorityRule authorityRule = createAuthorityRule(new UserConfiguration(USERNAME, PASSWORD, "", null, false), Collections.emptyMap(), null);
