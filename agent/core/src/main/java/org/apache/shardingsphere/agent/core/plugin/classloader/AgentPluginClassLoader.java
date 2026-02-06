@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.agent.core.plugin.classloader;
 
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -36,7 +37,7 @@ import java.util.zip.ZipEntry;
 /**
  * Agent plugin class loader.
  */
-public final class AgentPluginClassLoader extends ClassLoader {
+public final class AgentPluginClassLoader extends ClassLoader implements Closeable {
     
     static {
         registerAsParallelCapable();
@@ -94,8 +95,10 @@ public final class AgentPluginClassLoader extends ClassLoader {
     }
     
     private Class<?> defineClass(final String name, final JarFile extraJar, final ZipEntry entry) throws IOException {
-        byte[] data = toByteArray(extraJar.getInputStream(entry));
-        return defineClass(name, data, 0, data.length);
+        try (InputStream inputStream = extraJar.getInputStream(entry)) {
+            byte[] data = toByteArray(inputStream);
+            return defineClass(name, data, 0, data.length);
+        }
     }
     
     private static byte[] toByteArray(final InputStream inStream) throws IOException {
@@ -109,7 +112,6 @@ public final class AgentPluginClassLoader extends ClassLoader {
             }
         } finally {
             result.close();
-            inStream.close();
         }
         return result.toByteArray();
     }
@@ -137,6 +139,16 @@ public final class AgentPluginClassLoader extends ClassLoader {
             return Optional.of(new URL(String.format("jar:file:%s!/%s", extraJar.getName(), name)));
         } catch (final MalformedURLException ignored) {
             return Optional.empty();
+        }
+    }
+    
+    @Override
+    public void close() {
+        for (JarFile each : extraJars) {
+            try {
+                each.close();
+            } catch (final IOException ignored) {
+            }
         }
     }
 }
