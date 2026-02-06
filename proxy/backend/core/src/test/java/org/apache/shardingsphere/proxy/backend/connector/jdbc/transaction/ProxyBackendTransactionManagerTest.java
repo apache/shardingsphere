@@ -394,16 +394,14 @@ class ProxyBackendTransactionManagerTest {
         return Stream.of(
                 Arguments.of("LOCAL start initializes transaction context", TransactionType.LOCAL, false, false, true, false, true, true, true, true),
                 Arguments.of("Distributed begin when already in transaction", TransactionType.XA, true, true, false, true, false, false, false, true),
-                Arguments.of("XA default falls back to local when manager missing", TransactionType.XA, false, false, true, false, true, true, true, false)
-        );
+                Arguments.of("XA default falls back to local when manager missing", TransactionType.XA, false, false, true, false, true, true, true, false));
     }
     
     private static Stream<Arguments> provideCommitScenarios() {
         return Stream.of(
                 Arguments.of("Local commit without lock", TransactionType.LOCAL, false, false, false, true, false),
                 Arguments.of("Distributed commit with lock", TransactionType.XA, true, true, true, true, true),
-                Arguments.of("XA fallback commit uses local manager", TransactionType.XA, false, false, false, false, false)
-        );
+                Arguments.of("XA fallback commit uses local manager", TransactionType.XA, false, false, false, false, false));
     }
     
     private static Stream<Arguments> provideRollbackScenarios() {
@@ -411,15 +409,13 @@ class ProxyBackendTransactionManagerTest {
                 Arguments.of("Local rollback with hooks", TransactionType.LOCAL, true, false, false, true, true, true),
                 Arguments.of("Distributed rollback skipped after status cleared", TransactionType.XA, false, true, false, true, false, false),
                 Arguments.of("XA rollback falls back to local without manager", TransactionType.XA, true, false, false, false, false, true),
-                Arguments.of("Distributed rollback executes manager", TransactionType.XA, true, true, true, true, true, true)
-        );
+                Arguments.of("Distributed rollback executes manager", TransactionType.XA, true, true, true, true, true, true));
     }
     
     private static Stream<Arguments> provideRollbackToScenarios() {
         return Stream.of(
                 Arguments.of("Rollback to clears exception flag after success", true, 0, true, false),
                 Arguments.of("Rollback to keeps flag when no exception occurred", false, 0, false, false),
-                Arguments.of("Rollback to aggregates SQLException across connections", false, 2, false, true)
-        );
+                Arguments.of("Rollback to aggregates SQLException across connections", false, 2, false, true));
     }
 }
