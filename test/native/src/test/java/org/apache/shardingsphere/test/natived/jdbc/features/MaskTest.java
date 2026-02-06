@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -99,15 +100,19 @@ class MaskTest {
             order.setAddressId(i);
             order.setStatus("INSERT_TEST");
             orderRepository.insert(order);
+            Address address = new Address((long) i, "address_test_" + i);
+            addressRepository.insert(address);
+        }
+        Map<Integer, Long> orderIdMap = orderRepository.selectAll().stream().collect(Collectors.toMap(Order::getUserId, Order::getOrderId));
+        for (int i = 1; i <= 10; i++) {
             OrderItem orderItem = new OrderItem();
-            orderItem.setOrderId(order.getOrderId());
+            long orderId = orderIdMap.get(i);
+            orderItem.setOrderId(orderId);
             orderItem.setUserId(i);
             orderItem.setPhone("13800000001");
             orderItem.setStatus("INSERT_TEST");
             orderItemRepository.insert(orderItem);
-            Address address = new Address((long) i, "address_test_" + i);
-            addressRepository.insert(address);
-            result.add(order.getOrderId());
+            result.add(orderId);
         }
         return result;
     }
