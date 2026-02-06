@@ -95,7 +95,7 @@ class ShardingTableRuleStatementCheckerTest {
     @Test
     void assertCheckAlterSuccess() {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
-        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1"));
+        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1"), null, null);
         autoTableRuleSegment.setShardingColumn("order_id");
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("CORE.AUTO.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "2"))));
         rules.add(autoTableRuleSegment);
@@ -107,11 +107,11 @@ class ShardingTableRuleStatementCheckerTest {
         ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
         shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("reference_0", "t_order,t_order_item"));
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
-        AutoTableRuleSegment autoTable1 = new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1"));
+        AutoTableRuleSegment autoTable1 = new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1"), null, null);
         autoTable1.setShardingColumn("order_id");
         autoTable1.setShardingAlgorithmSegment(new AlgorithmSegment("CORE.AUTO.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "2"))));
         rules.add(autoTable1);
-        AutoTableRuleSegment autoTable2 = new AutoTableRuleSegment("t_order_item", Arrays.asList("ds_0", "ds_1"));
+        AutoTableRuleSegment autoTable2 = new AutoTableRuleSegment("t_order_item", Arrays.asList("ds_0", "ds_1"), null, null);
         autoTable2.setShardingColumn("order_id");
         autoTable2.setShardingAlgorithmSegment(new AlgorithmSegment("CORE.AUTO.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "2"))));
         rules.add(autoTable2);
@@ -121,49 +121,49 @@ class ShardingTableRuleStatementCheckerTest {
     @Test
     void assertCheckCreationWithDuplicated() {
         List<AbstractTableRuleSegment> rules = Arrays.asList(
-                new AutoTableRuleSegment("t_order_duplicated", Arrays.asList("ds_0", "ds_1")),
-                new AutoTableRuleSegment("t_order_duplicated", Arrays.asList("ds_0", "ds_1")));
+                new AutoTableRuleSegment("t_order_duplicated", Arrays.asList("ds_0", "ds_1"), null, null),
+                new AutoTableRuleSegment("t_order_duplicated", Arrays.asList("ds_0", "ds_1"), null, null));
         assertThrows(DuplicateRuleException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test
     void assertCheckCreationWithIdentical() {
-        Collection<AbstractTableRuleSegment> rules = Collections.singleton(new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1")));
+        Collection<AbstractTableRuleSegment> rules = Collections.singleton(new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1"), null, null));
         assertThrows(DuplicateRuleException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test
     void assertCheckAlterationWithRuleRequiredMissed() {
-        Collection<AbstractTableRuleSegment> rules = Collections.singleton(new AutoTableRuleSegment("t_order_required_missed", Arrays.asList("ds_0", "ds_1")));
+        Collection<AbstractTableRuleSegment> rules = Collections.singleton(new AutoTableRuleSegment("t_order_required_missed", Arrays.asList("ds_0", "ds_1"), null, null));
         assertThrows(MissingRequiredRuleException.class, () -> ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig));
     }
     
     @Test
     void assertCheckCreationWithResourceRequiredMissed() {
-        Collection<AbstractTableRuleSegment> rules = Collections.singleton(new AutoTableRuleSegment("t_product", Arrays.asList("ds_required_missed", "ds_1")));
+        Collection<AbstractTableRuleSegment> rules = Collections.singleton(new AutoTableRuleSegment("t_product", Arrays.asList("ds_required_missed", "ds_1"), null, null));
         assertThrows(MissingRequiredStorageUnitsException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test
     void assertCheckCreationWithInvalidKeyGenerateAlgorithm() {
-        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
-        autoTableRuleSegment.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("invalid", PropertiesBuilder.build(new Property("invalid", "invalid")))));
+        KeyGenerateStrategySegment keyGenerator = new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("invalid", PropertiesBuilder.build(new Property("invalid", "invalid"))));
+        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"), keyGenerator, null);
         assertThrows(ServiceProviderNotFoundException.class,
                 () -> ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(autoTableRuleSegment), false, shardingRuleConfig));
     }
     
     @Test
     void assertCheckCreationWithInvalidAuditAlgorithm() {
-        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
-        autoTableRuleSegment.setAuditStrategySegment(new AuditStrategySegment(Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
-                new AlgorithmSegment("invalid", new Properties()))), true));
+        AuditStrategySegment auditStrategySegment = new AuditStrategySegment(Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
+                new AlgorithmSegment("invalid", new Properties()))), true);
+        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"), null, auditStrategySegment);
         assertThrows(ServiceProviderNotFoundException.class,
                 () -> ShardingTableRuleStatementChecker.checkCreation(database, Collections.singleton(autoTableRuleSegment), false, shardingRuleConfig));
     }
     
     @Test
     void assertCheckAutoTableWithNotExistShardingAlgorithms() {
-        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"), null, null);
         autoTableRuleSegment.setShardingColumn("product_id");
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("not_exist", PropertiesBuilder.build(new Property("", ""))));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(autoTableRuleSegment);
@@ -172,7 +172,7 @@ class ShardingTableRuleStatementCheckerTest {
     
     @Test
     void assertCheckAutoTableWithComplexShardingAlgorithms() {
-        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"), null, null);
         autoTableRuleSegment.setShardingColumn("product_id");
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("complex", PropertiesBuilder.build(new Property("", ""))));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(autoTableRuleSegment);
@@ -255,7 +255,7 @@ class ShardingTableRuleStatementCheckerTest {
     
     @Test
     void assertCheckAutoTableRuleWithStandardShardingAlgorithm() {
-        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"), null, null);
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${product_id % 2}"))));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(autoTableRuleSegment);
         assertThrows(AlgorithmInitializationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
@@ -263,7 +263,7 @@ class ShardingTableRuleStatementCheckerTest {
     
     @Test
     void assertCheckAutoTableRuleWithAutoShardingAlgorithm() {
-        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"), null, null);
         autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("CORE.AUTO.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "4"))));
         Collection<AbstractTableRuleSegment> rules = Collections.singleton(autoTableRuleSegment);
         ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
@@ -314,8 +314,8 @@ class ShardingTableRuleStatementCheckerTest {
     }
     
     private AutoTableRuleSegment createCompleteAutoTableRule() {
-        AutoTableRuleSegment result = new AutoTableRuleSegment("t_product_0", Arrays.asList("ds_0", "ds_1"));
-        result.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
+        KeyGenerateStrategySegment keyGenerator = new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
+        AutoTableRuleSegment result = new AutoTableRuleSegment("t_product_0", Arrays.asList("ds_0", "ds_1"), keyGenerator, null);
         result.setShardingColumn("product_id");
         result.setShardingAlgorithmSegment(new AlgorithmSegment("FOO.DISTSQL.FIXTURE", PropertiesBuilder.build(new Property("", ""))));
         return result;
