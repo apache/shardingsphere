@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.infra.metadata.database.rule;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
@@ -34,19 +34,27 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
  * Rule meta data.
  */
-@Getter
 public final class RuleMetaData {
     
+    private final Map<Class<?>, Collection<?>> ruleCache = new ConcurrentHashMap<>();
+    
+    private final Map<Class<?>, Optional<ShardingSphereRule>> singleRuleCache = new ConcurrentHashMap<>();
+    
+    private final Map<Class<?>, Collection<?>> attributeCache = new ConcurrentHashMap<>();
+    
+    @Getter
     private final Collection<ShardingSphereRule> rules;
     
     public RuleMetaData(final Collection<ShardingSphereRule> rules) {
-        this.rules = new CopyOnWriteArrayList<>(rules);
+        this.rules = new CacheInvalidatingCopyOnWriteArrayList(rules);
     }
     
     /**
@@ -65,11 +73,20 @@ public final class RuleMetaData {
      * @param <T> type of rule
      * @return found rules
      */
+    @SuppressWarnings("unchecked")
     public <T extends ShardingSphereRule> Collection<T> findRules(final Class<T> clazz) {
-        Collection<T> result = new LinkedList<>();
+        Collection<?> result = ruleCache.get(clazz);
+        if (null == result) {
+            result = ruleCache.computeIfAbsent(clazz, this::computeRules);
+        }
+        return (Collection<T>) result;
+    }
+    
+    private Collection<? extends ShardingSphereRule> computeRules(final Class<?> clazz) {
+        Collection<ShardingSphereRule> result = new LinkedList<>();
         for (ShardingSphereRule each : rules) {
             if (clazz.isAssignableFrom(each.getClass())) {
-                result.add(clazz.cast(each));
+                result.add(each);
             }
         }
         return result;
@@ -82,9 +99,13 @@ public final class RuleMetaData {
      * @param <T> type of rule
      * @return found single rule
      */
+    @SuppressWarnings("unchecked")
     public <T extends ShardingSphereRule> Optional<T> findSingleRule(final Class<T> clazz) {
-        Collection<T> foundRules = findRules(clazz);
-        return foundRules.isEmpty() ? Optional.empty() : Optional.of(foundRules.iterator().next());
+        Optional<ShardingSphereRule> result = singleRuleCache.get(clazz);
+        if (null == result) {
+            result = singleRuleCache.computeIfAbsent(clazz, this::computeSingleRule);
+        }
+        return (Optional<T>) result;
     }
     
     /**
@@ -94,10 +115,21 @@ public final class RuleMetaData {
      * @param <T> type of rule
      * @return found single rule
      */
+    @SuppressWarnings("unchecked")
     public <T extends ShardingSphereRule> T getSingleRule(final Class<T> clazz) {
-        Collection<T> foundRules = findRules(clazz);
-        Preconditions.checkState(1 == foundRules.size(), "Rule `%s` should have and only have one instance.", clazz.getSimpleName());
-        return foundRules.iterator().next();
+        Optional<ShardingSphereRule> shardingSphereRule = singleRuleCache.get(clazz);
+        if (null == shardingSphereRule) {
+            shardingSphereRule = singleRuleCache.computeIfAbsent(clazz, this::computeSingleRule);
+        }
+        ShardingSpherePreconditions.checkState(shardingSphereRule.isPresent(),
+                () -> new IllegalStateException(String.format("Rule `%s` should have and only have one instance.", clazz.getSimpleName())));
+        return (T) shardingSphereRule.get();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Optional<ShardingSphereRule> computeSingleRule(final Class<?> clazz) {
+        Collection<ShardingSphereRule> rules = findRules((Class<ShardingSphereRule>) clazz);
+        return 1 == rules.size() ? Optional.of(rules.iterator().next()) : Optional.empty();
     }
     
     /**
@@ -166,27 +198,87 @@ public final class RuleMetaData {
      * @param <T> type of rule attributes
      * @return rule attributes
      */
+    @SuppressWarnings("unchecked")
     public <T extends RuleAttribute> Collection<T> getAttributes(final Class<T> attributeClass) {
-        Collection<T> result = new LinkedList<>();
+        Collection<?> result = attributeCache.get(attributeClass);
+        if (null == result) {
+            result = attributeCache.computeIfAbsent(attributeClass, this::computeAttributes);
+        }
+        return (Collection<T>) result;
+    }
+    
+    private Collection<? extends RuleAttribute> computeAttributes(final Class<?> attributeClass) {
+        Collection<RuleAttribute> result = new LinkedList<>();
         for (ShardingSphereRule each : rules) {
-            each.getAttributes().findAttribute(attributeClass).ifPresent(result::add);
+            each.getAttributes().findAttribute(attributeClass.asSubclass(RuleAttribute.class)).ifPresent(result::add);
         }
         return result;
     }
     
     /**
-     * Get rule attributes.
+     * Find rule attribute.
      *
      * @param attributeClass rule attribute class
      * @param <T> type of rule attributes
-     * @return rule attributes
+     * @return rule attribute
      */
     public <T extends RuleAttribute> Optional<T> findAttribute(final Class<T> attributeClass) {
-        for (ShardingSphereRule each : rules) {
-            if (each.getAttributes().findAttribute(attributeClass).isPresent()) {
-                return each.getAttributes().findAttribute(attributeClass);
-            }
+        Collection<T> attributes = getAttributes(attributeClass);
+        return attributes.isEmpty() ? Optional.empty() : Optional.of(attributes.iterator().next());
+    }
+    
+    private final class CacheInvalidatingCopyOnWriteArrayList extends CopyOnWriteArrayList<ShardingSphereRule> {
+        
+        CacheInvalidatingCopyOnWriteArrayList(final Collection<ShardingSphereRule> rules) {
+            super(rules);
         }
-        return Optional.empty();
+        
+        private void invalidateCache() {
+            ruleCache.clear();
+            singleRuleCache.clear();
+            attributeCache.clear();
+        }
+        
+        @Override
+        public boolean add(final ShardingSphereRule rule) {
+            invalidateCache();
+            return super.add(rule);
+        }
+        
+        @Override
+        public boolean addAll(final Collection<? extends ShardingSphereRule> collection) {
+            invalidateCache();
+            return super.addAll(collection);
+        }
+        
+        @Override
+        public boolean remove(final Object o) {
+            invalidateCache();
+            return super.remove(o);
+        }
+        
+        @Override
+        public boolean removeAll(final Collection<?> objects) {
+            invalidateCache();
+            return super.removeAll(objects);
+        }
+        
+        @Override
+        public boolean removeIf(final Predicate<? super ShardingSphereRule> filter) {
+            invalidateCache();
+            return super.removeIf(filter);
+        }
+        
+        @Override
+        public boolean retainAll(final Collection<?> objects) {
+            invalidateCache();
+            return super.retainAll(objects);
+        }
+        
+        @Override
+        public void clear() {
+            invalidateCache();
+            super.clear();
+        }
     }
 }
