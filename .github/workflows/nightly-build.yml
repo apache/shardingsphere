@@ -145,13 +145,16 @@ jobs:
           restore-keys: |
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
-      - name: Push Docker Image by arm64 or x64
+      - name: Push dynamic linked Docker Image by x64 or arm64
         run: |
           ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }} "-DskipTests" clean package
-      - name: Push Docker Image by x64
+      - name: Push mostly static linked Docker Image by x64
         if: matrix.os == 'ubuntu-latest'
         run: |
           ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }}-mostly "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-DskipTests" clean package
+      - name: Push fully static linked Docker Image by x64
+        if: matrix.os == 'ubuntu-latest'
+        run: |
           ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }}-static "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-DskipTests" clean package
 
   build-agent-image:
