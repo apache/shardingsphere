@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
@@ -140,8 +139,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
         sql = SQLHintUtils.removeHint(originSQL);
         hintValueContext = SQLHintUtils.extractHint(originSQL);
-        DatabaseType databaseType = metaData.getDatabase(connection.getCurrentDatabaseName()).getProtocolType();
-        SQLStatement sqlStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(databaseType).parse(sql, true);
+        ShardingSphereDatabase currentDatabase = metaData.getDatabase(connection.getCurrentDatabaseName());
+        SQLStatement sqlStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(currentDatabase.getProtocolType()).parse(sql, true);
         sqlStatementContext = new SQLBindEngine(metaData, connection.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
         String usedDatabaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabaseName(connection.getCurrentDatabaseName());
@@ -150,7 +149,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statementManager = new StatementManager();
         connection.getStatementManagers().add(statementManager);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
-        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.PREPARED_STATEMENT);
+        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.PREPARED_STATEMENT, currentDatabase);
         executeBatchExecutor = new DriverExecuteBatchExecutor(connection, metaData, statementOption, statementManager, usedDatabase);
         statementsCacheable = isStatementsCacheable();
     }

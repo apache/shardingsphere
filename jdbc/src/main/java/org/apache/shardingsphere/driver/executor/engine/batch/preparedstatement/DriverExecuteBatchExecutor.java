@@ -63,12 +63,12 @@ public final class DriverExecuteBatchExecutor {
     private ExecutionContext executionContext;
     
     public DriverExecuteBatchExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final StatementOption statementOption, final StatementManager statementManager,
-                                      final ShardingSphereDatabase database) {
+                                      final ShardingSphereDatabase usedDatabase) {
         this.connection = connection;
         this.metaData = metaData;
         JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
-        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(database, jdbcExecutor, connection.getProcessId());
-        prepareEngine = createDriverExecutionPrepareEngine(statementOption, statementManager, database, metaData);
+        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(usedDatabase, jdbcExecutor, connection.getProcessId());
+        prepareEngine = createDriverExecutionPrepareEngine(statementOption, statementManager, usedDatabase, metaData);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final StatementOption statementOption, final StatementManager statementManager,
