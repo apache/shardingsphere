@@ -86,7 +86,6 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 
 ## Compliance Guardrails & Checklists
 - **Pre-task checklist (do before planning/coding):** re-read AGENTS.md and `CODE_OF_CONDUCT.md`; restate user goal, constraints, forbidden tools/APIs, coverage expectations, sandbox/network/approval limits; prefer `rg`/`./mvnw`/`apply_patch`; avoid destructive commands (`git reset --hard`, `git checkout --`, bulk deletes) and generated paths like `target/`.
-- **Planning reference:** keep session plans, decision logs, and retrospectives in [PLANS.md](PLANS.md); update it when codex-readiness runs or task scopes change.
 - **Risk gate:** if any action fits the Dangerous Operation Checklist, pause and use the confirmation template before proceeding.
 - **Planning rules:** use Sequential Thinking with 3-10 actionable steps (no single-step plans) via the plan tool for non-trivial tasks; convert all hard requirements (SPI usage, mocking rules, coverage/test naming, forbidden APIs) into a checklist inside the plan and do not code until each item is addressed or explicitly waived.
 - **Execution discipline:** inspect existing code before edits; keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use and mark retained values `final`; delete dead code and avoid placeholders/TODOs.
