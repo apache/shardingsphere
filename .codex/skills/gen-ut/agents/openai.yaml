@@ -16,8 +16,8 @@
 #
 
 interface:
-  display_name: "生成单元测试"
-  short_description: "按严格门禁生成 ShardingSphere 标准单元测试"
+  display_name: "Generate Unit Tests"
+  short_description: "Generate standard ShardingSphere unit tests with strict quality gates"
   default_prompt: >-
-    使用 $gen-ut 为 ShardingSphere 的一个或多个类生成标准单元测试。
-    输入类集合（可选模块名和测试类），按 SKILL.md 规则执行。
+    Use $gen-ut to generate standard unit tests for one or more ShardingSphere classes.
+    Provide the class set (optional module name and test class) and execute according to SKILL.md rules.
