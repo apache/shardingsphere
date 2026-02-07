@@ -55,6 +55,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedConstruction;
@@ -74,6 +77,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -91,7 +95,6 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -267,56 +270,36 @@ class ProxyDatabaseConnectionManagerTest {
         assertTrue(connectionPostProcessors.isEmpty());
     }
     
-    @Test
-    void assertCloseConnectionsCorrectlyWhenForceRollbackAndNotInTransaction() throws SQLException {
-        connectionSession.getTransactionStatus().setInTransaction(false);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("closeConnectionsWithForceRollbackArguments")
+    void assertCloseConnectionsWithForceRollback(final String scenario, final boolean inTransaction, final boolean rollbackFailed, final int expectedRollbackCount) throws SQLException {
+        connectionSession.getTransactionStatus().setInTransaction(inTransaction);
         Connection connection = prepareCachedConnections();
-        databaseConnectionManager.closeConnections(true);
-        verify(connection, never()).rollback();
-    }
-    
-    @Test
-    void assertCloseConnectionsCorrectlyWhenForceRollbackAndInTransaction() throws SQLException {
-        connectionSession.getTransactionStatus().setInTransaction(true);
-        Connection connection = prepareCachedConnections();
-        databaseConnectionManager.closeConnections(true);
-        verify(connection).rollback();
-    }
-    
-    @Test
-    void assertCloseConnectionsCorrectlyWhenRollbackFailed() throws SQLException {
-        connectionSession.getTransactionStatus().setInTransaction(true);
-        Connection connection = prepareCachedConnections();
-        doThrow(new SQLException("")).when(connection).rollback();
+        if (rollbackFailed) {
+            doThrow(new SQLException("")).when(connection).rollback();
+        }
         Collection<SQLException> actualExceptions = databaseConnectionManager.closeConnections(true);
         assertTrue(actualExceptions.isEmpty());
+        verify(connection, times(expectedRollbackCount)).rollback();
         verify(connection).close();
     }
     
-    @Test
-    void assertCloseConnectionsCorrectlyWhenSQLExceptionThrown() throws SQLException {
-        Connection connection = prepareCachedConnections();
-        SQLException sqlException = new SQLException("");
-        doThrow(sqlException).when(connection).close();
-        assertTrue(databaseConnectionManager.closeConnections(false).contains(sqlException));
-    }
-    
-    @Test
-    void assertCloseConnectionsCorrectlyWhenConnectionIsClosed() throws SQLException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("closeConnectionsWithCloseExceptionArguments")
+    void assertCloseConnectionsWithCloseException(final String scenario, final boolean connectionClosed, final boolean checkClosedFailed, final int expectedExceptionCount) throws SQLException {
         Connection connection = prepareCachedConnections();
         SQLException expectedException = new SQLException("");
         doThrow(expectedException).when(connection).close();
-        when(connection.isClosed()).thenReturn(true);
-        assertTrue(databaseConnectionManager.closeConnections(false).isEmpty());
-    }
-    
-    @Test
-    void assertCloseConnectionsCorrectlyWhenCheckConnectionStatusFailed() throws SQLException {
-        Connection connection = prepareCachedConnections();
-        SQLException expectedException = new SQLException("");
-        doThrow(expectedException).when(connection).close();
-        when(connection.isClosed()).thenThrow(new SQLException(""));
-        assertThat(databaseConnectionManager.closeConnections(false), is(Collections.singletonList(expectedException)));
+        if (checkClosedFailed) {
+            when(connection.isClosed()).thenThrow(new SQLException(""));
+        } else {
+            when(connection.isClosed()).thenReturn(connectionClosed);
+        }
+        Collection<SQLException> actualExceptions = databaseConnectionManager.closeConnections(false);
+        assertThat(actualExceptions.size(), is(expectedExceptionCount));
+        if (1 == expectedExceptionCount) {
+            assertThat(actualExceptions.iterator().next(), is(expectedException));
+        }
     }
     
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
@@ -420,32 +403,17 @@ class ProxyDatabaseConnectionManagerTest {
                 not(databaseConnectionManager.getConnections("foo_db", "ds1", 1, 1, ConnectionMode.MEMORY_STRICTLY)));
     }
     
-    @Test
-    void assertHandleAutoCommit() {
-        when(connectionSession.isAutoCommit()).thenReturn(false);
-        connectionSession.getTransactionStatus().setInTransaction(false);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("handleAutoCommitArguments")
+    void assertHandleAutoCommit(final String scenario, final boolean autoCommit, final boolean inTransaction, final int expectedTransactionManagerCount) {
+        when(connectionSession.isAutoCommit()).thenReturn(autoCommit);
+        connectionSession.getTransactionStatus().setInTransaction(inTransaction);
         try (MockedConstruction<ProxyBackendTransactionManager> mockedConstruction = mockConstruction(ProxyBackendTransactionManager.class)) {
             databaseConnectionManager.handleAutoCommit();
-            verify(mockedConstruction.constructed().get(0)).begin();
-        }
-    }
-    
-    @Test
-    void assertHandleAutoCommitWhenAutoCommitEnabled() {
-        when(connectionSession.isAutoCommit()).thenReturn(true);
-        try (MockedConstruction<ProxyBackendTransactionManager> mockedConstruction = mockConstruction(ProxyBackendTransactionManager.class)) {
-            databaseConnectionManager.handleAutoCommit();
-            assertTrue(mockedConstruction.constructed().isEmpty());
-        }
-    }
-    
-    @Test
-    void assertHandleAutoCommitWhenInTransaction() {
-        when(connectionSession.isAutoCommit()).thenReturn(false);
-        connectionSession.getTransactionStatus().setInTransaction(true);
-        try (MockedConstruction<ProxyBackendTransactionManager> mockedConstruction = mockConstruction(ProxyBackendTransactionManager.class)) {
-            databaseConnectionManager.handleAutoCommit();
-            assertTrue(mockedConstruction.constructed().isEmpty());
+            assertThat(mockedConstruction.constructed().size(), is(expectedTransactionManagerCount));
+            if (1 == expectedTransactionManagerCount) {
+                verify(mockedConstruction.constructed().get(0)).begin();
+            }
         }
     }
     
@@ -643,5 +611,29 @@ class ProxyDatabaseConnectionManagerTest {
         databaseConnectionManager.getCachedConnections().put("schema_1.ds_1", mock(Connection.class));
         List<String> actual = new ArrayList<>(databaseConnectionManager.getUsedDataSourceNames());
         assertThat(actual, is(Collections.singletonList("ds_0")));
+    }
+    
+    private static Stream<Arguments> closeConnectionsWithForceRollbackArguments() {
+        return Stream.of(
+                Arguments.of("closeConnections_forceRollback_notInTransaction", false, false, 0),
+                Arguments.of("closeConnections_forceRollback_inTransaction", true, false, 1),
+                Arguments.of("closeConnections_forceRollback_rollbackFailed", true, true, 1)
+        );
+    }
+    
+    private static Stream<Arguments> closeConnectionsWithCloseExceptionArguments() {
+        return Stream.of(
+                Arguments.of("closeConnections_closeException_notClosed", false, false, 1),
+                Arguments.of("closeConnections_closeException_connectionClosed", true, false, 0),
+                Arguments.of("closeConnections_closeException_checkClosedFailed", false, true, 1)
+        );
+    }
+    
+    private static Stream<Arguments> handleAutoCommitArguments() {
+        return Stream.of(
+                Arguments.of("handleAutoCommit_beginTransaction", false, false, 1),
+                Arguments.of("handleAutoCommit_autoCommitEnabled", true, false, 0),
+                Arguments.of("handleAutoCommit_inTransaction", false, true, 0)
+        );
     }
 }
