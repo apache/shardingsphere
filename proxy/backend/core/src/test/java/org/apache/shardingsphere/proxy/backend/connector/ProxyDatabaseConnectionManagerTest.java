@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
 import org.apache.shardingsphere.infra.metadata.statistics.builder.ShardingSphereStatisticsFactory;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -44,10 +45,12 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.transaction.spi.TransactionHook;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -69,14 +72,19 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -158,6 +166,12 @@ class ProxyDatabaseConnectionManagerTest {
     }
     
     @Test
+    void assertGetConnectionsWithNullDatabaseName() {
+        NullPointerException actualException = assertThrows(NullPointerException.class, () -> databaseConnectionManager.getConnections(null, "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY));
+        assertThat(actualException.getMessage(), is("Current database name is null."));
+    }
+    
+    @Test
     void assertGetConnectionSizeLessThanCache() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         MockConnectionUtils.setCachedConnections(databaseConnectionManager, "ds1", 10);
@@ -190,12 +204,46 @@ class ProxyDatabaseConnectionManagerTest {
         assertTrue(connectionSession.getTransactionStatus().isInTransaction());
     }
     
+    @Test
+    void assertGetConnectionWithTransactionHook() throws SQLException {
+        connectionSession.getTransactionStatus().setInTransaction(true);
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        TransactionHook transactionHook = mock(TransactionHook.class);
+        setTransactionHooks(Collections.singletonMap(rule, transactionHook));
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(MockConnectionUtils.mockNewConnections(1));
+        databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        verify(transactionHook).afterCreateConnections(eq(rule), any(), anyList(), any());
+    }
+    
+    @Test
+    void assertGetConnectionWithReplayTransactionOption() throws SQLException {
+        when(connectionSession.isReadOnly()).thenReturn(true);
+        when(connectionSession.getIsolationLevel()).thenReturn(Optional.of(TransactionIsolationLevel.READ_UNCOMMITTED));
+        Connection connection = mock(Connection.class);
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(Collections.singletonList(connection));
+        databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        verify(connection).setReadOnly(true);
+        verify(connection).setTransactionIsolation(anyInt());
+    }
+    
+    @Test
+    void assertGetConnectionWithNullConnection() throws SQLException {
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(Collections.singletonList(null));
+        List<Connection> actualConnections = databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        assertThat(actualConnections, is(Collections.singletonList(null)));
+    }
+    
     @SneakyThrows(ReflectiveOperationException.class)
     private void setConnectionPostProcessors() {
         ConnectionPostProcessor connectionPostProcessor = mock(ConnectionPostProcessor.class);
         Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
         connectionPostProcessors.add(connectionPostProcessor);
         Plugins.getMemberAccessor().set(ProxyDatabaseConnectionManager.class.getDeclaredField("connectionPostProcessors"), databaseConnectionManager, connectionPostProcessors);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setTransactionHooks(final Map<ShardingSphereRule, TransactionHook> transactionHooks) {
+        Plugins.getMemberAccessor().set(ProxyDatabaseConnectionManager.class.getDeclaredField("transactionHooks"), databaseConnectionManager, transactionHooks);
     }
     
     @SuppressWarnings("unchecked")
@@ -236,11 +284,39 @@ class ProxyDatabaseConnectionManagerTest {
     }
     
     @Test
+    void assertCloseConnectionsCorrectlyWhenRollbackFailed() throws SQLException {
+        connectionSession.getTransactionStatus().setInTransaction(true);
+        Connection connection = prepareCachedConnections();
+        doThrow(new SQLException("")).when(connection).rollback();
+        Collection<SQLException> actualExceptions = databaseConnectionManager.closeConnections(true);
+        assertTrue(actualExceptions.isEmpty());
+        verify(connection).close();
+    }
+    
+    @Test
     void assertCloseConnectionsCorrectlyWhenSQLExceptionThrown() throws SQLException {
         Connection connection = prepareCachedConnections();
         SQLException sqlException = new SQLException("");
         doThrow(sqlException).when(connection).close();
         assertTrue(databaseConnectionManager.closeConnections(false).contains(sqlException));
+    }
+    
+    @Test
+    void assertCloseConnectionsCorrectlyWhenConnectionIsClosed() throws SQLException {
+        Connection connection = prepareCachedConnections();
+        SQLException expectedException = new SQLException("");
+        doThrow(expectedException).when(connection).close();
+        when(connection.isClosed()).thenReturn(true);
+        assertTrue(databaseConnectionManager.closeConnections(false).isEmpty());
+    }
+    
+    @Test
+    void assertCloseConnectionsCorrectlyWhenCheckConnectionStatusFailed() throws SQLException {
+        Connection connection = prepareCachedConnections();
+        SQLException expectedException = new SQLException("");
+        doThrow(expectedException).when(connection).close();
+        when(connection.isClosed()).thenThrow(new SQLException(""));
+        assertThat(databaseConnectionManager.closeConnections(false), is(Collections.singletonList(expectedException)));
     }
     
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
@@ -267,6 +343,13 @@ class ProxyDatabaseConnectionManagerTest {
         verify(actualConnection.createStatement()).execute("SET key=value");
     }
     
+    @Test
+    void assertGetConnectionsWithEmptyConnectionAndSessionVariables() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
+        when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(Collections.emptyList());
+        assertThrows(IndexOutOfBoundsException.class, () -> databaseConnectionManager.getConnections("foo_db", "ds1", 0, 1, ConnectionMode.CONNECTION_STRICTLY));
+    }
+    
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     @Test
     void assertGetConnectionsAndFailedToReplaySessionVariables() throws SQLException {
@@ -283,6 +366,25 @@ class ProxyDatabaseConnectionManagerTest {
             assertThat(ex, is(expectedException));
             verify(connection).close();
         }
+    }
+    
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
+    @Test
+    void assertGetConnectionsAndFailedToReleaseConnection() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
+        SQLException expectedException = new SQLException("");
+        SQLException expectedNextException = new SQLException("");
+        Connection firstConnection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        Connection secondConnection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(firstConnection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
+        when(firstConnection.createStatement().execute("SET key=value")).thenThrow(expectedException);
+        when(secondConnection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
+        doThrow(expectedNextException).when(secondConnection).close();
+        when(ProxyContext.getInstance().getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class)))
+                .thenReturn(Arrays.asList(firstConnection, secondConnection));
+        SQLException actualException = assertThrows(SQLException.class, () -> databaseConnectionManager.getConnections("foo_db", "", 0, 2, ConnectionMode.CONNECTION_STRICTLY));
+        assertThat(actualException, is(expectedException));
+        assertThat(actualException.getNextException(), is(expectedNextException));
     }
     
     @Test
@@ -325,6 +427,25 @@ class ProxyDatabaseConnectionManagerTest {
         try (MockedConstruction<ProxyBackendTransactionManager> mockedConstruction = mockConstruction(ProxyBackendTransactionManager.class)) {
             databaseConnectionManager.handleAutoCommit();
             verify(mockedConstruction.constructed().get(0)).begin();
+        }
+    }
+    
+    @Test
+    void assertHandleAutoCommitWhenAutoCommitEnabled() {
+        when(connectionSession.isAutoCommit()).thenReturn(true);
+        try (MockedConstruction<ProxyBackendTransactionManager> mockedConstruction = mockConstruction(ProxyBackendTransactionManager.class)) {
+            databaseConnectionManager.handleAutoCommit();
+            assertTrue(mockedConstruction.constructed().isEmpty());
+        }
+    }
+    
+    @Test
+    void assertHandleAutoCommitWhenInTransaction() {
+        when(connectionSession.isAutoCommit()).thenReturn(false);
+        connectionSession.getTransactionStatus().setInTransaction(true);
+        try (MockedConstruction<ProxyBackendTransactionManager> mockedConstruction = mockConstruction(ProxyBackendTransactionManager.class)) {
+            databaseConnectionManager.handleAutoCommit();
+            assertTrue(mockedConstruction.constructed().isEmpty());
         }
     }
     
@@ -408,6 +529,32 @@ class ProxyDatabaseConnectionManagerTest {
         assertThat(getInUseProxyBackendHandlers(), is(Collections.singleton(inUseHandler)));
     }
     
+    @Test
+    void assertCloseExecutionResourcesInTransactionWhenClosed() throws BackendConnectionException, SQLException {
+        connectionSession.getTransactionStatus().setInTransaction(true);
+        ProxyBackendHandler inUseHandler = mock(ProxyBackendHandler.class);
+        getProxyBackendHandlers().add(inUseHandler);
+        getInUseProxyBackendHandlers().add(inUseHandler);
+        Connection cachedConnection = mock(Connection.class);
+        databaseConnectionManager.getCachedConnections().put("ignoredDataSourceName", cachedConnection);
+        databaseConnectionManager.getClosed().set(true);
+        databaseConnectionManager.closeExecutionResources();
+        verify(inUseHandler).close();
+        verify(cachedConnection).rollback();
+        verify(cachedConnection).close();
+    }
+    
+    @Test
+    void assertCloseExecutionResourcesWithException() throws SQLException {
+        ProxyBackendHandler handler = mock(ProxyBackendHandler.class);
+        SQLException expectedException = new SQLException("");
+        doThrow(expectedException).when(handler).close();
+        getProxyBackendHandlers().add(handler);
+        BackendConnectionException actualException = assertThrows(BackendConnectionException.class, () -> databaseConnectionManager.closeExecutionResources());
+        assertThat(actualException.getExceptions().size(), is(1));
+        assertThat(actualException.getExceptions().iterator().next(), is(expectedException));
+    }
+    
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
     private Collection<ProxyBackendHandler> getProxyBackendHandlers() {
@@ -474,6 +621,13 @@ class ProxyDatabaseConnectionManagerTest {
     }
     
     @Test
+    void assertCloseConnectionsWithoutCachedConnectionsAndVariables() {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "default");
+        databaseConnectionManager.closeConnections(false);
+        assertFalse(connectionSession.getRequiredSessionVariableRecorder().isEmpty());
+    }
+    
+    @Test
     void assertGetDataSourceNamesOfCachedConnections() {
         databaseConnectionManager.getCachedConnections().put(connectionSession.getUsedDatabaseName() + ".ds_0", null);
         databaseConnectionManager.getCachedConnections().put(connectionSession.getUsedDatabaseName() + ".ds_1", null);
@@ -481,5 +635,13 @@ class ProxyDatabaseConnectionManagerTest {
         List<String> actual = new ArrayList<>(databaseConnectionManager.getUsedDataSourceNames());
         Collections.sort(actual);
         assertThat(actual, is(Arrays.asList("ds_0", "ds_1", "ds_2")));
+    }
+    
+    @Test
+    void assertGetDataSourceNamesWithoutCurrentDatabaseName() {
+        databaseConnectionManager.getCachedConnections().put(connectionSession.getUsedDatabaseName() + ".ds_0", mock(Connection.class));
+        databaseConnectionManager.getCachedConnections().put("schema_1.ds_1", mock(Connection.class));
+        List<String> actual = new ArrayList<>(databaseConnectionManager.getUsedDataSourceNames());
+        assertThat(actual, is(Collections.singletonList("ds_0")));
     }
 }

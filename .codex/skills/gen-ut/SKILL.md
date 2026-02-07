@@ -43,6 +43,20 @@ Test class placeholder convention:
 - `R10`: If a related test class already exists for a target class, extend that class to add only missing-coverage tests; create a new test class only when no related test class exists.
 - `R11`: Do not claim completion if target tests were not actually executed due compile/runtime blockers. First remove blockers with minimal test-scope fixes and rerun verification;
   only when blockers are outside scope and cannot be resolved safely in-turn, report exact blocker files/lines/commands and request user decision.
+- `R12`: Boolean assertion policy in tests:
+  - Must use `assertTrue` / `assertFalse` for boolean checks.
+  - Forbidden assertion patterns:
+    - `assertThat(<boolean expression>, is(true))`
+    - `assertThat(<boolean expression>, is(false))`
+    - `assertEquals(true, ...)`
+    - `assertEquals(false, ...)`
+- `R13`: Hard gate for `R12`:
+  - Use the unified scan regex:
+    - `assertThat\\s*\\(.*is\\s*\\(\\s*(true|false)\\s*\\)\\s*\\)|assertEquals\\s*\\(\\s*(true|false)\\s*,`
+  - Run hard-gate scan twice:
+    - after test implementation (early fail-fast gate);
+    - before final delivery (final release gate).
+  - If any match is found, task state is "not complete" until all violations are fixed and scan is rerun clean.
 
 ## Execution Boundary
 
@@ -58,9 +72,11 @@ Test class placeholder convention:
 3. Output branch-path inventory according to `R4`.
 4. Output branch-to-test mapping according to `R5`.
 5. Perform dead-code analysis according to `R8` and record findings.
-6. Implement or extend tests according to `R2/R3/R6/R7/R10`.
-7. Run verification commands and iterate.
-8. Deliver results using the output structure.
+6. Implement or extend tests according to `R2/R3/R6/R7/R10/R12/R13`.
+7. Run the first `R13` hard-gate scan (early fail-fast) and fix all hits.
+8. Run verification commands and iterate.
+9. Run the second `R13` hard-gate scan (final release gate) and ensure clean.
+10. Deliver results using the output structure.
 
 ## Verification and Commands
 
@@ -81,6 +97,11 @@ With module input:
 ./mvnw -pl <module> -am -Pcheck checkstyle:check -DskipTests
 ```
 
+4. `R13` hard-gate scan (must be clean, run in step 7 and step 9):
+```bash
+bash -lc 'if rg -n "assertThat\\s*\\(.*is\\s*\\(\\s*(true|false)\\s*\\)\\s*\\)|assertEquals\\s*\\(\\s*(true|false)\\s*," <module>/src/test/java; then echo "[R13] forbidden boolean assertion found"; exit 1; fi'
+```
+
 Without module input:
 
 1. Targeted unit tests:
@@ -98,6 +119,11 @@ Without module input:
 ./mvnw -Pcheck checkstyle:check -DskipTests
 ```
 
+4. `R13` hard-gate scan (must be clean, run in step 7 and step 9):
+```bash
+bash -lc 'if rg -n "assertThat\\s*\\(.*is\\s*\\(\\s*(true|false)\\s*\\)\\s*\\)|assertEquals\\s*\\(\\s*(true|false)\\s*," . --glob "**/src/test/java/**"; then echo "[R13] forbidden boolean assertion found"; exit 1; fi'
+```
+
 Command execution rules:
 - Record every command and exit code.
 - If a command fails, record the failure reason and execute at least one remediation attempt; if still blocked, continue clearing blockers within test scope before escalating.
@@ -107,16 +133,18 @@ Command execution rules:
 
 Respond in the same language as the user and follow this order:
 
-1. Goal and constraints (mapped to `R1-R11`)
+1. Goal and constraints (mapped to `R1-R13`)
 2. Plan and implementation (including branch mapping result)
 3. Dead-code and coverage results (according to `R8/R9`)
 4. Verification commands and exit codes
-5. Risks and next actions
+5. `R13` hard-gate evidence (both scan commands and exit codes)
+6. Risks and next actions
 
 ## Quality Self-Check
 
 - Rule definitions must exist only in "Mandatory Constraints"; other sections should reference rule IDs only.
-- Final state must satisfy `R9`, and all applicable rules (including `R10` and `R11`) must be met, with complete command and exit-code records.
+- Final state must satisfy `R9`, and all applicable rules (including `R10`, `R11`, `R12`, and `R13`) must be met, with complete command and exit-code records.
+- `R13` command is mandatory evidence; missing `R13` command record or non-clean scan means not complete.
 
 ## Maintenance Rules
 
