@@ -1,213 +1,215 @@
 ---
 name: review-pr
 description: >-
-  用于审查 Apache ShardingSphere PR 是否真正解决根因、评估副作用与回归风险、判断是否可安全合并，
-  并在不可合并时产出 committer 口吻的 change request 建议；支持多轮 review 的针对性比对。
+  Used to review whether an Apache ShardingSphere PR truly fixes the root cause,
+  assess side effects and regression risks, and determine whether it can be safely merged.
+  If not mergeable, produce committer-tone change request suggestions.
+  Supports targeted comparison across multiple review rounds.
 ---
 
 # Review PR
 
-## 目标
+## Objective
 
-- 面向 ShardingSphere PR 做“根因优先、证据优先”的合并决策。
-- 输出单一合并结论：
-  - `Merge Verdict`：`Mergeable` / `Not Mergeable`
+- Make merge decisions for ShardingSphere PRs with a "root-cause-first, evidence-first" approach.
+- Output a single merge decision:
+  - `Merge Verdict`: `Mergeable` / `Not Mergeable`
 
-## 触发场景
+## Trigger Scenarios
 
-- 用户让你 review 某个 PR。
-- 用户要求判断“是否可以合并”或“是否解决根因”。
-- 用户要求生成 committer 口吻的 change request。
+- The user asks you to review a PR.
+- The user asks whether a PR "can be merged" or "fixes the root cause."
+- The user asks you to generate committer-tone change request comments.
 
-## 强制约束
+## Mandatory Constraints
 
-1. 先验证根因是否被修复，再看兜底逻辑；禁止以“仅增加兜底”替代根因修复。
-2. 必须扫描副作用和风险：
-   - 设计一致性
-   - 性能（复杂度、热点路径、内存和 I/O）
-   - 兼容性（行为、配置、API-SPI、SQL 方言）
-   - 功能衰退与回归面
-3. 必须给出 `Merge Verdict` 单一结论。
-4. 证据不足、风险不明或验证不完整时，统一判定 `Merge Verdict: Not Mergeable`，
-   并列出最小补充信息清单。
-5. 回复 change request 时必须语气柔和、无表情符号。
-6. 如存在无关改动，必须明确要求回滚；若不存在，不输出该项。
-7. 使用与用户一致的语言；
-   若用户明确指定语言，以用户指定语言优先。
-8. 任何“仅兜底未修根因”或“存在未消除风险”都不得给出 `Merge Verdict: Mergeable`。
-9. 只评审 PR 当前最新版本代码，不复用历史版本代码结论。
+1. Verify root-cause repair first, then fallback logic; do not accept "fallback only" as a substitute for root-cause repair.
+2. You must scan side effects and risks:
+   - Design consistency
+   - Performance (complexity, hot paths, memory, and I/O)
+   - Compatibility (behavior, config, API-SPI, SQL dialect)
+   - Functional degradation and regression surface
+3. You must provide exactly one `Merge Verdict`.
+4. If evidence is insufficient, risk is unclear, or validation is incomplete, always set `Merge Verdict: Not Mergeable`,
+   and list the minimum additional information required.
+5. Change request replies must be gentle in tone and contain no emojis.
+6. If unrelated changes exist, you must explicitly ask for rollback; if none exist, do not output that section.
+7. Use the same language as the user;
+   if the user explicitly specifies a language, prioritize that language.
+8. Any "fallback-only without root-cause repair" or "unresolved risk" must not receive `Merge Verdict: Mergeable`.
+9. Review only the PR's latest code version; do not reuse conclusions from older versions.
 
-## 执行边界
+## Execution Boundary
 
-- 评审输出，不改代码。
+- Review output only; do not modify code.
 
-## 证据来源策略
+## Evidence Source Strategy
 
-优先级从高到低：
+Priority from high to low:
 
-1. PR 事实：diff、提交记录、评审评论、CI 状态、检查项结果。
-2. 同仓库关联 issue、相关模块代码与测试、历史行为（可选 git blame 或 log）。
-3. ShardingSphere 官方文档与官方仓库规范。
-4. 必要时外部权威规范（仅官方标准或官方文档）。
+1. PR facts: diff, commit history, review comments, CI status, check results.
+2. Related issues in the same repo, relevant module code/tests, historical behavior (optional git blame/log).
+3. ShardingSphere official docs and official repo conventions.
+4. External authoritative specs only when necessary (official standards/docs only).
 
-禁用来源：
+Forbidden sources:
 
-- 无法核验的博客、论坛帖子、AI 生成转载内容。
+- Unverifiable blogs, forum posts, or AI-reposted content.
 
-## 审查效率规则
+## Review Efficiency Rules
 
-- 在当前回复中优先给出阻塞项与 `Merge Verdict`。
-- 若 PR 明显过大（文件数或改动量过高），优先建议拆分提交。
-- 无法立即完成全量 review 时，先给高风险阻塞项，避免等待链路阻塞。
+- In the current reply, prioritize blocking issues and `Merge Verdict`.
+- If the PR is obviously too large (too many files or too much churn), suggest splitting first.
+- If full review cannot be completed immediately, provide high-risk blockers first to avoid blocking the delivery chain.
 
-## 快速分流
+## Quick Triage
 
-在深入审查前先回答：
+Before deep review, answer:
 
-1. PR 是否明确声明要解决的问题与预期行为？
-2. 当前改动是否直接触达疑似根因链路？
-3. 是否包含对应验证（单测、集成测试、回归测试）？
-4. 是否出现与目标无关的文件改动？
+1. Does the PR clearly state the problem and expected behavior?
+2. Do current changes directly touch the suspected root-cause path?
+3. Is there corresponding validation (unit/integration/regression tests)?
+4. Are there file changes unrelated to the stated goal?
 
-分流策略：
+Triage policy:
 
-- 信息完整：进入完整评审。
-- 证据缺失：认定为“不可合并”，并给出最小补充信息清单。
-- 包含任何偏题或无关改动：认定为“不可合并”，并要求收敛范围。
-- 改动过大：先要求拆分，并对当前版本仅给阻塞级意见。
+- Information complete: proceed with full review.
+- Missing evidence: mark as "not mergeable" and request minimum additional info.
+- Any off-topic/unrelated changes: mark as "not mergeable" and require scope narrowing.
+- Change set too large: request split first, and provide only blocker-level feedback for current version.
 
-## 最小补充信息清单（固定模板）
+## Minimum Additional Information List (Fixed Template)
 
-信息不足导致不可合并时，至少要求补齐以下内容：
+When information gaps block mergeability, request at least:
 
-- PR 当前最新版本代码的复核范围（文件/模块）。
-- ShardingSphere 版本、运行拓扑（JDBC/Proxy + Standalone/Cluster）。
-- 数据库类型与版本。
-- 最小复现输入（SQL、请求、配置片段）与期望/实际结果。
-- 关键日志或异常栈。
-- 与修复点一一对应的测试证据（新增或调整的测试项）。
+- Recheck scope for the PR latest version (files/modules).
+- ShardingSphere version and runtime topology (JDBC/Proxy + Standalone/Cluster).
+- Database type and version.
+- Minimal reproducible input (SQL/request/config snippet) with expected vs actual behavior.
+- Key logs or stack traces.
+- Test evidence mapped one-to-one with fix points (new or adjusted tests).
 
-## 评审工作流
+## Review Workflow
 
-1. 定义目标与边界：复述 PR 目标、影响模块、目标拓扑（JDBC 或 Proxy，Standalone 或 Cluster）。
-2. 根因建模：从 issue 和代码路径还原“触发条件 -> 异常路径 -> 结果”。
-3. 修复映射：逐项检查改动是否覆盖根因链路，而非只覆盖症状。
-4. 风险扫描：
-   - 设计：抽象层次、职责边界、是否引入临时兼容分支
-   - 性能：新增循环、远程调用、对象创建是否进入高频路径
-   - 兼容：行为、配置、API-SPI、SQL 方言版本
-   - 回归：同类语句、相邻特性、异常分支是否被影响
-5. 测试充分性：
-   - 是否有失败用例先行或可复现步骤
-   - 是否覆盖主要分支、边界与反例
-   - 测试是否与修复点一一对应
-6. 供应链与许可证门禁（按变更触发）：
-   - 若涉及依赖清单或 lockfile，检查漏洞严重度与许可证约束
-   - 标记是否需要额外安全评审
-7. 无关改动筛查：识别与 PR 目标无直接关系的代码、格式化或重构，要求剥离或回滚。
-8. 版本基线控制：
-   - 仅基于 PR 当前最新版本代码给出结论
-   - 若 PR 出现新 commit，本轮结论自动失效，需要在最新版本重新评审
-9. 合并决策：输出 `Merge Verdict`。
-10. 生成反馈：按下述模板输出。
+1. Define target and boundary: restate PR goal, impacted modules, target topology (JDBC or Proxy, Standalone or Cluster).
+2. Root-cause modeling: reconstruct "trigger condition -> failure path -> result" from issue and code path.
+3. Fix mapping: verify each change covers the root-cause chain, not just symptoms.
+4. Risk scan:
+   - Design: abstraction level, responsibility boundaries, temporary compatibility branches
+   - Performance: new loops/remote calls/object allocations on hot paths
+   - Compatibility: behavior/config/API-SPI/SQL dialect versions
+   - Regression: similar statements, adjacent features, exception branches
+5. Test adequacy:
+   - Is there a failing case first or reproducible steps?
+   - Are major branches, boundaries, and counterexamples covered?
+   - Are tests mapped one-to-one with fix points?
+6. Supply-chain and license gates (triggered by changes):
+   - If dependency manifests or lockfiles changed, check vulnerability severity and license constraints
+   - Mark whether extra security review is required
+7. Unrelated-change screening: identify code/format/refactor changes not directly tied to PR goal; require removal or rollback.
+8. Version baseline control:
+   - Base conclusion only on PR latest code version
+   - If new commits are added, current conclusion becomes invalid and must be re-reviewed on latest version
+9. Merge decision: output `Merge Verdict`.
+10. Generate feedback: follow the output template below.
 
-## 根因校验清单（必须逐项回答）
+## Root-Cause Validation Checklist (Must Answer Each)
 
-- 是否定位到真实触发点（不是最终报错点）？
-- 改动是否直接修复触发点或关键传播路径？
-- 是否只是增加空值判断、默认值、try-catch 而未修复根因？
-- 是否引入“静默吞错”或“降级到错误语义”？
-- 是否为同根因的相邻路径补齐验证？
+- Was the true trigger point identified (not just the final error point)?
+- Do changes directly fix the trigger point or key propagation path?
+- Is it only adding null checks/defaults/try-catch without fixing root cause?
+- Does it introduce silent error swallowing or downgrade to wrong semantics?
+- Are adjacent paths sharing the same root cause also validated?
 
-若根因链路无法被完整证明已修复，判定 `Merge Verdict: Not Mergeable`。
+If the root-cause chain cannot be fully proven fixed, set `Merge Verdict: Not Mergeable`.
 
-## 风险清单（必须覆盖）
+## Risk Checklist (Must Cover)
 
-- 设计风险：破坏层次、重复逻辑、绕过 SPI 或元数据缓存、引入隐式状态。
-- 性能风险：复杂度上升、热路径额外分配、无界重试、阻塞 I/O。
-- 兼容风险：
+- Design risk: broken layering, duplicated logic, bypassed SPI/metadata cache, implicit state.
+- Performance risk: complexity increase, extra hot-path allocations, unbounded retries, blocking I/O.
+- Compatibility risk:
   - Behavior compatibility
   - Config compatibility
   - API/SPI compatibility
-  - SQL compatibility（数据库、版本、方言）
-- 功能衰退风险：旧场景回归、边界输入行为变化、错误码或异常语义漂移。
-- 运维风险：配置迁移、灰度和回滚复杂度提升。
-- 供应链风险：新增依赖的漏洞、许可证、传递依赖变化。
+  - SQL compatibility (database/version/dialect)
+- Functional degradation risk: old-scenario regression, boundary input behavior changes, error-code/exception semantic drift.
+- Operational risk: config migration complexity, gray-release and rollback complexity.
+- Supply-chain risk: vulnerabilities, licenses, transitive dependency changes from new deps.
 
-## 覆盖范围声明（必须输出）
+## Coverage Statement (Required in Every Review)
 
-每次评审都要声明：
+Each review must declare:
 
-- `Reviewed Scope`：本轮实际审核的文件/模块范围。
-- `Not Reviewed Scope`：未审核或仅粗看范围。
-- `Need Expert Review`：是否需要特定领域 reviewer（安全、并发、性能、协议等）。
+- `Reviewed Scope`: files/modules actually reviewed this round.
+- `Not Reviewed Scope`: unreviewed or only superficially reviewed areas.
+- `Need Expert Review`: whether domain reviewers are required (security, concurrency, performance, protocol, etc.).
 
-## 多轮 Change Request 比对规则
+## Multi-Round Change Request Comparison Rules
 
-当用户提供“上一轮建议”或 PR 出现新增提交时，必须做增量比对：
+When the user provides previous-round feedback or PR adds new commits, perform incremental comparison:
 
-1. 建立“上一轮问题清单”并逐项标记：
-   - 已修复
-   - 部分修复
-   - 未修复
-   - 新引入问题
-2. 仅保留未闭环项和新问题作为本轮重点，避免重复已关闭问题。
-3. 每项建议都要指出对应 diff 证据。
-4. 对部分修复项给出“还差什么才能关闭”的明确条件。
-5. 若本轮新增 commit，仅基于当前最新版本继续评审，不要求输出历史 commit SHA。
+1. Build a "previous issues list" and mark each as:
+   - Fixed
+   - Partially fixed
+   - Not fixed
+   - Newly introduced issue
+2. Keep only unresolved and newly introduced items as current focus; do not repeat closed items.
+3. Every suggestion must cite corresponding diff evidence.
+4. For partially fixed items, specify exactly what is still needed to close.
+5. If new commits were added, continue review only on the latest version; no need to output historical commit SHA.
 
-## 输出结构
+## Output Structure
 
-### A. 不可合并（Change Request）
+### A. Not Mergeable (Change Request)
 
-使用 committer 口吻、语气柔和、无表情符号，结构如下：
+Use committer tone, gentle wording, no emojis; structure:
 
-1. 决策块
+1. Decision block
    - `Merge Verdict: Not Mergeable`
    - `Reviewed Scope / Not Reviewed Scope / Need Expert Review`
-2. 正向反馈（可选）
-   - 仅当确有与正确方向强关联的改动时写。
-   - 若无，省略本节，不强行表扬。
-3. 主要问题
-   - 列出不合理或不正确点（按严重度排序）。
-   - 每个问题包含：标签、现象、风险、建议动作（修复或回滚）。
-4. 新引入问题
-   - 指出此次改动带来的新增缺陷或回归风险。
-   - 明确要求修复或回滚。
-5. 无关改动（仅在存在时输出）
-   - 列出与本 PR 目标无关的改动并要求回滚。
-6. 下一步建议
-   - 给出可执行的修复清单，鼓励继续完善并提交下一版。
-7. 多轮比对（仅在有历史建议时输出）
-   - 对照上一轮：已关闭项、未关闭项、新问题。
-8. 证据补充（仅在信息不足时输出）
-   - 明确列出最小补充信息清单与复核入口。
+2. Positive feedback (optional)
+   - Include only when there are genuinely correct direction-aligned changes.
+   - Omit if none.
+3. Major issues
+   - List unreasonable/incorrect points by severity.
+   - Each issue includes: label, symptom, risk, recommended action (fix or rollback).
+4. Newly introduced issues
+   - Point out defects/regression risks introduced by this PR.
+   - Clearly require fix or rollback.
+5. Unrelated changes (output only when present)
+   - List changes unrelated to this PR goal and request rollback.
+6. Next-step suggestions
+   - Provide executable fix checklist and encourage next revision.
+7. Multi-round comparison (only when history exists)
+   - Versus previous round: closed, unresolved, and new items.
+8. Evidence supplement (only when information is insufficient)
+   - Explicitly list minimum additional information and review entry points.
 
-### B. 可合并
+### B. Mergeable
 
-1. 决策块
+1. Decision block
    - `Merge Verdict: Mergeable`
    - `Reviewed Scope / Not Reviewed Scope / Need Expert Review`
-2. 依据
-   - 根因修复证据。
-   - 风险评估结果（证明无未消除风险）。
-3. 合并前检查
-   - CI、测试、兼容性确认项。
+2. Basis
+   - Root-cause fix evidence.
+   - Risk assessment results (proving no unresolved risk).
+3. Pre-merge checks
+   - CI, tests, compatibility confirmations.
 
-## Change Request 语气规范
+## Change Request Tone Guidelines
 
-- 使用“建议、请、需要”而非命令式指责。
-- 先事实后判断，避免情绪化措辞。
-- 可直接使用如下句式：
-  - “这部分改动方向是正确的，尤其是……”。
-  - “当前还有几个问题会影响可合并性，建议先处理：……”。
-  - “这里引入了新的风险，建议修复或回滚该部分改动。”。
-  - “建议你继续完善，完成后我再做一轮聚焦复核。”。
+- Use "suggest / please / need" rather than accusatory commands.
+- Facts first, judgment second; avoid emotional wording.
+- Suggested sentence patterns:
+  - "This part is in the right direction, especially ..."
+  - "There are still several issues affecting mergeability; please address them first: ..."
+  - "This introduces new risk; please fix or roll back this part."
+  - "Please continue refining it, and I will do another focused review after that."
 
-## 禁止项
+## Prohibited Items
 
-- 不得在证据不足或风险不明时给出 `Merge Verdict: Mergeable`。
-- 不得用“兜底逻辑通过测试”替代根因修复证明。
-- 不得忽略无关改动。
-- 不得在出现新 commit 后沿用旧结论而不复核。
-- 不得输出带表情符号的 change request 文案。
+- Do not output `Mergeable` when evidence is insufficient or risks are unclear.
+- Do not use "fallback logic passes tests" to replace proof of root-cause repair.
+- Do not ignore unrelated changes.
+- Do not reuse old conclusions after new commits are added without re-review.
+- Do not include emojis in change request text.
