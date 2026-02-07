@@ -181,4 +181,34 @@ class ProjectionsContextTest {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(getColumnProjection()));
         assertTrue(projectionsContext.findColumnProjection(1).isPresent());
     }
+    
+    @Test
+    void assertGetExpandAggregationProjectionsWithNestedAvg() {
+        AggregationProjectionSegment avgSegment = new AggregationProjectionSegment(0, 0, AggregationType.AVG, "AVG(score)");
+        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 0, "IFNULL(AVG(score), 0)");
+        expressionSegment.getAggregationProjectionSegments().add(avgSegment);
+        ExpressionProjection expressionProjection = new ExpressionProjection(expressionSegment, new IdentifierValue("avg_val"), mock(DatabaseType.class));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singletonList(expressionProjection));
+        List<AggregationProjection> actual = projectionsContext.getExpandAggregationProjections();
+        assertThat(actual.size(), is(3));
+        AggregationProjection avgProjection = actual.get(0);
+        assertThat(avgProjection.getDerivedAggregationProjections().size(), is(2));
+        assertThat(avgProjection.getIndex(), is(2));
+        assertThat(actual.get(1).getIndex(), is(3));
+        assertThat(actual.get(2).getIndex(), is(4));
+    }
+    
+    @Test
+    void assertGetExpandAggregationProjectionsWithMultipleNestedAggregations() {
+        AggregationProjectionSegment sumASegment = new AggregationProjectionSegment(0, 0, AggregationType.SUM, "SUM(a)");
+        AggregationProjectionSegment sumBSegment = new AggregationProjectionSegment(0, 0, AggregationType.SUM, "SUM(b)");
+        ExpressionProjectionSegment expressionSegment = new ExpressionProjectionSegment(0, 0, "SUM(a) + SUM(b)");
+        expressionSegment.getAggregationProjectionSegments().addAll(Arrays.asList(sumASegment, sumBSegment));
+        ExpressionProjection expressionProjection = new ExpressionProjection(expressionSegment, new IdentifierValue("total"), mock(DatabaseType.class));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singletonList(expressionProjection));
+        List<AggregationProjection> actual = projectionsContext.getExpandAggregationProjections();
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0).getIndex(), is(2));
+        assertThat(actual.get(1).getIndex(), is(3));
+    }
 }

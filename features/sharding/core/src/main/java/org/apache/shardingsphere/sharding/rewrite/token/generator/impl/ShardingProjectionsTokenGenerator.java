@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.binder.context.segment.select.projection.
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
@@ -47,7 +48,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Sharding projections token generator.
@@ -66,6 +66,9 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
     private boolean containsDerivedProjections(final SelectStatementContext selectStatementContext) {
         for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
             if (each instanceof AggregationProjection && !((AggregationProjection) each).getDerivedAggregationProjections().isEmpty() || each instanceof DerivedProjection) {
+                return true;
+            }
+            if (each instanceof ExpressionProjection && !((ExpressionProjection) each).getExpressionSegment().getAggregationProjectionSegments().isEmpty()) {
                 return true;
             }
         }
@@ -89,10 +92,26 @@ public final class ShardingProjectionsTokenGenerator implements OptionalSQLToken
     
     private Collection<String> getDerivedProjectionTexts(final SelectStatementContext selectStatementContext, final RouteUnit routeUnit) {
         Collection<String> result = new LinkedList<>();
+        Collection<String> existingAliases = new LinkedList<>();
+        for (Projection p : selectStatementContext.getProjectionsContext().getProjections()) {
+            p.getAlias().ifPresent(a -> existingAliases.add(a.getValue()));
+        }
+        for (AggregationProjection each : selectStatementContext.getProjectionsContext().getExpandAggregationProjections()) {
+            String alias = each.getAlias().map(IdentifierValue::getValue).orElse("");
+            if (!alias.isEmpty() && !existingAliases.contains(alias)) {
+                result.add(getDerivedProjectionText(each));
+                existingAliases.add(alias);
+            }
+            for (AggregationProjection derived : each.getDerivedAggregationProjections()) {
+                String dAlias = derived.getAlias().map(IdentifierValue::getValue).orElse("");
+                if (!dAlias.isEmpty() && !existingAliases.contains(dAlias)) {
+                    result.add(getDerivedProjectionText(derived));
+                    existingAliases.add(dAlias);
+                }
+            }
+        }
         for (Projection each : selectStatementContext.getProjectionsContext().getProjections()) {
-            if (each instanceof AggregationProjection) {
-                result.addAll(((AggregationProjection) each).getDerivedAggregationProjections().stream().map(this::getDerivedProjectionText).collect(Collectors.toList()));
-            } else if (each instanceof DerivedProjection && ((DerivedProjection) each).getDerivedProjectionSegment() instanceof ColumnOrderByItemSegment) {
+            if (each instanceof DerivedProjection && ((DerivedProjection) each).getDerivedProjectionSegment() instanceof ColumnOrderByItemSegment) {
                 TableExtractor tableExtractor = new TableExtractor();
                 tableExtractor.extractTablesFromSelect(selectStatementContext.getSqlStatement());
                 result.add(getDerivedProjectionText((DerivedProjection) each, tableExtractor, routeUnit, selectStatementContext.getSqlStatement().getDatabaseType()));

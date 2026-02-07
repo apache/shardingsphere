@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.engine.segment.dml.projection;
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import java.util.LinkedList;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
@@ -44,7 +45,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Shor
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import java.util.Collection;
 
 /**
@@ -107,6 +108,7 @@ public final class ProjectionsSegmentBinder {
                     ((ExpressionProjectionSegment) projectionSegment).getExpr(), SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts);
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(
                     projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), ((ExpressionProjectionSegment) projectionSegment).getText(), boundExpressionSegment);
+            result.getAggregationProjectionSegments().addAll(extractAggregationProjectionSegments(boundExpressionSegment));
             ((ExpressionProjectionSegment) projectionSegment).getAliasSegment().ifPresent(result::setAlias);
             return result;
         }
@@ -151,6 +153,19 @@ public final class ProjectionsSegmentBinder {
         Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
                 projections, new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
         result.put(CaseInsensitiveString.of(""), new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE));
+        return result;
+    }
+    
+    private static Collection<AggregationProjectionSegment> extractAggregationProjectionSegments(final ExpressionSegment expression) {
+        Collection<AggregationProjectionSegment> result = new LinkedList<>();
+        if (expression instanceof AggregationProjectionSegment) {
+            result.add((AggregationProjectionSegment) expression);
+        }
+        if (expression instanceof FunctionSegment) {
+            for (ExpressionSegment each : ((FunctionSegment) expression).getParameters()) {
+                result.addAll(extractAggregationProjectionSegments(each));
+            }
+        }
         return result;
     }
 }

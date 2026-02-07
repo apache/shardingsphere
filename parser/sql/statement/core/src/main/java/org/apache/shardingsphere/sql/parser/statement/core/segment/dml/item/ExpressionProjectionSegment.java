@@ -26,6 +26,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Alias
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.LinkedList;
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -44,6 +46,8 @@ public final class ExpressionProjectionSegment implements ProjectionSegment, Com
     
     @Setter
     private AliasSegment alias;
+    
+    private final Collection<AggregationProjectionSegment> aggregationProjectionSegments = new LinkedList<>();
     
     public ExpressionProjectionSegment(final int startIndex, final int stopIndex, final String text) {
         this.startIndex = startIndex;

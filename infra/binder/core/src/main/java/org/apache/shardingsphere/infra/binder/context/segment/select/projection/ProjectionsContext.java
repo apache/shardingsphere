@@ -20,11 +20,15 @@ package org.apache.shardingsphere.infra.binder.context.segment.select.projection
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ShorthandProjection;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
@@ -166,6 +170,50 @@ public final class ProjectionsContext {
         return result;
     }
     
+    /**
+     * Get expand aggregation projections.
+     *
+     * @return expand aggregation projections
+     */
+    public List<AggregationProjection> getExpandAggregationProjections() {
+        List<AggregationProjection> result = new LinkedList<>();
+        int derivedColumnIndex = getExpandProjections().size() + 1;
+        int columnIndex = 1;
+        for (Projection each : projections) {
+            if (each instanceof AggregationProjection) {
+                AggregationProjection aggregationProjection = (AggregationProjection) each;
+                aggregationProjection.setIndex(columnIndex);
+                result.add(aggregationProjection);
+                result.addAll(aggregationProjection.getDerivedAggregationProjections());
+            } else if (each instanceof ExpressionProjection) {
+                ExpressionProjection expressionProjection = (ExpressionProjection) each;
+                for (AggregationProjectionSegment eachSegment : expressionProjection.getExpressionSegment().getAggregationProjectionSegments()) {
+                    String alias = eachSegment.getAliasName().orElse("__sharding_expr_agg_" + derivedColumnIndex);
+                    AggregationProjection nested = new AggregationProjection(
+                            eachSegment.getType(),
+                            eachSegment,
+                            new IdentifierValue(alias),
+                            expressionProjection.getDatabaseType());
+                    nested.setIndex(derivedColumnIndex++);
+                    if (AggregationType.AVG == eachSegment.getType()) {
+                        addDerivedProjectionsForNestedAvg(nested, expressionProjection.getDatabaseType(), derivedColumnIndex);
+                        derivedColumnIndex += 2;
+                    }
+                    result.add(nested);
+                    result.addAll(nested.getDerivedAggregationProjections());
+                }
+            }
+            columnIndex++;
+        }
+        return result;
+    }
+    
+    /**
+     * Check is contains LAST_INSERT_ID() projection.
+     *
+     * @param projections projections
+     * @return is contains LAST_INSERT_ID() projection
+     */
     private boolean isContainsLastInsertIdProjection(final Collection<Projection> projections) {
         for (Projection each : projections) {
             if (LAST_INSERT_ID_FUNCTION_EXPRESSION.equalsIgnoreCase(SQLUtils.getExactlyExpression(each.getExpression()))) {
@@ -196,5 +244,31 @@ public final class ProjectionsContext {
         }
         Projection projection = expandProjections.get(columnIndex - 1);
         return projection instanceof ColumnProjection ? Optional.of((ColumnProjection) projection) : Optional.empty();
+    }
+    
+    /**
+     * Add derived projections for nested AVG.
+     *
+     * @param avgProjection AVG projection
+     * @param databaseType database type
+     * @param currentDerivedIndex current derived index
+     */
+    private void addDerivedProjectionsForNestedAvg(final AggregationProjection avgProjection, final DatabaseType databaseType, final int currentDerivedIndex) {
+        String sumAlias = "__sharding_agg_sum_" + currentDerivedIndex;
+        String countAlias = "__sharding_agg_cnt_" + (currentDerivedIndex + 1);
+        AggregationProjection sumProjection = new AggregationProjection(
+                AggregationType.SUM,
+                avgProjection.getAggregationSegment(),
+                new IdentifierValue(sumAlias),
+                databaseType);
+        sumProjection.setIndex(currentDerivedIndex);
+        AggregationProjection countProjection = new AggregationProjection(
+                AggregationType.COUNT,
+                avgProjection.getAggregationSegment(),
+                new IdentifierValue(countAlias),
+                databaseType);
+        countProjection.setIndex(currentDerivedIndex + 1);
+        avgProjection.getDerivedAggregationProjections().add(sumProjection);
+        avgProjection.getDerivedAggregationProjections().add(countProjection);
     }
 }
