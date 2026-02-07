@@ -17,7 +17,8 @@
 
 interface:
   display_name: "Generate Unit Tests"
-  short_description: "Generate standard ShardingSphere unit tests with strict quality gates"
+  short_description: "Generate standard ShardingSphere unit tests with strict quality gates and mandatory executable verification"
   default_prompt: >-
     Use $gen-ut to generate standard unit tests for one or more ShardingSphere classes.
     Provide the class set (optional module name and test class) and execute according to SKILL.md rules.
+    Do not claim completion unless target tests are actually executed successfully; clear test-scope blockers first.

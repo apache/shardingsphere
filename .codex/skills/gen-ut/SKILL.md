@@ -36,11 +36,13 @@ Test class placeholder convention:
 - `R7`: Prefer `TypedSPILoader` and `OrderedSPILoader` to build subjects under test; subjects under test must be class-level fields.
 - `R8`: If dead code exists, report class name, file path, exact line number, and unreachable reason.
 - `R9`: Completion criteria must satisfy one of the following:
-  - `R9-A`: Target class coverage reaches 100% for class/line/branch, Checkstyle passes,
+  - `R9-A`: Target class coverage reaches 100% for class/line/branch, target test classes are executed successfully by Surefire, Checkstyle passes,
     and all commands with exit codes are recorded.
   - `R9-B`: If dead code blocks 100% branch coverage under the "no production code changes" rule,
     report fully as required by `R8` and wait for user decision.
 - `R10`: If a related test class already exists for a target class, extend that class to add only missing-coverage tests; create a new test class only when no related test class exists.
+- `R11`: Do not claim completion if target tests were not actually executed due compile/runtime blockers. First remove blockers with minimal test-scope fixes and rerun verification;
+  only when blockers are outside scope and cannot be resolved safely in-turn, report exact blocker files/lines/commands and request user decision.
 
 ## Execution Boundary
 
@@ -98,13 +100,14 @@ Without module input:
 
 Command execution rules:
 - Record every command and exit code.
-- If a command fails, record the failure reason and an alternative command; if no viable alternative exists, mark as blocked and wait for user decision.
+- If a command fails, record the failure reason and execute at least one remediation attempt; if still blocked, continue clearing blockers within test scope before escalating.
+- Escalate to user only when blockers are outside safe scope or require non-test changes; include exact failing commands, error lines, and attempted remediations.
 
 ## Output Structure
 
 Respond in the same language as the user and follow this order:
 
-1. Goal and constraints (mapped to `R1-R10`)
+1. Goal and constraints (mapped to `R1-R11`)
 2. Plan and implementation (including branch mapping result)
 3. Dead-code and coverage results (according to `R8/R9`)
 4. Verification commands and exit codes
@@ -113,7 +116,7 @@ Respond in the same language as the user and follow this order:
 ## Quality Self-Check
 
 - Rule definitions must exist only in "Mandatory Constraints"; other sections should reference rule IDs only.
-- Final state must satisfy `R9`, and all applicable rules (including `R10`) must be met, with complete command and exit-code records.
+- Final state must satisfy `R9`, and all applicable rules (including `R10` and `R11`) must be met, with complete command and exit-code records.
 
 ## Maintenance Rules
 
