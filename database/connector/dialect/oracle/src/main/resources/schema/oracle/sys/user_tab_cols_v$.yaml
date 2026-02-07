@@ -1,0 +1,186 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+USER_TAB_COLS_V$:
+  schema: SYS
+  columns:
+  - name: OWNER_ID
+    type: NUMBER
+    nullable: true
+  - name: TABLE_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: TABLE_ID
+    type: NUMBER
+    nullable: false
+  - name: COLUMN_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: COLUMN_INT_ID
+    type: NUMBER
+    nullable: false
+  - name: DATA_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: DATA_TYPE_MOD
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: DATA_TYPE_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: DATA_LENGTH
+    type: NUMBER
+    nullable: false
+  - name: DATA_PRECISION
+    type: NUMBER
+    nullable: true
+  - name: DATA_SCALE
+    type: NUMBER
+    nullable: true
+  - name: NULLABLE
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: COLUMN_ID
+    type: NUMBER
+    nullable: true
+  - name: DEFAULT_LENGTH
+    type: NUMBER
+    nullable: true
+  - name: DATA_DEFAULT
+    type: LONG
+    nullable: true
+  - name: NUM_DISTINCT
+    type: NUMBER
+    nullable: true
+  - name: LOW_VALUE
+    type: RAW
+    nullable: true
+  - name: HIGH_VALUE
+    type: RAW
+    nullable: true
+  - name: DENSITY
+    type: NUMBER
+    nullable: true
+  - name: NUM_NULLS
+    type: NUMBER
+    nullable: true
+  - name: NUM_BUCKETS
+    type: NUMBER
+    nullable: true
+  - name: LAST_ANALYZED
+    type: DATE
+    nullable: true
+  - name: SAMPLE_SIZE
+    type: NUMBER
+    nullable: true
+  - name: CHARACTER_SET_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 44
+  - name: CHAR_COL_DECL_LENGTH
+    type: NUMBER
+    nullable: true
+  - name: GLOBAL_STATS
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: USER_STATS
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: NOTES
+    type: VARCHAR2
+    nullable: true
+    length: 80
+  - name: AVG_COL_LEN
+    type: NUMBER
+    nullable: true
+  - name: CHAR_LENGTH
+    type: NUMBER
+    nullable: true
+  - name: CHAR_USED
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: V80_FMT_IMAGE
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: DATA_UPGRADED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: HIDDEN_COLUMN
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: VIRTUAL_COLUMN
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: SEGMENT_COLUMN_ID
+    type: NUMBER
+    nullable: true
+  - name: INTERNAL_COLUMN_ID
+    type: NUMBER
+    nullable: false
+  - name: HISTOGRAM
+    type: VARCHAR2
+    nullable: true
+    length: 15
+  - name: QUALIFIED_COL_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: USER_GENERATED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: DEFAULT_ON_NULL
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: IDENTITY_COLUMN
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: EVALUATION_EDITION
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: UNUSABLE_BEFORE
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: UNUSABLE_BEGINNING
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: COLLATION
+    type: VARCHAR2
+    nullable: true
+    length: 100
+  - name: COLLATED_COLUMN_ID
+    type: NUMBER
+    nullable: true

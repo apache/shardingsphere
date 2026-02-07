@@ -1,0 +1,85 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+USER_ADVISOR_SQLW_STMTS:
+  schema: SYS
+  columns:
+  - name: WORKLOAD_ID
+    type: NUMBER
+    nullable: false
+  - name: WORKLOAD_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: SQL_ID
+    type: NUMBER
+    nullable: false
+  - name: HASH_VALUE
+    type: NUMBER
+    nullable: true
+  - name: USERNAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: MODULE
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: ACTION
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: CPU_TIME
+    type: NUMBER
+    nullable: true
+  - name: BUFFER_GETS
+    type: NUMBER
+    nullable: true
+  - name: DISK_READS
+    type: NUMBER
+    nullable: true
+  - name: ELAPSED_TIME
+    type: NUMBER
+    nullable: true
+  - name: ROWS_PROCESSED
+    type: NUMBER
+    nullable: true
+  - name: EXECUTIONS
+    type: NUMBER
+    nullable: true
+  - name: OPTIMIZER_COST
+    type: NUMBER
+    nullable: true
+  - name: LAST_EXECUTION_DATE
+    type: DATE
+    nullable: true
+  - name: PRIORITY
+    type: NUMBER
+    nullable: true
+  - name: COMMAND_TYPE
+    type: NUMBER
+    nullable: true
+  - name: STAT_PERIOD
+    type: NUMBER
+    nullable: true
+  - name: SQL_TEXT
+    type: CLOB
+    nullable: true
+  - name: VALID
+    type: NUMBER
+    nullable: true

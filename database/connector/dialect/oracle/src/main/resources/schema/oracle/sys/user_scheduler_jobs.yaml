@@ -1,0 +1,270 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+USER_SCHEDULER_JOBS:
+  schema: SYS
+  columns:
+  - name: JOB_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: JOB_SUBNAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: JOB_STYLE
+    type: VARCHAR2
+    nullable: true
+    length: 17
+  - name: JOB_CREATOR
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: CLIENT_ID
+    type: VARCHAR2
+    nullable: true
+    length: 65
+  - name: GLOBAL_UID
+    type: VARCHAR2
+    nullable: true
+    length: 33
+  - name: PROGRAM_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: PROGRAM_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: JOB_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 16
+  - name: JOB_ACTION
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: NUMBER_OF_ARGUMENTS
+    type: NUMBER
+    nullable: true
+  - name: SCHEDULE_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: SCHEDULE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: SCHEDULE_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: START_DATE
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: REPEAT_INTERVAL
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: EVENT_QUEUE_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: EVENT_QUEUE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: EVENT_QUEUE_AGENT
+    type: VARCHAR2
+    nullable: true
+    length: 523
+  - name: EVENT_CONDITION
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: EVENT_RULE
+    type: VARCHAR2
+    nullable: true
+    length: 261
+  - name: FILE_WATCHER_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 261
+  - name: FILE_WATCHER_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 261
+  - name: END_DATE
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: JOB_CLASS
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: ENABLED
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: AUTO_DROP
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: RESTART_ON_RECOVERY
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: RESTART_ON_FAILURE
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: STATE
+    type: VARCHAR2
+    nullable: true
+    length: 20
+  - name: JOB_PRIORITY
+    type: NUMBER
+    nullable: true
+  - name: RUN_COUNT
+    type: NUMBER
+    nullable: true
+  - name: UPTIME_RUN_COUNT
+    type: NUMBER
+    nullable: true
+  - name: MAX_RUNS
+    type: NUMBER
+    nullable: true
+  - name: FAILURE_COUNT
+    type: NUMBER
+    nullable: true
+  - name: UPTIME_FAILURE_COUNT
+    type: NUMBER
+    nullable: true
+  - name: MAX_FAILURES
+    type: NUMBER
+    nullable: true
+  - name: RETRY_COUNT
+    type: NUMBER
+    nullable: true
+  - name: LAST_START_DATE
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: LAST_RUN_DURATION
+    type: INTERVAL DAY(9) TO SECOND(6)
+    nullable: true
+  - name: NEXT_RUN_DATE
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: SCHEDULE_LIMIT
+    type: INTERVAL DAY(3) TO SECOND(0)
+    nullable: true
+  - name: MAX_RUN_DURATION
+    type: INTERVAL DAY(3) TO SECOND(0)
+    nullable: true
+  - name: LOGGING_LEVEL
+    type: VARCHAR2
+    nullable: true
+    length: 11
+  - name: STORE_OUTPUT
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: STOP_ON_WINDOW_CLOSE
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: INSTANCE_STICKINESS
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: RAISE_EVENTS
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: SYSTEM
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: JOB_WEIGHT
+    type: NUMBER
+    nullable: true
+  - name: NLS_ENV
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: SOURCE
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: NUMBER_OF_DESTINATIONS
+    type: NUMBER
+    nullable: true
+  - name: DESTINATION_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 261
+  - name: DESTINATION
+    type: VARCHAR2
+    nullable: true
+    length: 261
+  - name: CREDENTIAL_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: CREDENTIAL_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: INSTANCE_ID
+    type: NUMBER
+    nullable: true
+  - name: DEFERRED_DROP
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: ALLOW_RUNS_IN_RESTRICTED_MODE
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: COMMENTS
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: FLAGS
+    type: NUMBER
+    nullable: true
+  - name: RESTARTABLE
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: HAS_CONSTRAINTS
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: CONNECT_CREDENTIAL_OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: CONNECT_CREDENTIAL_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: FAIL_ON_SCRIPT_ERROR
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  description: All scheduler jobs in the database

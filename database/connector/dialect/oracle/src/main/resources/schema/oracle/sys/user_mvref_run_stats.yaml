@@ -1,0 +1,94 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+USER_MVREF_RUN_STATS:
+  schema: SYS
+  columns:
+  - name: REFRESH_ID
+    type: NUMBER
+    nullable: false
+  - name: NUM_MVS
+    type: NUMBER
+    nullable: false
+  - name: MVIEWS
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: BASE_TABLES
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: METHOD
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: ROLLBACK_SEG
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: PUSH_DEFERRED_RPC
+    type: CHAR
+    nullable: true
+    length: 1
+  - name: REFRESH_AFTER_ERRORS
+    type: CHAR
+    nullable: true
+    length: 1
+  - name: PURGE_OPTION
+    type: NUMBER
+    nullable: true
+  - name: PARALLELISM
+    type: NUMBER
+    nullable: true
+  - name: HEAP_SIZE
+    type: NUMBER
+    nullable: true
+  - name: ATOMIC_REFRESH
+    type: CHAR
+    nullable: true
+    length: 1
+  - name: NESTED
+    type: CHAR
+    nullable: true
+    length: 1
+  - name: OUT_OF_PLACE
+    type: CHAR
+    nullable: true
+    length: 1
+  - name: NUMBER_OF_FAILURES
+    type: NUMBER
+    nullable: true
+  - name: START_TIME
+    type: TIMESTAMP(6)
+    nullable: true
+  - name: END_TIME
+    type: TIMESTAMP(6)
+    nullable: true
+  - name: ELAPSED_TIME
+    type: NUMBER
+    nullable: true
+  - name: LOG_SETUP_TIME
+    type: NUMBER
+    nullable: true
+  - name: LOG_PURGE_TIME
+    type: NUMBER
+    nullable: true
+  - name: COMPLETE_STATS_AVAILABLE
+    type: CHAR
+    nullable: true
+    length: 1

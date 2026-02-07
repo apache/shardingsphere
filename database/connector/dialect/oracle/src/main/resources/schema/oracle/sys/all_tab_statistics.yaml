@@ -1,0 +1,120 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+ALL_TAB_STATISTICS:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: TABLE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: PARTITION_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: PARTITION_POSITION
+    type: NUMBER
+    nullable: true
+  - name: SUBPARTITION_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: SUBPARTITION_POSITION
+    type: NUMBER
+    nullable: true
+  - name: OBJECT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: NUM_ROWS
+    type: NUMBER
+    nullable: true
+  - name: BLOCKS
+    type: NUMBER
+    nullable: true
+  - name: EMPTY_BLOCKS
+    type: NUMBER
+    nullable: true
+  - name: AVG_SPACE
+    type: NUMBER
+    nullable: true
+  - name: CHAIN_CNT
+    type: NUMBER
+    nullable: true
+  - name: AVG_ROW_LEN
+    type: NUMBER
+    nullable: true
+  - name: AVG_SPACE_FREELIST_BLOCKS
+    type: NUMBER
+    nullable: true
+  - name: NUM_FREELIST_BLOCKS
+    type: NUMBER
+    nullable: true
+  - name: AVG_CACHED_BLOCKS
+    type: NUMBER
+    nullable: true
+  - name: AVG_CACHE_HIT_RATIO
+    type: NUMBER
+    nullable: true
+  - name: IM_IMCU_COUNT
+    type: NUMBER
+    nullable: true
+  - name: IM_BLOCK_COUNT
+    type: NUMBER
+    nullable: true
+  - name: IM_STAT_UPDATE_TIME
+    type: TIMESTAMP(9)
+    nullable: true
+  - name: SCAN_RATE
+    type: NUMBER
+    nullable: true
+  - name: SAMPLE_SIZE
+    type: NUMBER
+    nullable: true
+  - name: LAST_ANALYZED
+    type: DATE
+    nullable: true
+  - name: GLOBAL_STATS
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: USER_STATS
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: STATTYPE_LOCKED
+    type: VARCHAR2
+    nullable: true
+    length: 5
+  - name: STALE_STATS
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: NOTES
+    type: VARCHAR2
+    nullable: true
+    length: 25
+  - name: SCOPE
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  description: Optimizer statistics for all tables accessible to the user

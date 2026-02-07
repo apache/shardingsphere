@@ -1,0 +1,154 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+USER_TABLESPACES:
+  schema: SYS
+  columns:
+  - name: TABLESPACE_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 30
+  - name: BLOCK_SIZE
+    type: NUMBER
+    nullable: false
+  - name: INITIAL_EXTENT
+    type: NUMBER
+    nullable: true
+  - name: NEXT_EXTENT
+    type: NUMBER
+    nullable: true
+  - name: MIN_EXTENTS
+    type: NUMBER
+    nullable: false
+  - name: MAX_EXTENTS
+    type: NUMBER
+    nullable: true
+  - name: MAX_SIZE
+    type: NUMBER
+    nullable: true
+  - name: PCT_INCREASE
+    type: NUMBER
+    nullable: true
+  - name: MIN_EXTLEN
+    type: NUMBER
+    nullable: true
+  - name: STATUS
+    type: VARCHAR2
+    nullable: true
+    length: 9
+  - name: CONTENTS
+    type: VARCHAR2
+    nullable: true
+    length: 21
+  - name: LOGGING
+    type: VARCHAR2
+    nullable: true
+    length: 9
+  - name: FORCE_LOGGING
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: EXTENT_MANAGEMENT
+    type: VARCHAR2
+    nullable: true
+    length: 10
+  - name: ALLOCATION_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 9
+  - name: SEGMENT_SPACE_MANAGEMENT
+    type: VARCHAR2
+    nullable: true
+    length: 6
+  - name: DEF_TAB_COMPRESSION
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: RETENTION
+    type: VARCHAR2
+    nullable: true
+    length: 11
+  - name: BIGFILE
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: PREDICATE_EVALUATION
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: ENCRYPTED
+    type: VARCHAR2
+    nullable: true
+    length: 3
+  - name: COMPRESS_FOR
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: DEF_INMEMORY
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: DEF_INMEMORY_PRIORITY
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: DEF_INMEMORY_DISTRIBUTE
+    type: VARCHAR2
+    nullable: true
+    length: 15
+  - name: DEF_INMEMORY_COMPRESSION
+    type: VARCHAR2
+    nullable: true
+    length: 17
+  - name: DEF_INMEMORY_DUPLICATE
+    type: VARCHAR2
+    nullable: true
+    length: 13
+  - name: SHARED
+    type: VARCHAR2
+    nullable: true
+    length: 13
+  - name: DEF_INDEX_COMPRESSION
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: INDEX_COMPRESS_FOR
+    type: VARCHAR2
+    nullable: true
+    length: 13
+  - name: DEF_CELLMEMORY
+    type: VARCHAR2
+    nullable: true
+    length: 16
+  - name: DEF_INMEMORY_SERVICE
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: DEF_INMEMORY_SERVICE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 1000
+  - name: LOST_WRITE_PROTECT
+    type: VARCHAR2
+    nullable: true
+    length: 7
+  - name: CHUNK_TABLESPACE
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  description: Description of accessible tablespaces

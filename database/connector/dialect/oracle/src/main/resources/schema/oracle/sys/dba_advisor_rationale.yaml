@@ -1,0 +1,79 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_ADVISOR_RATIONALE:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: TASK_ID
+    type: NUMBER
+    nullable: false
+  - name: TASK_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: EXECUTION_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: REC_ID
+    type: NUMBER
+    nullable: true
+  - name: RATIONALE_ID
+    type: NUMBER
+    nullable: false
+  - name: IMPACT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: IMPACT
+    type: NUMBER
+    nullable: true
+  - name: MESSAGE
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: OBJECT_ID
+    type: NUMBER
+    nullable: true
+  - name: TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 30
+  - name: ATTR1
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: ATTR2
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: ATTR3
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: ATTR4
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: ATTR5
+    type: CLOB
+    nullable: true

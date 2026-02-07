@@ -1,0 +1,98 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_HIST_BUFFER_POOL_STAT:
+  schema: SYS
+  columns:
+  - name: SNAP_ID
+    type: NUMBER
+    nullable: false
+  - name: DBID
+    type: NUMBER
+    nullable: false
+  - name: INSTANCE_NUMBER
+    type: NUMBER
+    nullable: false
+  - name: ID
+    type: NUMBER
+    nullable: false
+  - name: NAME
+    type: VARCHAR2
+    nullable: true
+    length: 20
+  - name: BLOCK_SIZE
+    type: NUMBER
+    nullable: true
+  - name: SET_MSIZE
+    type: NUMBER
+    nullable: true
+  - name: CNUM_REPL
+    type: NUMBER
+    nullable: true
+  - name: CNUM_WRITE
+    type: NUMBER
+    nullable: true
+  - name: CNUM_SET
+    type: NUMBER
+    nullable: true
+  - name: BUF_GOT
+    type: NUMBER
+    nullable: true
+  - name: SUM_WRITE
+    type: NUMBER
+    nullable: true
+  - name: SUM_SCAN
+    type: NUMBER
+    nullable: true
+  - name: FREE_BUFFER_WAIT
+    type: NUMBER
+    nullable: true
+  - name: WRITE_COMPLETE_WAIT
+    type: NUMBER
+    nullable: true
+  - name: BUFFER_BUSY_WAIT
+    type: NUMBER
+    nullable: true
+  - name: FREE_BUFFER_INSPECTED
+    type: NUMBER
+    nullable: true
+  - name: DIRTY_BUFFERS_INSPECTED
+    type: NUMBER
+    nullable: true
+  - name: DB_BLOCK_CHANGE
+    type: NUMBER
+    nullable: true
+  - name: DB_BLOCK_GETS
+    type: NUMBER
+    nullable: true
+  - name: CONSISTENT_GETS
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_READS
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_WRITES
+    type: NUMBER
+    nullable: true
+  - name: CON_DBID
+    type: NUMBER
+    nullable: true
+  - name: CON_ID
+    type: NUMBER
+    nullable: true
+  description: Buffer Pool Historical Statistics Information

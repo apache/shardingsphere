@@ -1,0 +1,58 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_STREAMS_TP_COMPONENT_LINK:
+  schema: SYS
+  columns:
+  - name: SOURCE_COMPONENT_ID
+    type: NUMBER
+    nullable: false
+  - name: SOURCE_COMPONENT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: SOURCE_COMPONENT_DB
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: SOURCE_COMPONENT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 20
+  - name: DESTINATION_COMPONENT_ID
+    type: NUMBER
+    nullable: false
+  - name: DESTINATION_COMPONENT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: DESTINATION_COMPONENT_DB
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: DESTINATION_COMPONENT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 20
+  - name: PATH_ID
+    type: NUMBER
+    nullable: false
+  - name: POSITION
+    type: NUMBER
+    nullable: true
+  description: DBA Streams Component Link (Streams Topology Links)

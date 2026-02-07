@@ -1,0 +1,172 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_AUTOSQLSET_SQLSTAT:
+  schema: SYS
+  columns:
+  - name: SNAP_TIME_UTC
+    type: DATE
+    nullable: false
+  - name: INSTANCE_NUMBER
+    type: NUMBER
+    nullable: false
+  - name: SQL_ID
+    type: VARCHAR2
+    nullable: false
+    length: 13
+  - name: PLAN_HASH_VALUE
+    type: NUMBER
+    nullable: false
+  - name: EXACT_MATCHING_SIGNATURE
+    type: NUMBER
+    nullable: true
+  - name: FORCE_MATCHING_SIGNATURE
+    type: NUMBER
+    nullable: true
+  - name: FULL_PLAN_HASH_VALUE
+    type: NUMBER
+    nullable: true
+  - name: PARSING_SCHEMA_ID
+    type: NUMBER
+    nullable: true
+  - name: PARSING_USER_ID
+    type: NUMBER
+    nullable: true
+  - name: OPTENV_HASH
+    type: NUMBER
+    nullable: true
+  - name: BIND_DATA
+    type: RAW
+    nullable: true
+  - name: LAST_ACTIVE_TIME
+    type: DATE
+    nullable: true
+  - name: SERVICE_HASH
+    type: NUMBER
+    nullable: true
+  - name: MODULE_HASH
+    type: NUMBER
+    nullable: true
+  - name: ACTION_HASH
+    type: NUMBER
+    nullable: true
+  - name: EXECUTIONS
+    type: NUMBER
+    nullable: true
+  - name: FETCH_COUNT
+    type: NUMBER
+    nullable: true
+  - name: END_OF_FETCH_COUNT
+    type: NUMBER
+    nullable: true
+  - name: ROWS_PROCESSED
+    type: NUMBER
+    nullable: true
+  - name: DURATION
+    type: NUMBER
+    nullable: true
+  - name: PARSE_TIME
+    type: NUMBER
+    nullable: true
+  - name: HARD_PARSE_TIME
+    type: NUMBER
+    nullable: true
+  - name: PARSE_CALLS
+    type: NUMBER
+    nullable: true
+  - name: HARD_PARSE_CALLS
+    type: NUMBER
+    nullable: true
+  - name: DB_TIME
+    type: NUMBER
+    nullable: true
+  - name: CPU_TIME
+    type: NUMBER
+    nullable: true
+  - name: USER_IO_WAIT_TIME
+    type: NUMBER
+    nullable: true
+  - name: CLUSTER_WAIT_TIME
+    type: NUMBER
+    nullable: true
+  - name: APPLICATION_WAIT_TIME
+    type: NUMBER
+    nullable: true
+  - name: CONCURRENCY_TIME
+    type: NUMBER
+    nullable: true
+  - name: PLSQL_EXEC_TIME
+    type: NUMBER
+    nullable: true
+  - name: JAVA_EXEC_TIME
+    type: NUMBER
+    nullable: true
+  - name: BUFFER_GETS
+    type: NUMBER
+    nullable: true
+  - name: DISK_READS
+    type: NUMBER
+    nullable: true
+  - name: DIRECT_READS
+    type: NUMBER
+    nullable: true
+  - name: DIRECT_WRITES
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_READ_REQUESTS
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_READ_BYTES
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_WRITE_REQUESTS
+    type: NUMBER
+    nullable: true
+  - name: PHYSICAL_WRITE_BYTES
+    type: NUMBER
+    nullable: true
+  - name: OPTIMIZED_PHYSICAL_READS
+    type: NUMBER
+    nullable: true
+  - name: IO_INTERCONNECT_BYTES
+    type: NUMBER
+    nullable: true
+  - name: CELL_UNCOMPRESSED_BYTES
+    type: NUMBER
+    nullable: true
+  - name: CELL_OFFLOAD_ELIG_BYTES
+    type: NUMBER
+    nullable: true
+  - name: CELL_OFFLOAD_RETURN_BYTES
+    type: NUMBER
+    nullable: true
+  - name: PX_SERVERS_EXECUTIONS
+    type: NUMBER
+    nullable: true
+  - name: LOADS
+    type: NUMBER
+    nullable: true
+  - name: INVALIDATIONS
+    type: NUMBER
+    nullable: true
+  - name: OBSOLETE_COUNT
+    type: NUMBER
+    nullable: true
+  - name: SORTS
+    type: NUMBER
+    nullable: true

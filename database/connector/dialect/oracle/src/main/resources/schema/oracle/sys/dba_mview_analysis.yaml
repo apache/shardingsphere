@@ -1,0 +1,95 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_MVIEW_ANALYSIS:
+  schema: SYS
+  columns:
+  - name: OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: MVIEW_NAME
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: MVIEW_TABLE_OWNER
+    type: VARCHAR2
+    nullable: false
+    length: 128
+  - name: CONTAINER_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: LAST_REFRESH_SCN
+    type: NUMBER
+    nullable: true
+  - name: LAST_REFRESH_DATE
+    type: DATE
+    nullable: true
+  - name: REFRESH_METHOD
+    type: VARCHAR2
+    nullable: true
+    length: 8
+  - name: SUMMARY
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: FULLREFRESHTIM
+    type: NUMBER
+    nullable: true
+  - name: INCREFRESHTIM
+    type: NUMBER
+    nullable: true
+  - name: CONTAINS_VIEWS
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: UNUSABLE
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: RESTRICTED_SYNTAX
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: INC_REFRESHABLE
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: KNOWN_STALE
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: INVALID
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: REWRITE_ENABLED
+    type: VARCHAR2
+    nullable: true
+    length: 1
+  - name: QUERY_LEN
+    type: NUMBER
+    nullable: true
+  - name: QUERY
+    type: LONG
+    nullable: true
+  - name: REVISION
+    type: NUMBER
+    nullable: false
+  description: Description of the materialized views accessible to dba

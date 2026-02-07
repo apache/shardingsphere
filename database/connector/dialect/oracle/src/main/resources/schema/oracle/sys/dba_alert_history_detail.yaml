@@ -1,0 +1,129 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+DBA_ALERT_HISTORY_DETAIL:
+  schema: SYS
+  columns:
+  - name: SEQUENCE_ID
+    type: NUMBER
+    nullable: false
+  - name: REASON_ID
+    type: NUMBER
+    nullable: true
+  - name: OWNER
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: OBJECT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 513
+  - name: SUBOBJECT_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: OBJECT_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: REASON
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: TIME_SUGGESTED
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: CREATION_TIME
+    type: TIMESTAMP(6) WITH TIME ZONE
+    nullable: true
+  - name: SUGGESTED_ACTION
+    type: VARCHAR2
+    nullable: true
+    length: 4000
+  - name: ADVISOR_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: METRIC_VALUE
+    type: NUMBER
+    nullable: true
+  - name: MESSAGE_TYPE
+    type: VARCHAR2
+    nullable: true
+    length: 12
+  - name: MESSAGE_GROUP
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: MESSAGE_LEVEL
+    type: NUMBER
+    nullable: true
+  - name: HOSTING_CLIENT_ID
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: MODULE_ID
+    type: VARCHAR2
+    nullable: true
+    length: 64
+  - name: PROCESS_ID
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: HOST_ID
+    type: VARCHAR2
+    nullable: true
+    length: 256
+  - name: HOST_NW_ADDR
+    type: VARCHAR2
+    nullable: true
+    length: 256
+  - name: INSTANCE_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 16
+  - name: INSTANCE_NUMBER
+    type: NUMBER
+    nullable: true
+  - name: USER_ID
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: EXECUTION_CONTEXT_ID
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: ERROR_INSTANCE_ID
+    type: VARCHAR2
+    nullable: true
+    length: 142
+  - name: RESOLUTION
+    type: VARCHAR2
+    nullable: true
+    length: 11
+  - name: STATE_TRANSITION_NUMBER
+    type: NUMBER
+    nullable: false
+  - name: PDB_NAME
+    type: VARCHAR2
+    nullable: true
+    length: 128
+  - name: CON_ID
+    type: NUMBER
+    nullable: true
+  description: Detailed alert history
