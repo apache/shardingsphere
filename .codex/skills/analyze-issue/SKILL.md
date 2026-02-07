@@ -187,8 +187,6 @@ Type-specific rules:
 
 ## Mandatory Output Structure
 
-Respond in the same language as the user.
-
 Four-section structure (Question, Misunderstanding / Invalid Usage):
 1. Problem Understanding
 2. Root Cause

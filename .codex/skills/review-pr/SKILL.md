@@ -34,10 +34,8 @@ description: >-
    and list the minimum additional information required.
 5. Change request replies must be gentle in tone and contain no emojis.
 6. If unrelated changes exist, you must explicitly ask for rollback; if none exist, do not output that section.
-7. Use the same language as the user;
-   if the user explicitly specifies a language, prioritize that language.
-8. Any "fallback-only without root-cause repair" or "unresolved risk" must not receive `Merge Verdict: Mergeable`.
-9. Review only the PR's latest code version; do not reuse conclusions from older versions.
+7. Any "fallback-only without root-cause repair" or "unresolved risk" must not receive `Merge Verdict: Mergeable`.
+8. Review only the PR's latest code version; do not reuse conclusions from older versions.
 
 ## Execution Boundary
 
