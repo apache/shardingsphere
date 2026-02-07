@@ -131,7 +131,7 @@ Command execution rules:
 
 ## Output Structure
 
-Respond in the same language as the user and follow this order:
+Follow this order:
 
 1. Goal and constraints (mapped to `R1-R13`)
 2. Plan and implementation (including branch mapping result)

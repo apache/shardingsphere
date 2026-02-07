@@ -62,7 +62,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
     - `topic`: technical topic or concept (e.g., "adaptive servo control").
     - `depth`: 1-3 to control semantic layers.
 
-## ⚠️ Dangerous Operation Confirmation Mechanism
+## Dangerous Operation Confirmation Mechanism
 
 ### High-Risk Operation Checklist—obtain explicit confirmation **before** doing any of the following:
 - **File System**: deleting files/directories, bulk edits, or moving system files.
@@ -74,7 +74,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 
 ### Confirmation Template
 
-⚠️ Dangerous operation detected! Operation type: [specific action] Scope of impact: [affected area] Risk assessment: [potential consequence] Please confirm whether to continue. [Requires explicit “yes”, “confirm”, or “proceed”]
+Dangerous operation detected! Operation type: [specific action] Scope of impact: [affected area] Risk assessment: [potential consequence] Please confirm whether to continue. [Requires explicit “yes”, “confirm”, or “proceed”]
 
 ## Workflow
 - Use Sequential Thinking when tasks need decomposition: 6-10 steps (fallback 3-5), one sentence each, actionable.
@@ -101,8 +101,9 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 ## Response Style
 
 ### Language and Tone
+- **Language Consistency**: respond in the same language as the user; if the user explicitly specifies a language, prioritize that language.
 - **Friendly and Natural**: interact like a professional peer; avoid stiff formal language.
-- **Use Light Accents**: prepend headings or bullets with emojis such as ✨⚠️ to highlight key points.
+- **No Emojis or Symbols**: do not use emojis or decorative graphic symbols in any reply.
 - **Hit the Point Fast**: start with a sentence that captures the core idea, especially for complex problems.
 
 ### Content Organization
@@ -110,7 +111,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Focused Bullets**: break long paragraphs into short sentences or bullets, each covering a single idea.
 - **Logical Flow**: use ordered lists for multi-step work (1. 2. 3.) and unordered lists for peers (- or *).
 - **Proper Spacing**: keep blank lines or `---` between blocks to boost readability.
-> ❌ Avoid complex tables in the terminal (especially for long, code-heavy, or narrative content).
+> Avoid complex tables in the terminal (especially for long, code-heavy, or narrative content).
 
 ### Visual & Layout Optimization
 - **Keep It Simple**: limit each line length to ≤200 characters.
@@ -135,7 +136,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Visible Status**: surface progress for important actions (e.g., “Processing...”).
 - **Friendly Errors**: clearly explain failures and suggest actionable fixes.
 
-### ✅ Ending Suggestions
+### Ending Suggestions
 - Append a **short summary** after complex content to reiterate the core points.
 - **Guide the Next Step**: close with actionable advice, instructions, or an invitation for follow-up questions.
 

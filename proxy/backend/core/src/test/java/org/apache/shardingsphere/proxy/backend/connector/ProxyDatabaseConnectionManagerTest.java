@@ -617,23 +617,20 @@ class ProxyDatabaseConnectionManagerTest {
         return Stream.of(
                 Arguments.of("closeConnections_forceRollback_notInTransaction", false, false, 0),
                 Arguments.of("closeConnections_forceRollback_inTransaction", true, false, 1),
-                Arguments.of("closeConnections_forceRollback_rollbackFailed", true, true, 1)
-        );
+                Arguments.of("closeConnections_forceRollback_rollbackFailed", true, true, 1));
     }
     
     private static Stream<Arguments> closeConnectionsWithCloseExceptionArguments() {
         return Stream.of(
                 Arguments.of("closeConnections_closeException_notClosed", false, false, 1),
                 Arguments.of("closeConnections_closeException_connectionClosed", true, false, 0),
-                Arguments.of("closeConnections_closeException_checkClosedFailed", false, true, 1)
-        );
+                Arguments.of("closeConnections_closeException_checkClosedFailed", false, true, 1));
     }
     
     private static Stream<Arguments> handleAutoCommitArguments() {
         return Stream.of(
                 Arguments.of("handleAutoCommit_beginTransaction", false, false, 1),
                 Arguments.of("handleAutoCommit_autoCommitEnabled", true, false, 0),
-                Arguments.of("handleAutoCommit_inTransaction", false, true, 0)
-        );
+                Arguments.of("handleAutoCommit_inTransaction", false, true, 0));
     }
 }
