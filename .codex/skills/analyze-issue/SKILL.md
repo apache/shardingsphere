@@ -30,6 +30,19 @@ Use only the following sources:
 
 Do not use blogs, third-party tutorials, or forum posts as evidence.
 
+## Fast Triage Gate (Add Before Intake Workflow)
+
+Run this 3-question triage first and record a provisional type:
+1. Can the behavior be reproduced with version + mode + SQL + config + log evidence?
+2. Is the expected behavior explicitly documented in official ShardingSphere docs?
+3. Do repository code/tests confirm a mismatch with the documented expectation?
+
+Triage decision:
+- Mostly Q&A -> Question
+- Misconfigured or unsupported usage -> Misunderstanding / Invalid Usage
+- Reproducible mismatch between expected and actual behavior -> Bug
+- Intended new capability or behavior evolution -> Enhancement
+
 ## Intake Workflow
 
 1. Identify the issue number from user input.
@@ -47,6 +60,18 @@ curl -L -sS "https://github.com/apache/shardingsphere/issues/${issueNO}"
 curl -sS -H "Accept: application/vnd.github+json" \
   "https://api.github.com/repos/apache/shardingsphere/issues/${issueNO}"
 ```
+
+## Minimum Evidence Package (Add New Section)
+
+Before root-cause conclusion, verify:
+- ShardingSphere version and deployment mode (JDBC / Proxy)
+- Database type and version
+- Minimal reproducible SQL
+- Related YAML / DistSQL config
+- Expected result vs actual result
+- Error stack trace and key log snippet
+
+If any required item is missing, classify as `Needs More Info` and stop short of definitive root-cause claims.
 
 ## Analysis Method (Classify First)
 
@@ -69,6 +94,20 @@ For every issue:
 2. Mark inferences explicitly.
 3. Every conclusion must bind to at least one traceable source (see Source Policy).
 4. If evidence conflicts, state the conflict explicitly and avoid forced certainty.
+5. For each key conclusion, output Confidence: High / Medium / Low.
+6. If confidence is Low, do not give a hard conclusion; switch to missing-info request flow.
+
+## Conflict Resolution Rule (Add New Section)
+
+When evidence conflicts, apply this order:
+1. Official docs define expected behavior boundaries.
+2. Repository code/tests define actual current behavior.
+3. Issue statements/comments describe reported symptoms.
+
+If docs and code conflict:
+- Infer Bug when code violates documented behavior.
+- Infer Documentation Gap when code is intentional but docs are outdated/unclear.
+Always mark this as Inference and cite both sources.
 
 ## Type and Label Recommendation
 
@@ -77,6 +116,15 @@ Before final conclusion, provide issue type and label recommendations:
 - Misunderstanding / Invalid Usage: recommend `type: question`, `status: invalid`
 - Bug: recommend `type: bug`, optionally with module/database labels (for example `in: SQL parse`, `db: SQLServer`)
 - Enhancement: recommend `type: enhancement`, and optionally `status: volunteer wanted` to invite community contribution
+
+When type is Bug/Enhancement, add module/database labels when evidence is sufficient:
+- Parser-related -> `in: SQL parse`
+- Routing/rewrite/execution core -> `in: Kernel`
+- Proxy runtime/protocol -> `in: Proxy`
+- JDBC driver behavior -> `in: JDBC`
+- Database specific behavior -> `db: <engine>`
+
+If module ownership is unclear, use only type/status labels first.
 
 ## Response Strategy by Type
 
@@ -95,6 +143,11 @@ Type-specific rules:
 - Invite community contributors to submit PRs (including code and tests).
 - Do not provide temporary workarounds.
 - Use the five-section structure (see Mandatory Output Structure).
+- Add a mandatory regression scope subsection covering:
+  - Affected modules
+  - Compatibility impact (API/config/behavior)
+  - Required test scope (unit/integration/e2e boundaries)
+  - Backward-compatibility notes and rollback hint
 
 ## Mandatory Output Structure
 
@@ -114,9 +167,13 @@ Five-section structure (Bug, Enhancement):
 5. Problem Conclusion
 
 At the end of `Problem Conclusion`, append:
+- `Evidence Confidence: High/Medium/Low`
 - `Issue Type: ...`
 - `Recommended Labels: ...`
 - `Next Action: ...`
+
+For Bug/Enhancement, also append:
+- `Regression Scope: ...`
 
 ## Missing Information Handling
 
