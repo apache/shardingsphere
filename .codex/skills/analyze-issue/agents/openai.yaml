@@ -1,0 +1,4 @@
+interface:
+  display_name: "Analyze Issue"
+  short_description: "Root-cause triage for ShardingSphere issue reports"
+  default_prompt: "Use $analyze-issue to analyze this ShardingSphere issue with a root-cause-first conclusion (analysis only, no code changes)."
