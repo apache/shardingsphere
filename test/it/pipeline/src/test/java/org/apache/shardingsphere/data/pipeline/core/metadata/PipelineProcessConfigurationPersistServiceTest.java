@@ -31,6 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.function.BiConsumer;
 
@@ -85,10 +86,9 @@ class PipelineProcessConfigurationPersistServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"MIGRATION", "STREAMING"})
     void assertPersistAndLoad(final String jobType) {
-        for (String each : typesAssertionMap.keySet()) {
-            YamlPipelineProcessConfiguration expected = createYamlPipelineProcessConfiguration(each);
-            YamlPipelineProcessConfiguration actual = persistAndLoad(jobType, expected);
-            typesAssertionMap.get(each).accept(actual, expected);
+        for (Entry<String, BiConsumer<YamlPipelineProcessConfiguration, YamlPipelineProcessConfiguration>> entry : typesAssertionMap.entrySet()) {
+            YamlPipelineProcessConfiguration expected = createYamlPipelineProcessConfiguration(entry.getKey());
+            entry.getValue().accept(persistAndLoad(jobType, expected), expected);
         }
     }
     
