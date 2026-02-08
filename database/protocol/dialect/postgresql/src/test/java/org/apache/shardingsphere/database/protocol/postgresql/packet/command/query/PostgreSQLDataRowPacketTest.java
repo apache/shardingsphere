@@ -32,7 +32,14 @@ import org.mockito.quality.Strictness;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -91,6 +98,74 @@ class PostgreSQLDataRowPacketTest {
         byte[] valueBytes = "value".getBytes(StandardCharsets.UTF_8);
         verify(payload).writeInt4(valueBytes.length);
         verify(payload).writeBytes(valueBytes);
+    }
+    
+    @Test
+    void assertWriteWithLocalTime() {
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(new LinkedList<>(Arrays.asList(
+                LocalTime.of(10, 0, 0, 123_456_000),
+                LocalTime.of(10, 0, 0, 000_000_001),
+                LocalTime.of(10, 0, 0, 123_450_000))));
+        actual.write(payload);
+        byte[] res1 = "10:00:00.123456".getBytes(StandardCharsets.UTF_8);
+        byte[] res2 = "10:00:00".getBytes(StandardCharsets.UTF_8);
+        byte[] res3 = "10:00:00.12345".getBytes(StandardCharsets.UTF_8);
+        verify(payload).writeInt4(res1.length);
+        verify(payload).writeBytes(res1);
+        verify(payload).writeInt4(res2.length);
+        verify(payload).writeBytes(res2);
+        verify(payload).writeInt4(res3.length);
+        verify(payload).writeBytes(res3);
+    }
+    
+    @Test
+    void assertWriteWithLocalDateTime() {
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(new LinkedList<>(Arrays.asList(
+                LocalDateTime.of(2022, 10, 12, 10, 0, 0, 123_456_000),
+                LocalDateTime.of(2022, 10, 12, 10, 0, 0, 000_000_000),
+                LocalDateTime.of(2022, 10, 12, 10, 0, 0, 123_450_000))));
+        actual.write(payload);
+        byte[] res1 = "2022-10-12 10:00:00.123456".getBytes(StandardCharsets.UTF_8);
+        byte[] res2 = "2022-10-12 10:00:00".getBytes(StandardCharsets.UTF_8);
+        byte[] res3 = "2022-10-12 10:00:00.12345".getBytes(StandardCharsets.UTF_8);
+        verify(payload).writeInt4(res1.length);
+        verify(payload).writeBytes(res1);
+        verify(payload).writeInt4(res2.length);
+        verify(payload).writeBytes(res2);
+        verify(payload).writeInt4(res3.length);
+        verify(payload).writeBytes(res3);
+    }
+    
+    @Test
+    void assertWriteWithOffsetDateTime() {
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(new LinkedList<>(Arrays.asList(
+                OffsetDateTime.of(2022, 10, 12, 10, 0, 0, 123_456_000, ZoneOffset.ofHoursMinutes(5, 30)),
+                OffsetDateTime.of(2022, 10, 12, 10, 0, 0, 000_000_000, ZoneOffset.ofHoursMinutes(5, 30)),
+                OffsetDateTime.of(2022, 10, 12, 10, 0, 0, 123_450_000, ZoneOffset.ofHoursMinutes(5, 30)))));
+        actual.write(payload);
+        byte[] res1 = "2022-10-12 04:30:00.123456+00".getBytes(StandardCharsets.UTF_8);
+        byte[] res2 = "2022-10-12 04:30:00+00".getBytes(StandardCharsets.UTF_8);
+        byte[] res3 = "2022-10-12 04:30:00.12345+00".getBytes(StandardCharsets.UTF_8);
+        verify(payload).writeInt4(res1.length);
+        verify(payload).writeBytes(res1);
+        verify(payload).writeInt4(res2.length);
+        verify(payload).writeBytes(res2);
+        verify(payload).writeInt4(res3.length);
+        verify(payload).writeBytes(res3);
+    }
+    
+    @Test
+    void assertWriteWithOffsetTime() {
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(new LinkedList<>(Arrays.asList(
+                OffsetTime.of(10, 0, 0, 123_450_000, ZoneOffset.ofHoursMinutes(5, 30)),
+                OffsetTime.of(10, 0, 0, 000_000_000, ZoneOffset.ofHoursMinutes(5, 30)))));
+        actual.write(payload);
+        byte[] res1 = "10:00:00.123450+05:30".getBytes(StandardCharsets.UTF_8);
+        byte[] res2 = "10:00:00+05:30".getBytes(StandardCharsets.UTF_8);
+        verify(payload).writeInt4(res1.length);
+        verify(payload).writeBytes(res1);
+        verify(payload).writeInt4(res2.length);
+        verify(payload).writeBytes(res2);
     }
     
     @Test

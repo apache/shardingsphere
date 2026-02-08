@@ -30,6 +30,12 @@ import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQL
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
 /**
@@ -77,6 +83,72 @@ public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
             writeSQLXMLData(payload, each);
         } else if (each instanceof Boolean) {
             byte[] columnData = ((Boolean) each ? "t" : "f").getBytes(payload.getCharset());
+            payload.writeInt4(columnData.length);
+            payload.writeBytes(columnData);
+        } else if (each instanceof OffsetTime) {
+            OffsetTime ot = (OffsetTime) each;
+            String formatted;
+            if (0 == ot.getNano()) {
+                formatted = ot.format(DateTimeFormatter.ofPattern("HH:mm:ssXXX"));
+            } else {
+                formatted = ot.format(DateTimeFormatter.ofPattern("HH:mm:ss.SSSSSSXXX"));
+            }
+            byte[] columnData = formatted.getBytes(payload.getCharset());
+            payload.writeInt4(columnData.length);
+            payload.writeBytes(columnData);
+        } else if (each instanceof OffsetDateTime) {
+            OffsetDateTime ot = (OffsetDateTime) each;
+            ot = ot.withOffsetSameInstant(ZoneOffset.UTC);
+            String formatted;
+            if (1000 > ot.getNano()) {
+                formatted = ot.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + "+00";
+            } else {
+                int precision = 9;
+                int micros = ot.getNano();
+                while (micros % 10 == 0) {
+                    precision -= 1;
+                    micros /= 10;
+                }
+                precision = Math.min(precision, 6);
+                formatted = ot.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss." + "SSSSSS".substring(0, precision))) + "+00";
+            }
+            byte[] columnData = formatted.getBytes(payload.getCharset());
+            payload.writeInt4(columnData.length);
+            payload.writeBytes(columnData);
+        } else if (each instanceof LocalTime) {
+            LocalTime ot = (LocalTime) each;
+            String formatted;
+            if (1000 > ot.getNano()) {
+                formatted = ot.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+            } else {
+                int precision = 9;
+                int micros = ot.getNano();
+                while (micros % 10 == 0) {
+                    precision -= 1;
+                    micros /= 10;
+                }
+                precision = Math.min(precision, 6);
+                formatted = ot.format(DateTimeFormatter.ofPattern("HH:mm:ss." + "SSSSSS".substring(0, precision)));
+            }
+            byte[] columnData = formatted.getBytes(payload.getCharset());
+            payload.writeInt4(columnData.length);
+            payload.writeBytes(columnData);
+        } else if (each instanceof LocalDateTime) {
+            LocalDateTime ot = (LocalDateTime) each;
+            String formatted;
+            if (1000 > ot.getNano()) {
+                formatted = ot.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            } else {
+                int precision = 9;
+                int micros = ot.getNano();
+                while (micros % 10 == 0) {
+                    precision -= 1;
+                    micros /= 10;
+                }
+                precision = Math.min(precision, 6);
+                formatted = ot.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss." + "SSSSSS".substring(0, precision)));
+            }
+            byte[] columnData = formatted.getBytes(payload.getCharset());
             payload.writeInt4(columnData.length);
             payload.writeBytes(columnData);
         } else {
