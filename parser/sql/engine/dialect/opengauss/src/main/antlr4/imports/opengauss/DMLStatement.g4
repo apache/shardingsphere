@@ -231,15 +231,15 @@ offsetClause
 
 selectLimitValue
     : ALL
-    | cExpr
+    | aExpr
     ;
 
 selectOffsetValue
-    : cExpr
+    : aExpr
     ;
 
 selectFetchValue
-    : cExpr
+    : aExpr
     ;
 
 rowOrRows

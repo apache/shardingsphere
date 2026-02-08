@@ -10,6 +10,7 @@
 2. SQL Parser: Fix escape '\' in SQL causing DialectSQLParsingException - [#37943](https://github.com/apache/shardingsphere/pull/37943)
 3. SQL Parser: Fix error parsing \l command SQL statement when front-end protocol is og - [#37953](https://github.com/apache/shardingsphere/pull/37953)
 4. SQL Parser:Fix SQLParsingException when using reserved word `order` in ORDER BY clause - [#37958](https://github.com/apache/shardingsphere/pull/37958)
+5. SQL Parser:Support '2'::int statement in PostgreSQL and openGauss - [#37962](https://github.com/apache/shardingsphere/pull/37962)
 
 ## Release 5.5.3
 
