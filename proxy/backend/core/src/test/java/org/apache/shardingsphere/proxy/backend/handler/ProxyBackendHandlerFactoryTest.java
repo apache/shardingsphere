@@ -70,12 +70,9 @@ import org.apache.shardingsphere.transaction.rule.builder.DefaultTransactionRule
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
-import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.jupiter.params.support.ParameterDeclarations;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -157,48 +154,28 @@ class ProxyBackendHandlerFactoryTest {
         return result;
     }
     
-    @Test
-    void assertNewInstanceWithDistSQL() throws SQLException {
-        String sql = "set dist variable sql_show='true'";
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("newInstanceWithDistSQLArguments")
+    void assertNewInstanceWithDistSQL(final String caseName, final String sql, final Class<? extends ProxyBackendHandler> expectedHandlerType) throws SQLException {
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(DistSQLUpdateProxyBackendHandler.class));
-        sql = "show dist variable where name = sql_show";
-        sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
-        actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(DistSQLQueryProxyBackendHandler.class));
-        sql = "show dist variables";
-        sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
-        actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(DistSQLQueryProxyBackendHandler.class));
+        assertThat(caseName, actual, isA(expectedHandlerType));
     }
     
     @ParameterizedTest(name = "{0}")
-    @ArgumentsSource(TCLTestCaseArgumentsProvider.class)
-    void assertNewInstanceWithTCL(final String sql, final Class<? extends ProxyBackendHandler> proxyBackendHandlerClass) throws SQLException {
+    @MethodSource("newInstanceWithTCLArguments")
+    void assertNewInstanceWithTCL(final String caseName, final String sql, final Class<? extends ProxyBackendHandler> expectedHandlerType) throws SQLException {
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(proxyBackendHandlerClass));
+        assertThat(caseName, actual, isA(expectedHandlerType));
     }
     
-    @Test
-    void assertNewInstanceWithShow() throws SQLException {
-        String sql = "SHOW VARIABLES LIKE '%x%'";
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("newInstanceWithShowArguments")
+    void assertNewInstanceWithShow(final String caseName, final String sql, final Class<? extends ProxyBackendHandler> expectedHandlerType) throws SQLException {
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(UnicastDatabaseProxyBackendHandler.class));
-        sql = "SHOW VARIABLES WHERE Variable_name ='language'";
-        sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
-        actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(UnicastDatabaseProxyBackendHandler.class));
-        sql = "SHOW CHARACTER SET";
-        sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
-        actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(UnicastDatabaseProxyBackendHandler.class));
-        sql = "SHOW COLLATION";
-        sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
-        actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(UnicastDatabaseProxyBackendHandler.class));
+        assertThat(caseName, actual, isA(expectedHandlerType));
     }
     
     @Test
@@ -298,31 +275,19 @@ class ProxyBackendHandlerFactoryTest {
         assertThrows(UnsupportedSQLOperationException.class, () -> ProxyBackendHandlerFactory.newInstance(databaseType, queryContext, connectionSession, false));
     }
     
-    @Test
-    void assertNewInstanceWhenTransactionFailedAndStatementIsNotCommitOrRollback() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("newInstanceWhenTransactionFailedWithPostgreSQLArguments")
+    void assertNewInstanceWhenTransactionFailedWithPostgreSQL(final String caseName, final String sql,
+                                                              final Optional<Class<? extends ProxyBackendHandler>> expectedHandlerType) throws SQLException {
         when(connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur()).thenReturn(true);
-        String sql = "SELECT 1";
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, postgreSQLDatabaseType, connectionSession);
+        if (expectedHandlerType.isPresent()) {
+            ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(postgreSQLDatabaseType, sql, sqlStatement, connectionSession, new HintValueContext());
+            assertThat(caseName, actual, isA(expectedHandlerType.get()));
+            return;
+        }
         assertThrows(SQLFeatureNotSupportedException.class,
-                () -> ProxyBackendHandlerFactory.newInstance(postgreSQLDatabaseType, sql, sqlStatement, connectionSession, new HintValueContext()));
-    }
-    
-    @Test
-    void assertNewInstanceWhenTransactionFailedAndStatementIsCommit() throws SQLException {
-        when(connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur()).thenReturn(true);
-        String sql = "COMMIT";
-        SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, postgreSQLDatabaseType, connectionSession);
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(postgreSQLDatabaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(CommitProxyBackendHandler.class));
-    }
-    
-    @Test
-    void assertNewInstanceWhenTransactionFailedAndStatementIsRollback() throws SQLException {
-        when(connectionSession.getConnectionContext().getTransactionContext().isExceptionOccur()).thenReturn(true);
-        String sql = "ROLLBACK";
-        SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, postgreSQLDatabaseType, connectionSession);
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(postgreSQLDatabaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(RollbackProxyBackendHandler.class));
+                () -> ProxyBackendHandlerFactory.newInstance(postgreSQLDatabaseType, sql, sqlStatement, connectionSession, new HintValueContext()), caseName);
     }
     
     @Test
@@ -343,59 +308,70 @@ class ProxyBackendHandlerFactoryTest {
         assertThat(actual, isA(UnicastDatabaseProxyBackendHandler.class));
     }
     
-    @Test
-    void assertNewInstanceWithUnsupportedNonQueryDistSQLInTransaction() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("newInstanceWithDistSQLInTransactionArguments")
+    void assertNewInstanceWithDistSQLInTransaction(final String caseName, final String sql, final boolean buildAttributes,
+                                                    final Optional<Class<? extends ProxyBackendHandler>> expectedHandlerType) throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        String sql = "CREATE SHARDING TABLE RULE t_order (STORAGE_UNITS(ms_group_0,ms_group_1), SHARDING_COLUMN=order_id, TYPE(NAME='hash_mod', PROPERTIES('sharding-count'='4')));";
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
-        assertThrows(UnsupportedSQLOperationException.class, () -> ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext()));
-    }
-    
-    @Test
-    void assertNewInstanceWithQueryableRALStatementInTransaction() throws SQLException {
-        when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        String sql = "SHOW DIST VARIABLES";
-        SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(DistSQLQueryProxyBackendHandler.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithRQLStatementInTransaction() throws SQLException {
-        when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        String sql = "SHOW DEFAULT SINGLE TABLE STORAGE UNIT";
-        SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(DistSQLQueryProxyBackendHandler.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithRULStatementInTransaction() throws SQLException {
-        when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
-        String sql = "PREVIEW INSERT INTO account VALUES(1, 1, 1)";
-        SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
-        sqlStatement.buildAttributes();
-        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
-        assertThat(actual, isA(DistSQLQueryProxyBackendHandler.class));
-    }
-    
-    private static final class TCLTestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
-            return Stream.of(
-                    Arguments.of("BEGIN", BeginTransactionProxyBackendHandler.class),
-                    Arguments.of("START TRANSACTION", BeginTransactionProxyBackendHandler.class),
-                    Arguments.of("SET AUTOCOMMIT=0", SetAutoCommitProxyBackendHandler.class),
-                    Arguments.of("SET @@SESSION.AUTOCOMMIT = OFF", SetAutoCommitProxyBackendHandler.class),
-                    Arguments.of("SET AUTOCOMMIT=1", SetAutoCommitProxyBackendHandler.class),
-                    Arguments.of("SET @@SESSION.AUTOCOMMIT = ON", SetAutoCommitProxyBackendHandler.class),
-                    Arguments.of("COMMIT", CommitProxyBackendHandler.class),
-                    Arguments.of("ROLLBACK", RollbackProxyBackendHandler.class),
-                    Arguments.of("SAVEPOINT foo_point", SetSavepointProxyBackendHandler.class),
-                    Arguments.of("RELEASE SAVEPOINT foo_point", ReleaseSavepointProxyBackendHandler.class),
-                    Arguments.of("ROLLBACK TO foo_point", RollbackSavepointProxyBackendHandler.class),
-                    Arguments.of("SET TRANSACTION READ ONLY, ISOLATION LEVEL REPEATABLE READ", SetTransactionProxyBackendHandler.class));
+        if (buildAttributes) {
+            sqlStatement.buildAttributes();
         }
+        if (expectedHandlerType.isPresent()) {
+            ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
+            assertThat(caseName, actual, isA(expectedHandlerType.get()));
+            return;
+        }
+        assertThrows(UnsupportedSQLOperationException.class,
+                () -> ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext()), caseName);
+    }
+    
+    private static Stream<Arguments> newInstanceWithDistSQLArguments() {
+        return Stream.of(
+                Arguments.of("DistSQL update statement", "set dist variable sql_show='true'", DistSQLUpdateProxyBackendHandler.class),
+                Arguments.of("DistSQL query statement with where", "show dist variable where name = sql_show", DistSQLQueryProxyBackendHandler.class),
+                Arguments.of("DistSQL query statement without where", "show dist variables", DistSQLQueryProxyBackendHandler.class));
+    }
+
+    private static Stream<Arguments> newInstanceWithTCLArguments() {
+        return Stream.of(
+                Arguments.of("BEGIN", "BEGIN", BeginTransactionProxyBackendHandler.class),
+                Arguments.of("START TRANSACTION", "START TRANSACTION", BeginTransactionProxyBackendHandler.class),
+                Arguments.of("SET AUTOCOMMIT=0", "SET AUTOCOMMIT=0", SetAutoCommitProxyBackendHandler.class),
+                Arguments.of("SET @@SESSION.AUTOCOMMIT = OFF", "SET @@SESSION.AUTOCOMMIT = OFF", SetAutoCommitProxyBackendHandler.class),
+                Arguments.of("SET AUTOCOMMIT=1", "SET AUTOCOMMIT=1", SetAutoCommitProxyBackendHandler.class),
+                Arguments.of("SET @@SESSION.AUTOCOMMIT = ON", "SET @@SESSION.AUTOCOMMIT = ON", SetAutoCommitProxyBackendHandler.class),
+                Arguments.of("COMMIT", "COMMIT", CommitProxyBackendHandler.class),
+                Arguments.of("ROLLBACK", "ROLLBACK", RollbackProxyBackendHandler.class),
+                Arguments.of("SAVEPOINT foo_point", "SAVEPOINT foo_point", SetSavepointProxyBackendHandler.class),
+                Arguments.of("RELEASE SAVEPOINT foo_point", "RELEASE SAVEPOINT foo_point", ReleaseSavepointProxyBackendHandler.class),
+                Arguments.of("ROLLBACK TO foo_point", "ROLLBACK TO foo_point", RollbackSavepointProxyBackendHandler.class),
+                Arguments.of("SET TRANSACTION READ ONLY, ISOLATION LEVEL REPEATABLE READ",
+                        "SET TRANSACTION READ ONLY, ISOLATION LEVEL REPEATABLE READ", SetTransactionProxyBackendHandler.class));
+    }
+
+    private static Stream<Arguments> newInstanceWithShowArguments() {
+        return Stream.of(
+                Arguments.of("SHOW VARIABLES with LIKE", "SHOW VARIABLES LIKE '%x%'", UnicastDatabaseProxyBackendHandler.class),
+                Arguments.of("SHOW VARIABLES with WHERE", "SHOW VARIABLES WHERE Variable_name ='language'", UnicastDatabaseProxyBackendHandler.class),
+                Arguments.of("SHOW CHARACTER SET", "SHOW CHARACTER SET", UnicastDatabaseProxyBackendHandler.class),
+                Arguments.of("SHOW COLLATION", "SHOW COLLATION", UnicastDatabaseProxyBackendHandler.class));
+    }
+
+    private static Stream<Arguments> newInstanceWhenTransactionFailedWithPostgreSQLArguments() {
+        return Stream.of(
+                Arguments.of("transaction failed with SELECT", "SELECT 1", Optional.<Class<? extends ProxyBackendHandler>>empty()),
+                Arguments.of("transaction failed with COMMIT", "COMMIT", Optional.of(CommitProxyBackendHandler.class)),
+                Arguments.of("transaction failed with ROLLBACK", "ROLLBACK", Optional.of(RollbackProxyBackendHandler.class)));
+    }
+
+    private static Stream<Arguments> newInstanceWithDistSQLInTransactionArguments() {
+        return Stream.of(
+                Arguments.of("non-query DistSQL in transaction", "CREATE SHARDING TABLE RULE t_order (STORAGE_UNITS(ms_group_0,ms_group_1),"
+                        + " SHARDING_COLUMN=order_id, TYPE(NAME='hash_mod', PROPERTIES('sharding-count'='4')));", false,
+                        Optional.<Class<? extends ProxyBackendHandler>>empty()),
+                Arguments.of("queryable RAL in transaction", "SHOW DIST VARIABLES", false, Optional.of(DistSQLQueryProxyBackendHandler.class)),
+                Arguments.of("RQL in transaction", "SHOW DEFAULT SINGLE TABLE STORAGE UNIT", false, Optional.of(DistSQLQueryProxyBackendHandler.class)),
+                Arguments.of("RUL in transaction", "PREVIEW INSERT INTO account VALUES(1, 1, 1)", true, Optional.of(DistSQLQueryProxyBackendHandler.class)));
     }
 }
