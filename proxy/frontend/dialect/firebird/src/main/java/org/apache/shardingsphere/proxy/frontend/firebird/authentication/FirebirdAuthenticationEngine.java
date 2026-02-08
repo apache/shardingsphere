@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.authentication;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.authentication.AuthenticatorFactory;
@@ -61,8 +62,6 @@ import java.util.Optional;
 public final class FirebirdAuthenticationEngine implements AuthenticationEngine {
     
     private FirebirdSRPAuthenticationData authData;
-    
-    private FirebirdAuthenticationMethod plugin;
     
     private AuthenticationResult currentAuthResult;
     
@@ -124,7 +123,8 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         String username = connectPacket.getLogin();
         Grantee grantee = new Grantee(username, "");
         Optional<ShardingSphereUser> user = rule.findUser(grantee);
-        plugin = FirebirdAuthenticationMethod.valueOf(getPluginName(rule, user.get()));
+        Preconditions.checkState(user.isPresent());
+        FirebirdAuthenticationMethod plugin = FirebirdAuthenticationMethod.valueOf(getPluginName(rule, user.get()));
         FirebirdAuthenticationMethod userPlugin = connectPacket.getPlugin();
         if (plugin != userPlugin) {
             acceptPacket.setAcceptDataPacket(new byte[0], "", plugin, 0, "");
