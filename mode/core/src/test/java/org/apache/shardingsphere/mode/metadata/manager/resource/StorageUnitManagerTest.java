@@ -45,7 +45,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.lenient;
@@ -73,7 +72,7 @@ class StorageUnitManagerTest {
         when(reloadMetaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(reloadDatabase);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createBySwitchResource(eq(DATABASE_NAME), eq(true), eq(switchingResource), eq(metaDataContexts))).thenReturn(reloadMetaDataContexts))) {
+                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, true, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
             createManager(metaDataContexts, resourceSwitchManager).register(DATABASE_NAME, Collections.emptyMap());
         }
         verify(metaDataContexts).update(any(MetaDataContexts.class));
@@ -105,7 +104,7 @@ class StorageUnitManagerTest {
         when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createBySwitchResource(eq(DATABASE_NAME), eq(true), eq(switchingResource), eq(metaDataContexts))).thenReturn(reloadMetaDataContexts))) {
+                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, true, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
             createManager(metaDataContexts, resourceSwitchManager).alter(DATABASE_NAME, Collections.emptyMap());
         }
         verify(metaDataContexts).update(any(MetaDataContexts.class));
@@ -136,7 +135,7 @@ class StorageUnitManagerTest {
         when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createBySwitchResource(eq(DATABASE_NAME), eq(false), eq(switchingResource), eq(metaDataContexts))).thenReturn(reloadMetaDataContexts))) {
+                        (mock, context) -> when(mock.createBySwitchResource(DATABASE_NAME, false, switchingResource, metaDataContexts)).thenReturn(reloadMetaDataContexts))) {
             createManager(metaDataContexts, resourceSwitchManager).unregister(DATABASE_NAME, "ds_0");
         }
         verify(metaDataContexts).update(any(MetaDataContexts.class));
