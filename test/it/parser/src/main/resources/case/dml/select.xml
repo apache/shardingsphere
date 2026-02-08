@@ -13802,4 +13802,229 @@
             <index-item index="1" start-index="291" stop-index="291"/>
         </order-by>
     </select>
+
+    <select sql-case-id="select_pg_int">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="30">
+            <row-count value="2" start-index="23" stop-index="30">
+                <type-cast-expression>
+                    <expression>
+                        <literal-expression value="2" start-index="23" stop-index="25" />
+                    </expression>
+                    <data-type>int</data-type>
+                </type-cast-expression>
+            </row-count>
+        </limit>
+    </select>
+
+    <select sql-case-id="select_pg_offset_int">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="32">
+            <offset value="10" start-index="24" stop-index="32">
+                <type-cast-expression>
+                    <expression>
+                        <literal-expression value="10" start-index="25" stop-index="27" />
+                    </expression>
+                    <data-type>int</data-type>
+                </type-cast-expression>
+            </offset>
+        </limit>
+    </select>
+
+    <select sql-case-id="select_pg_fetch_next_int">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <order-by start-index="17" stop-index="27">
+            <column-item name="id" order-direction="ASC" start-index="26" stop-index="27" />
+        </order-by>
+        <limit start-index="29" stop-index="60">
+            <row-count value="10" start-index="40" stop-index="50">
+                <type-cast-expression>
+                    <expression>
+                        <literal-expression value="10" start-index="41" stop-index="43" />
+                    </expression>
+                    <data-type>int</data-type>
+                </type-cast-expression>
+            </row-count>
+        </limit>
+    </select>
+
+    <select sql-case-id="select_limit_constant">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="24">
+            <row-count value="10" start-index="23" stop-index="24" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_limit_all">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="25" />
+    </select>
+
+    <select sql-case-id="select_limit_null">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="26" />
+    </select>
+
+    <select sql-case-id="select_limit_expression">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="29">
+            <row-count expression="5 + 3" start-index="23" stop-index="29" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_limit_cast">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="36">
+            <row-count value="8" start-index="23" stop-index="36" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_limit_subquery">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="48">
+            <row-count expression="(SELECT 6 FROM t4 LIMIT 1)" start-index="23" stop-index="48" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_offset_constant">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="34">
+            <offset value="5" start-index="34" stop-index="34" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_offset_null">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="36">
+            <row-count value="10" start-index="23" stop-index="24" />
+            <offset value="0" start-index="33" stop-index="36">
+                <literal-expression value="NULL" start-index="33" stop-index="36" />
+            </offset>
+        </limit>
+    </select>
+
+    <select sql-case-id="select_offset_expression">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="40">
+            <row-count value="10" start-index="23" stop-index="24" />
+            <offset expression="10 - 2" start-index="33" stop-index="40" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_offset_cast_string">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="40">
+            <row-count value="10" start-index="23" stop-index="24" />
+            <offset value="8" start-index="33" stop-index="40">
+                <type-cast-expression>
+                    <expression>
+                        <literal-expression value="8" start-index="33" stop-index="35" />
+                    </expression>
+                    <data-type>int</data-type>
+                </type-cast-expression>
+            </offset>
+        </limit>
+    </select>
+
+    <select sql-case-id="select_limit_offset_combined">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="33">
+            <row-count value="5" start-index="23" stop-index="23" />
+            <offset value="10" start-index="32" stop-index="33" />
+        </limit>
+    </select>
+    
+    <select sql-case-id="select_limit_parameter" parameters="1">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="23">
+            <row-count value="1" parameter-index="0" start-index="23" stop-index="23" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_limit_complex_expr">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="58">
+            <row-count expression="CASE WHEN true THEN 10 ELSE 20 END" start-index="23" stop-index="58" />
+        </limit>
+    </select>
 </sql-parser-test-cases>

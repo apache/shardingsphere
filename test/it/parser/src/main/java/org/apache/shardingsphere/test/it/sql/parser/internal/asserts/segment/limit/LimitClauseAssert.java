@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.ParameterMarkerPaginationValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.ExpressionPaginationValueSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.limit.ExpectedPaginationValue;
@@ -52,6 +53,8 @@ public final class LimitClauseAssert {
         if (actual instanceof ParameterMarkerPaginationValueSegment) {
             assertThat(assertContext.getText("Offset index assertion error: "),
                     ((ParameterMarkerPaginationValueSegment) actual).getParameterIndex(), is(expected.getParameterIndex()));
+        } else if (actual instanceof ExpressionPaginationValueSegment) {
+            assertThat(assertContext.getText("Offset expression assertion error: "), ((ExpressionPaginationValueSegment) actual).getExpression().getText(), is(expected.getExpression()));
         } else {
             assertThat(assertContext.getText("Offset value assertion error: "), ((NumberLiteralPaginationValueSegment) actual).getValue(), is(expected.getValue()));
         }
@@ -73,6 +76,8 @@ public final class LimitClauseAssert {
         if (SQLCaseType.PLACEHOLDER == assertContext.getCaseType()) {
             assertThat(assertContext.getText("Row count index assertion error: "),
                     ((ParameterMarkerPaginationValueSegment) actual).getParameterIndex(), is(expected.getParameterIndex()));
+        } else if (actual instanceof ExpressionPaginationValueSegment) {
+            assertThat(assertContext.getText("Row count expression assertion error: "), ((ExpressionPaginationValueSegment) actual).getExpression().getText(), is(expected.getExpression()));
         } else {
             assertThat(assertContext.getText("Row count value assertion error: "), ((NumberLiteralPaginationValueSegment) actual).getValue(), is(expected.getValue()));
         }

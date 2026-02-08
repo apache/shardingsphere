@@ -15,30 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.limit;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 
 /**
- * Expected pagination value.
+ * Pagination value segment for expression.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
-public final class ExpectedPaginationValue extends AbstractExpectedSQLSegment {
+public interface ExpressionPaginationValueSegment extends PaginationValueSegment {
     
-    @XmlAttribute
-    private Long value;
-    
-    @XmlAttribute
-    private String expression;
-    
-    @XmlAttribute(name = "parameter-index")
-    private Integer parameterIndex;
+    /**
+     * Get expression segment.
+     *
+     * @return expression segment
+     */
+    ExpressionSegment getExpression();
 }

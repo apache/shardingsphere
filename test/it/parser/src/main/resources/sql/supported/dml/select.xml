@@ -498,4 +498,20 @@
     <sql-case id="select_order_by_order" value="SELECT id FROM test ORDER BY `order` " db-types="MySQL,Hive,Doris,Presto" />
     <sql-case id="select_order_by_order_two" value="SELECT id FROM t_test ORDER BY t_test.order" db-types="MySQL,Hive,Doris,SQLServer,Firebird,SQL92,Presto" />
     <sql-case id="select_pg_database_info" value="SELECT d.datname as &quot;Name&quot;, pg_catalog.pg_get_userbyid(d.datdba) as &quot;Owner&quot;, pg_catalog.pg_encoding_to_char(d.encoding) as &quot;Encoding&quot;, d.datcollate as &quot;Collate&quot;, d.datctype as &quot;Ctype&quot;, pg_catalog.array_to_string(d.datacl, E'\n') AS &quot;Access privileges&quot; FROM pg_catalog.pg_database d ORDER BY 1;" db-types="openGauss" />
+    <sql-case id="select_pg_int" value="SELECT * FROM t4 LIMIT '2'::int;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_pg_offset_int" value="SELECT * FROM t4 OFFSET '10'::int;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_pg_fetch_next_int" value="SELECT * FROM t4 ORDER BY id FETCH NEXT ('10'::int) ROWS ONLY;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_limit_constant" value="SELECT * FROM t4 LIMIT 10;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_limit_all" value="SELECT * FROM t4 LIMIT ALL;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_limit_null" value="SELECT * FROM t4 LIMIT NULL;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_limit_cast" value="SELECT * FROM t4 LIMIT CAST(8 AS int);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_limit_expression" value="SELECT * FROM t4 LIMIT (5 + 3);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_limit_subquery" value="SELECT * FROM t4 LIMIT (SELECT 6 FROM t4 LIMIT 1);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_offset_constant" value="SELECT * FROM t4 LIMIT ALL OFFSET 5;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_offset_null" value="SELECT * FROM t4 LIMIT 10 OFFSET NULL;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_offset_expression" value="SELECT * FROM t4 LIMIT 10 OFFSET (10 - 2);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_offset_cast_string" value="SELECT * FROM t4 LIMIT 10 OFFSET '8'::int;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_limit_offset_combined" value="SELECT * FROM t4 LIMIT 5 OFFSET 10;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_limit_parameter" value="SELECT * FROM t4 LIMIT ?;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_limit_complex_expr" value="SELECT * FROM t4 LIMIT (CASE WHEN true THEN 10 ELSE 20 END);" db-types="PostgreSQL,openGauss" />
 </sql-cases>

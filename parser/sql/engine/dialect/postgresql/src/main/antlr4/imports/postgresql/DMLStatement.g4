@@ -233,16 +233,16 @@ offsetClause
     ;
 
 selectLimitValue
-    : cExpr
+    : aExpr
     | ALL
     ;
 
 selectOffsetValue
-    : cExpr
+    : aExpr
     ;
 
 selectFetchValue
-    : cExpr
+    : aExpr
     ;
 
 rowOrRows
