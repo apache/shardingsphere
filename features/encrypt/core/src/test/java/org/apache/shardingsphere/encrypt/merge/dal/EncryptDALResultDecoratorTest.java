@@ -64,7 +64,7 @@ class EncryptDALResultDecoratorTest {
     private ShardingSphereDatabase database;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(database.getRuleMetaData().findSingleRule(EncryptRule.class)).thenReturn(Optional.ofNullable(mock(EncryptRule.class)));
     }
     
