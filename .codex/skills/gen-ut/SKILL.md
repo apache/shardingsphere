@@ -23,6 +23,7 @@ Handling missing input:
 
 Test class placeholder convention:
 - `<ResolvedTestClass>` can be one fully qualified test class or a comma-separated list.
+- `<ResolvedTestFileSet>` is the concrete test file path list resolved from `<ResolvedTestClass>` (space-separated in shell commands).
 
 ## Mandatory Constraints (Single Source of Rules)
 
@@ -57,6 +58,21 @@ Test class placeholder convention:
     - after test implementation (early fail-fast gate);
     - before final delivery (final release gate).
   - If any match is found, task state is "not complete" until all violations are fixed and scan is rerun clean.
+- `R14`: Change scope must be strictly limited to tests resolved from input target classes.
+  - Allowed edit files: only `<ResolvedTestClass>` mapped source files under `src/test/java` or `src/test/resources`.
+  - Forbidden: modifying any other test file to fix unrelated build/lint/gate failures.
+  - Exception: only if the user explicitly approves scope expansion in the current turn.
+- `R15`: No meaningless test code; each line must have direct necessity for the scenario.
+  - Do not add redundant mocks/stubs/assertions that do not change branch selection, object behavior, or verification result.
+  - Prefer Mockito default return values unless explicit stubbing is required by the scenario.
+  - If a line is only cosmetic and removing it does not affect scenario setup or assertions, remove it.
+- `R16`: Inline single-use local variables in tests.
+  - If a local variable is used exactly once, inline it at the call site.
+  - Exception: keep the variable only when it is required for additional stubbing/verification or shared assertions.
+- `R17`: Test-method necessity hard gate; no coverage-equivalent duplicates.
+  - Each test method must add at least one unique value: either an uncovered branch/path from `R4/R5`, or a distinct externally observable behavior assertion not already covered.
+  - If removing a test method keeps target-class line/branch coverage unchanged and does not lose unique behavior verification, remove that method.
+  - For factory/route fallback scenarios, keep only one representative method per branch outcome unless the user explicitly requests an extra regression guard.
 
 ## Execution Boundary
 
@@ -64,6 +80,7 @@ Test class placeholder convention:
 - Do not edit generated directories (such as `target/`).
 - Do not use destructive git operations (such as `git reset --hard`, `git checkout --`).
 - If module name is missing, module-less command templates are allowed; if module is specified, module-scoped commands are mandatory.
+- If failures come from out-of-scope test files under `R14`, report blockers and wait for user decision instead of editing those files.
 
 ## Workflow
 
@@ -72,11 +89,12 @@ Test class placeholder convention:
 3. Output branch-path inventory according to `R4`.
 4. Output branch-to-test mapping according to `R5`.
 5. Perform dead-code analysis according to `R8` and record findings.
-6. Implement or extend tests according to `R2/R3/R6/R7/R10/R12/R13`.
-7. Run the first `R13` hard-gate scan (early fail-fast) and fix all hits.
-8. Run verification commands and iterate.
-9. Run the second `R13` hard-gate scan (final release gate) and ensure clean.
-10. Deliver results using the output structure.
+6. Implement or extend tests according to `R2/R3/R6/R7/R10/R12/R13/R14/R15/R16/R17`.
+7. Run necessity self-check according to `R15/R16/R17` and remove redundant mocks/stubs/assertions/single-use locals/coverage-equivalent test methods.
+8. Run the first `R13` hard-gate scan (early fail-fast) and fix all hits.
+9. Run verification commands and iterate.
+10. Run the second `R13` hard-gate scan (final release gate) and ensure clean.
+11. Deliver results using the output structure.
 
 ## Verification and Commands
 
@@ -97,9 +115,9 @@ With module input:
 ./mvnw -pl <module> -am -Pcheck checkstyle:check -DskipTests
 ```
 
-4. `R13` hard-gate scan (must be clean, run in step 7 and step 9):
+4. `R13` hard-gate scan (must be clean, run in step 8 and step 10):
 ```bash
-bash -lc 'if rg -n "assertThat\\s*\\(.*is\\s*\\(\\s*(true|false)\\s*\\)\\s*\\)|assertEquals\\s*\\(\\s*(true|false)\\s*," <module>/src/test/java; then echo "[R13] forbidden boolean assertion found"; exit 1; fi'
+bash -lc 'if rg -n "assertThat\\s*\\(.*is\\s*\\(\\s*(true|false)\\s*\\)\\s*\\)|assertEquals\\s*\\(\\s*(true|false)\\s*," <ResolvedTestFileSet>; then echo "[R13] forbidden boolean assertion found"; exit 1; fi'
 ```
 
 Without module input:
@@ -119,9 +137,9 @@ Without module input:
 ./mvnw -Pcheck checkstyle:check -DskipTests
 ```
 
-4. `R13` hard-gate scan (must be clean, run in step 7 and step 9):
+4. `R13` hard-gate scan (must be clean, run in step 8 and step 10):
 ```bash
-bash -lc 'if rg -n "assertThat\\s*\\(.*is\\s*\\(\\s*(true|false)\\s*\\)\\s*\\)|assertEquals\\s*\\(\\s*(true|false)\\s*," . --glob "**/src/test/java/**"; then echo "[R13] forbidden boolean assertion found"; exit 1; fi'
+bash -lc 'if rg -n "assertThat\\s*\\(.*is\\s*\\(\\s*(true|false)\\s*\\)\\s*\\)|assertEquals\\s*\\(\\s*(true|false)\\s*," <ResolvedTestFileSet>; then echo "[R13] forbidden boolean assertion found"; exit 1; fi'
 ```
 
 Command execution rules:
@@ -133,7 +151,7 @@ Command execution rules:
 
 Follow this order:
 
-1. Goal and constraints (mapped to `R1-R13`)
+1. Goal and constraints (mapped to `R1-R17`)
 2. Plan and implementation (including branch mapping result)
 3. Dead-code and coverage results (according to `R8/R9`)
 4. Verification commands and exit codes
@@ -143,7 +161,7 @@ Follow this order:
 ## Quality Self-Check
 
 - Rule definitions must exist only in "Mandatory Constraints"; other sections should reference rule IDs only.
-- Final state must satisfy `R9`, and all applicable rules (including `R10`, `R11`, `R12`, and `R13`) must be met, with complete command and exit-code records.
+- Final state must satisfy `R9`, and all applicable rules (including `R10`, `R11`, `R12`, `R13`, `R14`, `R15`, `R16`, and `R17`) must be met, with complete command and exit-code records.
 - `R13` command is mandatory evidence; missing `R13` command record or non-clean scan means not complete.
 
 ## Maintenance Rules

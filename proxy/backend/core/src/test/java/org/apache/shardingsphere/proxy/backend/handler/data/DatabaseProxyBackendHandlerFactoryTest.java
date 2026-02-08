@@ -17,24 +17,26 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.data;
 
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.StandardDatabaseProxyConnector;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.data.type.UnicastDatabaseProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.DatabaseSelectRequiredSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.ConstructionMockSettings;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
@@ -43,10 +45,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -58,14 +62,47 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class DatabaseProxyBackendHandlerFactoryTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-    
     @Test
     void assertNewInstanceReturnedUnicastDatabaseProxyBackendHandlerWithDAL() {
         String sql = "DESC tbl";
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class, RETURNS_DEEP_STUBS));
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        DatabaseProxyBackendHandler actual = DatabaseProxyBackendHandlerFactory.newInstance(
+                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), mock(), false);
+        assertThat(actual, isA(UnicastDatabaseProxyBackendHandler.class));
+    }
+    
+    @Test
+    void assertNewInstanceReturnedUpdateResponseHeaderWithSetAndNoDatabase() throws SQLException {
+        String sql = "SET autocommit=1";
+        SetStatement setStatement = mock(SetStatement.class);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(setStatement);
+        DatabaseProxyBackendHandler actual = DatabaseProxyBackendHandlerFactory.newInstance(
+                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), mock(ConnectionSession.class), false);
+        UpdateResponseHeader actualResponseHeader = (UpdateResponseHeader) actual.execute();
+        assertThat(actualResponseHeader, isA(UpdateResponseHeader.class));
+        assertThat(actualResponseHeader.getSqlStatement(), is(setStatement));
+    }
+    
+    @Test
+    void assertNewInstanceReturnedUnicastDatabaseProxyBackendHandlerWithSetAndDatabaseSelected() {
+        String sql = "SET autocommit=1";
+        SetStatement setStatement = mock(SetStatement.class, RETURNS_DEEP_STUBS);
+        when(setStatement.getAttributes().findAttribute(DatabaseSelectRequiredSQLStatementAttribute.class)).thenReturn(Optional.empty());
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(setStatement);
+        DatabaseProxyBackendHandler actual = DatabaseProxyBackendHandlerFactory.newInstance(
+                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), mockConnectionSession(), false);
+        assertThat(actual, isA(UnicastDatabaseProxyBackendHandler.class));
+    }
+    
+    @Test
+    void assertNewInstanceReturnedUnicastDatabaseProxyBackendHandlerWithDo() {
+        String sql = "DO 1";
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DoStatement.class));
         DatabaseProxyBackendHandler actual = DatabaseProxyBackendHandlerFactory.newInstance(
                 new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), mock(), false);
         assertThat(actual, isA(UnicastDatabaseProxyBackendHandler.class));
@@ -80,31 +117,42 @@ class DatabaseProxyBackendHandlerFactoryTest {
     @Test
     void assertNewInstanceReturnedUnicastDatabaseProxyBackendHandlerWithQueryWithoutFrom() {
         String sql = "SELECT 1";
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.buildAttributes();
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(selectStatement);
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getFrom()).thenReturn(Optional.empty());
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         DatabaseProxyBackendHandler actual = DatabaseProxyBackendHandlerFactory.newInstance(
                 new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock()), mock(), false);
         assertThat(actual, isA(UnicastDatabaseProxyBackendHandler.class));
     }
     
     @Test
-    void assertNewInstanceReturnedSchemaAssignedDatabaseProxyBackendHandler() {
-        String sql = "SELECT 1 FROM user WHERE id = 1";
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext();
+    void assertNewInstanceReturnedStandardDatabaseProxyConnectorWithDALRequiringDatabase() {
+        DALStatement dalStatement = mock(DALStatement.class, RETURNS_DEEP_STUBS);
+        when(dalStatement.getAttributes().findAttribute(DatabaseSelectRequiredSQLStatementAttribute.class)).thenReturn(Optional.of(mock(DatabaseSelectRequiredSQLStatementAttribute.class)));
+        assertNewInstanceReturnedStandardDatabaseProxyConnector(dalStatement, "SHOW PROCESSLIST");
+    }
+    
+    @Test
+    void assertNewInstanceReturnedStandardDatabaseProxyConnectorWithSelectFrom() {
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getFrom()).thenReturn(Optional.of(mock(TableSegment.class)));
+        assertNewInstanceReturnedStandardDatabaseProxyConnector(selectStatement, "SELECT 1 FROM t_order");
+    }
+    
+    private void assertNewInstanceReturnedStandardDatabaseProxyConnector(final SQLStatement sqlStatement, final String sql) {
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(sqlStatement);
         ConnectionSession connectionSession = mockConnectionSession();
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        DatabaseProxyBackendHandler actual =
-                DatabaseProxyBackendHandlerFactory.newInstance(
-                        new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)),
-                        connectionSession, false);
+        DatabaseProxyBackendHandler actual = DatabaseProxyBackendHandlerFactory.newInstance(
+                new QueryContext(sqlStatementContext, sql, Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)), connectionSession, false);
         assertThat(actual, isA(StandardDatabaseProxyConnector.class));
     }
     
-    private SQLStatementContext mockSQLStatementContext() {
+    private SQLStatementContext mockSQLStatementContext(final SQLStatement sqlStatement) {
         SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSqlStatement()).thenReturn(mock(SQLStatement.class));
+        when(result.getSqlStatement()).thenReturn(sqlStatement);
         when(result.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         when(result.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         return result;
