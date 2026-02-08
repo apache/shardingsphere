@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
@@ -189,7 +188,7 @@ class YamlDatabaseConfigurationImportExecutorTest {
         DatabaseRuleBuilder builder = mock(DatabaseRuleBuilder.class);
         DatabaseRule expectedRule = mock(DatabaseRule.class);
         when(builder.build(eq(ruleConfig), anyString(), any(DatabaseType.class), any(ResourceMetaData.class), anyCollection(), any())).thenReturn(expectedRule);
-        when(OrderedSPILoader.getServices(eq(DatabaseRuleBuilder.class), eq(Collections.singleton(ruleConfig)))).thenReturn(Collections.singletonMap(ruleConfig, builder));
+        when(OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, builder));
         YamlProxyDatabaseConfiguration yamlConfig = createYamlConfiguration();
         yamlConfig.setRules(Collections.singletonList(yamlRuleConfig));
         try (MockedConstruction<StorageUnit> mockedConstruction = mockConstruction(StorageUnit.class, (mock, context) -> {
@@ -238,12 +237,10 @@ class YamlDatabaseConfigurationImportExecutorTest {
     }
     
     private void mockMetaDataContexts(final ShardingSphereDatabase database, final ConfigurationProperties props) {
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
-        lenient().when(metaData.getDatabase("foo_db")).thenReturn(database);
-        lenient().when(metaData.getProps()).thenReturn(props);
-        lenient().when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
-        when(metaDataContexts.getMetaData()).thenReturn(metaData);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        lenient().when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
+        lenient().when(metaDataContexts.getMetaData().getProps()).thenReturn(props);
+        lenient().when(metaDataContexts.getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
         lenient().when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
     }
 }
