@@ -254,7 +254,7 @@ class PostgreSQLCommandExecuteEngineTest {
     private PostgreSQLCommandCompletePacket captureCommandCompletePacket(final int expectedWrites) {
         ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
         verify(channelHandlerContext, times(expectedWrites)).write(captor.capture());
-        return (PostgreSQLCommandCompletePacket) captor.getAllValues().stream().filter(each -> each instanceof PostgreSQLCommandCompletePacket).findFirst()
+        return (PostgreSQLCommandCompletePacket) captor.getAllValues().stream().filter(PostgreSQLCommandCompletePacket.class::isInstance).findFirst()
                 .orElseThrow(() -> new AssertionError("CommandComplete packet not written"));
     }
     
