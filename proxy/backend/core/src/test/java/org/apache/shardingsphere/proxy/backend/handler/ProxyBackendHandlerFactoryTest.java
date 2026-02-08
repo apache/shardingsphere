@@ -205,7 +205,8 @@ class ProxyBackendHandlerFactoryTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SQLStatement.class));
         when(sqlStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.of("db"));
         when(metaData.getDatabase("db")).thenReturn(mock(ShardingSphereDatabase.class));
-        try (MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class);
+        try (
+                MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class);
                 MockedStatic<DatabaseProxyBackendHandlerFactory> databaseFactory = mockStatic(DatabaseProxyBackendHandlerFactory.class)) {
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(SQLExecutionChecker.class)).thenReturn(Collections.emptyList());
             databaseFactory.when(() -> DatabaseProxyBackendHandlerFactory.newInstance(queryContext, connectionSession, false)).thenReturn(expected);
@@ -311,7 +312,7 @@ class ProxyBackendHandlerFactoryTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("newInstanceWithDistSQLInTransactionArguments")
     void assertNewInstanceWithDistSQLInTransaction(final String caseName, final String sql, final boolean buildAttributes,
-                                                    final Optional<Class<? extends ProxyBackendHandler>> expectedHandlerType) throws SQLException {
+                                                   final Optional<Class<? extends ProxyBackendHandler>> expectedHandlerType) throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
         if (buildAttributes) {
@@ -332,7 +333,7 @@ class ProxyBackendHandlerFactoryTest {
                 Arguments.of("DistSQL query statement with where", "show dist variable where name = sql_show", DistSQLQueryProxyBackendHandler.class),
                 Arguments.of("DistSQL query statement without where", "show dist variables", DistSQLQueryProxyBackendHandler.class));
     }
-
+    
     private static Stream<Arguments> newInstanceWithTCLArguments() {
         return Stream.of(
                 Arguments.of("BEGIN", "BEGIN", BeginTransactionProxyBackendHandler.class),
@@ -349,7 +350,7 @@ class ProxyBackendHandlerFactoryTest {
                 Arguments.of("SET TRANSACTION READ ONLY, ISOLATION LEVEL REPEATABLE READ",
                         "SET TRANSACTION READ ONLY, ISOLATION LEVEL REPEATABLE READ", SetTransactionProxyBackendHandler.class));
     }
-
+    
     private static Stream<Arguments> newInstanceWithShowArguments() {
         return Stream.of(
                 Arguments.of("SHOW VARIABLES with LIKE", "SHOW VARIABLES LIKE '%x%'", UnicastDatabaseProxyBackendHandler.class),
@@ -357,14 +358,14 @@ class ProxyBackendHandlerFactoryTest {
                 Arguments.of("SHOW CHARACTER SET", "SHOW CHARACTER SET", UnicastDatabaseProxyBackendHandler.class),
                 Arguments.of("SHOW COLLATION", "SHOW COLLATION", UnicastDatabaseProxyBackendHandler.class));
     }
-
+    
     private static Stream<Arguments> newInstanceWhenTransactionFailedWithPostgreSQLArguments() {
         return Stream.of(
                 Arguments.of("transaction failed with SELECT", "SELECT 1", Optional.<Class<? extends ProxyBackendHandler>>empty()),
                 Arguments.of("transaction failed with COMMIT", "COMMIT", Optional.of(CommitProxyBackendHandler.class)),
                 Arguments.of("transaction failed with ROLLBACK", "ROLLBACK", Optional.of(RollbackProxyBackendHandler.class)));
     }
-
+    
     private static Stream<Arguments> newInstanceWithDistSQLInTransactionArguments() {
         return Stream.of(
                 Arguments.of("non-query DistSQL in transaction", "CREATE SHARDING TABLE RULE t_order (STORAGE_UNITS(ms_group_0,ms_group_1),"
