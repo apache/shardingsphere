@@ -229,6 +229,8 @@ public final class RuleMetaData {
     
     private final class CacheInvalidatingCopyOnWriteArrayList extends CopyOnWriteArrayList<ShardingSphereRule> {
         
+        private static final long serialVersionUID = 4649605887075508397L;
+        
         CacheInvalidatingCopyOnWriteArrayList(final Collection<ShardingSphereRule> rules) {
             super(rules);
         }
