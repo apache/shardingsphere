@@ -15,9 +15,10 @@ description: >-
 
 可选输入：
 - 模块名（限定 Maven 命令作用域）。
-- 测试类列表（定向执行测试）。
+- 测试类列表（仅用于定向执行，不限制相关测试类原位更新）。
 
 缺失处理：
+- 说明：本节仅描述入口处理，最终判定以 `R7` 与 `R10` 为准。
 - 缺少目标类：进入 `R10-INPUT_BLOCKED`。
 - 缺少测试类：按 `TargetClassName + Test` 约定自动发现。
 - 无相关测试类：在推导出的模块测试源码集中创建 `<TargetClassName>Test`。
@@ -64,7 +65,7 @@ description: >-
 - `R5`：测试粒度
   - 每个测试方法 `MUST` 只覆盖一个场景。
   - 每个测试方法对目标公开方法 `MUST` 最多调用一次；同场景允许补充断言。
-  - 公共生产方法 `SHOULD` 采用专用测试方法覆盖。
+  - 公共生产方法 `MUST` 采用专用测试方法覆盖。
 
 - `R6`：SPI、Mock 与反射
   - 被测类可通过 SPI 获取时，`MUST` 默认使用 `TypedSPILoader`/`OrderedSPILoader`（或数据库对应加载器）实例化。
@@ -88,7 +89,7 @@ description: >-
   - “已声明的断言差异”指在交付报告中明确记录的差异项。
   - 高适配候选 `SHOULD` 直接参数化重构；若重构显著降低可读性/可诊断性，`MAY` 保留并记录 `必要性理由标签`。
   - 参数构建 `SHOULD` 优先 `Arguments + @MethodSource`；`MAY` 使用 `@CsvSource`/`@EnumSource` 等更清晰方案。
-  - `MUST` 同时给出“推荐重构”和“不推荐重构”结论及理由；无候选时 `MUST` 输出“无候选 + 判定理由”。
+  - `MUST` 为每个候选给出“推荐重构”或“不推荐重构”结论及理由；无候选时 `MUST` 输出“无候选 + 判定理由”。
 
 - `R9`：死代码与覆盖阻塞
   - 死代码阻塞时 `MUST` 报告类名、文件路径、精确行号与不可达原因。
@@ -110,6 +111,7 @@ description: >-
   - 失败位于 `R3` 范围内：`MUST` 在 `<ResolvedTestFileSet>` 内修复并重跑最小验证。
   - 失败位于 `R3` 范围外：`MUST` 记录阻塞证据（失败命令、退出码、关键报错行、阻塞文件/行）并请求用户决策。
   - 最小验证定义为“目标测试命令 + 一次 `R14` 硬门禁扫描命令”。
+  - 最小验证仅用于范围内修复迭代，`MUST NOT` 取代 `R10-A` 的最终门禁验证。
   - 可重试错误（插件解析临时失败、镜像超时、瞬时网络抖动）`MAY` 重试，最多 2 次。
 
 - `R12`：覆盖率 100% 优化模式
@@ -119,7 +121,7 @@ description: >-
 
 - `R13`：测试必要性裁剪
   - 裁剪顺序 `MUST` 固定为“客观裁剪 -> 例外保留复核”。
-  - 客观裁剪阶段 `MUST` 先删除覆盖等价测试并统一复验覆盖率，再删除不影响分支选择/协作者行为/可观察断言的冗余 mock/stub/assertion 与单次使用局部变量；若保留能显著提升可读性，`MAY` 保留并打 `必要性理由标签`。
+  - 客观裁剪阶段 `MUST` 先删除覆盖等价测试并统一复验覆盖率，再删除不影响分支选择/协作对象交互行为（如调用次数、参数）/可观察断言的冗余 mock/stub/assertion 与单次使用局部变量；若保留能显著提升可读性，`MAY` 保留并打 `必要性理由标签`。
   - 每个保留项 `MUST` 携带 `KEEP:<id>:<reason>` 格式标签，并记录在交付报告中；无标签按冗余处理。
   - 每个测试方法 `MUST` 具备唯一价值：覆盖新分支/路径，或新增断言差异。
   - 若删除某测试方法后行/分支覆盖率不变且无断言差异，`MUST` 删除。
@@ -179,6 +181,7 @@ description: >-
 ```bash
 ./mvnw <GateModuleFlags> -Pcheck spotless:check -DskipTests
 ```
+若出现跨模块依赖缺失，可改用 `<FallbackGateModuleFlags>` 对上述 gate 命令重跑一次，并记录触发原因与命令结果。
 
 5. `R8` 参数化合规扫描（注解块解析）：
 ```bash
@@ -239,8 +242,8 @@ PY
 6. `R14` 硬门禁扫描：
 ```bash
 bash -lc '
-BOOLEAN_ASSERTION_BAN_REGEX="assertThat\s*\(.*is\s*\(\s*(true|false)\s*\)\s*\)|assertEquals\s*\(\s*(true|false)\s*,"
-if rg -n "$BOOLEAN_ASSERTION_BAN_REGEX" <ResolvedTestFileSet>; then
+BOOLEAN_ASSERTION_BAN_REGEX="assertThat\s*\((?s:.*?)is\s*\(\s*(true|false)\s*\)\s*\)|assertEquals\s*\(\s*(true|false)\s*,"
+if rg -n -U --pcre2 "$BOOLEAN_ASSERTION_BAN_REGEX" <ResolvedTestFileSet>; then
   echo "[R14] forbidden boolean assertion found"
   exit 1
 fi'
