@@ -2,7 +2,7 @@
 name: gen-ut
 description: >-
   为 Apache ShardingSphere 的一个或多个目标类生成标准单元测试；
-  使用统一规则使目标类达到 100% 类/行/分支覆盖率并通过质量门禁；
+  默认以 100% 类/行/分支覆盖率为目标并通过质量门禁；
   对参数化测试执行显式合并分析、适配性筛选与重构优化。
 ---
 
@@ -11,151 +11,151 @@ description: >-
 ## 输入约定
 
 必需输入：
-- 目标类列表：一个或多个类，优先使用全限定类名。
+- 目标类列表（建议使用全限定类名）。
 
 可选输入：
-- 模块名（用于限定 Maven 命令作用范围）。
-- 测试类列表（用于定向执行测试）。
+- 模块名（限定 Maven 命令作用域）。
+- 测试类列表（定向执行测试）。
 
-缺失输入处理：
-- 如果缺少目标类，在进行任何编码工作前先请求提供类列表。
-- 如果缺少测试类，先按 `TargetClassName + Test` 约定发现已有相关测试类。
-- 如果不存在相关测试类，在解析出的模块测试源码集中创建 `<TargetClassName>Test` 并继续。
-- 若无法从相关测试文件或目标类源码文件推导 `<ResolvedTestModules>`，标记阻塞并要求用户明确提供模块范围。
+缺失处理：
+- 缺少目标类：进入 `R10-INPUT_BLOCKED`。
+- 缺少测试类：按 `TargetClassName + Test` 约定自动发现。
+- 无相关测试类：在推导出的模块测试源码集中创建 `<TargetClassName>Test`。
+- 无法推导 `<ResolvedTestModules>`：进入 `R10-INPUT_BLOCKED` 并请求补充模块范围。
 
-输入阻塞状态映射：
-- 输入阻塞（待补充输入）：缺少目标类，或无法确定 `<ResolvedTestModules>` 且用户未补充模块范围。
-- 输入补齐并进入执行阶段后，再按 `R10`、`R11`、`R3` 判定完成/阻塞。
-- 执行阶段状态映射：死代码阻塞按 `R10-B`；范围外失败按 `R10-C`。
+## 术语
 
-测试类占位符约定：
-- `<ResolvedTestClass>` 可以是一个全限定测试类，也可以是逗号分隔列表。
-- `<ResolvedTestFileSet>` 是具体可编辑文件列表（在 shell 命令中以空格分隔），包括：
-  - 从 `<ResolvedTestClass>` 解析出的测试源码文件；
-  - 严格针对这些目标类所需的新测试文件和测试资源。
-  - 必须在工作流第 3 步解析为具体路径。
-- `<ResolvedTestModules>` 是用于作用域验证命令的逗号分隔 Maven 模块列表。
-  - 推导顺序：
-    1. 如果提供了显式模块输入，则优先使用；
-    2. 否则从相关测试文件（`<ResolvedTestFileSet>`）按最近父级 Maven 模块（`pom.xml`）推导；
-    3. 否则从目标类源码文件按最近父级 Maven 模块（`pom.xml`）推导。
+- `<ResolvedTestClass>`：一个全限定测试类或逗号分隔测试类列表。
+- `<ResolvedTestFileSet>`：可编辑文件集合（shell 命令中空格分隔），仅含相关测试文件与必要测试资源。
+- `<ResolvedTestModules>`：用于作用域验证命令的逗号分隔 Maven 模块列表。
+- `相关测试类`：同模块测试范围内可解析到的既有 `TargetClassName + Test` 类。
+- `断言差异`：对外可观察结果或副作用存在可区分断言。
+- `必要性理由标签`：保留测试代码时用于说明不可删原因的一行标签。
 
-术语：
-- `相关测试类（Related test class）`：在同一模块测试范围内解析到的既有 `TargetClassName + Test` 类。
-- `断言差异（Distinct observable assertion）`：针对不同公开结果或副作用的断言。
+模块推导顺序：
+1. 用户显式提供模块时优先使用。
+2. 否则从 `<ResolvedTestFileSet>` 对应路径向上查找最近父级 `pom.xml` 推导。
+3. 否则从目标类源码路径向上查找最近父级 `pom.xml` 推导。
 
-## 强制约束（规则单一来源）
+## 强制约束
 
-- 定义源原则：规则定义仅在“强制约束”部分；其他章节只引用规则号。
-- 分层索引：
-  - `L1（基础约束层）`：`R1`、`R2`、`R3`
-  - `L2（测试设计与实现层）`：`R4`、`R5`、`R6`、`R7`、`R8`、`R9`
-  - `L3（状态判定与阻塞处理层）`：`R10`、`R11`、`R12`
-  - `L4（质量硬门禁层）`：`R13`、`R14`
-- `R1（L1-基础约束层）`：遵循 `CODE_OF_CONDUCT.md`。
-- `R2（L1-基础约束层）`：非参数化场景使用 JUnit `@Test`，数据驱动场景使用 JUnit `@ParameterizedTest`；禁止 `@RepeatedTest`。
-- `R3（L1-基础约束层）`：改动范围严格限制在由输入目标类解析出的测试范围内。
-  - 允许编辑文件仅 `<ResolvedTestFileSet>`。
-  - 禁止为修复无关构建/检查/门禁失败修改其他测试文件。
-  - 仅当用户在当前轮次明确批准时可扩范围。
-- `R4（L2-测试设计与实现层）`：分支路径规则：编码前枚举目标公开方法全部分支路径；默认一个分支/路径仅映射一个测试方法；
-  同分支新增测试必要性按 `R13` 判定。
-- `R5（L2-测试设计与实现层）`：每个测试覆盖一个场景，且对目标公开方法最多调用一次；同场景可附加断言。
-- `R6（L2-测试设计与实现层）`：被测类可通过 SPI 获取时，默认使用 `TypedSPILoader` 和 `OrderedSPILoader`。
-  - “可通过 SPI 获取”：类实现 `TypedSPI`/`DatabaseTypedSPI`，或其实现可被 SPI 加载器发现。
-  - 不使用 SPI 实例化时，必须在实现前于计划中记录原因。
-- `R7（L2-测试设计与实现层）`：目标类已有相关测试类时必须原位更新：先补缺失覆盖，再按 `R13` 删除或合并
-  覆盖等价测试；仅在无相关测试类时新建。
-- `R8（L2-测试设计与实现层）`：存在死代码时，报告类名、文件路径、精确行号和不可达原因。
-- `R9（L2-测试设计与实现层）`：参数化测试优化（默认执行；不依赖用户额外要求）：
-  - 分析现有哪些方法可合并到一个参数化测试方法，并报告待合并的方法名与方法个数。
-  - 对同时满足“特别适合参数化测试”且参数集合元素数不小于 3 的候选，必须直接实施参数化重构。
-  - 若无满足条件的候选，必须显式报告“无候选”及判定理由。
-  - 同时给出“推荐重构”和“不推荐重构”结论，并分别说明理由。
-  - 参数构建必须使用原生 `Arguments` + `@MethodSource`；禁止使用自定义 `ArgumentsProvider` 等内部类。
-  - 参数化测试展示名必须使用 `@ParameterizedTest(name = "{0}")`。
-  - 测试类中的辅助 `static` 方法必须放在类的最后。
-  - 所有参数化重构必须零妥协通过项目代码规范。
-- `R10（L3-状态判定与阻塞处理层）`：完成判定满足以下之一：
-  - `R10-A`：目标类覆盖率（类/行/分支）100%，目标测试类 Surefire 成功执行，且必需质量门禁
-    （`R14` 硬门禁、Checkstyle）通过，并附命令与退出码。
-  - `R10-B`：若在“不改生产代码”规则下死代码阻塞 100% 分支覆盖率，按 `R8` 报告并标记阻塞。
-  - `R10-C`：若失败发生在 `R3` 范围之外，按 `R11` 报告阻塞证据并标记阻塞。
-  - 优先级：先判 `R10-B`，再判 `R10-C`；两者都不适用时才判 `R10-A` 完成。
-- `R11（L3-状态判定与阻塞处理层）`：阻塞处理：先在最小测试范围内消除阻塞并重验。
-  - 若阻塞位于 `R3` 范围外且当前任务无法安全解决，报告精确阻塞文件/行/命令并请求用户决策。
-- `R12（L3-状态判定与阻塞处理层）`：覆盖率已达 100% 优化模式：
-  - 若目标类现有覆盖率（类/行/分支）已为 100%，则不再执行覆盖率补齐工作；仅关注 `R9` 的参数化优化机会并实施必要重构。
-  - 进入该模式的覆盖率判定必须可复现：以“验证与命令 / 覆盖率”生成的报告或检查结果为证据。
-  - 该模式下允许跳过 `R4` 分支清单与分支-测试映射输出；但必须输出覆盖率证据与 `R9` 结论（含“无候选”）。
-- `R13（L4-质量硬门禁层）`：测试必要性硬门禁：
-  - 判定顺序固定为“客观裁剪 -> 例外保留复核”，禁止反向顺序导致重复返工。
-  - 客观裁剪阶段：先基于 `R4` 分支映射与覆盖结果识别覆盖等价测试并批量删除，再统一复验覆盖率。
-  - 客观裁剪阶段：再删除不影响分支选择/协作者行为/可观察断言结果的冗余 mock/stub/assertion 与单次使用局部变量。
-  - 每个保留项必须记录一行必要性理由标签；未提供标签的保留项按冗余处理。
-  - 不允许无意义测试代码；每行都必须对场景有直接必要性。
-  - 删除该行后若上述三项均不变，则该行为冗余（含冗余 mock/stub/assertion），必须删除。
-  - 除非场景明确需要 stub，否则使用 Mockito 默认返回值。
-  - 单次使用局部变量应在调用点内联；仅当该变量用于两个及以上语句的额外 stub/校验或共享断言时保留。
-  - 测试方法禁止覆盖等价重复。
-  - 每个测试方法必须新增唯一价值：覆盖未覆盖分支/路径，或新增未覆盖断言差异。
-  - 覆盖等价重复：同一目标公开方法、同一分支/路径且无断言差异；仅改字面量/mock 名称/夹具值且断言结果不变也属重复。
-  - 若删除某测试方法后目标类行/分支覆盖率不变，则必须删除该方法。
-  - 工厂/路由回退场景默认每个分支结果仅保留一个代表性方法；仅在有断言差异或用户明确要求额外回归保护时新增。
-- `R14（L4-质量硬门禁层）`：布尔断言与硬门禁：
-  - 布尔检查必须使用 `assertTrue` / `assertFalse`；禁止以下模式：
-  - `assertThat(<boolean expression>, is(true))`
-  - `assertThat(<boolean expression>, is(false))`
-  - `assertEquals(true, ...)`
-  - `assertEquals(false, ...)`
-  - 正则单一来源为“验证与命令 / 第 5 项”。
-  - 硬门禁扫描必须两次执行：测试实现后（早期快速失败门禁）和最终交付前（最终发布门禁）。
-  - 任意命中均视为“未完成”，直到全部修复并复扫干净。
+- 规范等级：`MUST`（必须）、`SHOULD`（优先）、`MAY`（可选）。
+- 定义源原则：所有强制约束仅定义在本节 `R1-R14`；其他章节只允许引用规则号与执行顺序。
 
-## 执行边界
+- `R1`：`MUST` 遵循 `AGENTS.md` 与 `CODE_OF_CONDUCT.md`；规则解释优先引用 `CODE_OF_CONDUCT.md` 的对应条款与行号证据。
 
-- 仅处理单元测试任务。
-- 不得修改生产代码。
-- 仅可修改 `src/test/java` 和 `src/test/resources`。
-- 不得编辑生成目录（例如 `target/`）。
-- 不得使用破坏性 git 操作（例如 `git reset --hard`、`git checkout --`）。
-- 若未提供模块名，推导 `<ResolvedTestModules>` 并保持命令为模块级作用域；除非用户批准，否则禁止仓库级命令。
+- `R2`：测试类型与命名
+  - 非参数化场景 `MUST` 使用 JUnit `@Test`。
+  - 数据驱动场景 `MUST` 使用 JUnit `@ParameterizedTest`。
+  - `MUST NOT` 使用 `@RepeatedTest`。
+  - 参数化测试展示名 `MUST` 使用 `@ParameterizedTest(name = "{0}")`。
+
+- `R3`：改动与执行范围
+  - 编辑范围 `MUST` 仅限 `<ResolvedTestFileSet>`。
+  - 路径范围 `MUST` 仅限 `src/test/java` 与 `src/test/resources`。
+  - `MUST NOT` 修改生产代码与生成目录（如 `target/`）。
+  - `MUST NOT` 为修复范围外失败而改动其他测试文件；若需扩范围，`MUST` 由用户当前轮次显式批准。
+  - `MUST NOT` 使用破坏性 git 操作（例如 `git reset --hard`、`git checkout --`）。
+
+- `R4`：分支清单与映射
+  - 编码前 `MUST` 枚举目标公开方法分支/路径并建立分支-测试映射。
+  - 默认一条分支/路径映射一个测试方法。
+  - 同分支新增测试是否保留由 `R13` 判定。
+
+- `R5`：测试粒度
+  - 每个测试方法 `MUST` 只覆盖一个场景。
+  - 每个测试方法对目标公开方法 `MUST` 最多调用一次；同场景允许补充断言。
+  - 公共生产方法 `SHOULD` 采用专用测试方法覆盖。
+
+- `R6`：SPI、Mock 与反射
+  - 被测类可通过 SPI 获取时，`MUST` 默认使用 `TypedSPILoader`/`OrderedSPILoader`（或数据库对应加载器）实例化。
+  - 不经 SPI 实例化时，`MUST` 在实现前记录原因。
+  - 测试依赖 `SHOULD` 默认使用 Mockito mock。
+  - 反射访问 `MUST` 使用 `Plugins.getMemberAccessor()`，且仅限字段访问。
+
+- `R7`：相关测试类策略
+  - 已存在相关测试类时，`MUST` 原位更新并先补缺失覆盖。
+  - 无相关测试类时，`MUST` 新建 `<TargetClassName>Test`。
+  - 用户显式提供测试类列表时，仅作为执行过滤输入，`MUST NOT` 取代“相关测试类原位更新”策略。
+  - 覆盖等价测试的删除/合并由 `R13` 判定。
+
+- `R8`：参数化优化（默认执行）
+  - `MUST` 报告可合并方法集合与待合并数量。
+  - 同时满足以下条件的候选视为“高适配参数化”：
+    - A. 目标公开方法与分支骨架一致；
+    - B. 场景差异主要来自输入数据；
+    - C. 断言骨架一致或仅存在已声明的断言差异；
+    - D. 参数样本数不少于 3。
+  - 高适配候选 `SHOULD` 直接参数化重构；若重构显著降低可读性/可诊断性，`MAY` 保留并记录 `必要性理由标签`。
+  - 参数构建 `SHOULD` 优先 `Arguments + @MethodSource`；`MAY` 使用 `@CsvSource`/`@EnumSource` 等更清晰方案；`MUST NOT` 使用自定义 `ArgumentsProvider` 与 `@ArgumentsSource`。
+  - `MUST` 同时给出“推荐重构”和“不推荐重构”结论及理由；无候选时 `MUST` 输出“无候选 + 判定理由”。
+
+- `R9`：死代码与覆盖阻塞
+  - 死代码阻塞时 `MUST` 报告类名、文件路径、精确行号与不可达原因。
+  - 在本 skill 范围内 `MUST NOT` 通过修改生产代码绕过死代码。
+
+- `R10`：状态机与完成判定
+  - `R10-INPUT_BLOCKED`：缺少目标类，或无法确定 `<ResolvedTestModules>`。
+  - `R10-A`（完成）：同时满足以下条件：
+    - 作用域满足 `R3`；
+    - 目标测试执行成功（Surefire）；
+    - 覆盖率证据满足目标（默认类/行/分支 100%，除非用户明确下调）；
+    - Checkstyle、`R14` 两次扫描均通过；
+    - `R8` 的分析与合规证据完整。
+  - `R10-B`（阻塞）：在“不可改生产代码”前提下，死代码阻塞覆盖目标，且证据满足 `R9`。
+  - `R10-C`（阻塞）：失败发生在 `R3` 范围外，且证据满足 `R11`。
+  - 判定优先级：`R10-INPUT_BLOCKED` > `R10-B` > `R10-C` > `R10-A`。
+
+- `R11`：失败处理
+  - 失败位于 `R3` 范围内：`MUST` 在 `<ResolvedTestFileSet>` 内修复并重跑最小验证。
+  - 失败位于 `R3` 范围外：`MUST` 记录阻塞证据（失败命令、退出码、关键报错行、阻塞文件/行）并请求用户决策。
+  - 可重试错误（插件解析临时失败、镜像超时、瞬时网络抖动）`MAY` 重试，最多 2 次。
+
+- `R12`：覆盖率 100% 优化模式
+  - 若目标类覆盖率证据已为 100%，`MUST` 跳过覆盖率补齐，仅执行 `R8` 参数化优化。
+  - 覆盖率判定 `MUST` 可复现（命令 + 报告路径）。
+  - 该模式下 `MAY` 省略 `R4` 分支映射输出，但 `MUST` 在规则映射中标注 `R4=N/A（由 R12 触发）` 并附覆盖率证据。
+
+- `R13`：测试必要性裁剪
+  - 裁剪顺序 `MUST` 固定为“客观裁剪 -> 例外保留复核”。
+  - 客观裁剪阶段 `MUST` 先删除覆盖等价测试并统一复验覆盖率，再删除不影响分支选择/协作者行为/可观察断言的冗余 mock/stub/assertion 与单次使用局部变量；若保留能显著提升可读性，`MAY` 保留并打 `必要性理由标签`。
+  - 每个保留项 `MUST` 携带 `必要性理由标签`；无标签按冗余处理。
+  - 每个测试方法 `MUST` 具备唯一价值：覆盖新分支/路径，或新增断言差异。
+  - 若删除某测试方法后行/分支覆盖率不变且无断言差异，`MUST` 删除。
+  - 除非场景需要，`SHOULD` 使用 Mockito 默认返回值而非额外 stub。
+
+- `R14`：布尔断言硬门禁
+  - 布尔断言 `MUST` 使用 `assertTrue`/`assertFalse`。
+  - `MUST NOT` 使用：
+    - `assertThat(<boolean expression>, is(true|false))`
+    - `assertEquals(true|false, ...)`
+  - `MUST` 在实现后与交付前各执行一次硬门禁扫描；任一命中均视为未完成。
 
 ## 工作流
 
-1. 重新检查 `AGENTS.md` 和 `CODE_OF_CONDUCT.md`。
-2. 定位目标类和相关测试类。
-3. 解析 `<ResolvedTestClass>`、`<ResolvedTestFileSet>`、`<ResolvedTestModules>`，并记录模块推导证据（`pom.xml` 路径）。
-4. 若不满足 `R12`，输出分支清单与测试映射（`R4`）；若有额外同分支测试，记录其必要性依据（`R13`）。
-5. 按 `R9` 执行参数化测试优化：默认识别可合并方法和数量，对参数元素数不小于 3 且特别适合参数化的候选
-   直接实施重构，并记录推荐/不推荐结论及理由；若无候选，记录“无候选”原因。
-6. 按 `R8` 执行死代码分析并记录结果。
-7. 按实现规则实现或扩展测试（`R2`、`R4`、`R5`、`R6`、`R7`、`R3`、`R12`、`R13`、`R14`、`R9`、执行边界）。
-8. 按 `R13` 执行必要性自检（客观裁剪 -> 例外保留复核），删除冗余 mock/stub/assertion、单次使用局部变量和覆盖等价测试方法。
-9. 按 `R14` 执行第一次硬门禁扫描（早期快速失败）并修复所有命中。
-10. 按分层顺序运行验证命令（目标测试 -> 目标模块门禁 -> 必要时回退门禁）并迭代。
-11. 按 `R14` 执行第二次硬门禁扫描（最终发布门禁）并确保干净。
-12. 按 `R10` 判定最终状态，输出规则-证据映射后交付。
+1. 读取 `AGENTS.md` 与 `CODE_OF_CONDUCT.md`，记录本轮硬约束（`R1`）。
+2. 解析目标类、相关测试类与输入阻塞状态（`R10-INPUT_BLOCKED`）。
+3. 解析 `<ResolvedTestClass>`、`<ResolvedTestFileSet>`、`<ResolvedTestModules>` 并记录 `pom.xml` 证据（`R3`）。
+4. 判断是否命中 `R12`；未命中则输出 `R4` 分支映射。
+5. 执行 `R8` 参数化优化分析并落地必要重构。
+6. 执行 `R9` 死代码检查并记录证据。
+7. 按 `R2-R7` 完成测试实现或扩展。
+8. 按 `R13` 进行必要性裁剪与覆盖率复验。
+9. 执行验证命令并按 `R11` 处理失败；执行两次 `R14` 扫描。
+10. 按 `R10` 判定状态并输出规则-证据映射。
 
 ## 验证与命令
 
-执行决策树（仅引用规则）：
-0. 输入阻塞（待补充输入）优先：按“输入阻塞状态映射”处理，不进入 `R10` 判定。
-1. 完成判定只按 `R10` 执行。
-2. 失败在 `R3` 范围内：按 `R11` 在 `<ResolvedTestFileSet>` 内修复并重跑。
-3. 失败在 `R3` 范围外：按 `R11` 记录证据并按 `R10-C` 标记阻塞。
-4. `<FallbackGateModuleFlags>` 仅用于排障，不扩大编辑范围（`R3`）且不改变完成判定（`R10-A`）。
-
 标志预设：
-- 提供模块输入时：
+- 提供模块输入：
   - `<TestModuleFlags>` = `-pl <module>`
   - `<GateModuleFlags>` = `-pl <module>`
-- 未提供模块输入时：
+- 未提供模块输入：
   - `<TestModuleFlags>` = `-pl <ResolvedTestModules>`
   - `<GateModuleFlags>` = `-pl <ResolvedTestModules>`
-  - `<FallbackGateModuleFlags>` = `<GateModuleFlags> -am`（仅当门禁因跨模块依赖缺失而失败时使用）。
+  - `<FallbackGateModuleFlags>` = `<GateModuleFlags> -am`（仅用于跨模块依赖缺失排障，不改变 `R3` 与 `R10`）。
 
-1. 定向单元测试：
+1. 目标测试：
 ```bash
 ./mvnw <TestModuleFlags> -DskipITs -Dspotless.skip=true -Dtest=<ResolvedTestClass> -Dsurefire.failIfNoSpecifiedTests=false test
 ```
@@ -164,112 +164,67 @@ description: >-
 ```bash
 ./mvnw <GateModuleFlags> -DskipITs -Djacoco.skip=false test jacoco:report jacoco:check@jacoco-check -Pcoverage-check
 ```
-若目标模块的 `pom.xml` 未定义 `jacoco-check@jacoco-check` Maven 执行节点，改用：
+若模块未定义 `jacoco-check@jacoco-check`：
 ```bash
 ./mvnw <GateModuleFlags> -DskipITs -Djacoco.skip=false test jacoco:report
 ```
-并按以下模板记录人工覆盖率证据（必须包含生成命令与可访问报告路径）：
-- `目标类`: `<ClassA>,<ClassB>,...`
-- `覆盖率`: `class=<...>, line=<...>, branch=<...>`
-- `报告生成命令`: `<生成报告命令>`
-- `报告路径`: `<报告路径>`
 
 3. Checkstyle：
 ```bash
 ./mvnw <GateModuleFlags> -Pcheck checkstyle:check -DskipTests
 ```
 
-4. `R9` 参数化合规扫描（必需执行）：
-```bash
-bash -lc "
-if rg -n 'implements\s+ArgumentsProvider|@ArgumentsSource' <ResolvedTestFileSet>; then
-  echo '[R9] forbidden parameter provider pattern found'
-  exit 1
-fi
-if rg -n '@ParameterizedTest' <ResolvedTestFileSet> | rg -v 'name\s*=\s*"\{0\}"'; then
-  echo '[R9] @ParameterizedTest must use name = "{0}"'
-  exit 1
-fi"
-```
-
-5. `R14` 硬门禁扫描（必须干净，在工作流第 9 步和第 11 步执行）：
+4. `R8` 参数化合规扫描：
 ```bash
 bash -lc '
-BOOLEAN_ASSERTION_BAN_REGEX="assertThat\s*\(.*is\s*\(\s*(true|false)\s*\)\s*\)|assertEquals\s*\(\s*(true|false)\s*,"
+if rg -n "implements\\s+ArgumentsProvider|@ArgumentsSource" <ResolvedTestFileSet>; then
+  echo "[R8] forbidden parameter provider pattern found"
+  exit 1
+fi
+if rg -n "@ParameterizedTest" <ResolvedTestFileSet> | rg -v "name\s*=\s*\"\{0\}\""; then
+  echo "[R8] @ParameterizedTest must use name = \"{0}\""
+  exit 1
+fi'
+```
+
+5. `R14` 硬门禁扫描：
+```bash
+bash -lc '
+BOOLEAN_ASSERTION_BAN_REGEX="assertThat\\s*\\(.*is\\s*\\(\\s*(true|false)\\s*\\)\\s*\\)|assertEquals\\s*\\(\\s*(true|false)\\s*,"
 if rg -n "$BOOLEAN_ASSERTION_BAN_REGEX" <ResolvedTestFileSet>; then
   echo "[R14] forbidden boolean assertion found"
   exit 1
 fi'
 ```
 
-命令执行规则：
-- 记录每条命令及退出码。
-- 仅对可重试错误重试一次（例如插件解析临时失败、仓库镜像超时、瞬时网络抖动）；不可重试错误直接按 `R11` 处理。
-- 若门禁命令因跨模块依赖缺失失败，使用 `<FallbackGateModuleFlags>` 补救一次，并记录回退原因。
-- 若命令失败，按执行决策树（`R11`、`R3`、`R10-C`）记录失败命令与关键报错行。
+6. 范围校验：
+```bash
+git diff --name-only
+```
+
+命令记录格式（用于 `R10` 与 `R11` 证据）：
+- `命令`: `<command>`
+- `退出码`: `<code>`
+- `关键输出`: `<key lines>`
 
 阻塞报告模板：
 - `失败命令`: `<失败命令>`
 - `退出码`: `<code>`
 - `关键报错行`: `<关键报错行>`
+- `阻塞文件/行`: `<path:line>`
 - `是否在 R3 范围内`: `<是/否>`
-- `状态`: `<R10-B 或 R10-C>`
-
-6. 交付前最小机检清单（建议顺序）：
-```bash
-git diff --name-only
-```
-- 对照 `<ResolvedTestFileSet>` 逐项确认改动文件未越出 `R3`。
-```bash
-./mvnw <TestModuleFlags> -DskipITs -Dspotless.skip=true -Dtest=<ResolvedTestClass> -Dsurefire.failIfNoSpecifiedTests=false test
-```
-- 执行第 4 项 `R9` 参数化合规扫描。
-- 执行第 5 项 `R14` 硬门禁扫描命令，并记录结果（最终发布门禁）。
+- `状态`: `<R10-B | R10-C>`
 
 ## 输出结构
 
-按以下顺序（命中 `R12` 时，按 `R12` 执行简化输出）：
-
-1. 目标与约束（映射到 `R1-R14`）
-2. 状态（由 `R10` 判定）+ 一行原因
-3. 计划与实现（包含模块推导证据、分支映射结果及任何 `R13` 例外理由与标签）
-  - 若命中 `R12`，可省略分支映射并改为“已进入覆盖率 100% 优化模式”的覆盖率证据说明；
-4. 参数化测试优化分析（`R9`）：
-  - 可合并到一个参数化测试方法的方法名及待合并个数；
-  - 参数元素数不小于 3 且特别适合参数化重构的候选；
-  - 若无满足条件候选，必须输出“无候选”与判定理由；
-  - 推荐/不推荐重构结论及理由。
-5. 死代码与覆盖率结果（至少包含：目标类覆盖率数值、死代码定位与原因）
-6. 验证与质量门禁证据（至少包含：关键命令、退出码、`R14` 扫描结果、`R9` 扫描结果）
-7. 规则-证据映射（`R#->证据`，至少覆盖 `R4`、`R7`、`R8`、`R10`、`R11`、`R3`、`R12`、`R13`、`R9`、`R14`）
-8. 风险与后续动作
-
-规则-证据映射最小模板：
-- `R4`: 分支清单与分支-测试映射。
-- `R7`: 相关测试类原位更新或新建决策证据。
-- `R8`: 死代码定位（类、路径、行号、原因）。
-- `R10`: 最终状态及其判定理由。
-- `R11/R3`: 阻塞范围判定与阻塞报告模板。
-- `R13`: 必要性自检结果（删除项、保留理由标签、覆盖率复验结果）。
-- `R14`: 布尔断言策略与两次硬门禁扫描结果。
-- `R9`: 合并候选报告、Arguments>=3 适配性报告、推荐/不推荐结论及理由。
-- `R12`: 覆盖率 100% 证据与“仅参数化优化”模式启用说明。
+1. 输入与状态：目标输入解析、模块推导证据、最终状态（`R10-*`）及一行理由。
+2. 实现与优化：`R4` 分支映射（或 `R12` 例外）、测试实现动作、`R8` 结论、`R13` 裁剪记录。
+3. 验证证据：覆盖率与死代码结果（若有）、关键命令与退出码、`R8`/`R14` 扫描结果。
+4. 规则映射与风险：`R# -> 证据`（至少含 `R4`、`R8`、`R9`、`R10`、`R11`、`R12`、`R13`、`R14`）与后续动作。
 
 ## 质量自检
 
-- 规则定义只能出现在“强制约束”部分；其他部分仅可引用规则 ID。
-- 最终状态必须满足 `R10`；命令型规则提供命令与退出码证据，非命令型规则提供映射/代码证据。
-- `R14` 命令是必需证据；缺失 `R14` 记录或扫描不干净即视为未完成。
-- `R9` 输出与 `R9` 合规扫描证据为必需项；无候选时仍需提供“无候选”证据。
-- 命中 `R12` 时，`R12` 证据（覆盖率 100% 判定依据 + 仅参数化优化说明）为必需项。
-- 阻塞状态证据要求按 `R11` 执行。
-- 输出中必须包含“规则-证据映射”，且与 `R10` 最终状态一致。
-
-## 维护规则
-
-- 修改任意 `R` 编号后，运行 `rg -n "R[0-9]+" .codex/skills/gen-ut/SKILL.md` 以确保无悬空引用。
-- 修改 skill 规则后，验证 `SKILL.md` 与 `agents/openai.yaml` 的触发语义一致。
-- 固定最终复审顺序：
-  1. 编号一致性检查
-  2. 重复短语扫描
-  3. `SKILL.md` 与 `agents/openai.yaml` 的语义一致性检查
+- 仅“强制约束”章节定义规则；其他章节仅引用规则号。
+- 最终状态与 `R10` 一致；`R10-A` 需同时满足覆盖率、测试、Checkstyle、`R8` 证据、`R14` 双扫描。
+- 命中 `R12` 时提供覆盖率证据并标注 `R4=N/A（由 R12 触发）`。
+- 输出必须包含规则-证据映射与命令退出码。

@@ -17,14 +17,8 @@
 
 interface:
   display_name: "Generate Unit Tests"
-  short_description: "Generate standard ShardingSphere unit tests with strict quality gates and parameterized-test optimization analysis"
+  short_description: "Generate or optimize unit tests for ShardingSphere"
   default_prompt: >-
-    Use $gen-ut to generate standard unit tests for one or more ShardingSphere classes.
-    Provide the class set (optional module name and test class) and execute according to SKILL.md rules.
-    Execute parameterized-test optimization by default: identify mergeable method sets,
-    directly refactor highly suitable data-driven scenarios (arguments>=3), and report
-    recommended/not-recommended conclusions with evidence (or "no candidate" evidence).
-    If the target class already has 100% class/line/branch coverage, switch to the coverage-100% optimization mode:
-    focus only on parameterized-test improvement opportunities (skip coverage-filling work) with reproducible coverage evidence.
-    Determine final status strictly by SKILL.md R10:
-    report completion only as R10-A (target tests pass and 100% class/line/branch coverage is verified for target classes) or blocked states R10-B/R10-C with required evidence.
+    Use $gen-ut to generate or optimize unit tests for one or more ShardingSphere classes.
+    Provide target classes (optional module name and test class names).
+    Run parameterized-test analysis and optimization by default.
