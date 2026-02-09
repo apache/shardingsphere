@@ -99,7 +99,7 @@ chapter = true
  - 单元测试必须通过公共 API 验证行为，禁止通过反射调用私有成员。 若测试必须通过反射访问字段，应使用 `Plugins.getMemberAccessor()`，且反射仅限于 `Field` 访问。
  - 当某个生产方法只由一个测试用例覆盖时，测试方法命名为 `assert<MethodName>`，无额外后缀。
  - 每个公有方法使用一个独立的测试方法，测试方法顺序在可行时与生产方法保持一致。
- - 参数化测试需通过参数提供显示名，并以 `{index}:` 前缀标注序号。
+ - 参数化测试需通过参数提供显示名，并使用 `"{0}"` 作为展示名模板。
  - 每个测试用例需精确断言，尽量不使用 `not`、`containsString` 断言。
  - 准备环境的代码和测试代码分离。
  - 只有 Mockito，junit `Assertions`，hamcrest `CoreMatchers` 和 `MatcherAssert` 相关可以使用 static import。

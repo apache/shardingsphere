@@ -99,7 +99,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Unit tests must exercise behavior through public APIs only. Reflection-based invocation of private members is forbidden. If tests must access fields via reflection, use `Plugins.getMemberAccessor()` and limit reflection to `Field` access only.
 - Except for simple `getter /setter` methods, unit tests need full coverage.
 - When a production method is covered by only one test case, name that test method `assert<MethodName>` without extra suffixes, and prefer isolating one public production method per dedicated test method; when practical, keep test method ordering aligned with the corresponding production methods.
-- For parameterized tests, provide display names via parameters and prefix each with `{index}:` to include the sequence number.
+- For parameterized tests, provide display names via parameters and use `"{0}"` as the display-name template.
 - Each test case needs precise assertions, try not to use `not`, `containsString` assertions.
 - Separate environment preparation code from test code.
 - Only Mockito, junit `Assertions`, hamcrest `CoreMatchers` and `MatcherAssert` related can use static import.
