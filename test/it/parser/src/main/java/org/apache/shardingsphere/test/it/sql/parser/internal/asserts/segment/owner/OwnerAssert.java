@@ -42,6 +42,10 @@ public final class OwnerAssert {
      * @param expected expected owner
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final OwnerSegment actual, final ExpectedOwner expected) {
+        if (null == actual) {
+            assertTrue(null == expected, assertContext.getText("Actual owner should be null."));
+            return;
+        }
         IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "Owner");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
         if (null == expected.getOwner()) {

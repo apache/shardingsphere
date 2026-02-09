@@ -255,11 +255,16 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     }
     
     @Override
+    public final ASTNode visitOwner(final OwnerContext ctx) {
+        return new OwnerSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+    }
+    
+    @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
         SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
+            result.setOwner((OwnerSegment) visit(owner));
         }
         return result;
     }
@@ -269,7 +274,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
+            result.setOwner((OwnerSegment) visit(owner));
         }
         return result;
     }
@@ -1252,6 +1257,8 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), functionName, getOriginalText(ctx));
         if (null != funcNameContext.colId()) {
             result.setOwner(new OwnerSegment(funcNameContext.colId().start.getStartIndex(), funcNameContext.colId().stop.getStopIndex(), new IdentifierValue(funcNameContext.colId().getText())));
+        } else if (null != funcNameContext.owner() && null != funcNameContext.typeFunctionName()) {
+            result.setOwner((OwnerSegment) visit(funcNameContext.owner()));
         }
         result.getParameters().addAll(expressionSegments);
         return result;

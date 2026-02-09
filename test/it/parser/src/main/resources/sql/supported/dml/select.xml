@@ -514,4 +514,5 @@
     <sql-case id="select_limit_offset_combined" value="SELECT * FROM t4 LIMIT 5 OFFSET 10;" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_limit_parameter" value="SELECT * FROM t4 LIMIT ?;" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_limit_complex_expr" value="SELECT * FROM t4 LIMIT (CASE WHEN true THEN 10 ELSE 20 END);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_func" value="select public.int4range(400, 500, '[]');" db-types="PostgreSQL" />
 </sql-cases>

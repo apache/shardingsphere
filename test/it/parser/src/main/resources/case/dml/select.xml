@@ -14027,4 +14027,25 @@
             <row-count expression="CASE WHEN true THEN 10 ELSE 20 END" start-index="23" stop-index="58" />
         </limit>
     </select>
+
+    <select sql-case-id="select_func">
+        <projections start-index="7" stop-index="38">
+            <expression-projection text="public.int4range(400, 500, '[]')" start-index="7" stop-index="38">
+                <expr>
+                    <function start-index="7" stop-index="38" text="public.int4range(400, 500, '[]')" function-name="int4range">
+                        <owner name="public" start-index="7" stop-index="12" />
+                        <parameter>
+                            <literal-expression value="400" start-index="24" stop-index="26" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="500" start-index="29" stop-index="31" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="[]" start-index="34" stop-index="37" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
