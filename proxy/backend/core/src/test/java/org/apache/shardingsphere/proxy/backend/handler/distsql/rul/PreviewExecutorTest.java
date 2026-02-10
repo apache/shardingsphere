@@ -130,11 +130,11 @@ class PreviewExecutorTest {
     
     @Test
     void assertGetRowsWithIncompleteDatabase() {
-        HintValueContext hintValueContext = new HintValueContext();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getProtocolType()).thenReturn(databaseType);
         when(database.getName()).thenReturn("foo_db");
         executor.setDatabase(database);
+        HintValueContext hintValueContext = new HintValueContext();
         executor.setConnectionContext(mockConnectionContext(hintValueContext, new ConnectionContext(Collections::emptyList), mock(DatabaseConnectionManager.class)));
         assertThrows(EmptyRuleException.class, () -> executor.getRows(new PreviewStatement("SELECT 1"), contextManager));
         assertTrue(hintValueContext.isSkipMetadataValidate());
