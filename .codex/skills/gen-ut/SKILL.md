@@ -17,6 +17,9 @@ Optional inputs:
 - Module name (limits Maven command scope).
 - Test class list (for targeted execution only; does not limit in-place updates for related test classes).
 
+Default completion level:
+- Unless the user explicitly waives or lowers the target, requests such as "add tests" remain bound to `R10-A` completion criteria (including default coverage and quality gates).
+
 Missing input handling:
 - Note: this section only describes entry handling; final decisions follow `R7`/`R10`.
 - Missing target classes: enter `R10-INPUT_BLOCKED`.
@@ -29,6 +32,8 @@ Missing input handling:
 - `<ResolvedTestClass>`: one fully-qualified test class or a comma-separated list of test classes.
 - `<ResolvedTestFileSet>`: editable file set (space-separated in shell commands), containing only related test files and required test resources.
 - `<ResolvedTestModules>`: comma-separated Maven module list used by scoped verification commands.
+- `<ResolvedTargetClasses>`: one fully-qualified production class or a comma-separated list of target classes from user input.
+- `Target-class coverage scope`: for each target class, aggregate coverage for the target binary class and all binary classes whose names start with `<targetBinaryName>$` (including member/anonymous/local classes).
 - `Related test classes`: existing `TargetClassName + Test` classes resolvable within the same module's test scope.
 - `Assertion differences`: distinguishable assertions in externally observable results or side effects.
 - `Necessity reason tag`: fixed-format tag for retention reasons, using `KEEP:<id>:<reason>`, recorded in the "Implementation and Optimization" section of the delivery report.
@@ -73,7 +78,8 @@ Module resolution order:
   - Dedicated test targets `MUST` follow the `R4` branch-mapping exclusion scope.
 
 - `R6`: SPI, Mock, and reflection
-  - If the class under test can be obtained via SPI, `MUST` instantiate by default with `TypedSPILoader`/`OrderedSPILoader` (or database-specific loaders).
+  - If the class under test can be obtained via SPI, `MUST` instantiate by default with `TypedSPILoader`/`OrderedSPILoader` (or database-specific loaders), and `MUST` keep the resolved instance as a test-class-level field (global variable) by default.
+  - SPI metadata accessor methods `TypedSPI#getType`, `OrderedSPI#getOrder`, and `getTypeClass` `MUST` be treated as no-test-required targets by default, unless the user explicitly requests tests for them.
   - If not instantiated via SPI, `MUST` record the reason before implementation.
   - Test dependencies `SHOULD` use Mockito mocks by default.
   - Reflection access `MUST` use `Plugins.getMemberAccessor()`, and field access only.
@@ -107,11 +113,14 @@ Module resolution order:
     - scope satisfies `R3`;
     - target test command succeeds, and surefire report has `Tests run > 0` (recommended to also satisfy `Tests run - Skipped > 0`);
     - coverage evidence satisfies the target (default class/line/branch 100%, unless explicitly lowered by the user);
+    - each class in `<ResolvedTargetClasses>` has explicit aggregated class-level coverage evidence (CLASS/LINE/BRANCH counters with covered/missed/ratio) over the `Target-class coverage scope`, and all ratios satisfy the declared target;
     - Checkstyle, Spotless, and two `R14` scans all pass;
     - `R8` analysis and compliance evidence are complete.
   - `R10-B` (blocked): under the "production code cannot be changed" constraint, dead code blocks coverage targets, and evidence satisfies `R9`.
   - `R10-C` (blocked): failure occurs outside `R3` scope, and evidence satisfies `R11`.
-  - Decision priority: `R10-INPUT_BLOCKED` > `R10-B` > `R10-C` > `R10-A`.
+  - `R10-D` (in-progress): none of `R10-INPUT_BLOCKED/R10-B/R10-C/R10-A` is satisfied yet.
+  - Decision priority: `R10-INPUT_BLOCKED` > `R10-B` > `R10-C` > `R10-A` > `R10-D`.
+  - `MUST NOT` conclude the task as completed while in `R10-D`; continue implementation and verification loops until reaching a terminal state.
 
 - `R11`: failure handling
   - If failure is within `R3` scope: `MUST` fix within `<ResolvedTestFileSet>` and rerun minimal verification.
@@ -152,7 +161,8 @@ Module resolution order:
 7. Complete test implementation or extension according to `R2-R7`.
 8. Perform necessity trimming and coverage re-verification according to `R13`.
 9. Run verification commands and handle failures by `R11`; execute two `R14` scans.
-10. Decide status by `R10` and output rule-to-evidence mapping.
+10. Decide status by `R10` after verification; if status is `R10-D`, return to Step 5 and continue.
+11. Before final response, run a second `R10` status decision and output `R10=<state>` with rule-to-evidence mapping.
 
 ## Verification and Commands
 
@@ -179,6 +189,53 @@ If the module does not define `jacoco-check@jacoco-check`:
 ./mvnw <GateModuleFlags> -DskipITs -Djacoco.skip=false test jacoco:report
 ```
 
+2.1 Target-class coverage hard gate (default target 100 unless explicitly lowered, aggregated over `Target-class coverage scope`):
+```bash
+bash -lc '
+python3 - <JacocoXmlPath> <TargetRatioPercent> <ResolvedTargetClasses> <<'"'"'PY'"'"'
+import sys
+import xml.etree.ElementTree as ET
+xml_path, target = sys.argv[1], float(sys.argv[2])
+target_classes = [each.strip() for each in sys.argv[3].split(",") if each.strip()]
+if not target_classes:
+    print("[R10] empty target class list")
+    sys.exit(1)
+all_classes = list(ET.parse(xml_path).getroot().iter("class"))
+all_ok = True
+for fqcn in target_classes:
+    class_name = fqcn.replace(".", "/")
+    matched_nodes = [each for each in all_classes if each.get("name") == class_name or each.get("name", "").startswith(class_name + "$")]
+    if not matched_nodes:
+        print(f"[R10] class not found in jacoco.xml: {fqcn}")
+        all_ok = False
+        continue
+    for counter_type in ("CLASS", "LINE", "BRANCH"):
+        covered = 0
+        missed = 0
+        found_counter = False
+        for each in matched_nodes:
+            counter = next((c for c in each.findall("counter") if c.get("type") == counter_type), None)
+            if counter is None:
+                continue
+            found_counter = True
+            covered += int(counter.get("covered"))
+            missed += int(counter.get("missed"))
+        if not found_counter:
+            print(f"[R10] missing {counter_type} counter for {fqcn}")
+            all_ok = False
+            continue
+        total = covered + missed
+        ratio = 100.0 if total == 0 else covered * 100.0 / total
+        print(f"[R10] {fqcn} (+inner) {counter_type} covered={covered} missed={missed} ratio={ratio:.2f}%")
+        if ratio + 1e-9 < target:
+            print(f"[R10] {fqcn} (+inner) {counter_type} ratio {ratio:.2f}% < target {target:.2f}%")
+            all_ok = False
+if not all_ok:
+    sys.exit(1)
+PY
+'
+```
+
 3. Checkstyle:
 ```bash
 ./mvnw <GateModuleFlags> -Pcheck checkstyle:check -DskipTests
@@ -200,43 +257,33 @@ from pathlib import Path
 
 name_pattern = re.compile(r'name\s*=\s*"\{0\}"')
 token = "@ParameterizedTest"
-
-def collect_violations(path):
+violations = []
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
     source = Path(path).read_text(encoding="utf-8")
-    violations = []
     pos = 0
     while True:
         token_pos = source.find(token, pos)
         if token_pos < 0:
-            return violations
+            break
         line = source.count("\n", 0, token_pos) + 1
         cursor = token_pos + len(token)
         while cursor < len(source) and source[cursor].isspace():
             cursor += 1
-        if cursor >= len(source) or source[cursor] != "(":
+        if cursor >= len(source) or "(" != source[cursor]:
             violations.append(f"{path}:{line}")
             pos = token_pos + len(token)
             continue
         depth = 1
         end = cursor + 1
         while end < len(source) and depth:
-            if source[end] == "(":
+            if "(" == source[end]:
                 depth += 1
-            elif source[end] == ")":
+            elif ")" == source[end]:
                 depth -= 1
             end += 1
-        if depth:
-            violations.append(f"{path}:{line}")
-            return violations
-        if not name_pattern.search(source[cursor + 1:end - 1]):
+        if depth or not name_pattern.search(source[cursor + 1:end - 1]):
             violations.append(f"{path}:{line}")
         pos = end
-
-violations = []
-for each in sys.argv[1:]:
-    if each.endswith(".java"):
-        violations.extend(collect_violations(each))
-
 if violations:
     print("[R8] @ParameterizedTest must use name = \"{0}\"")
     for each in violations:
@@ -260,3 +307,11 @@ fi'
 ```bash
 git diff --name-only
 ```
+
+## Final Output Requirements
+
+- `MUST` include a status line `R10=<state>`.
+- `MUST` include aggregated class-level coverage evidence for each class in `<ResolvedTargetClasses>` over the `Target-class coverage scope` (CLASS/LINE/BRANCH counters and ratios).
+- `MUST` include executed commands and exit codes.
+- If `R10` is not `R10-A`, `MUST` explicitly mark the task as not completed and provide blocking reason plus next action.
+- `MUST NOT` use completion wording when `R10` is `R10-D`.
