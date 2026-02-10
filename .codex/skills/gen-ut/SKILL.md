@@ -33,6 +33,7 @@ Missing input handling:
 - `<ResolvedTestFileSet>`: editable file set (space-separated in shell commands), containing only related test files and required test resources.
 - `<ResolvedTestModules>`: comma-separated Maven module list used by scoped verification commands.
 - `<ResolvedTargetClasses>`: one fully-qualified production class or a comma-separated list of target classes from user input.
+- `Target-class coverage scope`: for each target class, aggregate coverage for the target binary class and all binary classes whose names start with `<targetBinaryName>$` (including member/anonymous/local classes).
 - `Related test classes`: existing `TargetClassName + Test` classes resolvable within the same module's test scope.
 - `Assertion differences`: distinguishable assertions in externally observable results or side effects.
 - `Necessity reason tag`: fixed-format tag for retention reasons, using `KEEP:<id>:<reason>`, recorded in the "Implementation and Optimization" section of the delivery report.
@@ -112,7 +113,7 @@ Module resolution order:
     - scope satisfies `R3`;
     - target test command succeeds, and surefire report has `Tests run > 0` (recommended to also satisfy `Tests run - Skipped > 0`);
     - coverage evidence satisfies the target (default class/line/branch 100%, unless explicitly lowered by the user);
-    - each class in `<ResolvedTargetClasses>` has explicit class-level coverage evidence (CLASS/LINE/BRANCH counters with covered/missed/ratio), and all ratios satisfy the declared target;
+    - each class in `<ResolvedTargetClasses>` has explicit aggregated class-level coverage evidence (CLASS/LINE/BRANCH counters with covered/missed/ratio) over the `Target-class coverage scope`, and all ratios satisfy the declared target;
     - Checkstyle, Spotless, and two `R14` scans all pass;
     - `R8` analysis and compliance evidence are complete.
   - `R10-B` (blocked): under the "production code cannot be changed" constraint, dead code blocks coverage targets, and evidence satisfies `R9`.
@@ -188,7 +189,7 @@ If the module does not define `jacoco-check@jacoco-check`:
 ./mvnw <GateModuleFlags> -DskipITs -Djacoco.skip=false test jacoco:report
 ```
 
-2.1 Target-class coverage hard gate (default target 100 unless explicitly lowered):
+2.1 Target-class coverage hard gate (default target 100 unless explicitly lowered, aggregated over `Target-class coverage scope`):
 ```bash
 bash -lc '
 python3 - <JacocoXmlPath> <TargetRatioPercent> <ResolvedTargetClasses> <<'"'"'PY'"'"'
@@ -199,27 +200,35 @@ target_classes = [each.strip() for each in sys.argv[3].split(",") if each.strip(
 if not target_classes:
     print("[R10] empty target class list")
     sys.exit(1)
-class_nodes = {each.get("name"): each for each in ET.parse(xml_path).getroot().iter("class")}
+all_classes = list(ET.parse(xml_path).getroot().iter("class"))
 all_ok = True
 for fqcn in target_classes:
-    node = class_nodes.get(fqcn.replace(".", "/"))
-    if node is None:
+    class_name = fqcn.replace(".", "/")
+    matched_nodes = [each for each in all_classes if each.get("name") == class_name or each.get("name", "").startswith(class_name + "$")]
+    if not matched_nodes:
         print(f"[R10] class not found in jacoco.xml: {fqcn}")
         all_ok = False
         continue
-    counters = {each.get("type"): each for each in node.findall("counter")}
     for counter_type in ("CLASS", "LINE", "BRANCH"):
-        counter = counters.get(counter_type)
-        if counter is None:
+        covered = 0
+        missed = 0
+        found_counter = False
+        for each in matched_nodes:
+            counter = next((c for c in each.findall("counter") if c.get("type") == counter_type), None)
+            if counter is None:
+                continue
+            found_counter = True
+            covered += int(counter.get("covered"))
+            missed += int(counter.get("missed"))
+        if not found_counter:
             print(f"[R10] missing {counter_type} counter for {fqcn}")
             all_ok = False
             continue
-        covered, missed = int(counter.get("covered")), int(counter.get("missed"))
         total = covered + missed
         ratio = 100.0 if total == 0 else covered * 100.0 / total
-        print(f"[R10] {fqcn} {counter_type} covered={covered} missed={missed} ratio={ratio:.2f}%")
+        print(f"[R10] {fqcn} (+inner) {counter_type} covered={covered} missed={missed} ratio={ratio:.2f}%")
         if ratio + 1e-9 < target:
-            print(f"[R10] {fqcn} {counter_type} ratio {ratio:.2f}% < target {target:.2f}%")
+            print(f"[R10] {fqcn} (+inner) {counter_type} ratio {ratio:.2f}% < target {target:.2f}%")
             all_ok = False
 if not all_ok:
     sys.exit(1)
@@ -302,7 +311,7 @@ git diff --name-only
 ## Final Output Requirements
 
 - `MUST` include a status line `R10=<state>`.
-- `MUST` include class-level coverage evidence for each class in `<ResolvedTargetClasses>` (CLASS/LINE/BRANCH counters and ratios).
+- `MUST` include aggregated class-level coverage evidence for each class in `<ResolvedTargetClasses>` over the `Target-class coverage scope` (CLASS/LINE/BRANCH counters and ratios).
 - `MUST` include executed commands and exit codes.
 - If `R10` is not `R10-A`, `MUST` explicitly mark the task as not completed and provide blocking reason plus next action.
 - `MUST NOT` use completion wording when `R10` is `R10-D`.
