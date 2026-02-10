@@ -120,7 +120,7 @@ class PreviewExecutorTest {
         executor.setDatabase(mockCompleteDatabase());
         executor.setConnectionContext(mockConnectionContext(hintValueContext, new ConnectionContext(Collections::emptyList), mock(DatabaseConnectionManager.class)));
         SQLStatement sqlStatement = mockSQLStatement(new CursorSQLStatementAttribute(null));
-        SQLStatementContext sqlStatementContext = mockSQLStatementContext(sqlStatement, Optional.empty());
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(sqlStatement);
         ExecutionContext executionContext = new ExecutionContext(mock(QueryContext.class), Collections.singletonList(createExecutionUnit("foo_ds", "SELECT 1")), mock(RouteContext.class));
         try (
                 MockedConstruction<SQLBindEngine> ignored1 =
@@ -235,10 +235,10 @@ class PreviewExecutorTest {
         return result;
     }
     
-    private SQLStatementContext mockSQLStatementContext(final SQLStatement sqlStatement, final Optional<String> schemaName) {
+    private SQLStatementContext mockSQLStatementContext(final SQLStatement sqlStatement) {
         SQLStatementContext result = mock(SQLStatementContext.class);
         TablesContext tablesContext = mock(TablesContext.class);
-        when(tablesContext.getSchemaName()).thenReturn(schemaName);
+        when(tablesContext.getSchemaName()).thenReturn(Optional.empty());
         when(result.getSqlStatement()).thenReturn(sqlStatement);
         when(result.getTablesContext()).thenReturn(tablesContext);
         return result;

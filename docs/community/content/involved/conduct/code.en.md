@@ -63,6 +63,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Access control for classes and methods should be minimal.
 - Private methods used by a method should immediately follow that method. If there are multiple private methods, they should be written in the same order as they appear in the original method.
 - Method parameters and return values are not allowed to be `null`.
+- Method parameters must not use `Optional`; pass plain values (nullable when needed).
 - Prefer using lombok instead of constructors, getter, setter methods and log variables.
 - Do not leave fully-qualified class names inline; add import statements instead.
 - Consider using `LinkedList` first, only use `ArrayList` when you need to get element values from the collection by index.

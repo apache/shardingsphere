@@ -194,34 +194,27 @@ bash -lc '
 python3 - <JacocoXmlPath> <TargetRatioPercent> <ResolvedTargetClasses> <<'"'"'PY'"'"'
 import sys
 import xml.etree.ElementTree as ET
-
-xml_path = sys.argv[1]
-target = float(sys.argv[2])
+xml_path, target = sys.argv[1], float(sys.argv[2])
 target_classes = [each.strip() for each in sys.argv[3].split(",") if each.strip()]
 if not target_classes:
     print("[R10] empty target class list")
     sys.exit(1)
-root = ET.parse(xml_path).getroot()
+class_nodes = {each.get("name"): each for each in ET.parse(xml_path).getroot().iter("class")}
 all_ok = True
 for fqcn in target_classes:
-    class_name = fqcn.replace(".", "/")
-    node = None
-    for each in root.iter("class"):
-        if each.get("name") == class_name:
-            node = each
-            break
+    node = class_nodes.get(fqcn.replace(".", "/"))
     if node is None:
         print(f"[R10] class not found in jacoco.xml: {fqcn}")
         all_ok = False
         continue
+    counters = {each.get("type"): each for each in node.findall("counter")}
     for counter_type in ("CLASS", "LINE", "BRANCH"):
-        counter = next((c for c in node.findall("counter") if c.get("type") == counter_type), None)
+        counter = counters.get(counter_type)
         if counter is None:
             print(f"[R10] missing {counter_type} counter for {fqcn}")
             all_ok = False
             continue
-        covered = int(counter.get("covered"))
-        missed = int(counter.get("missed"))
+        covered, missed = int(counter.get("covered")), int(counter.get("missed"))
         total = covered + missed
         ratio = 100.0 if total == 0 else covered * 100.0 / total
         print(f"[R10] {fqcn} {counter_type} covered={covered} missed={missed} ratio={ratio:.2f}%")
@@ -255,43 +248,33 @@ from pathlib import Path
 
 name_pattern = re.compile(r'name\s*=\s*"\{0\}"')
 token = "@ParameterizedTest"
-
-def collect_violations(path):
+violations = []
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
     source = Path(path).read_text(encoding="utf-8")
-    violations = []
     pos = 0
     while True:
         token_pos = source.find(token, pos)
         if token_pos < 0:
-            return violations
+            break
         line = source.count("\n", 0, token_pos) + 1
         cursor = token_pos + len(token)
         while cursor < len(source) and source[cursor].isspace():
             cursor += 1
-        if cursor >= len(source) or source[cursor] != "(":
+        if cursor >= len(source) or "(" != source[cursor]:
             violations.append(f"{path}:{line}")
             pos = token_pos + len(token)
             continue
         depth = 1
         end = cursor + 1
         while end < len(source) and depth:
-            if source[end] == "(":
+            if "(" == source[end]:
                 depth += 1
-            elif source[end] == ")":
+            elif ")" == source[end]:
                 depth -= 1
             end += 1
-        if depth:
-            violations.append(f"{path}:{line}")
-            return violations
-        if not name_pattern.search(source[cursor + 1:end - 1]):
+        if depth or not name_pattern.search(source[cursor + 1:end - 1]):
             violations.append(f"{path}:{line}")
         pos = end
-
-violations = []
-for each in sys.argv[1:]:
-    if each.endswith(".java"):
-        violations.extend(collect_violations(each))
-
 if violations:
     print("[R8] @ParameterizedTest must use name = \"{0}\"")
     for each in violations:
