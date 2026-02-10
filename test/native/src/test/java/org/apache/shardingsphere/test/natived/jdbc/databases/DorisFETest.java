@@ -53,8 +53,7 @@ class DorisFETest {
     private final GenericContainer<?> container = new GenericContainer<>("dyrnq/doris:4.0.0")
             .withEnv("RUN_MODE", "standalone")
             .withEnv("SKIP_CHECK_ULIMIT", "true")
-            .withExposedPorts(9030)
-            .withStartupTimeout(Duration.ofMinutes(10L));
+            .withExposedPorts(9030);
     
     private DataSource logicDataSource;
     
