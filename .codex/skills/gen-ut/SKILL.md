@@ -60,13 +60,17 @@ Module resolution order:
 
 - `R4`: branch list and mapping
   - Before coding, `MUST` enumerate branches/paths of target public methods and build branch-to-test mappings.
+  - Branch mapping scope `MUST` exclude Lombok-generated methods without custom logic.
   - By default, one branch/path maps to one test method.
   - Whether to keep additional tests on the same branch is determined by `R13`.
 
 - `R5`: test granularity
   - Each test method `MUST` cover only one scenario.
   - Each test method `MUST` call the target public method at most once; additional assertions are allowed in the same scenario.
-  - Public production methods `MUST` be covered with dedicated test methods.
+  - For parameterized tests, each `Arguments` row `MUST` represent one independent scenario and one branch/path mapping unit for `R4`.
+  - Tests `MUST` exercise behavior through public methods only.
+  - Public production methods with business logic `MUST` be covered with dedicated test methods.
+  - Dedicated test targets `MUST` follow the `R4` branch-mapping exclusion scope.
 
 - `R6`: SPI, Mock, and reflection
   - If the class under test can be obtained via SPI, `MUST` instantiate by default with `TypedSPILoader`/`OrderedSPILoader` (or database-specific loaders).
@@ -88,7 +92,8 @@ Module resolution order:
     - C. assertion skeleton is consistent, or only declared assertion differences exist;
     - D. parameter sample count is at least 3.
   - "Declared assertion differences" means differences explicitly recorded in the delivery report.
-  - High-fit candidates `SHOULD` be refactored directly to parameterized form; if refactoring significantly reduces readability/diagnosability, `MAY` keep and record a `Necessity reason tag`.
+  - High-fit candidates `MUST` be refactored directly to parameterized form.
+  - For high-fit candidates, a "do not recommend refactor" conclusion is allowed only when refactoring causes significant readability/diagnosability regression, and the exception `MUST` include a `Necessity reason tag` with concrete evidence.
   - Parameter construction `SHOULD` prefer `Arguments + @MethodSource`; `MAY` use clearer options such as `@CsvSource`/`@EnumSource`.
   - `MUST` provide either a "recommend refactor" or "do not recommend refactor" conclusion with reasons for each candidate; when no candidates exist, `MUST` output "no candidates + decision reason".
 
