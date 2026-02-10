@@ -18,10 +18,17 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.RALStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.AlterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.RegisterStorageUnitStatement;
 import org.apache.shardingsphere.distsql.statement.type.rdl.resource.unit.type.UnregisterStorageUnitStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.statement.type.rul.RULStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -32,6 +39,7 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -52,6 +60,9 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -63,6 +74,7 @@ import org.mockito.quality.Strictness;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
@@ -85,7 +97,21 @@ class DistSQLProxyBackendHandlerFactoryTest {
     void setUp() {
         ShardingSphereDatabase database = mockDatabase();
         contextManager = mockContextManager(database);
+        ProxyContext.init(contextManager);
         when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("newInstanceSupportedStatements")
+    void assertNewInstanceWithSupportedStatements(final String caseName, final Class<? extends DistSQLStatement> statementClass,
+                                                  final Class<?> expectedHandlerClass) {
+        assertThat(DistSQLProxyBackendHandlerFactory.newInstance(mockDistSQLStatement(statementClass), mockQueryContext(), connectionSession), isA(expectedHandlerClass));
+    }
+    
+    @Test
+    void assertNewInstanceWithUnsupportedStatement() {
+        assertThrows(UnsupportedSQLOperationException.class,
+                () -> DistSQLProxyBackendHandlerFactory.newInstance(mock(DistSQLStatement.class), mockQueryContext(), connectionSession));
     }
     
     private ShardingSphereDatabase mockDatabase() {
@@ -240,6 +266,12 @@ class DistSQLProxyBackendHandlerFactoryTest {
         return mock(QueryContext.class, RETURNS_DEEP_STUBS);
     }
     
+    private DistSQLStatement mockDistSQLStatement(final Class<? extends DistSQLStatement> statementClass) {
+        DistSQLStatement result = mock(statementClass, RETURNS_DEEP_STUBS);
+        when(result.getAttributes()).thenReturn(new SQLStatementAttributes());
+        return result;
+    }
+    
     private ShardingSphereDatabase mockDatabaseWithRule() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("foo_db");
@@ -258,5 +290,14 @@ class DistSQLProxyBackendHandlerFactoryTest {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         result.getShadowAlgorithms().put("default_shadow_algorithm", mock(AlgorithmConfiguration.class));
         return result;
+    }
+    
+    private static Stream<Arguments> newInstanceSupportedStatements() {
+        return Stream.of(
+                Arguments.of("RQL statement returns query handler", RQLStatement.class, DistSQLQueryProxyBackendHandler.class),
+                Arguments.of("RUL statement returns query handler", RULStatement.class, DistSQLQueryProxyBackendHandler.class),
+                Arguments.of("RDL statement returns update handler", RDLStatement.class, DistSQLUpdateProxyBackendHandler.class),
+                Arguments.of("Queryable RAL statement returns query handler", QueryableRALStatement.class, DistSQLQueryProxyBackendHandler.class),
+                Arguments.of("RAL statement returns update handler", RALStatement.class, DistSQLUpdateProxyBackendHandler.class));
     }
 }

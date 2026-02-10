@@ -2,231 +2,261 @@
 name: gen-ut
 description: >-
   Generate standard unit tests for one or more target classes in Apache ShardingSphere;
-  use unified rules to make target classes reach 100% class/line/branch coverage and pass quality gates.
+  by default, target 100% class/line/branch coverage and pass quality gates;
+  perform explicit merge analysis, suitability filtering, and refactor optimization for parameterized tests.
 ---
 
 # Generate Unit Tests
 
 ## Input Conventions
 
-Required input:
-- Target class list: one or more classes, preferably fully qualified class names.
+Required inputs:
+- Target class list (fully-qualified class names are recommended).
 
-Optional input:
-- Module name (used to scope Maven command execution).
-- Test class list (used for targeted test execution).
+Optional inputs:
+- Module name (limits Maven command scope).
+- Test class list (for targeted execution only; does not limit in-place updates for related test classes).
 
-Missing-input handling:
-- If target classes are missing, request the class list before any coding work.
-- If test classes are missing, first discover existing related test classes by the `TargetClassName + Test` convention.
-- If related test classes do not exist, create `<TargetClassName>Test` in the resolved module test source set and continue.
-- If `<ResolvedTestModules>` cannot be inferred from related test files or target class source files, mark as blocked and require the user to explicitly provide module scope.
+Missing input handling:
+- Note: this section only describes entry handling; final decisions follow `R7`/`R10`.
+- Missing target classes: enter `R10-INPUT_BLOCKED`.
+- Missing test classes: auto-discover with the `TargetClassName + Test` convention.
+- No related test classes: create `<TargetClassName>Test` in the resolved module test source set.
+- Cannot resolve `<ResolvedTestModules>`: enter `R10-INPUT_BLOCKED` and request additional module scope.
 
-Input-blocking status mapping:
-- Input blocked (awaiting supplemental input): target classes are missing, or `<ResolvedTestModules>` cannot be determined and the user has not provided module scope.
-- After input is complete and the task enters execution, determine completion/blocking by `R9`, `R10`, and `R3`.
-- Execution-phase status mapping: dead-code blocking follows `R9-B`; out-of-scope failures follow `R9-C`.
+## Terms
 
-Test-class placeholder conventions:
-- `<ResolvedTestClass>` can be one fully qualified test class, or a comma-separated list.
-- `<ResolvedTestFileSet>` is the concrete editable file list (space-separated in shell commands), including:
-  - test source files resolved from `<ResolvedTestClass>`;
-  - new test files and test resources strictly required for these target classes.
-  - Must be resolved to concrete paths in workflow step 3.
-- `<ResolvedTestModules>` is a comma-separated Maven module list for scoped verification commands.
-  - Resolution order:
-    1. If explicit module input is provided, use it first;
-    2. Otherwise infer from related test files (`<ResolvedTestFileSet>`) via the nearest parent Maven module (`pom.xml`);
-    3. Otherwise infer from target class source files via the nearest parent Maven module (`pom.xml`).
+- `<ResolvedTestClass>`: one fully-qualified test class or a comma-separated list of test classes.
+- `<ResolvedTestFileSet>`: editable file set (space-separated in shell commands), containing only related test files and required test resources.
+- `<ResolvedTestModules>`: comma-separated Maven module list used by scoped verification commands.
+- `Related test classes`: existing `TargetClassName + Test` classes resolvable within the same module's test scope.
+- `Assertion differences`: distinguishable assertions in externally observable results or side effects.
+- `Necessity reason tag`: fixed-format tag for retention reasons, using `KEEP:<id>:<reason>`, recorded in the "Implementation and Optimization" section of the delivery report.
 
-Terminology:
-- `Related test class`: existing `TargetClassName + Test` classes resolved within the same module test scope.
-- `Distinct observable assertion`: assertions for different public outcomes or side effects.
+Module resolution order:
+1. If the user explicitly provides modules, use them first.
+2. Otherwise, resolve by searching upward for the nearest parent `pom.xml` from `<ResolvedTestFileSet>` paths.
+3. Otherwise, resolve by searching upward for the nearest parent `pom.xml` from target class source paths.
 
-## Mandatory Constraints (Single Source of Rules)
+## Mandatory Constraints
 
-- Definition-source principle: rule definitions exist only in the "Mandatory Constraints" section; other sections only reference rule IDs.
-- Layered index:
-  - `L1 (Base Constraints Layer)`: `R1`, `R2`, `R3`
-  - `L2 (Test Design and Implementation Layer)`: `R4`, `R5`, `R6`, `R7`, `R8`
-  - `L3 (Status Determination and Blocking Handling Layer)`: `R9`, `R10`
-  - `L4 (Hard Quality Gate Layer)`: `R11`, `R12`
-- `R1 (L1-Base Constraints Layer)`: Follow `CODE_OF_CONDUCT.md`.
-- `R2 (L1-Base Constraints Layer)`: Use JUnit `@Test`; `@RepeatedTest` is forbidden.
-- `R3 (L1-Base Constraints Layer)`: Change scope is strictly limited to the test scope resolved from input target classes.
-  - Editable files are only `<ResolvedTestFileSet>`.
-  - Modifying other test files to fix unrelated build/check/gate failures is forbidden.
-  - Scope can be expanded only when explicitly approved by the user in the current turn.
-- `R4 (L2-Test Design and Implementation Layer)`: Branch-path rule: before coding, enumerate all branch paths of target public methods; by default one branch/path maps to only one test method; necessity of additional tests on the same branch is judged by `R11`.
-- `R5 (L2-Test Design and Implementation Layer)`: Each test covers one scenario, and invokes the target public method at most once; additional assertions are allowed in the same scenario.
-- `R6 (L2-Test Design and Implementation Layer)`: When the class under test can be obtained via SPI, default to `TypedSPILoader` and `OrderedSPILoader`.
-  - "Obtainable via SPI": the class implements `TypedSPI`/`DatabaseTypedSPI`, or its implementation can be discovered by an SPI loader.
-  - If SPI is not used for instantiation, the reason must be recorded in the plan before implementation.
-- `R7 (L2-Test Design and Implementation Layer)`: If the target class already has related tests, update in place: first fill missing coverage, then delete or merge coverage-equivalent tests by `R11`; create new tests only when no related tests exist.
-- `R8 (L2-Test Design and Implementation Layer)`: If dead code exists, report class name, file path, exact line number, and unreachable reason.
-- `R9 (L3-Status Determination and Blocking Handling Layer)`: Completion is determined by one of the following:
-  - `R9-A`: target class coverage (class/line/branch) is 100%, target test classes run successfully in Surefire, and required quality gates (`R12` hard gate, Checkstyle) pass, with commands and exit codes attached.
-  - `R9-B`: if dead code blocks 100% branch coverage under the "do not modify production code" rule, report by `R8` and mark blocked.
-  - `R9-C`: if failure occurs outside `R3` scope, report blocking evidence by `R10` and mark blocked.
-  - Priority: evaluate `R9-B` first, then `R9-C`; only when neither applies can `R9-A` be marked complete.
-- `R10 (L3-Status Determination and Blocking Handling Layer)`: Blocking handling: first remove blocking within the smallest test scope and re-verify.
-  - If blocking is outside `R3` scope and cannot be safely solved in the current task, report exact blocking file/line/command and request user decision.
-- `R11 (L4-Hard Quality Gate Layer)`: Hard gate for test necessity:
-  - Decision order is fixed as "objective pruning -> exception-retention review"; reversing the order and causing repeated rework is forbidden.
-  - Objective-pruning phase: first identify and batch-delete coverage-equivalent tests based on `R4` branch mapping and coverage results, then uniformly re-verify coverage.
-  - Objective-pruning phase: then delete redundant mocks/stubs/assertions and single-use local variables that do not affect branch selection/collaborator behavior/observable assertion results.
-  - Each retained item must have a one-line necessity-reason label; retained items without labels are treated as redundant.
-  - Meaningless test code is not allowed; every line must have direct necessity for the scenario.
-  - If deleting a line leaves the above three dimensions unchanged, that line is redundant (including redundant mocks/stubs/assertions) and must be deleted.
-  - Unless a scenario explicitly requires stubbing, use Mockito default return values.
-  - Single-use local variables should be inlined at the call site; retain only when the variable is used for extra stubbing/verification across two or more statements or for shared assertions.
-  - Coverage-equivalent duplicate test methods are forbidden.
-  - Each test method must add unique value: cover an uncovered branch/path, or add an uncovered distinct observable assertion.
-  - Coverage-equivalent duplicate: same target public method, same branch/path, and no assertion difference; changing only literals/mock names/fixture values with unchanged assertion results is also duplicate.
-  - If deleting a test method does not change line/branch coverage of the target class, the method must be deleted.
-  - For factory/routing fallback scenarios, by default keep only one representative method for each branch result; add extra methods only when there is assertion difference or the user explicitly requests extra regression protection.
-- `R12 (L4-Hard Quality Gate Layer)`: Boolean assertions and hard gate:
-  - Boolean checks must use `assertTrue` / `assertFalse`; the following patterns are forbidden:
-  - `assertThat(<boolean expression>, is(true))`
-  - `assertThat(<boolean expression>, is(false))`
-  - `assertEquals(true, ...)`
-  - `assertEquals(false, ...)`
-  - The single source of regex is "Validation and Commands / Item 4".
-  - The hard-gate scan must run twice: after test implementation (early fail-fast gate) and before final delivery (final release gate).
-  - Any hit is considered "incomplete" until all issues are fixed and a clean rescan is obtained.
+- Norm levels: `MUST` (required), `SHOULD` (preferred), `MAY` (optional).
+- Definition source principle: mandatory constraints are defined only in this `R1-R14` section; other sections only provide term/workflow/command descriptions and must not add, override, or relax `R1-R14`.
 
-## Execution Boundaries
+- `R1`: `MUST` comply with `AGENTS.md` and `CODE_OF_CONDUCT.md`; rule interpretation should prioritize corresponding clauses and line-number evidence in `CODE_OF_CONDUCT.md`.
 
-- Only handle unit test tasks.
-- Do not modify production code.
-- Only `src/test/java` and `src/test/resources` may be modified.
-- Do not edit generated directories (for example, `target/`).
-- Do not use destructive git operations (for example, `git reset --hard`, `git checkout --`).
-- If module name is not provided, infer `<ResolvedTestModules>` and keep commands module-scoped; repository-scoped commands are forbidden unless approved by the user.
+- `R2`: test types and naming
+  - Non-parameterized scenarios `MUST` use JUnit `@Test`.
+  - Data-driven scenarios `MUST` use JUnit `@ParameterizedTest`, and display names `MUST` use `@ParameterizedTest(name = "{0}")`.
+  - `MUST NOT` use `@RepeatedTest`.
+  - Test method naming `MUST` follow `CODE_OF_CONDUCT.md`: use the `assert` prefix; when a single test uniquely covers a production method, use `assert<MethodName>`.
+
+- `R3`: change and execution scope
+  - Edit scope `MUST` be limited to `<ResolvedTestFileSet>`.
+  - Path scope `MUST` be limited to `src/test/java` and `src/test/resources`.
+  - `MUST NOT` modify production code or generated directories (such as `target/`).
+  - `MUST NOT` modify other test files to fix failures outside scope; if scope expansion is needed, `MUST` be explicitly approved by the user in the current turn.
+  - `MUST NOT` use destructive git operations (for example, `git reset --hard`, `git checkout --`).
+
+- `R4`: branch list and mapping
+  - Before coding, `MUST` enumerate branches/paths of target public methods and build branch-to-test mappings.
+  - Branch mapping scope `MUST` exclude Lombok-generated methods without custom logic.
+  - By default, one branch/path maps to one test method.
+  - Whether to keep additional tests on the same branch is determined by `R13`.
+
+- `R5`: test granularity
+  - Each test method `MUST` cover only one scenario.
+  - Each test method `MUST` call the target public method at most once; additional assertions are allowed in the same scenario.
+  - For parameterized tests, each `Arguments` row `MUST` represent one independent scenario and one branch/path mapping unit for `R4`.
+  - Tests `MUST` exercise behavior through public methods only.
+  - Public production methods with business logic `MUST` be covered with dedicated test methods.
+  - Dedicated test targets `MUST` follow the `R4` branch-mapping exclusion scope.
+
+- `R6`: SPI, Mock, and reflection
+  - If the class under test can be obtained via SPI, `MUST` instantiate by default with `TypedSPILoader`/`OrderedSPILoader` (or database-specific loaders).
+  - If not instantiated via SPI, `MUST` record the reason before implementation.
+  - Test dependencies `SHOULD` use Mockito mocks by default.
+  - Reflection access `MUST` use `Plugins.getMemberAccessor()`, and field access only.
+
+- `R7`: related test class strategy
+  - If related test classes already exist, `MUST` update in place and fill missing coverage first.
+  - If no related test class exists, `MUST` create `<TargetClassName>Test`.
+  - If the user explicitly provides a test class list, it is only used as execution filtering input and `MUST NOT` replace the "in-place update of related test classes" strategy.
+  - Deletion/merge of coverage-equivalent tests is determined by `R13`.
+
+- `R8`: parameterized optimization (enabled by default)
+  - `MUST` report the mergeable method set and merge candidate count.
+  - Candidates meeting all conditions below are considered "high-fit for parameterization":
+    - A. target public method and branch skeleton are consistent;
+    - B. scenario differences mainly come from input data;
+    - C. assertion skeleton is consistent, or only declared assertion differences exist;
+    - D. parameter sample count is at least 3.
+  - "Declared assertion differences" means differences explicitly recorded in the delivery report.
+  - High-fit candidates `MUST` be refactored directly to parameterized form.
+  - For high-fit candidates, a "do not recommend refactor" conclusion is allowed only when refactoring causes significant readability/diagnosability regression, and the exception `MUST` include a `Necessity reason tag` with concrete evidence.
+  - Parameter construction `SHOULD` prefer `Arguments + @MethodSource`; `MAY` use clearer options such as `@CsvSource`/`@EnumSource`.
+  - `MUST` provide either a "recommend refactor" or "do not recommend refactor" conclusion with reasons for each candidate; when no candidates exist, `MUST` output "no candidates + decision reason".
+
+- `R9`: dead code and coverage blockers
+  - When dead code blocks progress, `MUST` report class name, file path, exact line number, and unreachable reason.
+  - Within this skill scope, `MUST NOT` bypass dead code by modifying production code.
+
+- `R10`: state machine and completion criteria
+  - `R10-INPUT_BLOCKED`: missing target classes, or unable to determine `<ResolvedTestModules>`.
+  - `R10-A` (done): all of the following must be satisfied:
+    - scope satisfies `R3`;
+    - target test command succeeds, and surefire report has `Tests run > 0` (recommended to also satisfy `Tests run - Skipped > 0`);
+    - coverage evidence satisfies the target (default class/line/branch 100%, unless explicitly lowered by the user);
+    - Checkstyle, Spotless, and two `R14` scans all pass;
+    - `R8` analysis and compliance evidence are complete.
+  - `R10-B` (blocked): under the "production code cannot be changed" constraint, dead code blocks coverage targets, and evidence satisfies `R9`.
+  - `R10-C` (blocked): failure occurs outside `R3` scope, and evidence satisfies `R11`.
+  - Decision priority: `R10-INPUT_BLOCKED` > `R10-B` > `R10-C` > `R10-A`.
+
+- `R11`: failure handling
+  - If failure is within `R3` scope: `MUST` fix within `<ResolvedTestFileSet>` and rerun minimal verification.
+  - If failure is outside `R3` scope: `MUST` record blocking evidence (failed command, exit code, key error lines, blocking file/line) and request user decision.
+  - Minimal verification is defined as "target test command + one `R14` hard-gate scan command".
+  - Minimal verification is only for in-scope repair and `MUST NOT` replace final gating of `R10-A`.
+  - Retryable errors (temporary plugin resolution failure, mirror timeout, transient network jitter) `MAY` retry up to 2 times.
+
+- `R12`: 100% coverage optimization mode
+  - If target class coverage evidence is already 100%, `MUST` skip coverage completion and execute only `R8` parameterized optimization.
+  - Coverage judgment `MUST` be reproducible (command + report path).
+  - In this mode, `MAY` omit `R4` branch mapping output, but `MUST` mark `R4=N/A (triggered by R12)` in rule mapping and attach coverage evidence.
+
+- `R13`: test necessity trimming
+  - Trimming order `MUST` be fixed as "objective trimming -> exception retention review".
+  - In objective trimming stage, `MUST` first remove coverage-equivalent tests and re-verify coverage uniformly, then remove redundant mock/stub/assertion and single-use local variables that do not affect branch selection/collaborator interaction behavior (call count, parameters)/observable assertions; if retention significantly improves readability, `MAY` keep and mark `Necessity reason tag`.
+  - Each retained item `MUST` carry a `KEEP:<id>:<reason>` tag and be recorded in the delivery report; items without tags are treated as redundant.
+  - Each test method `MUST` provide unique value: cover a new branch/path, or add assertion differences.
+  - If deleting a test method does not change line/branch coverage and has no assertion differences, `MUST` delete it.
+  - Unless scenario requires otherwise, `SHOULD` use Mockito default return values instead of extra stubs.
+
+- `R14`: boolean assertion hard gate
+  - Boolean literal/boolean constant assertions `MUST` use `assertTrue`/`assertFalse`.
+  - `MUST NOT` use:
+    - `assertThat(<boolean expression>, is(true|false|Boolean.TRUE|Boolean.FALSE))`
+    - `assertEquals(true|false|Boolean.TRUE|Boolean.FALSE, ...)`
+    - `assertEquals(..., true|false|Boolean.TRUE|Boolean.FALSE)`
+  - `MUST` run one hard-gate scan after implementation and another before delivery; any hit means incomplete.
 
 ## Workflow
 
-1. Re-check `AGENTS.md` and `CODE_OF_CONDUCT.md`.
-2. Locate target classes and related test classes.
-3. Resolve `<ResolvedTestClass>`, `<ResolvedTestFileSet>`, and `<ResolvedTestModules>`, and record module-resolution evidence (`pom.xml` paths).
-4. Output branch list and test mapping (`R4`); if extra tests exist on the same branch, record their necessity basis (`R11`).
-5. Execute dead-code analysis by `R8` and record the result.
-6. Implement or extend tests by implementation rules (`R2`, `R4`, `R5`, `R6`, `R7`, `R3`, `R11`, `R12`, execution boundaries).
-7. Execute necessity self-check by `R11` (objective pruning -> exception-retention review), removing redundant mocks/stubs/assertions, single-use local variables, and coverage-equivalent test methods.
-8. Execute the first hard-gate scan by `R12` (early fail-fast) and fix all hits.
-9. Run verification commands in layered order (target tests -> target module gate -> fallback gate when necessary) and iterate.
-10. Execute the second hard-gate scan by `R12` (final release gate) and ensure clean results.
-11. Determine final status by `R9`, then deliver with the rule-evidence mapping.
+1. Read `AGENTS.md` and `CODE_OF_CONDUCT.md`, and record hard constraints for this round (`R1`).
+2. Parse target classes, related test classes, and input-blocked state (`R10-INPUT_BLOCKED`).
+3. Resolve `<ResolvedTestClass>`, `<ResolvedTestFileSet>`, `<ResolvedTestModules>`, and record `pom.xml` evidence (`R3`).
+4. Decide whether `R12` is triggered; if not, output `R4` branch mapping.
+5. Execute `R8` parameterized optimization analysis and apply required refactoring.
+6. Execute `R9` dead-code checks and record evidence.
+7. Complete test implementation or extension according to `R2-R7`.
+8. Perform necessity trimming and coverage re-verification according to `R13`.
+9. Run verification commands and handle failures by `R11`; execute two `R14` scans.
+10. Decide status by `R10` and output rule-to-evidence mapping.
 
-## Validation and Commands
-
-Execution decision tree (rule references only):
-0. Input blocking (awaiting supplemental input) first: process by "Input-blocking status mapping" and do not enter `R9` determination.
-1. Completion determination follows `R9` only.
-2. Failure within `R3` scope: fix within `<ResolvedTestFileSet>` by `R10` and rerun.
-3. Failure outside `R3` scope: record evidence by `R10` and mark blocked by `R9-C`.
-4. `<FallbackGateModuleFlags>` is only for troubleshooting, does not expand edit scope (`R3`), and does not change completion determination (`R9-A`).
+## Verification and Commands
 
 Flag presets:
-- When module input is provided:
+- Module input provided:
   - `<TestModuleFlags>` = `-pl <module>`
   - `<GateModuleFlags>` = `-pl <module>`
-- When module input is not provided:
+- Module input not provided:
   - `<TestModuleFlags>` = `-pl <ResolvedTestModules>`
   - `<GateModuleFlags>` = `-pl <ResolvedTestModules>`
-  - `<FallbackGateModuleFlags>` = `<GateModuleFlags> -am` (used only when gate fails because of cross-module dependency gaps).
+  - `<FallbackGateModuleFlags>` = `<GateModuleFlags> -am` (for troubleshooting missing cross-module dependencies only; does not change `R3` and `R10`).
 
-1. Targeted unit test:
+1. Target tests:
 ```bash
-./mvnw <TestModuleFlags> -DskipITs -Dspotless.skip=true -Dtest=<ResolvedTestClass> -Dsurefire.failIfNoSpecifiedTests=false test
+./mvnw <TestModuleFlags> -DskipITs -Dspotless.skip=true -Dtest=<ResolvedTestClass> -DfailIfNoTests=true -Dsurefire.failIfNoSpecifiedTests=false test
 ```
 
 2. Coverage:
 ```bash
 ./mvnw <GateModuleFlags> -DskipITs -Djacoco.skip=false test jacoco:report jacoco:check@jacoco-check -Pcoverage-check
 ```
-If `jacoco-check@jacoco-check` Maven execution is not defined in the target module's `pom.xml`, use:
+If the module does not define `jacoco-check@jacoco-check`:
 ```bash
 ./mvnw <GateModuleFlags> -DskipITs -Djacoco.skip=false test jacoco:report
 ```
-Then record manual coverage evidence with the following template (must include the generation command and an accessible report path):
-- `Target classes`: `<ClassA>,<ClassB>,...`
-- `Coverage`: `class=<...>, line=<...>, branch=<...>`
-- `Report generation command`: `<report generation command>`
-- `Report path`: `<report path>`
 
 3. Checkstyle:
 ```bash
 ./mvnw <GateModuleFlags> -Pcheck checkstyle:check -DskipTests
 ```
 
-4. `R12` hard-gate scan (must be clean; execute in workflow step 8 and step 10):
+4. Spotless:
+```bash
+./mvnw <GateModuleFlags> -Pcheck spotless:check -DskipTests
+```
+If missing cross-module dependencies occur, rerun the gate command above once with `<FallbackGateModuleFlags>` and record the trigger reason and result.
+
+5. `R8` parameterized compliance scan (annotation block parsing):
 ```bash
 bash -lc '
-BOOLEAN_ASSERTION_BAN_REGEX="assertThat\\s*\\(.*is\\s*\\(\\s*(true|false)\\s*\\)\\s*\\)|assertEquals\\s*\\(\\s*(true|false)\\s*,"
-if rg -n "$BOOLEAN_ASSERTION_BAN_REGEX" <ResolvedTestFileSet>; then
-  echo "[R12] forbidden boolean assertion found"
+python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
+import re
+import sys
+from pathlib import Path
+
+name_pattern = re.compile(r'name\s*=\s*"\{0\}"')
+token = "@ParameterizedTest"
+
+def collect_violations(path):
+    source = Path(path).read_text(encoding="utf-8")
+    violations = []
+    pos = 0
+    while True:
+        token_pos = source.find(token, pos)
+        if token_pos < 0:
+            return violations
+        line = source.count("\n", 0, token_pos) + 1
+        cursor = token_pos + len(token)
+        while cursor < len(source) and source[cursor].isspace():
+            cursor += 1
+        if cursor >= len(source) or source[cursor] != "(":
+            violations.append(f"{path}:{line}")
+            pos = token_pos + len(token)
+            continue
+        depth = 1
+        end = cursor + 1
+        while end < len(source) and depth:
+            if source[end] == "(":
+                depth += 1
+            elif source[end] == ")":
+                depth -= 1
+            end += 1
+        if depth:
+            violations.append(f"{path}:{line}")
+            return violations
+        if not name_pattern.search(source[cursor + 1:end - 1]):
+            violations.append(f"{path}:{line}")
+        pos = end
+
+violations = []
+for each in sys.argv[1:]:
+    if each.endswith(".java"):
+        violations.extend(collect_violations(each))
+
+if violations:
+    print("[R8] @ParameterizedTest must use name = \"{0}\"")
+    for each in violations:
+        print(each)
+    sys.exit(1)
+PY
+'
+```
+
+6. `R14` hard-gate scan:
+```bash
+bash -lc '
+BOOLEAN_ASSERTION_BAN_REGEX="assertThat\s*\((?s:.*?)is\s*\(\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*\)\s*\)|assertEquals\s*\(\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*,"
+BOOLEAN_ASSERTION_BAN_REGEX+="|assertEquals\s*\((?s:.*?),\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*\)"
+if rg -n -U --pcre2 "$BOOLEAN_ASSERTION_BAN_REGEX" <ResolvedTestFileSet>; then
+  echo "[R14] forbidden boolean assertion found"
   exit 1
 fi'
 ```
-
-Command-execution rules:
-- Record every command and its exit code.
-- Retry only once for retryable errors (for example, temporary plugin-resolution failure, repository mirror timeout, transient network jitter); handle non-retryable errors directly by `R10`.
-- If a gate command fails because of cross-module dependency gaps, remediate once with `<FallbackGateModuleFlags>` and record the fallback reason.
-- If a command fails, record the failed command and key error lines by the execution decision tree (`R10`, `R3`, `R9-C`).
-
-Blocking report template:
-- `Failed command`: `<failed command>`
-- `Exit code`: `<code>`
-- `Key error line`: `<key error line>`
-- `Within R3 scope`: `<yes/no>`
-- `Status`: `<R9-B or R9-C>`
-
-5. Minimal pre-delivery machine-check list (recommended order):
+7. Scope validation:
 ```bash
 git diff --name-only
 ```
-- Check against `<ResolvedTestFileSet>` item by item to confirm modified files do not exceed `R3` scope.
-```bash
-./mvnw <TestModuleFlags> -DskipITs -Dspotless.skip=true -Dtest=<ResolvedTestClass> -Dsurefire.failIfNoSpecifiedTests=false test
-```
-- Execute item 4 `R12` hard-gate scan command and record the result (final release gate).
-
-## Output Structure
-
-Use the following order:
-
-1. Goal and constraints (mapped to `R1-R12`)
-2. Status (determined by `R9`) + one-line reason
-3. Plan and implementation (including module-resolution evidence, branch-mapping results, and any `R11` exception reasons and labels)
-4. Dead code and coverage results (at minimum include: target-class coverage values, dead-code location, and reason)
-5. Verification and quality-gate evidence (at minimum include: key commands, exit codes, and `R12` scan results)
-6. Rule-evidence mapping (`R#->evidence`, at least covering `R4`, `R7`, `R8`, `R9`, `R10`, `R3`, `R11`, `R12`)
-7. Risks and next actions
-
-Minimal template for rule-evidence mapping:
-- `R4`: branch list and branch-test mapping.
-- `R7`: evidence of in-place update or creation decision for related test classes.
-- `R8`: dead-code location (class, path, line number, reason).
-- `R9`: final status and determination reason.
-- `R10/R3`: blocking-scope determination and blocking-report template.
-- `R11`: necessity self-check result (deleted items, retained-reason labels, coverage re-verification result).
-- `R12`: boolean-assertion policy and results of two hard-gate scans.
-
-## Quality Self-Check
-
-- Rule definitions may appear only in the "Mandatory Constraints" section; other sections may only reference rule IDs.
-- Final status must satisfy `R9`; command-based rules provide command and exit-code evidence, and non-command rules provide mapping/code evidence.
-- The `R12` command is mandatory evidence; missing `R12` records or a non-clean scan is considered incomplete.
-- Blocking-state evidence must follow `R10`.
-- Output must include "Rule-evidence mapping" and must be consistent with the final status in `R9`.
-
-## Maintenance Rules
-
-- After modifying any `R` index, run `rg -n "R[0-9]+" .codex/skills/gen-ut/SKILL.md` to ensure no dangling references.
-- After modifying skill rules, verify semantic consistency between `SKILL.md` and `agents/openai.yaml` trigger semantics.
-- Fixed final review order:
-  1. Index consistency check
-  2. Repeated-phrase scan
-  3. Semantic consistency check between `SKILL.md` and `agents/openai.yaml`

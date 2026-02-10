@@ -17,9 +17,8 @@
 
 interface:
   display_name: "Generate Unit Tests"
-  short_description: "Generate standard ShardingSphere unit tests with strict quality gates, reporting R9-A completion or R9-B/R9-C blocked status with evidence"
+  short_description: "Generate or optimize unit tests for ShardingSphere"
   default_prompt: >-
-    Use $gen-ut to generate standard unit tests for one or more ShardingSphere classes.
-    Provide the class set (optional module name and test class) and execute according to SKILL.md rules.
-    Determine final status strictly by SKILL.md R9:
-    report completion only as R9-A (target tests pass and 100% class/line/branch coverage is verified for target classes) or blocked states R9-B/R9-C with required evidence.
+    Use $gen-ut to generate or optimize unit tests for one or more ShardingSphere classes.
+    Provide target classes (optional module name and test class names).
+    Run parameterized-test analysis and optimization by default.
