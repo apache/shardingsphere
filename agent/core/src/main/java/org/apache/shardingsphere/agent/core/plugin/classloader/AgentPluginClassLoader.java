@@ -36,7 +36,7 @@ import java.util.zip.ZipEntry;
 /**
  * Agent plugin class loader.
  */
-public final class AgentPluginClassLoader extends ClassLoader {
+public final class AgentPluginClassLoader extends ClassLoader implements AutoCloseable {
     
     static {
         registerAsParallelCapable();
@@ -47,6 +47,16 @@ public final class AgentPluginClassLoader extends ClassLoader {
     public AgentPluginClassLoader(final ClassLoader appClassLoader, final Collection<JarFile> extraJars) {
         super(appClassLoader);
         this.extraJars = extraJars;
+    }
+    
+    @Override
+    public void close() {
+        for (JarFile each : extraJars) {
+            try {
+                each.close();
+            } catch (final IOException ignored) {
+            }
+        }
     }
     
     @Override
