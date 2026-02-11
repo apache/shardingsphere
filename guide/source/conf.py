@@ -105,6 +105,15 @@ latex_elements = {
 {\filright\normalsize\bfseries\color{MidnightBlue}}
 {\theparagraph}{1em}{}
 
+\titleformat{\subparagraph}
+{\filright\normalsize\bfseries\color{MidnightBlue}}
+{\thesubparagraph}{1em}{}
+
+\titlespacing*{\subparagraph}
+  {0pt}  
+  {3.25ex plus 1ex minus .2ex}
+  {1em}
+
 \renewcommand{\thetable}{\thesection.\arabic{table}}
 \renewcommand{\thefigure}{\thesection.\arabic{figure}}
 
