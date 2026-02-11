@@ -1,18 +1,5 @@
 ## Release 5.5.4-SNAPSHOT
 
-### Enhancements
-
-1. Enhance MySQLTextResultSetRowPacket and MySQLDateBinaryProtocolValue to support LocalDateTime and LocalTime when value contains scale - [#37881](https://github.com/apache/shardingsphere/pull/37881)
-
-### Bug Fixes
-
-1. SQL Parser: Support Oracle SQL parser correctly extract REGEXP_SUBSTR parameters - [#37924](https://github.com/apache/shardingsphere/pull/37924)
-2. SQL Parser: Fix escape '\' in SQL causing DialectSQLParsingException - [#37943](https://github.com/apache/shardingsphere/pull/37943)
-3. SQL Parser: Fix error parsing \l command SQL statement when front-end protocol is og - [#37953](https://github.com/apache/shardingsphere/pull/37953)
-4. SQL Parser:Fix SQLParsingException when using reserved word `order` in ORDER BY clause - [#37958](https://github.com/apache/shardingsphere/pull/37958)
-5. SQL Parser:Support '2'::int statement in PostgreSQL and openGauss - [#37962](https://github.com/apache/shardingsphere/pull/37962)
-6. SQL Parser:Support range type constructor functions in PostgreSQL without quotes - [#37994](https://github.com/apache/shardingsphere/pull/37994)
-
 ## Release 5.5.3
 
 ### CVE
@@ -58,8 +45,15 @@
 1. SQL Parser: Support to parse more SQL statements for Hive - [#36694](https://github.com/apache/shardingsphere/pull/36694) [#37074](https://github.com/apache/shardingsphere/pull/37074)
 1. SQL Parser: Support to parse CREATE MATERIALIZED VIEW for Doris - [#31499](https://github.com/apache/shardingsphere/pull/31499)
 1. SQL Parser: Support to parse CREATE FUNCTION with $$ symbol for PostgreSQL and openGauss - [#35947](https://github.com/apache/shardingsphere/pull/35947)
+1. SQL Parser: Support Oracle SQL parser correctly extract REGEXP_SUBSTR parameters - [#37924](https://github.com/apache/shardingsphere/pull/37924)
+1. SQL Parser: Fix escape '\' in SQL causing DialectSQLParsingException - [#37943](https://github.com/apache/shardingsphere/pull/37943)
+1. SQL Parser: Fix error parsing \l command SQL statement when front-end protocol is og - [#37953](https://github.com/apache/shardingsphere/pull/37953)
+1. SQL Parser:Fix SQLParsingException when using reserved word `order` in ORDER BY clause - [#37958](https://github.com/apache/shardingsphere/pull/37958)
+1. SQL Parser:Support '2'::int statement in PostgreSQL and openGauss - [#37962](https://github.com/apache/shardingsphere/pull/37962)
+1. SQL Parser:Support range type constructor functions in PostgreSQL without quotes - [#37994](https://github.com/apache/shardingsphere/pull/37994)
 1. SQL Binder: Support to bind more SQL statements - [#36697](https://github.com/apache/shardingsphere/pull/36697)
 1. SQL Binder: Add ALTER TABLE metadata check - [#35877](https://github.com/apache/shardingsphere/pull/35877)
+1. SQL Binder: Support Grant statement SQL bind - [#36207](https://github.com/apache/shardingsphere/pull/36207)
 1. SQL Router: Add SELECT with UNION ALL routing to multi data sources check - [#35037](https://github.com/apache/shardingsphere/pull/35037)
 1. SQL Router: Improve support for executing tableless SQL with single data source - [#35659](https://github.com/apache/shardingsphere/pull/35659)
 1. SQL Router: Add `max-union-size-per-datasource` property to batch UNION ALL rewrite per data source and keep parallel execution - [#37405](https://github.com/apache/shardingsphere/pull/37405)
@@ -67,6 +61,7 @@
 1. DistSQL: Add DistSQL for query storage units which used in single rule - [#35131](https://github.com/apache/shardingsphere/pull/35131)
 1. Proxy: Implement write bool binary data type for PostgreSQL protocol - [#35831](https://github.com/apache/shardingsphere/pull/35831)
 1. Proxy: Add authority check on SQL `SHOW CREATE DATABASE` for MySQL - [#36862](https://github.com/apache/shardingsphere/pull/36862)
+1. Proxy: MySQLTextResultSetRowPacket and MySQLDateBinaryProtocolValue to support LocalDateTime and LocalTime when value contains scale - [#37881](https://github.com/apache/shardingsphere/pull/37881)
 1. Sharding: Using cache to avoid memory overflow from inline expression parsing - [#22196](https://github.com/apache/shardingsphere/issues/22196)
 1. Sharding: Add digital suffix check with binding table names - [#35293](https://github.com/apache/shardingsphere/issues/35293)
 1. Encrypt: Use EncryptDerivedColumnSuffix to enhance encrypt table subquery rewrite logic - [#34829](https://github.com/apache/shardingsphere/pull/34829)
@@ -92,7 +87,6 @@
 1. Pipeline: Support multi-columns unique key non-first column nullable - [#37647](https://github.com/apache/shardingsphere/pull/37647)
 1. Encrypt: Support handling show create view result decoration in encrypt - [#37299](https://github.com/apache/shardingsphere/pull/37299)
 1. JDBC: Enhance ResultSetUtils to support flexible string date/time conversions - [37424](https://github.com/apache/shardingsphere/pull/37424)
-1. SQL Binder: Support Grant statement SQL bind - [#36207](https://github.com/apache/shardingsphere/pull/36207)
 
 ### Bug Fixes
 
@@ -110,9 +104,11 @@
 1. SQL Binder: Fix correlated subquery in HAVING cannot reference outer query column - [#37872](https://github.com/apache/shardingsphere/pull/37872)
 1. Transaction: Fix conflicting dependencies of BASE transaction integration module - [#35142](https://github.com/apache/shardingsphere/pull/35142)
 1. Transaction: Alleviate connection leaks caused by SEATA client throwing exceptions - [#34463](https://github.com/apache/shardingsphere/pull/34463)
+1. Transaction: Fix XA data source enlist failure caused connection leaks - [37593](https://github.com/apache/shardingsphere/pull/37593)
 1. SQL Federation: Fix Operation not allowed after ResultSet closed exception when use SQL federation - [#35206](https://github.com/apache/shardingsphere/pull/35206)
 1. DistSQL: Fix duplicate result when show rules used storage unit with readwrite-splitting rule - [#35129](https://github.com/apache/shardingsphere/pull/35129)
 1. DistSQL: Fix missing comma in `ALTER SQL_FEDERATION RULE` - [#35523](https://github.com/apache/shardingsphere/pull/35523)
+1. DistSQL: Fix load single table with specific schema - [#37535](https://github.com/apache/shardingsphere/pull/37535)
 1. JDBC: Fix some wrong JDBC database metadata retrieve logics - [#34959](https://github.com/apache/shardingsphere/pull/34959)
 1. JDBC: Fix getting database name from SQL statement context - [#34960](https://github.com/apache/shardingsphere/pull/34960)
 1. JDBC: Support set data source properties type with java.time.Duration - [#35241](https://github.com/apache/shardingsphere/pull/35241)
@@ -130,13 +126,15 @@
 1. Proxy: Fix MySQL binary protocol datetime/time fractional seconds precision - [#37294](https://github.com/apache/shardingsphere/pull/37294)
 1. Proxy: Fix PostgreSQL boolean text output to return `t`/`f` as per protocol - [#37184](https://github.com/apache/shardingsphere/pull/37184)
 1. Proxy: Fix PostgreSQL text protocol bytea output to use hex encoding and avoid truncation - [#37772](https://github.com/apache/shardingsphere/pull/37772)
+1. Proxy: Fix MySQL prepared statement sharding failure with `interpolateParams=false` when `MYSQL_TYPE_STRING` is used for character sharding columns - [#37993](https://github.com/apache/shardingsphere/issues/37993)
+1. Proxy: Fix command type error when use openGauss driver to execute statements in transaction - [37749](https://github.com/apache/shardingsphere/pull/37749)
 1. Mode: Fix issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
-1. Encrypt: Resolve rewrite issue in nested concat function - [#35815](https://github.com/apache/shardingsphere/pull/35815)
 1. Sharding: Fix mod sharding algorithm judgement -[#36386](https://github.com/apache/shardingsphere/pull/36386)
 1. Sharding: Fix check inline sharding algorithms in table rules - [#36999](https://github.com/apache/shardingsphere/pull/36999)
 1. Sharding: Fix wrong sharding condition merge when sharding column in case-sensitive - [#37389](https://github.com/apache/shardingsphere/pull/37389)
 1. Sharding: Fix wrong merge sharding condition logic caused by different type sharding value - [#37528](https://github.com/apache/shardingsphere/pull/37528)
 1. Sharding: Prevent SELECT DISTINCT rewrite from losing global de-duplication across shards - [#37857](https://github.com/apache/shardingsphere/pull/37857)
+1. Encrypt: Resolve rewrite issue in nested concat function - [#35815](https://github.com/apache/shardingsphere/pull/35815)
 1. Pipeline: Recover value of migration incremental importer batch size - [#34670](https://github.com/apache/shardingsphere/pull/34670)
 1. Pipeline: Fix InventoryDumper first time dump SQL without ORDER BY on multiple columns unique key table - [#34736](https://github.com/apache/shardingsphere/pull/34736)
 1. Pipeline: Fix MySQL JDBC query properties extension when SSL is required on server - [#36581](https://github.com/apache/shardingsphere/pull/36581)
@@ -145,9 +143,6 @@
 1. Pipeline: Fix PostgreSQL migration create table SQL generation failure caused by locale-formatted sequence values - [#28360](https://github.com/apache/shardingsphere/issues/28360)
 1. Pipeline: MySQLBinlogClient compatible with async exception - [#37631](https://github.com/apache/shardingsphere/issues/37631)
 1. Pipeline: Fix SHOW MIGRATION RULE always display default values when ALTER MIGRATION RULE without STREAM_CHANNEL - [#37737](https://github.com/apache/shardingsphere/issues/37737)
-1. DistSQL: Fix load single table with specific schema - [#37535](https://github.com/apache/shardingsphere/pull/37535)
-1. Transaction: Fix XA data source enlist failure caused connection leaks - [37593](https://github.com/apache/shardingsphere/pull/37593)
-1. Proxy: Fix command type error when use openGauss driver to execute statements in transaction - [37749](https://github.com/apache/shardingsphere/pull/37749)
 
 ### Change Logs
 
