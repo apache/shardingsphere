@@ -108,7 +108,7 @@ class DistSQLProxyBackendHandlerFactoryTest {
     
     @Test
     void assertNewInstanceWithUnsupportedStatement() {
-        assertThrows(UnsupportedSQLOperationException.class, () -> DistSQLProxyBackendHandlerFactory.newInstance(mock(DistSQLStatement.class), mock(), connectionSession));
+        assertThrows(UnsupportedSQLOperationException.class, () -> DistSQLProxyBackendHandlerFactory.newInstance(mock(DistSQLStatement.class, RETURNS_DEEP_STUBS), mock(), connectionSession));
     }
     
     private ShardingSphereDatabase mockDatabase() {
