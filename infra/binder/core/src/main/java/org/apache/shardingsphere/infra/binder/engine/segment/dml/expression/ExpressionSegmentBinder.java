@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.BetweenExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.BinaryOperationExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.CaseWhenExpressionBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.CollateExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ExistsSubqueryExpressionBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.FunctionExpressionSegmentBinder;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -126,6 +128,9 @@ public final class ExpressionSegmentBinder {
         }
         if (segment instanceof UnaryOperationExpression) {
             return UnaryOperationExpressionBinder.bind((UnaryOperationExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
+        }
+        if (segment instanceof CollateExpression) {
+            return CollateExpressionBinder.bind((CollateExpression) segment, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts);
         }
         // TODO support more ExpressionSegment bound
         return segment;
