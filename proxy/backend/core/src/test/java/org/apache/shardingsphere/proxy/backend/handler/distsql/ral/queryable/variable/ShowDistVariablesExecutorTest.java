@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.va
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowDistVariablesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConne
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -45,10 +47,20 @@ class ShowDistVariablesExecutorTest {
     
     private final ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
     
+    private final ShowDistVariablesExecutor executor = (ShowDistVariablesExecutor) TypedSPILoader.getService(DistSQLQueryExecutor.class, ShowDistVariablesStatement.class);
+    
+    @Test
+    void assertGetColumnNames() {
+        Collection<String> actual = executor.getColumnNames(new ShowDistVariablesStatement(false, null));
+        assertThat(actual.size(), is(2));
+        Iterator<String> iterator = actual.iterator();
+        assertThat(iterator.next(), is("variable_name"));
+        assertThat(iterator.next(), is("variable_value"));
+    }
+    
     @Test
     void assertExecute() {
         when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("agent-plugins-enabled", "false"))));
-        ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         executor.setConnectionContext(new DistSQLConnectionContext(mock(QueryContext.class), 1,
                 mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mock(ShowDistVariablesStatement.class), contextManager);
@@ -60,7 +72,6 @@ class ShowDistVariablesExecutorTest {
     
     @Test
     void assertExecuteWithLike() {
-        ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         executor.setConnectionContext(new DistSQLConnectionContext(mock(QueryContext.class), 1,
                 mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement(false, "sql_%"), contextManager);
@@ -71,9 +82,33 @@ class ShowDistVariablesExecutorTest {
     }
     
     @Test
+    void assertExecuteWithTypedSPI() {
+        when(contextManager.getMetaDataContexts().getMetaData().getProps())
+                .thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("proxy-frontend-database-protocol-type", "MySQL"))));
+        executor.setConnectionContext(new DistSQLConnectionContext(mock(QueryContext.class), 1,
+                mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement(false, "PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE"), contextManager);
+        assertThat(actual.size(), is(1));
+        LocalDataQueryResultRow row = actual.iterator().next();
+        assertThat(row.getCell(1), is("proxy_frontend_database_protocol_type"));
+        assertThat(row.getCell(2), is("MySQL"));
+    }
+    
+    @Test
+    void assertExecuteWithNullTypedSPI() {
+        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        executor.setConnectionContext(new DistSQLConnectionContext(mock(QueryContext.class), 1,
+                mock(DatabaseType.class), mock(DatabaseConnectionManager.class), mock(ExecutorStatementManager.class)));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement(false, "proxy_frontend_database_protocol_type"), contextManager);
+        assertThat(actual.size(), is(1));
+        LocalDataQueryResultRow row = actual.iterator().next();
+        assertThat(row.getCell(1), is("proxy_frontend_database_protocol_type"));
+        assertThat(row.getCell(2), is(""));
+    }
+    
+    @Test
     void assertExecuteTemporary() {
         when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
-        ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         ShowDistVariablesStatement sqlStatement = new ShowDistVariablesStatement(true, null);
         Collection<LocalDataQueryResultRow> actual = executor.getRows(sqlStatement, contextManager);
         assertThat(actual.size(), is(4));
@@ -84,7 +119,6 @@ class ShowDistVariablesExecutorTest {
     
     @Test
     void assertExecuteTemporaryWithLike() {
-        ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowDistVariablesStatement(true, "proxy_%"), contextManager);
         assertThat(actual.size(), is(2));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
