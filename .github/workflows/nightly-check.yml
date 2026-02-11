@@ -180,7 +180,7 @@ jobs:
             ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Run OWASP Check
         # https://nvd.nist.gov/developers/request-an-api-key
-        run: ./mvnw clean dependency-check:aggregate -DnvdApiKey=${{ secrets.NIST_NVD_API_KEY }} -DfailBuildOnCVSS=7 -DskipProvidedScope=true -DskipRuntimeScope=true
+        run: ./mvnw clean dependency-check:aggregate -DnvdApiKey=${{ secrets.NIST_NVD_API_KEY }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
