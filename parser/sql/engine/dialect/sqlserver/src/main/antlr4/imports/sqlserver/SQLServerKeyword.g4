@@ -1415,6 +1415,10 @@ QUOTED_IDENTIFIER
     : Q U O T E D UL_ I D E N T I F I E R
     ;
 
+TEXTSIZE
+    : T E X T S I Z E
+    ;
+
 NUMERIC_ROUNDABORT
     : N U M E R I C UL_ R O U N D A B O R T
     ;

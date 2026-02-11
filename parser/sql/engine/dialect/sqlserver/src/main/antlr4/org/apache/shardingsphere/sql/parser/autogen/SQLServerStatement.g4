@@ -76,6 +76,7 @@ execute
     | alterLogin
     | call
     | explain
+    | set
     | setUser
     | revert
     | updateStatistics
