@@ -31,6 +31,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -57,7 +58,7 @@ class MySQLComStmtExecutePacketTest {
         assertThat(parameterTypes.size(), is(1));
         assertThat(parameterTypes.get(0).getColumnType(), is(MySQLBinaryColumnType.LONG));
         assertThat(parameterTypes.get(0).getUnsignedFlag(), is(0));
-        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(0)), is(Collections.<Object>singletonList(1)));
+        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(0), Collections.emptyList()), is(Collections.<Object>singletonList(1)));
     }
     
     @Test
@@ -71,7 +72,7 @@ class MySQLComStmtExecutePacketTest {
         assertThat(parameterTypes.size(), is(1));
         assertThat(parameterTypes.get(0).getColumnType(), is(MySQLBinaryColumnType.LONG));
         assertThat(parameterTypes.get(0).getUnsignedFlag(), is(0));
-        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.emptyList()), is(Collections.singletonList(null)));
+        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.emptyList(), Collections.emptyList()), is(Collections.singletonList(null)));
     }
     
     @Test
@@ -85,6 +86,27 @@ class MySQLComStmtExecutePacketTest {
         assertThat(parameterTypes.size(), is(1));
         assertThat(parameterTypes.get(0).getColumnType(), is(MySQLBinaryColumnType.BLOB));
         assertThat(parameterTypes.get(0).getUnsignedFlag(), is(0));
-        assertThat(actual.readParameters(parameterTypes, Collections.singleton(0), Collections.emptyList()), is(Collections.singletonList(null)));
+        assertThat(actual.readParameters(parameterTypes, Collections.singleton(0), Collections.emptyList(), Collections.emptyList()), is(Collections.singletonList(null)));
+    }
+    
+    @Test
+    void assertNewWithStringParameterBoundToVarStringColumn() throws SQLException {
+        byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, (byte) 0xfe, 0x00, 0x01, 0x61};
+        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
+        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
+        List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
+        assertThat(actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(0), Collections.singletonList(MySQLBinaryColumnType.VAR_STRING)),
+                is(Collections.<Object>singletonList("a")));
+    }
+    
+    @Test
+    void assertNewWithStringParameterBoundToBlobColumn() throws SQLException {
+        byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, (byte) 0xfe, 0x00, 0x01, 0x61};
+        MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
+        MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
+        List<MySQLPreparedStatementParameterType> parameterTypes = actual.getNewParameterTypes();
+        Object actualValue = actual.readParameters(parameterTypes, Collections.emptySet(), Collections.singletonList(0), Collections.singletonList(MySQLBinaryColumnType.BLOB)).get(0);
+        assertTrue(actualValue instanceof byte[]);
+        assertArrayEquals(new byte[]{0x61}, (byte[]) actualValue);
     }
 }

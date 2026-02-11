@@ -129,6 +129,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         Collection<ParameterMarkerSegment> parameterMarkerSegments = sqlStatementContext.getSqlStatement().getParameterMarkers();
         Collection<MySQLPacket> result = new ArrayList<>(parameterMarkerSegments.size());
         Collection<Integer> paramColumnDefinitionFlags = new ArrayList<>(parameterMarkerSegments.size());
+        Collection<MySQLBinaryColumnType> parameterColumnTypes = new ArrayList<>(parameterMarkerSegments.size());
         for (int index = 0; index < parameterMarkerSegments.size(); index++) {
             ShardingSphereColumn column = null;
             if (!columnsOfParameterMarkers.isEmpty() && index < columnsOfParameterMarkers.size()) {
@@ -136,14 +137,18 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             }
             if (null != column) {
                 int columnDefinitionFlag = calculateColumnDefinitionFlag(column);
-                result.add(createMySQLColumnDefinition41Packet(characterSet, columnDefinitionFlag, MySQLBinaryColumnType.valueOfJDBCType(column.getDataType())));
+                MySQLBinaryColumnType columnType = MySQLBinaryColumnType.valueOfJDBCType(column.getDataType());
+                result.add(createMySQLColumnDefinition41Packet(characterSet, columnDefinitionFlag, columnType));
                 paramColumnDefinitionFlags.add(columnDefinitionFlag);
+                parameterColumnTypes.add(columnType);
             } else {
                 result.add(createMySQLColumnDefinition41Packet(characterSet, 0, MySQLBinaryColumnType.VAR_STRING));
                 paramColumnDefinitionFlags.add(0);
+                parameterColumnTypes.add(MySQLBinaryColumnType.NULL);
             }
         }
         serverPreparedStatement.getParameterColumnDefinitionFlags().addAll(paramColumnDefinitionFlags);
+        serverPreparedStatement.getParameterColumnTypes().addAll(parameterColumnTypes);
         return result;
     }
     
