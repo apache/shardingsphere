@@ -103,7 +103,7 @@ class DistSQLProxyBackendHandlerFactoryTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("newInstanceSupportedStatements")
     void assertNewInstanceWithSupportedStatements(final String caseName, final Class<? extends DistSQLStatement> statementClass, final Class<?> expectedHandlerClass) {
-        assertThat(DistSQLProxyBackendHandlerFactory.newInstance(mockDistSQLStatement(statementClass), mock(), connectionSession), isA(expectedHandlerClass));
+        assertThat(DistSQLProxyBackendHandlerFactory.newInstance(mock(statementClass, RETURNS_DEEP_STUBS), mock(), connectionSession), isA(expectedHandlerClass));
     }
     
     @Test
@@ -257,12 +257,6 @@ class DistSQLProxyBackendHandlerFactoryTest {
     void assertExecuteAlterReadwriteSplittingRuleContext() {
         assertThrows(MissingRequiredRuleException.class,
                 () -> new DistSQLUpdateProxyBackendHandler(mock(AlterReadwriteSplittingRuleStatement.class, RETURNS_DEEP_STUBS), mock(), connectionSession, contextManager).execute());
-    }
-    
-    private DistSQLStatement mockDistSQLStatement(final Class<? extends DistSQLStatement> statementClass) {
-        DistSQLStatement result = mock(statementClass, RETURNS_DEEP_STUBS);
-        when(result.getAttributes()).thenReturn(new SQLStatementAttributes());
-        return result;
     }
     
     private ShardingSphereDatabase mockDatabaseWithRule() {
