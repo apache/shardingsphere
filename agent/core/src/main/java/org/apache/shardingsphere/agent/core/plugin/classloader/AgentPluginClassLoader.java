@@ -50,16 +50,6 @@ public final class AgentPluginClassLoader extends ClassLoader implements AutoClo
     }
     
     @Override
-    public void close() {
-        for (JarFile each : extraJars) {
-            try {
-                each.close();
-            } catch (final IOException ignored) {
-            }
-        }
-    }
-    
-    @Override
     protected Class<?> findClass(final String name) throws ClassNotFoundException {
         String path = convertClassNameToPath(name);
         for (JarFile each : extraJars) {
@@ -147,6 +137,16 @@ public final class AgentPluginClassLoader extends ClassLoader implements AutoClo
             return Optional.of(new URL(String.format("jar:file:%s!/%s", extraJar.getName(), name)));
         } catch (final MalformedURLException ignored) {
             return Optional.empty();
+        }
+    }
+    
+    @Override
+    public void close() {
+        for (JarFile each : extraJars) {
+            try {
+                each.close();
+            } catch (final IOException ignored) {
+            }
         }
     }
 }
