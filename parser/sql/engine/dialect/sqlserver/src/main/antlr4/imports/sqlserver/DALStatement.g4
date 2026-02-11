@@ -23,6 +23,15 @@ explain
     : EXPLAIN WITH_RECOMMENDATIONS? explainableStatement
     ;
 
+set
+    : SET setParameter
+    ;
+
+setParameter
+    : QUOTED_IDENTIFIER (ON | OFF)
+    | TEXTSIZE numberLiterals
+    ;
+
 explainableStatement
     : select | insert | update | delete | createTableAsSelectClause
     ;
