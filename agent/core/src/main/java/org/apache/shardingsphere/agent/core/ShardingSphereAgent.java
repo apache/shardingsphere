@@ -31,9 +31,7 @@ import org.apache.shardingsphere.agent.core.plugin.jar.PluginJarLoader;
 import java.io.File;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
-import java.util.Collection;
 import java.util.Map;
-import java.util.jar.JarFile;
 
 /**
  * ShardingSphere agent.
@@ -51,9 +49,8 @@ public final class ShardingSphereAgent {
     public static void premain(final String args, final Instrumentation instrumentation) throws IOException {
         File rootPath = AgentPath.getRootPath();
         Map<String, PluginConfiguration> pluginConfigs = PluginConfigurationLoader.load(rootPath);
-        Collection<JarFile> pluginJars = PluginJarLoader.load(rootPath);
-        Map<String, AdvisorConfiguration> advisorConfigs = AdvisorConfigurationLoader.load(pluginJars, pluginConfigs.keySet());
-        AgentBuilderFactory.create(pluginConfigs, pluginJars, advisorConfigs, isEnhancedForProxy()).installOn(instrumentation);
+        Map<String, AdvisorConfiguration> advisorConfigs = AdvisorConfigurationLoader.load(PluginJarLoader.load(rootPath), pluginConfigs.keySet());
+        AgentBuilderFactory.create(pluginConfigs, PluginJarLoader.load(rootPath), advisorConfigs, isEnhancedForProxy()).installOn(instrumentation);
     }
     
     private static boolean isEnhancedForProxy() {
