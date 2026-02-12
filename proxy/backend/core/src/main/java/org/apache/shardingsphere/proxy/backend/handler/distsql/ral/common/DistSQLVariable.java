@@ -17,27 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common;
 
-import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedVariableException;
-
 /**
  * DistSQL variable.
  */
 public enum DistSQLVariable {
     
-    CACHED_CONNECTIONS;
-    
-    /**
-     * Returns the variable constant of the specified variable name.
-     *
-     * @param variableName variable name
-     * @return variable constant
-     * @throws UnsupportedVariableException unsupported variable exception
-     */
-    public static DistSQLVariable getValueOf(final String variableName) {
-        try {
-            return valueOf(variableName.toUpperCase());
-        } catch (final IllegalArgumentException ignored) {
-            throw new UnsupportedVariableException(variableName);
-        }
-    }
+    CACHED_CONNECTIONS
 }
