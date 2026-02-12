@@ -1,19 +1,5 @@
 ## Release 5.5.4-SNAPSHOT
 
-### Enhancements
-
-1. Enhance MySQLTextResultSetRowPacket and MySQLDateBinaryProtocolValue to support LocalDateTime and LocalTime when value contains scale - [#37881](https://github.com/apache/shardingsphere/pull/37881)
-2. SQL Parser: Support parsing MySQL stored procedure syntax - [#38016](https://github.com/apache/shardingsphere/pull/38016)
-
-### Bug Fixes
-
-1. SQL Parser: Support Oracle SQL parser correctly extract REGEXP_SUBSTR parameters - [#37924](https://github.com/apache/shardingsphere/pull/37924)
-2. SQL Parser: Fix escape '\' in SQL causing DialectSQLParsingException - [#37943](https://github.com/apache/shardingsphere/pull/37943)
-3. SQL Parser: Fix error parsing \l command SQL statement when front-end protocol is og - [#37953](https://github.com/apache/shardingsphere/pull/37953)
-4. SQL Parser:Fix SQLParsingException when using reserved word `order` in ORDER BY clause - [#37958](https://github.com/apache/shardingsphere/pull/37958)
-5. SQL Parser:Support '2'::int statement in PostgreSQL and openGauss - [#37962](https://github.com/apache/shardingsphere/pull/37962)
-6. SQL Parser:Support range type constructor functions in PostgreSQL without quotes - [#37994](https://github.com/apache/shardingsphere/pull/37994)
-
 ## Release 5.5.3
 
 ### CVE
