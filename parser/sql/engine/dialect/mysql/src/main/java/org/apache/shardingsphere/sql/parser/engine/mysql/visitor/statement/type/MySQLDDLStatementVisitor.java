@@ -214,8 +214,11 @@ import java.util.Optional;
  */
 public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implements DDLStatementVisitor {
     
+    private final MySQLDALStatementVisitor dalStatementVisitor;
+    
     public MySQLDDLStatementVisitor(final DatabaseType databaseType) {
         super(databaseType);
+        dalStatementVisitor = new MySQLDALStatementVisitor(databaseType);
     }
     
     @Override
@@ -759,7 +762,9 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
         CreateProcedureStatement result = new CreateProcedureStatement(getDatabaseType());
         result.setProcedureName((FunctionNameSegment) visit(ctx.functionName()));
-        result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
+        if (null != ctx.routineBody()) {
+            result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
+        }
         return result;
     }
     
@@ -859,6 +864,8 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
             sqlStatement = (DeleteStatement) visit(ctx.delete());
         } else if (null != ctx.select()) {
             sqlStatement = (SelectStatement) visit(ctx.select());
+        } else if (null != ctx.setVariable()) {
+            sqlStatement = (SQLStatement) dalStatementVisitor.visitSetVariable(ctx.setVariable());
         } else if (null != ctx.doStatement()) {
             sqlStatement = (DoStatement) visit(ctx.doStatement());
         } else if (null != ctx.explain()) {
