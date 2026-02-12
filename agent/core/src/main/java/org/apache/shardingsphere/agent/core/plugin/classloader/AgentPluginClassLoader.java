@@ -36,7 +36,7 @@ import java.util.zip.ZipEntry;
 /**
  * Agent plugin class loader.
  */
-public final class AgentPluginClassLoader extends ClassLoader implements AutoCloseable {
+public final class AgentPluginClassLoader extends ClassLoader {
     
     static {
         registerAsParallelCapable();
@@ -137,16 +137,6 @@ public final class AgentPluginClassLoader extends ClassLoader implements AutoClo
             return Optional.of(new URL(String.format("jar:file:%s!/%s", extraJar.getName(), name)));
         } catch (final MalformedURLException ignored) {
             return Optional.empty();
-        }
-    }
-    
-    @Override
-    public void close() {
-        for (JarFile each : extraJars) {
-            try {
-                each.close();
-            } catch (final IOException ignored) {
-            }
         }
     }
 }
