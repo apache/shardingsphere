@@ -19,7 +19,7 @@
 mybatis.mapper-locations=classpath*:mappers/*Mapper.xml
 <#elseif framework?contains("jpa")>
 spring.jpa.properties.hibernate.hbm2ddl.auto=create-drop
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 spring.jpa.properties.hibernate.show_sql=false
 </#if>
 
