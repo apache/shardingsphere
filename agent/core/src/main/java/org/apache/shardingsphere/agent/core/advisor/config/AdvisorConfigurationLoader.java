@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.loader.YamlAdvisorsConfigurationLoader;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.swapper.YamlAdvisorsConfigurationSwapper;
-import org.apache.shardingsphere.agent.core.plugin.classloader.AgentPluginClassLoader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +28,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,9 +50,8 @@ public final class AdvisorConfigurationLoader {
      */
     public static Map<String, AdvisorConfiguration> load(final Collection<JarFile> pluginJars, final Collection<String> pluginTypes) {
         Map<String, AdvisorConfiguration> result = new HashMap<>();
-        AgentPluginClassLoader agentPluginClassLoader = new AgentPluginClassLoader(Thread.currentThread().getContextClassLoader(), pluginJars);
         for (String each : pluginTypes) {
-            InputStream advisorsResourceStream = getResourceStream(agentPluginClassLoader, each);
+            InputStream advisorsResourceStream = getResourceStream(pluginJars, each);
             if (null == advisorsResourceStream) {
                 LOGGER.log(Level.WARNING, "The configuration file for advice of plugin `{0}` is not found", new String[]{each});
             }
@@ -68,8 +67,18 @@ public final class AdvisorConfigurationLoader {
         return result;
     }
     
-    private static InputStream getResourceStream(final ClassLoader pluginClassLoader, final String pluginType) {
-        return pluginClassLoader.getResourceAsStream(String.join("/", "META-INF", "conf", getFileName(pluginType)));
+    private static InputStream getResourceStream(final Collection<JarFile> pluginJars, final String pluginType) {
+        String entryName = String.join("/", "META-INF", "conf", getFileName(pluginType));
+        for (JarFile each : pluginJars) {
+            JarEntry entry = each.getJarEntry(entryName);
+            if (null != entry) {
+                try {
+                    return each.getInputStream(entry);
+                } catch (final IOException ignored) {
+                }
+            }
+        }
+        return null;
     }
     
     private static String getFileName(final String pluginType) {
