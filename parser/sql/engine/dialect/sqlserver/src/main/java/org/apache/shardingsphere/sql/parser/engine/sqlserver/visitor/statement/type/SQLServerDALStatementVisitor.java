@@ -22,9 +22,16 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExplainableStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.SetParameterContext;
 import org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.SQLServerStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
+
+import java.util.Collections;
 
 /**
  * DAL statement visitor for SQLServer.
@@ -38,6 +45,23 @@ public final class SQLServerDALStatementVisitor extends SQLServerStatementVisito
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
         return new ExplainStatement(getDatabaseType(), (SQLStatement) visit(ctx.explainableStatement()));
+    }
+    
+    @Override
+    public ASTNode visitSet(final SetContext ctx) {
+        return new SetStatement(getDatabaseType(), Collections.singletonList((VariableAssignSegment) visit(ctx.setParameter())));
+    }
+    
+    @Override
+    public ASTNode visitSetParameter(final SetParameterContext ctx) {
+        int startIndex = ctx.start.getStartIndex();
+        int stopIndex = ctx.stop.getStopIndex();
+        if (null != ctx.QUOTED_IDENTIFIER()) {
+            VariableSegment variable = new VariableSegment(ctx.QUOTED_IDENTIFIER().getSymbol().getStartIndex(), ctx.QUOTED_IDENTIFIER().getSymbol().getStopIndex(), "QUOTED_IDENTIFIER");
+            return new VariableAssignSegment(startIndex, stopIndex, variable, null == ctx.ON() ? "OFF" : "ON");
+        }
+        VariableSegment variable = new VariableSegment(ctx.TEXTSIZE().getSymbol().getStartIndex(), ctx.TEXTSIZE().getSymbol().getStopIndex(), "TEXTSIZE");
+        return new VariableAssignSegment(startIndex, stopIndex, variable, ctx.numberLiterals().getText());
     }
     
     @Override
