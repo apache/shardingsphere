@@ -3,6 +3,7 @@
 ### Enhancements
 
 1. Enhance MySQLTextResultSetRowPacket and MySQLDateBinaryProtocolValue to support LocalDateTime and LocalTime when value contains scale - [#37881](https://github.com/apache/shardingsphere/pull/37881)
+2. SQL Parser: Support parsing MySQL stored procedure syntax - [#38016](https://github.com/apache/shardingsphere/pull/38016)
 
 ### Bug Fixes
 
