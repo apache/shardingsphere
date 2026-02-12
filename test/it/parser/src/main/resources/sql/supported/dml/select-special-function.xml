@@ -324,4 +324,16 @@
     <sql-case id="select_translate_nchar_cs_oracle" value="SELECT TRANSLATE(col USING NCHAR_CS) FROM translate_tab" db-types="Oracle" />
     <sql-case id="select_approx_rank_oracle" value="SELECT APPROX_RANK(0.5) FROM dual" db-types="Oracle" />
     <sql-case id="select_isschemavalid_function_oracle" value="SELECT ISSCHEMAVALID(xml_doc, 'schema.xsd') FROM dual" db-types="Oracle" />
+    <!-- Parameter count test cases for functions with placeholders -->
+    <sql-case id="select_position_with_placeholder" value="SELECT POSITION(? IN user_name) AS a_pos FROM t_user ORDER BY user_id" case-types="placeholder" db-types="MySQL,Doris,Hive,Presto,GoldenDB,StarRocks,SQL92" />
+    <sql-case id="select_char_nested_with_placeholder" value="SELECT CHAR(ASCII(SUBSTRING(user_name, ?, ?))) AS first_char FROM t_user ORDER BY user_id" case-types="placeholder" db-types="MySQL,Doris,Hive,Presto,GoldenDB,StarRocks" />
+    <sql-case id="select_substring_with_placeholder" value="SELECT SUBSTRING(user_name, ?, ?) AS first_char FROM t_user ORDER BY user_id" case-types="placeholder" db-types="MySQL,Doris,Hive,Presto,GoldenDB,StarRocks" />
+    <sql-case id="select_group_concat_with_placeholder" value="SELECT GROUP_CONCAT(? ORDER BY ?) FROM t_order" case-types="placeholder" db-types="MySQL,Doris,GoldenDB,StarRocks,Hive,Presto" />
+    <sql-case id="select_extract_with_placeholder" value="SELECT EXTRACT(? FROM creation_date) FROM t_order" case-types="placeholder" db-types="MySQL,Doris,Hive,Presto,GoldenDB,StarRocks" />
+    <sql-case id="select_weight_string_with_placeholder" value="SELECT WEIGHT_STRING(?) FROM t_order" case-types="placeholder" db-types="MySQL,Doris,Hive" />
+    <!-- CAST test cases per dialect group - different syntax for data types -->
+    <sql-case id="select_cast_with_placeholder_mysql" value="SELECT CAST(? AS UNSIGNED) FROM t_order" case-types="placeholder" db-types="MySQL,Hive,Presto" />
+    <sql-case id="select_cast_with_placeholder_clickhouse" value="SELECT CAST(? AS INT8) FROM t_order" case-types="placeholder" db-types="ClickHouse" />
+    <sql-case id="select_cast_with_placeholder_standard" value="SELECT CAST(? AS INT) FROM t_order" case-types="placeholder" db-types="SQL92,Firebird,SQLServer" />
+    <sql-case id="select_interval_with_placeholder" value="SELECT INTERVAL ? DAY FROM t_order" case-types="placeholder" db-types="MySQL,ClickHouse,SQL92,Firebird" />
 </sql-cases>

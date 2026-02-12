@@ -342,9 +342,14 @@
                     </function>
                 </expr>
             </expression-projection>
-            <expression-projection alias="inter" text="INTERVAL2DAY" start-index="105" stop-index="127">
+            <expression-projection alias="inter" text="INTERVAL 2 DAY" start-index="105" stop-index="127">
                 <expr>
-                    <common-expression text="INTERVAL2DAY" start-index="105" stop-index="118" />
+                    <interval-expression start-index="105" stop-index="118">
+                        <value>
+                            <literal-expression value="2" start-index="114" stop-index="114" />
+                        </value>
+                        <interval-unit>DAY</interval-unit>
+                    </interval-expression>
                 </expr>
             </expression-projection>
             <aggregation-distinct-projection type="COUNT" expression="COUNT(DISTINCT user_id)" distinct-inner-expression="user_id" alias="cnt" start-index="130" stop-index="152" />
@@ -686,7 +691,12 @@
                         </left>
                         <operator>+</operator>
                         <right>
-                            <common-expression text="INTERVAL2DAY" literal-text="INTERVAL2DAY" start-index="20" stop-index="33" />
+                            <interval-expression start-index="20" stop-index="33">
+                                <value>
+                                    <literal-expression value="2" start-index="29" stop-index="29" />
+                                </value>
+                                <interval-unit>DAY</interval-unit>
+                            </interval-expression>
                         </right>
                     </binary-operation-expression>
                 </expr>
@@ -1128,7 +1138,12 @@
                         </left>
                         <operator>+</operator>
                         <right>
-                            <common-expression text="INTERVAL1DAY" literal-text="INTERVAL1DAY" start-index="20" stop-index="33" />
+                            <interval-expression start-index="20" stop-index="33">
+                                <value>
+                                    <literal-expression value="1" start-index="29" stop-index="29" />
+                                </value>
+                                <interval-unit>DAY</interval-unit>
+                            </interval-expression>
                         </right>
                     </binary-operation-expression>
                 </expr>
