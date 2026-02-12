@@ -123,6 +123,16 @@
             <parameter name="CLIENT_ENCODING" />
         </parameter-assign>
     </set-parameter>
+    <set-parameter sql-case-id="set_quoted_identifier_sqlserver">
+        <parameter-assign value="ON">
+            <parameter name="QUOTED_IDENTIFIER" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_textsize_sqlserver">
+        <parameter-assign value="2048">
+            <parameter name="TEXTSIZE" />
+        </parameter-assign>
+    </set-parameter>
     <set-parameter sql-case-id="set_session_authorization" />
     <set-parameter sql-case-id="set_persist_system_variable_doris">
         <parameter-assign value="200">

@@ -204,7 +204,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
-            <version>2.2.0.RELEASE</version>
+            <version>3.2.12</version>
             <exclusions>
                 <exclusion>
                     <artifactId>snakeyaml</artifactId>
@@ -265,12 +265,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot</artifactId>
-            <version>2.2.0.RELEASE</version>
+            <version>3.2.12</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>2.2.0.RELEASE</version>
+            <version>3.2.12</version>
         </dependency>
     </#if>
         

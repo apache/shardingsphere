@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.export.ExportStorageNodesStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -47,6 +48,7 @@ import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -58,7 +60,9 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -78,24 +82,37 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ExportStorageNodesExecutorTest {
     
+    private final ExportStorageNodesExecutor executor = (ExportStorageNodesExecutor) TypedSPILoader.getService(DistSQLQueryExecutor.class, ExportStorageNodesStatement.class);
+    
+    @TempDir
+    private Path tempDir;
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase emptyDatabase;
+    
     @BeforeEach
     void setUp() {
-        when(database.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+        when(database.getProtocolType()).thenReturn(databaseType);
+        when(emptyDatabase.getProtocolType()).thenReturn(databaseType);
+    }
+    
+    @Test
+    void assertGetColumnNames() {
+        assertThat(executor.getColumnNames(new ExportStorageNodesStatement(null, null)), is(Arrays.asList("id", "create_time", "storage_nodes")));
     }
     
     @Test
     void assertExecuteWithWrongDatabaseName() {
-        ExportStorageNodesStatement sqlStatement = new ExportStorageNodesStatement("foo", null);
-        assertThrows(IllegalArgumentException.class, () -> new ExportStorageNodesExecutor().getRows(sqlStatement, mockEmptyContextManager()));
+        assertThrows(IllegalArgumentException.class, () -> executor.getRows(new ExportStorageNodesStatement("foo", null), mockEmptyContextManager()));
     }
     
     @Test
     void assertExecuteWithEmptyMetaData() {
-        ExportStorageNodesStatement sqlStatement = new ExportStorageNodesStatement(null, null);
-        Collection<LocalDataQueryResultRow> actual = new ExportStorageNodesExecutor().getRows(sqlStatement, mockEmptyContextManager());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportStorageNodesStatement(null, null), mockEmptyContextManager());
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(3), is("{\"storage_nodes\":{}}"));
@@ -105,19 +122,15 @@ class ExportStorageNodesExecutorTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.emptyList(), new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
-        MetaDataContexts metaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
-        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getMetaDataContexts()).thenReturn(new MetaDataContexts(metaData, new ShardingSphereStatistics()));
         when(result.getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
         return result;
     }
     
     @Test
     void assertExecute() {
-        when(database.getName()).thenReturn("normal_db");
-        Map<String, StorageUnit> storageUnits = createStorageUnits();
-        when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
-        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
-        Collection<LocalDataQueryResultRow> actual = new ExportStorageNodesExecutor().getRows(new ExportStorageNodesStatement(null, null), mockContextManager());
+        prepareNormalDatabase();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportStorageNodesStatement(null, null), mockContextManager(database));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(3), is(loadExpectedRow()));
@@ -125,19 +138,50 @@ class ExportStorageNodesExecutorTest {
     
     @Test
     void assertExecuteWithDatabaseName() {
-        when(database.getName()).thenReturn("normal_db");
-        Map<String, StorageUnit> storageUnits = createStorageUnits();
-        when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
-        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
-        Collection<LocalDataQueryResultRow> actual = new ExportStorageNodesExecutor().getRows(new ExportStorageNodesStatement("normal_db", null), mockContextManager());
+        prepareNormalDatabase();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportStorageNodesStatement("normal_db", null), mockContextManager(database));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(3), is(loadExpectedRow()));
     }
     
-    private ContextManager mockContextManager() {
+    @Test
+    void assertExecuteWithFilePath() throws IOException {
+        prepareNormalDatabase();
+        ContextManager contextManager = mockContextManager(database);
+        when(contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn("file_id");
+        Path tempFile = tempDir.resolve("export-storage-nodes.json");
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportStorageNodesStatement(null, tempFile.toString()), contextManager);
+        assertThat(actual.size(), is(1));
+        LocalDataQueryResultRow row = actual.iterator().next();
+        assertThat(row.getCell(1), is("file_id"));
+        assertThat(row.getCell(3), is(String.format("Successfully exported to：'%s'", tempFile)));
+        assertThat(new String(Files.readAllBytes(tempFile)), is(loadExpectedRow()));
+    }
+    
+    @Test
+    void assertExecuteWithEmptyStorageNodeDatabase() {
+        prepareNormalDatabase();
+        when(emptyDatabase.getName()).thenReturn("empty_db");
+        when(emptyDatabase.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.emptySet());
+        when(emptyDatabase.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ExportStorageNodesStatement(null, null), mockContextManager(emptyDatabase, database));
+        assertThat(actual.size(), is(1));
+        LocalDataQueryResultRow row = actual.iterator().next();
+        assertThat(row.getCell(3), is(loadExpectedRow()));
+    }
+    
+    private void prepareNormalDatabase() {
+        when(database.getName()).thenReturn("normal_db");
+        Map<String, StorageUnit> storageUnits = createStorageUnits();
+        when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(storageUnits.keySet());
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(storageUnits);
+        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
+    }
+    
+    private ContextManager mockContextManager(final ShardingSphereDatabase... databases) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database),
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Arrays.asList(databases),
                 new ResourceMetaData(Collections.emptyMap()),
                 new RuleMetaData(Collections.singleton(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build()))),
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true"))));

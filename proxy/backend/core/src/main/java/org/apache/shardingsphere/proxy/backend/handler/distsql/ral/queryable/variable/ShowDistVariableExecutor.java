@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -80,16 +79,23 @@ public final class ShowDistVariableExecutor implements DistSQLQueryExecutor<Show
     }
     
     private String getConnectionSize(final String variableName) {
-        ShardingSpherePreconditions.checkState(DistSQLVariable.CACHED_CONNECTIONS == DistSQLVariable.getValueOf(variableName), () -> new UnsupportedVariableException(variableName));
+        checkVariableName(variableName);
         return String.valueOf(connectionContext.getConnectionSize());
+    }
+    
+    private void checkVariableName(final String variableName) {
+        DistSQLVariable distSQLVariable;
+        try {
+            distSQLVariable = DistSQLVariable.valueOf(variableName.toUpperCase());
+        } catch (final IllegalArgumentException ignored) {
+            throw new UnsupportedVariableException(variableName);
+        }
+        ShardingSpherePreconditions.checkState(DistSQLVariable.CACHED_CONNECTIONS == distSQLVariable, () -> new UnsupportedVariableException(variableName));
     }
     
     private String getStringResult(final Object value) {
         if (null == value) {
             return "";
-        }
-        if (value instanceof Float || value instanceof Double) {
-            return new BigDecimal(String.valueOf(value)).toPlainString();
         }
         return value instanceof TypedSPI ? ((TypedSPI) value).getType().toString() : value.toString();
     }

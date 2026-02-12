@@ -97,22 +97,41 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
      * @param paramTypes parameter type of values
      * @param longDataIndexes indexes of long data
      * @param parameterFlags column definition flag of parameters
+     * @param parameterColumnTypes column type of parameters from COM_STMT_PREPARE
      * @return parameter values
      * @throws SQLException SQL exception
      */
     public List<Object> readParameters(final List<MySQLPreparedStatementParameterType> paramTypes, final Set<Integer> longDataIndexes,
-                                       final List<Integer> parameterFlags) throws SQLException {
+                                       final List<Integer> parameterFlags, final List<MySQLBinaryColumnType> parameterColumnTypes) throws SQLException {
         List<Object> result = new ArrayList<>(paramTypes.size());
         for (int paramIndex = 0; paramIndex < paramTypes.size(); paramIndex++) {
             if (longDataIndexes.contains(paramIndex)) {
                 result.add(null);
                 continue;
             }
-            MySQLBinaryProtocolValue binaryProtocolValue = MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(paramTypes.get(paramIndex).getColumnType());
-            Object value = nullBitmap.isNullParameter(paramIndex) ? null
+            MySQLBinaryColumnType parameterType = paramTypes.get(paramIndex).getColumnType();
+            MySQLBinaryProtocolValue binaryProtocolValue = MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(parameterType);
+            Object value = nullBitmap.isNullParameter(paramIndex)
+                    ? null
                     : binaryProtocolValue.read(payload, (parameterFlags.get(paramIndex) & MySQLColumnDefinitionFlag.UNSIGNED.getValue()) == MySQLColumnDefinitionFlag.UNSIGNED.getValue());
+            value = decodeStringParameterValue(parameterColumnTypes, paramIndex, parameterType, value);
             result.add(value);
         }
         return result;
+    }
+    
+    private Object decodeStringParameterValue(final List<MySQLBinaryColumnType> parameterColumnTypes, final int paramIndex, final MySQLBinaryColumnType parameterType, final Object value) {
+        if (!(value instanceof byte[]) || MySQLBinaryColumnType.STRING != parameterType || !isCharacterColumnType(parameterColumnTypes, paramIndex)) {
+            return value;
+        }
+        return new String((byte[]) value, payload.getCharset());
+    }
+    
+    private boolean isCharacterColumnType(final List<MySQLBinaryColumnType> parameterColumnTypes, final int paramIndex) {
+        if (paramIndex >= parameterColumnTypes.size()) {
+            return false;
+        }
+        MySQLBinaryColumnType columnType = parameterColumnTypes.get(paramIndex);
+        return MySQLBinaryColumnType.STRING == columnType || MySQLBinaryColumnType.VAR_STRING == columnType || MySQLBinaryColumnType.VARCHAR == columnType;
     }
 }

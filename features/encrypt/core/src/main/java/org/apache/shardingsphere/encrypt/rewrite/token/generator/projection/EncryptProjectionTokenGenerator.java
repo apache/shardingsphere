@@ -93,8 +93,7 @@ public final class EncryptProjectionTokenGenerator {
         for (ProjectionSegment each : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
             if (each instanceof ColumnProjectionSegment) {
                 generateSQLToken(selectStatementContext, (ColumnProjectionSegment) each).ifPresent(result::add);
-            }
-            if (each instanceof ShorthandProjectionSegment) {
+            } else if (each instanceof ShorthandProjectionSegment) {
                 ShorthandProjectionSegment shorthandSegment = (ShorthandProjectionSegment) each;
                 Collection<Projection> actualColumns = getShorthandProjection(shorthandSegment, selectStatementContext.getProjectionsContext()).getActualColumns();
                 if (!actualColumns.isEmpty()) {
