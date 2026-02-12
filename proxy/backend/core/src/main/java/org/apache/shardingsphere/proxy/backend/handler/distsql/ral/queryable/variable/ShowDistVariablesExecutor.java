@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.util.regex.RegexUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -75,9 +74,6 @@ public final class ShowDistVariablesExecutor implements DistSQLQueryExecutor<Sho
     private String getStringResult(final Object value) {
         if (null == value) {
             return "";
-        }
-        if (value instanceof Float || value instanceof Double) {
-            return new BigDecimal(String.valueOf(value)).toPlainString();
         }
         return value instanceof TypedSPI ? ((TypedSPI) value).getType().toString() : value.toString();
     }
