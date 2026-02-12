@@ -104,18 +104,17 @@ class ImportMetaDataExecutorTest {
     
     @Test
     void assertExecuteUpdateFromJsonValue() {
-        ContextManager contextManager = createContextManagerWithTemporaryProps();
+        ContextManager contextManager = mockContextManager();
         executor.executeUpdate(new ImportMetaDataStatement(Base64.encodeBase64String(METADATA_VALUE.getBytes(StandardCharsets.UTF_8)), null), contextManager);
         assertNotNull(contextManager.getDatabase("normal_db"));
     }
     
     private static Stream<Arguments> importFailureCases() {
         return Stream.of(
-                Arguments.of("import empty metadata", createImportMetaDataStatement(EMPTY_METADATA_FILE_PATH), createContextManagerWithTemporaryProps(), EmptyStorageUnitException.class),
-                Arguments.of("import existed metadata", createImportMetaDataStatement(EMPTY_METADATA_FILE_PATH), createContextManagerWithExistedDatabase(),
-                        DatabaseCreateExistsException.class),
-                Arguments.of("import metadata from missing file", new ImportMetaDataStatement(null, NOT_EXIST_METADATA_FILE_PATH), mock(ContextManager.class), FileIOException.class),
-                Arguments.of("import metadata with empty file path in file branch", createStatementWithEmptyFilePathInFileBranch(), mock(ContextManager.class), JsonProcessingException.class));
+                Arguments.of("import empty metadata", createImportMetaDataStatement(EMPTY_METADATA_FILE_PATH), mockContextManager(), EmptyStorageUnitException.class),
+                Arguments.of("import existed metadata", createImportMetaDataStatement(EMPTY_METADATA_FILE_PATH), createContextManagerWithExistedDatabase(), DatabaseCreateExistsException.class),
+                Arguments.of("import metadata from missing file", new ImportMetaDataStatement(null, NOT_EXIST_METADATA_FILE_PATH), mockContextManager(), FileIOException.class),
+                Arguments.of("import metadata with empty file path in file branch", createStatementWithEmptyFilePathInFileBranch(), mockContextManager(), JsonProcessingException.class));
     }
     
     private static ImportMetaDataStatement createImportMetaDataStatement(final String filePath) {
@@ -131,7 +130,7 @@ class ImportMetaDataExecutorTest {
         return result;
     }
     
-    private static ContextManager createContextManagerWithTemporaryProps() {
+    private static ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(new Properties()));
         return result;
