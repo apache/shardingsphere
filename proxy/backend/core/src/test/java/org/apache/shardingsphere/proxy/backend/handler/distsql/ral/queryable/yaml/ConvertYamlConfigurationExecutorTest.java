@@ -73,76 +73,36 @@ class ConvertYamlConfigurationExecutorTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("resourceExpectedCases")
     void assertExecuteWithExpectedResource(final String caseName, final String configFilePath, final String expectedFilePath) {
-        assertRowData(
-                executor.getRows(new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationExecutorTest.class.getResource(configFilePath)).getPath()), mock()),
-                loadExpectedRow(expectedFilePath));
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(
+                new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationExecutorTest.class.getResource(configFilePath)).getPath()), mock());
+        assertRowData(actual, loadExpectedRow(expectedFilePath));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("inlineExpectedCases")
     void assertExecuteWithInlineExpected(final String caseName, final String configFilePath, final String expectedRow) {
-        assertRowData(
-                executor.getRows(new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationExecutorTest.class.getResource(configFilePath)).getPath()), mock()),
-                expectedRow);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(
+                new ConvertYamlConfigurationStatement(Objects.requireNonNull(ConvertYamlConfigurationExecutorTest.class.getResource(configFilePath)).getPath()), mock());
+        assertRowData(actual, expectedRow);
     }
     
-    @Test
-    void assertExecuteWithNullDataSources() throws IOException {
-        YamlProxyDatabaseConfiguration yamlConfig = new YamlProxyDatabaseConfiguration();
-        yamlConfig.setDatabaseName("null_data_sources_db");
-        yamlConfig.setDataSources(null);
-        yamlConfig.setRules(Collections.emptyList());
-        assertExecuteWithMockedYamlConfig(yamlConfig, toExpectedRow("CREATE DATABASE null_data_sources_db;", "USE null_data_sources_db;"));
-    }
-    
-    @Test
-    void assertExecuteWithNullRules() throws IOException {
-        YamlProxyDatabaseConfiguration yamlConfig = new YamlProxyDatabaseConfiguration();
-        yamlConfig.setDatabaseName("null_rules_db");
-        YamlProxyDataSourceConfiguration dataSourceConfig = new YamlProxyDataSourceConfiguration();
-        dataSourceConfig.setUrl("jdbc:mysql://127.0.0.1:3306/demo_convert_ds_0?useSSL=false");
-        dataSourceConfig.setUsername("root");
-        dataSourceConfig.setPassword("12345678");
-        dataSourceConfig.setConnectionTimeoutMilliseconds(30000L);
-        dataSourceConfig.setIdleTimeoutMilliseconds(60000L);
-        dataSourceConfig.setMaxLifetimeMilliseconds(1800000L);
-        dataSourceConfig.setMaxPoolSize(50);
-        dataSourceConfig.setMinPoolSize(1);
-        yamlConfig.setDataSources(Collections.singletonMap("ds_0", dataSourceConfig));
-        yamlConfig.setRules(null);
-        assertExecuteWithMockedYamlConfig(yamlConfig, toExpectedRow(
-                "CREATE DATABASE null_rules_db;",
-                "USE null_rules_db;",
-                "",
-                "REGISTER STORAGE UNIT ds_0 (",
-                "URL='jdbc:mysql://127.0.0.1:3306/demo_convert_ds_0?useSSL=false',",
-                "USER='root',",
-                "PASSWORD='12345678',",
-                "PROPERTIES('minPoolSize'='1','connectionTimeoutMilliseconds'='30000','maxLifetimeMilliseconds'='1800000',"
-                        + "'idleTimeoutMilliseconds'='60000','maxPoolSize'='50')",
-                ");"));
-    }
-    
-    @Test
-    void assertExecuteWithMissingDatabaseName() {
-        String filePath = Objects.requireNonNull(ConvertYamlConfigurationExecutorTest.class.getResource("/conf/convert/database-without-database-name.yaml")).getPath();
-        NullPointerException actual = assertThrows(NullPointerException.class,
-                () -> executor.getRows(new ConvertYamlConfigurationStatement(filePath), mock()));
-        assertThat(actual.getMessage(), is("`databaseName` in file `database-without-database-name.yaml` is required."));
-    }
-    
-    @Test
-    void assertExecuteWithMissingFile() {
-        FileIOException actual = assertThrows(FileIOException.class, () -> executor.getRows(new ConvertYamlConfigurationStatement(MISSING_FILE_PATH), mock()));
-        assertThat(actual.getMessage(), is(String.format("File access failed, file is: %s", new File(MISSING_FILE_PATH).getAbsolutePath())));
-    }
-    
-    private void assertExecuteWithMockedYamlConfig(final YamlProxyDatabaseConfiguration yamlConfig, final String expectedRow) throws IOException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("mockedYamlCases")
+    void assertExecuteWithMockedYamlConfiguration(final String caseName, final YamlProxyDatabaseConfiguration yamlConfig, final String expectedRow) {
         try (MockedStatic<YamlEngine> mockedYamlEngine = mockStatic(YamlEngine.class)) {
             mockedYamlEngine.when(() -> YamlEngine.unmarshal(any(File.class), eq(YamlProxyDatabaseConfiguration.class))).thenReturn(yamlConfig);
             Collection<LocalDataQueryResultRow> actual = executor.getRows(new ConvertYamlConfigurationStatement("mocked-path.yaml"), mock());
             assertRowData(actual, expectedRow);
         }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidInputCases")
+    void assertExecuteWithInvalidInput(final String caseName, final String filePath, final boolean classPathResource,
+                                       final Class<? extends Throwable> expectedExceptionType, final String expectedMessage) {
+        Throwable actual = assertThrows(expectedExceptionType,
+                () -> executor.getRows(new ConvertYamlConfigurationStatement(resolveFilePath(filePath, classPathResource)), mock()));
+        assertThat(actual.getMessage(), is(expectedMessage));
     }
     
     private void assertRowData(final Collection<LocalDataQueryResultRow> data, final String expectedRow) {
@@ -162,6 +122,10 @@ class ConvertYamlConfigurationExecutorTest {
         URL url = Objects.requireNonNull(ConvertYamlConfigurationExecutorTest.class.getResource(expectedFilePath));
         return Files.readAllLines(Paths.get(url.toURI())).stream().filter(each -> !each.startsWith("#")).collect(Collectors.joining(System.lineSeparator()))
                 + System.lineSeparator() + System.lineSeparator();
+    }
+    
+    private String resolveFilePath(final String filePath, final boolean classPathResource) {
+        return classPathResource ? Objects.requireNonNull(ConvertYamlConfigurationExecutorTest.class.getResource(filePath)).getPath() : filePath;
     }
     
     private static Stream<Arguments> resourceExpectedCases() {
@@ -208,6 +172,61 @@ class ConvertYamlConfigurationExecutorTest {
                         "PROPERTIES('minPoolSize'='1','connectionTimeoutMilliseconds'='30000','maxLifetimeMilliseconds'='1800000',"
                                 + "'idleTimeoutMilliseconds'='60000','maxPoolSize'='50','foo1'='bar_1')",
                         ");")));
+    }
+    
+    private static Stream<Arguments> mockedYamlCases() {
+        return Stream.of(
+                Arguments.of("null-data-sources", createYamlConfigWithNullDataSources(), toExpectedRow(
+                        "CREATE DATABASE null_data_sources_db;",
+                        "USE null_data_sources_db;")),
+                Arguments.of("null-rules", createYamlConfigWithNullRules(), toExpectedRow(
+                        "CREATE DATABASE null_rules_db;",
+                        "USE null_rules_db;",
+                        "",
+                        "REGISTER STORAGE UNIT ds_0 (",
+                        "URL='jdbc:mysql://127.0.0.1:3306/demo_convert_ds_0?useSSL=false',",
+                        "USER='root',",
+                        "PASSWORD='12345678',",
+                        "PROPERTIES('minPoolSize'='1','connectionTimeoutMilliseconds'='30000','maxLifetimeMilliseconds'='1800000',"
+                                + "'idleTimeoutMilliseconds'='60000','maxPoolSize'='50')",
+                        ");")));
+    }
+    
+    private static YamlProxyDatabaseConfiguration createYamlConfigWithNullDataSources() {
+        YamlProxyDatabaseConfiguration result = new YamlProxyDatabaseConfiguration();
+        result.setDatabaseName("null_data_sources_db");
+        result.setDataSources(null);
+        result.setRules(Collections.emptyList());
+        return result;
+    }
+    
+    private static YamlProxyDatabaseConfiguration createYamlConfigWithNullRules() {
+        YamlProxyDatabaseConfiguration result = new YamlProxyDatabaseConfiguration();
+        result.setDatabaseName("null_rules_db");
+        result.setDataSources(Collections.singletonMap("ds_0", createDataSourceConfig()));
+        result.setRules(null);
+        return result;
+    }
+    
+    private static YamlProxyDataSourceConfiguration createDataSourceConfig() {
+        YamlProxyDataSourceConfiguration result = new YamlProxyDataSourceConfiguration();
+        result.setUrl("jdbc:mysql://127.0.0.1:3306/demo_convert_ds_0?useSSL=false");
+        result.setUsername("root");
+        result.setPassword("12345678");
+        result.setConnectionTimeoutMilliseconds(30000L);
+        result.setIdleTimeoutMilliseconds(60000L);
+        result.setMaxLifetimeMilliseconds(1800000L);
+        result.setMaxPoolSize(50);
+        result.setMinPoolSize(1);
+        return result;
+    }
+    
+    private static Stream<Arguments> invalidInputCases() {
+        return Stream.of(
+                Arguments.of("missing-database-name", "/conf/convert/database-without-database-name.yaml", true,
+                        NullPointerException.class, "`databaseName` in file `database-without-database-name.yaml` is required."),
+                Arguments.of("missing-file", MISSING_FILE_PATH, false, FileIOException.class,
+                        String.format("File access failed, file is: %s", new File(MISSING_FILE_PATH).getAbsolutePath())));
     }
     
     private static String toExpectedRow(final String... lines) {
