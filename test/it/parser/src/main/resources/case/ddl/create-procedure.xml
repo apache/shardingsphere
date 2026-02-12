@@ -182,4 +182,43 @@
         </sql-statements>
     </create-procedure>
     <create-procedure sql-case-id="create_procedure_doris_control_flow" />
+    <create-procedure sql-case-id="create_procedure_keywords_declare_select_into">
+        <procedure-name name="p1" />
+        <sql-statements>
+            <sql-statement start-index="135" stop-index="172" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="174" stop-index="217" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="219" stop-index="282" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="284" stop-index="359" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="361" stop-index="425" statement-class-simple-name="SelectStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_keywords_labeled_while">
+        <procedure-name name="p2" />
+        <sql-statements>
+            <sql-statement start-index="77" stop-index="89" statement-class-simple-name="SetStatement" />
+            <sql-statement start-index="110" stop-index="119" statement-class-simple-name="SetStatement" />
+            <sql-statement start-index="142" stop-index="154" statement-class-simple-name="SetStatement" />
+            <sql-statement start-index="172" stop-index="181" statement-class-simple-name="SetStatement" />
+            <sql-statement start-index="217" stop-index="229" statement-class-simple-name="SetStatement" />
+            <sql-statement start-index="260" stop-index="269" statement-class-simple-name="SetStatement" />
+            <sql-statement start-index="311" stop-index="323" statement-class-simple-name="SetStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_check_warnings">
+        <procedure-name name="check_warnings" />
+        <sql-statements>
+            <sql-statement start-index="108" stop-index="125" statement-class-simple-name="SetStatement" />
+            <sql-statement start-index="127" stop-index="239" statement-class-simple-name="UpdateStatement" />
+            <sql-statement start-index="241" stop-index="351" statement-class-simple-name="UpdateStatement" />
+            <sql-statement start-index="353" stop-index="421" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="449" stop-index="494" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="496" stop-index="516" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="523" stop-index="543" statement-class-simple-name="SelectStatement" />
+            <sql-statement start-index="553" stop-index="579" statement-class-simple-name="TruncateStatement" />
+            <sql-statement start-index="581" stop-index="601" statement-class-simple-name="DropTableStatement" />
+        </sql-statements>
+    </create-procedure>
+    <create-procedure sql-case-id="create_procedure_lib_uses_both">
+        <procedure-name name="lib_uses_both" />
+    </create-procedure>
 </sql-parser-test-cases>

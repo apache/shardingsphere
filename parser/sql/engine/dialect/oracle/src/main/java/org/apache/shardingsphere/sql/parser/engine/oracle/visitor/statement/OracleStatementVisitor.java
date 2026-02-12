@@ -1237,7 +1237,6 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     
     @Override
     public final ASTNode visitCharFunction(final CharFunctionContext ctx) {
-        calculateParameterCount(ctx.expr());
         FunctionSegment result;
         if (null != ctx.CHR()) {
             result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHR().getText(), getOriginalText(ctx));
@@ -1300,13 +1299,6 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
             dataTypeNames.add(ctx.getChild(i).getText());
         }
         return new KeywordValue(String.join(" ", dataTypeNames));
-    }
-    
-    // TODO :FIXME, sql case id: insert_with_str_to_date
-    private void calculateParameterCount(final Collection<ExprContext> exprContexts) {
-        for (ExprContext each : exprContexts) {
-            visit(each);
-        }
     }
     
     @Override

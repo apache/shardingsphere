@@ -1171,6 +1171,10 @@ ITERATE
     : I T E R A T E
     ;
 
+JAVASCRIPT
+    : J A V A S C R I P T
+    ;
+
 JOIN
     : J O I N
     ;

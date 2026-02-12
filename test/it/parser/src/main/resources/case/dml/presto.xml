@@ -547,7 +547,54 @@
         <projections start-index="7" stop-index="29">
             <expression-projection text="CONVERT(order_id, CHAR)" start-index="7" stop-index="29">
                 <expr>
-                    <function function-name="CONVERT" text="CONVERT(order_id, CHAR)" start-index="7" stop-index="29" />
+                    <function function-name="CONVERT" text="CONVERT(order_id, CHAR)" start-index="7" stop-index="29">
+                        <parameter>
+                            <column name="order_id" start-index="15" stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="CHAR" start-index="25" stop-index="28" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="36" stop-index="42" />
+        </from>
+    </select>
+
+    <select sql-case-id="presto_select_convert_with_placeholder">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="CONVERT(?, CHAR)" start-index="7" stop-index="24">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(?, CHAR)" start-index="7" stop-index="24">
+                        <parameter>
+                            <parameter-marker index="0" start-index="15" stop-index="15" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="CHAR" start-index="18" stop-index="21" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="31" stop-index="37" />
+        </from>
+    </select>
+
+    <select sql-case-id="presto_select_convert_using_with_placeholder">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="CONVERT(? USING utf8)" start-index="7" stop-index="29">
+                <expr>
+                    <function function-name="CONVERT" text="CONVERT(? USING utf8)" start-index="7" stop-index="29">
+                        <parameter>
+                            <parameter-marker index="0" start-index="15" stop-index="15" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="utf8" start-index="23" stop-index="26" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>

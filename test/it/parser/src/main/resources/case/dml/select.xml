@@ -12501,6 +12501,14 @@
     <select sql-case-id="select_interval_firebird">
         <projections start-index="7" stop-index="20">
             <expression-projection text="INTERVAL 1 DAY" start-index="7" stop-index="20">
+                <expr>
+                    <interval-expression start-index="7" stop-index="20">
+                        <value>
+                            <literal-expression value="1" start-index="16" stop-index="16" />
+                        </value>
+                        <interval-unit>DAY</interval-unit>
+                    </interval-expression>
+                </expr>
             </expression-projection>
         </projections>
         <from>
@@ -13436,7 +13444,15 @@
 
     <select sql-case-id="select_interval_expression_sql92">
         <projections start-index="7" stop-index="20">
-            <expression-projection text="INTERVAL1DAY" start-index="7" stop-index="20">
+            <expression-projection text="INTERVAL 1 DAY" start-index="7" stop-index="20">
+                <expr>
+                    <interval-expression start-index="7" stop-index="20">
+                        <value>
+                            <literal-expression value="1" start-index="16" stop-index="16" />
+                        </value>
+                        <interval-unit>DAY</interval-unit>
+                    </interval-expression>
+                </expr>
             </expression-projection>
         </projections>
     </select>

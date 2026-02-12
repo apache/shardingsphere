@@ -46,7 +46,7 @@ Module resolution order:
 ## Mandatory Constraints
 
 - Norm levels: `MUST` (required), `SHOULD` (preferred), `MAY` (optional).
-- Definition source principle: mandatory constraints are defined only in this `R1-R14` section; other sections only provide term/workflow/command descriptions and must not add, override, or relax `R1-R14`.
+- Definition source principle: mandatory constraints are defined only in this `R1-R15` section; other sections only provide term/workflow/command descriptions and must not add, override, or relax `R1-R15`.
 
 - `R1`: `MUST` comply with `AGENTS.md` and `CODE_OF_CONDUCT.md`; rule interpretation should prioritize corresponding clauses and line-number evidence in `CODE_OF_CONDUCT.md`.
 
@@ -79,7 +79,9 @@ Module resolution order:
 
 - `R6`: SPI, Mock, and reflection
   - If the class under test can be obtained via SPI, `MUST` instantiate by default with `TypedSPILoader`/`OrderedSPILoader` (or database-specific loaders), and `MUST` keep the resolved instance as a test-class-level field (global variable) by default.
-  - SPI metadata accessor methods `TypedSPI#getType`, `OrderedSPI#getOrder`, and `getTypeClass` `MUST` be treated as no-test-required targets by default, unless the user explicitly requests tests for them.
+  - SPI metadata accessor methods `TypedSPI#getType`, `OrderedSPI#getOrder`, and `getTypeClass` are default no-test-required targets.
+  - For these accessors, tests `MUST NOT` be added by default; they are allowed only when the user explicitly requests tests for them in the current turn.
+  - If such tests are added without explicit request, they `MUST` be removed before completion.
   - If not instantiated via SPI, `MUST` record the reason before implementation.
   - Test dependencies `SHOULD` use Mockito mocks by default.
   - Reflection access `MUST` use `Plugins.getMemberAccessor()`, and field access only.
@@ -91,6 +93,7 @@ Module resolution order:
   - Deletion/merge of coverage-equivalent tests is determined by `R13`.
 
 - `R8`: parameterized optimization (enabled by default)
+  - `MUST` run pre-implementation candidate analysis and output an `R8-CANDIDATES` record (target public method, candidate count, decision, and evidence).
   - `MUST` report the mergeable method set and merge candidate count.
   - Candidates meeting all conditions below are considered "high-fit for parameterization":
     - A. target public method and branch skeleton are consistent;
@@ -102,6 +105,7 @@ Module resolution order:
   - For high-fit candidates, a "do not recommend refactor" conclusion is allowed only when refactoring causes significant readability/diagnosability regression, and the exception `MUST` include a `Necessity reason tag` with concrete evidence.
   - Parameter construction `SHOULD` prefer `Arguments + @MethodSource`; `MAY` use clearer options such as `@CsvSource`/`@EnumSource`.
   - `MUST` provide either a "recommend refactor" or "do not recommend refactor" conclusion with reasons for each candidate; when no candidates exist, `MUST` output "no candidates + decision reason".
+  - If high-fit candidates exist but neither parameterized refactor nor valid `KEEP` evidence is present, status `MUST NOT` be concluded as `R10-A`.
 
 - `R9`: dead code and coverage blockers
   - When dead code blocks progress, `MUST` report class name, file path, exact line number, and unreachable reason.
@@ -114,8 +118,8 @@ Module resolution order:
     - target test command succeeds, and surefire report has `Tests run > 0` (recommended to also satisfy `Tests run - Skipped > 0`);
     - coverage evidence satisfies the target (default class/line/branch 100%, unless explicitly lowered by the user);
     - each class in `<ResolvedTargetClasses>` has explicit aggregated class-level coverage evidence (CLASS/LINE/BRANCH counters with covered/missed/ratio) over the `Target-class coverage scope`, and all ratios satisfy the declared target;
-    - Checkstyle, Spotless, and two `R14` scans all pass;
-    - `R8` analysis and compliance evidence are complete.
+    - Checkstyle, Spotless, two `R14` scans, and all required `R15` scans all pass;
+    - `R8` analysis and compliance evidence are complete, including `R8-CANDIDATES` and candidate-level decisions (refactor or valid `KEEP` evidence).
   - `R10-B` (blocked): under the "production code cannot be changed" constraint, dead code blocks coverage targets, and evidence satisfies `R9`.
   - `R10-C` (blocked): failure occurs outside `R3` scope, and evidence satisfies `R11`.
   - `R10-D` (in-progress): none of `R10-INPUT_BLOCKED/R10-B/R10-C/R10-A` is satisfied yet.
@@ -150,17 +154,23 @@ Module resolution order:
     - `assertEquals(..., true|false|Boolean.TRUE|Boolean.FALSE)`
   - `MUST` run one hard-gate scan after implementation and another before delivery; any hit means incomplete.
 
+- `R15`: pre-delivery hard gates
+  - `R15-A` (parameterization enforcement): if an `R8` high-fit candidate exists, the corresponding tests `MUST` be parameterized with `@ParameterizedTest(name = "{0}")`, unless a valid `KEEP` exception is recorded.
+  - `R15-B` (metadata accessor test ban): unless the user explicitly requests it in the current turn, tests targeting `getType` / `getOrder` / `getTypeClass` `MUST NOT` be added.
+  - `R15-C` (scope mutation guard): test-generation tasks `MUST NOT` introduce new diffs under any `src/main/` path.
+
 ## Workflow
 
 1. Read `AGENTS.md` and `CODE_OF_CONDUCT.md`, and record hard constraints for this round (`R1`).
+   - Capture scope baseline once: `git status --porcelain > /tmp/gen-ut-status-before.txt`.
 2. Parse target classes, related test classes, and input-blocked state (`R10-INPUT_BLOCKED`).
 3. Resolve `<ResolvedTestClass>`, `<ResolvedTestFileSet>`, `<ResolvedTestModules>`, and record `pom.xml` evidence (`R3`).
 4. Decide whether `R12` is triggered; if not, output `R4` branch mapping.
-5. Execute `R8` parameterized optimization analysis and apply required refactoring.
+5. Execute `R8` parameterized optimization analysis, output `R8-CANDIDATES`, and apply required refactoring.
 6. Execute `R9` dead-code checks and record evidence.
 7. Complete test implementation or extension according to `R2-R7`.
 8. Perform necessity trimming and coverage re-verification according to `R13`.
-9. Run verification commands and handle failures by `R11`; execute two `R14` scans.
+9. Run verification commands and handle failures by `R11`; execute two `R14` scans and all required `R15` scans.
 10. Decide status by `R10` after verification; if status is `R10-D`, return to Step 5 and continue.
 11. Before final response, run a second `R10` status decision and output `R10=<state>` with rule-to-evidence mapping.
 
@@ -293,6 +303,62 @@ PY
 '
 ```
 
+5.1 `R15-A` high-fit candidate enforcement scan (shape-based):
+```bash
+bash -lc '
+python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
+import re
+import sys
+from pathlib import Path
+from collections import defaultdict
+
+IGNORE = {"assertThat", "assertTrue", "assertFalse", "mock", "when", "verify", "is", "not"}
+
+def extract_block(text, brace_index):
+    depth = 0
+    i = brace_index
+    while i < len(text):
+        if "{" == text[i]:
+            depth += 1
+        elif "}" == text[i]:
+            depth -= 1
+            if 0 == depth:
+                return text[brace_index + 1:i]
+        i += 1
+    return ""
+
+decl = re.compile(r"(?:@Test|@ParameterizedTest(?:\\([^)]*\\))?)\\s+void\\s+(assert\\w+)\\s*\\([^)]*\\)\\s*\\{", re.S)
+call = re.compile(r"\\b\\w+\\.(\\w+)\\s*\\(")
+param_targets = defaultdict(set)
+plain_target_count = defaultdict(lambda: defaultdict(int))
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
+    source = Path(path).read_text(encoding="utf-8")
+    for match in decl.finditer(source):
+        brace_index = source.find("{", match.start())
+        body = extract_block(source, brace_index)
+        methods = [each for each in call.findall(body) if each not in IGNORE]
+        if not methods:
+            continue
+        target = methods[0]
+        header = source[max(0, match.start() - 160):match.start()]
+        if "@ParameterizedTest" in header:
+            param_targets[path].add(target)
+        else:
+            plain_target_count[path][target] += 1
+violations = []
+for path, each_counter in plain_target_count.items():
+    for method_name, count in each_counter.items():
+        if count >= 3 and method_name not in param_targets[path]:
+            violations.append(f"{path}: method={method_name} nonParameterizedCount={count}")
+if violations:
+    print("[R15-A] high-fit candidate likely exists but no parameterized test found:")
+    for each in violations:
+        print(each)
+    sys.exit(1)
+PY
+'
+```
+
 6. `R14` hard-gate scan:
 ```bash
 bash -lc '
@@ -303,15 +369,54 @@ if rg -n -U --pcre2 "$BOOLEAN_ASSERTION_BAN_REGEX" <ResolvedTestFileSet>; then
   exit 1
 fi'
 ```
-7. Scope validation:
+
+7. `R15-B` metadata accessor test ban scan (skip only when explicitly requested by user):
+```bash
+bash -lc '
+if rg -n -U "@Test(?s:.*?)void\\s+assert\\w*(GetType|GetOrder|GetTypeClass)\\b|assertThat\\((?s:.*?)\\.getType\\(\\)|assertThat\\((?s:.*?)\\.getOrder\\(\\)|assertThat\\((?s:.*?)\\.getTypeClass\\(\\)" <ResolvedTestFileSet>; then
+  echo "[R15-B] metadata accessor test detected without explicit user request"
+  exit 1
+fi'
+```
+
+8. Scope validation:
 ```bash
 git diff --name-only
+```
+
+9. `R15-C` production-path mutation guard (baseline-based):
+```bash
+bash -lc '
+# capture once at task start:
+# git status --porcelain > /tmp/gen-ut-status-before.txt
+git status --porcelain > /tmp/gen-ut-status-after.txt
+python3 - <<'"'"'PY'"'"'
+from pathlib import Path
+
+before_path = Path("/tmp/gen-ut-status-before.txt")
+after_path = Path("/tmp/gen-ut-status-after.txt")
+before = set(before_path.read_text(encoding="utf-8").splitlines()) if before_path.exists() else set()
+after = set(after_path.read_text(encoding="utf-8").splitlines())
+introduced = sorted(after - before)
+violations = []
+for each in introduced:
+    path = each[3:].strip()
+    if "/src/main/" in path or path.startswith("src/main/"):
+        violations.append(path)
+if violations:
+    print("[R15-C] out-of-scope production path modified:")
+    for each in violations:
+        print(each)
+    raise SystemExit(1)
+PY
+'
 ```
 
 ## Final Output Requirements
 
 - `MUST` include a status line `R10=<state>`.
 - `MUST` include aggregated class-level coverage evidence for each class in `<ResolvedTargetClasses>` over the `Target-class coverage scope` (CLASS/LINE/BRANCH counters and ratios).
+- `MUST` include `R8-CANDIDATES` output (candidate set, counts, and per-candidate decision evidence).
 - `MUST` include executed commands and exit codes.
 - If `R10` is not `R10-A`, `MUST` explicitly mark the task as not completed and provide blocking reason plus next action.
 - `MUST NOT` use completion wording when `R10` is `R10-D`.

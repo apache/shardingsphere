@@ -78,6 +78,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Exis
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalUnit;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
@@ -430,8 +432,9 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     
     @Override
     public final ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        IntervalUnit intervalUnit = IntervalUnit.valueOf(ctx.intervalUnit().getText().toUpperCase());
+        return new IntervalExpression(ctx.INTERVAL().getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()), intervalUnit,
+                getOriginalText(ctx));
     }
     
     @Override
@@ -501,7 +504,6 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
     
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.expr()));
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
         ASTNode exprSegment = visit(ctx.expr());
         if (exprSegment instanceof ColumnSegment) {
@@ -561,13 +563,6 @@ public abstract class FirebirdStatementVisitor extends FirebirdStatementBaseVisi
             dataTypeNames.add(ctx.getChild(i).getText());
         }
         return new KeywordValue(String.join(" ", dataTypeNames));
-    }
-    
-    // TODO :FIXME, sql case id: insert_with_str_to_date
-    private void calculateParameterCount(final Collection<ExprContext> exprContexts) {
-        for (ExprContext each : exprContexts) {
-            visit(each);
-        }
     }
     
     @Override

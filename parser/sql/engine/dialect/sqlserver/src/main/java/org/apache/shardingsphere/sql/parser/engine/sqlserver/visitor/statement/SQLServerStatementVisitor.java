@@ -1056,7 +1056,6 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.expr()));
         String functionName = null == ctx.CAST() ? ctx.TRY_CAST().getText() : ctx.CAST().getText();
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
         ASTNode exprSegment = visit(ctx.expr());
@@ -1133,13 +1132,6 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public final ASTNode visitDataTypeName(final DataTypeNameContext ctx) {
         return new KeywordValue(ctx.getText());
-    }
-    
-    // TODO :FIXME, sql case id: insert_with_str_to_date
-    private void calculateParameterCount(final Collection<ExprContext> exprContexts) {
-        for (ExprContext each : exprContexts) {
-            visit(each);
-        }
     }
     
     @Override
