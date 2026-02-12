@@ -32,7 +32,9 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.DistSQLVariable;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -43,6 +45,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class ShowDistVariableExecutorTest {
@@ -116,5 +119,13 @@ class ShowDistVariableExecutorTest {
     @Test
     void assertExecuteWithInvalidVariableName() {
         assertThrows(UnsupportedVariableException.class, () -> executor.getRows(new ShowDistVariableStatement("wrong_name"), contextManager));
+    }
+    
+    @Test
+    void assertExecuteWithUnsupportedDistSQLVariable() {
+        try (MockedStatic<DistSQLVariable> mockedStatic = mockStatic(DistSQLVariable.class)) {
+            mockedStatic.when(() -> DistSQLVariable.valueOf("CACHED_CONNECTIONS")).thenReturn(null);
+            assertThrows(UnsupportedVariableException.class, () -> executor.getRows(new ShowDistVariableStatement("CACHED_CONNECTIONS"), contextManager));
+        }
     }
 }
