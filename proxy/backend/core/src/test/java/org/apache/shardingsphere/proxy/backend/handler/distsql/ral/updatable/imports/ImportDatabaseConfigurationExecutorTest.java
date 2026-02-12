@@ -82,8 +82,7 @@ class ImportDatabaseConfigurationExecutorTest {
     
     @Test
     void assertImportFileNotFound() {
-        assertThrows(FileIOException.class, () -> executor.executeUpdate(
-                new ImportDatabaseConfigurationStatement("/__not_exist__/database-configuration.yaml"), mock(ContextManager.class)));
+        assertThrows(FileIOException.class, () -> executor.executeUpdate(new ImportDatabaseConfigurationStatement("/__not_exist__/database-configuration.yaml"), mock(ContextManager.class)));
     }
     
     private static Stream<Arguments> importSuccessCases() {
