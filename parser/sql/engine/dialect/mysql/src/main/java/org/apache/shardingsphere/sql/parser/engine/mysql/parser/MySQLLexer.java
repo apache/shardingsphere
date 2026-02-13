@@ -33,7 +33,7 @@ public final class MySQLLexer extends MySQLStatementLexer implements SQLLexer {
     public MySQLLexer(final CharStream input) {
         super(stripExecutableComment(input));
     }
-
+    
     private static CharStream stripExecutableComment(final CharStream input) {
         String sql = input.getText(Interval.of(0, input.size() - 1));
         String trimmed = sql.trim();
