@@ -192,6 +192,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.In
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
@@ -216,9 +217,12 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     private final MySQLDALStatementVisitor dalStatementVisitor;
     
+    private final MySQLTCLStatementVisitor tclStatementVisitor;
+    
     public MySQLDDLStatementVisitor(final DatabaseType databaseType) {
         super(databaseType);
         dalStatementVisitor = new MySQLDALStatementVisitor(databaseType);
+        tclStatementVisitor = new MySQLTCLStatementVisitor(databaseType);
     }
     
     @Override
@@ -864,6 +868,12 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
             sqlStatement = (DeleteStatement) visit(ctx.delete());
         } else if (null != ctx.select()) {
             sqlStatement = (SelectStatement) visit(ctx.select());
+        } else if (null != ctx.startTransaction()) {
+            sqlStatement = new StartTransactionStatement(getDatabaseType());
+        } else if (null != ctx.commit()) {
+            sqlStatement = (SQLStatement) tclStatementVisitor.visitCommit(ctx.commit());
+        } else if (null != ctx.rollback()) {
+            sqlStatement = (SQLStatement) tclStatementVisitor.visitRollback(ctx.rollback());
         } else if (null != ctx.setVariable()) {
             sqlStatement = (SQLStatement) dalStatementVisitor.visitSetVariable(ctx.setVariable());
         } else if (null != ctx.doStatement()) {
