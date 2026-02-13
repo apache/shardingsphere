@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 
-import java.util.Optional;
-
 /**
  * Lock cluster statement.
  */
@@ -32,14 +30,9 @@ public final class LockClusterStatement extends UpdatableRALStatement {
     
     private final AlgorithmSegment lockStrategy;
     
-    private final Long timeoutMillis;
+    private final long timeoutMillis;
     
-    /**
-     * Get lock timeout milliseconds.
-     *
-     * @return lock timeout milliseconds
-     */
-    public Optional<Long> getTimeoutMillis() {
-        return Optional.of(timeoutMillis);
+    public LockClusterStatement(final AlgorithmSegment lockStrategy) {
+        this(lockStrategy, 3000L);
     }
 }

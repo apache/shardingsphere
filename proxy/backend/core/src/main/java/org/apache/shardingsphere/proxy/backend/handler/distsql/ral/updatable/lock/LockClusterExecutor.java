@@ -41,8 +41,7 @@ public final class LockClusterExecutor implements DistSQLUpdateExecutor<LockClus
     public void executeUpdate(final LockClusterStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         checkState(contextManager);
         checkAlgorithm(sqlStatement);
-        long timeoutMillis = sqlStatement.getTimeoutMillis().orElse(3000L);
-        contextManager.getExclusiveOperatorEngine().operate(new LockClusterOperation(), timeoutMillis, () -> {
+        contextManager.getExclusiveOperatorEngine().operate(new LockClusterOperation(), sqlStatement.getTimeoutMillis(), () -> {
             checkState(contextManager);
             TypedSPILoader.getService(ClusterLockStrategy.class, sqlStatement.getLockStrategy().getName()).lock();
         });
