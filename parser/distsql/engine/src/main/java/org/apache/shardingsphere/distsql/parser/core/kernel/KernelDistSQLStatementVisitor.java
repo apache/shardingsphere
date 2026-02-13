@@ -329,7 +329,9 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitLockCluster(final LockClusterContext ctx) {
-        return new LockClusterStatement((AlgorithmSegment) visitAlgorithmDefinition(ctx.lockStrategy().algorithmDefinition()), Long.parseLong(IdentifierValueUtils.getValue(ctx.INT_())));
+        String value = IdentifierValueUtils.getValue(ctx.INT_());
+        AlgorithmSegment algorithmSegment = (AlgorithmSegment) visitAlgorithmDefinition(ctx.lockStrategy().algorithmDefinition());
+        return null == value ? new LockClusterStatement(algorithmSegment) : new LockClusterStatement(algorithmSegment, Long.parseLong(value));
     }
     
     @Override
