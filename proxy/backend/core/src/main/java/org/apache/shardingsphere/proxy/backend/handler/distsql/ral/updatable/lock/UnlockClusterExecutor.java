@@ -36,7 +36,7 @@ public final class UnlockClusterExecutor implements DistSQLUpdateExecutor<Unlock
     @Override
     public void executeUpdate(final UnlockClusterStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         checkState(contextManager);
-        long timeoutMillis = sqlStatement.getTimeoutMillis().orElse(3000L);
+        long timeoutMillis = sqlStatement.getTimeoutMillis();
         contextManager.getExclusiveOperatorEngine().operate(new LockClusterOperation(), timeoutMillis, () -> {
             checkState(contextManager);
             contextManager.getPersistServiceFacade().getStateService().update(ShardingSphereState.OK);
