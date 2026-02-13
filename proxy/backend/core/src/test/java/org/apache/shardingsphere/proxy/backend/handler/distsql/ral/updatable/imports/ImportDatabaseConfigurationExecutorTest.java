@@ -19,10 +19,12 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.im
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.database.DatabaseCreateExistsException;
+import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecutor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
+import org.apache.shardingsphere.infra.exception.generic.FileIOException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.MissingRequiredDatabaseException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -36,6 +38,9 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
 import java.net.URL;
@@ -43,6 +48,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -52,34 +58,13 @@ import static org.mockito.Mockito.when;
 
 class ImportDatabaseConfigurationExecutorTest {
     
-    @Test
-    void assertImportDatabaseExecutorForSharding() {
-        ContextManager contextManager = mockContextManager("sharding_db");
-        assertExecute(contextManager, "/conf/import/database-sharding.yaml");
-    }
+    private final ImportDatabaseConfigurationExecutor executor =
+            (ImportDatabaseConfigurationExecutor) TypedSPILoader.getService(DistSQLUpdateExecutor.class, ImportDatabaseConfigurationStatement.class);
     
-    @Test
-    void assertImportDatabaseExecutorForReadwriteSplitting() {
-        ContextManager contextManager = mockContextManager("readwrite_splitting_db");
-        assertExecute(contextManager, "/conf/import/database-readwrite-splitting.yaml");
-    }
-    
-    @Test
-    void assertImportDatabaseExecutorForEncrypt() {
-        ContextManager contextManager = mockContextManager("encrypt_db");
-        assertExecute(contextManager, "/conf/import/database-encrypt.yaml");
-    }
-    
-    @Test
-    void assertImportDatabaseExecutorForShadow() {
-        ContextManager contextManager = mockContextManager("shadow_db");
-        assertExecute(contextManager, "/conf/import/database-shadow.yaml");
-    }
-    
-    @Test
-    void assertImportDatabaseExecutorForMask() {
-        ContextManager contextManager = mockContextManager("mask_db");
-        assertExecute(contextManager, "/conf/import/database-mask.yaml");
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("importSuccessCases")
+    void assertImportDatabaseExecutor(final String caseName, final String databaseName, final String filePath) {
+        assertExecute(mockContextManager(databaseName), filePath);
     }
     
     @Test
@@ -89,26 +74,34 @@ class ImportDatabaseConfigurationExecutorTest {
         assertThrows(DatabaseCreateExistsException.class, () -> assertExecute(contextManager, "/conf/import/database-sharding.yaml"));
     }
     
-    @Test
-    void assertImportEmptyDatabaseName() {
-        ContextManager contextManager = mockContextManager("sharding_db");
-        assertThrows(MissingRequiredDatabaseException.class, () -> assertExecute(contextManager, "/conf/import/database-empty-database-name.yaml"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("importFailureCases")
+    void assertImportFailure(final String caseName, final String databaseName, final String filePath, final Class<? extends Throwable> expected) {
+        assertThrows(expected, () -> assertExecute(mockContextManager(databaseName), filePath));
     }
     
     @Test
-    void assertImportDuplicatedLogicTable() {
-        ContextManager contextManager = mockContextManager("sharding_db");
-        assertThrows(DuplicateRuleException.class, () -> assertExecute(contextManager, "/conf/import/database-duplicated-logic-table.yaml"));
+    void assertImportFileNotFound() {
+        assertThrows(FileIOException.class, () -> executor.executeUpdate(new ImportDatabaseConfigurationStatement("/__not_exist__/database-configuration.yaml"), mock(ContextManager.class)));
     }
     
-    @Test
-    void assertImportInvalidAlgorithm() {
-        ContextManager contextManager = mockContextManager("sharding_db");
-        assertThrows(ServiceProviderNotFoundException.class, () -> assertExecute(contextManager, "/conf/import/database-invalid-algorithm.yaml"));
+    private static Stream<Arguments> importSuccessCases() {
+        return Stream.of(
+                Arguments.of("import sharding", "sharding_db", "/conf/import/database-sharding.yaml"),
+                Arguments.of("import readwrite splitting", "readwrite_splitting_db", "/conf/import/database-readwrite-splitting.yaml"),
+                Arguments.of("import encrypt", "encrypt_db", "/conf/import/database-encrypt.yaml"),
+                Arguments.of("import shadow", "shadow_db", "/conf/import/database-shadow.yaml"),
+                Arguments.of("import mask", "mask_db", "/conf/import/database-mask.yaml"));
+    }
+    
+    private static Stream<Arguments> importFailureCases() {
+        return Stream.of(
+                Arguments.of("missing database name", "sharding_db", "/conf/import/database-empty-database-name.yaml", MissingRequiredDatabaseException.class),
+                Arguments.of("duplicated logic table", "sharding_db", "/conf/import/database-duplicated-logic-table.yaml", DuplicateRuleException.class),
+                Arguments.of("invalid algorithm", "sharding_db", "/conf/import/database-invalid-algorithm.yaml", ServiceProviderNotFoundException.class));
     }
     
     private void assertExecute(final ContextManager contextManager, final String filePath) {
-        ImportDatabaseConfigurationExecutor executor = new ImportDatabaseConfigurationExecutor();
         URL url = ImportDatabaseConfigurationExecutorTest.class.getResource(filePath);
         assertNotNull(url);
         executor.executeUpdate(new ImportDatabaseConfigurationStatement(url.getPath()), contextManager);

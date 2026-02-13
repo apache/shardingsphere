@@ -134,6 +134,11 @@
             <artifactId>shardingsphere-transaction-xa-atomikos</artifactId>
             <version>${r'${project.version}'}</version>
         </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>javax.transaction-api</artifactId>
+            <version>1.3</version>
+        </dependency>
     </#if>
     <#if transaction=="xa-narayana">
         <dependency>
@@ -144,22 +149,27 @@
         <dependency>
             <groupId>org.jboss.narayana.jta</groupId>
             <artifactId>jta</artifactId>
-            <version>5.12.4.Final</version>
+            <version>5.12.7.Final</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.narayana.jts</groupId>
             <artifactId>narayana-jts-integration</artifactId>
-            <version>5.12.4.Final</version>
+            <version>5.12.7.Final</version>
         </dependency>
         <dependency>
             <groupId>org.jboss</groupId>
             <artifactId>jboss-transaction-spi</artifactId>
-            <version>7.6.0.Final</version>
+            <version>7.6.1.Final</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
-            <version>3.2.1.Final</version>
+            <version>3.4.3.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>javax.transaction-api</artifactId>
+            <version>1.3</version>
         </dependency>
     <#elseif transaction=="base-seata">
         <dependency>
@@ -170,34 +180,29 @@
         <dependency>
             <groupId>io.seata</groupId>
             <artifactId>seata-all</artifactId>
-            <version>1.5.2</version>
+            <version>2.0.0</version>
         </dependency>
     </#if>
     <#if framework?contains("jpa")>
         <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.1-api</artifactId>
-            <version>1.0.0.Final</version>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.4.24.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <version>5.4.24.Final</version>
+            <version>6.4.4.Final</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
-            <version>5.2.15.RELEASE</version>
+            <version>6.1.16</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>5.2.15.RELEASE</version>
+            <version>6.1.16</version>
         </dependency>
     </#if>
     <#if framework=="spring-boot-starter-jdbc">
@@ -221,7 +226,7 @@
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>2.1.3</version>
+            <version>3.0.3</version>
             <exclusions>
                 <exclusion>
                     <artifactId>snakeyaml</artifactId>
@@ -233,12 +238,12 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>5.2.15.RELEASE</version>
+            <version>6.1.16</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>5.2.15.RELEASE</version>
+            <version>6.1.16</version>
         </dependency>
     <#elseif framework=="spring-namespace-mybatis">
         <dependency>
@@ -249,17 +254,17 @@
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis-spring</artifactId>
-            <version>2.0.5</version>
+            <version>3.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
-            <version>5.2.15.RELEASE</version>
+            <version>6.1.16</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>5.2.15.RELEASE</version>
+            <version>6.1.16</version>
         </dependency>
     <#elseif framework?contains("spring-boot-starter")>
         <dependency>
@@ -283,7 +288,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>3.4.2</version>
+            <version>4.0.3</version>
         </dependency>
         <dependency>
             <groupId>com.mysql</groupId>
@@ -336,8 +341,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>17</source>
+                    <target>17</target>
                 </configuration>
             </plugin>
         </plugins>

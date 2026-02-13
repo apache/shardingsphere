@@ -46,7 +46,7 @@
         <property name="packagesToScan" value="org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity" />
         <property name="jpaProperties">
             <props>
-                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
                 <prop key="hibernate.hbm2ddl.auto">create-drop</prop>
                 <prop key="hibernate.show_sql">false</prop>
             </props>
