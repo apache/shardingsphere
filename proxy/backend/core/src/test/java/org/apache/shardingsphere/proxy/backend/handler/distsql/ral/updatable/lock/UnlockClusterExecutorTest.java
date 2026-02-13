@@ -40,7 +40,7 @@ class UnlockClusterExecutorTest {
     void assertExecuteUpdateWithNotLockedCluster() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getStateContext().getState()).thenReturn(ShardingSphereState.OK);
-        assertThrows(NotLockedClusterException.class, () -> executor.executeUpdate(new UnlockClusterStatement(null), contextManager));
+        assertThrows(NotLockedClusterException.class, () -> executor.executeUpdate(new UnlockClusterStatement(), contextManager));
     }
     
     @Test
