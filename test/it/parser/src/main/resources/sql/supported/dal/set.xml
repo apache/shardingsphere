@@ -50,4 +50,6 @@
     <sql-case id="set_session_authorization" value="SET SESSION AUTHORIZATION user1 PASSWORD 'password'" db-types="openGauss" />
     <sql-case id="set_persist_system_variable_doris" value="SET PERSIST max_connections = 200" db-types="Doris" />
     <sql-case id="set_persist_only_system_variable_doris" value="SET PERSIST_ONLY time_zone = '+08:00'" db-types="Doris" />
+    <sql-case id="set_mysql_version_comment" value="/*! SET GLOBAL max_connections=123 */" db-types="MySQL" />
+    <sql-case id="set_mysql_version_comment_with_version" value="/*!80029 SET GLOBAL max_connections=456 */" db-types="MySQL" />
 </sql-cases>
