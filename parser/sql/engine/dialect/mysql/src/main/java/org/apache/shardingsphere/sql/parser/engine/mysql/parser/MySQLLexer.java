@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.engine.mysql.parser;
 
+import java.nio.CharBuffer;
 import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CodePointBuffer;
+import org.antlr.v4.runtime.CodePointCharStream;
+import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementLexer;
 
@@ -27,6 +31,27 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementLexer;
 public final class MySQLLexer extends MySQLStatementLexer implements SQLLexer {
     
     public MySQLLexer(final CharStream input) {
-        super(input);
+        super(stripExecutableComment(input));
+    }
+
+    private static CharStream stripExecutableComment(final CharStream input) {
+        String sql = input.getText(Interval.of(0, input.size() - 1));
+        String trimmed = sql.trim();
+        if (trimmed.endsWith(";")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1).trim();
+        }
+        if (!trimmed.startsWith("/*!") || !trimmed.endsWith("*/")) {
+            return input;
+        }
+        String content = trimmed.substring(3, trimmed.length() - 2);
+        int index = 0;
+        while (index < content.length() && content.charAt(index) >= '0' && content.charAt(index) <= '9') {
+            index++;
+        }
+        String innerSQL = content.substring(index).trim();
+        if (innerSQL.isEmpty()) {
+            return input;
+        }
+        return CodePointCharStream.fromBuffer(CodePointBuffer.withChars(CharBuffer.wrap(innerSQL.toCharArray())));
     }
 }
