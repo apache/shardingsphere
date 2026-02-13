@@ -46,6 +46,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -59,7 +60,7 @@ class SetDistVariableExecutorTest {
     void assertExecuteUpdateSuccess(final String caseName, final SetDistVariableStatement statement, final Consumer<ContextManager> assertion) {
         ContextManager contextManager = mockContextManager();
         executor.executeUpdate(statement, contextManager);
-        assertion.accept(contextManager);
+        assertDoesNotThrow(() -> assertion.accept(contextManager));
     }
     
     private static Stream<Arguments> assertExecuteUpdateSuccessArguments() {
