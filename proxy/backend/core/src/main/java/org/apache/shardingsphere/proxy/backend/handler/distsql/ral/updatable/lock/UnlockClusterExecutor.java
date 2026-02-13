@@ -36,8 +36,7 @@ public final class UnlockClusterExecutor implements DistSQLUpdateExecutor<Unlock
     @Override
     public void executeUpdate(final UnlockClusterStatement sqlStatement, final ContextManager contextManager) throws SQLException {
         checkState(contextManager);
-        long timeoutMillis = sqlStatement.getTimeoutMillis().orElse(3000L);
-        contextManager.getExclusiveOperatorEngine().operate(new LockClusterOperation(), timeoutMillis, () -> {
+        contextManager.getExclusiveOperatorEngine().operate(new LockClusterOperation(), sqlStatement.getTimeoutMillis(), () -> {
             checkState(contextManager);
             contextManager.getPersistServiceFacade().getStateService().update(ShardingSphereState.OK);
             // TODO unlock snapshot info if locked

@@ -17,24 +17,19 @@
 
 package org.apache.shardingsphere.distsql.statement.type.ral.updatable;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Optional;
 
 /**
  * Unlock cluster statement.
  */
 @RequiredArgsConstructor
+@Getter
 public final class UnlockClusterStatement extends UpdatableRALStatement {
     
-    private final Long timeoutMillis;
+    private final long timeoutMillis;
     
-    /**
-     * Get lock timeout milliseconds.
-     *
-     * @return lock timeout milliseconds
-     */
-    public Optional<Long> getTimeoutMillis() {
-        return Optional.of(timeoutMillis);
+    public UnlockClusterStatement() {
+        this(3000L);
     }
 }
