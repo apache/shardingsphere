@@ -33,7 +33,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * Pipeline data source check engine.
@@ -52,14 +51,12 @@ public final class PipelineDataSourceCheckEngine {
     /**
      * Check data source connections.
      *
-     * @param dataSources data sources
+     * @param dataSource data source
      * @throws SQLWrapperException SQL wrapper exception
      */
-    public void checkConnection(final Collection<DataSource> dataSources) {
+    public void checkConnection(final DataSource dataSource) {
         try {
-            for (DataSource each : dataSources) {
-                each.getConnection().close();
-            }
+            dataSource.getConnection().close();
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
@@ -68,31 +65,29 @@ public final class PipelineDataSourceCheckEngine {
     /**
      * Check source data source.
      *
-     * @param dataSources to be checked source data source
+     * @param dataSource to be checked source data source
      */
-    public void checkSourceDataSources(final Collection<DataSource> dataSources) {
-        checkConnection(dataSources);
-        DatabaseTypedSPILoader.findService(DialectDatabasePrivilegeChecker.class, databaseType).ifPresent(optional -> dataSources.forEach(each -> optional.check(each, PrivilegeCheckType.PIPELINE)));
-        DatabaseTypedSPILoader.findService(DialectPipelineDatabaseVariableChecker.class, databaseType).ifPresent(optional -> dataSources.forEach(optional::check));
+    public void checkSourceDataSource(final DataSource dataSource) {
+        checkConnection(dataSource);
+        DatabaseTypedSPILoader.findService(DialectDatabasePrivilegeChecker.class, databaseType).ifPresent(optional -> optional.check(dataSource, PrivilegeCheckType.PIPELINE));
+        DatabaseTypedSPILoader.findService(DialectPipelineDatabaseVariableChecker.class, databaseType).ifPresent(optional -> optional.check(dataSource));
     }
     
     /**
-     * Check target data sources.
+     * Check target data source.
      *
-     * @param dataSources to be checked target data sources
+     * @param dataSource to be checked target data sources
      * @param importerConfig importer configuration
      */
-    public void checkTargetDataSources(final Collection<DataSource> dataSources, final ImporterConfiguration importerConfig) {
-        checkConnection(dataSources);
-        checkEmptyTable(dataSources, importerConfig);
+    public void checkTargetDataSource(final DataSource dataSource, final ImporterConfiguration importerConfig) {
+        checkConnection(dataSource);
+        checkEmptyTable(dataSource, importerConfig);
     }
     
-    private void checkEmptyTable(final Collection<DataSource> dataSources, final ImporterConfiguration importerConfig) {
+    private void checkEmptyTable(final DataSource dataSource, final ImporterConfiguration importerConfig) {
         try {
-            for (DataSource each : dataSources) {
-                for (QualifiedTable qualifiedTable : importerConfig.getTableAndSchemaNameMapper().getQualifiedTables()) {
-                    ShardingSpherePreconditions.checkState(checkEmptyTable(each, qualifiedTable), () -> new PrepareJobWithTargetTableNotEmptyException(qualifiedTable.getTableName()));
-                }
+            for (QualifiedTable qualifiedTable : importerConfig.getTableAndSchemaNameMapper().getQualifiedTables()) {
+                ShardingSpherePreconditions.checkState(checkEmptyTable(dataSource, qualifiedTable), () -> new PrepareJobWithTargetTableNotEmptyException(qualifiedTable.getTableName()));
             }
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
