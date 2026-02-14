@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.persist.service;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Table meta data persist service.
@@ -43,7 +44,7 @@ public interface TableMetaDataPersistService {
      * @param tableName to be loaded table name
      * @return loaded table
      */
-    ShardingSphereTable load(String databaseName, String schemaName, String tableName);
+    Optional<ShardingSphereTable> load(String databaseName, String schemaName, String tableName);
     
     /**
      * Persist tables.
