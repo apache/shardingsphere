@@ -33,7 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -59,7 +59,7 @@ class TableMetaDataPersistDisabledServiceTest {
     
     @Test
     void assertLoadTable() {
-        assertNull(persistService.load("foo_db", "foo_schema", "foo_tbl"));
+        assertFalse(persistService.load("foo_db", "foo_schema", "foo_tbl").isPresent());
     }
     
     @Test

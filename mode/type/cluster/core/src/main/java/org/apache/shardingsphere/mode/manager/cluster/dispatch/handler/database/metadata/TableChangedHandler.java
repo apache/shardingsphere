@@ -28,6 +28,8 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath;
 
+import java.util.Optional;
+
 /**
  * Table changed handler.
  */
@@ -65,9 +67,11 @@ public final class TableChangedHandler implements DatabaseLeafValueChangedHandle
     }
     
     private void handleCreatedOrAltered(final String databaseName, final String schemaName, final String tableName) {
-        ShardingSphereTable table = contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);
-        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterTable(databaseName, schemaName, table);
-        statisticsRefreshEngine.asyncRefresh();
+        Optional<ShardingSphereTable> table = contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getTable().load(databaseName, schemaName, tableName);
+        if (table.isPresent()) {
+            contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterTable(databaseName, schemaName, table.get());
+            statisticsRefreshEngine.asyncRefresh();
+        }
     }
     
     private void handleDropped(final String databaseName, final String schemaName, final String tableName) {
