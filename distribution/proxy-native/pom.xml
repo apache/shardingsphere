@@ -468,10 +468,6 @@
                     <scope>runtime</scope>
                     <exclusions>
                         <exclusion>
-                            <groupId>org.apache.seata</groupId>
-                            <artifactId>seata-all</artifactId>
-                        </exclusion>
-                        <exclusion>
                             <groupId>commons-lang</groupId>
                             <artifactId>commons-lang</artifactId>
                         </exclusion>
