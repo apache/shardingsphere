@@ -715,7 +715,7 @@
                 <dependency>
                     <groupId>org.apache.hive</groupId>
                     <artifactId>hive-jdbc</artifactId>
-                    <scope>runtime</scope>
+                    <scope>provided</scope>
                 </dependency>
             </dependencies>
         </profile>
