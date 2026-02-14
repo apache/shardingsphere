@@ -61,6 +61,7 @@
             <artifactId>hive-jdbc</artifactId>
             <version>${hive-jdbc.version}</version>
             <classifier>standalone</classifier>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
