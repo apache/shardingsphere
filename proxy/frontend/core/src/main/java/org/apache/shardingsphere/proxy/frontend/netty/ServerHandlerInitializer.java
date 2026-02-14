@@ -20,11 +20,16 @@ package org.apache.shardingsphere.proxy.frontend.netty;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Server handler initializer.
@@ -42,7 +47,15 @@ public final class ServerHandlerInitializer extends ChannelInitializer<Channel> 
         pipeline.addLast(new PacketCodec(databaseProtocolFrontendEngine.getCodecEngine()));
         pipeline.addLast(new FrontendChannelLimitationInboundHandler(databaseProtocolFrontendEngine));
         pipeline.addLast(ProxyFlowControlHandler.class.getSimpleName(), new ProxyFlowControlHandler());
+        addIdleStateHandlerIfNeeded(pipeline);
         pipeline.addLast(FrontendChannelInboundHandler.class.getSimpleName(), new FrontendChannelInboundHandler(databaseProtocolFrontendEngine, socketChannel));
         databaseProtocolFrontendEngine.initChannel(socketChannel);
+    }
+    
+    private void addIdleStateHandlerIfNeeded(final ChannelPipeline pipeline) {
+        long idleTimeout = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_CONNECTION_IDLE_TIMEOUT);
+        if (0 < idleTimeout) {
+            pipeline.addLast(new IdleStateHandler(0, 0, idleTimeout, TimeUnit.SECONDS));
+        }
     }
 }
