@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.checker;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
-import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelinePrepareSQLBuilder;
 import org.apache.shardingsphere.database.connector.core.checker.DialectDatabasePrivilegeChecker;
 import org.apache.shardingsphere.database.connector.core.checker.PrivilegeCheckType;
@@ -33,6 +32,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Pipeline data source check engine.
@@ -77,16 +77,16 @@ public final class PipelineDataSourceCheckEngine {
      * Check target data source.
      *
      * @param dataSource to be checked target data sources
-     * @param importerConfig importer configuration
+     * @param qualifiedTables qualified tables
      */
-    public void checkTargetDataSource(final DataSource dataSource, final ImporterConfiguration importerConfig) {
+    public void checkTargetDataSource(final DataSource dataSource, final Collection<QualifiedTable> qualifiedTables) {
         checkConnection(dataSource);
-        checkEmptyTable(dataSource, importerConfig);
+        checkEmptyTable(dataSource, qualifiedTables);
     }
     
-    private void checkEmptyTable(final DataSource dataSource, final ImporterConfiguration importerConfig) {
+    private void checkEmptyTable(final DataSource dataSource, final Collection<QualifiedTable> qualifiedTables) {
         try {
-            for (QualifiedTable qualifiedTable : importerConfig.getTableAndSchemaNameMapper().getQualifiedTables()) {
+            for (QualifiedTable qualifiedTable : qualifiedTables) {
                 ShardingSpherePreconditions.checkState(checkEmptyTable(dataSource, qualifiedTable), () -> new PrepareJobWithTargetTableNotEmptyException(qualifiedTable.getTableName()));
             }
         } catch (final SQLException ex) {

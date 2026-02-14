@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.checker;
 
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithTargetTableNotEmptyException;
-import org.apache.shardingsphere.data.pipeline.core.importer.ImporterConfiguration;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
@@ -34,17 +33,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PipelineDataSourceCheckEngineTest {
+    
+    private final Collection<QualifiedTable> qualifiedTables = Collections.singleton(new QualifiedTable(null, "t_order"));
     
     @Mock(extraInterfaces = AutoCloseable.class)
     private DataSource dataSource;
@@ -90,9 +90,7 @@ class PipelineDataSourceCheckEngineTest {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        ImporterConfiguration importerConfig = mock(ImporterConfiguration.class, RETURNS_DEEP_STUBS);
-        when(importerConfig.getTableAndSchemaNameMapper().getQualifiedTables()).thenReturn(Collections.singleton(new QualifiedTable(null, "t_order")));
-        assertDoesNotThrow(() -> pipelineDataSourceCheckEngine.checkTargetDataSource(dataSource, importerConfig));
+        assertDoesNotThrow(() -> pipelineDataSourceCheckEngine.checkTargetDataSource(dataSource, qualifiedTables));
     }
     
     @Test
@@ -101,14 +99,12 @@ class PipelineDataSourceCheckEngineTest {
         when(connection.prepareStatement("SELECT * FROM t_order LIMIT 1")).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
-        ImporterConfiguration importerConfig = mock(ImporterConfiguration.class, RETURNS_DEEP_STUBS);
-        when(importerConfig.getTableAndSchemaNameMapper().getQualifiedTables()).thenReturn(Collections.singleton(new QualifiedTable(null, "t_order")));
-        assertThrows(PrepareJobWithTargetTableNotEmptyException.class, () -> pipelineDataSourceCheckEngine.checkTargetDataSource(dataSource, importerConfig));
+        assertThrows(PrepareJobWithTargetTableNotEmptyException.class, () -> pipelineDataSourceCheckEngine.checkTargetDataSource(dataSource, qualifiedTables));
     }
     
     @Test
     void assertCheckTargetDataSourceWhenSQLExceptionThrown() throws SQLException {
         when(dataSource.getConnection()).thenThrow(new SQLException(""));
-        assertThrows(SQLWrapperException.class, () -> pipelineDataSourceCheckEngine.checkTargetDataSource(dataSource, mock(ImporterConfiguration.class)));
+        assertThrows(SQLWrapperException.class, () -> pipelineDataSourceCheckEngine.checkTargetDataSource(dataSource, qualifiedTables));
     }
 }
