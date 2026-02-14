@@ -26,6 +26,10 @@
     <artifactId>shardingsphere-test-native</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <seata.version>2.5.0</seata.version>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -85,6 +89,12 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.seata</groupId>
+            <artifactId>seata-all</artifactId>
+            <version>${seata.version}</version>
             <scope>test</scope>
         </dependency>
         
