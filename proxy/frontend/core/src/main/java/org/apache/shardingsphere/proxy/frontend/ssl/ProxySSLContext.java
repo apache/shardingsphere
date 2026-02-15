@@ -70,9 +70,9 @@ public final class ProxySSLContext {
     }
     
     /**
-     * Get instance of {@link ProxySSLContext}.
+     * Get instance.
      *
-     * @return instance of {@link ProxySSLContext}
+     * @return got instance 
      */
     public static ProxySSLContext getInstance() {
         return INSTANCE;
