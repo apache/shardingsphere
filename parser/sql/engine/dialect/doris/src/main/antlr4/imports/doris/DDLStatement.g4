@@ -360,6 +360,18 @@ dropFunction
     : DROP FUNCTION ifExists? functionName
     ;
 
+createFile
+    : CREATE FILE fileName ((FROM | IN) databaseName)? propertiesClause
+    ;
+
+dropFile
+    : DROP FILE fileName ((FROM | IN) databaseName)? propertiesClause
+    ;
+
+fileName
+    : identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT
+    ;
+
 createProcedure
     : CREATE ownerStatement?
       PROCEDURE functionName LP_ procedureParameter? (COMMA_ procedureParameter)* RP_
