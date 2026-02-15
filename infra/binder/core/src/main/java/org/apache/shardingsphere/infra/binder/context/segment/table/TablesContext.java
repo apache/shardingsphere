@@ -21,6 +21,8 @@ import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
@@ -36,19 +38,19 @@ import java.util.Optional;
 @Getter
 @ToString
 public final class TablesContext {
-    
+
     private final Collection<SimpleTableSegment> simpleTables = new LinkedList<>();
-    
+
     private final Collection<String> tableNames = new CaseInsensitiveSet<>();
-    
+
     private final Collection<String> schemaNames = new CaseInsensitiveSet<>();
-    
+
     private final Collection<String> databaseNames = new CaseInsensitiveSet<>();
-    
+
     public TablesContext(final SimpleTableSegment table) {
         this(null == table ? Collections.emptyList() : Collections.singletonList(table));
     }
-    
+
     public TablesContext(final Collection<? extends TableSegment> tables) {
         for (TableSegment each : tables) {
             if (!(each instanceof SimpleTableSegment)) {
@@ -62,17 +64,27 @@ public final class TablesContext {
             handleSimpleTable(simpleTable, tableName);
         }
     }
-    
+
     private void handleSimpleTable(final SimpleTableSegment simpleTable, final TableNameSegment tableName) {
         simpleTables.add(simpleTable);
         tableNames.add(tableName.getIdentifier().getValue());
         // TODO support bind with all statement contains table segment @duanzhengqiang
-        tableName.getTableBoundInfo().filter(optional -> !Strings.isNullOrEmpty(optional.getOriginalSchema().getValue()))
+        tableName.getTableBoundInfo()
+                .filter(optional -> !Strings.isNullOrEmpty(optional.getOriginalSchema().getValue()))
                 .ifPresent(optional -> schemaNames.add(optional.getOriginalSchema().getValue()));
-        tableName.getTableBoundInfo().filter(optional -> !Strings.isNullOrEmpty(optional.getOriginalDatabase().getValue()))
+        tableName.getTableBoundInfo()
+                .filter(optional -> !Strings.isNullOrEmpty(optional.getOriginalDatabase().getValue()))
                 .ifPresent(optional -> databaseNames.add(optional.getOriginalDatabase().getValue()));
+
+        // Fallback for openGauss when TableBoundInfo is absent
+        if (!tableName.getTableBoundInfo().isPresent()) {
+            simpleTable.getOwner()
+                    .map(OwnerSegment::getIdentifier)
+                    .map(IdentifierValue::getValue)
+                    .ifPresent(schemaNames::add);
+        }
     }
-    
+
     /**
      * Get database name.
      *
@@ -81,7 +93,7 @@ public final class TablesContext {
     public Optional<String> getDatabaseName() {
         return databaseNames.isEmpty() ? Optional.empty() : Optional.of(databaseNames.iterator().next());
     }
-    
+
     /**
      * Get schema name.
      *
@@ -91,3 +103,4 @@ public final class TablesContext {
         return schemaNames.isEmpty() ? Optional.empty() : Optional.of(schemaNames.iterator().next());
     }
 }
+
