@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.connector;
 
-import com.google.common.collect.Multimap;
+import com.google.common.collect.LinkedHashMultimap;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -45,7 +46,6 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.ProxyJDBCExecutor;
@@ -144,9 +144,6 @@ class ProxySQLExecutorTest {
     private RawExecutor rawExecutor;
     
     @Mock
-    private JDBCBackendStatement jdbcBackendStatement;
-    
-    @Mock
     private TransactionHook transactionHook;
     
     @Mock
@@ -164,20 +161,14 @@ class ProxySQLExecutorTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
-    @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
-        when(transactionConnectionContext.getTransactionType()).thenReturn(Optional.empty());
         when(connectionSession.getConnectionContext().getTransactionContext()).thenReturn(transactionConnectionContext);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
+        when(databaseConnectionManager.getCachedConnections()).thenReturn(LinkedHashMultimap.create());
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
-        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
-        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(connectionSession.getIsolationLevel()).thenReturn(Optional.empty());
-        when(connectionSession.getStatementManager()).thenReturn(jdbcBackendStatement);
-        Multimap<String, Connection> cachedConnections = mock(Multimap.class);
-        when(cachedConnections.values()).thenReturn(Collections.emptyList());
-        when(databaseConnectionManager.getCachedConnections()).thenReturn(cachedConnections);
+        when(connectionSession.getStatementManager()).thenReturn(mock(JDBCBackendStatement.class));
         when(database.getName()).thenReturn("foo_db");
         when(database.getProtocolType()).thenReturn(fixtureDatabaseType);
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
@@ -197,32 +188,30 @@ class ProxySQLExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("constructorScenarios")
-    void assertConstructor(final String scenario, final String currentDatabaseName, final Optional<String> schemaName) {
+    void assertConstructor(final String name, final String currentDatabaseName, final String schemaName, final boolean hasSchemaName) {
         when(connectionSession.getCurrentDatabaseName()).thenReturn(currentDatabaseName);
-        ProxySQLExecutor actual = createProxySQLExecutor(schemaName);
-        assertNotNull(actual.getSqlFederationEngine());
+        assertNotNull(createProxySQLExecutor(schemaName, hasSchemaName).getSqlFederationEngine());
     }
     
     private Stream<Arguments> constructorScenarios() {
         return Stream.of(
-                Arguments.of("constructor-use-used-database-when-current-empty", "", Optional.of("foo_schema")),
-                Arguments.of("constructor-use-default-schema-when-schema-missing", "foo_db", Optional.empty()));
+                Arguments.of("constructor-use-used-database-when-current-empty", "", "foo_schema", true),
+                Arguments.of("constructor-use-default-schema-when-schema-missing", "foo_db", "foo_schema", false));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("checkExecutePrerequisitesScenarios")
-    void assertCheckExecutePrerequisites(
-                                         final String scenario, final SQLStatement sqlStatement, final TransactionType transactionType, final boolean inTransaction, final boolean hasTable,
-                                         final boolean expectedThrowException) {
+    void assertCheckExecutePrerequisites(final String name, final SQLStatement sqlStatement,
+                                         final TransactionType transactionType, final boolean inTransaction, final boolean hasTable, final boolean expectedThrowException) {
         when(transactionRule.getDefaultType()).thenReturn(transactionType);
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(inTransaction);
-        ProxySQLExecutor proxySQLExecutor = createProxySQLExecutor(Optional.of("foo_schema"));
+        ProxySQLExecutor proxySQLExecutor = createProxySQLExecutor("foo_schema", true);
         SQLStatementContext sqlStatementContext = createCheckStatementContext(sqlStatement, hasTable);
         if (expectedThrowException) {
             assertThrows(TableModifyInTransactionException.class, () -> proxySQLExecutor.checkExecutePrerequisites(sqlStatementContext));
-            return;
+        } else {
+            assertDoesNotThrow(() -> proxySQLExecutor.checkExecutePrerequisites(sqlStatementContext));
         }
-        assertDoesNotThrow(() -> proxySQLExecutor.checkExecutePrerequisites(sqlStatementContext));
     }
     
     private Stream<Arguments> checkExecutePrerequisitesScenarios() {
@@ -238,21 +227,22 @@ class ProxySQLExecutorTest {
                 Arguments.of("ddl-create-mysql-not-in-transaction-pass", createCreateTableStatement(mysqlDatabaseType), TransactionType.XA, false, true, false),
                 Arguments.of("ddl-create-postgresql-not-in-transaction-pass", createCreateTableStatement(postgresqlDatabaseType), TransactionType.LOCAL, false, true, false),
                 Arguments.of("ddl-truncate-postgresql-local-pass", createTruncateStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, true, false),
-                Arguments.of("ddl-cursor-postgresql-local-pass", createCursorStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, true, false),
-                Arguments.of("ddl-close-postgresql-local-pass", createCloseStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, true, false),
-                Arguments.of("ddl-move-postgresql-local-pass", createMoveStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, true, false),
-                Arguments.of("ddl-fetch-postgresql-local-pass", createFetchStatement(postgresqlDatabaseType), TransactionType.LOCAL, true, true, false),
+                Arguments.of("ddl-cursor-postgresql-local-pass", new CursorStatement(postgresqlDatabaseType, null, null), TransactionType.LOCAL, true, true, false),
+                Arguments.of("ddl-close-postgresql-local-pass", new CloseStatement(postgresqlDatabaseType, null, false), TransactionType.LOCAL, true, true, false),
+                Arguments.of("ddl-move-postgresql-local-pass", new MoveStatement(postgresqlDatabaseType, null, null), TransactionType.LOCAL, true, true, false),
+                Arguments.of("ddl-fetch-postgresql-local-pass", new FetchStatement(postgresqlDatabaseType, null, null), TransactionType.LOCAL, true, true, false),
                 Arguments.of("ddl-truncate-postgresql-xa-pass", createTruncateStatement(postgresqlDatabaseType), TransactionType.XA, true, true, false),
                 Arguments.of("dml-insert-mysql-xa-pass", createInsertStatement(mysqlDatabaseType), TransactionType.XA, true, true, false));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("executeScenarios")
-    void assertExecute(final String scenario, final boolean hasRawExecutionRule, final SQLStatement sqlStatement, final boolean inTransaction,
-                       final boolean expectedHookInvoked, final boolean isReturnGeneratedKeys) throws ReflectiveOperationException, SQLException {
+    void assertExecute(final String name, final boolean hasRawExecutionRule, final SQLStatement sqlStatement, final boolean inTransaction,
+                       final boolean expectedHookInvoked, final boolean isReturnGeneratedKeys) throws SQLException {
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(transactionConnectionContext.isInTransaction()).thenReturn(inTransaction);
         when(database.getRuleMetaData().getRules()).thenReturn(createRules(hasRawExecutionRule));
-        ProxySQLExecutor proxySQLExecutor = createProxySQLExecutor(Optional.of("foo_schema"));
+        ProxySQLExecutor proxySQLExecutor = createProxySQLExecutor("foo_schema", true);
         setExecutorField(proxySQLExecutor, "rawExecutor", rawExecutor);
         setExecutorField(proxySQLExecutor, "regularExecutor", regularExecutor);
         setExecutorField(proxySQLExecutor, "transactionHooks", Collections.singletonMap(shardingSphereRule, transactionHook));
@@ -298,18 +288,17 @@ class ProxySQLExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("executeFallbackScenarios")
-    void assertExecuteFallback(final String scenario, final boolean hasRawExecutionRule, final SQLStatement sqlStatement,
-                               final boolean hasSaneResult) throws ReflectiveOperationException, SQLException {
+    void assertExecuteFallback(final String name, final boolean hasRawExecutionRule, final SQLStatement sqlStatement, final boolean hasSaneResult) throws SQLException {
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
         when(database.getRuleMetaData().getRules()).thenReturn(createRules(hasRawExecutionRule));
-        ProxySQLExecutor proxySQLExecutor = createProxySQLExecutor(Optional.of("foo_schema"));
+        ProxySQLExecutor proxySQLExecutor = createProxySQLExecutor("foo_schema", true);
         setExecutorField(proxySQLExecutor, "rawExecutor", rawExecutor);
         setExecutorField(proxySQLExecutor, "regularExecutor", regularExecutor);
         setExecutorField(proxySQLExecutor, "transactionHooks", Collections.singletonMap(shardingSphereRule, transactionHook));
         ExecutionContext executionContext = createExecutionContext(sqlStatement);
         SQLException expectedException = new SQLException("mock prepare failure");
         try (MockedStatic<DatabaseTypedSPILoader> mockedDatabaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
-            mockedDatabaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, fixtureDatabaseType))
-                    .thenReturn(Optional.of(saneQueryResultEngine));
+            mockedDatabaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSaneQueryResultEngine.class, fixtureDatabaseType)).thenReturn(Optional.of(saneQueryResultEngine));
             if (hasSaneResult) {
                 ExecuteResult saneExecuteResult = mock(ExecuteResult.class);
                 when(saneQueryResultEngine.getSaneQueryResult(sqlStatement, expectedException)).thenReturn(Optional.of(saneExecuteResult));
@@ -345,8 +334,7 @@ class ProxySQLExecutorTest {
                     MockedConstruction<DriverExecutionPrepareEngine> ignored = mockConstruction(DriverExecutionPrepareEngine.class,
                             (mock, context) -> when(mock.prepare(anyString(), eq(executionContext), anyCollection(), any(ExecutionGroupReportContext.class)))
                                     .thenThrow(expectedException))) {
-                SQLException actual = assertThrows(SQLException.class, () -> proxySQLExecutor.execute(executionContext));
-                assertThat(actual, is(expectedException));
+                assertThat(assertThrows(SQLException.class, () -> proxySQLExecutor.execute(executionContext)), is(expectedException));
             }
         }
     }
@@ -360,7 +348,7 @@ class ProxySQLExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("xaMetaDataRefreshScenarios")
-    void assertCheckExecutePrerequisitesWithMetaDataRefreshInXATransaction(final String scenario) {
+    void assertCheckExecutePrerequisitesWithMetaDataRefreshInXATransaction(final String name) {
         DatabaseType databaseType = mock(DatabaseType.class);
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(new DialectTransactionOption(false, false, false, true, true,
@@ -369,7 +357,7 @@ class ProxySQLExecutorTest {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         try (MockedStatic<DatabaseTypedSPILoader> mockedDatabaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class, CALLS_REAL_METHODS)) {
             mockedDatabaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
-            ProxySQLExecutor proxySQLExecutor = createProxySQLExecutor(Optional.of("foo_schema"));
+            ProxySQLExecutor proxySQLExecutor = createProxySQLExecutor("foo_schema", true);
             assertDoesNotThrow(() -> proxySQLExecutor.checkExecutePrerequisites(createCheckStatementContext(createCreateTableStatement(databaseType), true)));
         }
     }
@@ -378,31 +366,29 @@ class ProxySQLExecutorTest {
         return Stream.of(Arguments.of("ddl-create-xa-with-metadata-refresh-supported"));
     }
     
-    private ProxySQLExecutor createProxySQLExecutor(final Optional<String> schemaName) {
-        return new ProxySQLExecutor(JDBCDriverType.STATEMENT, databaseConnectionManager, databaseProxyConnector, createConstructorStatementContext(schemaName));
+    private ProxySQLExecutor createProxySQLExecutor(final String schemaName, final boolean hasSchemaName) {
+        return new ProxySQLExecutor(JDBCDriverType.STATEMENT, databaseConnectionManager, databaseProxyConnector, createConstructorStatementContext(schemaName, hasSchemaName));
     }
     
-    private SQLStatementContext createConstructorStatementContext(final Optional<String> schemaName) {
+    private SQLStatementContext createConstructorStatementContext(final String schemaName, final boolean hasSchemaName) {
         SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement().getDatabaseType()).thenReturn(fixtureDatabaseType);
-        when(result.getTablesContext().getSchemaName()).thenReturn(schemaName);
+        when(result.getTablesContext().getSchemaName()).thenReturn(hasSchemaName ? Optional.of(schemaName) : Optional.empty());
         return result;
     }
     
     private SQLStatementContext createCheckStatementContext(final SQLStatement sqlStatement, final boolean hasTable) {
         SQLStatementContext result = mock(SQLStatementContext.class);
         when(result.getSqlStatement()).thenReturn(sqlStatement);
-        when(result.getTablesContext()).thenReturn(new TablesContext(hasTable ? createSimpleTableSegment() : (SimpleTableSegment) null));
+        when(result.getTablesContext()).thenReturn(new TablesContext(hasTable ? new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))) : null));
         return result;
     }
     
     private ExecutionContext createExecutionContext(final SQLStatement sqlStatement) {
-        ExecutionContext result = mock(ExecutionContext.class);
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        ExecutionContext result = mock(ExecutionContext.class);
         when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        when(result.getExecutionUnits()).thenReturn(Collections.emptyList());
-        when(result.getQueryContext()).thenReturn(mock(QueryContext.class));
         return result;
     }
     
@@ -430,41 +416,22 @@ class ProxySQLExecutorTest {
     
     private CreateTableStatement createCreateTableStatement(final DatabaseType databaseType) {
         CreateTableStatement result = new CreateTableStatement(databaseType);
-        result.setTable(createSimpleTableSegment());
+        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         return result;
     }
     
     private TruncateStatement createTruncateStatement(final DatabaseType databaseType) {
-        return new TruncateStatement(databaseType, Collections.singleton(createSimpleTableSegment()));
+        return new TruncateStatement(databaseType, Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
     }
     
     private InsertStatement createInsertStatement(final DatabaseType databaseType) {
         InsertStatement result = new InsertStatement(databaseType);
-        result.setTable(createSimpleTableSegment());
+        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         return result;
     }
     
-    private CursorStatement createCursorStatement(final DatabaseType databaseType) {
-        return new CursorStatement(databaseType, null, null);
-    }
-    
-    private CloseStatement createCloseStatement(final DatabaseType databaseType) {
-        return new CloseStatement(databaseType, null, false);
-    }
-    
-    private MoveStatement createMoveStatement(final DatabaseType databaseType) {
-        return new MoveStatement(databaseType, null, null);
-    }
-    
-    private FetchStatement createFetchStatement(final DatabaseType databaseType) {
-        return new FetchStatement(databaseType, null, null);
-    }
-    
-    private SimpleTableSegment createSimpleTableSegment() {
-        return new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
-    }
-    
-    private void setExecutorField(final ProxySQLExecutor target, final String fieldName, final Object value) throws ReflectiveOperationException {
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setExecutorField(final ProxySQLExecutor target, final String fieldName, final Object value) {
         Plugins.getMemberAccessor().set(ProxySQLExecutor.class.getDeclaredField(fieldName), target, value);
     }
 }

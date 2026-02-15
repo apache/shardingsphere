@@ -36,6 +36,47 @@ description: >-
 6. If unrelated changes exist, you must explicitly ask for rollback; if none exist, do not output that section.
 7. Any "fallback-only without root-cause repair" or "unresolved risk" must not receive `Merge Verdict: Mergeable`.
 8. Review only the PR's latest code version; do not reuse conclusions from older versions.
+9. In every review, run the `Hard Compliance Gate` checks and record command evidence with exit codes.
+10. If any required check was not executed, output is missing, or evidence is incomplete, set `Merge Verdict: Not Mergeable` with reason `Evidence insufficient`.
+11. Enforce `RULE-COD-062` from `CODE_OF_CONDUCT.md:62`: method parameters must not use `Optional`; pass plain values (nullable when needed).
+12. If `RULE-COD-062` is violated in changed production/test Java files and no explicit user waiver exists, set `Merge Verdict: Not Mergeable`.
+13. Any `RULE-COD-062` judgment must include file/line evidence and cite `CODE_OF_CONDUCT.md:62` in the review.
+
+## Hard Compliance Gate (Non-negotiable)
+
+Run these checks before merge decision:
+
+1. Build changed Java file list from latest PR diff.
+2. Execute Optional-parameter scan against changed Java files:
+   - `rg -nP '\([^)]*\bOptional<[^>]+>\s+\w+[^)]*\)' <changed_java_files>`
+3. Record command(s), exit code(s), and hit summary.
+4. If there are no changed Java files, still record the file-list command and explicitly mark `No Java files changed`.
+
+Recommended command template:
+
+```bash
+git diff --name-only <base>...<head> | rg '\.java$'
+rg -nP '\([^)]*\bOptional<[^>]+>\s+\w+[^)]*\)' <changed_java_files>
+```
+
+Decision rules:
+
+- Any hit for method parameter `Optional` -> `Compliance Gate: FAIL` -> `Merge Verdict: Not Mergeable` (unless user explicitly waives).
+- Missing command execution or missing output evidence -> `Compliance Gate: FAIL` -> `Merge Verdict: Not Mergeable`.
+- No hit with complete evidence -> `Compliance Gate: PASS`.
+
+## Required Evidence Block (Mandatory Output)
+
+Every review response MUST include a compact evidence block:
+
+- `Compliance Gate: PASS/FAIL`
+- `Rule ID: RULE-COD-062`
+- `Rule Source: CODE_OF_CONDUCT.md:62`
+- `Commands:` list each command exactly as executed
+- `Exit Codes:` one-to-one mapping with commands
+- `Matches:` file:line hits, or `none`, or `No Java files changed`
+
+If any field above is missing, treat it as `Evidence insufficient` and set `Merge Verdict: Not Mergeable`.
 
 ## Execution Boundary
 
@@ -89,6 +130,7 @@ When information gaps block mergeability, request at least:
 
 ## Review Workflow
 
+0. Run `Hard Compliance Gate` first and collect command evidence (commands, exit codes, hit summary).
 1. Define target and boundary: restate PR goal, impacted modules, target topology (JDBC or Proxy, Standalone or Cluster).
 2. Root-cause modeling: reconstruct "trigger condition -> failure path -> result" from issue and code path.
 3. Fix mapping: verify each change covers the root-cause chain, not just symptoms.
@@ -165,6 +207,8 @@ Use committer tone, gentle wording, no emojis; structure:
 1. Decision block
    - `Merge Verdict: Not Mergeable`
    - `Reviewed Scope / Not Reviewed Scope / Need Expert Review`
+   - `Compliance Gate: PASS/FAIL`
+   - `Compliance Evidence: commands + exit codes + key matches`
 2. Positive feedback (optional)
    - Include only when there are genuinely correct direction-aligned changes.
    - Omit if none.
@@ -188,9 +232,12 @@ Use committer tone, gentle wording, no emojis; structure:
 1. Decision block
    - `Merge Verdict: Mergeable`
    - `Reviewed Scope / Not Reviewed Scope / Need Expert Review`
+   - `Compliance Gate: PASS`
+   - `Compliance Evidence: commands + exit codes + key matches`
 2. Basis
    - Root-cause fix evidence.
    - Risk assessment results (proving no unresolved risk).
+   - Explicit statement that `RULE-COD-062` (`CODE_OF_CONDUCT.md:62`) has no violation in changed Java files.
 3. Pre-merge checks
    - CI, tests, compatibility confirmations.
 
