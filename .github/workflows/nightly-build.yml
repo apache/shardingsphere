@@ -258,6 +258,8 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
       zookeeper:
         image: zookeeper:3.6.3
+        env:
+          JMXDISABLE: "true"
         ports:
           - 2181:2181
         options: --health-cmd="echo ruok | nc localhost 2181" --health-interval=10s --health-timeout=5s --health-retries=3
