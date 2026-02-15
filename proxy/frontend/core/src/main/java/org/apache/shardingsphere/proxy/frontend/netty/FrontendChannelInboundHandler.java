@@ -21,11 +21,15 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.authentication.result.AuthenticationResult;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.exception.ExpectedExceptions;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
@@ -97,6 +101,31 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             message.release();
         }
         return false;
+    }
+    
+    @Override
+    public void userEventTriggered(final ChannelHandlerContext ctx, final Object event) throws Exception {
+        if (event instanceof IdleStateEvent) {
+            if (isIdle()) {
+                ConnectionContext connectionContext = connectionSession.getConnectionContext();
+                Grantee grantee = null == connectionContext ? null : connectionContext.getGrantee();
+                String databaseName = null == connectionContext ? null : connectionContext.getCurrentDatabaseName().orElse("NONE");
+                log.info("Connection {} (processId: {}) will be closed due to receiving an IdleStateEvent as it is idle. Grantee: {}, database name: {}",
+                        connectionSession.getConnectionId(), connectionSession.getProcessId(), grantee, databaseName);
+                ctx.close();
+            } else {
+                log.info("Received IdleStateEvent, but connection {} (processId: {}) is not idle, ignore.", connectionSession.getConnectionId(), connectionSession.getProcessId());
+            }
+        }
+        super.userEventTriggered(ctx, event);
+    }
+    
+    private boolean isIdle() {
+        if (null == connectionSession.getProcessId()) {
+            return true;
+        }
+        Process process = ProcessRegistry.getInstance().get(connectionSession.getProcessId());
+        return null == process || process.isIdle();
     }
     
     @Override

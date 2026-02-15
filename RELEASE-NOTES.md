@@ -1,5 +1,3 @@
-## Release 5.5.4-SNAPSHOT
-
 ## Release 5.5.3
 
 ### CVE
@@ -9,6 +7,9 @@
 1. Fix CVE-2024-7254 [#36153](https://github.com/apache/shardingsphere/pull/36153)
 1. Fix CVE-2015-5237, CVE-2024-7254, CVE-2022-3171, CVE-2021-22569, CVE-2021-22570 [#37888](https://github.com/apache/shardingsphere/pull/37888)
 1. Fix CVE-2024-12798, CVE-2024-12801, CVE-2025-11226 [#37936](https://github.com/apache/shardingsphere/pull/37936)
+1. Fix CVE-2023-39017 [#38039](https://github.com/apache/shardingsphere/pull/38039)
+1. Fix CVE-2024-22399, CVE-2021-32824, CVE-2025-5222, CVE-2016-1000027 [#38040](https://github.com/apache/shardingsphere/pull/38040)
+1. Fix CVE-2023-2976, CVE-2024-29131, CVE-2025-27821 [#38042](https://github.com/apache/shardingsphere/pull/38042)
 
 ### Metadata Storage Changes
 
@@ -21,6 +22,7 @@
 1. Remove configuration property key `system-log-level` - [#35493](https://github.com/apache/shardingsphere/pull/35493)
 1. Change ShardingSphere SQL log topic from `ShardingSphere-SQL` to `org.apache.shardingsphere.sql` - [#37022](https://github.com/apache/shardingsphere/pull/37022)
 1. Add temporary config key `instance-connection-enabled` - [#37694](https://github.com/apache/shardingsphere/pull/37694)
+1. Add property config key `proxy-frontend-connection-idle-timeout` - [#38045](https://github.com/apache/shardingsphere/pull/38045)
 
 ### New Features
 
@@ -30,6 +32,7 @@
 1. Decouple registry center types as pluggable - [#36087](https://github.com/apache/shardingsphere/pull/36087)
 1. Proxy: Support Firebird Proxy - [#35937](https://github.com/apache/shardingsphere/pull/35937)
 1. JDBC: Support ZooKeeper and ETCD URL format - [#37037](https://github.com/apache/shardingsphere/pull/37037)
+1. Proxy: Auto close idle frontend connection for Proxy - [#38045](https://github.com/apache/shardingsphere/pull/38045)
 
 ### Enhancements
 
@@ -96,7 +99,7 @@
 1. Kernel: Fix not return generate key when set null in INSERT statement - [35783](https://github.com/apache/shardingsphere/pull/35783)
 1. Kernel: Add AllowNotUseDatabaseSQLStatementAttribute to support some mysql dal statement execute without use database - [#37033](https://github.com/apache/shardingsphere/pull/37033)
 1. Metadata: Fix the exception to rename schema name when executing ALTER SCHEMA - [#34465](https://github.com/apache/shardingsphere/pull/34465)
-1. SQL Parser: Support multiple column names with pivot and unpivot clause - [35586](https://github.com/apache/shardingsphere/pull/35586)
+1. SQL Parser: Support multiple column names with pivot and unpivot clause for Oracle - [#35586](https://github.com/apache/shardingsphere/pull/35586)
 1. SQL Parser: Fix set OnDuplicateKeyColumnsSegment on INSERT for PostgreSQL - [#34425](https://github.com/apache/shardingsphere/pull/34425)
 1. SQL Parser: Fix SQL parser error when SQL contains implicit concat expression for MySQL - [#34660](https://github.com/apache/shardingsphere/pull/34660)
 1. SQL Parser: Fix SQL parser error when SQL contains subquery with alias for Oracle - [#35239](https://github.com/apache/shardingsphere/pull/35239)

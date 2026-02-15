@@ -22,6 +22,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.embedded.EmbeddedChannel;
+import io.netty.handler.timeout.IdleStateEvent;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authentication.result.AuthenticationResult;
 import org.apache.shardingsphere.authentication.result.AuthenticationResultBuilder;
@@ -30,7 +31,9 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.SQLDialectException;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -71,15 +74,15 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@StaticMockSettings({ProxyContext.class, ProcessRegistry.class})
 class FrontendChannelInboundHandlerTest {
     
     private static final int CONNECTION_ID = 1;
@@ -264,6 +267,29 @@ class FrontendChannelInboundHandlerTest {
         when(context.channel()).thenReturn(channelMock);
         frontendChannelInboundHandler.channelWritabilityChanged(context);
         verify(databaseConnectionManager, never()).getConnectionResourceLock();
+    }
+    
+    @Test
+    void assertUserEventTriggeredWithIdleStateEventAndIdle() throws Exception {
+        channel.register();
+        ProcessRegistry processRegistry = mock(ProcessRegistry.class);
+        when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
+        channel.pipeline().fireUserEventTriggered(IdleStateEvent.ALL_IDLE_STATE_EVENT);
+        assertThat(channel.isOpen(), is(false));
+    }
+    
+    @Test
+    void assertUserEventTriggeredWithIdleStateEventAndNotIdle() throws Exception {
+        channel.register();
+        ProcessRegistry processRegistry = mock(ProcessRegistry.class);
+        when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
+        String processId = "foo_id";
+        connectionSession.setProcessId(processId);
+        Process process = mock(Process.class);
+        when(process.isIdle()).thenReturn(false);
+        when(processRegistry.get(processId)).thenReturn(process);
+        channel.pipeline().fireUserEventTriggered(IdleStateEvent.ALL_IDLE_STATE_EVENT);
+        assertThat(channel.isOpen(), is(true));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

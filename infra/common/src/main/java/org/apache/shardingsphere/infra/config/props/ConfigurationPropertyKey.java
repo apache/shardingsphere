@@ -96,6 +96,11 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_FRONTEND_MAX_CONNECTIONS("proxy-frontend-max-connections", "0", int.class, false),
     
     /**
+     * Proxy frontend connection idle timeout in seconds.
+     */
+    PROXY_FRONTEND_CONNECTION_IDLE_TIMEOUT("proxy-frontend-connection-idle-timeout", "28800", long.class, false),
+    
+    /**
      * Proxy default start port.
      */
     PROXY_DEFAULT_PORT("proxy-default-port", "3307", int.class, true),
