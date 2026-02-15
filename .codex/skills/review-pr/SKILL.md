@@ -13,7 +13,7 @@ description: >-
 
 - Make merge decisions for ShardingSphere PRs with a "root-cause-first, evidence-first" approach.
 - Output a single merge decision:
-   - `Merge Verdict`: `Mergeable` / `Not Mergeable`
+  - `Merge Verdict`: `Mergeable` / `Not Mergeable`
 
 ## Trigger Scenarios
 
@@ -126,10 +126,10 @@ If the root-cause chain cannot be fully proven fixed, set `Merge Verdict: Not Me
 - Design risk: broken layering, duplicated logic, bypassed SPI/metadata cache, implicit state.
 - Performance risk: complexity increase, extra hot-path allocations, unbounded retries, blocking I/O.
 - Compatibility risk:
-   - Behavior compatibility
-   - Config compatibility
-   - API/SPI compatibility
-   - SQL compatibility (database/version/dialect)
+  - Behavior compatibility
+  - Config compatibility
+  - API/SPI compatibility
+  - SQL compatibility (database/version/dialect)
 - Functional degradation risk: old-scenario regression, boundary input behavior changes, error-code/exception semantic drift.
 - Operational risk: config migration complexity, gray-release and rollback complexity.
 - Supply-chain risk: vulnerabilities, licenses, transitive dependency changes from new deps.
@@ -199,10 +199,10 @@ Use committer tone, gentle wording, no emojis; structure:
 - Use "suggest / please / need" rather than accusatory commands.
 - Facts first, judgment second; avoid emotional wording.
 - Suggested sentence patterns:
-   - "This part is in the right direction, especially ..."
-   - "There are still several issues affecting mergeability; please address them first: ..."
-   - "This introduces new risk; please fix or roll back this part."
-   - "Please continue refining it, and I will do another focused review after that."
+  - "This part is in the right direction, especially ..."
+  - "There are still several issues affecting mergeability; please address them first: ..."
+  - "This introduces new risk; please fix or roll back this part."
+  - "Please continue refining it, and I will do another focused review after that."
 
 ## Prohibited Items
 
