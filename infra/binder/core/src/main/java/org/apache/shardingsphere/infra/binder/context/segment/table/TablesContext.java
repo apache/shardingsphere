@@ -38,19 +38,19 @@ import java.util.Optional;
 @Getter
 @ToString
 public final class TablesContext {
-
+    
     private final Collection<SimpleTableSegment> simpleTables = new LinkedList<>();
-
+    
     private final Collection<String> tableNames = new CaseInsensitiveSet<>();
-
+    
     private final Collection<String> schemaNames = new CaseInsensitiveSet<>();
-
+    
     private final Collection<String> databaseNames = new CaseInsensitiveSet<>();
-
+    
     public TablesContext(final SimpleTableSegment table) {
         this(null == table ? Collections.emptyList() : Collections.singletonList(table));
     }
-
+    
     public TablesContext(final Collection<? extends TableSegment> tables) {
         for (TableSegment each : tables) {
             if (!(each instanceof SimpleTableSegment)) {
@@ -64,7 +64,7 @@ public final class TablesContext {
             handleSimpleTable(simpleTable, tableName);
         }
     }
-
+    
     private void handleSimpleTable(final SimpleTableSegment simpleTable, final TableNameSegment tableName) {
         simpleTables.add(simpleTable);
         tableNames.add(tableName.getIdentifier().getValue());
@@ -75,7 +75,7 @@ public final class TablesContext {
         tableName.getTableBoundInfo()
                 .filter(optional -> !Strings.isNullOrEmpty(optional.getOriginalDatabase().getValue()))
                 .ifPresent(optional -> databaseNames.add(optional.getOriginalDatabase().getValue()));
-
+        
         // Fallback for openGauss when TableBoundInfo is absent
         if (!tableName.getTableBoundInfo().isPresent()) {
             simpleTable.getOwner()
@@ -84,7 +84,7 @@ public final class TablesContext {
                     .ifPresent(schemaNames::add);
         }
     }
-
+    
     /**
      * Get database name.
      *
@@ -93,7 +93,7 @@ public final class TablesContext {
     public Optional<String> getDatabaseName() {
         return databaseNames.isEmpty() ? Optional.empty() : Optional.of(databaseNames.iterator().next());
     }
-
+    
     /**
      * Get schema name.
      *
@@ -103,4 +103,3 @@ public final class TablesContext {
         return schemaNames.isEmpty() ? Optional.empty() : Optional.of(schemaNames.iterator().next());
     }
 }
-
