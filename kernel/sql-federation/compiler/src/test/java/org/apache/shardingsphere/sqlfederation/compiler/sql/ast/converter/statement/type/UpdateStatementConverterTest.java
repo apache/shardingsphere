@@ -45,8 +45,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class UpdateStatementConverterTest {
@@ -59,10 +59,10 @@ class UpdateStatementConverterTest {
         LimitSegment limit = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1L), new ParameterMarkerLimitValueSegment(0, 0, 0));
         updateStatement.setLimit(limit);
         SqlOrderBy actual = (SqlOrderBy) new UpdateStatementConverter().convert(updateStatement);
-        assertThat(actual.offset, instanceOf(SqlNode.class));
-        assertThat(actual.fetch, instanceOf(SqlDynamicParam.class));
+        assertThat(actual.offset, isA(SqlNode.class));
+        assertThat(actual.fetch, isA(SqlDynamicParam.class));
         SqlUpdate sqlUpdate = (SqlUpdate) actual.query;
-        assertThat(sqlUpdate.getAlias(), instanceOf(SqlIdentifier.class));
+        assertThat(sqlUpdate.getAlias(), isA(SqlIdentifier.class));
     }
     
     @Test

@@ -27,7 +27,6 @@ import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.ConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.service.PipelineJobItemManager;
-import org.apache.shardingsphere.data.pipeline.core.task.runner.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.config.YamlConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.swapper.YamlConsistencyCheckJobConfigurationSwapper;
@@ -49,8 +48,8 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 
@@ -87,8 +86,7 @@ class ConsistencyCheckJobExecutorCallbackTest {
     @Test
     void assertBuildTasksRunner() {
         ConsistencyCheckJobConfiguration jobConfig = new ConsistencyCheckJobConfiguration("check_job", "parent_job", "DATA_MATCH", new Properties(), databaseType);
-        PipelineTasksRunner actual = new ConsistencyCheckJobExecutorCallback().buildTasksRunner(new ConsistencyCheckJobItemContext(jobConfig, 0, JobStatus.RUNNING, null));
-        assertThat(actual, instanceOf(ConsistencyCheckTasksRunner.class));
+        assertThat(new ConsistencyCheckJobExecutorCallback().buildTasksRunner(new ConsistencyCheckJobItemContext(jobConfig, 0, JobStatus.RUNNING, null)), isA(ConsistencyCheckTasksRunner.class));
     }
     
     @Test

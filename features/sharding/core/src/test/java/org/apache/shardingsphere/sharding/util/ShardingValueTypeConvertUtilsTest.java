@@ -40,423 +40,303 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingValueTypeConvertUtilsTest {
     
     @Test
     void assertConvertToTargetTypeWhenValueIsNull() {
-        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(null, Integer.class), is(equalTo(null)));
+        assertNull(ShardingValueTypeConvertUtils.convertToTargetType(null, Integer.class));
     }
     
     @Test
     void assertConvertToTargetTypeWhenTypesMatch() {
-        Integer value = 100;
-        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(value, Integer.class), is(equalTo(value)));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(100, Integer.class), is(100));
     }
     
     @Test
     void assertConvertToIntegerFromLong() {
-        Long value = 123L;
-        Integer result = ShardingValueTypeConvertUtils.convertToTargetType(value, Integer.class);
-        assertThat(result, is(equalTo(123)));
-        assertThat(result, instanceOf(Integer.class));
+        Integer result = ShardingValueTypeConvertUtils.convertToTargetType(123L, Integer.class);
+        assertThat(result, is(123));
     }
     
     @Test
     void assertConvertToIntegerFromShort() {
-        Short value = 45;
-        Integer result = ShardingValueTypeConvertUtils.convertToTargetType(value, Integer.class);
-        assertThat(result, is(equalTo(45)));
-        assertThat(result, instanceOf(Integer.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(45, Integer.class), is(45));
     }
     
     @Test
     void assertConvertToIntegerFromByte() {
-        Byte value = 10;
-        Integer result = ShardingValueTypeConvertUtils.convertToTargetType(value, Integer.class);
-        assertThat(result, is(equalTo(10)));
-        assertThat(result, instanceOf(Integer.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(10, Integer.class), is(10));
     }
     
     @Test
     void assertConvertToIntegerFromDouble() {
-        Double value = 123.45;
-        Integer result = ShardingValueTypeConvertUtils.convertToTargetType(value, Integer.class);
-        assertThat(result, is(equalTo(123)));
-        assertThat(result, instanceOf(Integer.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(123.45, Integer.class), is(123));
     }
     
     @Test
     void assertConvertToIntegerFromFloat() {
-        Float value = 67.89f;
-        Integer result = ShardingValueTypeConvertUtils.convertToTargetType(value, Integer.class);
-        assertThat(result, is(equalTo(67)));
-        assertThat(result, instanceOf(Integer.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(67.89f, Integer.class), is(67));
     }
     
     @Test
     void assertConvertToIntegerFromBigDecimal() {
-        BigDecimal value = new BigDecimal("999");
-        Integer result = ShardingValueTypeConvertUtils.convertToTargetType(value, Integer.class);
-        assertThat(result, is(equalTo(999)));
-        assertThat(result, instanceOf(Integer.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(new BigDecimal("999"), Integer.class), is(999));
     }
     
     @Test
     void assertConvertToIntegerFromBigInteger() {
-        BigInteger value = BigInteger.valueOf(777);
-        Integer result = ShardingValueTypeConvertUtils.convertToTargetType(value, Integer.class);
-        assertThat(result, is(equalTo(777)));
-        assertThat(result, instanceOf(Integer.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(BigInteger.valueOf(777), Integer.class), is(777));
     }
     
     @Test
     void assertConvertToIntegerFromString() {
-        String value = "555";
-        Integer result = ShardingValueTypeConvertUtils.convertToTargetType(value, Integer.class);
-        assertThat(result, is(equalTo(555)));
-        assertThat(result, instanceOf(Integer.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType("555", Integer.class), is(555));
     }
     
     @Test
     void assertConvertToLongFromInteger() {
-        Integer value = 123456;
-        Long result = ShardingValueTypeConvertUtils.convertToTargetType(value, Long.class);
-        assertThat(result, is(equalTo(123456L)));
-        assertThat(result, instanceOf(Long.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(123456, Long.class), is(123456L));
     }
     
     @Test
     void assertConvertToLongFromShort() {
-        Short value = 789;
-        Long result = ShardingValueTypeConvertUtils.convertToTargetType(value, Long.class);
-        assertThat(result, is(equalTo(789L)));
-        assertThat(result, instanceOf(Long.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(789, Long.class), is(789L));
     }
     
     @Test
     void assertConvertToLongFromDouble() {
-        Double value = 12345.67;
-        Long result = ShardingValueTypeConvertUtils.convertToTargetType(value, Long.class);
-        assertThat(result, is(equalTo(12345L)));
-        assertThat(result, instanceOf(Long.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(12345.67, Long.class), is(12345L));
     }
     
     @Test
     void assertConvertToLongFromBigDecimal() {
-        BigDecimal value = new BigDecimal("9876543210");
-        Long result = ShardingValueTypeConvertUtils.convertToTargetType(value, Long.class);
-        assertThat(result, is(equalTo(9876543210L)));
-        assertThat(result, instanceOf(Long.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(new BigDecimal("9876543210"), Long.class), is(9876543210L));
     }
     
     @Test
     void assertConvertToShortFromInteger() {
-        Integer value = 123;
-        Short result = ShardingValueTypeConvertUtils.convertToTargetType(value, Short.class);
-        assertThat(result, is(equalTo((short) 123)));
-        assertThat(result, instanceOf(Short.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(123, Short.class), is((short) 123));
     }
     
     @Test
     void assertConvertToShortFromLong() {
-        Long value = 456L;
-        Short result = ShardingValueTypeConvertUtils.convertToTargetType(value, Short.class);
-        assertThat(result, is(equalTo((short) 456)));
-        assertThat(result, instanceOf(Short.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(456L, Short.class), is((short) 456));
     }
     
     @Test
     void assertConvertToByteFromInteger() {
-        Integer value = 100;
-        Byte result = ShardingValueTypeConvertUtils.convertToTargetType(value, Byte.class);
-        assertThat(result, is(equalTo((byte) 100)));
-        assertThat(result, instanceOf(Byte.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(100, Byte.class), is((byte) 100));
     }
     
     @Test
     void assertConvertToByteFromShort() {
-        Short value = 50;
-        Byte result = ShardingValueTypeConvertUtils.convertToTargetType(value, Byte.class);
-        assertThat(result, is(equalTo((byte) 50)));
-        assertThat(result, instanceOf(Byte.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(50, Byte.class), is((byte) 50));
     }
     
     @Test
     void assertConvertToDoubleFromInteger() {
-        Integer value = 123;
-        Double result = ShardingValueTypeConvertUtils.convertToTargetType(value, Double.class);
-        assertThat(result, is(equalTo(123.0)));
-        assertThat(result, instanceOf(Double.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(123, Double.class), is(123.0));
     }
     
     @Test
     void assertConvertToDoubleFromLong() {
-        Long value = 456L;
-        Double result = ShardingValueTypeConvertUtils.convertToTargetType(value, Double.class);
-        assertThat(result, is(equalTo(456.0)));
-        assertThat(result, instanceOf(Double.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(456L, Double.class), is(456.0));
     }
     
     @Test
     void assertConvertToDoubleFromFloat() {
-        Float value = 78.9f;
-        Double result = ShardingValueTypeConvertUtils.convertToTargetType(value, Double.class);
-        assertThat(result, is(equalTo(78.9000015258789)));
-        assertThat(result, instanceOf(Double.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(78.9f, Double.class), is(78.9000015258789));
     }
     
     @Test
     void assertConvertToDoubleFromBigDecimal() {
-        BigDecimal value = new BigDecimal("123.456");
-        Double result = ShardingValueTypeConvertUtils.convertToTargetType(value, Double.class);
-        assertThat(result, is(equalTo(123.456)));
-        assertThat(result, instanceOf(Double.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(new BigDecimal("123.456"), Double.class), is(123.456));
     }
     
     @Test
     void assertConvertToFloatFromInteger() {
-        Integer value = 234;
-        Float result = ShardingValueTypeConvertUtils.convertToTargetType(value, Float.class);
-        assertThat(result, is(equalTo(234.0f)));
-        assertThat(result, instanceOf(Float.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(234, Float.class), is(234.0f));
     }
     
     @Test
     void assertConvertToFloatFromDouble() {
-        Double value = 56.78;
-        Float result = ShardingValueTypeConvertUtils.convertToTargetType(value, Float.class);
-        assertThat(result, is(equalTo(56.78f)));
-        assertThat(result, instanceOf(Float.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(56.78, Float.class), is(56.78f));
     }
     
     @Test
     void assertConvertToBigDecimalFromInteger() {
-        Integer value = 999;
-        BigDecimal result = ShardingValueTypeConvertUtils.convertToTargetType(value, BigDecimal.class);
-        assertThat(result.compareTo(new BigDecimal("999")), is(equalTo(0)));
-        assertThat(result, instanceOf(BigDecimal.class));
+        assertThat(((BigDecimal) ShardingValueTypeConvertUtils.convertToTargetType(999, BigDecimal.class)).compareTo(new BigDecimal("999")), is(0));
     }
     
     @Test
     void assertConvertToBigDecimalFromLong() {
-        Long value = 888L;
-        BigDecimal result = ShardingValueTypeConvertUtils.convertToTargetType(value, BigDecimal.class);
-        assertThat(result.compareTo(new BigDecimal("888")), is(equalTo(0)));
-        assertThat(result, instanceOf(BigDecimal.class));
+        assertThat(((BigDecimal) ShardingValueTypeConvertUtils.convertToTargetType(888L, BigDecimal.class)).compareTo(new BigDecimal("888")), is(0));
     }
     
     @Test
     void assertConvertToBigDecimalFromDouble() {
-        Double value = 123.456;
-        BigDecimal result = ShardingValueTypeConvertUtils.convertToTargetType(value, BigDecimal.class);
-        assertThat(result, is(equalTo(BigDecimal.valueOf(123.456))));
-        assertThat(result, instanceOf(BigDecimal.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(123.456, BigDecimal.class), is(BigDecimal.valueOf(123.456)));
     }
     
     @Test
     void assertConvertToBigDecimalFromBigInteger() {
-        BigInteger value = BigInteger.valueOf(12345);
-        BigDecimal result = ShardingValueTypeConvertUtils.convertToTargetType(value, BigDecimal.class);
-        assertThat(result, is(equalTo(new BigDecimal("12345"))));
-        assertThat(result, instanceOf(BigDecimal.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(BigInteger.valueOf(12345), BigDecimal.class), is(new BigDecimal("12345")));
     }
     
     @Test
     void assertConvertToBigDecimalFromString() {
-        String value = "999.888";
-        BigDecimal result = ShardingValueTypeConvertUtils.convertToTargetType(value, BigDecimal.class);
-        assertThat(result, is(equalTo(new BigDecimal("999.888"))));
-        assertThat(result, instanceOf(BigDecimal.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType("999.888", BigDecimal.class), is(new BigDecimal("999.888")));
     }
     
     @Test
     void assertConvertToBigIntegerFromInteger() {
-        Integer value = 777;
-        BigInteger result = ShardingValueTypeConvertUtils.convertToTargetType(value, BigInteger.class);
-        assertThat(result, is(equalTo(BigInteger.valueOf(777))));
-        assertThat(result, instanceOf(BigInteger.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(777, BigInteger.class), is(BigInteger.valueOf(777)));
     }
     
     @Test
     void assertConvertToBigIntegerFromLong() {
-        Long value = 666L;
-        BigInteger result = ShardingValueTypeConvertUtils.convertToTargetType(value, BigInteger.class);
-        assertThat(result, is(equalTo(BigInteger.valueOf(666))));
-        assertThat(result, instanceOf(BigInteger.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(666L, BigInteger.class), is(BigInteger.valueOf(666)));
     }
     
     @Test
     void assertConvertToBigIntegerFromBigDecimal() {
-        BigDecimal value = new BigDecimal("555");
-        BigInteger result = ShardingValueTypeConvertUtils.convertToTargetType(value, BigInteger.class);
-        assertThat(result, is(equalTo(BigInteger.valueOf(555))));
-        assertThat(result, instanceOf(BigInteger.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(new BigDecimal("555"), BigInteger.class), is(BigInteger.valueOf(555)));
     }
     
     @Test
     void assertConvertToStringFromInteger() {
-        Integer value = 123;
-        String result = ShardingValueTypeConvertUtils.convertToTargetType(value, String.class);
-        assertThat(result, is(equalTo("123")));
-        assertThat(result, instanceOf(String.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(123, String.class), is("123"));
     }
     
     @Test
     void assertConvertToStringFromLong() {
-        Long value = 456L;
-        String result = ShardingValueTypeConvertUtils.convertToTargetType(value, String.class);
-        assertThat(result, is(equalTo("456")));
-        assertThat(result, instanceOf(String.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(456L, String.class), is("456"));
     }
     
     @Test
     void assertConvertToStringFromDouble() {
-        Double value = 78.9;
-        String result = ShardingValueTypeConvertUtils.convertToTargetType(value, String.class);
-        assertThat(result, is(equalTo("78.9")));
-        assertThat(result, instanceOf(String.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(78.9, String.class), is("78.9"));
     }
     
     @Test
     void assertConvertToStringFromBigDecimal() {
-        BigDecimal value = new BigDecimal("123.456");
-        String result = ShardingValueTypeConvertUtils.convertToTargetType(value, String.class);
-        assertThat(result, is(equalTo("123.456")));
-        assertThat(result, instanceOf(String.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(new BigDecimal("123.456"), String.class), is("123.456"));
     }
     
     @Test
     void assertConvertCollectionTypeToIntegers() {
         Collection<Comparable<?>> source = Arrays.asList(1L, 2L, 3L, 4L);
-        Collection<Comparable<?>> result = ShardingValueTypeConvertUtils.convertCollectionType(source, Integer.class);
-        assertThat(result.size(), is(4));
-        for (Comparable<?> value : result) {
-            assertThat(value, instanceOf(Integer.class));
+        Collection<Comparable<?>> actual = ShardingValueTypeConvertUtils.convertCollectionType(source, Integer.class);
+        assertThat(actual.size(), is(4));
+        for (Comparable<?> value : actual) {
+            assertThat(value, isA(Integer.class));
         }
     }
     
     @Test
     void assertConvertCollectionTypeToLongs() {
         Collection<Comparable<?>> source = Arrays.asList(100, 200, 300);
-        Collection<Comparable<?>> result = ShardingValueTypeConvertUtils.convertCollectionType(source, Long.class);
-        assertThat(result.size(), is(3));
-        for (Comparable<?> value : result) {
-            assertThat(value, instanceOf(Long.class));
+        Collection<Comparable<?>> actual = ShardingValueTypeConvertUtils.convertCollectionType(source, Long.class);
+        assertThat(actual.size(), is(3));
+        for (Comparable<?> value : actual) {
+            assertThat(value, isA(Long.class));
         }
     }
     
     @Test
     void assertConvertCollectionTypeToDoubles() {
         Collection<Comparable<?>> source = Arrays.asList(10, 20, 30);
-        Collection<Comparable<?>> result = ShardingValueTypeConvertUtils.convertCollectionType(source, Double.class);
-        assertThat(result.size(), is(3));
-        for (Comparable<?> value : result) {
-            assertThat(value, instanceOf(Double.class));
+        Collection<Comparable<?>> actual = ShardingValueTypeConvertUtils.convertCollectionType(source, Double.class);
+        assertThat(actual.size(), is(3));
+        for (Comparable<?> value : actual) {
+            assertThat(value, isA(Double.class));
         }
     }
     
     @Test
     void assertConvertCollectionTypeToStrings() {
         Collection<Comparable<?>> source = Arrays.asList(123, 456, 789);
-        Collection<Comparable<?>> result = ShardingValueTypeConvertUtils.convertCollectionType(source, String.class);
-        assertThat(result.size(), is(3));
-        assertThat(new LinkedList<>(result).get(0), is(equalTo("123")));
-        assertThat(new LinkedList<>(result).get(1), is(equalTo("456")));
-        assertThat(new LinkedList<>(result).get(2), is(equalTo("789")));
+        Collection<Comparable<?>> actual = ShardingValueTypeConvertUtils.convertCollectionType(source, String.class);
+        assertThat(actual.size(), is(3));
+        assertThat(new LinkedList<>(actual).get(0), is("123"));
+        assertThat(new LinkedList<>(actual).get(1), is("456"));
+        assertThat(new LinkedList<>(actual).get(2), is("789"));
     }
     
     @Test
     void assertConvertCollectionTypeWithMixedNumericTypes() {
         Collection<Comparable<?>> source = Arrays.asList(1, 2L, 3.0, 4.0f);
-        Collection<Comparable<?>> result = ShardingValueTypeConvertUtils.convertCollectionType(source, Integer.class);
-        assertThat(result.size(), is(4));
-        for (Comparable<?> value : result) {
-            assertThat(value, instanceOf(Integer.class));
+        Collection<Comparable<?>> actual = ShardingValueTypeConvertUtils.convertCollectionType(source, Integer.class);
+        assertThat(actual.size(), is(4));
+        for (Comparable<?> value : actual) {
+            assertThat(value, isA(Integer.class));
         }
     }
     
     @Test
     void assertConvertCollectionTypeEmptyCollection() {
         Collection<Comparable<?>> source = new HashSet<>();
-        Collection<Comparable<?>> result = ShardingValueTypeConvertUtils.convertCollectionType(source, Integer.class);
-        assertThat(result.isEmpty(), is(true));
+        assertTrue(ShardingValueTypeConvertUtils.convertCollectionType(source, Integer.class).isEmpty());
     }
     
     @Test
     void assertConvertCollectionTypeToBigDecimal() {
         Collection<Comparable<?>> source = Arrays.asList(100, 200L, 300.5);
-        Collection<Comparable<?>> result = ShardingValueTypeConvertUtils.convertCollectionType(source, BigDecimal.class);
-        assertThat(result.size(), is(3));
-        for (Comparable<?> value : result) {
-            assertThat(value, instanceOf(BigDecimal.class));
+        Collection<Comparable<?>> actual = ShardingValueTypeConvertUtils.convertCollectionType(source, BigDecimal.class);
+        assertThat(actual.size(), is(3));
+        for (Comparable<?> value : actual) {
+            assertThat(value, isA(BigDecimal.class));
         }
     }
     
     @Test
     void assertConvertCollectionTypeToBigInteger() {
         Collection<Comparable<?>> source = Arrays.asList(100, 200L, 300);
-        Collection<Comparable<?>> result = ShardingValueTypeConvertUtils.convertCollectionType(source, BigInteger.class);
-        assertThat(result.size(), is(3));
-        for (Comparable<?> value : result) {
-            assertThat(value, instanceOf(BigInteger.class));
+        Collection<Comparable<?>> actual = ShardingValueTypeConvertUtils.convertCollectionType(source, BigInteger.class);
+        assertThat(actual.size(), is(3));
+        for (Comparable<?> value : actual) {
+            assertThat(value, isA(BigInteger.class));
         }
     }
     
     @Test
     void assertConvertToBooleanFromInteger() {
-        Integer value = 1;
-        Boolean result = ShardingValueTypeConvertUtils.convertToTargetType(value, Boolean.class);
-        assertThat(result, is(equalTo(true)));
-        assertThat(result, instanceOf(Boolean.class));
+        assertTrue(ShardingValueTypeConvertUtils.convertToTargetType(1, Boolean.class));
     }
     
     @Test
     void assertConvertToBooleanFromIntegerZero() {
-        Integer value = 0;
-        Boolean result = ShardingValueTypeConvertUtils.convertToTargetType(value, Boolean.class);
-        assertThat(result, is(equalTo(false)));
-        assertThat(result, instanceOf(Boolean.class));
+        assertFalse(ShardingValueTypeConvertUtils.convertToTargetType(0, Boolean.class));
     }
     
     @Test
     void assertConvertToBooleanFromStringTrue() {
-        String value = "true";
-        Boolean result = ShardingValueTypeConvertUtils.convertToTargetType(value, Boolean.class);
-        assertThat(result, is(equalTo(true)));
-        assertThat(result, instanceOf(Boolean.class));
+        assertTrue(ShardingValueTypeConvertUtils.convertToTargetType("true", Boolean.class));
     }
     
     @Test
     void assertConvertToBooleanFromStringFalse() {
-        String value = "false";
-        Boolean result = ShardingValueTypeConvertUtils.convertToTargetType(value, Boolean.class);
-        assertThat(result, is(equalTo(false)));
-        assertThat(result, instanceOf(Boolean.class));
+        assertFalse(ShardingValueTypeConvertUtils.convertToTargetType("false", Boolean.class));
     }
     
     @Test
     void assertConvertToBooleanFromStringOne() {
-        String value = "1";
-        Boolean result = ShardingValueTypeConvertUtils.convertToTargetType(value, Boolean.class);
-        assertThat(result, is(equalTo(true)));
-        assertThat(result, instanceOf(Boolean.class));
+        assertTrue(ShardingValueTypeConvertUtils.convertToTargetType("1", Boolean.class));
     }
     
     @Test
     void assertConvertToBooleanFromStringZero() {
-        String value = "0";
-        Boolean result = ShardingValueTypeConvertUtils.convertToTargetType(value, Boolean.class);
-        assertThat(result, is(equalTo(false)));
-        assertThat(result, instanceOf(Boolean.class));
+        assertFalse(ShardingValueTypeConvertUtils.convertToTargetType("0", Boolean.class));
     }
     
     @Test
     void assertConvertToCharacterFromInteger() {
-        Integer value = 65;
-        Character result = ShardingValueTypeConvertUtils.convertToTargetType(value, Character.class);
-        assertThat(result, is(equalTo('A')));
-        assertThat(result, instanceOf(Character.class));
+        assertThat(ShardingValueTypeConvertUtils.convertToTargetType(65, Character.class), is('A'));
     }
     
     @Test
