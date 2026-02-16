@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="drop_file_basic" value="DROP FILE my_file PROPERTIES (&quot;catalog&quot; = &quot;kafka&quot;)" db-types="Doris" />
+    <sql-case id="drop_file_quoted" value="DROP FILE &quot;ca.pem&quot; PROPERTIES (&quot;catalog&quot; = &quot;default&quot;)" db-types="Doris" />
+    <sql-case id="drop_file_single_quoted" value="DROP FILE 'ca.pem' PROPERTIES (&quot;catalog&quot; = &quot;default&quot;)" db-types="Doris" />
+    <sql-case id="drop_file_in_database" value="DROP FILE &quot;ca.pem&quot; IN my_database PROPERTIES (&quot;catalog&quot; = &quot;default&quot;)" db-types="Doris" />
+    <sql-case id="drop_file_from_database" value="DROP FILE my_file FROM test_db PROPERTIES (&quot;catalog&quot; = &quot;default&quot;, &quot;key&quot; = &quot;true&quot;)" db-types="Doris" />
+</sql-cases>

@@ -141,6 +141,8 @@ execute
     | dropSqlBlockRule
     | buildIndex
     | cancelBuildIndex
+    | createFile
+    | dropFile
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

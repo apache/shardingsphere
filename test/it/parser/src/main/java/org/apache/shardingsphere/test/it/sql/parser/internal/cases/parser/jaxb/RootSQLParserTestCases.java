@@ -114,6 +114,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.standard.RevertStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.standard.RevokeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dcl.standard.SetRoleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateFileStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.DropFileStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.opengauss.OpengaussAlterDirectoryStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleAlterAuditPolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.oracle.OracleAlterHierarchyStatementTestCase;
@@ -1203,6 +1205,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "drop-schema")
     private final List<DropSchemaStatementTestCase> dropSchemaTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-file")
+    private final List<CreateFileStatementTestCase> createFileStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-file")
+    private final List<DropFileStatementTestCase> dropFileStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "install-component")
     private final List<MySQLInstallComponentStatementTestCase> installComponentTestCases = new LinkedList<>();

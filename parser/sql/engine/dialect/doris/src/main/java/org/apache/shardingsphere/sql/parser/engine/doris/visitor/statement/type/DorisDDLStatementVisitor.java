@@ -120,6 +120,9 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameP
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterStoragePolicyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateEncryptKeyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateFileContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropFileContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FileNameContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AlgorithmOption;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.LockTableOption;
@@ -205,6 +208,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.vi
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropEncryptKeyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFileStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFileStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
@@ -406,6 +411,42 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitCreateLikeClause(final CreateLikeClauseContext ctx) {
         return visit(ctx.tableName());
+    }
+    
+    @Override
+    public ASTNode visitCreateFile(final CreateFileContext ctx) {
+        CreateFileStatement result = new CreateFileStatement(getDatabaseType());
+        result.setFileName(getFileName(ctx.fileName()));
+        if (null != ctx.databaseName()) {
+            result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDropFile(final DropFileContext ctx) {
+        DropFileStatement result = new DropFileStatement(getDatabaseType());
+        result.setFileName(getFileName(ctx.fileName()));
+        if (null != ctx.databaseName()) {
+            result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
+    }
+    
+    private String getFileName(final FileNameContext ctx) {
+        if (null != ctx.identifier()) {
+            return new IdentifierValue(ctx.identifier().getText()).getValue();
+        }
+        if (null != ctx.SINGLE_QUOTED_TEXT()) {
+            return SQLUtils.getExactlyValue(ctx.SINGLE_QUOTED_TEXT().getText());
+        }
+        return SQLUtils.getExactlyValue(ctx.DOUBLE_QUOTED_TEXT().getText());
     }
     
     @SuppressWarnings("unchecked")
