@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.infra.spi.type.ordered;
 
-import org.apache.shardingsphere.infra.spi.type.ordered.fixture.OrderedSPINonSingletonFixture;
 import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.infra.spi.type.ordered.fixture.OrderedInterfaceFixture;
 import org.apache.shardingsphere.infra.spi.type.ordered.fixture.OrderedSPIFixture;
+import org.apache.shardingsphere.infra.spi.type.ordered.fixture.OrderedSPINonSingletonFixture;
 import org.apache.shardingsphere.infra.spi.type.ordered.fixture.impl.OrderedInterfaceFixtureImpl;
 import org.apache.shardingsphere.infra.spi.type.ordered.fixture.impl.OrderedSPIFixtureImpl;
 import org.junit.jupiter.api.AfterEach;
@@ -32,11 +32,11 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.sameInstance;
 
 class OrderedSPILoaderTest {
     

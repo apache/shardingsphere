@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.wal
 import org.junit.jupiter.api.Test;
 import org.opengauss.replication.LogSequenceNumber;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class OpenGaussLogSequenceNumberTest {

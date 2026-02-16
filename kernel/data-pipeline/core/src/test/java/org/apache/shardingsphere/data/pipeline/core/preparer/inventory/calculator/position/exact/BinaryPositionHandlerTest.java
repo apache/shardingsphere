@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;

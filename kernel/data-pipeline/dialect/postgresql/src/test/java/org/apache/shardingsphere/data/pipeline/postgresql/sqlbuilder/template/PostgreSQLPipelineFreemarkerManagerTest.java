@@ -25,9 +25,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class PostgreSQLPipelineFreemarkerManagerTest {
     
@@ -45,8 +45,7 @@ class PostgreSQLPipelineFreemarkerManagerTest {
         Map<String, Object> dataModel = new HashMap<>(2, 1F);
         dataModel.put("tid", 1);
         dataModel.put("tname", "foo_tb l");
-        String actual = PostgreSQLPipelineFreemarkerManager.getSQLByVersion(dataModel, "component/table/%s/get_columns_for_table.ftl", 10, 0);
-        assertThat(actual, notNullValue());
+        assertNotNull(PostgreSQLPipelineFreemarkerManager.getSQLByVersion(dataModel, "component/table/%s/get_columns_for_table.ftl", 10, 0));
     }
     
     @Test
@@ -73,19 +72,19 @@ class PostgreSQLPipelineFreemarkerManagerTest {
     }
     
     private static Map<String, Object> getColumn() {
-        Map<String, Object> column = new LinkedHashMap<>(16, 1F);
-        column.put("name", "id");
-        column.put("cltype", "int4");
-        column.put("displaytypname", "integer");
-        column.put("attnotnull", true);
-        column.put("attidentity", "a");
-        column.put("colconstype", "i");
-        column.put("seqincrement", 1L);
-        column.put("seqstart", 1L);
-        column.put("seqmin", 1L);
-        column.put("seqmax", 2147483647L);
-        column.put("seqcache", 1L);
-        column.put("seqcycle", false);
-        return column;
+        Map<String, Object> result = new LinkedHashMap<>(16, 1F);
+        result.put("name", "id");
+        result.put("cltype", "int4");
+        result.put("displaytypname", "integer");
+        result.put("attnotnull", true);
+        result.put("attidentity", "a");
+        result.put("colconstype", "i");
+        result.put("seqincrement", 1L);
+        result.put("seqstart", 1L);
+        result.put("seqmin", 1L);
+        result.put("seqmax", 2147483647L);
+        result.put("seqcache", 1L);
+        result.put("seqcycle", false);
+        return result;
     }
 }

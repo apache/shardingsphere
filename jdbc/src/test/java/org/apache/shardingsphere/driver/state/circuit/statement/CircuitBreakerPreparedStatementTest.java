@@ -35,11 +35,11 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SuppressWarnings("resource")
 class CircuitBreakerPreparedStatementTest {
@@ -261,7 +261,7 @@ class CircuitBreakerPreparedStatementTest {
     
     @Test
     void assertGetParameterMetaData() {
-        Assertions.assertNull(new CircuitBreakerPreparedStatement().getParameterMetaData());
+        assertNull(new CircuitBreakerPreparedStatement().getParameterMetaData());
     }
     
     @Test
@@ -316,7 +316,7 @@ class CircuitBreakerPreparedStatementTest {
     
     @Test
     void assertGetStatementManager() {
-        assertThat(new CircuitBreakerPreparedStatement().getStatementManager(), is(nullValue()));
+        assertNull(new CircuitBreakerPreparedStatement().getStatementManager());
     }
     
     @Test

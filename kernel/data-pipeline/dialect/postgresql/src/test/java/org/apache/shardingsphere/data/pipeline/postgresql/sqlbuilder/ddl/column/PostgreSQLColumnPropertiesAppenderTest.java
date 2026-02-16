@@ -40,8 +40,8 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -277,7 +277,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         column.put("colconstype", "i");
         column.put("seqmax", null);
         Map<String, Object> singleColumn = appendWithSingleColumn(column);
-        assertThat(singleColumn.get("seqmax"), nullValue());
+        assertNull(singleColumn.get("seqmax"));
     }
     
     @Test
@@ -554,7 +554,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         appender.append(context);
         Map<String, Object> singleColumn = getSingleColumn(context);
         assertThat(singleColumn.get("typname"), is("_int4"));
-        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertNull(singleColumn.get("typnspname"));
         assertThat(singleColumn.get("atttypmod"), is(-1));
         assertThat(singleColumn.get("attndims"), is(0));
         @SuppressWarnings("unchecked")
@@ -579,7 +579,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         appender.append(context);
         Map<String, Object> singleColumn = getSingleColumn(context);
         assertThat(singleColumn.get("typname"), is("_int8"));
-        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertNull(singleColumn.get("typnspname"));
         assertThat(singleColumn.get("atttypmod"), is(-1));
         assertThat(singleColumn.get("attndims"), is(2));
         @SuppressWarnings("unchecked")
@@ -605,7 +605,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         appender.append(context);
         Map<String, Object> singleColumn = getSingleColumn(context);
         assertThat(singleColumn.get("typname"), is("int4[]"));
-        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertNull(singleColumn.get("typnspname"));
         assertThat(singleColumn.get("atttypmod"), is(-1));
         @SuppressWarnings("unchecked")
         Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
@@ -631,7 +631,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         appender.append(context);
         Map<String, Object> singleColumn = getSingleColumn(context);
         assertThat(singleColumn.get("typname"), is("int4[]"));
-        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertNull(singleColumn.get("typnspname"));
         assertThat(singleColumn.get("atttypmod"), is(-1));
         assertThat(singleColumn.get("attndims"), is(0));
         @SuppressWarnings("unchecked")
@@ -658,7 +658,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         appender.append(context);
         Map<String, Object> singleColumn = getSingleColumn(context);
         assertThat(singleColumn.get("typname"), is("_int8"));
-        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertNull(singleColumn.get("typnspname"));
         assertThat(singleColumn.get("atttypmod"), is(-1));
         @SuppressWarnings("unchecked")
         Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
@@ -684,7 +684,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         appender.append(context);
         Map<String, Object> singleColumn = getSingleColumn(context);
         assertThat(singleColumn.get("typname"), is("\"foo"));
-        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertNull(singleColumn.get("typnspname"));
         assertThat(singleColumn.get("atttypmod"), is(-1));
         assertThat(singleColumn.get("attndims"), is(0));
         @SuppressWarnings("unchecked")
@@ -710,7 +710,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         appender.append(context);
         Map<String, Object> singleColumn = getSingleColumn(context);
         assertThat(singleColumn.get("typname"), is("_int4"));
-        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertNull(singleColumn.get("typnspname"));
         assertThat(singleColumn.get("atttypmod"), is(-1));
         @SuppressWarnings("unchecked")
         Collection<String> editTypes = (Collection<String>) singleColumn.get("edit_types");
@@ -736,7 +736,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         appender.append(context);
         Map<String, Object> singleColumn = getSingleColumn(context);
         assertThat(singleColumn.get("typname"), is("_int4"));
-        assertThat(singleColumn.get("typnspname"), nullValue());
+        assertNull(singleColumn.get("typnspname"));
         assertThat(singleColumn.get("atttypmod"), is(-1));
         assertThat(singleColumn.get("attndims"), is(0));
         @SuppressWarnings("unchecked")

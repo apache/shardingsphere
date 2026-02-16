@@ -23,11 +23,11 @@ import org.junit.jupiter.api.Test;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SuppressWarnings("resource")
 class CircuitBreakerStatementTest {
@@ -74,7 +74,7 @@ class CircuitBreakerStatementTest {
     
     @Test
     void assertGetWarnings() {
-        assertThat(new CircuitBreakerStatement().getWarnings(), is(nullValue()));
+        assertNull(new CircuitBreakerStatement().getWarnings());
     }
     
     @Test
@@ -89,7 +89,7 @@ class CircuitBreakerStatementTest {
     
     @Test
     void assertGetResultSet() {
-        assertThat(new CircuitBreakerStatement().getResultSet(), is(nullValue()));
+        assertNull(new CircuitBreakerStatement().getResultSet());
     }
     
     @Test
@@ -159,12 +159,12 @@ class CircuitBreakerStatementTest {
     
     @Test
     void assertGetGeneratedKeys() {
-        assertThat(new CircuitBreakerStatement().getGeneratedKeys(), is(nullValue()));
+        assertNull(new CircuitBreakerStatement().getGeneratedKeys());
     }
     
     @Test
     void assertExecuteQuery() {
-        assertThat(new CircuitBreakerStatement().executeQuery("sql"), is(nullValue()));
+        assertNull(new CircuitBreakerStatement().executeQuery("sql"));
     }
     
     @Test

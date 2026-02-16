@@ -44,9 +44,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 class HavingCorrelatedSubqueryBinderIT {
@@ -83,7 +82,7 @@ class HavingCorrelatedSubqueryBinderIT {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, databaseTypeName);
         SQLStatement sqlStatement = new SQLStatementVisitorEngine(databaseTypeName).visit(new SQLParserEngine(databaseTypeName, new CacheOption(128, 1024L)).parse(sql, false));
         SQLStatementContext result = new SQLBindEngine(mockMetaData(databaseType), "foo_db", new HintValueContext()).bind(sqlStatement);
-        assertThat(result, notNullValue());
+        assertNotNull(result);
         return result;
     }
     

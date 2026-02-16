@@ -68,8 +68,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
@@ -183,7 +183,7 @@ class ConsistencyCheckTasksRunnerTest {
             runner.start();
             verify(jobItemManager).persistProgress(jobItemContext);
             verify(checkRepository).persistCheckJobResult(PARENT_JOB_ID, CHECK_JOB_ID, checkResult);
-            assertThat(jobItemContext.getProgressContext().getCheckEndTimeMillis(), notNullValue());
+            assertNotNull(jobItemContext.getProgressContext().getCheckEndTimeMillis());
             runner.stop();
             verify(checker).cancel();
         }
@@ -236,7 +236,7 @@ class ConsistencyCheckTasksRunnerTest {
             runner.start();
             verify(jobItemManager).persistProgress(jobItemContext);
             verifyNoInteractions(checkRepository);
-            assertThat(jobItemContext.getProgressContext().getCheckEndTimeMillis(), notNullValue());
+            assertNotNull(jobItemContext.getProgressContext().getCheckEndTimeMillis());
         }
     }
     

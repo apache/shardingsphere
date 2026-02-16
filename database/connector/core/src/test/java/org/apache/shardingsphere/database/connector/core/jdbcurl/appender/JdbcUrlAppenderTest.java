@@ -26,9 +26,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Properties;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.startsWith;
 
 class JdbcUrlAppenderTest {
     

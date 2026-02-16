@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqlfederation.compiler.sql.ast.converter.type;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class SqlTypeNameConverterTest {

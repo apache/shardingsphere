@@ -40,7 +40,7 @@ import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -105,17 +105,15 @@ class FirebirdFreeStatementCommandExecutorTest {
     @Test
     void assertExecuteWithClose() {
         when(packet.getOption()).thenReturn(FirebirdFreeStatementPacket.CLOSE);
-        FirebirdFreeStatementCommandExecutor executor = new FirebirdFreeStatementCommandExecutor(packet, connectionSession);
-        executor.execute();
+        new FirebirdFreeStatementCommandExecutor(packet, connectionSession).execute();
         verify(connectionSession.getConnectionContext()).clearCursorContext();
         verify(connectionManager).unmarkResourceInUse(proxyBackendHandler);
-        assertThat(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID), nullValue());
+        assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
     }
     
     @Test
     void assertExecuteWithUnknownOption() {
         when(packet.getOption()).thenReturn(999);
-        FirebirdFreeStatementCommandExecutor executor = new FirebirdFreeStatementCommandExecutor(packet, connectionSession);
-        assertThrows(FirebirdProtocolException.class, executor::execute);
+        assertThrows(FirebirdProtocolException.class, new FirebirdFreeStatementCommandExecutor(packet, connectionSession)::execute);
     }
 }
