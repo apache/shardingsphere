@@ -257,7 +257,7 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
       zookeeper:
-        image: zookeeper:3.6.3
+        image: zookeeper:3.8.5-jre-17
         env:
           JMXDISABLE: "true"
         ports:
