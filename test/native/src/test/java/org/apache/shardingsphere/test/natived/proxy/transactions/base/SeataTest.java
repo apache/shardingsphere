@@ -45,9 +45,7 @@ import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SuppressWarnings({"SqlNoDataSourceInspection", "resource"})
 @Disabled("See https://github.com/apache/incubator-seata/issues/7523 .")
@@ -73,7 +71,7 @@ class SeataTest {
     
     @BeforeEach
     void beforeEach() {
-        assertThat(System.getProperty(serviceDefaultGroupListKey), is(nullValue()));
+        assertNull(System.getProperty(serviceDefaultGroupListKey));
         System.setProperty(serviceDefaultGroupListKey, "127.0.0.1:" + container.getMappedPort(8091));
         Awaitility.await().atMost(Duration.ofSeconds(30L)).ignoreExceptions().until(() -> {
             openConnection("test", "test", "jdbc:postgresql://127.0.0.1:" + postgresContainer.getMappedPort(5432) + "/")

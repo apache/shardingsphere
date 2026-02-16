@@ -20,7 +20,7 @@ package org.apache.shardingsphere.database.connector.core.type;
 import org.apache.shardingsphere.database.connector.core.exception.UnsupportedStorageTypeException;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

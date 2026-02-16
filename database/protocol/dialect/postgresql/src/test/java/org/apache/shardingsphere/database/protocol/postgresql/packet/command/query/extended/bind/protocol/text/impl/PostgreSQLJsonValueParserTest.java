@@ -20,7 +20,7 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 import org.junit.jupiter.api.Test;
 import org.postgresql.util.PGobject;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class PostgreSQLJsonValueParserTest {

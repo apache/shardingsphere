@@ -28,9 +28,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class WeightLoadBalanceAlgorithmTest {
@@ -63,9 +63,9 @@ class WeightLoadBalanceAlgorithmTest {
     }
     
     private void assertWeightLoadBalance(final LoadBalanceAlgorithm loadBalanceAlgorithm, final List<String> availableTargetNames) {
-        assertThat(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames), notNullValue());
-        assertThat(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames), notNullValue());
-        assertThat(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames), notNullValue());
+        assertNotNull(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames));
+        assertNotNull(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames));
+        assertNotNull(loadBalanceAlgorithm.getTargetName("ds", availableTargetNames));
     }
     
     @Test

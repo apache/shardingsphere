@@ -26,8 +26,8 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.database.My
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.privilege.MySQLShowCreateUserStatement;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
 
 class MySQLProxyStateSupportedSQLProviderTest {
     

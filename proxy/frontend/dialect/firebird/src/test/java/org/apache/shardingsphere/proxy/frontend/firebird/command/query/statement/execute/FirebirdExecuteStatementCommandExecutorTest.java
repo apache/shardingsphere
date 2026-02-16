@@ -70,11 +70,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -169,7 +169,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(executor.getResponseType(), is(ResponseType.UPDATE));
         assertThat(actual.iterator().next(), isA(FirebirdGenericResponsePacket.class));
-        assertThat(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID), nullValue());
+        assertNull(FirebirdFetchStatementCache.getInstance().getFetchBackendHandler(CONNECTION_ID, STATEMENT_ID));
     }
     
     @Test
@@ -188,7 +188,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         executor.execute();
         List<Object> actualParams = queryContextCaptor.getValue().getParameters();
         assertThat(actualParams.size(), is(1));
-        assertThat(actualParams.get(0), nullValue());
+        assertNull(actualParams.get(0));
     }
     
     @Test
@@ -218,7 +218,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         executor.execute();
         List<Object> actualParams = queryContextCaptor.getValue().getParameters();
         assertThat(actualParams.size(), is(1));
-        assertThat(actualParams.get(0), nullValue());
+        assertNull(actualParams.get(0));
     }
     
     @Test
@@ -233,7 +233,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         executor.execute();
         List<Object> actualParams = queryContextCaptor.getValue().getParameters();
         assertThat(actualParams.size(), is(1));
-        assertThat(actualParams.get(0), nullValue());
+        assertNull(actualParams.get(0));
     }
     
     @Test

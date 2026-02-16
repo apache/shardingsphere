@@ -47,7 +47,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection", "resource", "deprecation"})
 @EnabledInNativeImage
@@ -76,9 +76,9 @@ class ZookeeperServiceDiscoveryTest {
     
     @BeforeEach
     void beforeEach() {
-        assertThat(System.getProperty(systemPropKeyPrefix + "ds0.jdbc-url"), is(nullValue()));
-        assertThat(System.getProperty(systemPropKeyPrefix + "ds1.jdbc-url"), is(nullValue()));
-        assertThat(System.getProperty(systemPropKeyPrefix + "ds2.jdbc-url"), is(nullValue()));
+        assertNull(System.getProperty(systemPropKeyPrefix + "ds0.jdbc-url"));
+        assertNull(System.getProperty(systemPropKeyPrefix + "ds1.jdbc-url"));
+        assertNull(System.getProperty(systemPropKeyPrefix + "ds2.jdbc-url"));
     }
     
     @AfterEach

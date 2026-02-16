@@ -49,7 +49,6 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -84,7 +83,7 @@ class ClusterExportMetaDataGeneratorTest {
         assertThat(metaData.getDatabases().size(), is(1));
         assertThat(metaData.getProps(), containsString("props:"));
         assertThat(metaData.getRules(), containsString("rules:"));
-        assertThat(actual.getSnapshotInfo(), is(notNullValue()));
+        assertNotNull(actual.getSnapshotInfo());
         assertThat(actual.getSnapshotInfo().getCsn(), is("123"));
         assertNotNull(actual.getSnapshotInfo().getCreateTime());
     }

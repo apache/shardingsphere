@@ -21,7 +21,7 @@ import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdVal
 import org.apache.shardingsphere.database.protocol.firebird.constant.buffer.type.FirebirdDatabaseParameterBufferType;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class FirebirdParameterBufferTypeTest {

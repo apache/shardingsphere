@@ -21,9 +21,10 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSetMetaData;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class CircuitBreakerResultSetMetaDataTest {
     
@@ -34,22 +35,22 @@ class CircuitBreakerResultSetMetaDataTest {
     
     @Test
     void assertIsAutoIncrement() {
-        assertThat(new CircuitBreakerResultSetMetaData().isAutoIncrement(1), is(false));
+        assertFalse(new CircuitBreakerResultSetMetaData().isAutoIncrement(1));
     }
     
     @Test
     void assertIsCaseSensitive() {
-        assertThat(new CircuitBreakerResultSetMetaData().isCaseSensitive(1), is(false));
+        assertFalse(new CircuitBreakerResultSetMetaData().isCaseSensitive(1));
     }
     
     @Test
     void assertIsSearchable() {
-        assertThat(new CircuitBreakerResultSetMetaData().isSearchable(1), is(false));
+        assertFalse(new CircuitBreakerResultSetMetaData().isSearchable(1));
     }
     
     @Test
     void assertIsCurrency() {
-        assertThat(new CircuitBreakerResultSetMetaData().isCurrency(1), is(false));
+        assertFalse(new CircuitBreakerResultSetMetaData().isCurrency(1));
     }
     
     @Test
@@ -59,7 +60,7 @@ class CircuitBreakerResultSetMetaDataTest {
     
     @Test
     void assertIsSigned() {
-        assertThat(new CircuitBreakerResultSetMetaData().isSigned(1), is(false));
+        assertFalse(new CircuitBreakerResultSetMetaData().isSigned(1));
     }
     
     @Test
@@ -69,17 +70,17 @@ class CircuitBreakerResultSetMetaDataTest {
     
     @Test
     void assertGetColumnLabel() {
-        assertThat(new CircuitBreakerResultSetMetaData().getColumnLabel(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSetMetaData().getColumnLabel(1));
     }
     
     @Test
     void assertGetColumnName() {
-        assertThat(new CircuitBreakerResultSetMetaData().getColumnName(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSetMetaData().getColumnName(1));
     }
     
     @Test
     void assertGetSchemaName() {
-        assertThat(new CircuitBreakerResultSetMetaData().getSchemaName(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSetMetaData().getSchemaName(1));
     }
     
     @Test
@@ -94,12 +95,12 @@ class CircuitBreakerResultSetMetaDataTest {
     
     @Test
     void assertGetTableName() {
-        assertThat(new CircuitBreakerResultSetMetaData().getTableName(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSetMetaData().getTableName(1));
     }
     
     @Test
     void assertGetCatalogName() {
-        assertThat(new CircuitBreakerResultSetMetaData().getCatalogName(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSetMetaData().getCatalogName(1));
     }
     
     @Test
@@ -109,36 +110,36 @@ class CircuitBreakerResultSetMetaDataTest {
     
     @Test
     void assertGetColumnTypeName() {
-        assertThat(new CircuitBreakerResultSetMetaData().getColumnTypeName(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSetMetaData().getColumnTypeName(1));
     }
     
     @Test
     void assertIsReadOnly() {
-        assertThat(new CircuitBreakerResultSetMetaData().isReadOnly(1), is(false));
+        assertFalse(new CircuitBreakerResultSetMetaData().isReadOnly(1));
     }
     
     @Test
     void assertIsWritable() {
-        assertThat(new CircuitBreakerResultSetMetaData().isWritable(1), is(false));
+        assertFalse(new CircuitBreakerResultSetMetaData().isWritable(1));
     }
     
     @Test
     void assertIsDefinitelyWritable() {
-        assertThat(new CircuitBreakerResultSetMetaData().isDefinitelyWritable(1), is(false));
+        assertFalse(new CircuitBreakerResultSetMetaData().isDefinitelyWritable(1));
     }
     
     @Test
     void assertGetColumnClassName() {
-        assertThat(new CircuitBreakerResultSetMetaData().getColumnClassName(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSetMetaData().getColumnClassName(1));
     }
     
     @Test
     void assertUnwrap() {
-        assertThat(new CircuitBreakerResultSetMetaData().unwrap(Object.class), is(nullValue()));
+        assertNull(new CircuitBreakerResultSetMetaData().unwrap(Object.class));
     }
     
     @Test
     void assertIsWrapperFor() {
-        assertThat(new CircuitBreakerResultSetMetaData().isWrapperFor(Object.class), is(false));
+        assertFalse(new CircuitBreakerResultSetMetaData().isWrapperFor(Object.class));
     }
 }
