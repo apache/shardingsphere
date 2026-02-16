@@ -71,8 +71,8 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
@@ -152,7 +152,7 @@ class CDCBackendHandlerTest {
         when(CDCSchemaTableUtils.parseTableExpressionWithoutSchema(eq(database), anyList())).thenReturn(Collections.emptySet());
         StreamDataRequestBody requestBody = StreamDataRequestBody.newBuilder().setDatabase("foo_db").addSourceSchemaTable(SchemaTable.newBuilder().setTable("foo_tbl")).build();
         CDCExceptionWrapper actualException = assertThrows(CDCExceptionWrapper.class, () -> backendHandler.streamData("foo_req", requestBody, createConnectionContext(), mock()));
-        assertThat(actualException.getCause(), is(instanceOf(MissingRequiredStreamDataSourceException.class)));
+        assertThat(actualException.getCause(), isA(MissingRequiredStreamDataSourceException.class));
     }
     
     @Test
@@ -162,7 +162,7 @@ class CDCBackendHandlerTest {
         when(PipelineContextManager.getProxyContext()).thenReturn(contextManager);
         StreamDataRequestBody requestBody = StreamDataRequestBody.newBuilder().setDatabase("missing_db").build();
         CDCExceptionWrapper actualException = assertThrows(CDCExceptionWrapper.class, () -> backendHandler.streamData("foo_req", requestBody, createConnectionContext(), mock()));
-        assertThat(actualException.getCause(), is(instanceOf(StreamDatabaseNotFoundException.class)));
+        assertThat(actualException.getCause(), isA(StreamDatabaseNotFoundException.class));
     }
     
     @Test
