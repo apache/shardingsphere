@@ -40,10 +40,17 @@ public final class MySQLDescribeStatement extends DALStatement {
     
     private SQLStatementAttributes attributes;
     
+    private final boolean showAll;
+    
     public MySQLDescribeStatement(final DatabaseType databaseType, final SimpleTableSegment table, final ColumnSegment columnWildcard) {
+        this(databaseType, table, columnWildcard, false);
+    }
+    
+    public MySQLDescribeStatement(final DatabaseType databaseType, final SimpleTableSegment table, final ColumnSegment columnWildcard, final boolean showAll) {
         super(databaseType);
         this.table = table;
         this.columnWildcard = columnWildcard;
+        this.showAll = showAll;
     }
     
     /**

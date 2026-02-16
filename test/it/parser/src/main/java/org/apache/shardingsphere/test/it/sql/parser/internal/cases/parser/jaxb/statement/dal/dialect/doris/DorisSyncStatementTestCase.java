@@ -15,30 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.show.column;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Describe statement test case for MySQL.
+ * Sync statement test case for Doris.
  */
-@Getter
-@Setter
-public final class MySQLDescribeStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement(name = "simple-table")
-    private ExpectedSimpleTable table;
-    
-    @XmlElement(name = "column-wild")
-    private ExpectedColumn column;
-    
-    @XmlAttribute(name = "show-all")
-    private boolean showAll;
+public final class DorisSyncStatementTestCase extends SQLParserTestCase {
 }
