@@ -265,18 +265,17 @@ class ProxySQLExecutorTest {
         ExecutionGroupContext<JDBCExecutionUnit> jdbcExecutionGroupContext = mock(ExecutionGroupContext.class);
         try (
                 MockedConstruction<DriverExecutionPrepareEngine> ignored = mockConstruction(DriverExecutionPrepareEngine.class,
-                        (mock, context) -> when(mock.prepare(anyString(), eq(executionContext), anyCollection(), any(ExecutionGroupReportContext.class)))
-                                .thenReturn(jdbcExecutionGroupContext))) {
+                        (mock, context) -> when(mock.prepare(anyString(), eq(executionContext), anyCollection(), any(ExecutionGroupReportContext.class))).thenReturn(jdbcExecutionGroupContext))) {
             when(regularExecutor.execute(any(), eq(jdbcExecutionGroupContext), eq(isReturnGeneratedKeys), anyBoolean())).thenReturn(expected);
             assertThat(proxySQLExecutor.execute(executionContext), is(expected));
         }
         verify(regularExecutor).execute(any(), eq(jdbcExecutionGroupContext), eq(isReturnGeneratedKeys), anyBoolean());
         if (expectedHookInvoked) {
-            verify(transactionHook).beforeExecuteSQL(eq(shardingSphereRule), eq(fixtureDatabaseType), anyCollection(),
-                    eq(transactionConnectionContext), eq(TransactionIsolationLevel.READ_COMMITTED));
-            return;
+            verify(transactionHook).beforeExecuteSQL(eq(shardingSphereRule), eq(fixtureDatabaseType), anyCollection(), eq(transactionConnectionContext), eq(TransactionIsolationLevel.READ_COMMITTED));
+        } else {
+            verify(transactionHook, never()).beforeExecuteSQL(any(), any(), anyCollection(), any(), any());
         }
-        verify(transactionHook, never()).beforeExecuteSQL(any(), any(), anyCollection(), any(), any());
+        
     }
     
     private Stream<Arguments> executeScenarios() {
