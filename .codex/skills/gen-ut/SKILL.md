@@ -52,7 +52,8 @@ Module resolution order:
 
 - `R2`: test types and naming
   - Non-parameterized scenarios `MUST` use JUnit `@Test`.
-  - Data-driven scenarios `MUST` use JUnit `@ParameterizedTest`, and display names `MUST` use `@ParameterizedTest(name = "{0}")`.
+  - Data-driven scenarios `MUST` use JUnit `@ParameterizedTest(name = "{0}")` with `@MethodSource` + `Arguments`.
+  - Each parameterized test `MUST` provide at least 3 `Arguments` rows; fewer than 3 is a violation and `MUST` be converted to non-parameterized `@Test`.
   - `MUST NOT` use `@RepeatedTest`.
   - Test method naming `MUST` follow `CODE_OF_CONDUCT.md`: use the `assert` prefix; when a single test uniquely covers a production method, use `assert<MethodName>`.
 
@@ -73,6 +74,7 @@ Module resolution order:
   - Each test method `MUST` cover only one scenario.
   - Each test method `MUST` call the target public method at most once; additional assertions are allowed in the same scenario.
   - For parameterized tests, each `Arguments` row `MUST` represent one independent scenario and one branch/path mapping unit for `R4`.
+  - For parameterized tests, `Arguments` row count `MUST` be greater than or equal to 3.
   - Tests `MUST` exercise behavior through public methods only.
   - Public production methods with business logic `MUST` be covered with dedicated test methods.
   - Dedicated test targets `MUST` follow the `R4` branch-mapping exclusion scope.
@@ -103,7 +105,7 @@ Module resolution order:
   - "Declared assertion differences" means differences explicitly recorded in the delivery report.
   - High-fit candidates `MUST` be refactored directly to parameterized form.
   - For high-fit candidates, a "do not recommend refactor" conclusion is allowed only when refactoring causes significant readability/diagnosability regression, and the exception `MUST` include a `Necessity reason tag` with concrete evidence.
-  - Parameter construction `SHOULD` prefer `Arguments + @MethodSource`; `MAY` use clearer options such as `@CsvSource`/`@EnumSource`.
+  - Parameter construction `MUST` use `Arguments + @MethodSource`.
   - `MUST` provide either a "recommend refactor" or "do not recommend refactor" conclusion with reasons for each candidate; when no candidates exist, `MUST` output "no candidates + decision reason".
   - If high-fit candidates exist but neither parameterized refactor nor valid `KEEP` evidence is present, status `MUST NOT` be concluded as `R10-A`.
 
@@ -158,6 +160,7 @@ Module resolution order:
   - `R15-A` (parameterization enforcement): if an `R8` high-fit candidate exists, the corresponding tests `MUST` be parameterized with `@ParameterizedTest(name = "{0}")`, unless a valid `KEEP` exception is recorded.
   - `R15-B` (metadata accessor test ban): unless the user explicitly requests it in the current turn, tests targeting `getType` / `getOrder` / `getTypeClass` `MUST NOT` be added.
   - `R15-C` (scope mutation guard): test-generation tasks `MUST NOT` introduce new diffs under any `src/main/` path.
+  - `R15-D` (parameterized argument floor): each `@ParameterizedTest` `MUST` bind to `@MethodSource` providers that together contain at least 3 `Arguments` rows; otherwise it is a violation.
 
 ## Workflow
 
@@ -352,6 +355,90 @@ for path, each_counter in plain_target_count.items():
             violations.append(f"{path}: method={method_name} nonParameterizedCount={count}")
 if violations:
     print("[R15-A] high-fit candidate likely exists but no parameterized test found:")
+    for each in violations:
+        print(each)
+    sys.exit(1)
+PY
+'
+```
+
+5.2 `R15-D` parameterized minimum arguments scan:
+```bash
+bash -lc '
+python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
+import re
+import sys
+from pathlib import Path
+
+PARAM_METHOD_PATTERN = re.compile(r"@ParameterizedTest(?:\\s*\\([^)]*\\))?\\s*((?:@\\w+(?:\\s*\\([^)]*\\))?\\s*)*)void\\s+(assert\\w+)\\s*\\(", re.S)
+METHOD_SOURCE_PATTERN = re.compile(r"@MethodSource(?:\\s*\\(([^)]*)\\))?")
+METHOD_DECL_PATTERN = re.compile(r"(?:private|protected|public)?\\s*(?:static\\s+)?[\\w$<>\\[\\], ?]+\\s+(\\w+)\\s*\\([^)]*\\)\\s*\\{", re.S)
+ARGUMENT_ROW_PATTERN = re.compile(r"\\b(?:Arguments\\.of|arguments)\\s*\\(")
+
+def extract_block(text, brace_index):
+    depth = 0
+    index = brace_index
+    while index < len(text):
+        if "{" == text[index]:
+            depth += 1
+        elif "}" == text[index]:
+            depth -= 1
+            if 0 == depth:
+                return text[brace_index + 1:index]
+        index += 1
+    return ""
+
+def parse_method_sources(method_name, annotation_block):
+    resolved = []
+    matches = list(METHOD_SOURCE_PATTERN.finditer(annotation_block))
+    if not matches:
+        return resolved
+    for each in matches:
+        raw = each.group(1)
+        if raw is None or not raw.strip():
+            resolved.append(method_name)
+            continue
+        raw = raw.strip()
+        normalized = re.sub(r"\\bvalue\\s*=\\s*", "", raw)
+        names = re.findall(r'"([^"]+)"', normalized)
+        for name in names:
+            # Ignore external references such as "pkg.Class#method"; they are unresolved in this scan.
+            resolved.append(name.split("#", 1)[-1])
+    return resolved
+
+violations = []
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
+    source = Path(path).read_text(encoding="utf-8")
+    method_bodies = {}
+    for match in METHOD_DECL_PATTERN.finditer(source):
+        method_name = match.group(1)
+        brace_index = source.find("{", match.start())
+        if brace_index < 0:
+            continue
+        method_bodies[method_name] = extract_block(source, brace_index)
+    for match in PARAM_METHOD_PATTERN.finditer(source):
+        annotation_block = match.group(1)
+        method_name = match.group(2)
+        line = source.count("\\n", 0, match.start()) + 1
+        source_methods = parse_method_sources(method_name, annotation_block)
+        if not source_methods:
+            violations.append(f"{path}:{line} method={method_name} missing @MethodSource")
+            continue
+        total_rows = 0
+        unresolved = []
+        for provider in source_methods:
+            body = method_bodies.get(provider)
+            if body is None:
+                unresolved.append(provider)
+                continue
+            total_rows += len(ARGUMENT_ROW_PATTERN.findall(body))
+        if unresolved:
+            violations.append(f"{path}:{line} method={method_name} unresolvedProviders={','.join(unresolved)}")
+            continue
+        if total_rows < 3:
+            violations.append(f"{path}:{line} method={method_name} argumentsRows={total_rows}")
+if violations:
+    print("[R15-D] each @ParameterizedTest must have >= 3 Arguments rows from @MethodSource")
     for each in violations:
         print(each)
     sys.exit(1)

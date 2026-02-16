@@ -72,6 +72,7 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -186,17 +187,16 @@ class ProxySQLExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("constructorScenarios")
-    void assertConstructor(final String name, final String currentDatabaseName, final String schemaName, final boolean hasSchemaName) {
-        when(connectionSession.getCurrentDatabaseName()).thenReturn(currentDatabaseName);
-        assertNotNull(createProxySQLExecutor(schemaName, hasSchemaName).getSqlFederationEngine());
+    @Test
+    void assertConstructorUseUsedDatabaseWhenCurrentDatabaseNameEmpty() {
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("");
+        assertNotNull(createProxySQLExecutor("foo_schema", true).getSqlFederationEngine());
     }
     
-    private Stream<Arguments> constructorScenarios() {
-        return Stream.of(
-                Arguments.of("constructor-use-used-database-when-current-empty", "", "foo_schema", true),
-                Arguments.of("constructor-use-default-schema-when-schema-missing", "foo_db", "foo_schema", false));
+    @Test
+    void assertConstructorUseDefaultSchemaWhenSchemaMissing() {
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
+        assertNotNull(createProxySQLExecutor("foo_schema", false).getSqlFederationEngine());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -346,9 +346,8 @@ class ProxySQLExecutorTest {
                 Arguments.of("driver-prepare-failed-throws-original", false, createInsertStatement(postgresqlDatabaseType), false));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("xaMetaDataRefreshScenarios")
-    void assertCheckExecutePrerequisitesWithMetaDataRefreshInXATransaction(final String name) {
+    @Test
+    void assertCheckExecutePrerequisitesWithMetaDataRefreshInXATransaction() {
         DatabaseType databaseType = mock(DatabaseType.class);
         DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
         when(dialectDatabaseMetaData.getTransactionOption()).thenReturn(new DialectTransactionOption(false, false, false, true, true,
@@ -360,10 +359,6 @@ class ProxySQLExecutorTest {
             ProxySQLExecutor proxySQLExecutor = createProxySQLExecutor("foo_schema", true);
             assertDoesNotThrow(() -> proxySQLExecutor.checkExecutePrerequisites(createCheckStatementContext(createCreateTableStatement(databaseType), true)));
         }
-    }
-    
-    private Stream<Arguments> xaMetaDataRefreshScenarios() {
-        return Stream.of(Arguments.of("ddl-create-xa-with-metadata-refresh-supported"));
     }
     
     private ProxySQLExecutor createProxySQLExecutor(final String schemaName, final boolean hasSchemaName) {
