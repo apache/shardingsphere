@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.datasource.StorageUnitNodePath;
 
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Storage unit changed handler.
@@ -62,13 +63,15 @@ public final class StorageUnitChangedHandler implements DatabaseLeafValueChanged
     }
     
     private void handleRegistered(final String databaseName, final String storageUnitName) {
-        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataFacade().getDataSourceUnitService().load(databaseName, storageUnitName);
-        contextManager.getMetaDataContextManager().getStorageUnitManager().register(databaseName, Collections.singletonMap(storageUnitName, dataSourcePoolProps));
+        Optional<DataSourcePoolProperties> dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataFacade().getDataSourceUnitService().load(databaseName, storageUnitName);
+        dataSourcePoolProps.ifPresent(dataSourcePoolProperties -> contextManager.getMetaDataContextManager().getStorageUnitManager().register(databaseName,
+                Collections.singletonMap(storageUnitName, dataSourcePoolProperties)));
     }
     
     private void handleAltered(final String databaseName, final String storageUnitName) {
-        DataSourcePoolProperties dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataFacade().getDataSourceUnitService().load(databaseName, storageUnitName);
-        contextManager.getMetaDataContextManager().getStorageUnitManager().alter(databaseName, Collections.singletonMap(storageUnitName, dataSourcePoolProps));
+        Optional<DataSourcePoolProperties> dataSourcePoolProps = contextManager.getPersistServiceFacade().getMetaDataFacade().getDataSourceUnitService().load(databaseName, storageUnitName);
+        dataSourcePoolProps.ifPresent(dataSourcePoolProperties -> contextManager.getMetaDataContextManager().getStorageUnitManager().alter(databaseName,
+                Collections.singletonMap(storageUnitName, dataSourcePoolProperties)));
     }
     
     private void handleUnregistered(final String databaseName, final String storageUnitName) {
