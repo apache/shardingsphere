@@ -117,9 +117,9 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -226,7 +226,7 @@ class StandardDatabaseProxyConnectorTest {
         try (
                 MockedConstruction<FederationMetaDataRefreshEngine> mockedConstruction = mockConstruction(FederationMetaDataRefreshEngine.class,
                         (mock, context) -> when(mock.isNeedRefresh()).thenReturn(true))) {
-            assertThat(engine.execute(), instanceOf(UpdateResponseHeader.class));
+            assertThat(engine.execute(), isA(UpdateResponseHeader.class));
             FederationMetaDataRefreshEngine federationMetaDataRefreshEngine = mockedConstruction.constructed().iterator().next();
             verify(federationMetaDataRefreshEngine).refresh(any(), any(ShardingSphereDatabase.class));
         }
@@ -252,7 +252,7 @@ class StandardDatabaseProxyConnectorTest {
                 MockedConstruction<ProxyBackendTransactionManager> mockedTransactionManager = mockConstruction(ProxyBackendTransactionManager.class);
                 MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
-            assertThat(engine.execute(), instanceOf(UpdateResponseHeader.class));
+            assertThat(engine.execute(), isA(UpdateResponseHeader.class));
             assertThat(mockedKernelProcessor.constructed().size(), is(1));
             assertThat(mockedDatabaseTypeRegistry.constructed().size(), is(1));
             ProxyBackendTransactionManager transactionManager = mockedTransactionManager.constructed().iterator().next();
@@ -444,7 +444,7 @@ class StandardDatabaseProxyConnectorTest {
             });
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(eq(QueryHeaderBuilder.class), any(DatabaseType.class))).thenReturn(new QueryHeaderBuilderFixture());
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(QueryHeaderBuilder.class, null)).thenReturn(new QueryHeaderBuilderFixture());
-            assertThat(engine.execute(), instanceOf(QueryResponseHeader.class));
+            assertThat(engine.execute(), isA(QueryResponseHeader.class));
         }
     }
     
@@ -465,7 +465,7 @@ class StandardDatabaseProxyConnectorTest {
         setField(engine, "proxySQLExecutor", proxySQLExecutor);
         try (MockedStatic<DatabaseTypedSPILoader> spiLoader = mockStatic(DatabaseTypedSPILoader.class)) {
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(eq(QueryHeaderBuilder.class), any(DatabaseType.class))).thenReturn(new QueryHeaderBuilderFixture());
-            assertThat(engine.execute(), instanceOf(QueryResponseHeader.class));
+            assertThat(engine.execute(), isA(QueryResponseHeader.class));
         }
     }
     
@@ -487,7 +487,7 @@ class StandardDatabaseProxyConnectorTest {
                         (mock, context) -> when(mock.isNeedRefresh()).thenReturn(false));
                 MockedConstruction<KernelProcessor> mockedKernelProcessor = mockConstruction(KernelProcessor.class,
                         (mock, context) -> when(mock.generateExecutionContext(any(QueryContext.class), any(RuleMetaData.class), any(ConfigurationProperties.class))).thenReturn(executionContext))) {
-            assertThat(engine.execute(), instanceOf(UpdateResponseHeader.class));
+            assertThat(engine.execute(), isA(UpdateResponseHeader.class));
             assertThat(mockedRefreshEngine.constructed().size(), is(1));
             assertThat(mockedKernelProcessor.constructed().size(), is(1));
         }
@@ -527,7 +527,7 @@ class StandardDatabaseProxyConnectorTest {
                 MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(eq(QueryHeaderBuilder.class), any(DatabaseType.class))).thenReturn(new QueryHeaderBuilderFixture());
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
-            assertThat(engine.execute(), instanceOf(QueryResponseHeader.class));
+            assertThat(engine.execute(), isA(QueryResponseHeader.class));
             assertThat(mockedKernelProcessor.constructed().size(), is(1));
             assertThat(mockedDatabaseTypeRegistry.constructed().size(), is(1));
             assertThat(mockedMergeEngine.constructed().size(), is(1));
@@ -576,7 +576,7 @@ class StandardDatabaseProxyConnectorTest {
                 MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
             spiLoader.when(() -> DatabaseTypedSPILoader.getService(eq(QueryHeaderBuilder.class), any(DatabaseType.class))).thenReturn(new QueryHeaderBuilderFixture());
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
-            assertThat(engine.execute(), instanceOf(QueryResponseHeader.class));
+            assertThat(engine.execute(), isA(QueryResponseHeader.class));
             assertThat(mockedKernelProcessor.constructed().size(), is(1));
             assertThat(mockedDatabaseTypeRegistry.constructed().size(), is(1));
             assertThat(mockedMergeEngine.constructed().size(), is(1));
@@ -608,7 +608,7 @@ class StandardDatabaseProxyConnectorTest {
                 MockedConstruction<ProxyBackendTransactionManager> mockedTransactionManager = mockConstruction(ProxyBackendTransactionManager.class);
                 MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
-            assertThat(engine.execute(), instanceOf(UpdateResponseHeader.class));
+            assertThat(engine.execute(), isA(UpdateResponseHeader.class));
             assertThat(mockedKernelProcessor.constructed().size(), is(1));
             assertThat(mockedDatabaseTypeRegistry.constructed().size(), is(1));
             verify(mockedTransactionManager.constructed().iterator().next()).commit();
@@ -645,31 +645,31 @@ class StandardDatabaseProxyConnectorTest {
     @Test
     void assertExecuteWithoutImplicitCommitWhenSingleExecutionUnit() throws SQLException {
         InsertStatement insertStatement = new InsertStatement(databaseType);
-        assertThat(executeWithImplicitCommitCondition(insertStatement, "XA", false, 1), instanceOf(UpdateResponseHeader.class));
+        assertThat(executeWithImplicitCommitCondition(insertStatement, "XA", false, 1), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteWithoutImplicitCommitWhenLocalTransaction() throws SQLException {
         InsertStatement insertStatement = new InsertStatement(databaseType);
-        assertThat(executeWithImplicitCommitCondition(insertStatement, "LOCAL", false, 2), instanceOf(UpdateResponseHeader.class));
+        assertThat(executeWithImplicitCommitCondition(insertStatement, "LOCAL", false, 2), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteWithoutImplicitCommitWhenAlreadyInTransaction() throws SQLException {
         InsertStatement insertStatement = new InsertStatement(databaseType);
-        assertThat(executeWithImplicitCommitCondition(insertStatement, "XA", true, 2), instanceOf(UpdateResponseHeader.class));
+        assertThat(executeWithImplicitCommitCondition(insertStatement, "XA", true, 2), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteWithoutImplicitCommitWhenSelectStatement() throws SQLException {
         SelectStatement selectStatement = new SelectStatement(databaseType);
-        assertThat(executeWithImplicitCommitCondition(selectStatement, "XA", false, 2), instanceOf(UpdateResponseHeader.class));
+        assertThat(executeWithImplicitCommitCondition(selectStatement, "XA", false, 2), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteWithoutImplicitCommitWhenSQLStatementIsNotDML() throws SQLException {
         SQLStatement sqlStatement = new SQLStatement(databaseType);
-        assertThat(executeWithImplicitCommitCondition(sqlStatement, "XA", false, 2), instanceOf(UpdateResponseHeader.class));
+        assertThat(executeWithImplicitCommitCondition(sqlStatement, "XA", false, 2), isA(UpdateResponseHeader.class));
     }
     
     @Test
@@ -692,7 +692,7 @@ class StandardDatabaseProxyConnectorTest {
                 MockedConstruction<ProxyBackendTransactionManager> mockedTransactionManager = mockConstruction(ProxyBackendTransactionManager.class);
                 MockedStatic<ShardingSphereServiceLoader> serviceLoader = mockStatic(ShardingSphereServiceLoader.class)) {
             serviceLoader.when(() -> ShardingSphereServiceLoader.getServiceInstances(AdvancedProxySQLExecutor.class)).thenReturn(Collections.emptyList());
-            assertThat(engine.execute(), instanceOf(UpdateResponseHeader.class));
+            assertThat(engine.execute(), isA(UpdateResponseHeader.class));
             assertThat(mockedKernelProcessor.constructed().size(), is(1));
             assertThat(mockedDatabaseTypeRegistry.constructed().size(), is(1));
             assertTrue(mockedTransactionManager.constructed().isEmpty());

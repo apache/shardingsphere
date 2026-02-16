@@ -30,8 +30,8 @@ import org.junit.jupiter.api.Test;
 import java.math.BigInteger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 
 class ConsistencyCheckJobItemContextTest {
     
@@ -82,7 +82,7 @@ class ConsistencyCheckJobItemContextTest {
     
     private void assertRange(final UniqueKeyIngestPosition<?> actual, final UniqueKeyIngestPosition<?> expected) {
         assertThat(actual.getClass(), is(expected.getClass()));
-        assertThat(actual, instanceOf(UniqueKeyIngestPosition.class));
+        assertThat(actual, isA(UniqueKeyIngestPosition.class));
         assertThat(actual.getLowerBound(), is(expected.getLowerBound()));
         assertThat(actual.getUpperBound(), is(expected.getUpperBound()));
     }

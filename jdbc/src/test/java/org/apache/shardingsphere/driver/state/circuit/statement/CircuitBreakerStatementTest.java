@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @SuppressWarnings("resource")
@@ -144,7 +144,7 @@ class CircuitBreakerStatementTest {
     
     @Test
     void assertGetConnection() {
-        assertThat(new CircuitBreakerStatement().getConnection(), instanceOf(CircuitBreakerConnection.class));
+        assertThat(new CircuitBreakerStatement().getConnection(), isA(CircuitBreakerConnection.class));
     }
     
     @Test

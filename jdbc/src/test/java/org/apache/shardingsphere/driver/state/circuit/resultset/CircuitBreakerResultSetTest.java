@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 import java.sql.ResultSet;
 import java.util.Calendar;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @SuppressWarnings("resource")
@@ -248,7 +248,7 @@ class CircuitBreakerResultSetTest {
     
     @Test
     void assertGetMetaData() {
-        assertThat(new CircuitBreakerResultSet().getMetaData(), instanceOf(CircuitBreakerResultSetMetaData.class));
+        assertThat(new CircuitBreakerResultSet().getMetaData(), isA(CircuitBreakerResultSetMetaData.class));
     }
     
     @Test

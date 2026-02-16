@@ -35,10 +35,10 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @SuppressWarnings("resource")
@@ -276,12 +276,12 @@ class CircuitBreakerPreparedStatementTest {
     
     @Test
     void assertGetConnection() {
-        assertThat(new CircuitBreakerPreparedStatement().getConnection(), instanceOf(CircuitBreakerConnection.class));
+        assertThat(new CircuitBreakerPreparedStatement().getConnection(), isA(CircuitBreakerConnection.class));
     }
     
     @Test
     void assertGetGeneratedKeys() {
-        assertThat(new CircuitBreakerPreparedStatement().getGeneratedKeys(), instanceOf(CircuitBreakerResultSet.class));
+        assertThat(new CircuitBreakerPreparedStatement().getGeneratedKeys(), isA(CircuitBreakerResultSet.class));
     }
     
     @Test
@@ -291,7 +291,7 @@ class CircuitBreakerPreparedStatementTest {
     
     @Test
     void assertGetResultSet() {
-        assertThat(new CircuitBreakerPreparedStatement().getResultSet(), instanceOf(CircuitBreakerResultSet.class));
+        assertThat(new CircuitBreakerPreparedStatement().getResultSet(), isA(CircuitBreakerResultSet.class));
     }
     
     @Test
@@ -321,7 +321,7 @@ class CircuitBreakerPreparedStatementTest {
     
     @Test
     void assertExecuteQuery() {
-        assertThat(new CircuitBreakerPreparedStatement().executeQuery(), instanceOf(CircuitBreakerResultSet.class));
+        assertThat(new CircuitBreakerPreparedStatement().executeQuery(), isA(CircuitBreakerResultSet.class));
     }
     
     @Test
