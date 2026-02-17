@@ -134,6 +134,7 @@
 1. Proxy: Fix PostgreSQL boolean text output to return `t`/`f` as per protocol - [#37184](https://github.com/apache/shardingsphere/pull/37184)
 1. Proxy: Fix PostgreSQL text protocol bytea output to use hex encoding and avoid truncation - [#37772](https://github.com/apache/shardingsphere/pull/37772)
 1. Proxy: Fix MySQL prepared statement sharding failure with `interpolateParams=false` when `MYSQL_TYPE_STRING` is used for character sharding columns - [#37993](https://github.com/apache/shardingsphere/issues/37993)
+1. Proxy: Handle `byte[]` pagination parameters in MySQL prepared statements (`LIMIT ?`, `LIMIT ?, ?`) - [#38057](https://github.com/apache/shardingsphere/pull/38057)
 1. Proxy: Fix command type error when use openGauss driver to execute statements in transaction - [37749](https://github.com/apache/shardingsphere/pull/37749)
 1. Mode: Fix issue of drop schema can not work on standalone mode - [#34470](https://github.com/apache/shardingsphere/pull/34470)
 1. Sharding: Fix mod sharding algorithm judgement -[#36386](https://github.com/apache/shardingsphere/pull/36386)
