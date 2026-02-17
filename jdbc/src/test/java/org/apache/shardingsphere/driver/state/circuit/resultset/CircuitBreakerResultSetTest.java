@@ -28,13 +28,14 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("resource")
 class CircuitBreakerResultSetTest {
     
     @Test
     void assertNext() {
-        assertThat(new CircuitBreakerResultSet().next(), is(false));
+        assertFalse(new CircuitBreakerResultSet().next());
     }
     
     @Test
@@ -44,7 +45,7 @@ class CircuitBreakerResultSetTest {
     
     @Test
     void assertWasNull() {
-        assertThat(new CircuitBreakerResultSet().wasNull(), is(true));
+        assertTrue(new CircuitBreakerResultSet().wasNull());
     }
     
     @Test
@@ -69,12 +70,12 @@ class CircuitBreakerResultSetTest {
     
     @Test
     void assertGetBooleanByIndex() {
-        assertThat(new CircuitBreakerResultSet().getBoolean(1), is(false));
+        assertFalse(new CircuitBreakerResultSet().getBoolean(1));
     }
     
     @Test
     void assertGetBooleanByLabel() {
-        assertThat(new CircuitBreakerResultSet().getBoolean("foo"), is(false));
+        assertFalse(new CircuitBreakerResultSet().getBoolean("foo"));
     }
     
     @Test

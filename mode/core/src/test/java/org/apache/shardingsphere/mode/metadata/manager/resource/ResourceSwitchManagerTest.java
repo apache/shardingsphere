@@ -46,6 +46,7 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -182,7 +183,7 @@ class ResourceSwitchManagerTest {
         SwitchingResource actual = resourceSwitchManager.switchByRegisterStorageUnit(resourceMetaData, toBeRegistered, false);
         assertThat(actual.getNewDataSources(), aMapWithSize(0));
         assertThat(actual.getStaleDataSources(), aMapWithSize(0));
-        assertThat(actual.getStaleStorageUnitNames().isEmpty(), is(true));
+        assertTrue(actual.getStaleStorageUnitNames().isEmpty());
         assertThat(actual.getMergedDataSourcePoolPropertiesMap(), hasKey("ds_existing"));
     }
     
@@ -196,7 +197,7 @@ class ResourceSwitchManagerTest {
             SwitchingResource actual = resourceSwitchManager.switchByAlterStorageUnit(resourceMetaData, toBeAltered, false);
             assertThat(actual.getNewDataSources().size(), is(1));
             assertThat(actual.getStaleDataSources().size(), is(1));
-            assertThat(actual.getStaleStorageUnitNames().isEmpty(), is(false));
+            assertFalse(actual.getStaleStorageUnitNames().isEmpty());
             assertThat(actual.getMergedDataSourcePoolPropertiesMap(), hasKey("ds_existing"));
         }
     }
@@ -206,7 +207,7 @@ class ResourceSwitchManagerTest {
         ResourceMetaData resourceMetaData = createResourceMetaDataWithSingleUnit("ds_existing");
         SwitchingResource actual = resourceSwitchManager.switchByUnregisterStorageUnit(resourceMetaData, Collections.emptySet());
         assertThat(actual.getStaleDataSources(), aMapWithSize(0));
-        assertThat(actual.getStaleStorageUnitNames().isEmpty(), is(true));
+        assertTrue(actual.getStaleStorageUnitNames().isEmpty());
         assertThat(actual.getMergedDataSourcePoolPropertiesMap(), hasKey("ds_existing"));
     }
     
@@ -215,7 +216,7 @@ class ResourceSwitchManagerTest {
         ResourceMetaData resourceMetaData = createResourceMetaDataWithSingleUnit("ds_existing");
         SwitchingResource actual = resourceSwitchManager.createByUnregisterStorageUnit(resourceMetaData, Collections.emptySet());
         assertThat(actual.getStaleDataSources(), aMapWithSize(0));
-        assertThat(actual.getStaleStorageUnitNames().isEmpty(), is(true));
+        assertTrue(actual.getStaleStorageUnitNames().isEmpty());
         assertThat(actual.getMergedDataSourcePoolPropertiesMap(), hasKey("ds_existing"));
     }
     

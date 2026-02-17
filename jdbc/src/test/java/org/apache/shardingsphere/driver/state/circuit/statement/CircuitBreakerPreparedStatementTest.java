@@ -39,6 +39,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SuppressWarnings("resource")
@@ -191,7 +192,7 @@ class CircuitBreakerPreparedStatementTest {
     
     @Test
     void assertExecute() {
-        assertThat(new CircuitBreakerPreparedStatement().execute(), is(false));
+        assertFalse(new CircuitBreakerPreparedStatement().execute());
     }
     
     @Test
@@ -306,7 +307,7 @@ class CircuitBreakerPreparedStatementTest {
     
     @Test
     void assertIsAccumulate() {
-        assertThat(new CircuitBreakerPreparedStatement().isAccumulate(), is(false));
+        assertFalse(new CircuitBreakerPreparedStatement().isAccumulate());
     }
     
     @Test

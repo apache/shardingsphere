@@ -100,7 +100,7 @@ class LiteralExpressionConverterTest {
     void assertConvertBooleanLiteral() {
         SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, true), null).orElse(null);
         assertNotNull(actual);
-        assertThat(actual.getValueAs(Boolean.class), is(true));
+        assertTrue(actual.getValueAs(Boolean.class));
     }
     
     @Test

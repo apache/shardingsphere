@@ -32,6 +32,7 @@ import java.util.Collections;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -79,7 +80,7 @@ class FirebirdExecuteStatementPacketTest {
         when(returnBlr.skipBytes(anyInt())).thenReturn(returnBlr);
         when(payload.readInt4Unsigned()).thenReturn(30L, 1L, 1024L);
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION19);
-        assertThat(packet.isStoredProcedure(), is(true));
+        assertTrue(packet.isStoredProcedure());
         assertThat(packet.getReturnColumns(), is(Collections.singletonList(FirebirdBinaryColumnType.LONG)));
         assertThat(packet.getOutputMessageNumber(), is(9));
         assertThat(packet.getParameterValues(), is(Collections.singletonList(123)));

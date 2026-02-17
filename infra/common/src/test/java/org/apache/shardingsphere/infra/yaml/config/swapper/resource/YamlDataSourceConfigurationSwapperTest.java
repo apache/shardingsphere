@@ -115,7 +115,7 @@ class YamlDataSourceConfigurationSwapperTest {
         yamlConfig.put("password", "");
         DataSourcePoolProperties actual = swapper.swapToDataSourcePoolProperties(yamlConfig);
         assertThat(actual.getPoolClassName(), is("com.zaxxer.hikari.HikariDataSource"));
-        assertThat(actual.getAllLocalProperties().containsKey("dataSourceClassName"), is(false));
+        assertFalse(actual.getAllLocalProperties().containsKey("dataSourceClassName"));
         assertThat(actual.getAllLocalProperties().get("url").toString(), is("jdbc:h2:mem:test"));
         assertThat(actual.getAllLocalProperties().get("username").toString(), is("sa"));
     }
