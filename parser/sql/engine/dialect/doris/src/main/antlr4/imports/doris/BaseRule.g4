@@ -526,12 +526,14 @@ identifierKeywordsUnambiguous
     | UNDOFILE
     | UNDO_BUFFER_SIZE
     | UNKNOWN
+    | UNSET
     | UNTIL
     | UPGRADE
     | USER
     | USE_FRM
     | VALIDATION
     | VALUE
+    | VARIABLE
     | VARIABLES
     | VCPU
     | VERBOSE

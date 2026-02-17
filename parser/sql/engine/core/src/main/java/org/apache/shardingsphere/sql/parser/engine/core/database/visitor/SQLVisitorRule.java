@@ -439,6 +439,8 @@ public enum SQLVisitorRule {
     
     SET_VARIABLE("SetVariable", SQLStatementType.DAL),
     
+    UNSET_VARIABLE("UnsetVariable", SQLStatementType.DAL),
+    
     SET("Set", SQLStatementType.DAL),
     
     SET_NAME("SetName", SQLStatementType.DAL),

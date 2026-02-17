@@ -122,6 +122,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TablesO
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UnsetVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterResourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyAssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResourceNameContext;
@@ -180,6 +181,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.An
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.RefreshStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.UnsetVariableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -935,6 +937,13 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
             return result;
         }
         return null;
+    }
+    
+    @Override
+    public ASTNode visitUnsetVariable(final UnsetVariableContext ctx) {
+        String scope = null != ctx.optionType() ? ctx.optionType().getText() : "SESSION";
+        String variableName = ctx.unsetVariableName().getText();
+        return new UnsetVariableStatement(getDatabaseType(), scope, variableName);
     }
     
     private String getAssignValue(final OptionValueNoOptionTypeContext ctx) {

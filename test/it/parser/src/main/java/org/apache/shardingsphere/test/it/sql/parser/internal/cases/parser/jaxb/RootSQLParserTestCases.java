@@ -32,6 +32,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadTaskStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisUnsetVariableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.catalog.AlterCatalogStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.HiveAbortStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCloneStatementTestCase;
@@ -1164,6 +1165,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "set-dist-variable")
     private final List<SetDistVariableStatementTestCase> setDistVariableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "unset-variable")
+    private final List<DorisUnsetVariableStatementTestCase> unsetVariableTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-shadow-rule")
     private final List<CreateShadowRuleStatementTestCase> createShadowRuleTestCases = new LinkedList<>();

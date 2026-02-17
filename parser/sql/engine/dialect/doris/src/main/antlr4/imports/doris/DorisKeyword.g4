@@ -3002,6 +3002,10 @@ UNLOCK
     : U N L O C K
     ;
 
+UNSET
+    : U N S E T
+    ;
+
 UNSIGNED
     : U N S I G N E D
     ;
@@ -3084,6 +3088,10 @@ VARCHAR
 
 VARCHARACTER
     : V A R C H A R A C T E R
+    ;
+
+VARIABLE
+    : V A R I A B L E
     ;
 
 VARIABLES
