@@ -34,6 +34,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -154,7 +155,7 @@ class AgentPluginClassLoaderTest {
     private JarFile createJar(final String fileName, final Map<String, byte[]> entries, final Manifest manifest) throws IOException {
         Path jarPath = tempDir.resolve(fileName);
         try (JarOutputStream out = null == manifest ? new JarOutputStream(Files.newOutputStream(jarPath)) : new JarOutputStream(Files.newOutputStream(jarPath), manifest)) {
-            for (Map.Entry<String, byte[]> each : entries.entrySet()) {
+            for (Entry<String, byte[]> each : entries.entrySet()) {
                 out.putNextEntry(new JarEntry(each.getKey()));
                 out.write(each.getValue());
                 out.closeEntry();

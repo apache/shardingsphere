@@ -144,6 +144,11 @@
         <module name="UnnecessarySemicolonInTryWithResources" />
         <module name="UnusedLocalVariable" />
         <module name="VariableDeclarationUsageDistance" />
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="^(?!\s*import\s+java\.util\.Map\.Entry\s*;).*\b(?:java\.util\.)?Map\.Entry\b" />
+            <property name="ignoreComments" value="true" />
+            <property name="message" value="Use Entry instead of Map.Entry (import java.util.Map.Entry)." />
+        </module>
         
         <!-- Imports -->
         <module name="AvoidStarImport" />

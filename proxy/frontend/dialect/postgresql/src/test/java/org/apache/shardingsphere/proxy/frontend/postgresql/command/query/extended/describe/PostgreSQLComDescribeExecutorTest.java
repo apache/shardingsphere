@@ -83,6 +83,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -357,7 +358,7 @@ class PostgreSQLComDescribeExecutorTest {
         verify(mockPayload).writeInt2(expectedParamTypes.size());
         Map<Integer, Long> expectedTypeCounts = expectedParamTypes.stream()
                 .collect(Collectors.groupingBy(PostgreSQLColumnType::getValue, Collectors.counting()));
-        for (Map.Entry<Integer, Long> entry : expectedTypeCounts.entrySet()) {
+        for (Entry<Integer, Long> entry : expectedTypeCounts.entrySet()) {
             verify(mockPayload, times(entry.getValue().intValue())).writeInt4(entry.getKey());
         }
         PostgreSQLRowDescriptionPacket rowDescriptionPacket = (PostgreSQLRowDescriptionPacket) actualIterator.next();
