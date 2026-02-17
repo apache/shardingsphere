@@ -17,37 +17,31 @@
 
 package org.apache.shardingsphere.single.checker.sql;
 
-import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.checker.SupportedSQLChecker;
 import org.apache.shardingsphere.infra.checker.SupportedSQLCheckersBuilder;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.single.checker.sql.schema.SingleDropSchemaSupportedChecker;
 import org.apache.shardingsphere.single.checker.sql.table.SingleDropTableSupportedChecker;
-import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.rule.SingleRule;
+import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-/**
- * Single SQL supported checker factory.
- */
-public final class SingleSupportedSQLCheckersBuilder implements SupportedSQLCheckersBuilder<SingleRule> {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
+
+class SingleSupportedSQLCheckersBuilderTest {
     
-    private final Collection<SupportedSQLChecker<?, SingleRule>> supportedSQLCheckers = Arrays.asList(new SingleDropSchemaSupportedChecker(), new SingleDropTableSupportedChecker());
+    @SuppressWarnings("rawtypes")
+    private final SupportedSQLCheckersBuilder builder = OrderedSPILoader.getServicesByClass(SupportedSQLCheckersBuilder.class, Collections.singleton(SingleRule.class)).get(SingleRule.class);
     
-    @HighFrequencyInvocation
-    @Override
-    public Collection<SupportedSQLChecker<?, SingleRule>> getSupportedSQLCheckers() {
-        return supportedSQLCheckers;
-    }
-    
-    @Override
-    public int getOrder() {
-        return SingleOrder.ORDER;
-    }
-    
-    @Override
-    public Class<SingleRule> getTypeClass() {
-        return SingleRule.class;
+    @SuppressWarnings("unchecked")
+    @Test
+    void assertGetSupportedSQLCheckers() {
+        List<SupportedSQLChecker<?, SingleRule>> actual = new ArrayList<SupportedSQLChecker<?, SingleRule>>(builder.getSupportedSQLCheckers());
+        assertThat(actual.get(0), isA(SingleDropSchemaSupportedChecker.class));
+        assertThat(actual.get(1), isA(SingleDropTableSupportedChecker.class));
     }
 }
