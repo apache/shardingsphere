@@ -143,6 +143,7 @@ execute
     | cancelBuildIndex
     | createFile
     | dropFile
+    | sync
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

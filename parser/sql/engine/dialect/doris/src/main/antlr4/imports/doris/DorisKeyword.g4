@@ -2714,6 +2714,10 @@ SWITCHES
     : S W I T C H E S
     ;
 
+SYNC
+    :S Y N C
+    ;
+
 SYSTEM
     : S Y S T E M
     ;

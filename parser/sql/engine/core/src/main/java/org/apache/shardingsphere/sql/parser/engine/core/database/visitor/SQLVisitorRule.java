@@ -445,6 +445,8 @@ public enum SQLVisitorRule {
     
     SET_CHARACTER("SetCharacter", SQLStatementType.DAL),
     
+    SYNC("Sync", SQLStatementType.DAL),
+    
     RESET_PARAMETER("ResetParameter", SQLStatementType.DAL),
     
     VACUUM("Vacuum", SQLStatementType.DAL),

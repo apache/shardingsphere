@@ -42,4 +42,5 @@
     <sql-case id="describe_map_value" value="DESCRIBE event_log params.'$value$';" db-types="Hive" />
     <sql-case id="describe_nested_struct_in_array" value="DESCRIBE posts comments.'$elem$'.author;" db-types="Hive" />
     <sql-case id="describe_with_partition_and_complex" value="DESCRIBE sales_db.actions PARTITION (dt='2025-08-17') products.'$elem$'.details.price;" db-types="Hive" />
+    <sql-case id="desc_table_all_doris" value="DESC demo.test_table ALL" db-types="Doris" />
 </sql-cases>

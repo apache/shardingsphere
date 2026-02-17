@@ -117,6 +117,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Shutdow
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StartSlaveContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StopSlaveContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SwitchCatalogContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SyncContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TablesOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UninstallPluginContext;
@@ -199,6 +200,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropSqlBloc
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSyncStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowBuildIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQueryStatsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
@@ -486,6 +488,11 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
+    public ASTNode visitSync(final SyncContext ctx) {
+        return new DorisSyncStatement(getDatabaseType());
+    }
+    
+    @Override
     public ASTNode visitKill(final KillContext ctx) {
         String processId;
         if (null != ctx.NUMBER_()) {
@@ -605,9 +612,11 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {
-        return null == ctx.tableName()
-                ? new ExplainStatement(getDatabaseType(), getExplainableSQLStatement(ctx).orElse(null))
-                : new MySQLDescribeStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()), getColumnWildcard(ctx));
+        if (null == ctx.tableName()) {
+            return new ExplainStatement(getDatabaseType(), getExplainableSQLStatement(ctx).orElse(null));
+        }
+        boolean showAll = null != ctx.ALL();
+        return new MySQLDescribeStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()), getColumnWildcard(ctx), showAll);
     }
     
     private Optional<SQLStatement> getExplainableSQLStatement(final ExplainContext ctx) {

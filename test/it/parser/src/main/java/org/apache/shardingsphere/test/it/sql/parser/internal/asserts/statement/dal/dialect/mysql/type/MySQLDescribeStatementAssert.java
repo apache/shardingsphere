@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.tab
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.show.column.MySQLDescribeStatementTestCase;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Describe statement assert for MySQL.
@@ -41,6 +42,7 @@ public final class MySQLDescribeStatementAssert {
      * @param expected expected describe statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLDescribeStatement actual, final MySQLDescribeStatementTestCase expected) {
+        assertShowAll(assertContext, actual, expected);
         TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         if (actual.getColumnWildcard().isPresent()) {
             assertDescribeColumnWild(assertContext, actual, expected);
@@ -52,6 +54,12 @@ public final class MySQLDescribeStatementAssert {
             ColumnAssert.assertIs(assertContext, actual.getColumnWildcard().get(), expected.getColumn());
         } else {
             assertNull(expected.getColumn(), assertContext.getText("Actual column wild should not exist."));
+        }
+    }
+    
+    private static void assertShowAll(final SQLCaseAssertContext assertContext, final MySQLDescribeStatement actual, final MySQLDescribeStatementTestCase expected) {
+        if (expected.isShowAll()) {
+            assertTrue(actual.isShowAll(), assertContext.getText("Actual show all flag should be true"));
         }
     }
 }

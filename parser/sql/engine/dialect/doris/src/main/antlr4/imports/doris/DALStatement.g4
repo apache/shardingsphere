@@ -33,7 +33,7 @@ help
 
 explain
     : (DESC | DESCRIBE | EXPLAIN)
-    (tableName (columnRef | textString)?
+    (tableName (columnRef | textString)? ALL?
     | explainType? (explainableStatement | FOR CONNECTION connectionId)
     | ANALYZE (FORMAT EQ_ TREE)? (select | delete | update | insert))
     ;
@@ -264,6 +264,10 @@ showCharset
 
 setCharacter
     : SET (CHARACTER SET | CHARSET) (charsetName | DEFAULT)
+    ;
+
+sync
+    : SYNC
     ;
 
 clone
