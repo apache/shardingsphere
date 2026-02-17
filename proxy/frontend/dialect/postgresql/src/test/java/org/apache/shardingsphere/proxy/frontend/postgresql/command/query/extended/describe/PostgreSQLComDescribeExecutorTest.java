@@ -92,6 +92,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -212,7 +213,7 @@ class PostgreSQLComDescribeExecutorTest {
         PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
         parameterDescription.write(mockPayload);
         verify(mockPayload).writeInt2(0);
-        assertThat(actualIterator.hasNext(), is(false));
+        assertFalse(actualIterator.hasNext());
     }
     
     @Test

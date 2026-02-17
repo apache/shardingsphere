@@ -44,6 +44,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -73,7 +74,7 @@ class InventoryColumnValueReaderEngineTest {
     void assertReadWithBooleanValue() throws SQLException {
         when(metaData.getColumnType(1)).thenReturn(Types.BOOLEAN);
         when(resultSet.getBoolean(1)).thenReturn(true);
-        assertThat(engine.read(resultSet, metaData, 1), is(true));
+        assertTrue((boolean) engine.read(resultSet, metaData, 1));
     }
     
     @Test

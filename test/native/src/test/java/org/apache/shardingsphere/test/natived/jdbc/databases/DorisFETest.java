@@ -38,9 +38,8 @@ import java.sql.Statement;
 import java.time.Duration;
 import java.util.stream.Stream;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledInNativeImage
 @Testcontainers
@@ -96,8 +95,8 @@ class DorisFETest {
     private DataSource createDataSource() throws SQLException {
         Awaitility.await().atMost(Duration.ofMinutes(1L)).ignoreExceptions().until(() -> {
             try (Connection connection = DriverManager.getConnection(jdbcUrlPrefix, "root", null)) {
-                assertThat(connection.createStatement().executeQuery("SELECT `host`, `join`, `alive` FROM frontends()").next(), is(true));
-                assertThat(connection.createStatement().executeQuery("SELECT `host`, `alive` FROM backends()").next(), is(true));
+                assertTrue(connection.createStatement().executeQuery("SELECT `host`, `join`, `alive` FROM frontends()").next());
+                assertTrue(connection.createStatement().executeQuery("SELECT `host`, `alive` FROM backends()").next());
             }
             return true;
         });

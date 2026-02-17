@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HashColumnTest {
     
@@ -33,8 +34,8 @@ class HashColumnTest {
         assertThat(new HashColumn("col", "tbl", false), not(new HashColumn("col", "tbl1", false)));
         HashColumn column1 = new HashColumn("col", "tbl", false);
         HashColumn column2 = new HashColumn("COL", "TBL", false);
-        assertThat(column1.equals(column2), is(true));
-        assertThat(column2.equals(column1), is(true));
+        assertTrue(column1.equals(column2));
+        assertTrue(column2.equals(column1));
     }
     
     @Test

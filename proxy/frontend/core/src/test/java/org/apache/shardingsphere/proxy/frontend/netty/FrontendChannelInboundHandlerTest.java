@@ -71,6 +71,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
@@ -275,7 +276,7 @@ class FrontendChannelInboundHandlerTest {
         ProcessRegistry processRegistry = mock(ProcessRegistry.class);
         when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
         channel.pipeline().fireUserEventTriggered(IdleStateEvent.ALL_IDLE_STATE_EVENT);
-        assertThat(channel.isOpen(), is(false));
+        assertFalse(channel.isOpen());
     }
     
     @Test
@@ -286,10 +287,9 @@ class FrontendChannelInboundHandlerTest {
         String processId = "foo_id";
         connectionSession.setProcessId(processId);
         Process process = mock(Process.class);
-        when(process.isIdle()).thenReturn(false);
         when(processRegistry.get(processId)).thenReturn(process);
         channel.pipeline().fireUserEventTriggered(IdleStateEvent.ALL_IDLE_STATE_EVENT);
-        assertThat(channel.isOpen(), is(true));
+        assertTrue(channel.isOpen());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

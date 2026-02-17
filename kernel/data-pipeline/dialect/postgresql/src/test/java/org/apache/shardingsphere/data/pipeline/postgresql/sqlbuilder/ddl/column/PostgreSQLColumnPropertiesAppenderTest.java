@@ -42,6 +42,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -129,8 +130,8 @@ class PostgreSQLColumnPropertiesAppenderTest {
         when(templateExecutor.executeByTemplate(anyMap(), eq("component/columns/%s/edit_mode_types_multi.ftl"))).thenReturn(Collections.emptyList());
         appender.append(context);
         Map<String, Object> singleColumn = getSingleColumn(context);
-        assertThat(singleColumn.get("is_pk"), is(false));
-        assertThat(singleColumn.get("is_primary_key"), is(false));
+        assertFalse((boolean) singleColumn.get("is_pk"));
+        assertFalse((boolean) singleColumn.get("is_primary_key"));
     }
     
     @Test
@@ -873,7 +874,7 @@ class PostgreSQLColumnPropertiesAppenderTest {
         assertThat(actualColumn.get("inheritedfromtype"), is("parent"));
         assertThat(actualColumn.get("attlen"), is("5"));
         assertThat(actualColumn.get("attprecision"), is("2"));
-        assertThat(actualColumn.get("is_pk"), is(true));
+        assertTrue((boolean) actualColumn.get("is_pk"));
         assertThat(actualColumn.get("cltype"), is("numeric"));
         assertThat((Collection<?>) actualColumn.get("edit_types"), contains("alpha", "numeric(5,2)"));
     }

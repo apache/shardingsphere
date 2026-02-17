@@ -110,6 +110,10 @@
             <property name="format" value="\\u00(09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\\(0(10|11|12|14|15|42|47)|134)" />
             <property name="message" value="Consider using special escape sequence instead of octal value or Unicode escaped value." />
         </module>
+        <module name="MatchXpath">
+            <property name="query" value="//METHOD_CALL[(./IDENT[@text='assertThat'] or ./DOT/IDENT[@text='assertThat']) and ./ELIST/EXPR[last()]/METHOD_CALL[(./IDENT[@text='is'] or ./DOT/IDENT[@text='is']) and ./ELIST/EXPR/*[self::LITERAL_TRUE or self::LITERAL_FALSE]]]" />
+            <message key="matchxpath.match" value="Use assertTrue/assertFalse instead of assertThat(..., is(true/false))." />
+        </module>
         <module name="IllegalType" />
         <module name="MissingSwitchDefault" />
         <module name="ModifiedControlVariable" />
