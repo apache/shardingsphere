@@ -61,6 +61,19 @@ class DataSourceUnitPersistServiceTest {
     }
     
     @Test
+    void assertLoadWhenActiveVersionIsEmpty() {
+        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/active_version")).thenReturn("");
+        assertFalse(persistService.load("foo_db", "foo_ds").isPresent());
+    }
+    
+    @Test
+    void assertLoadWhenDataSourceContentIsEmpty() {
+        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/active_version")).thenReturn("10");
+        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/versions/10")).thenReturn("");
+        assertFalse(persistService.load("foo_db", "foo_ds").isPresent());
+    }
+    
+    @Test
     void assertLoadWithInvalidDataSource() {
         when(repository.getChildrenKeys("/metadata/foo_db/data_sources/units")).thenReturn(Arrays.asList("foo_ds", "bar_ds"));
         when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/active_version")).thenReturn("10");
