@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.OptionalInt;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -52,7 +53,7 @@ public final class FirebirdBlobInfoRegistry {
             return;
         }
         Map<String, Integer> normalizedColumns = new HashMap<>(blobColumns.size(), 1F);
-        for (Map.Entry<String, Integer> entry : blobColumns.entrySet()) {
+        for (Entry<String, Integer> entry : blobColumns.entrySet()) {
             if (null != entry.getKey()) {
                 normalizedColumns.put(toKey(entry.getKey()), entry.getValue());
             }

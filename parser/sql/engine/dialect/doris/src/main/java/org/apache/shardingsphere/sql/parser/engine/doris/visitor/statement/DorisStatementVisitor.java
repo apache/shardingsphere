@@ -1123,8 +1123,6 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.extractUrlParameterFunction()) {
             return visit(ctx.extractUrlParameterFunction());
         }
-        // DORIS ADDED END
-        // DORIS ADDED BEGIN
         if (null != ctx.instrFunction()) {
             return visit(ctx.instrFunction());
         }
@@ -1190,9 +1188,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         }
         return result;
     }
-    // DORIS ADDED END
     
-    // DORIS ADDED BEGIN
     @Override
     public final ASTNode visitExtractUrlParameterFunction(final ExtractUrlParameterFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.EXTRACT_URL_PARAMETER().getText(), getOriginalText(ctx));
@@ -1200,9 +1196,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         result.getParameters().add(new LiteralExpressionSegment(ctx.expr(1).getStart().getStartIndex(), ctx.expr(1).getStop().getStopIndex(), ctx.expr(1).getText()));
         return result;
     }
-    // DORIS ADDED END
     
-    // DORIS ADDED BEGIN
     @Override
     public final ASTNode visitInstrFunction(final InstrFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.INSTR().getText(), getOriginalText(ctx));

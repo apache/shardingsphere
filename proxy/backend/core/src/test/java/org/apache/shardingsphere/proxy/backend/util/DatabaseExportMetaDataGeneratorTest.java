@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -89,7 +90,7 @@ class DatabaseExportMetaDataGeneratorTest {
     
     private Map<String, StorageUnit> mockStorageUnits(final Map<String, DataSourcePoolProperties> props) {
         Map<String, StorageUnit> result = new LinkedHashMap<>(props.size(), 1F);
-        for (Map.Entry<String, DataSourcePoolProperties> entry : props.entrySet()) {
+        for (Entry<String, DataSourcePoolProperties> entry : props.entrySet()) {
             StorageUnit storageUnit = mock(StorageUnit.class);
             when(storageUnit.getDataSourcePoolProperties()).thenReturn(entry.getValue());
             result.put(entry.getKey(), storageUnit);
