@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.rownum.ExpressionRowNumberValueSegment;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,7 +65,7 @@ public final class PaginationContext {
             if (null == obj) {
                 return null;
             }
-            return obj instanceof Long ? (long) obj : (int) obj;
+            return getLongValue(obj);
         }
         if (paginationValueSegment instanceof ExpressionRowNumberValueSegment) {
             return ((ExpressionRowNumberValueSegment) paginationValueSegment).getValue(params);
@@ -74,6 +75,16 @@ public final class PaginationContext {
             return result;
         }
         return ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
+    }
+    
+    private Long getLongValue(final Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        }
+        if (value instanceof byte[]) {
+            return Long.parseLong(new String((byte[]) value, StandardCharsets.UTF_8));
+        }
+        return Long.parseLong(value.toString());
     }
     
     private Long getValueFromExpression(final ExpressionSegment expressionSegment, final List<Object> params) {
