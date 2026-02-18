@@ -133,7 +133,7 @@ public final class SingleTableDataNodeLoader {
                 continue;
             }
             Map<String, Collection<String>> configuredTablesForDataSource = configuredTableMap.get(each.getDataSourceName());
-            if (null == configuredTablesForDataSource || configuredTablesForDataSource.isEmpty()) {
+            if (null == configuredTablesForDataSource) {
                 continue;
             }
             if (configuredTablesForDataSource.containsKey(SingleTableConstants.ASTERISK)) {
@@ -141,7 +141,7 @@ public final class SingleTableDataNodeLoader {
                 continue;
             }
             Collection<String> configuredTablesForSchema = configuredTablesForDataSource.get(each.getSchemaName());
-            if (null == configuredTablesForSchema || configuredTablesForSchema.isEmpty()) {
+            if (null == configuredTablesForSchema) {
                 continue;
             }
             if (configuredTablesForSchema.contains(SingleTableConstants.ASTERISK) || configuredTablesForSchema.contains(each.getTableName().toLowerCase())) {

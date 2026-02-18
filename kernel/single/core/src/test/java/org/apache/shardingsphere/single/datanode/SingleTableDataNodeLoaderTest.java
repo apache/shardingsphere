@@ -23,9 +23,16 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.single.exception.SingleTablesLoadingException;
+import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Answers;
+import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -35,31 +42,24 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class SingleTableDataNodeLoaderTest {
-    
-    private static final String TABLE_TYPE = "TABLE";
-    
-    private static final String PARTITIONED_TABLE_TYPE = "PARTITIONED TABLE";
-    
-    private static final String VIEW_TYPE = "VIEW";
-    
-    private static final String SYSTEM_TABLE_TYPE = "SYSTEM TABLE";
-    
-    private static final String SYSTEM_VIEW_TYPE = "SYSTEM VIEW";
-    
-    private static final String TABLE_NAME = "TABLE_NAME";
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
@@ -76,7 +76,7 @@ class SingleTableDataNodeLoaderTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getCatalog()).thenReturn(dataSourceName);
         ResultSet resultSet = mockResultSet(tableNames);
-        when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, PARTITIONED_TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE})).thenReturn(resultSet);
+        when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{"TABLE", "PARTITIONED TABLE", "VIEW", "SYSTEM TABLE", "SYSTEM VIEW"})).thenReturn(resultSet);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         return new MockedDataSource(connection);
     }
@@ -88,53 +88,134 @@ class SingleTableDataNodeLoaderTest {
         Collection<Boolean> remainNextResults = remainTableNames.stream().map(each -> true).collect(Collectors.toList());
         remainNextResults.add(false);
         when(result.next()).thenReturn(true, remainNextResults.toArray(new Boolean[tableNames.size()]));
-        when(result.getString(TABLE_NAME)).thenReturn(firstTableName, remainTableNames.toArray(new String[tableNames.size() - 1]));
+        when(result.getString("TABLE_NAME")).thenReturn(firstTableName, remainTableNames.toArray(new String[tableNames.size() - 1]));
         return result;
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("loadArguments")
+    void assertLoad(final String caseName, final Collection<ShardingSphereRule> builtRules, final Collection<String> configuredTables, final Collection<String> expectedTableNames) {
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, builtRules, configuredTables);
+        assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(expectedTableNames)));
+    }
+    
     @Test
-    void assertLoad() {
-        ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
-        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
-        when(ruleAttribute.getDistributedTableNames()).thenReturn(Arrays.asList("salary", "employee", "student"));
-        when(builtRule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+    void assertLoadWithFeatureRequiredSingleTables() {
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
-                "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule), Collections.singleton("*.*"));
-        assertFalse(actual.containsKey("employee"));
-        assertFalse(actual.containsKey("salary"));
-        assertFalse(actual.containsKey("student"));
-        assertTrue(actual.containsKey("dept"));
-        assertTrue(actual.containsKey("teacher"));
-        assertTrue(actual.containsKey("class"));
-        assertThat(actual.get("dept").iterator().next().getDataSourceName(), is("ds0"));
-        assertThat(actual.get("teacher").iterator().next().getDataSourceName(), is("ds1"));
-        assertThat(actual.get("class").iterator().next().getDataSourceName(), is("ds1"));
-    }
-    
-    @Test
-    void assertLoadWithConflictTables() {
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), Collections.singleton("*.*.*"));
+                "foo_db", databaseType, dataSourceMap, Collections.singleton(createFeatureRequiredRule()), Collections.singleton("ds0.dept"));
         assertTrue(actual.containsKey("employee"));
-        assertTrue(actual.containsKey("salary"));
-        assertTrue(actual.containsKey("student"));
         assertTrue(actual.containsKey("dept"));
-        assertTrue(actual.containsKey("teacher"));
-        assertTrue(actual.containsKey("class"));
+        assertFalse(actual.containsKey("salary"));
         assertThat(actual.get("employee").iterator().next().getDataSourceName(), is("ds0"));
-        assertThat(actual.get("salary").iterator().next().getDataSourceName(), is("ds0"));
-        assertThat(actual.get("student").iterator().next().getDataSourceName(), is("ds1"));
         assertThat(actual.get("dept").iterator().next().getDataSourceName(), is("ds0"));
-        assertThat(actual.get("teacher").iterator().next().getDataSourceName(), is("ds1"));
-        assertThat(actual.get("class").iterator().next().getDataSourceName(), is("ds1"));
     }
     
     @Test
-    void assertLoadWithEmptyConfiguredTables() {
-        ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
+    void assertLoadWithEmptyConfiguredTablesAndFeatureRequiredSingleTables() {
+        assertThat(dataSourceMap.size(), is(2));
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
+                "foo_db", databaseType, dataSourceMap, Collections.singleton(createFeatureRequiredRule()), Collections.emptyList());
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    void assertLoadWithConfiguredDataSourceNotFoundInConfiguredTableMap() {
+        Collection<String> splitTables = new LinkedHashSet<>(Collections.singleton("other_ds.dept"));
+        assertTrue(splitTables.contains("other_ds.dept"));
+        try (MockedStatic<SingleTableLoadUtils> mockedSingleTableLoadUtils = mockStatic(SingleTableLoadUtils.class, Answers.CALLS_REAL_METHODS)) {
+            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.splitTableLines(Collections.singleton("ds0.dept"))).thenReturn(splitTables);
+            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), Collections.singleton("ds0.dept"));
+            assertTrue(actual.isEmpty());
+        }
+    }
+    
+    @Test
+    void assertLoadWithConfiguredDataSourceWildcardSchema() {
+        Collection<String> splitTables = new LinkedHashSet<>(Collections.singleton("ds0.dept"));
+        Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("ds0", "*", "dept"));
+        assertThat(configuredDataNodes.iterator().next().getSchemaName(), is("*"));
+        try (MockedStatic<SingleTableLoadUtils> mockedSingleTableLoadUtils = mockStatic(SingleTableLoadUtils.class, Answers.CALLS_REAL_METHODS)) {
+            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.splitTableLines(Collections.singleton("ds0.dept"))).thenReturn(splitTables);
+            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, splitTables)).thenReturn(configuredDataNodes);
+            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), Collections.singleton("ds0.dept"));
+            assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(Arrays.asList("employee", "dept", "salary"))));
+        }
+    }
+    
+    @Test
+    void assertLoadWithConfiguredSchemaNotMatched() {
+        Collection<String> splitTables = new LinkedHashSet<>(Collections.singleton("ds0.dept"));
+        Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("ds0", "other_schema", "dept"));
+        assertThat(splitTables.toArray().length, is(1));
+        try (MockedStatic<SingleTableLoadUtils> mockedSingleTableLoadUtils = mockStatic(SingleTableLoadUtils.class, Answers.CALLS_REAL_METHODS)) {
+            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.splitTableLines(Collections.singleton("ds0.dept"))).thenReturn(splitTables);
+            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, splitTables)).thenReturn(configuredDataNodes);
+            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), Collections.singleton("ds0.dept"));
+            assertTrue(actual.isEmpty());
+        }
+    }
+    
+    @Test
+    void assertLoadWithConfiguredTableWildcard() {
+        Collection<String> splitTables = new LinkedHashSet<>(Collections.singleton("ds0.dept"));
+        Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("ds0", "foo_db", "*"));
+        assertThat(configuredDataNodes.iterator().next().getTableName(), is("*"));
+        try (MockedStatic<SingleTableLoadUtils> mockedSingleTableLoadUtils = mockStatic(SingleTableLoadUtils.class, Answers.CALLS_REAL_METHODS)) {
+            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.splitTableLines(Collections.singleton("ds0.dept"))).thenReturn(splitTables);
+            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, splitTables)).thenReturn(configuredDataNodes);
+            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), Collections.singleton("ds0.dept"));
+            assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(Arrays.asList("employee", "dept", "salary"))));
+        }
+    }
+    
+    @Test
+    void assertLoadWithDataSourceMap() {
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", dataSourceMap, Collections.singleton("dept"));
+        assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(Arrays.asList("employee", "salary", "student", "teacher", "class"))));
+        assertThat(new TreeSet<>(actual.get("salary").stream().map(DataNode::getDataSourceName).collect(Collectors.toList())), is(new TreeSet<>(Arrays.asList("ds0", "ds1"))));
+    }
+    
+    @Test
+    void assertLoadSchemaTableNames() {
+        Map<String, Collection<String>> actual = SingleTableDataNodeLoader.loadSchemaTableNames("foo_db", databaseType, dataSourceMap.get("ds0"), "ds0", Collections.singleton("salary"));
+        assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(Collections.singleton("foo_db"))));
+        assertThat(new TreeSet<>(actual.get("foo_db")), is(new TreeSet<>(Arrays.asList("employee", "dept"))));
+    }
+    
+    @Test
+    void assertLoadSchemaTableNamesWithSQLException() throws SQLException {
+        SQLException expected = new SQLException("mocked_ex");
+        DataSource dataSource = mock(DataSource.class);
+        when(dataSource.getConnection()).thenThrow(expected);
+        SingleTablesLoadingException actual = assertThrows(SingleTablesLoadingException.class,
+                () -> SingleTableDataNodeLoader.loadSchemaTableNames("foo_db", databaseType, dataSource, "foo_ds", Collections.emptyList()));
+        assertThat(actual.getCause(), is(expected));
+    }
+    
+    private static Stream<Arguments> loadArguments() {
+        return Stream.of(
+                Arguments.arguments("empty configured tables", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
+                Arguments.arguments("all tables with excluded tables", Collections.singleton(createDistributedRule()), Collections.singleton("*.*"), Arrays.asList("dept", "teacher", "class")),
+                Arguments.arguments("all schema tables", Collections.emptyList(), Collections.singleton("*.*.*"), Arrays.asList("employee", "dept", "salary", "student", "teacher", "class")));
+    }
+    
+    private static ShardingSphereRule createDistributedRule() {
+        ShardingSphereRule result = mock(ShardingSphereRule.class);
         TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
         when(ruleAttribute.getDistributedTableNames()).thenReturn(Arrays.asList("salary", "employee", "student"));
-        when(builtRule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule), Collections.emptyList());
-        assertTrue(actual.isEmpty());
+        when(ruleAttribute.getActualTableNames()).thenReturn(Collections.emptyList());
+        when(ruleAttribute.getEnhancedTableNames()).thenReturn(Collections.emptyList());
+        when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        return result;
+    }
+    
+    private static ShardingSphereRule createFeatureRequiredRule() {
+        ShardingSphereRule result = mock(ShardingSphereRule.class);
+        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
+        when(ruleAttribute.getDistributedTableNames()).thenReturn(Collections.emptyList());
+        when(ruleAttribute.getActualTableNames()).thenReturn(Collections.emptyList());
+        when(ruleAttribute.getEnhancedTableNames()).thenReturn(Collections.singleton("employee"));
+        when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        return result;
     }
 }
