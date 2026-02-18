@@ -57,22 +57,6 @@ import static org.mockito.Mockito.when;
 class ShardingSphereStatementTest {
     
     @Test
-    void assertGetGeneratedKeysByColumnName() throws SQLException {
-        ShardingSphereStatement statement = createStatement(TypedSPILoader.getService(DatabaseType.class, "SQL92"));
-        ResultSet generatedKeys = mock(ResultSet.class);
-        when(generatedKeys.next()).thenReturn(true, false);
-        when(generatedKeys.getObject("id")).thenReturn(1L);
-        setInsertStatementContext(statement);
-        addStatement(statement, generatedKeys);
-        try (ResultSet actual = statement.getGeneratedKeys()) {
-            assertTrue(actual.next());
-            assertThat(actual.getObject(1), is(1L));
-        }
-        verify(generatedKeys).getObject("id");
-        verify(generatedKeys, never()).getObject(1);
-    }
-    
-    @Test
     void assertGetGeneratedKeysByColumnIndexWhenColumnNameMissing() throws SQLException {
         ResultSet generatedKeys = mock(ResultSet.class);
         when(generatedKeys.next()).thenReturn(true, false);

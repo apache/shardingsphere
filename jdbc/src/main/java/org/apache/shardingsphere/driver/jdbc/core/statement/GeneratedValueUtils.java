@@ -31,7 +31,7 @@ public final class GeneratedValueUtils {
     
     /**
      * Get generated value.
-     * 
+     *
      * @param resultSet result set
      * @param generatedKeysColumnName generated keys column name
      * @param columnName column name
