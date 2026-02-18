@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -34,49 +32,85 @@ import static org.mockito.Mockito.when;
 
 class GeneratedValueUtilsTest {
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertGetGeneratedValueArguments")
-    void assertGetGeneratedValue(final String name, final String generatedKeysColumnName, final String columnName, final Object generatedKeyValue,
-                                 final boolean generatedKeyThrowsSQLException, final Object columnValue, final boolean columnThrowsSQLException,
-                                 final Object indexValue, final Object expected, final boolean generatedKeyAccessed, final boolean columnAccessed,
-                                 final boolean indexAccessed) throws SQLException {
+    @Test
+    void assertGetGeneratedValueByGeneratedKeysColumn() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
-        if (null != generatedKeysColumnName) {
-            if (generatedKeyThrowsSQLException) {
-                when(resultSet.getObject(generatedKeysColumnName)).thenThrow(SQLException.class);
-            } else {
-                when(resultSet.getObject(generatedKeysColumnName)).thenReturn(generatedKeyValue);
-            }
-        }
-        if (null != columnName && !columnName.equals(generatedKeysColumnName)) {
-            if (columnThrowsSQLException) {
-                when(resultSet.getObject(columnName)).thenThrow(SQLException.class);
-            } else {
-                when(resultSet.getObject(columnName)).thenReturn(columnValue);
-            }
-        }
-        when(resultSet.getObject(1)).thenReturn(indexValue);
-        Comparable<?> actual = GeneratedValueUtils.getGeneratedValue(resultSet, generatedKeysColumnName, columnName);
-        assertThat(actual, is(expected));
-        if (generatedKeyAccessed) {
-            verify(resultSet).getObject(generatedKeysColumnName);
-        }
-        if (columnAccessed) {
-            verify(resultSet).getObject(columnName);
-        }
-        if (indexAccessed) {
-            verify(resultSet).getObject(1);
-        }
+        when(resultSet.getObject("generated_key")).thenReturn(1L);
+        Comparable<?> actual = GeneratedValueUtils.getGeneratedValue(resultSet, "generated_key", "id");
+        assertThat(actual, is(1L));
+        verify(resultSet).getObject("generated_key");
         verifyNoMoreInteractions(resultSet);
     }
     
-    private static Stream<Arguments> assertGetGeneratedValueArguments() {
-        return Stream.of(
-                Arguments.arguments("generated keys column returns value", "generated_key", "id", 1L, false, 2L, false, 3L, 1L, true, false, false),
-                Arguments.arguments("generated keys column throws and column name returns value", "generated_key", "id", null, true, 2L, false, 3L, 2L, true, true, false),
-                Arguments.arguments("generated keys column is null and column name returns value", null, "id", null, false, 2L, false, 3L, 2L, false, true, false),
-                Arguments.arguments("column name equals generated keys column and fallback to index", "id", "id", null, true, null, false, 3L, 3L, true, false, true),
-                Arguments.arguments("column name throws and fallback to index", "generated_key", "id", null, true, null, true, 3L, 3L, true, true, true),
-                Arguments.arguments("generated keys and column name are null and fallback to index", null, null, null, false, null, false, 3L, 3L, false, false, true));
+    @Test
+    void assertGetGeneratedValueByColumnNameWhenGeneratedKeysColumnThrows() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject("generated_key")).thenThrow(SQLException.class);
+        when(resultSet.getObject("id")).thenReturn(2L);
+        Comparable<?> actual = GeneratedValueUtils.getGeneratedValue(resultSet, "generated_key", "id");
+        assertThat(actual, is(2L));
+        verify(resultSet).getObject("generated_key");
+        verify(resultSet).getObject("id");
+        verifyNoMoreInteractions(resultSet);
+    }
+    
+    @Test
+    void assertGetGeneratedValueByColumnNameWhenGeneratedKeysColumnIsNull() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject("id")).thenReturn(2L);
+        Comparable<?> actual = GeneratedValueUtils.getGeneratedValue(resultSet, null, "id");
+        assertThat(actual, is(2L));
+        verify(resultSet).getObject("id");
+        verifyNoMoreInteractions(resultSet);
+    }
+    
+    @Test
+    void assertGetGeneratedValueByColumnIndexWhenColumnNameEqualsGeneratedKeysColumn() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject("id")).thenThrow(SQLException.class);
+        when(resultSet.getObject(1)).thenReturn(3L);
+        Comparable<?> actual = GeneratedValueUtils.getGeneratedValue(resultSet, "id", "id");
+        assertThat(actual, is(3L));
+        verify(resultSet).getObject("id");
+        verify(resultSet).getObject(1);
+        verifyNoMoreInteractions(resultSet);
+    }
+    
+    @Test
+    void assertGetGeneratedValueByColumnIndexWhenColumnNameThrows() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject("generated_key")).thenThrow(SQLException.class);
+        when(resultSet.getObject("id")).thenThrow(SQLException.class);
+        when(resultSet.getObject(1)).thenReturn(3L);
+        Comparable<?> actual = GeneratedValueUtils.getGeneratedValue(resultSet, "generated_key", "id");
+        assertThat(actual, is(3L));
+        verify(resultSet).getObject("generated_key");
+        verify(resultSet).getObject("id");
+        verify(resultSet).getObject(1);
+        verifyNoMoreInteractions(resultSet);
+    }
+    
+    @Test
+    void assertGetGeneratedValueByColumnIndexWhenGeneratedKeysAndColumnNameAreNull() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject(1)).thenReturn(3L);
+        Comparable<?> actual = GeneratedValueUtils.getGeneratedValue(resultSet, null, null);
+        assertThat(actual, is(3L));
+        verify(resultSet).getObject(1);
+        verifyNoMoreInteractions(resultSet);
+    }
+    
+    @Test
+    void assertGetGeneratedValueWithSQLException() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject("generated_key")).thenThrow(SQLException.class);
+        when(resultSet.getObject("id")).thenThrow(SQLException.class);
+        when(resultSet.getObject(1)).thenThrow(new SQLException("index not found"));
+        SQLException actual = assertThrows(SQLException.class, () -> GeneratedValueUtils.getGeneratedValue(resultSet, "generated_key", "id"));
+        assertThat(actual.getMessage(), is("index not found"));
+        verify(resultSet).getObject("generated_key");
+        verify(resultSet).getObject("id");
+        verify(resultSet).getObject(1);
+        verifyNoMoreInteractions(resultSet);
     }
 }
