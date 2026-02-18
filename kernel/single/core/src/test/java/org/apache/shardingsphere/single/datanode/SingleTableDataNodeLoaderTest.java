@@ -94,16 +94,15 @@ class SingleTableDataNodeLoaderTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadWithConfiguredTableExpressionArguments")
-    void assertLoadWithConfiguredTableExpressions(final String caseName, final Collection<ShardingSphereRule> builtRules, final Collection<String> configuredTables,
-                                                  final Collection<String> expectedTableNames) {
+    void assertLoadWithConfiguredTableExpressions(final String name,
+                                                  final Collection<ShardingSphereRule> builtRules, final Collection<String> configuredTables, final Collection<String> expectedTableNames) {
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, builtRules, configuredTables);
         assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(expectedTableNames)));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadWithConfiguredTableMapRuleArguments")
-    void assertLoadWithConfiguredTableMapRules(final String caseName, final Collection<String> splitTables, final Collection<DataNode> configuredDataNodes,
-                                               final Collection<String> expectedTableNames) {
+    void assertLoadWithConfiguredTableMapRules(final String name, final Collection<String> splitTables, final Collection<DataNode> configuredDataNodes, final Collection<String> expectedTableNames) {
         try (MockedStatic<SingleTableLoadUtils> mockedSingleTableLoadUtils = mockStatic(SingleTableLoadUtils.class, Answers.CALLS_REAL_METHODS)) {
             mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.splitTableLines(Collections.singleton("foo_ds.foo_tbl2"))).thenReturn(splitTables);
             mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, splitTables)).thenReturn(configuredDataNodes);
@@ -114,8 +113,13 @@ class SingleTableDataNodeLoaderTest {
     
     @Test
     void assertLoadWithFeatureRequiredSingleTables() {
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
-                "foo_db", databaseType, dataSourceMap, Collections.singleton(createFeatureRequiredRule()), Collections.singleton("foo_ds.foo_tbl2"));
+        ShardingSphereRule result = mock(ShardingSphereRule.class);
+        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class);
+        when(ruleAttribute.getDistributedTableNames()).thenReturn(Collections.emptyList());
+        when(ruleAttribute.getActualTableNames()).thenReturn(Collections.emptyList());
+        when(ruleAttribute.getEnhancedTableNames()).thenReturn(Collections.singleton("foo_tbl1"));
+        when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.singleton(result), Collections.singleton("foo_ds.foo_tbl2"));
         assertTrue(actual.containsKey("foo_tbl1"));
         assertTrue(actual.containsKey("foo_tbl2"));
         assertFalse(actual.containsKey("bar_tbl1"));
@@ -125,8 +129,11 @@ class SingleTableDataNodeLoaderTest {
     
     @Test
     void assertLoadWithEmptyConfiguredTablesAndFeatureRequiredSingleTables() {
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.singleton(createFeatureRequiredRule()), Collections.emptyList());
-        assertTrue(actual.isEmpty());
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class);
+        when(ruleAttribute.getEnhancedTableNames()).thenReturn(Collections.singleton("foo_tbl1"));
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        assertTrue(SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.singleton(rule), Collections.emptyList()).isEmpty());
     }
     
     @Test
@@ -156,8 +163,18 @@ class SingleTableDataNodeLoaderTest {
     private static Stream<Arguments> loadWithConfiguredTableExpressionArguments() {
         return Stream.of(
                 Arguments.arguments("empty configured tables", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
-                Arguments.arguments("all tables with excluded tables", Collections.singleton(createDistributedRule()), Collections.singleton("*.*"), Arrays.asList("foo_tbl2", "bar_tbl2")),
+                Arguments.arguments("all tables with excluded tables", Collections.singleton(createRuleWithExcludedTables()), Collections.singleton("*.*"), Arrays.asList("foo_tbl2", "bar_tbl2")),
                 Arguments.arguments("all schema tables", Collections.emptyList(), Collections.singleton("*.*.*"), Arrays.asList("foo_tbl1", "foo_tbl2", "bar_tbl1", "bar_tbl2")));
+    }
+    
+    private static ShardingSphereRule createRuleWithExcludedTables() {
+        ShardingSphereRule result = mock(ShardingSphereRule.class);
+        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class);
+        when(ruleAttribute.getDistributedTableNames()).thenReturn(Arrays.asList("foo_tbl1", "bar_tbl1", "unused_tbl"));
+        when(ruleAttribute.getActualTableNames()).thenReturn(Collections.emptyList());
+        when(ruleAttribute.getEnhancedTableNames()).thenReturn(Collections.emptyList());
+        when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        return result;
     }
     
     private static Stream<Arguments> loadWithConfiguredTableMapRuleArguments() {
@@ -170,25 +187,5 @@ class SingleTableDataNodeLoaderTest {
                         Collections.singleton(new DataNode("foo_ds", "other_schema", "foo_tbl2")), Collections.emptyList()),
                 Arguments.arguments("configured table wildcard", new LinkedHashSet<>(Collections.singleton("foo_ds.foo_tbl2")),
                         Collections.singleton(new DataNode("foo_ds", "foo_db", "*")), Arrays.asList("foo_tbl1", "foo_tbl2")));
-    }
-    
-    private static ShardingSphereRule createDistributedRule() {
-        ShardingSphereRule result = mock(ShardingSphereRule.class);
-        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
-        when(ruleAttribute.getDistributedTableNames()).thenReturn(Arrays.asList("foo_tbl1", "bar_tbl1", "unused_tbl"));
-        when(ruleAttribute.getActualTableNames()).thenReturn(Collections.emptyList());
-        when(ruleAttribute.getEnhancedTableNames()).thenReturn(Collections.emptyList());
-        when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
-        return result;
-    }
-    
-    private static ShardingSphereRule createFeatureRequiredRule() {
-        ShardingSphereRule result = mock(ShardingSphereRule.class);
-        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
-        when(ruleAttribute.getDistributedTableNames()).thenReturn(Collections.emptyList());
-        when(ruleAttribute.getActualTableNames()).thenReturn(Collections.emptyList());
-        when(ruleAttribute.getEnhancedTableNames()).thenReturn(Collections.singleton("foo_tbl1"));
-        when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
-        return result;
     }
 }
