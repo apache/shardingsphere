@@ -49,8 +49,8 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -99,6 +99,17 @@ class SingleTableDataNodeLoaderTest {
         assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(expectedTableNames)));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("loadWithConfiguredTableMapArguments")
+    void assertLoadWithConfiguredTableMap(final String caseName, final Collection<String> splitTables, final Collection<DataNode> configuredDataNodes, final Collection<String> expectedTableNames) {
+        try (MockedStatic<SingleTableLoadUtils> mockedSingleTableLoadUtils = mockStatic(SingleTableLoadUtils.class, Answers.CALLS_REAL_METHODS)) {
+            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.splitTableLines(Collections.singleton("ds0.dept"))).thenReturn(splitTables);
+            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, splitTables)).thenReturn(configuredDataNodes);
+            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), Collections.singleton("ds0.dept"));
+            assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(expectedTableNames)));
+        }
+    }
+    
     @Test
     void assertLoadWithFeatureRequiredSingleTables() {
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
@@ -112,60 +123,8 @@ class SingleTableDataNodeLoaderTest {
     
     @Test
     void assertLoadWithEmptyConfiguredTablesAndFeatureRequiredSingleTables() {
-        assertThat(dataSourceMap.size(), is(2));
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
-                "foo_db", databaseType, dataSourceMap, Collections.singleton(createFeatureRequiredRule()), Collections.emptyList());
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.singleton(createFeatureRequiredRule()), Collections.emptyList());
         assertTrue(actual.isEmpty());
-    }
-    
-    @Test
-    void assertLoadWithConfiguredDataSourceNotFoundInConfiguredTableMap() {
-        Collection<String> splitTables = new LinkedHashSet<>(Collections.singleton("other_ds.dept"));
-        assertTrue(splitTables.contains("other_ds.dept"));
-        try (MockedStatic<SingleTableLoadUtils> mockedSingleTableLoadUtils = mockStatic(SingleTableLoadUtils.class, Answers.CALLS_REAL_METHODS)) {
-            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.splitTableLines(Collections.singleton("ds0.dept"))).thenReturn(splitTables);
-            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), Collections.singleton("ds0.dept"));
-            assertTrue(actual.isEmpty());
-        }
-    }
-    
-    @Test
-    void assertLoadWithConfiguredDataSourceWildcardSchema() {
-        Collection<String> splitTables = new LinkedHashSet<>(Collections.singleton("ds0.dept"));
-        Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("ds0", "*", "dept"));
-        assertThat(configuredDataNodes.iterator().next().getSchemaName(), is("*"));
-        try (MockedStatic<SingleTableLoadUtils> mockedSingleTableLoadUtils = mockStatic(SingleTableLoadUtils.class, Answers.CALLS_REAL_METHODS)) {
-            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.splitTableLines(Collections.singleton("ds0.dept"))).thenReturn(splitTables);
-            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, splitTables)).thenReturn(configuredDataNodes);
-            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), Collections.singleton("ds0.dept"));
-            assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(Arrays.asList("employee", "dept", "salary"))));
-        }
-    }
-    
-    @Test
-    void assertLoadWithConfiguredSchemaNotMatched() {
-        Collection<String> splitTables = new LinkedHashSet<>(Collections.singleton("ds0.dept"));
-        Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("ds0", "other_schema", "dept"));
-        assertThat(splitTables.toArray().length, is(1));
-        try (MockedStatic<SingleTableLoadUtils> mockedSingleTableLoadUtils = mockStatic(SingleTableLoadUtils.class, Answers.CALLS_REAL_METHODS)) {
-            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.splitTableLines(Collections.singleton("ds0.dept"))).thenReturn(splitTables);
-            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, splitTables)).thenReturn(configuredDataNodes);
-            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), Collections.singleton("ds0.dept"));
-            assertTrue(actual.isEmpty());
-        }
-    }
-    
-    @Test
-    void assertLoadWithConfiguredTableWildcard() {
-        Collection<String> splitTables = new LinkedHashSet<>(Collections.singleton("ds0.dept"));
-        Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("ds0", "foo_db", "*"));
-        assertThat(configuredDataNodes.iterator().next().getTableName(), is("*"));
-        try (MockedStatic<SingleTableLoadUtils> mockedSingleTableLoadUtils = mockStatic(SingleTableLoadUtils.class, Answers.CALLS_REAL_METHODS)) {
-            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.splitTableLines(Collections.singleton("ds0.dept"))).thenReturn(splitTables);
-            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, splitTables)).thenReturn(configuredDataNodes);
-            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), Collections.singleton("ds0.dept"));
-            assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(Arrays.asList("employee", "dept", "salary"))));
-        }
     }
     
     @Test
@@ -197,6 +156,18 @@ class SingleTableDataNodeLoaderTest {
                 Arguments.arguments("empty configured tables", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
                 Arguments.arguments("all tables with excluded tables", Collections.singleton(createDistributedRule()), Collections.singleton("*.*"), Arrays.asList("dept", "teacher", "class")),
                 Arguments.arguments("all schema tables", Collections.emptyList(), Collections.singleton("*.*.*"), Arrays.asList("employee", "dept", "salary", "student", "teacher", "class")));
+    }
+    
+    private static Stream<Arguments> loadWithConfiguredTableMapArguments() {
+        return Stream.of(
+                Arguments.arguments("configured data source not found", new LinkedHashSet<>(Collections.singleton("other_ds.dept")),
+                        Collections.singleton(new DataNode("other_ds", "foo_db", "dept")), Collections.emptyList()),
+                Arguments.arguments("configured wildcard schema", new LinkedHashSet<>(Collections.singleton("ds0.dept")),
+                        Collections.singleton(new DataNode("ds0", "*", "dept")), Arrays.asList("employee", "dept", "salary")),
+                Arguments.arguments("configured schema not matched", new LinkedHashSet<>(Collections.singleton("ds0.dept")),
+                        Collections.singleton(new DataNode("ds0", "other_schema", "dept")), Collections.emptyList()),
+                Arguments.arguments("configured table wildcard", new LinkedHashSet<>(Collections.singleton("ds0.dept")),
+                        Collections.singleton(new DataNode("ds0", "foo_db", "*")), Arrays.asList("employee", "dept", "salary")));
     }
     
     private static ShardingSphereRule createDistributedRule() {
