@@ -23,6 +23,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateSqlBlockRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateRepositoryStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropRepositoryStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisSwitchStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateEncryptKeyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
@@ -721,6 +723,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "drop-resource-group")
     private final List<MySQLDropResourceGroupStatementTestCase> dropResourceGroupTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-repository")
+    private final List<DorisCreateRepositoryStatementTestCase> createRepositoryTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-repository")
+    private final List<DorisDropRepositoryStatementTestCase> dropRepositoryTestCases = new LinkedList<>();
     
     @XmlElement(name = "binlog")
     private final List<MySQLBinlogStatementTestCase> binlogTestCases = new LinkedList<>();

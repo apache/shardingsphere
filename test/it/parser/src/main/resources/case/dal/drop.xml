@@ -27,4 +27,7 @@
         <rule-name name="test_rule1" start-index="20" stop-index="29" />
         <rule-name name="test_rule2" start-index="32" stop-index="41" />
     </drop-sql-block-rule>
+    <drop-repository sql-case-id="drop_repository">
+        <repository-name name="example_repo" start-index="16" stop-index="29" start-delimiter="`" end-delimiter="`" />
+    </drop-repository>
 </sql-parser-test-cases>
