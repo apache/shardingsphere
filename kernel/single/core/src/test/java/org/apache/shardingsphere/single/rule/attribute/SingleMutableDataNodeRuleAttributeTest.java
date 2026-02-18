@@ -74,7 +74,8 @@ class SingleMutableDataNodeRuleAttributeTest {
     @Test
     void assertRemoveWithSchemaName() {
         DataNode dataNode = new DataNode("foo_ds", "foo_schema", "foo_tbl");
-        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(new LinkedList<>(Collections.singleton(SingleTableLoadUtils.getDataNodeString(DATABASE_TYPE, "foo_ds", "foo_schema", "foo_tbl"))), null);
+        SingleRuleConfiguration ruleConfig =
+                new SingleRuleConfiguration(new LinkedList<>(Collections.singleton(SingleTableLoadUtils.getDataNodeString(DATABASE_TYPE, "foo_ds", "foo_schema", "foo_tbl"))), null);
         Map<String, Collection<DataNode>> singleTableDataNodes = createSingleTableDataNodes(Collections.singleton(dataNode));
         SingleTableMapperRuleAttribute tableMapperRuleAttribute = new SingleTableMapperRuleAttribute(singleTableDataNodes.values());
         SingleMutableDataNodeRuleAttribute ruleAttribute = createRuleAttribute(ruleConfig, Collections.singleton("foo_ds"), singleTableDataNodes, tableMapperRuleAttribute);
