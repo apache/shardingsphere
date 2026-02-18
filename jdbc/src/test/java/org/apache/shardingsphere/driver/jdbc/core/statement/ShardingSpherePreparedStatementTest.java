@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.statement;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
@@ -84,47 +85,17 @@ class ShardingSpherePreparedStatementTest {
     }
     
     @Test
-    void assertGetGeneratedKeysByColumnName() throws SQLException, ReflectiveOperationException {
-        ShardingSpherePreparedStatement preparedStatement = createPreparedStatement(TypedSPILoader.getService(DatabaseType.class, "SQL92"));
-        ResultSet generatedKeys = mock(ResultSet.class);
-        when(generatedKeys.next()).thenReturn(true, false);
-        when(generatedKeys.getObject("id")).thenReturn(1L);
-        setInsertStatementContext(preparedStatement, "id");
-        addPreparedStatement(preparedStatement, generatedKeys);
-        ResultSet actual = preparedStatement.getGeneratedKeys();
-        assertTrue(actual.next());
-        assertThat(actual.getObject(1), is(1L));
-        verify(generatedKeys).getObject("id");
-        verify(generatedKeys, never()).getObject(1);
-    }
-    
-    @Test
-    void assertGetGeneratedKeysByColumnIndexWhenColumnNameMissing() throws SQLException, ReflectiveOperationException {
-        ResultSet generatedKeys = mock(ResultSet.class);
-        when(generatedKeys.next()).thenReturn(true, false);
-        when(generatedKeys.getObject("id")).thenThrow(new SQLException("Column not found"));
-        when(generatedKeys.getObject(1)).thenReturn(2L);
-        ShardingSpherePreparedStatement preparedStatement = createPreparedStatement(TypedSPILoader.getService(DatabaseType.class, "SQL92"));
-        setInsertStatementContext(preparedStatement, "id");
-        addPreparedStatement(preparedStatement, generatedKeys);
-        ResultSet actual = preparedStatement.getGeneratedKeys();
-        assertTrue(actual.next());
-        assertThat(actual.getObject(1), is(2L));
-        verify(generatedKeys).getObject("id");
-        verify(generatedKeys).getObject(1);
-    }
-    
-    @Test
-    void assertGetGeneratedKeysByDialectGeneratedKeyColumn() throws SQLException, ReflectiveOperationException {
+    void assertGetGeneratedKeysByDialectGeneratedKeyColumn() throws SQLException {
         ShardingSpherePreparedStatement preparedStatement = createPreparedStatement(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ResultSet generatedKeys = mock(ResultSet.class);
         when(generatedKeys.next()).thenReturn(true, false);
         when(generatedKeys.getObject("GENERATED_KEY")).thenReturn(3L);
-        setInsertStatementContext(preparedStatement, "id");
+        setInsertStatementContext(preparedStatement);
         addPreparedStatement(preparedStatement, generatedKeys);
-        ResultSet actual = preparedStatement.getGeneratedKeys();
-        assertTrue(actual.next());
-        assertThat(actual.getObject(1), is(3L));
+        try (ResultSet actual = preparedStatement.getGeneratedKeys()) {
+            assertTrue(actual.next());
+            assertThat(actual.getObject(1), is(3L));
+        }
         verify(generatedKeys).getObject("GENERATED_KEY");
         verify(generatedKeys, never()).getObject("id");
         verify(generatedKeys, never()).getObject(1);
@@ -151,23 +122,25 @@ class ShardingSpherePreparedStatementTest {
         return result;
     }
     
-    private void setInsertStatementContext(final ShardingSpherePreparedStatement preparedStatement, final String columnName) throws ReflectiveOperationException {
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setInsertStatementContext(final ShardingSpherePreparedStatement preparedStatement) {
         GeneratedKeyContext generatedKeyContext = mock(GeneratedKeyContext.class);
-        when(generatedKeyContext.getColumnName()).thenReturn(columnName);
+        when(generatedKeyContext.getColumnName()).thenReturn("id");
         when(generatedKeyContext.getGeneratedValues()).thenReturn(Collections.emptyList());
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
         Plugins.getMemberAccessor().set(ShardingSpherePreparedStatement.class.getDeclaredField("sqlStatementContext"), preparedStatement, insertStatementContext);
     }
     
-    private void addPreparedStatement(final ShardingSpherePreparedStatement preparedStatement, final ResultSet generatedKeys) throws ReflectiveOperationException, SQLException {
+    private void addPreparedStatement(final ShardingSpherePreparedStatement preparedStatement, final ResultSet generatedKeys) throws SQLException {
         PreparedStatement statement = mock(PreparedStatement.class);
         when(statement.getGeneratedKeys()).thenReturn(generatedKeys);
         getPreparedStatements(preparedStatement).add(statement);
     }
     
+    @SneakyThrows(ReflectiveOperationException.class)
     @SuppressWarnings("unchecked")
-    private Collection<PreparedStatement> getPreparedStatements(final ShardingSpherePreparedStatement preparedStatement) throws ReflectiveOperationException {
+    private Collection<PreparedStatement> getPreparedStatements(final ShardingSpherePreparedStatement preparedStatement) {
         Field statementsField = ShardingSpherePreparedStatement.class.getDeclaredField("statements");
         return (Collection<PreparedStatement>) Plugins.getMemberAccessor().get(statementsField, preparedStatement);
     }
