@@ -129,7 +129,8 @@ class SingleRuleTest {
     @MethodSource("findSingleTableDataNodeArguments")
     void assertFindSingleTableDataNode(final String name, final String actualTableName, final String expectedDataSourceName, final String expectedTableName) {
         ShardingSphereRule builtRule = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
-        Optional<DataNode> actual = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule)).getAttributes().getAttribute(MutableDataNodeRuleAttribute.class).findTableDataNode("foo_db", actualTableName);
+        Optional<DataNode> actual = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule)).getAttributes().getAttribute(MutableDataNodeRuleAttribute.class)
+                .findTableDataNode("foo_db", actualTableName);
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDataSourceName(), is(expectedDataSourceName));
         assertThat(actual.get().getTableName(), is(expectedTableName));
