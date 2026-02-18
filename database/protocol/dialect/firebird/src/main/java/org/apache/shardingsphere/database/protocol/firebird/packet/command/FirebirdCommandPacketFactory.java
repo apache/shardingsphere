@@ -21,6 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdGetBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
@@ -97,6 +101,14 @@ public final class FirebirdCommandPacketFactory {
                 return new FirebirdRollbackTransactionPacket(payload);
             case FREE_STATEMENT:
                 return new FirebirdFreeStatementPacket(payload);
+            case BATCH_CREATE:
+                return new FirebirdBatchCreateCommandPacket(payload);
+            case BATCH_MSG:
+                return new FirebirdBatchSendMessageCommandPacket(payload);
+            case BATCH_EXEC:
+                return new FirebirdBatchExecuteCommandPacket(payload);
+            case BATCH_CANCEL:
+                return new FirebirdBatchCancelCommandPacket(payload);
             default:
                 return new FirebirdUnsupportedCommandPacket(commandPacketType);
         }
@@ -154,6 +166,14 @@ public final class FirebirdCommandPacketFactory {
                 return FirebirdRollbackTransactionPacket.getLength();
             case FREE_STATEMENT:
                 return FirebirdFreeStatementPacket.getLength();
+            case BATCH_CREATE:
+                return FirebirdBatchCreateCommandPacket.getLength(payload);
+            case BATCH_MSG:
+                return FirebirdBatchSendMessageCommandPacket.getLength(payload);
+            case BATCH_EXEC:
+                return FirebirdBatchExecuteCommandPacket.getLength();
+            case BATCH_CANCEL:
+                return FirebirdBatchCancelCommandPacket.getLength();
             default:
                 return 0;
         }

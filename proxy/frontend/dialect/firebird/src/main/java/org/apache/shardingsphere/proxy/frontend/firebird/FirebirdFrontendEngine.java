@@ -26,6 +26,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.FirebirdAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.FirebirdCommandExecuteEngine;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBlobIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
@@ -53,6 +54,7 @@ public final class FirebirdFrontendEngine implements DatabaseProtocolFrontendEng
         FirebirdBlobUploadCache.getInstance().unregisterConnection(connectionSession.getConnectionId());
         FirebirdConnectionProtocolVersion.getInstance().unsetProtocolVersion(connectionSession.getConnectionId());
         FirebirdFetchStatementCache.getInstance().unregisterConnection(connectionSession.getConnectionId());
+        FirebirdBatchRegistry.getInstance().unregisterConnection(connectionSession.getConnectionId());
     }
     
     @Override

@@ -46,6 +46,7 @@ import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.v
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticatorType;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBlobIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
@@ -76,6 +77,7 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
         FirebirdBlobIdGenerator.getInstance().registerConnection(connectionId);
         FirebirdBlobUploadCache.getInstance().registerConnection(connectionId);
         FirebirdFetchStatementCache.getInstance().registerConnection(connectionId);
+        FirebirdBatchRegistry.getInstance().registerConnection(connectionId);
         return connectionId;
     }
     

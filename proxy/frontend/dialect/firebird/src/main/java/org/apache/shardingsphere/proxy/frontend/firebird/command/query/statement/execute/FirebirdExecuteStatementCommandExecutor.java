@@ -99,6 +99,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
         return result;
     }
     
+    // TODO Move BLOB handling logic from ExecuteStatementCommandExecutor.
     private List<Long> bindBlobParameters(final List<Object> params) {
         List<FirebirdBinaryColumnType> parameterTypes = packet.getParameterTypes();
         List<Long> blobIds = new LinkedList<>();
