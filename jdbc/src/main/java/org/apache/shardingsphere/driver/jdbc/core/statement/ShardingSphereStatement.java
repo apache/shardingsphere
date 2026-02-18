@@ -346,15 +346,32 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (returnGeneratedKeys && generatedKey.isPresent() && !generatedKey.get().getGeneratedValues().isEmpty()) {
             return new GeneratedKeysResultSet(getGeneratedKeysColumnName(generatedKey.get().getColumnName()), generatedKey.get().getGeneratedValues().iterator(), this);
         }
+        String columnName = generatedKey.map(GeneratedKeyContext::getColumnName).orElse(null);
+        String generatedKeysColumnName = getGeneratedKeysColumnName(columnName);
         Collection<Comparable<?>> generatedValues = new LinkedList<>();
         for (Statement each : statements) {
             ResultSet resultSet = each.getGeneratedKeys();
             while (resultSet.next()) {
-                generatedValues.add((Comparable<?>) resultSet.getObject(1));
+                generatedValues.add(getGeneratedValue(resultSet, generatedKeysColumnName, columnName));
             }
         }
-        String columnName = generatedKey.map(GeneratedKeyContext::getColumnName).orElse(null);
-        return new GeneratedKeysResultSet(getGeneratedKeysColumnName(columnName), generatedValues.iterator(), this);
+        return new GeneratedKeysResultSet(generatedKeysColumnName, generatedValues.iterator(), this);
+    }
+    
+    private Comparable<?> getGeneratedValue(final ResultSet resultSet, final String generatedKeysColumnName, final String columnName) throws SQLException {
+        if (null != generatedKeysColumnName) {
+            try {
+                return (Comparable<?>) resultSet.getObject(generatedKeysColumnName);
+            } catch (final SQLException ignored) {
+            }
+        }
+        if (null != columnName && !columnName.equals(generatedKeysColumnName)) {
+            try {
+                return (Comparable<?>) resultSet.getObject(columnName);
+            } catch (final SQLException ignored) {
+            }
+        }
+        return (Comparable<?>) resultSet.getObject(1);
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {
