@@ -144,6 +144,7 @@ execute
     | createFile
     | dropFile
     | sync
+    | unsetVariable
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

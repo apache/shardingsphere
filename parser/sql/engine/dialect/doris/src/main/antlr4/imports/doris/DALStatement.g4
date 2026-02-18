@@ -78,6 +78,14 @@ optionValueNoOptionType
     | NAMES (equal expr | charsetName collateClause? | DEFAULT)
     ;
 
+unsetVariable
+    : UNSET optionType? VARIABLE (LP_ unsetVariableName RP_ | unsetVariableName)
+    ;
+
+unsetVariableName
+    : internalVariableName | ALL
+    ;
+
 equal
     : EQ_ | ASSIGNMENT_
     ;

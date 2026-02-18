@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <unset-variable sql-case-id="unset_global_variable" scope="GLOBAL" variable-name="exec_mem_limit" />
+    <unset-variable sql-case-id="unset_session_variable" scope="SESSION" variable-name="exec_mem_limit" />
+    <unset-variable sql-case-id="unset_local_variable" scope="LOCAL" variable-name="exec_mem_limit" />
+    <unset-variable sql-case-id="unset_variable_default_scope" scope="SESSION" variable-name="exec_mem_limit" />
+    <unset-variable sql-case-id="unset_global_variable_all" scope="GLOBAL" variable-name="ALL" />
+    <unset-variable sql-case-id="unset_variable_default_scope_without_parentheses" scope="SESSION" variable-name="time_zone" />
+    <unset-variable sql-case-id="unset_global_variable_without_parentheses" scope="GLOBAL" variable-name="exec_mem_limit" />
+    <unset-variable sql-case-id="unset_session_variable_without_parentheses" scope="SESSION" variable-name="exec_mem_limit" />
+    <unset-variable sql-case-id="unset_local_variable_without_parentheses" scope="LOCAL" variable-name="exec_mem_limit" />
+    <unset-variable sql-case-id="unset_global_variable_all_without_parentheses" scope="GLOBAL" variable-name="ALL" />
+</sql-parser-test-cases>
