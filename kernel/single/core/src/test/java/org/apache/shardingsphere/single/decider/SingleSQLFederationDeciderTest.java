@@ -53,6 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -121,7 +122,7 @@ class SingleSQLFederationDeciderTest {
     
     private SingleRule createSingleRule(final Collection<QualifiedTable> qualifiedTables, final boolean hasOrderDataNode) {
         SingleRule result = mock(SingleRule.class);
-        when(result.getSingleTables(any())).thenReturn(qualifiedTables);
+        when(result.getSingleTables(anyCollection())).thenReturn(qualifiedTables);
         when(result.getQualifiedTables(any(), any())).thenReturn(qualifiedTables);
         MutableDataNodeRuleAttribute ruleAttribute = mock(MutableDataNodeRuleAttribute.class);
         when(ruleAttribute.findTableDataNode("foo_db", "foo_tbl")).thenReturn(hasOrderDataNode ? Optional.of(new DataNode("ds_0", (String) null, "foo_tbl")) : Optional.empty());
