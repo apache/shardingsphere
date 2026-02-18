@@ -53,6 +53,7 @@ Module resolution order:
 - `R2`: test types and naming
   - Non-parameterized scenarios `MUST` use JUnit `@Test`.
   - Data-driven scenarios `MUST` use JUnit `@ParameterizedTest(name = "{0}")` with `@MethodSource` + `Arguments`.
+  - Parameterized test method signatures `MUST` use `final String name` as the first parameter.
   - Each parameterized test `MUST` provide at least 3 `Arguments` rows; fewer than 3 is a violation and `MUST` be converted to non-parameterized `@Test`.
   - `MUST NOT` use `@RepeatedTest`.
   - Test method naming `MUST` follow `CODE_OF_CONDUCT.md`: use the `assert` prefix; when a single test uniquely covers a production method, use `assert<MethodName>`.
@@ -161,6 +162,7 @@ Module resolution order:
   - `R15-B` (metadata accessor test ban): unless the user explicitly requests it in the current turn, tests targeting `getType` / `getOrder` / `getTypeClass` `MUST NOT` be added.
   - `R15-C` (scope mutation guard): test-generation tasks `MUST NOT` introduce new diffs under any `src/main/` path.
   - `R15-D` (parameterized argument floor): each `@ParameterizedTest` `MUST` bind to `@MethodSource` providers that together contain at least 3 `Arguments` rows; otherwise it is a violation.
+  - `R15-E` (parameterized name parameter): each `@ParameterizedTest` method `MUST` declare the first parameter exactly as `final String name`.
 
 ## Workflow
 
@@ -439,6 +441,38 @@ for path in (each for each in sys.argv[1:] if each.endswith(".java")):
             violations.append(f"{path}:{line} method={method_name} argumentsRows={total_rows}")
 if violations:
     print("[R15-D] each @ParameterizedTest must have >= 3 Arguments rows from @MethodSource")
+    for each in violations:
+        print(each)
+    sys.exit(1)
+PY
+'
+```
+
+5.3 `R15-E` parameterized first-parameter scan:
+```bash
+bash -lc '
+python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
+import re
+import sys
+from pathlib import Path
+
+PARAM_METHOD_PATTERN = re.compile(r"@ParameterizedTest(?:\\s*\\([^)]*\\))?\\s*(?:@\\w+(?:\\s*\\([^)]*\\))?\\s*)*void\\s+(assert\\w+)\\s*\\(([^)]*)\\)", re.S)
+violations = []
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
+    source = Path(path).read_text(encoding="utf-8")
+    for match in PARAM_METHOD_PATTERN.finditer(source):
+        method_name = match.group(1)
+        params = match.group(2).strip()
+        line = source.count("\\n", 0, match.start()) + 1
+        if not params:
+            violations.append(f"{path}:{line} method={method_name} missingParameters")
+            continue
+        first_param = params.split(",", 1)[0].strip()
+        normalized = re.sub(r"\\s+", " ", first_param)
+        if "final String name" != normalized:
+            violations.append(f"{path}:{line} method={method_name} firstParam={first_param}")
+if violations:
+    print("[R15-E] each @ParameterizedTest method must declare first parameter as `final String name`")
     for each in violations:
         print(each)
     sys.exit(1)
