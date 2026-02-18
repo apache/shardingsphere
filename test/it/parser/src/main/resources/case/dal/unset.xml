@@ -22,4 +22,9 @@
     <unset-variable sql-case-id="unset_local_variable" scope="LOCAL" variable-name="exec_mem_limit" />
     <unset-variable sql-case-id="unset_variable_default_scope" scope="SESSION" variable-name="exec_mem_limit" />
     <unset-variable sql-case-id="unset_global_variable_all" scope="GLOBAL" variable-name="ALL" />
+    <unset-variable sql-case-id="unset_variable_default_scope_without_parentheses" scope="SESSION" variable-name="time_zone" />
+    <unset-variable sql-case-id="unset_global_variable_without_parentheses" scope="GLOBAL" variable-name="exec_mem_limit" />
+    <unset-variable sql-case-id="unset_session_variable_without_parentheses" scope="SESSION" variable-name="exec_mem_limit" />
+    <unset-variable sql-case-id="unset_local_variable_without_parentheses" scope="LOCAL" variable-name="exec_mem_limit" />
+    <unset-variable sql-case-id="unset_global_variable_all_without_parentheses" scope="GLOBAL" variable-name="ALL" />
 </sql-parser-test-cases>

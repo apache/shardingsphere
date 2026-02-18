@@ -22,4 +22,9 @@
     <sql-case id="unset_local_variable" value="UNSET LOCAL VARIABLE (exec_mem_limit)" db-types="Doris" />
     <sql-case id="unset_variable_default_scope" value="UNSET VARIABLE (exec_mem_limit)" db-types="Doris" />
     <sql-case id="unset_global_variable_all" value="UNSET GLOBAL VARIABLE (ALL)" db-types="Doris" />
+    <sql-case id="unset_variable_default_scope_without_parentheses" value="UNSET VARIABLE time_zone" db-types="Doris" />
+    <sql-case id="unset_global_variable_without_parentheses" value="UNSET GLOBAL VARIABLE exec_mem_limit" db-types="Doris" />
+    <sql-case id="unset_session_variable_without_parentheses" value="UNSET SESSION VARIABLE exec_mem_limit" db-types="Doris" />
+    <sql-case id="unset_local_variable_without_parentheses" value="UNSET LOCAL VARIABLE exec_mem_limit" db-types="Doris" />
+    <sql-case id="unset_global_variable_all_without_parentheses" value="UNSET GLOBAL VARIABLE ALL" db-types="Doris" />
 </sql-cases>

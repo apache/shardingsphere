@@ -79,7 +79,7 @@ optionValueNoOptionType
     ;
 
 unsetVariable
-    : UNSET optionType? VARIABLE LP_ unsetVariableName RP_
+    : UNSET optionType? VARIABLE (LP_ unsetVariableName RP_ | unsetVariableName)
     ;
 
 unsetVariableName
