@@ -93,15 +93,17 @@ class SingleTableDataNodeLoaderTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("loadArguments")
-    void assertLoad(final String caseName, final Collection<ShardingSphereRule> builtRules, final Collection<String> configuredTables, final Collection<String> expectedTableNames) {
+    @MethodSource("loadWithConfiguredTableExpressionArguments")
+    void assertLoadWithConfiguredTableExpressions(final String caseName, final Collection<ShardingSphereRule> builtRules, final Collection<String> configuredTables,
+                                                  final Collection<String> expectedTableNames) {
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, builtRules, configuredTables);
         assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(expectedTableNames)));
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("loadWithConfiguredTableMapArguments")
-    void assertLoadWithConfiguredTableMap(final String caseName, final Collection<String> splitTables, final Collection<DataNode> configuredDataNodes, final Collection<String> expectedTableNames) {
+    @MethodSource("loadWithConfiguredTableMapRuleArguments")
+    void assertLoadWithConfiguredTableMapRules(final String caseName, final Collection<String> splitTables, final Collection<DataNode> configuredDataNodes,
+                                               final Collection<String> expectedTableNames) {
         try (MockedStatic<SingleTableLoadUtils> mockedSingleTableLoadUtils = mockStatic(SingleTableLoadUtils.class, Answers.CALLS_REAL_METHODS)) {
             mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.splitTableLines(Collections.singleton("ds0.dept"))).thenReturn(splitTables);
             mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, splitTables)).thenReturn(configuredDataNodes);
@@ -151,14 +153,14 @@ class SingleTableDataNodeLoaderTest {
         assertThat(actual.getCause(), is(expected));
     }
     
-    private static Stream<Arguments> loadArguments() {
+    private static Stream<Arguments> loadWithConfiguredTableExpressionArguments() {
         return Stream.of(
                 Arguments.arguments("empty configured tables", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
                 Arguments.arguments("all tables with excluded tables", Collections.singleton(createDistributedRule()), Collections.singleton("*.*"), Arrays.asList("dept", "teacher", "class")),
                 Arguments.arguments("all schema tables", Collections.emptyList(), Collections.singleton("*.*.*"), Arrays.asList("employee", "dept", "salary", "student", "teacher", "class")));
     }
     
-    private static Stream<Arguments> loadWithConfiguredTableMapArguments() {
+    private static Stream<Arguments> loadWithConfiguredTableMapRuleArguments() {
         return Stream.of(
                 Arguments.arguments("configured data source not found", new LinkedHashSet<>(Collections.singleton("other_ds.dept")),
                         Collections.singleton(new DataNode("other_ds", "foo_db", "dept")), Collections.emptyList()),
