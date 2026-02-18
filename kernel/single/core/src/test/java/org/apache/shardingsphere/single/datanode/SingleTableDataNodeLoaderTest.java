@@ -95,9 +95,8 @@ class SingleTableDataNodeLoaderTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadWithConfiguredTableExpressionArguments")
-    void assertLoadWithConfiguredTableExpressions(final String name,
-                                                  final Collection<ShardingSphereRule> builtRules, final Collection<String> configuredTables,
-                                                  final Map<String, Collection<String>> expectedTableDataSources) {
+    void assertLoadWithConfiguredTableExpressions(final String name, final Collection<ShardingSphereRule> builtRules,
+                                                  final Collection<String> configuredTables, final Map<String, Collection<String>> expectedTableDataSources) {
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, builtRules, configuredTables);
         assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(expectedTableDataSources.keySet())));
         assertTableDataSources(actual, expectedTableDataSources);
@@ -105,8 +104,8 @@ class SingleTableDataNodeLoaderTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadWithConfiguredTableMapRuleArguments")
-    void assertLoadWithConfiguredTableMapRules(final String name, final Collection<String> splitTables, final Collection<DataNode> configuredDataNodes,
-                                               final Map<String, Collection<String>> expectedTableDataSources) {
+    void assertLoadWithConfiguredTableMapRules(final String name, final Collection<String> splitTables,
+                                               final Collection<DataNode> configuredDataNodes, final Map<String, Collection<String>> expectedTableDataSources) {
         try (MockedStatic<SingleTableLoadUtils> mockedSingleTableLoadUtils = mockStatic(SingleTableLoadUtils.class, Answers.CALLS_REAL_METHODS)) {
             mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.splitTableLines(Collections.singleton("foo_ds.foo_tbl2"))).thenReturn(splitTables);
             mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, splitTables)).thenReturn(configuredDataNodes);
@@ -136,7 +135,8 @@ class SingleTableDataNodeLoaderTest {
     
     @Test
     void assertLoadWithEmptyConfiguredTablesAndFeatureRequiredSingleTables() {
-        assertTrue(SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.singleton(createRule(Collections.emptyList(), Collections.singleton("foo_tbl1"))), Collections.emptyList()).isEmpty());
+        assertTrue(SingleTableDataNodeLoader.load(
+                "foo_db", databaseType, dataSourceMap, Collections.singleton(createRule(Collections.emptyList(), Collections.singleton("foo_tbl1"))), Collections.emptyList()).isEmpty());
     }
     
     @Test
@@ -164,17 +164,19 @@ class SingleTableDataNodeLoaderTest {
     }
     
     private static Stream<Arguments> loadWithConfiguredTableExpressionArguments() {
+        Map<String, Collection<String>> excludedTablesExpectedDataSources = new LinkedHashMap<>(2, 1F);
+        excludedTablesExpectedDataSources.put("foo_tbl2", Collections.singleton("foo_ds"));
+        excludedTablesExpectedDataSources.put("bar_tbl2", Collections.singleton("bar_ds"));
+        Map<String, Collection<String>> allSchemaTablesExpectedDataSources = new LinkedHashMap<>(4, 1F);
+        allSchemaTablesExpectedDataSources.put("foo_tbl1", Collections.singleton("foo_ds"));
+        allSchemaTablesExpectedDataSources.put("foo_tbl2", Collections.singleton("foo_ds"));
+        allSchemaTablesExpectedDataSources.put("bar_tbl1", Collections.singleton("bar_ds"));
+        allSchemaTablesExpectedDataSources.put("bar_tbl2", Collections.singleton("bar_ds"));
         return Stream.of(
                 Arguments.arguments("empty configured tables", Collections.emptyList(), Collections.emptyList(), Collections.emptyMap()),
-                Arguments.arguments("all tables with excluded tables", Collections.singleton(createRuleWithExcludedTables()), Collections.singleton("*.*"),
-                        createExpectedTableDataSources(new DataNode("foo_ds", "foo_db", "foo_tbl2"), new DataNode("bar_ds", "foo_db", "bar_tbl2"))),
-                Arguments.arguments("all schema tables", Collections.emptyList(), Collections.singleton("*.*.*"), createExpectedTableDataSources(
-                        new DataNode("foo_ds", "foo_db", "foo_tbl1"), new DataNode("foo_ds", "foo_db", "foo_tbl2"),
-                        new DataNode("bar_ds", "foo_db", "bar_tbl1"), new DataNode("bar_ds", "foo_db", "bar_tbl2"))));
-    }
-    
-    private static ShardingSphereRule createRuleWithExcludedTables() {
-        return createRule(Arrays.asList("foo_tbl1", "bar_tbl1", "unused_tbl"), Collections.emptyList());
+                Arguments.arguments("all tables with excluded tables", Collections.singleton(createRule(Arrays.asList("foo_tbl1", "bar_tbl1", "unused_tbl"), Collections.emptyList())),
+                        Collections.singleton("*.*"), createExpectedTableDataSources(excludedTablesExpectedDataSources)),
+                Arguments.arguments("all schema tables", Collections.emptyList(), Collections.singleton("*.*.*"), createExpectedTableDataSources(allSchemaTablesExpectedDataSources)));
     }
     
     private static ShardingSphereRule createRule(final Collection<String> distributedTableNames, final Collection<String> enhancedTableNames) {
@@ -188,25 +190,26 @@ class SingleTableDataNodeLoaderTest {
     }
     
     private static Stream<Arguments> loadWithConfiguredTableMapRuleArguments() {
+        Map<String, Collection<String>> wildcardExpectedDataSources = new LinkedHashMap<>(2, 1F);
+        wildcardExpectedDataSources.put("foo_tbl1", Collections.singleton("foo_ds"));
+        wildcardExpectedDataSources.put("foo_tbl2", Collections.singleton("foo_ds"));
         return Stream.of(
                 Arguments.arguments("configured data source not found", new LinkedHashSet<>(Collections.singleton("other_ds.foo_tbl2")),
                         Collections.singleton(new DataNode("other_ds", "foo_db", "foo_tbl2")), Collections.emptyMap()),
                 Arguments.arguments("configured wildcard schema", new LinkedHashSet<>(Collections.singleton("foo_ds.foo_tbl2")),
                         Collections.singleton(new DataNode("foo_ds", "*", "foo_tbl2")),
-                        createExpectedTableDataSources(new DataNode("foo_ds", "foo_db", "foo_tbl1"), new DataNode("foo_ds", "foo_db", "foo_tbl2"))),
+                        createExpectedTableDataSources(wildcardExpectedDataSources)),
                 Arguments.arguments("configured schema not matched", new LinkedHashSet<>(Collections.singleton("foo_ds.foo_tbl2")),
                         Collections.singleton(new DataNode("foo_ds", "other_schema", "foo_tbl2")), Collections.emptyMap()),
                 Arguments.arguments("configured table wildcard", new LinkedHashSet<>(Collections.singleton("foo_ds.foo_tbl2")),
                         Collections.singleton(new DataNode("foo_ds", "foo_db", "*")),
-                        createExpectedTableDataSources(new DataNode("foo_ds", "foo_db", "foo_tbl1"), new DataNode("foo_ds", "foo_db", "foo_tbl2"))));
+                        createExpectedTableDataSources(wildcardExpectedDataSources)));
     }
     
-    private static Map<String, Collection<String>> createExpectedTableDataSources(final DataNode... dataNodes) {
-        Map<String, Collection<String>> result = new LinkedHashMap<>(dataNodes.length, 1F);
-        for (DataNode each : dataNodes) {
-            Collection<String> dataSourceNames = result.getOrDefault(each.getTableName(), new LinkedHashSet<>(1, 1F));
-            dataSourceNames.add(each.getDataSourceName());
-            result.put(each.getTableName(), dataSourceNames);
+    private static Map<String, Collection<String>> createExpectedTableDataSources(final Map<String, Collection<String>> tableDataSources) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>(tableDataSources.size(), 1F);
+        for (Entry<String, Collection<String>> each : tableDataSources.entrySet()) {
+            result.put(each.getKey(), new LinkedHashSet<>(each.getValue()));
         }
         return result;
     }
