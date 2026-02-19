@@ -21,7 +21,6 @@ import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.statement.type.rdl.rule.global.GlobalRuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
  * @param <T> type of rule definition statement
  * @param <R> type of rule
  */
-@SingletonSPI
 public interface GlobalRuleDefinitionExecutor<T extends GlobalRuleDefinitionStatement, R extends ShardingSphereRule> extends DistSQLExecutorRuleAware<R>, TypedSPI {
     
     /**

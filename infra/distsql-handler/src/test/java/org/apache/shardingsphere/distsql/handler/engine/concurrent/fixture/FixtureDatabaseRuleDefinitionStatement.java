@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.engine.update;
+package org.apache.shardingsphere.distsql.handler.engine.concurrent.fixture;
 
-import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-
-import java.sql.SQLException;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**
- * DistSQL update executor.
- * 
- * @param <T> type of DistSQL statement
+ * Fixture database rule definition statement.
  */
-public interface DistSQLUpdateExecutor<T extends DistSQLStatement> extends TypedSPI {
+@Getter
+public final class FixtureDatabaseRuleDefinitionStatement extends SQLStatement {
     
-    /**
-     * Execute update.
-     *
-     * @param sqlStatement DistSQL statement
-     * @param contextManager context manager
-     * @throws SQLException SQL exception
-     */
-    void executeUpdate(T sqlStatement, ContextManager contextManager) throws SQLException;
+    private final ShardingSphereRule expectedRule;
     
-    @Override
-    Class<T> getType();
+    public FixtureDatabaseRuleDefinitionStatement(final ShardingSphereRule expectedRule) {
+        super(null);
+        this.expectedRule = expectedRule;
+    }
 }
