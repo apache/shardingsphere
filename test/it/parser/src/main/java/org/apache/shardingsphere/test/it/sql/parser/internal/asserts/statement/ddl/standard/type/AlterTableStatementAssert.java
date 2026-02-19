@@ -33,6 +33,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ReplaceTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
@@ -57,6 +60,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameIndexDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenamePartitionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameRollupDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperties;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperty;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.AlterTableStatementTestCase;
 
 import java.util.Collection;
@@ -87,6 +92,7 @@ public final class AlterTableStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertRenameTable(assertContext, actual, expected);
+        assertReplaceTable(assertContext, actual, expected);
         assertAddColumnDefinitions(assertContext, actual, expected);
         assertAddConstraintDefinitions(assertContext, actual, expected);
         assertModifyConstraintDefinitions(assertContext, actual, expected);
@@ -126,6 +132,39 @@ public final class AlterTableStatementAssert {
             assertTrue(tableSegment.isPresent(), assertContext.getText("Actual table segment should exist."));
             TableAssert.assertIs(assertContext, tableSegment.get(), expected.getRenameTable());
         }
+    }
+    
+    private static void assertReplaceTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        Optional<ReplaceTableDefinitionSegment> replaceTableSegment = actual.getReplaceTable();
+        if (null == expected.getReplaceTable()) {
+            assertFalse(replaceTableSegment.isPresent(), assertContext.getText("Actual replace table segment should not exist."));
+        } else {
+            assertTrue(replaceTableSegment.isPresent(), assertContext.getText("Actual replace table segment should exist."));
+            ReplaceTableDefinitionSegment actualReplaceTable = replaceTableSegment.get();
+            assertNotNull(actualReplaceTable.getReplaceTable(), assertContext.getText("Actual replace table should exist."));
+            TableAssert.assertIs(assertContext, actualReplaceTable.getReplaceTable(), expected.getReplaceTable().getTable());
+            if (null == expected.getReplaceTable().getProperties()) {
+                assertNull(actualReplaceTable.getProperties(), assertContext.getText("Actual properties should not exist."));
+            } else {
+                assertNotNull(actualReplaceTable.getProperties(), assertContext.getText("Actual properties should exist."));
+                assertProperties(assertContext, actualReplaceTable.getProperties(), expected.getReplaceTable().getProperties());
+            }
+            SQLSegmentAssert.assertIs(assertContext, actualReplaceTable, expected.getReplaceTable());
+        }
+    }
+    
+    private static void assertProperties(final SQLCaseAssertContext assertContext, final PropertiesSegment actual, final ExpectedProperties expected) {
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        assertThat(assertContext.getText("Properties size assertion error: "), actual.getProperties().size(), is(expected.getProperties().size()));
+        for (int i = 0; i < expected.getProperties().size(); i++) {
+            assertProperty(assertContext, actual.getProperties().get(i), expected.getProperties().get(i));
+        }
+    }
+    
+    private static void assertProperty(final SQLCaseAssertContext assertContext, final PropertySegment actual, final ExpectedProperty expected) {
+        assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), is(expected.getKey()));
+        assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), is(expected.getValue()));
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {

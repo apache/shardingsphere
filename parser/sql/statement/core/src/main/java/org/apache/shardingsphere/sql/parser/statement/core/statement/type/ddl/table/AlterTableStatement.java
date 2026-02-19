@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.Re
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ReplaceTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -65,6 +66,8 @@ public final class AlterTableStatement extends DDLStatement {
     private SimpleTableSegment table;
     
     private SimpleTableSegment renameTable;
+    
+    private ReplaceTableDefinitionSegment replaceTable;
     
     private ConvertTableDefinitionSegment convertTableDefinition;
     
@@ -117,6 +120,15 @@ public final class AlterTableStatement extends DDLStatement {
      */
     public Optional<SimpleTableSegment> getRenameTable() {
         return Optional.ofNullable(renameTable);
+    }
+    
+    /**
+     * Get replace table definition.
+     *
+     * @return replace table definition
+     */
+    public Optional<ReplaceTableDefinitionSegment> getReplaceTable() {
+        return Optional.ofNullable(replaceTable);
     }
     
     /**
@@ -174,6 +186,9 @@ public final class AlterTableStatement extends DDLStatement {
         result.add(table);
         if (getRenameTable().isPresent()) {
             result.add(getRenameTable().get());
+        }
+        if (getReplaceTable().isPresent() && null != getReplaceTable().get().getReplaceTable()) {
+            result.add(getReplaceTable().get().getReplaceTable());
         }
         for (AddColumnDefinitionSegment each : addColumnDefinitions) {
             for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
