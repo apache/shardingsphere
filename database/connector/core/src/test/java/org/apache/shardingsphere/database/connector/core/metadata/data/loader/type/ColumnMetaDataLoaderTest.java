@@ -37,49 +37,45 @@ import java.util.Iterator;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ColumnMetaDataLoaderTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "TRUNK");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private Connection connection;
     
     @Mock
-    private ResultSet primaryResultSet;
-    
-    @Mock
     private ResultSet columnResultSet;
-    
-    @Mock
-    private ResultSet caseSensitivesResultSet;
-    
-    @Mock
-    private ResultSetMetaData resultSetMetaData;
     
     @BeforeEach
     void setUp() throws SQLException {
         when(connection.getCatalog()).thenReturn("catalog");
-        when(connection.getMetaData().getPrimaryKeys("catalog", null, "tbl")).thenReturn(primaryResultSet);
-        when(primaryResultSet.next()).thenReturn(true, false);
-        when(primaryResultSet.getString("COLUMN_NAME")).thenReturn("pk_col");
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.getString("COLUMN_NAME")).thenReturn("pk_col");
+        when(connection.getMetaData().getPrimaryKeys("catalog", null, "tbl")).thenReturn(resultSet);
         when(connection.getMetaData().getColumns("catalog", null, "tbl", "%")).thenReturn(columnResultSet);
-        when(columnResultSet.next()).thenReturn(true, true, false);
-        when(columnResultSet.getString("TABLE_NAME")).thenReturn("tbl");
-        when(columnResultSet.getString("COLUMN_NAME")).thenReturn("pk_col", "col");
-        when(columnResultSet.getInt("DATA_TYPE")).thenReturn(Types.INTEGER, Types.VARCHAR);
-        when(connection.createStatement().executeQuery(anyString())).thenReturn(caseSensitivesResultSet);
-        when(caseSensitivesResultSet.findColumn("pk_col")).thenReturn(1);
-        when(caseSensitivesResultSet.findColumn("col")).thenReturn(2);
-        when(caseSensitivesResultSet.getMetaData()).thenReturn(resultSetMetaData);
-        when(resultSetMetaData.isCaseSensitive(1)).thenReturn(true);
     }
     
     @Test
     void assertLoad() throws SQLException {
+        when(columnResultSet.next()).thenReturn(true, true, true, false);
+        when(columnResultSet.getString("TABLE_NAME")).thenReturn("other_tbl", "tbl", "tbl");
+        when(columnResultSet.getString("COLUMN_NAME")).thenReturn("pk_col", "col");
+        when(columnResultSet.getInt("DATA_TYPE")).thenReturn(Types.INTEGER, Types.VARCHAR);
+        ResultSet caseSensitivesResultSet = mock(ResultSet.class);
+        when(caseSensitivesResultSet.findColumn("pk_col")).thenReturn(1);
+        when(caseSensitivesResultSet.findColumn("col")).thenReturn(2);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(resultSetMetaData.isCaseSensitive(1)).thenReturn(true);
+        when(caseSensitivesResultSet.getMetaData()).thenReturn(resultSetMetaData);
+        when(connection.createStatement().executeQuery(anyString())).thenReturn(caseSensitivesResultSet);
         Collection<ColumnMetaData> actual = ColumnMetaDataLoader.load(connection, "tbl", databaseType);
         assertThat(actual.size(), is(2));
         Iterator<ColumnMetaData> columnMetaDataIterator = actual.iterator();
@@ -92,5 +88,15 @@ class ColumnMetaDataLoaderTest {
         assertThat(actual.getDataType(), is(dataType));
         assertThat(actual.isPrimaryKey(), is(primaryKey));
         assertThat(actual.isCaseSensitive(), is(caseSensitive));
+    }
+    
+    @Test
+    void assertLoadWhenThrowsSQLException() throws SQLException {
+        when(columnResultSet.next()).thenReturn(true, false);
+        when(columnResultSet.getString("TABLE_NAME")).thenReturn("tbl");
+        when(columnResultSet.getString("COLUMN_NAME")).thenReturn("pk_col");
+        when(columnResultSet.getInt("DATA_TYPE")).thenReturn(Types.INTEGER);
+        when(connection.createStatement().executeQuery(anyString())).thenThrow(SQLException.class);
+        assertThrows(SQLException.class, () -> ColumnMetaDataLoader.load(connection, "tbl", databaseType));
     }
 }
