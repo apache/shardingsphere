@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.single.util;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
@@ -26,15 +28,24 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedConstruction;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.TreeSet;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -54,39 +65,18 @@ class SingleTableLoadUtilsTest {
         assertThat(SingleTableLoadUtils.getExcludedTables(Arrays.asList(builtRule1, builtRule2)), is(new TreeSet<>(Arrays.asList("dist_tbl", "actual_tbl"))));
     }
     
-    @Test
-    void assertGetFeatureRequiredSingleTablesWithEmptyEnhancedTableNames() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getFeatureRequiredSingleTablesArguments")
+    void assertGetFeatureRequiredSingleTables(final String name, final Collection<String> enhancedTableNames,
+                                              final Collection<String> distributedTableNames, final Collection<String> expectedTableNames) {
         ShardingSphereRule builtRule1 = mock(ShardingSphereRule.class);
         TableMapperRuleAttribute tableMapperRuleAttribute = mock(TableMapperRuleAttribute.class);
-        when(tableMapperRuleAttribute.getEnhancedTableNames()).thenReturn(Collections.emptyList());
+        when(tableMapperRuleAttribute.getEnhancedTableNames()).thenReturn(enhancedTableNames);
+        when(tableMapperRuleAttribute.getDistributedTableNames()).thenReturn(distributedTableNames);
         when(builtRule1.getAttributes()).thenReturn(new RuleAttributes(tableMapperRuleAttribute));
         ShardingSphereRule builtRule2 = mock(ShardingSphereRule.class);
         when(builtRule2.getAttributes()).thenReturn(new RuleAttributes());
-        assertThat(SingleTableLoadUtils.getFeatureRequiredSingleTables(Arrays.asList(builtRule1, builtRule2)), is(Collections.emptySet()));
-    }
-    
-    @Test
-    void assertGetFeatureRequiredSingleTablesWithDistributedTableNames() {
-        ShardingSphereRule builtRule1 = mock(ShardingSphereRule.class);
-        TableMapperRuleAttribute tableMapperRuleAttribute = mock(TableMapperRuleAttribute.class);
-        when(tableMapperRuleAttribute.getEnhancedTableNames()).thenReturn(Collections.singleton("enhanced_tbl"));
-        when(tableMapperRuleAttribute.getDistributedTableNames()).thenReturn(Collections.singleton("dist_tbl"));
-        when(builtRule1.getAttributes()).thenReturn(new RuleAttributes(tableMapperRuleAttribute));
-        ShardingSphereRule builtRule2 = mock(ShardingSphereRule.class);
-        when(builtRule2.getAttributes()).thenReturn(new RuleAttributes());
-        assertThat(SingleTableLoadUtils.getFeatureRequiredSingleTables(Arrays.asList(builtRule1, builtRule2)), is(Collections.emptySet()));
-    }
-    
-    @Test
-    void assertGetFeatureRequiredSingleTablesWithoutDistributedTableNames() {
-        ShardingSphereRule builtRule1 = mock(ShardingSphereRule.class);
-        TableMapperRuleAttribute tableMapperRuleAttribute = mock(TableMapperRuleAttribute.class);
-        when(tableMapperRuleAttribute.getEnhancedTableNames()).thenReturn(Collections.singleton("enhanced_tbl"));
-        when(tableMapperRuleAttribute.getDistributedTableNames()).thenReturn(Collections.emptyList());
-        when(builtRule1.getAttributes()).thenReturn(new RuleAttributes(tableMapperRuleAttribute));
-        ShardingSphereRule builtRule2 = mock(ShardingSphereRule.class);
-        when(builtRule2.getAttributes()).thenReturn(new RuleAttributes());
-        assertThat(SingleTableLoadUtils.getFeatureRequiredSingleTables(Arrays.asList(builtRule1, builtRule2)), is(Collections.singleton("enhanced_tbl")));
+        assertThat(SingleTableLoadUtils.getFeatureRequiredSingleTables(Arrays.asList(builtRule1, builtRule2)), is(expectedTableNames));
     }
     
     @Test
@@ -108,12 +98,47 @@ class SingleTableLoadUtilsTest {
     }
     
     @Test
+    void assertGetAllTablesNodeStrWithSchema() {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry()) {
+            assertThat(SingleTableLoadUtils.getAllTablesNodeStr(databaseType), is("*.*.*"));
+        }
+    }
+    
+    @Test
     void assertGetAllTablesNodeStrFromDataSource() {
         assertThat(SingleTableLoadUtils.getAllTablesNodeStrFromDataSource(databaseType, "foo_ds", "foo_schema"), is("foo_ds.*"));
+    }
+    
+    @Test
+    void assertGetAllTablesNodeStrFromDataSourceWithSchema() {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry()) {
+            assertThat(SingleTableLoadUtils.getAllTablesNodeStrFromDataSource(databaseType, "foo_ds", "foo_schema"), is("foo_ds.foo_schema.*"));
+        }
     }
     
     @Test
     void assertGetDataNodeString() {
         assertThat(SingleTableLoadUtils.getDataNodeString(databaseType, "foo_ds", "foo_schema", "foo_tbl"), is("foo_ds.foo_tbl"));
     }
+    
+    @Test
+    void assertGetDataNodeStringWithSchema() {
+        try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry()) {
+            assertThat(SingleTableLoadUtils.getDataNodeString(databaseType, "foo_ds", "foo_schema", "foo_tbl"), is("foo_ds.foo_schema.foo_tbl"));
+        }
+    }
+    
+    private MockedConstruction<DatabaseTypeRegistry> mockSchemaRegistry() {
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+        when(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema()).thenReturn(Optional.of("foo_schema"));
+        return mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData));
+    }
+    
+    private static Stream<Arguments> getFeatureRequiredSingleTablesArguments() {
+        return Stream.of(
+                Arguments.of("without enhanced table names", Collections.emptyList(), Collections.emptyList(), Collections.emptySet()),
+                Arguments.of("with distributed table names", Collections.singleton("enhanced_tbl"), Collections.singleton("dist_tbl"), Collections.emptySet()),
+                Arguments.of("without distributed table names", Collections.singleton("enhanced_tbl"), Collections.emptyList(), Collections.singleton("enhanced_tbl")));
+    }
+    
 }
