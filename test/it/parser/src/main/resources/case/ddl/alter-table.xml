@@ -2761,4 +2761,45 @@
             </column-definition>
         </add-column>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_replace_with_table_swap_true">
+        <table name="tbl1" start-index="12" stop-index="15" />
+        <replace-table start-index="17" stop-index="67">
+            <table name="tbl2" start-index="36" stop-index="39" />
+            <properties start-index="41" stop-index="67">
+                <property key="swap" value="true" start-index="52" stop-index="66" />
+            </properties>
+        </replace-table>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_replace_with_table_swap_false">
+        <table name="tbl1" start-index="12" stop-index="15" />
+        <replace-table start-index="17" stop-index="68">
+            <table name="tbl2" start-index="36" stop-index="39" />
+            <properties start-index="41" stop-index="68">
+                <property key="swap" value="false" start-index="52" stop-index="67" />
+            </properties>
+        </replace-table>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_replace_with_table_default">
+        <table name="tbl1" start-index="12" stop-index="15" />
+        <replace-table start-index="17" stop-index="39">
+            <table name="tbl2" start-index="36" stop-index="39" />
+        </replace-table>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_replace_with_table_with_database">
+        <table name="tbl1" start-index="12" stop-index="19">
+            <owner name="db1" start-index="12" stop-index="14" />
+        </table>
+        <replace-table start-index="21" stop-index="75">
+            <table name="tbl2" start-index="40" stop-index="47">
+                <owner name="db2" start-index="40" stop-index="42" />
+            </table>
+            <properties start-index="49" stop-index="75">
+                <property key="swap" value="true" start-index="60" stop-index="74" />
+            </properties>
+        </replace-table>
+    </alter-table>
 </sql-parser-test-cases>

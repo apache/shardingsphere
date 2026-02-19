@@ -398,4 +398,8 @@
     <sql-case id="alter_table_with_lock_default_mysql" value="ALTER TABLE t_order ADD COLUMN col_lock_default INT, LOCK=DEFAULT" db-types="MySQL" />
     <sql-case id="alter_table_with_lock_shared_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_shared INT, LOCK=SHARED" db-types="Doris" />
     <sql-case id="alter_table_with_lock_exclusive_doris" value="ALTER TABLE t_order ADD COLUMN col_lock_exclusive INT, LOCK=EXCLUSIVE" db-types="Doris" />
+    <sql-case id="alter_table_replace_with_table_swap_true" value="ALTER TABLE tbl1 REPLACE WITH TABLE tbl2 PROPERTIES('swap' = 'true')" db-types="Doris" />
+    <sql-case id="alter_table_replace_with_table_swap_false" value="ALTER TABLE tbl1 REPLACE WITH TABLE tbl2 PROPERTIES('swap' = 'false')" db-types="Doris" />
+    <sql-case id="alter_table_replace_with_table_default" value="ALTER TABLE tbl1 REPLACE WITH TABLE tbl2" db-types="Doris" />
+    <sql-case id="alter_table_replace_with_table_with_database" value="ALTER TABLE db1.tbl1 REPLACE WITH TABLE db2.tbl2 PROPERTIES('swap' = 'true')" db-types="Doris" />
 </sql-cases>

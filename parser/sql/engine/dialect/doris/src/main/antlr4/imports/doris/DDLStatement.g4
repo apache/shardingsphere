@@ -139,6 +139,7 @@ alterListItem
     | RENAME keyOrIndex indexName TO indexName  # renameIndex
     | RENAME ROLLUP oldRollupName=identifier newRollupName=identifier  # renameRollup
     | RENAME PARTITION oldPartitionName=identifier newPartitionName=identifier  # renamePartition
+    | REPLACE WITH TABLE tableName propertiesClause?  # replaceTable
     | CONVERT TO charset charsetName collateClause?  # alterConvert
     | FORCE  # alterTableForce
     | ORDER BY alterOrderList  # alterTableOrder

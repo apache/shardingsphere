@@ -117,6 +117,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ValidSt
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WhileStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameRollupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenamePartitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReplaceTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterStoragePolicyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateEncryptKeyContext;
@@ -163,6 +164,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.Con
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CreateTableOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ReplaceTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -478,6 +480,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             alterTableStatement.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameTableDefinitionSegment) {
             alterTableStatement.setRenameTable(((RenameTableDefinitionSegment) alterDefinitionSegment).getRenameTable());
+        } else if (alterDefinitionSegment instanceof ReplaceTableDefinitionSegment) {
+            alterTableStatement.setReplaceTable((ReplaceTableDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof ConvertTableDefinitionSegment) {
             alterTableStatement.setConvertTableDefinition((ConvertTableDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof DropIndexDefinitionSegment) {
@@ -562,6 +566,9 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         if (alterListItemContext instanceof AlterRenameTableContext) {
             return Optional.of((RenameTableDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof ReplaceTableContext) {
+            return Optional.of((ReplaceTableDefinitionSegment) visit(alterListItemContext));
         }
         if (alterListItemContext instanceof AlterConvertContext) {
             return Optional.of((ConvertTableDefinitionSegment) visit(alterListItemContext));
@@ -657,6 +664,16 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitAlterRenameTable(final AlterRenameTableContext ctx) {
         RenameTableDefinitionSegment result = new RenameTableDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         result.setRenameTable((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitReplaceTable(final ReplaceTableContext ctx) {
+        ReplaceTableDefinitionSegment result = new ReplaceTableDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setReplaceTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
         return result;
     }
     
