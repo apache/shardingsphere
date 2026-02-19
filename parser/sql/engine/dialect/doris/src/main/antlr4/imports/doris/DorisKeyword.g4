@@ -1011,6 +1011,10 @@ HAVING
     : H A V I N G
     ;
 
+HDFS
+    : H D F S
+    ;
+
 HELP
     : H E L P
     ;
@@ -1365,6 +1369,10 @@ LOCKED
 
 LOCKS
     : L O C K S
+    ;
+
+LOCATION
+    : L O C A T I O N
     ;
 
 LOGFILE
@@ -2224,6 +2232,10 @@ REPLICATION
     : R E P L I C A T I O N
     ;
 
+REPOSITORY
+    : R E P O S I T O R Y
+    ;
+
 REQUIRE
     : R E Q U I R E
     ;
@@ -2334,6 +2346,10 @@ ROW
 
 ROWS
     : R O W S
+    ;
+
+S3
+    : S '3'
     ;
 
 ROW_COUNT

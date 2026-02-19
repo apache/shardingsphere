@@ -50,4 +50,15 @@
         <property key="global" value="false" start-index="95" stop-index="110" />
         <property key="enable" value="true" start-index="112" stop-index="126" />
     </create-sql-block-rule>
+    <create-repository sql-case-id="create_repository" read-only="false" storage-type="S3" location="s3://s3-repo">
+        <repository-name name="s3_repo" start-index="18" stop-index="26" start-delimiter="`" end-delimiter="`" />
+        <property key="s3.endpoint" value="http://s3-REGION.amazonaws.com" start-index="74" stop-index="119" />
+        <property key="s3.access_key" value="AWS_ACCESS_KEY" start-index="121" stop-index="152" />
+        <property key="s3.secret_key" value="AWS_SECRET_KEY" start-index="154" stop-index="185" />
+        <property key="s3.region" value="REGION" start-index="187" stop-index="206" />
+    </create-repository>
+    <create-repository sql-case-id="create_repository_readonly" read-only="true" storage-type="HDFS" location="hdfs://hdfs-server:9000/backup">
+        <repository-name name="backup_repo" start-index="28" stop-index="38" />
+        <property key="hadoop.username" value="user" start-index="106" stop-index="129" />
+    </create-repository>
 </sql-parser-test-cases>

@@ -465,6 +465,17 @@ dropResourceGroup
     : DROP RESOURCE GROUP groupName FORCE?
     ;
 
+dropRepository
+    : DROP REPOSITORY repositoryName
+    ;
+
+createRepository
+    : CREATE (READ ONLY)? REPOSITORY repositoryName 
+      WITH (S3 | HDFS)
+      ON LOCATION string_
+      propertiesClause
+    ;
+
 setResourceGroup
     : SET RESOURCE GROUP groupName (FOR NUMBER_ (COMMA_ NUMBER_)*)?
     ;

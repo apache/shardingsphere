@@ -258,6 +258,7 @@ identifierKeywordsUnambiguous
     | GROUP_REPLICATION
     | GROUPS
     | HASH
+    | HDFS
     | HISTOGRAM
     | HISTORY
     | HOSTS
@@ -291,6 +292,7 @@ identifierKeywordsUnambiguous
     | LEVEL
     | LINESTRING
     | LIST
+    | LOCATION
     | LOCKED
     | LOCKS
     | LOGFILE
@@ -430,6 +432,7 @@ identifierKeywordsUnambiguous
     | REPLICATE_REWRITE_DB
     | REPLICATE_WILD_DO_TABLE
     | REPLICATE_WILD_IGNORE_TABLE
+    | REPOSITORY
     | REQUIRE_ROW_FORMAT
 //    | REQUIRE_TABLE_PRIMARY_KEY_CHECK
     | USER_RESOURCES
@@ -499,6 +502,7 @@ identifierKeywordsUnambiguous
     | SWAPS
     | SWITCHES
     | SYSTEM
+    | S3
     | TABLE
     | TABLES
     | TABLESPACE
@@ -806,6 +810,10 @@ columnNames
     ;
 
 groupName
+    : identifier
+    ;
+
+repositoryName
     : identifier
     ;
 

@@ -139,6 +139,8 @@ execute
     | createSqlBlockRule
     | alterSqlBlockRule
     | dropSqlBlockRule
+    | dropRepository
+    | createRepository
     | buildIndex
     | cancelBuildIndex
     | createFile

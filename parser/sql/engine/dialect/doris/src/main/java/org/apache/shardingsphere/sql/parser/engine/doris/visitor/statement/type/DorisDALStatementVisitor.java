@@ -36,9 +36,11 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CloneAc
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CloneContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CloneInstanceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLoadableFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateRepositoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DelimiterContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropResourceGroupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropRepositoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExplainableStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FlushContext;
@@ -60,6 +62,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OptionV
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PartitionListContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PartitionNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RepairTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RepositoryNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResetOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResetPersistContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResetStatementContext;
@@ -196,13 +199,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Te
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBlockRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSwitchStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSqlBlockRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSyncStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.RepositoryNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowBuildIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQueryStatsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
@@ -1034,6 +1040,28 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitDropResourceGroup(final DropResourceGroupContext ctx) {
         return new MySQLDropResourceGroupStatement(getDatabaseType(), ((IdentifierValue) visit(ctx.groupName())).getValue());
+    }
+    
+    @Override
+    public ASTNode visitDropRepository(final DropRepositoryContext ctx) {
+        DorisDropRepositoryStatement result = new DorisDropRepositoryStatement(getDatabaseType());
+        RepositoryNameContext repositoryNameCtx = ctx.repositoryName();
+        IdentifierValue identifierValue = (IdentifierValue) visit(repositoryNameCtx);
+        result.setRepositoryName(new RepositoryNameSegment(repositoryNameCtx.start.getStartIndex(), repositoryNameCtx.stop.getStopIndex(), identifierValue));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateRepository(final CreateRepositoryContext ctx) {
+        DorisCreateRepositoryStatement result = new DorisCreateRepositoryStatement(getDatabaseType());
+        result.setReadOnly(null != ctx.READ() && null != ctx.ONLY());
+        RepositoryNameContext repositoryNameCtx = ctx.repositoryName();
+        IdentifierValue identifierValue = (IdentifierValue) visit(repositoryNameCtx);
+        result.setRepositoryName(new RepositoryNameSegment(repositoryNameCtx.start.getStartIndex(), repositoryNameCtx.stop.getStopIndex(), identifierValue));
+        result.setStorageType(null != ctx.S3() ? "S3" : "HDFS");
+        result.setLocation(((StringLiteralValue) visit(ctx.string_())).getValue());
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
     }
     
     @Override
