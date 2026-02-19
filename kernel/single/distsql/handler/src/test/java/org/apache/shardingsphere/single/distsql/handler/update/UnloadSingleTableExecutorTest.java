@@ -183,15 +183,20 @@ class UnloadSingleTableExecutorTest {
     
     private static Stream<Arguments> assertBuildToBeAlteredRuleConfigurationArguments() {
         return Stream.of(
-                Arguments.of("unload all tables keeps altered config empty", Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), new UnloadSingleTableStatement(true, Collections.emptyList()), Collections.emptyList()),
-                Arguments.of("unload one table removes matching two-segment node", Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), new UnloadSingleTableStatement(false, Collections.singletonList("foo_tbl")), Collections.singleton("foo_ds.bar_tbl")),
-                Arguments.of("unload one table removes matching three-segment node", Arrays.asList("foo_ds.foo_schema.bar_tbl", "foo_ds.foo_tbl"), new UnloadSingleTableStatement(false, Collections.singletonList("bar_tbl")), Collections.singleton("foo_ds.foo_tbl")));
+                Arguments.of("unload all tables keeps altered config empty", Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), new UnloadSingleTableStatement(true, Collections.emptyList()),
+                        Collections.emptyList()),
+                Arguments.of("unload one table removes matching two-segment node", Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"),
+                        new UnloadSingleTableStatement(false, Collections.singletonList("foo_tbl")), Collections.singleton("foo_ds.bar_tbl")),
+                Arguments.of("unload one table removes matching three-segment node", Arrays.asList("foo_ds.foo_schema.bar_tbl", "foo_ds.foo_tbl"),
+                        new UnloadSingleTableStatement(false, Collections.singletonList("bar_tbl")), Collections.singleton("foo_ds.foo_tbl")));
     }
     
     private static Stream<Arguments> assertBuildToBeDroppedRuleConfigurationArguments() {
         return Stream.of(
-                Arguments.of("empty altered config drops current rule config", Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), Collections.emptyList(), false, Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl")),
+                Arguments.of("empty altered config drops current rule config", Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), Collections.emptyList(), false,
+                        Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl")),
                 Arguments.of("non-empty altered config does not drop rule", Collections.singleton("foo_ds.foo_tbl"), Collections.singleton("foo_ds.foo_tbl"), true, Collections.emptyList()),
-                Arguments.of("multi-table altered config does not drop rule", Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), true, Collections.emptyList()));
+                Arguments.of("multi-table altered config does not drop rule", Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), Arrays.asList("foo_ds.foo_tbl", "foo_ds.bar_tbl"), true,
+                        Collections.emptyList()));
     }
 }
