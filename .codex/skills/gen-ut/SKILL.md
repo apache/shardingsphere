@@ -144,6 +144,7 @@ Module resolution order:
 - `R13`: test necessity trimming
   - Trimming order `MUST` be fixed as "objective trimming -> exception retention review".
   - In objective trimming stage, `MUST` first remove coverage-equivalent tests and re-verify coverage uniformly, then remove redundant mock/stub/assertion and single-use local variables that do not affect branch selection/collaborator interaction behavior (call count, parameters)/observable assertions; if retention significantly improves readability, `MAY` keep and mark `Necessity reason tag`.
+  - Local variable declarations in test code `MUST NOT` use `final`; this rule applies only to local variables and does not change `R15-E` for parameterized-test method parameters.
   - Each retained item `MUST` carry a `KEEP:<id>:<reason>` tag and be recorded in the delivery report; items without tags are treated as redundant.
   - Each test method `MUST` provide unique value: cover a new branch/path, or add assertion differences.
   - If deleting a test method does not change line/branch coverage and has no assertion differences, `MUST` delete it.
