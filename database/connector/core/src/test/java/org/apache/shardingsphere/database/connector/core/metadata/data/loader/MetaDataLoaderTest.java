@@ -128,7 +128,8 @@ class MetaDataLoaderTest {
     @SneakyThrows(ReflectiveOperationException.class)
     private AutoCloseable registerDialectMetaDataLoader(final DialectMetaDataLoader service) {
         Map<Class<?>, Object> registeredServices = getRegisteredServices();
-        return () -> restoreDialectMetaDataLoader(registeredServices, registeredServices.put(DialectMetaDataLoader.class, createRegisteredService(service)));
+        Object original = registeredServices.put(DialectMetaDataLoader.class, createRegisteredService(service));
+        return () -> restoreDialectMetaDataLoader(registeredServices, original);
     }
     
     @SuppressWarnings("unchecked")
@@ -141,8 +142,7 @@ class MetaDataLoaderTest {
     private Object createRegisteredService(final DialectMetaDataLoader service) throws ReflectiveOperationException {
         Class<?> registeredServiceClass = Class.forName("org.apache.shardingsphere.infra.spi.RegisteredShardingSphereSPI");
         Constructor<?> constructor = registeredServiceClass.getDeclaredConstructor(Class.class);
-        constructor.setAccessible(true);
-        Object result = constructor.newInstance(DialectMetaDataLoader.class);
+        Object result = Plugins.getMemberAccessor().newInstance(constructor, DialectMetaDataLoader.class);
         Field servicesField = registeredServiceClass.getDeclaredField("services");
         Collection<DialectMetaDataLoader> services = (Collection<DialectMetaDataLoader>) Plugins.getMemberAccessor().get(servicesField, result);
         services.clear();
