@@ -152,6 +152,7 @@
 1. Pipeline: Fix PostgreSQL migration create table SQL generation failure caused by locale-formatted sequence values - [#28360](https://github.com/apache/shardingsphere/issues/28360)
 1. Pipeline: MySQLBinlogClient compatible with async exception - [#37631](https://github.com/apache/shardingsphere/issues/37631)
 1. Pipeline: Fix SHOW MIGRATION RULE always display default values when ALTER MIGRATION RULE without STREAM_CHANNEL - [#37737](https://github.com/apache/shardingsphere/issues/37737)
+1. DistSQL: Eliminate the concurrency safety risks of DistSQL executors. - [#38097](https://github.com/apache/shardingsphere/pull/38097)
 
 ### Change Logs
 
