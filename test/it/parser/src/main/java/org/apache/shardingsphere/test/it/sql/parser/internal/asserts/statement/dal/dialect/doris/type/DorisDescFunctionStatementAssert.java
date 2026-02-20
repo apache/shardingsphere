@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDescFunctionStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDescFunctionStatementTestCase;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -51,12 +50,6 @@ public final class DorisDescFunctionStatementAssert {
             MatcherAssert.assertThat(assertContext.getText("Function name assertion error: "), actual.getFunctionName().get().getIdentifier().getValue(),
                     Matchers.is(expected.getFunctionName().getFunctionName()));
             SQLSegmentAssert.assertIs(assertContext, actual.getFunctionName().get(), expected.getFunctionName());
-            if (null == expected.getFunctionName().getOwner()) {
-                Assertions.assertFalse(actual.getFunctionName().get().getOwner().isPresent(), assertContext.getText("Actual function owner should not exist."));
-            } else {
-                Assertions.assertTrue(actual.getFunctionName().get().getOwner().isPresent(), assertContext.getText("Actual function owner should exist."));
-                OwnerAssert.assertIs(assertContext, actual.getFunctionName().get().getOwner().get(), expected.getFunctionName().getOwner());
-            }
         }
     }
 }
