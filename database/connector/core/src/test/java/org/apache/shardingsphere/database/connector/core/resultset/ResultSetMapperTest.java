@@ -200,7 +200,6 @@ class ResultSetMapperTest {
         assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(1));
     }
     
-    
     @ParameterizedTest(name = "{0}")
     @MethodSource("numericAndFloatingTypeArguments")
     void assertLoadNumericAndFloatingValue(final String name, final int columnType, final Object expected) throws SQLException {
