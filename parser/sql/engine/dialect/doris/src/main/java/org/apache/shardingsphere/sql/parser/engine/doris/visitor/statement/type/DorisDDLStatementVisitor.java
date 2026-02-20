@@ -75,7 +75,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateV
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DeallocateContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropEventContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisDropFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropLogfileGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropProcedureContext;
@@ -185,7 +185,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.da
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.AlterFunctionStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.DropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.BuildIndexStatement;
@@ -221,6 +220,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.collection.Coll
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLCreateEventStatement;
@@ -1234,8 +1234,14 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
-    public ASTNode visitDropFunction(final DropFunctionContext ctx) {
-        return new DropFunctionStatement(getDatabaseType());
+    public ASTNode visitDorisDropFunction(final DorisDropFunctionContext ctx) {
+        DorisDropFunctionStatement result = new DorisDropFunctionStatement(getDatabaseType());
+        result.setGlobal(null != ctx.GLOBAL());
+        result.setFunctionName((FunctionNameSegment) visit(ctx.functionName()));
+        for (int i = 0; i < ctx.dataType().size(); i++) {
+            result.getParameterDataTypes().add((DataTypeSegment) visit(ctx.dataType(i)));
+        }
+        return result;
     }
     
     @Override

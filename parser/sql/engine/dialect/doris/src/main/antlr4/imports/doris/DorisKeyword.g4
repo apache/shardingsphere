@@ -217,6 +217,10 @@ BUILD
     : B U I L D
     ;
 
+BUILTIN
+    : B U I L T I N
+    ;
+
 BY
     : B Y
     ;
@@ -925,6 +929,10 @@ FULLTEXT
 
 FUNCTION
     : F U N C T I O N
+    ;
+
+FUNCTIONS
+    : F U N C T I O N S
     ;
 
 GENERAL

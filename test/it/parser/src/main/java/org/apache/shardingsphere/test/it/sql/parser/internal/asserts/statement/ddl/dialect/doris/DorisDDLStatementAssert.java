@@ -22,11 +22,13 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.doris.type.DorisAlterStoragePolicyStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.function.CreateFunctionStatementTestCase;
 
@@ -50,6 +52,8 @@ public final class DorisDDLStatementAssert {
             DorisCreateFunctionStatementAssert.assertIs(assertContext, (DorisCreateFunctionStatement) actual, (CreateFunctionStatementTestCase) expected);
         } else if (actual instanceof DorisAlterStoragePolicyStatement) {
             DorisAlterStoragePolicyStatementAssert.assertIs(assertContext, (DorisAlterStoragePolicyStatement) actual, (DorisAlterStoragePolicyStatementTestCase) expected);
+        } else if (actual instanceof DorisDropFunctionStatement) {
+            DorisDropFunctionStatementAssert.assertIs(assertContext, (DorisDropFunctionStatement) actual, (DorisDropFunctionStatementTestCase) expected);
         }
     }
 }

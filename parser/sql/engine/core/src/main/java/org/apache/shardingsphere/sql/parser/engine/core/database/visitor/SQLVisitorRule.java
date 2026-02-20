@@ -135,6 +135,8 @@ public enum SQLVisitorRule {
     
     DROP_GROUP("DropGroup", SQLStatementType.DDL),
     
+    DORIS_DROP_FUNCTION("DorisDropFunction", SQLStatementType.DDL),
+    
     CREATE_DATABASE("CreateDatabase", SQLStatementType.DDL),
     
     CREATE_DATABASE_LINK("CreateDatabaseLink", SQLStatementType.DDL),
@@ -436,6 +438,10 @@ public enum SQLVisitorRule {
     SHOW_OPEN_TABLES("ShowOpenTables", SQLStatementType.DAL),
     
     SHOW_TRIGGERS("ShowTriggers", SQLStatementType.DAL),
+    
+    SHOW_FUNCTIONS("ShowFunctions", SQLStatementType.DAL),
+    
+    DESC_FUNCTION("DescFunction", SQLStatementType.DAL),
     
     SET_VARIABLE("SetVariable", SQLStatementType.DAL),
     

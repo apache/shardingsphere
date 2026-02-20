@@ -28,6 +28,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisSwitchStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.CreateEncryptKeyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropSqlBlockRuleStatementTestCase;
@@ -90,6 +91,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.table.MySQLRepairTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterResourceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisSyncStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDescFunctionStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowFunctionsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.show.DorisShowQueryStatsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.oracle.OracleSpoolStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.postgresql.PostgreSQLResetParameterStatementTestCase;
@@ -928,6 +931,9 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "drop-trigger")
     private final List<DropTriggerStatementTestCase> dropTriggerTestCases = new LinkedList<>();
     
+    @XmlElement(name = "doris-drop-function")
+    private final List<DorisDropFunctionStatementTestCase> dorisDropFunctionTestCases = new LinkedList<>();
+    
     @XmlElement(name = "alter-trigger")
     private final List<AlterTriggerStatementTestCase> alterTriggerTestCases = new LinkedList<>();
     
@@ -1347,6 +1353,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "show-query-stats")
     private final List<DorisShowQueryStatsStatementTestCase> showQueryStatsTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-functions")
+    private final List<DorisShowFunctionsStatementTestCase> dorisShowFunctionsTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-desc-function")
+    private final List<DorisDescFunctionStatementTestCase> dorisDescFunctionTestCases = new LinkedList<>();
     
     @XmlElement(name = "check-table")
     private final List<MySQLCheckTableStatementTestCase> checkTableTestCases = new LinkedList<>();
