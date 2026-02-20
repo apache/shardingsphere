@@ -78,9 +78,11 @@ Module resolution order:
   - For parameterized tests, `Arguments` row count `MUST` be greater than or equal to 3.
   - Tests `MUST` exercise behavior through public methods only.
   - Public production methods with business logic `MUST` be covered with dedicated test methods.
+  - For interface targets, only `default` public methods are required test targets by default, and non-`default` public methods `MUST NOT` be tested unless the user explicitly requests them in the current turn.
   - Dedicated test targets `MUST` follow the `R4` branch-mapping exclusion scope.
 
 - `R6`: SPI, Mock, and reflection
+  - For interface `default` methods, this rule overrides SPI instantiation requirements in `R6`: tests `MUST` use Mockito `CALLS_REAL_METHODS` to invoke real default implementations, and this path does not require SPI-bypass justification.
   - If the class under test can be obtained via SPI, `MUST` instantiate by default with `TypedSPILoader`/`OrderedSPILoader` (or database-specific loaders), and `MUST` keep the resolved instance as a test-class-level field (global variable) by default.
   - SPI metadata accessor methods `TypedSPI#getType`, `OrderedSPI#getOrder`, and `getTypeClass` are default no-test-required targets.
   - For these accessors, tests `MUST NOT` be added by default; they are allowed only when the user explicitly requests tests for them in the current turn.
