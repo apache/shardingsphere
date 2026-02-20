@@ -104,8 +104,10 @@ Module resolution order:
     - A. target public method and branch skeleton are consistent;
     - B. scenario differences mainly come from input data;
     - C. assertion skeleton is consistent, or only declared assertion differences exist;
-    - D. parameter sample count is at least 3.
+    - D. parameter sample count is at least 3;
+    - E. parameterized test body does not require dispatch logic via `switch`.
   - "Declared assertion differences" means differences explicitly recorded in the delivery report.
+  - If a candidate requires `switch` in a `@ParameterizedTest` body to distinguish argument rows, it is not high-fit and `MUST NOT` be refactored to parameterized form.
   - High-fit candidates `MUST` be refactored directly to parameterized form.
   - For high-fit candidates, a "do not recommend refactor" conclusion is allowed only when refactoring causes significant readability/diagnosability regression, and the exception `MUST` include a `Necessity reason tag` with concrete evidence.
   - Parameter construction `MUST` use `Arguments + @MethodSource`.
@@ -166,6 +168,7 @@ Module resolution order:
   - `R15-C` (scope mutation guard): test-generation tasks `MUST NOT` introduce new diffs under any `src/main/` path.
   - `R15-D` (parameterized argument floor): each `@ParameterizedTest` `MUST` bind to `@MethodSource` providers that together contain at least 3 `Arguments` rows; otherwise it is a violation.
   - `R15-E` (parameterized name parameter): each `@ParameterizedTest` method `MUST` declare the first parameter exactly as `final String name`.
+  - `R15-F` (parameterized switch ban): `@ParameterizedTest` method bodies `MUST NOT` contain `switch` statements.
 
 ## Workflow
 
@@ -476,6 +479,51 @@ for path in (each for each in sys.argv[1:] if each.endswith(".java")):
             violations.append(f"{path}:{line} method={method_name} firstParam={first_param}")
 if violations:
     print("[R15-E] each @ParameterizedTest method must declare first parameter as `final String name`")
+    for each in violations:
+        print(each)
+    sys.exit(1)
+PY
+'
+```
+
+5.4 `R15-F` parameterized switch ban scan:
+```bash
+bash -lc '
+python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
+import re
+import sys
+from pathlib import Path
+
+PARAM_METHOD_PATTERN = re.compile(r"@ParameterizedTest(?:\\s*\\([^)]*\\))?\\s*(?:@\\w+(?:\\s*\\([^)]*\\))?\\s*)*void\\s+(assert\\w+)\\s*\\([^)]*\\)\\s*\\{", re.S)
+SWITCH_PATTERN = re.compile(r"\\bswitch\\s*\\(")
+
+def extract_block(text, brace_index):
+    depth = 0
+    index = brace_index
+    while index < len(text):
+        if "{" == text[index]:
+            depth += 1
+        elif "}" == text[index]:
+            depth -= 1
+            if 0 == depth:
+                return text[brace_index + 1:index]
+        index += 1
+    return ""
+
+violations = []
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
+    source = Path(path).read_text(encoding="utf-8")
+    for match in PARAM_METHOD_PATTERN.finditer(source):
+        method_name = match.group(1)
+        line = source.count("\\n", 0, match.start()) + 1
+        brace_index = source.find("{", match.start())
+        if brace_index < 0:
+            continue
+        body = extract_block(source, brace_index)
+        if SWITCH_PATTERN.search(body):
+            violations.append(f"{path}:{line} method={method_name}")
+if violations:
+    print("[R15-F] @ParameterizedTest method body must not contain switch")
     for each in violations:
         print(each)
     sys.exit(1)
