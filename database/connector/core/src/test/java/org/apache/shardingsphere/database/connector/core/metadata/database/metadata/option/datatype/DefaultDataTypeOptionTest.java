@@ -18,41 +18,75 @@
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.Types;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class DefaultDataTypeOptionTest {
     
     private final DialectDataTypeOption dataTypeOption = new DefaultDataTypeOption();
     
     @Test
-    void assertIsIntegerDataType() {
-        assertTrue(dataTypeOption.isIntegerDataType(Types.INTEGER));
-        assertTrue(dataTypeOption.isIntegerDataType(Types.BIGINT));
-        assertTrue(dataTypeOption.isIntegerDataType(Types.SMALLINT));
-        assertTrue(dataTypeOption.isIntegerDataType(Types.TINYINT));
-        assertFalse(dataTypeOption.isIntegerDataType(Types.VARCHAR));
+    void assertGetExtraDataTypes() {
+        assertThat(dataTypeOption.getExtraDataTypes(), is(Collections.emptyMap()));
     }
     
     @Test
-    void assertIsStringDataType() {
-        assertTrue(dataTypeOption.isStringDataType(Types.CHAR));
-        assertTrue(dataTypeOption.isStringDataType(Types.VARCHAR));
-        assertTrue(dataTypeOption.isStringDataType(Types.LONGVARCHAR));
-        assertTrue(dataTypeOption.isStringDataType(Types.NCHAR));
-        assertTrue(dataTypeOption.isStringDataType(Types.NVARCHAR));
-        assertTrue(dataTypeOption.isStringDataType(Types.LONGNVARCHAR));
-        assertFalse(dataTypeOption.isStringDataType(Types.INTEGER));
+    void assertFindExtraSQLTypeClass() {
+        assertThat(dataTypeOption.findExtraSQLTypeClass(Types.INTEGER, true), is(Optional.empty()));
     }
     
-    @Test
-    void assertIsBinaryDataType() {
-        assertTrue(dataTypeOption.isBinaryDataType(Types.BINARY));
-        assertTrue(dataTypeOption.isBinaryDataType(Types.VARBINARY));
-        assertTrue(dataTypeOption.isBinaryDataType(Types.LONGVARBINARY));
-        assertFalse(dataTypeOption.isBinaryDataType(Types.VARCHAR));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("integerDataTypeArguments")
+    void assertIsIntegerDataType(final String name, final int sqlType, final boolean expected) {
+        assertThat(dataTypeOption.isIntegerDataType(sqlType), is(expected));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("stringDataTypeArguments")
+    void assertIsStringDataType(final String name, final int sqlType, final boolean expected) {
+        assertThat(dataTypeOption.isStringDataType(sqlType), is(expected));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("binaryDataTypeArguments")
+    void assertIsBinaryDataType(final String name, final int sqlType, final boolean expected) {
+        assertThat(dataTypeOption.isBinaryDataType(sqlType), is(expected));
+    }
+    
+    private static Stream<Arguments> integerDataTypeArguments() {
+        return Stream.of(
+                Arguments.of("integer", Types.INTEGER, true),
+                Arguments.of("bigint", Types.BIGINT, true),
+                Arguments.of("smallint", Types.SMALLINT, true),
+                Arguments.of("tinyint", Types.TINYINT, true),
+                Arguments.of("varchar", Types.VARCHAR, false));
+    }
+    
+    private static Stream<Arguments> stringDataTypeArguments() {
+        return Stream.of(
+                Arguments.of("char", Types.CHAR, true),
+                Arguments.of("varchar", Types.VARCHAR, true),
+                Arguments.of("longvarchar", Types.LONGVARCHAR, true),
+                Arguments.of("nchar", Types.NCHAR, true),
+                Arguments.of("nvarchar", Types.NVARCHAR, true),
+                Arguments.of("longnvarchar", Types.LONGNVARCHAR, true),
+                Arguments.of("integer", Types.INTEGER, false));
+    }
+    
+    private static Stream<Arguments> binaryDataTypeArguments() {
+        return Stream.of(
+                Arguments.of("binary", Types.BINARY, true),
+                Arguments.of("varbinary", Types.VARBINARY, true),
+                Arguments.of("longvarbinary", Types.LONGVARBINARY, true),
+                Arguments.of("varchar", Types.VARCHAR, false));
     }
 }
