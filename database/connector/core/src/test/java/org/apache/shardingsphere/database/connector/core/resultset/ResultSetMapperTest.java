@@ -25,6 +25,9 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 
 import java.math.BigDecimal;
@@ -40,6 +43,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -52,7 +56,7 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(DatabaseTypedSPILoader.class)
 class ResultSetMapperTest {
     
-    private DatabaseType databaseType;
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Mock
     private ResultSet resultSet;
@@ -62,7 +66,6 @@ class ResultSetMapperTest {
     
     @BeforeEach
     void setUp() throws SQLException {
-        databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
         when(resultSet.getMetaData()).thenReturn(metaData);
     }
     
@@ -171,23 +174,10 @@ class ResultSetMapperTest {
         assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(1D));
     }
     
-    @Test
-    void assertLoadCharValue() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.CHAR);
-        when(resultSet.getString(1)).thenReturn("foo");
-        assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is("foo"));
-    }
-    
-    @Test
-    void assertLoadVarcharValue() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.VARCHAR);
-        when(resultSet.getString(1)).thenReturn("foo");
-        assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is("foo"));
-    }
-    
-    @Test
-    void assertLoadLongVarcharValue() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.LONGVARCHAR);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("stringTypeArguments")
+    void assertLoadStringValue(final String name, final int columnType) throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(columnType);
         when(resultSet.getString(1)).thenReturn("foo");
         assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is("foo"));
     }
@@ -238,25 +228,10 @@ class ResultSetMapperTest {
         assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(clob));
     }
     
-    @Test
-    void assertLoadBinaryValue() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.BINARY);
-        byte[] bytes = new byte[0];
-        when(resultSet.getBytes(1)).thenReturn(bytes);
-        assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(bytes));
-    }
-    
-    @Test
-    void assertLoadVarbinaryValue() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.VARBINARY);
-        byte[] bytes = new byte[0];
-        when(resultSet.getBytes(1)).thenReturn(bytes);
-        assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(bytes));
-    }
-    
-    @Test
-    void assertLoadLongVarbinaryValue() throws SQLException {
-        when(metaData.getColumnType(1)).thenReturn(Types.LONGVARBINARY);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("binaryTypeArguments")
+    void assertLoadBinaryValue(final String name, final int columnType) throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(columnType);
         byte[] bytes = new byte[0];
         when(resultSet.getBytes(1)).thenReturn(bytes);
         assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(bytes));
@@ -271,10 +246,34 @@ class ResultSetMapperTest {
     }
     
     @Test
+    void assertLoadObjectValueWithDialectResultSetMapper() throws SQLException {
+        when(metaData.getColumnType(1)).thenReturn(Types.JAVA_OBJECT);
+        DialectResultSetMapper dialectResultSetMapper = mock(DialectResultSetMapper.class);
+        Object object = new Object();
+        when(DatabaseTypedSPILoader.findService(DialectResultSetMapper.class, databaseType)).thenReturn(Optional.of(dialectResultSetMapper));
+        when(dialectResultSetMapper.getDefaultValue(resultSet, 1, Types.JAVA_OBJECT)).thenReturn(object);
+        assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(object));
+    }
+    
+    @Test
     void assertLoadObjectValue() throws SQLException {
         when(metaData.getColumnType(1)).thenReturn(Types.JAVA_OBJECT);
         Object object = new Object();
         when(resultSet.getObject(1)).thenReturn(object);
         assertThat(new ResultSetMapper(databaseType).load(resultSet, 1), is(object));
+    }
+    
+    private static Stream<Arguments> stringTypeArguments() {
+        return Stream.of(
+                Arguments.of("char", Types.CHAR),
+                Arguments.of("varchar", Types.VARCHAR),
+                Arguments.of("longvarchar", Types.LONGVARCHAR));
+    }
+    
+    private static Stream<Arguments> binaryTypeArguments() {
+        return Stream.of(
+                Arguments.of("binary", Types.BINARY),
+                Arguments.of("varbinary", Types.VARBINARY),
+                Arguments.of("longvarbinary", Types.LONGVARBINARY));
     }
 }
