@@ -17,41 +17,67 @@
 
 package org.apache.shardingsphere.database.connector.core.type;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collections;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DatabaseTypeRegistryTest {
     
+    private final DatabaseType trunkDatabaseType = TypedSPILoader.getService(DatabaseType.class, "TRUNK");
+    
+    private final DatabaseType branchDatabaseType = TypedSPILoader.getService(DatabaseType.class, "BRANCH");
+    
     @Test
     void assertGetAllBranchDatabaseTypesWithTrunkType() {
-        assertThat(new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, "TRUNK")).getAllBranchDatabaseTypes(),
-                is(Collections.singletonList(TypedSPILoader.getService(DatabaseType.class, "BRANCH"))));
+        assertThat(new DatabaseTypeRegistry(trunkDatabaseType).getAllBranchDatabaseTypes(), is(Collections.singletonList(branchDatabaseType)));
     }
     
     @Test
     void assertGetAllBranchDatabaseTypesWithBranchType() {
-        assertTrue(new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, "BRANCH")).getAllBranchDatabaseTypes().isEmpty());
+        assertTrue(new DatabaseTypeRegistry(branchDatabaseType).getAllBranchDatabaseTypes().isEmpty());
     }
     
-    @Test
-    void assertGetDefaultSchemaNameWhenDatabaseTypeContainsDefaultSchema() {
-        assertThat(new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, "TRUNK")).getDefaultSchemaName("FOO"), is("test"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getDefaultSchemaNameArguments")
+    void assertGetDefaultSchemaName(final String name, final String databaseType, final String databaseName, final String expectedSchemaName) {
+        assertThat(new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, databaseType)).getDefaultSchemaName(databaseName), is(expectedSchemaName));
     }
     
-    @Test
-    void assertGetDefaultSchemaNameWhenDatabaseTypeNotContainsDefaultSchema() {
-        assertThat(new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, "BRANCH")).getDefaultSchemaName("FOO"), is("FOO"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("formatIdentifierPatternArguments")
+    void assertFormatIdentifierPattern(final String name, final IdentifierPatternType identifierPatternType, final String expectedIdentifierPattern) throws ReflectiveOperationException {
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(identifierPatternType);
+        DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(trunkDatabaseType);
+        Plugins.getMemberAccessor().set(DatabaseTypeRegistry.class.getDeclaredField("dialectDatabaseMetaData"), databaseTypeRegistry, dialectDatabaseMetaData);
+        assertThat(databaseTypeRegistry.formatIdentifierPattern("Foo"), is(expectedIdentifierPattern));
     }
     
-    @Test
-    void assertGetDefaultSchemaNameWhenDatabaseTypeNotContainsDefaultSchemaAndNullDatabaseName() {
-        assertNull(new DatabaseTypeRegistry(TypedSPILoader.getService(DatabaseType.class, "BRANCH")).getDefaultSchemaName(null));
+    private static Stream<Arguments> getDefaultSchemaNameArguments() {
+        return Stream.of(
+                Arguments.of("database type contains default schema", "TRUNK", "FOO", "test"),
+                Arguments.of("database type does not contain default schema", "BRANCH", "FOO", "FOO"),
+                Arguments.of("database name is null", "BRANCH", null, null));
+    }
+    
+    private static Stream<Arguments> formatIdentifierPatternArguments() {
+        return Stream.of(
+                Arguments.of("identifier pattern upper case", IdentifierPatternType.UPPER_CASE, "FOO"),
+                Arguments.of("identifier pattern lower case", IdentifierPatternType.LOWER_CASE, "foo"),
+                Arguments.of("identifier pattern keep origin", IdentifierPatternType.KEEP_ORIGIN, "Foo"));
     }
 }
