@@ -15,3 +15,7 @@
    sec-conf_global
    sec-conf_database
    sec-distsql
+   sec-sqlhint
+   sec-errorcode
+
+
