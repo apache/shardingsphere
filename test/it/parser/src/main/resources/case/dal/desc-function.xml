@@ -23,7 +23,17 @@
     
     <doris-desc-function sql-case-id="desc_function_with_schema_doris">
         <function-name function-name="my_func" start-index="14" stop-index="26">
-            <owner name="my_db" start-index="13" stop-index="17" />
+            <owner name="my_db" start-index="14" stop-index="18" />
+        </function-name>
+    </doris-desc-function>
+    
+    <doris-desc-function sql-case-id="desc_function_with_parentheses_doris">
+        <function-name function-name="catalogs" start-index="14" stop-index="21" />
+    </doris-desc-function>
+    
+    <doris-desc-function sql-case-id="desc_function_with_schema_and_parentheses_doris">
+        <function-name function-name="my_func" start-index="14" stop-index="26">
+            <owner name="my_db" start-index="14" stop-index="18" />
         </function-name>
     </doris-desc-function>
 </sql-parser-test-cases>

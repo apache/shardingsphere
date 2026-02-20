@@ -26,6 +26,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.dat
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowFunctionsStatementTestCase;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 
 /**
  * Show functions statement assert for Doris.
@@ -67,14 +68,16 @@ public final class DorisShowFunctionsStatementAssert {
     }
     
     private static void assertFromDatabase(final SQLCaseAssertContext assertContext, final DorisShowFunctionsStatement actual, final DorisShowFunctionsStatementTestCase expected) {
-        if (null != expected.getFromDatabase() && actual.getFromDatabase().isPresent()) {
+        if (null != expected.getFromDatabase()) {
+            Assertions.assertTrue(actual.getFromDatabase().isPresent(), assertContext.getText("Actual from database should exist."));
             DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get().getDatabase(), expected.getFromDatabase().getDatabase());
             SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase().get(), expected.getFromDatabase());
         }
     }
     
     private static void assertLike(final SQLCaseAssertContext assertContext, final DorisShowFunctionsStatement actual, final DorisShowFunctionsStatementTestCase expected) {
-        if (null != expected.getLike() && actual.getLike().isPresent()) {
+        if (null != expected.getLike()) {
+            Assertions.assertTrue(actual.getLike().isPresent(), assertContext.getText("Actual like segment should exist."));
             MatcherAssert.assertThat(assertContext.getText("Like pattern assertion error: "), actual.getLike().get().getPattern(), Matchers.is(expected.getLike().getPattern()));
             SQLSegmentAssert.assertIs(assertContext, actual.getLike().get(), expected.getLike());
         }

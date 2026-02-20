@@ -32,7 +32,7 @@ help
     ;
 
 descFunction
-    : DESC FUNCTION functionName
+    : DESC FUNCTION functionName (LP_ RP_)?
     ;
 
 explain
