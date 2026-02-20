@@ -19,6 +19,6 @@
 <sql-cases>
     <sql-case id="desc_function_doris" value="DESC FUNCTION catalogs" db-types="Doris" />
     <sql-case id="desc_function_with_schema_doris" value="DESC FUNCTION my_db.my_func" db-types="Doris" />
-    <sql-case id="desc_function_with_parentheses_doris" value="DESC FUNCTION catalogs()" db-types="Doris" />
+    <sql-case id="desc_function_with_parenthese" value="DESC FUNCTION catalogs()" db-types="Doris" />
     <sql-case id="desc_function_with_schema_and_parentheses_doris" value="DESC FUNCTION my_db.my_func()" db-types="Doris" />
 </sql-cases>
