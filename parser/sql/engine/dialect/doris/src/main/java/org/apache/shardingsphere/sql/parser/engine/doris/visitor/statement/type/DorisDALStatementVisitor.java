@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateL
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateRepositoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DelimiterContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DescFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropRepositoryContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExplainContext;
@@ -91,6 +92,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowErr
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowEventsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowFilterContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowFunctionCodeContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowFunctionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowFunctionStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowGrantsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowIndexContext;
@@ -171,6 +173,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.RuleNameS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -178,6 +181,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.Ord
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.AnalyzeTableStatement;
@@ -202,8 +206,10 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBl
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSwitchStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSqlBlockRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDescFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropSqlBlockRuleStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowFunctionsStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadStatement;
@@ -847,6 +853,35 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowFunctionStatus(final ShowFunctionStatusContext ctx) {
         MySQLShowFunctionStatusStatement result = new MySQLShowFunctionStatusStatement(getDatabaseType(), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDescFunction(final DescFunctionContext ctx) {
+        DorisDescFunctionStatement result = new DorisDescFunctionStatement(getDatabaseType());
+        FunctionNameSegment functionName =
+                new FunctionNameSegment(ctx.functionName().start.getStartIndex(), ctx.functionName().stop.getStopIndex(), (IdentifierValue) visit(ctx.functionName().identifier()));
+        if (null != ctx.functionName().owner()) {
+            functionName.setOwner((OwnerSegment) visit(ctx.functionName().owner()));
+        }
+        result.setFunctionName(functionName);
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowFunctions(final ShowFunctionsContext ctx) {
+        DorisShowFunctionsStatement result = new DorisShowFunctionsStatement(getDatabaseType());
+        result.setGlobal(null != ctx.GLOBAL());
+        result.setFull(null != ctx.FULL());
+        result.setBuiltin(null != ctx.BUILTIN());
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
+        }
+        if (null != ctx.showLike()) {
+            result.setLikeSegment((ShowLikeSegment) visit(ctx.showLike()));
+        }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }

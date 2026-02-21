@@ -31,6 +31,10 @@ help
     : HELP textOrIdentifier
     ;
 
+descFunction
+    : DESC FUNCTION functionName (LP_ RP_)?
+    ;
+
 explain
     : (DESC | DESCRIBE | EXPLAIN)
     (tableName (columnRef | textString)? ALL?
@@ -168,6 +172,11 @@ showEvents
 
 showFunctionCode
     : SHOW FUNCTION CODE functionName
+    ;
+
+showFunctions
+    : SHOW GLOBAL FULL? FUNCTIONS showLike?
+    | SHOW FULL? BUILTIN? FUNCTIONS fromDatabase? showLike?
     ;
 
 showFunctionStatus
@@ -782,6 +791,7 @@ show
     | showErrors
     | showEvents
     | showFunctionCode
+    | showFunctions
     | showFunctionStatus
     | showGrants
     | showMasterStatus

@@ -357,8 +357,8 @@ alterFunction
     : ALTER FUNCTION functionName routineOption*
     ;
 
-dropFunction
-    : DROP FUNCTION ifExists? functionName
+dorisDropFunction
+    : DROP GLOBAL? FUNCTION functionName LP_ dataType (COMMA_ dataType)* RP_
     ;
 
 createFile

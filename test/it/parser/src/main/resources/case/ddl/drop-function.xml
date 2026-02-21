@@ -25,6 +25,19 @@
     <drop-function sql-case-id="drop_temporary_function_with_if_exists" />
     <drop-function sql-case-id="drop_function_basic" />
     <drop-function sql-case-id="drop_function_with_if_exists" />
-    <drop-function sql-case-id="drop_function_doris" />
     <drop-function sql-case-id="drop_function_mysql" />
+    <doris-drop-function sql-case-id="drop_global_function_doris" global="true">
+        <function-name name="my_add" start-index="21" stop-index="26" />
+        <parameter-data-types>
+            <data-type name="INT" />
+            <data-type name="INT" />
+        </parameter-data-types>
+    </doris-drop-function>
+    <doris-drop-function sql-case-id="drop_function_with_params_doris">
+        <function-name name="my_add" start-index="14" stop-index="19" />
+        <parameter-data-types>
+            <data-type name="INT" />
+            <data-type name="INT" />
+        </parameter-data-types>
+    </doris-drop-function>
 </sql-parser-test-cases>

@@ -162,6 +162,7 @@ identifierKeywordsUnambiguous
     | BOOL
     | BTREE
     | BUCKETS
+    | BUILTIN
     | CASCADED
     | CATALOG_NAME
     | CHAIN

@@ -36,7 +36,8 @@ execute
     | createProcedure
     | dropProcedure
     | createFunction
-    | dropFunction
+    | dorisDropFunction
+    | descFunction
     | createDatabase
     | dropDatabase
     | createEvent
