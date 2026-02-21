@@ -23,5 +23,5 @@
     <sql-case id="cancel_alter_table_rollup_with_jobs" value="CANCEL ALTER TABLE ROLLUP FROM table_name (20001, 20002, 20003)" db-types="Doris" />
     <sql-case id="cancel_alter_table_materialized_view_without_jobs" value="CANCEL ALTER TABLE MATERIALIZED VIEW FROM table_name" db-types="Doris" />
     <sql-case id="cancel_alter_table_materialized_view_with_jobs" value="CANCEL ALTER TABLE MATERIALIZED VIEW FROM table_name (30001)" db-types="Doris" />
-    <sql-case id="cancel_alter_table_rollup_db_table" value="CANCEL ALTER TABLE ROLLUP FROM db_name.table_name (40001)" db-types="Doris" />
+    <sql-case id="cancel_alter_table_rollup_db_table" value="CANCEL ALTER TABLE ROLLUP FROM db_name.table_name (40001);" db-types="Doris" />
 </sql-cases>
