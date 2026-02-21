@@ -20,13 +20,19 @@ package org.apache.shardingsphere.database.connector.h2.metadata.database;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
+
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class H2DatabaseMetaDataTest {
     
@@ -40,5 +46,25 @@ class H2DatabaseMetaDataTest {
     @Test
     void assertGetDefaultNullsOrderType() {
         assertThat(dialectDatabaseMetaData.getDefaultNullsOrderType(), is(NullsOrderType.LOW));
+    }
+    
+    @Test
+    void assertGetIdentifierPatternType() {
+        assertThat(dialectDatabaseMetaData.getIdentifierPatternType(), is(IdentifierPatternType.KEEP_ORIGIN));
+    }
+    
+    @Test
+    void assertGetTransactionOption() {
+        DialectTransactionOption actual = dialectDatabaseMetaData.getTransactionOption();
+        assertFalse(actual.isSupportGlobalCSN());
+        assertFalse(actual.isDDLNeedImplicitCommit());
+        assertFalse(actual.isSupportAutoCommitInNestedTransaction());
+        assertFalse(actual.isSupportDDLInXATransaction());
+        assertTrue(actual.isSupportMetaDataRefreshInTransaction());
+        assertThat(actual.getDefaultIsolationLevel(), is(Connection.TRANSACTION_READ_COMMITTED));
+        assertFalse(actual.isReturnRollbackStatementWhenCommitFailed());
+        assertFalse(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
+        assertThat(actual.getXaDriverClassNames().size(), is(1));
+        assertTrue(actual.getXaDriverClassNames().contains("org.h2.jdbcx.JdbcDataSource"));
     }
 }

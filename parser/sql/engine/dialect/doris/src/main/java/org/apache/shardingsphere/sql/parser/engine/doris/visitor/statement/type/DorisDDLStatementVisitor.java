@@ -25,6 +25,12 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterCatalogContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeSyncJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PauseSyncJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSyncJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ChannelDescriptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BinlogDescriptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AddColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AddTableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterAlgorithmOptionContext;
@@ -160,6 +166,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.Ro
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.ChannelDescriptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.BinlogDescriptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CreateTableOptionSegment;
@@ -224,6 +233,9 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStorag
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLCreateEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLDropEventStatement;
@@ -353,6 +365,73 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitResumeJob(final ResumeJobContext ctx) {
         String jobName = SQLUtils.getExactlyValue(ctx.stringLiterals().getText());
         return new DorisResumeJobStatement(getDatabaseType(), jobName);
+    }
+    
+    @Override
+    public ASTNode visitResumeSyncJob(final ResumeSyncJobContext ctx) {
+        DorisResumeSyncJobStatement result = new DorisResumeSyncJobStatement(getDatabaseType());
+        JobNameSegment jobName = new JobNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.owner()) {
+            jobName.setOwner((OwnerSegment) visit(ctx.owner()));
+        }
+        result.setJobName(jobName);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitPauseSyncJob(final PauseSyncJobContext ctx) {
+        DorisPauseSyncJobStatement result = new DorisPauseSyncJobStatement(getDatabaseType());
+        JobNameSegment jobName = new JobNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.owner()) {
+            jobName.setOwner((OwnerSegment) visit(ctx.owner()));
+        }
+        result.setJobName(jobName);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateSyncJob(final CreateSyncJobContext ctx) {
+        DorisCreateSyncJobStatement result = new DorisCreateSyncJobStatement(getDatabaseType());
+        JobNameSegment jobName = new JobNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.owner()) {
+            jobName.setOwner((OwnerSegment) visit(ctx.owner()));
+        }
+        result.setJobName(jobName);
+        for (ChannelDescriptionContext each : ctx.channelDescription()) {
+            result.getChannelDescriptions().add((ChannelDescriptionSegment) visit(each));
+        }
+        result.setBinlogDescription((BinlogDescriptionSegment) visit(ctx.binlogDescription()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitChannelDescription(final ChannelDescriptionContext ctx) {
+        SimpleTableSegment sourceTable = (SimpleTableSegment) visit(ctx.tableName(0));
+        SimpleTableSegment targetTable = (SimpleTableSegment) visit(ctx.tableName(1));
+        ChannelDescriptionSegment result = new ChannelDescriptionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), sourceTable, targetTable);
+        if (null != ctx.columnNames()) {
+            for (ColumnNameContext each : ctx.columnNames().columnName()) {
+                result.getColumnNames().add(((ColumnSegment) visit(each)).getIdentifier().getValue());
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitBinlogDescription(final BinlogDescriptionContext ctx) {
+        BinlogDescriptionSegment result = new BinlogDescriptionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.properties().start.getStartIndex(), ctx.properties().stop.getStopIndex());
+        for (PropertyContext each : ctx.properties().property()) {
+            propertiesSegment.getProperties().add(createPropertySegment(each));
+        }
+        result.setProperties(propertiesSegment);
+        return result;
+    }
+    
+    private PropertySegment createPropertySegment(final PropertyContext ctx) {
+        String key = getPropertyKey(ctx);
+        String value = SQLUtils.getExactlyValue(ctx.literals().getText());
+        return new PropertySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), key, value);
     }
     
     @SuppressWarnings("unchecked")

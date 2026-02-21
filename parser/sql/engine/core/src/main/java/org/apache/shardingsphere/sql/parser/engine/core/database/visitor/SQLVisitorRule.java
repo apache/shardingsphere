@@ -291,6 +291,12 @@ public enum SQLVisitorRule {
     
     RESUME_JOB("ResumeJob", SQLStatementType.DDL),
     
+    RESUME_SYNC_JOB("ResumeSyncJob", SQLStatementType.DDL),
+    
+    PAUSE_SYNC_JOB("PauseSyncJob", SQLStatementType.DDL),
+    
+    CREATE_SYNC_JOB("CreateSyncJob", SQLStatementType.DDL),
+    
     ALTER_CATALOG("AlterCatalog", SQLStatementType.DDL),
     
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
@@ -446,6 +452,8 @@ public enum SQLVisitorRule {
     DESC_FUNCTION("DescFunction", SQLStatementType.DAL),
     
     SHOW_ALTER_TABLE("ShowAlterTable", SQLStatementType.DAL),
+    
+    SHOW_PROC("ShowProc", SQLStatementType.DAL),
     
     SET_VARIABLE("SetVariable", SQLStatementType.DAL),
     

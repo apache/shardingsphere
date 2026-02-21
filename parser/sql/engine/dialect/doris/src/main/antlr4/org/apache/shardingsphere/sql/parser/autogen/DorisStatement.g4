@@ -136,6 +136,9 @@ execute
     | startReplica
     | createMaterializedView
     | resumeJob
+    | resumeSyncJob
+    | pauseSyncJob
+    | createSyncJob
     | dorisAlterSystem
     | createSqlBlockRule
     | alterSqlBlockRule

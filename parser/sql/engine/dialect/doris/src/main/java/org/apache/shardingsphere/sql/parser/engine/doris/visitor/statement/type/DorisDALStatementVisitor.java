@@ -144,6 +144,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Propert
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowQueryStatsContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowProcContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSqlBlockRuleContext;
@@ -211,6 +212,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDescFunctio
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowFunctionsStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowProcStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadStatement;
@@ -1367,5 +1369,13 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitRefresh(final RefreshContext ctx) {
         return new RefreshStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitShowProc(final ShowProcContext ctx) {
+        String procPath = SQLUtils.getExactlyValue(ctx.string_().getText());
+        DorisShowProcStatement result = new DorisShowProcStatement(getDatabaseType(), procPath);
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
     }
 }

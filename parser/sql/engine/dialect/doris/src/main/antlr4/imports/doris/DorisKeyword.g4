@@ -1942,6 +1942,10 @@ PATH
     : P A T H
     ;
 
+PAUSE
+    : P A U S E
+    ;
+
 PERCENT_RANK
     : P E R C E N T UL_ R A N K
     ;
@@ -2016,6 +2020,10 @@ PRIVILEGES
 
 PRIVILEGE_CHECKS_USER
     : P R I V I L E G E UL_ C H E C K S UL_ U S E R
+    ;
+
+PROC
+    : P R O C
     ;
 
 PROCEDURE
