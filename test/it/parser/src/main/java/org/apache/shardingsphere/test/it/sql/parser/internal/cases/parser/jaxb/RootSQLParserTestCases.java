@@ -288,9 +288,11 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.DropIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.CancelBuildIndexStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.BuildIndexStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.alter.CancelAlterTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.macro.CreateMacroStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.macro.DropMacroStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowBuildIndexStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowAlterTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.operator.AlterOperatorStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.operator.CreateOperatorStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.operator.DropOperatorStatementTestCase;
@@ -574,11 +576,17 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "show-build-index")
     private final List<ShowBuildIndexStatementTestCase> showBuildIndexTestCases = new LinkedList<>();
     
+    @XmlElement(name = "show-alter-table")
+    private final List<ShowAlterTableStatementTestCase> showAlterTableTestCases = new LinkedList<>();
+    
     @XmlElement(name = "build-index")
     private final List<BuildIndexStatementTestCase> buildIndexTestCases = new LinkedList<>();
     
     @XmlElement(name = "cancel-build-index")
     private final List<CancelBuildIndexStatementTestCase> cancelBuildIndexStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "cancel-alter-table")
+    private final List<CancelAlterTableStatementTestCase> cancelAlterTableStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-sql-block-rule")
     private final List<DorisAlterSqlBlockRuleStatementTestCase> alterSqlBlockRuleTestCases = new LinkedList<>();

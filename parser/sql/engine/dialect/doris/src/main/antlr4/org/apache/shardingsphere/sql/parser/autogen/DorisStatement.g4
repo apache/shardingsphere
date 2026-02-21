@@ -144,6 +144,7 @@ execute
     | createRepository
     | buildIndex
     | cancelBuildIndex
+    | cancelAlterTable
     | createFile
     | dropFile
     | sync

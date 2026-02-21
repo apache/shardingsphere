@@ -152,6 +152,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowRou
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.QualifiedJobNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RuleNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowBuildIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowAlterTableContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActionSegment;
@@ -216,6 +217,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutine
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSyncStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.RepositoryNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowBuildIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQueryStatsStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCloneStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLCreateLoadableFunctionStatement;
@@ -1261,6 +1263,30 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitShowBuildIndex(final ShowBuildIndexContext ctx) {
         ShowBuildIndexStatement result = new ShowBuildIndexStatement(getDatabaseType());
+        if (null != ctx.fromDatabase()) {
+            FromDatabaseSegment fromDatabaseSegment = (FromDatabaseSegment) visit(ctx.fromDatabase());
+            result.setDatabase(fromDatabaseSegment.getDatabase());
+        }
+        if (null != ctx.showWhereClause()) {
+            result.setWhere((WhereSegment) visit(ctx.showWhereClause()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowAlterTable(final ShowAlterTableContext ctx) {
+        ShowAlterTableStatement result = new ShowAlterTableStatement(getDatabaseType());
+        if (null != ctx.COLUMN()) {
+            result.setAlterType("COLUMN");
+        } else if (null != ctx.ROLLUP()) {
+            result.setAlterType("ROLLUP");
+        }
         if (null != ctx.fromDatabase()) {
             FromDatabaseSegment fromDatabaseSegment = (FromDatabaseSegment) visit(ctx.fromDatabase());
             result.setDatabase(fromDatabaseSegment.getDatabase());

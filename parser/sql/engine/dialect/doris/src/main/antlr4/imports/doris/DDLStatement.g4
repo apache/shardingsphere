@@ -237,6 +237,10 @@ cancelBuildIndex
     : CANCEL BUILD INDEX ON tableName jobIdList?
     ;
 
+cancelAlterTable
+    : CANCEL ALTER TABLE (COLUMN | MATERIALIZED VIEW | ROLLUP) FROM tableName jobIdList?
+    ;
+
 jobIdList
     : LP_ jobId (COMMA_ jobId)* RP_
     ;

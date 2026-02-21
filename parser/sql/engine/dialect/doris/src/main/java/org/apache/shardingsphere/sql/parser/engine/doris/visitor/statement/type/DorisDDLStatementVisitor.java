@@ -86,6 +86,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropTri
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BuildIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelBuildIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelAlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExecuteStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FieldDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FlowControlStatementContext;
@@ -189,6 +190,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.in
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.BuildIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CancelBuildIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.alter.CancelAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.AlterProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.CreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.DropProcedureStatement;
@@ -915,6 +917,25 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitCancelBuildIndex(final CancelBuildIndexContext ctx) {
         CancelBuildIndexStatement result = new CancelBuildIndexStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.jobIdList()) {
+            for (JobIdContext each : ctx.jobIdList().jobId()) {
+                result.getJobIds().add(each.getText());
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCancelAlterTable(final CancelAlterTableContext ctx) {
+        CancelAlterTableStatement result = new CancelAlterTableStatement(getDatabaseType());
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.COLUMN()) {
+            result.setAlterType("COLUMN");
+        } else if (null != ctx.MATERIALIZED()) {
+            result.setAlterType("MATERIALIZED VIEW");
+        } else if (null != ctx.ROLLUP()) {
+            result.setAlterType("ROLLUP");
+        }
         if (null != ctx.jobIdList()) {
             for (JobIdContext each : ctx.jobIdList().jobId()) {
                 result.getJobIds().add(each.getText());
