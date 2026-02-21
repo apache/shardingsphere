@@ -20,9 +20,11 @@ package org.apache.shardingsphere.database.connector.firebird.metadata.data.load
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -31,13 +33,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -46,49 +48,62 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class FirebirdBlobColumnLoaderTest {
     
-    private static final Collection<String> TABLES = Collections.singleton("test_table");
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
     
     @Mock
-    private DataSource dataSource;
-    
-    @Mock
-    private Connection connection;
+    private ResultSet resultSet;
     
     @Mock
     private PreparedStatement preparedStatement;
     
     @Mock
-    private ResultSet resultSet;
+    private Connection connection;
     
-    private MetaDataLoaderMaterial material;
+    @Mock
+    private DataSource dataSource;
     
-    @BeforeEach
-    void setUp() {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
-        material = new MetaDataLoaderMaterial(TABLES, "logic_ds", dataSource, databaseType, "schema");
-    }
-    
-    @Test
-    void assertLoadReturnsBlobColumns() throws SQLException {
-        when(dataSource.getConnection()).thenReturn(connection);
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("loadWithBlobColumnArguments")
+    void assertLoadWithBlobColumn(final String name, final String columnName, final Object subType, final Integer expectedSubType) throws SQLException {
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.getString("COLUMN_NAME")).thenReturn(columnName);
+        when(resultSet.getObject("SUB_TYPE")).thenReturn(subType);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getString("COLUMN_NAME")).thenReturn(" blob_col ", "  ");
-        when(resultSet.getObject("SUB_TYPE")).thenReturn(2).thenReturn((Object) null);
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(dataSource.getConnection()).thenReturn(connection);
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "foo_ds", dataSource, databaseType, "schema");
         Map<String, Map<String, Integer>> actual = new FirebirdBlobColumnLoader(material).load();
-        assertThat(actual, hasKey("test_table"));
-        Map<String, Integer> actualTableColumns = actual.get("test_table");
+        assertThat(actual, hasKey("foo_tbl"));
+        Map<String, Integer> actualTableColumns = actual.get("foo_tbl");
         assertThat(actualTableColumns.size(), is(1));
-        assertThat(actualTableColumns.get("BLOB_COL"), is(2));
-        verify(preparedStatement).setString(1, "TEST_TABLE");
+        assertThat(actualTableColumns.get("BLOB_COL"), is(expectedSubType));
+        verify(preparedStatement).setString(1, "FOO_TBL");
     }
     
     @Test
-    void assertLoadReturnsEmptyWhenNoTables() throws SQLException {
-        material = new MetaDataLoaderMaterial(Collections.emptyList(), "logic_ds", dataSource,
-                TypedSPILoader.getService(DatabaseType.class, "Firebird"), "schema");
+    void assertLoadWithInvalidColumnNames() throws SQLException {
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getString("COLUMN_NAME")).thenReturn(null, "   ");
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(dataSource.getConnection()).thenReturn(connection);
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.singleton("foo_tbl"), "foo_ds", dataSource, databaseType, "schema");
         Map<String, Map<String, Integer>> actual = new FirebirdBlobColumnLoader(material).load();
-        assertTrue(actual.isEmpty());
+        assertThat(actual, hasKey("foo_tbl"));
+        assertTrue(actual.get("foo_tbl").isEmpty());
+        verify(preparedStatement).setString(1, "FOO_TBL");
+    }
+    
+    @Test
+    void assertLoadWithNoTables() throws SQLException {
+        MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, databaseType, "schema");
+        assertTrue(new FirebirdBlobColumnLoader(material).load().isEmpty());
+    }
+    
+    private static Stream<Arguments> loadWithBlobColumnArguments() {
+        return Stream.of(
+                Arguments.of("trimmed column with integer subtype", " blob_col ", 2, 2),
+                Arguments.of("upper case column with null subtype", "BLOB_COL", null, null),
+                Arguments.of("lower case column with negative subtype", "blob_col", -1, -1));
     }
 }

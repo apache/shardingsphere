@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.database.connector.firebird.metadata.data.loader;
 
+import org.apache.shardingsphere.database.connector.core.metadata.data.loader.DialectMetaDataLoader;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.type.TableMetaDataLoader;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdBlobInfoRegistry;
 import org.apache.shardingsphere.database.connector.firebird.metadata.data.FirebirdNonFixedLengthColumnSizeRegistry;
@@ -50,6 +52,8 @@ class FirebirdMetaDataLoaderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
     
+    private final DialectMetaDataLoader dialectMetaDataLoader = DatabaseTypedSPILoader.getService(DialectMetaDataLoader.class, databaseType);
+    
     @Test
     void assertLoadRefreshesSizeRegistry() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
@@ -68,7 +72,7 @@ class FirebirdMetaDataLoaderTest {
                 MockedConstruction<FirebirdBlobColumnLoader> blobColumnLoaderMocked =
                         mockConstruction(FirebirdBlobColumnLoader.class, (mock, context) -> when(mock.load()).thenReturn(allBlobColumns))) {
             tableLoaderMocked.when(() -> TableMetaDataLoader.load(dataSource, "test_table", databaseType)).thenReturn(Optional.of(tableMetaData));
-            Collection<SchemaMetaData> actual = new FirebirdMetaDataLoader().load(material);
+            Collection<SchemaMetaData> actual = dialectMetaDataLoader.load(material);
             assertThat(actual, hasSize(1));
             SchemaMetaData schema = actual.iterator().next();
             assertThat(schema.getName(), is("schema"));
