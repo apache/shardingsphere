@@ -965,6 +965,26 @@ resumeJob
     : RESUME JOB WHERE jobName EQ_ stringLiterals
     ;
 
+resumeSyncJob
+    : RESUME SYNC JOB (owner DOT_)? identifier
+    ;
+
+pauseSyncJob
+    : PAUSE SYNC JOB (owner DOT_)? identifier
+    ;
+
+createSyncJob
+    : CREATE SYNC (owner DOT_)? identifier LP_ channelDescription (COMMA_ channelDescription)* RP_ binlogDescription
+    ;
+
+channelDescription
+    : FROM tableName INTO tableName (LP_ columnNames RP_)?
+    ;
+
+binlogDescription
+    : FROM BINLOG LP_ properties RP_
+    ;
+
 prepare
     : PREPARE identifier FROM (stringLiterals | userVariable)
     ;

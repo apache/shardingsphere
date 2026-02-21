@@ -390,6 +390,7 @@ identifierKeywordsUnambiguous
     | PASSWORD
     | PASSWORD_LOCK_TIME
     | PATH
+    | PAUSE
     | PHASE
     | PLUGINS
     | PLUGIN_DIR
@@ -402,6 +403,7 @@ identifierKeywordsUnambiguous
     | PREV
     | PRIVILEGES
     | PRIVILEGE_CHECKS_USER
+    | PROC
     | PROCESSLIST
     | PROFILES
     | PROFILE

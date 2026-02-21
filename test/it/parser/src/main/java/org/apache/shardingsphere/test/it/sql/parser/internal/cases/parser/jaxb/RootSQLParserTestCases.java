@@ -30,8 +30,12 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeSyncJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseSyncJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropSqlBlockRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowProcStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadTaskStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadStatementTestCase;
@@ -537,6 +541,15 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "resume-job")
     private final List<DorisResumeJobStatementTestCase> resumeJobTestCases = new LinkedList<>();
     
+    @XmlElement(name = "resume-sync-job")
+    private final List<DorisResumeSyncJobStatementTestCase> resumeSyncJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "pause-sync-job")
+    private final List<DorisPauseSyncJobStatementTestCase> pauseSyncJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-sync-job")
+    private final List<DorisCreateSyncJobStatementTestCase> createSyncJobTestCases = new LinkedList<>();
+    
     @XmlElement(name = "alter-catalog")
     private final List<AlterCatalogStatementTestCase> alterCatalogTestCases = new LinkedList<>();
     
@@ -578,6 +591,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "show-alter-table")
     private final List<ShowAlterTableStatementTestCase> showAlterTableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-proc")
+    private final List<DorisShowProcStatementTestCase> dorisShowProcTestCases = new LinkedList<>();
     
     @XmlElement(name = "build-index")
     private final List<BuildIndexStatementTestCase> buildIndexTestCases = new LinkedList<>();

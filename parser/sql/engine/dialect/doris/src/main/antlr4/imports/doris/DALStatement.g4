@@ -497,6 +497,10 @@ showQueryStats
     : SHOW QUERY STATS (FOR databaseName | fromTable)? ALL? VERBOSE?
     ;
 
+showProc
+    : SHOW PROC string_
+    ;
+
 binlog
     : BINLOG stringLiterals
     ;
@@ -821,4 +825,5 @@ show
     | showSqlBlockRule
     | showRoutineLoadTask
     | showRoutineLoad
+    | showProc
     ;
