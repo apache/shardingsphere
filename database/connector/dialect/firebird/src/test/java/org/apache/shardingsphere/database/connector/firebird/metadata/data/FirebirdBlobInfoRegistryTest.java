@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.connector.firebird.metadata.data;
 
 import org.mockito.internal.configuration.plugins.Plugins;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -44,6 +45,11 @@ class FirebirdBlobInfoRegistryTest {
     @SuppressWarnings("unchecked")
     void setUp() throws ReflectiveOperationException {
         blobColumns = (Map<String, Map<String, Integer>>) Plugins.getMemberAccessor().get(FirebirdBlobInfoRegistry.class.getDeclaredField("BLOB_COLUMNS"), FirebirdBlobInfoRegistry.class);
+        blobColumns.clear();
+    }
+    
+    @AfterEach
+    void tearDown() {
         blobColumns.clear();
     }
     
