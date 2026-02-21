@@ -20,19 +20,24 @@ package org.apache.shardingsphere.database.connector.h2.jdbcurl;
 import org.apache.shardingsphere.database.connector.core.exception.UnrecognizedDatabaseURLException;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class H2ConnectionPropertiesParserTest {
     
-    private final ConnectionPropertiesParser parser = new H2ConnectionPropertiesParser();
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
+    
+    private final ConnectionPropertiesParser parser = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType);
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideArguments")
