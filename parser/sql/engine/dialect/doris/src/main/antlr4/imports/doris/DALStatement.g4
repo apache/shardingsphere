@@ -195,6 +195,10 @@ showBuildIndex
     : SHOW BUILD INDEX fromDatabase? showWhereClause? orderByClause? limitClause?
     ;
 
+showAlterTable
+    : SHOW ALTER TABLE (COLUMN | ROLLUP)? fromDatabase? showWhereClause? orderByClause? limitClause?
+    ;
+
 showMasterStatus
     : SHOW MASTER STATUS
     ;
@@ -774,6 +778,7 @@ show
     | showColumns
     | showIndex
     | showBuildIndex
+    | showAlterTable
     | showCreateDatabase
     | showCreateTable
     | showBinlogEvents

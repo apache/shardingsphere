@@ -99,6 +99,8 @@ public enum SQLVisitorRule {
     
     CANCEL_BUILD_INDEX("CancelBuildIndex", SQLStatementType.DDL),
     
+    CANCEL_ALTER_TABLE("CancelAlterTable", SQLStatementType.DDL),
+    
     CREATE_PROCEDURE("CreateProcedure", SQLStatementType.DDL),
     
     CREATE_PUBLICATION("CreatePublication", SQLStatementType.DDL),
@@ -442,6 +444,8 @@ public enum SQLVisitorRule {
     SHOW_FUNCTIONS("ShowFunctions", SQLStatementType.DAL),
     
     DESC_FUNCTION("DescFunction", SQLStatementType.DAL),
+    
+    SHOW_ALTER_TABLE("ShowAlterTable", SQLStatementType.DAL),
     
     SET_VARIABLE("SetVariable", SQLStatementType.DAL),
     
