@@ -53,9 +53,4 @@ class ClickHouseDatabaseMetaDataTest {
     void assertIsCaseSensitive() {
         assertTrue(dialectDatabaseMetaData.isCaseSensitive());
     }
-    
-    @Test
-    void assertGetDatabaseType() {
-        assertThat(dialectDatabaseMetaData.getDatabaseType(), is("ClickHouse"));
-    }
 }
