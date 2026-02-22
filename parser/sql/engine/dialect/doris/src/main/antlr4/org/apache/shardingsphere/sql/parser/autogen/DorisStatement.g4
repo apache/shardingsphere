@@ -87,6 +87,9 @@ execute
     | kill
     | loadStatement
     | createRoutineLoad
+    | alterRoutineLoad
+    | pauseRoutineLoad
+    | resumeRoutineLoad
     | cacheIndex
     | loadIndexInfo
     | optimizeTable

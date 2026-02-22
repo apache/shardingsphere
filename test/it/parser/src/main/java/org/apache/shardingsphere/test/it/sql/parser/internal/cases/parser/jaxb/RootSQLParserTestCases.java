@@ -41,7 +41,10 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisUnsetVariableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.catalog.AlterCatalogStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisAlterRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisCreateRoutineLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisPauseRoutineLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisResumeRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.HiveAbortStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCloneStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCreateLoadableFunctionTestCase;
@@ -622,6 +625,15 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "create-routine-load")
     private final List<DorisCreateRoutineLoadStatementTestCase> createRoutineLoadTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-routine-load")
+    private final List<DorisAlterRoutineLoadStatementTestCase> alterRoutineLoadTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "pause-routine-load")
+    private final List<DorisPauseRoutineLoadStatementTestCase> pauseRoutineLoadTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "resume-routine-load")
+    private final List<DorisResumeRoutineLoadStatementTestCase> resumeRoutineLoadTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-constraints")
     private final List<SetConstraintsStatementTestCase> setConstraintsTestCases = new LinkedList<>();
