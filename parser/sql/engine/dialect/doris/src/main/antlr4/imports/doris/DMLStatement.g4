@@ -195,6 +195,74 @@ loadStatement
     : loadDataStatement | loadXmlStatement
     ;
 
+createRoutineLoad
+    : CREATE ROUTINE LOAD (owner DOT_)? jobName (ON tableName)?
+      (WITH mergeType)?
+      (loadProperty (COMMA_ loadProperty)*)?
+      jobProperties?
+      FROM dataSource
+      dataSourceProperties?
+      (COMMENT string_)?
+    ;
+
+loadProperty
+    : columnSeparatorClause
+    | columnsClause
+    | precedingFilterClause
+    | whereClause
+    | partitionNames
+    | deleteOnClause
+    | orderByClause
+    ;
+
+jobName
+    : identifier
+    ;
+
+mergeType
+    : MERGE | DELETE
+    ;
+
+columnSeparatorClause
+    : COLUMNS TERMINATED BY string_
+    ;
+
+columnsClause
+    : COLUMNS LP_ columnMapping (COMMA_ columnMapping)* RP_
+    ;
+
+columnMapping
+    : columnName (EQ_ expr)?
+    ;
+
+precedingFilterClause
+    : PRECEDING FILTER expr
+    ;
+
+deleteOnClause
+    : DELETE ON expr
+    ;
+
+jobProperties
+    : PROPERTIES LP_ jobProperty (COMMA_ jobProperty)* RP_
+    ;
+
+jobProperty
+    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_? literals
+    ;
+
+dataSource
+    : KAFKA
+    ;
+
+dataSourceProperties
+    : LP_ dataSourceProperty (COMMA_ dataSourceProperty)* RP_
+    ;
+
+dataSourceProperty
+    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_? literals
+    ;
+
 loadDataStatement
     : LOAD DATA
       (LOW_PRIORITY | CONCURRENT)? LOCAL? 

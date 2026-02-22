@@ -15,35 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.dialect.doris;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisCreateRoutineLoadStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.dialect.doris.DorisDMLStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.dialect.mysql.MySQLDMLStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.dialect.postgresql.PostgreSQLDMLStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.StandardDMLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisCreateRoutineLoadStatementTestCase;
 
 /**
- * DML statement assert.
+ * Doris DML statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DMLStatementAssert {
+public final class DorisDMLStatementAssert {
     
     /**
-     * Assert DML statement is correct with expected parser result.
+     * Assert Doris DML statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual DML statement
      * @param expected expected parser result
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DMLStatement actual, final SQLParserTestCase expected) {
-        StandardDMLStatementAssert.assertIs(assertContext, actual, expected);
-        MySQLDMLStatementAssert.assertIs(assertContext, actual, expected);
-        PostgreSQLDMLStatementAssert.assertIs(assertContext, actual, expected);
-        DorisDMLStatementAssert.assertIs(assertContext, actual, expected);
+        if (actual instanceof DorisCreateRoutineLoadStatement) {
+            DorisCreateRoutineLoadStatementAssert.assertIs(assertContext, (DorisCreateRoutineLoadStatement) actual, (DorisCreateRoutineLoadStatementTestCase) expected);
+        }
     }
 }

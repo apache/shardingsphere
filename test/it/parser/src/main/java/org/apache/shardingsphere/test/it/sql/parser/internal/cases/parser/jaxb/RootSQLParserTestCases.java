@@ -41,6 +41,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisUnsetVariableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.catalog.AlterCatalogStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisCreateRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.HiveAbortStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCloneStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.MySQLCreateLoadableFunctionTestCase;
@@ -618,6 +619,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "show-routine-load")
     private final List<DorisShowRoutineLoadStatementTestCase> showRoutineLoadTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-routine-load")
+    private final List<DorisCreateRoutineLoadStatementTestCase> createRoutineLoadTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-constraints")
     private final List<SetConstraintsStatementTestCase> setConstraintsTestCases = new LinkedList<>();
