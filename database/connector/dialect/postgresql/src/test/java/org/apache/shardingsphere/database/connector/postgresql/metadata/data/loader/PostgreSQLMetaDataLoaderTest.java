@@ -74,6 +74,8 @@ class PostgreSQLMetaDataLoaderTest {
     
     private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_name FROM information_schema.role_table_grants";
     
+    private static final String VIEW_META_DATA_SQL = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN ('public') and table_name IN ('tbl')";
+    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
@@ -123,6 +125,8 @@ class PostgreSQLMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(BASIC_CONSTRAINT_META_DATA_SQL).executeQuery()).thenReturn(constraintResultSet);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
+        ResultSet viewResultSet = mockViewMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(VIEW_META_DATA_SQL).executeQuery()).thenReturn(viewResultSet);
         DataTypeRegistry.load(dataSource, "PostgreSQL");
         assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, "sharding_db")));
     }
@@ -152,13 +156,13 @@ class PostgreSQLMetaDataLoaderTest {
     
     private ResultSet mockTableMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, false);
-        when(result.getString("table_name")).thenReturn("tbl");
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getString("table_name")).thenReturn("ignored_tbl", "tbl", "tbl");
         when(result.getString("column_name")).thenReturn("id", "name");
-        when(result.getInt("ordinal_position")).thenReturn(1, 2);
+        when(result.getInt("ordinal_position")).thenReturn(1, 2, 3);
         when(result.getString("data_type")).thenReturn("integer", "character varying");
         when(result.getString("udt_name")).thenReturn("int4", "varchar");
-        when(result.getString("column_default")).thenReturn("nextval('id_seq'::regclass)", "");
+        when(result.getString("column_default")).thenReturn("nextval('id_seq'::regclass)", null);
         when(result.getString("table_schema")).thenReturn("public", "public");
         when(result.getString("is_nullable")).thenReturn("NO", "YES");
         return result;
@@ -184,12 +188,20 @@ class PostgreSQLMetaDataLoaderTest {
     
     private ResultSet mockAdvanceIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getString("table_name")).thenReturn("tbl", "tbl", "tbl");
+        when(result.getString("column_name")).thenReturn("id", "id", "id");
+        when(result.getString("index_name")).thenReturn("missing_index", "not_matched", "id");
+        when(result.getString("index_schema")).thenReturn("ignored_schema", "public", "public");
+        when(result.getBoolean("is_unique")).thenReturn(false, true, true);
+        return result;
+    }
+    
+    private ResultSet mockViewMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
+        when(result.getString("table_schema")).thenReturn("public");
         when(result.getString("table_name")).thenReturn("tbl");
-        when(result.getString("column_name")).thenReturn("id");
-        when(result.getString("index_name")).thenReturn("id");
-        when(result.getString("index_schema")).thenReturn("public");
-        when(result.getBoolean("is_unique")).thenReturn(true);
         return result;
     }
     
