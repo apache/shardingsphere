@@ -60,14 +60,16 @@ class OracleMetaDataLoaderTest {
     
     private static final String ALL_VIEWS_SQL = "SELECT VIEW_NAME FROM ALL_VIEWS WHERE OWNER = ? AND VIEW_NAME IN ('tbl')";
     
-    private static final String ALL_TAB_COLUMNS_SQL_CONDITION4 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, NULLABLE, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN , IDENTITY_COLUMN, COLLATION"
-            + " FROM ALL_TAB_COLS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
+    private static final String ALL_TAB_COLUMNS_SQL_WITH_IDENTITY_AND_COLLATION =
+            "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, NULLABLE, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN , IDENTITY_COLUMN, COLLATION"
+                    + " FROM ALL_TAB_COLS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
-    private static final String ALL_TAB_COLUMNS_SQL_CONDITION5 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, NULLABLE, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN , IDENTITY_COLUMN "
+    private static final String ALL_TAB_COLUMNS_SQL_WITH_IDENTITY = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, NULLABLE, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN , IDENTITY_COLUMN "
             + "FROM ALL_TAB_COLS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
-    private static final String ALL_TAB_COLUMNS_SQL_CONDITION6 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, NULLABLE, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN  FROM ALL_TAB_COLS"
-            + " WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
+    private static final String ALL_TAB_COLUMNS_SQL_WITHOUT_IDENTITY_AND_COLLATION =
+            "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, NULLABLE, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN  FROM ALL_TAB_COLS"
+                    + " WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
     
@@ -106,7 +108,7 @@ class OracleMetaDataLoaderTest {
         ResultSet indexColumnMetaDataResultSet = mockIndexColumnMetaDataResultSetWithMultipleIndexes();
         ResultSet viewMetaDataResultSet = mockViewMetaDataResultSet();
         ResultSet primaryKeysResultSet = mockPrimaryKeysMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_CONDITION4).executeQuery()).thenReturn(tableMetaDataResultSet);
+        when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_WITH_IDENTITY_AND_COLLATION).executeQuery()).thenReturn(tableMetaDataResultSet);
         when(dataSource.getConnection().prepareStatement(ALL_INDEXES_SQL).executeQuery()).thenReturn(indexMetaDataResultSet);
         when(dataSource.getConnection().prepareStatement(ALL_INDEX_COLUMNS_SQL_WITH_MULTIPLE_INDEXES).executeQuery()).thenReturn(indexColumnMetaDataResultSet);
         when(dataSource.getConnection().prepareStatement(ALL_VIEWS_SQL).executeQuery()).thenReturn(viewMetaDataResultSet);
@@ -127,7 +129,7 @@ class OracleMetaDataLoaderTest {
         DataSource dataSource = mockDataSource();
         ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet();
         ResultSet primaryKeysResultSet = mockPrimaryKeysMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_CONDITION4).executeQuery()).thenReturn(tableMetaDataResultSet);
+        when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_WITH_IDENTITY_AND_COLLATION).executeQuery()).thenReturn(tableMetaDataResultSet);
         when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeysResultSet);
         when(dataSource.getConnection().getMetaData().getUserName()).thenReturn("TEST");
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
@@ -220,12 +222,12 @@ class OracleMetaDataLoaderTest {
     
     private String getTableMetaDataSQL(final int majorVersion, final int minorVersion) {
         if (majorVersion >= 12 && minorVersion >= 2) {
-            return ALL_TAB_COLUMNS_SQL_CONDITION4;
+            return ALL_TAB_COLUMNS_SQL_WITH_IDENTITY_AND_COLLATION;
         }
         if (majorVersion >= 12 && minorVersion == 1) {
-            return ALL_TAB_COLUMNS_SQL_CONDITION5;
+            return ALL_TAB_COLUMNS_SQL_WITH_IDENTITY;
         }
-        return ALL_TAB_COLUMNS_SQL_CONDITION6;
+        return ALL_TAB_COLUMNS_SQL_WITHOUT_IDENTITY_AND_COLLATION;
     }
     
     private ColumnMetaData getExpectedFirstColumnMetaData(final int majorVersion, final int minorVersion, final boolean withPrimaryKey) {
