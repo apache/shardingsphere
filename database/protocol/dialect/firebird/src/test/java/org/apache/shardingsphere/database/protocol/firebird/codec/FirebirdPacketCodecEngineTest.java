@@ -88,7 +88,7 @@ class FirebirdPacketCodecEngineTest {
     void assertDecodeSingleAllocateStatement() {
         ByteBuf in = mock(ByteBuf.class);
         ByteBuf slice = mock(ByteBuf.class);
-        when(in.readableBytes()).thenReturn(8, 0);
+        when(in.readableBytes()).thenReturn(0);
         when(in.readerIndex()).thenReturn(0);
         when(in.getInt(0)).thenReturn(FirebirdCommandPacketType.ALLOCATE_STATEMENT.getValue());
         when(in.readRetainedSlice(8)).thenReturn(slice);
@@ -104,7 +104,7 @@ class FirebirdPacketCodecEngineTest {
         ByteBuf in = mock(ByteBuf.class);
         ByteBuf slice1 = mock(ByteBuf.class);
         ByteBuf slice2 = mock(ByteBuf.class);
-        when(in.readableBytes()).thenReturn(16, 8, 8, 0);
+        when(in.readableBytes()).thenReturn(8, 0);
         when(in.readerIndex()).thenReturn(0);
         when(in.getInt(0)).thenReturn(FirebirdCommandPacketType.ALLOCATE_STATEMENT.getValue());
         when(in.readRetainedSlice(8)).thenReturn(slice1, slice2);
@@ -123,7 +123,7 @@ class FirebirdPacketCodecEngineTest {
         when(in.getInt(0)).thenReturn(FirebirdCommandPacketType.INFO_REQUEST.getValue());
         when(in.writerIndex()).thenReturn(8);
         when(in.capacity()).thenReturn(16);
-        when(in.isReadable()).thenReturn(true, true, false);
+        when(in.isReadable()).thenReturn(true, false);
         when(in.retainedSlice(anyInt(), anyInt())).thenReturn(payloadSlice);
         when(payloadSlice.release()).thenReturn(true);
         when(in.readRetainedSlice(8)).thenReturn(slice);
@@ -191,7 +191,7 @@ class FirebirdPacketCodecEngineTest {
         when(in.getInt(0)).thenReturn(FirebirdCommandPacketType.PREPARE_STATEMENT.getValue());
         when(in.writerIndex()).thenReturn(8);
         when(in.capacity()).thenReturn(8);
-        when(in.isReadable()).thenReturn(true, true, false);
+        when(in.isReadable()).thenReturn(true, false);
         when(in.retainedSlice(anyInt(), anyInt())).thenReturn(payloadSlice);
         when(payloadSlice.release()).thenReturn(true);
         when(in.readRetainedSlice(8)).thenReturn(slice);

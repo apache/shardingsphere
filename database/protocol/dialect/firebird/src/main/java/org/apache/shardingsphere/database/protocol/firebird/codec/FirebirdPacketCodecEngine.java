@@ -54,7 +54,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     
     @Override
     public void decode(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
-        if (pendingMessages.isEmpty() && isValidHeader(in.readableBytes())) {
+        if (pendingMessages.isEmpty()) {
             int type = in.getInt(in.readerIndex());
             pendingPacketType = FirebirdCommandPacketType.valueOf(type);
             if (pendingPacketType == FirebirdCommandPacketType.ALLOCATE_STATEMENT) {
@@ -76,9 +76,6 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
     }
     
     private void addToBuffer(final ChannelHandlerContext context, final ByteBuf in, final List<Object> out) {
-        if (!in.isReadable()) {
-            return;
-        }
         ByteBuf buffer = mergePendingMessages(context, in);
         boolean shouldRelease = buffer != in;
         try {
