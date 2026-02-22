@@ -20,17 +20,25 @@ package org.apache.shardingsphere.database.connector.presto.metadata.database;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PrestoDatabaseMetaDataTest {
     
-    private final DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, TypedSPILoader.getService(DatabaseType.class, "Presto"));
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Presto");
+    
+    private final DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
     
     @Test
     void assertGetQuoteCharacter() {
@@ -38,7 +46,22 @@ class PrestoDatabaseMetaDataTest {
     }
     
     @Test
+    void assertGetIdentifierPatternType() {
+        assertThat(dialectDatabaseMetaData.getIdentifierPatternType(), is(IdentifierPatternType.KEEP_ORIGIN));
+    }
+    
+    @Test
     void assertGetDefaultNullsOrderType() {
         assertThat(dialectDatabaseMetaData.getDefaultNullsOrderType(), is(NullsOrderType.LOW));
+    }
+    
+    @Test
+    void assertGetSchemaOption() {
+        DialectSchemaOption actual = dialectDatabaseMetaData.getSchemaOption();
+        assertThat(actual, isA(DefaultSchemaOption.class));
+        assertFalse(actual.isSchemaAvailable());
+        assertTrue(actual.getDefaultSchema().isPresent());
+        assertThat(actual.getDefaultSchema().get(), is("default"));
+        assertFalse(actual.getDefaultSystemSchema().isPresent());
     }
 }
