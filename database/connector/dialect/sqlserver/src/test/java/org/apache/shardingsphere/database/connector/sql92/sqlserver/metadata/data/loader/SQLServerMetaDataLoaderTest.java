@@ -28,18 +28,23 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -69,42 +74,37 @@ class SQLServerMetaDataLoaderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
     
-    @Test
-    void assertLoadWithTablesWithHighVersion() throws SQLException {
-        DataSource dataSource = mockDataSource();
-        ResultSet resultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(LOAD_COLUMN_META_DATA_WITH_TABLES_HIGH_VERSION).executeQuery()).thenReturn(resultSet);
-        ResultSet indexResultSet = mockIndexMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
-                .executeQuery()).thenReturn(indexResultSet);
-        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(15);
-        DataTypeRegistry.load(dataSource, "SQLServer");
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
-                new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, "sharding_db"));
-        assertTableMetaDataMap(actual);
-        TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
-        Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, false, true, true, true, false, false));
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true));
-    }
+    private final DialectMetaDataLoader dialectMetaDataLoader = DatabaseTypedSPILoader.getService(DialectMetaDataLoader.class, databaseType);
     
+    @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
     @Test
-    void assertLoadWithTablesWithLowVersion() throws SQLException {
+    void assertLoadWithEmptyColumnMetaData() throws SQLException {
         DataSource dataSource = mockDataSource();
-        ResultSet resultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(LOAD_COLUMN_META_DATA_WITH_TABLES_LOW_VERSION).executeQuery()).thenReturn(resultSet);
-        ResultSet indexResultSet = mockIndexMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
-                .executeQuery()).thenReturn(indexResultSet);
+        ResultSet tableMetaDataResultSet = mock(ResultSet.class);
+        when(tableMetaDataResultSet.next()).thenReturn(false);
+        when(dataSource.getConnection().prepareStatement(LOAD_COLUMN_META_DATA_WITH_TABLES_LOW_VERSION).executeQuery()).thenReturn(tableMetaDataResultSet);
         when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(14);
         DataTypeRegistry.load(dataSource, "SQLServer");
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
+        Collection<SchemaMetaData> actual = dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, "sharding_db"));
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.iterator().next().getTables().isEmpty());
+    }
+    
+    @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("loadArguments")
+    void assertLoad(final String name, final String tableMetaDataSQL, final int majorVersion, final boolean includeCompositeIndex,
+                    final boolean expectedSecondColumnVisible, final Collection<String> expectedIndexColumns) throws SQLException {
+        DataSource dataSource = mockDataSource();
+        ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(tableMetaDataSQL).executeQuery()).thenReturn(tableMetaDataResultSet);
+        ResultSet indexMetaDataResultSet = includeCompositeIndex ? mockCompositeIndexMetaDataResultSet() : mockSimpleIndexMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA).executeQuery()).thenReturn(indexMetaDataResultSet);
+        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(majorVersion);
+        DataTypeRegistry.load(dataSource, "SQLServer");
+        Collection<SchemaMetaData> actual = dialectMetaDataLoader.load(
                 new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, "sharding_db"));
-        assertTableMetaDataMap(actual);
-        TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
-        Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, false, true, true, true, false, false));
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, true, false, true));
+        assertTableMetaData(actual, expectedSecondColumnVisible, expectedIndexColumns);
     }
     
     private DataSource mockDataSource() throws SQLException {
@@ -128,15 +128,15 @@ class SQLServerMetaDataLoaderTest {
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
         when(result.getString("COLUMN_NAME")).thenReturn("id", "name");
         when(result.getString("DATA_TYPE")).thenReturn("int", "varchar");
-        when(result.getString("COLUMN_KEY")).thenReturn("1", "");
+        when(result.getString("IS_PRIMARY_KEY")).thenReturn("1", "");
         when(result.getString("IS_IDENTITY")).thenReturn("1", "");
         when(result.getString("IS_HIDDEN")).thenReturn("0", "1");
-        when(result.getString("COLLATION_NAME")).thenReturn("SQL_Latin1_General_CP1_CS_AS", "utf8");
+        when(result.getString("COLLATION_NAME")).thenReturn("SQL_Latin1_General_CP1_CS_AS", (String) null);
         when(result.getString("IS_NULLABLE")).thenReturn("0", "1");
         return result;
     }
     
-    private ResultSet mockIndexMetaDataResultSet() throws SQLException {
+    private ResultSet mockSimpleIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
         when(result.getString("INDEX_NAME")).thenReturn("id");
@@ -146,21 +146,31 @@ class SQLServerMetaDataLoaderTest {
         return result;
     }
     
-    private DialectMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectMetaDataLoader> result = DatabaseTypedSPILoader.findService(DialectMetaDataLoader.class, TypedSPILoader.getService(DatabaseType.class, "SQLServer"));
-        assertTrue(result.isPresent());
-        return result.get();
+    private ResultSet mockCompositeIndexMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("INDEX_NAME")).thenReturn("id", "id");
+        when(result.getString("TABLE_NAME")).thenReturn("tbl", "tbl");
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "name");
+        when(result.getString("IS_UNIQUE")).thenReturn("1", "1");
+        return result;
     }
     
-    private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList) {
+    private void assertTableMetaData(final Collection<SchemaMetaData> schemaMetaDataList, final boolean expectedSecondColumnVisible, final Collection<String> expectedIndexColumns) {
         assertThat(schemaMetaDataList.size(), is(1));
-        TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().iterator().next();
+        Collection<TableMetaData> tables = schemaMetaDataList.iterator().next().getTables();
+        assertThat(tables.size(), is(1));
+        TableMetaData actualTableMetaData = tables.iterator().next();
+        assertThat(actualTableMetaData.getName(), is("tbl"));
         assertThat(actualTableMetaData.getColumns().size(), is(2));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
-        Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
-        IndexMetaData expected = new IndexMetaData("id", Collections.singletonList("id"));
-        expected.setUnique(true);
-        assertIndexMetaData(indexesIterator.next(), expected);
+        List<ColumnMetaData> columnsIterator = new ArrayList<>(actualTableMetaData.getColumns());
+        assertColumnMetaData(columnsIterator.get(0), new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false));
+        assertColumnMetaData(columnsIterator.get(1), new ColumnMetaData("name", Types.VARCHAR, false, false, false, expectedSecondColumnVisible, false, true));
+        List<IndexMetaData> indexes = new ArrayList<>(actualTableMetaData.getIndexes());
+        IndexMetaData expectedIndexMetaData = new IndexMetaData("id", expectedIndexColumns);
+        expectedIndexMetaData.setUnique(true);
+        assertIndexMetaData(indexes.get(0), expectedIndexMetaData);
     }
     
     private void assertColumnMetaData(final ColumnMetaData actual, final ColumnMetaData expected) {
@@ -178,5 +188,12 @@ class SQLServerMetaDataLoaderTest {
         assertThat(actual.getName(), is(expected.getName()));
         assertThat(actual.getColumns(), is(expected.getColumns()));
         assertThat(actual.isUnique(), is(expected.isUnique()));
+    }
+    
+    private static Stream<Arguments> loadArguments() {
+        return Stream.of(
+                Arguments.of("load with hidden column on high version", LOAD_COLUMN_META_DATA_WITH_TABLES_HIGH_VERSION, 15, false, false, Collections.singletonList("id")),
+                Arguments.of("load with hidden column ignored on low version", LOAD_COLUMN_META_DATA_WITH_TABLES_LOW_VERSION, 14, false, true, Collections.singletonList("id")),
+                Arguments.of("load with composite index", LOAD_COLUMN_META_DATA_WITH_TABLES_HIGH_VERSION, 15, true, false, Arrays.asList("id", "name")));
     }
 }
