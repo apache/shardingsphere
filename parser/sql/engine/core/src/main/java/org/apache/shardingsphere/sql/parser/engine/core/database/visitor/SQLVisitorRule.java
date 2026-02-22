@@ -425,6 +425,12 @@ public enum SQLVisitorRule {
     
     CREATE_ROUTINE_LOAD("CreateRoutineLoad", SQLStatementType.DML),
     
+    ALTER_ROUTINE_LOAD("AlterRoutineLoad", SQLStatementType.DML),
+    
+    PAUSE_ROUTINE_LOAD("PauseRoutineLoad", SQLStatementType.DML),
+    
+    RESUME_ROUTINE_LOAD("ResumeRoutineLoad", SQLStatementType.DML),
+    
     SHOW_CREATE_TABLE("ShowCreateTable", SQLStatementType.DAL),
     
     SHOW_OTHER("ShowOther", SQLStatementType.DAL),

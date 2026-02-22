@@ -20,10 +20,16 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisAlterRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisCreateRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisPauseRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisResumeRoutineLoadStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisAlterRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisCreateRoutineLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisPauseRoutineLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisResumeRoutineLoadStatementTestCase;
 
 /**
  * Doris DML statement assert.
@@ -41,6 +47,12 @@ public final class DorisDMLStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final DMLStatement actual, final SQLParserTestCase expected) {
         if (actual instanceof DorisCreateRoutineLoadStatement) {
             DorisCreateRoutineLoadStatementAssert.assertIs(assertContext, (DorisCreateRoutineLoadStatement) actual, (DorisCreateRoutineLoadStatementTestCase) expected);
+        } else if (actual instanceof DorisAlterRoutineLoadStatement) {
+            DorisAlterRoutineLoadStatementAssert.assertIs(assertContext, (DorisAlterRoutineLoadStatement) actual, (DorisAlterRoutineLoadStatementTestCase) expected);
+        } else if (actual instanceof DorisPauseRoutineLoadStatement) {
+            DorisPauseRoutineLoadStatementAssert.assertIs(assertContext, (DorisPauseRoutineLoadStatement) actual, (DorisPauseRoutineLoadStatementTestCase) expected);
+        } else if (actual instanceof DorisResumeRoutineLoadStatement) {
+            DorisResumeRoutineLoadStatementAssert.assertIs(assertContext, (DorisResumeRoutineLoadStatement) actual, (DorisResumeRoutineLoadStatementTestCase) expected);
         }
     }
 }
