@@ -22,18 +22,44 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class PostgreSQLSystemDatabaseTest {
     
-    private final DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
+    private final DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, databaseType);
+    
+    @Test
+    void assertGetSystemDatabases() {
+        assertThat(systemDatabase.getSystemDatabases(), is(Collections.singleton("postgres")));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getSystemSchemasWithDatabaseNameArguments")
+    void assertGetSystemSchemasWithDatabaseName(final String name, final String databaseName, final Collection<String> expectedSchemas) {
+        assertThat(systemDatabase.getSystemSchemas(databaseName), is(expectedSchemas));
+    }
     
     @Test
     void assertGetSystemSchemas() {
         assertThat(systemDatabase.getSystemSchemas(), is(Arrays.asList("information_schema", "pg_catalog", "shardingsphere")));
+    }
+    
+    private static Stream<Arguments> getSystemSchemasWithDatabaseNameArguments() {
+        return Stream.of(
+                Arguments.of("existing database", "postgres", Arrays.asList("information_schema", "pg_catalog", "shardingsphere")),
+                Arguments.of("non-existing database", "foo", Collections.emptyList()),
+                Arguments.of("null database", null, Collections.emptyList()));
     }
 }
