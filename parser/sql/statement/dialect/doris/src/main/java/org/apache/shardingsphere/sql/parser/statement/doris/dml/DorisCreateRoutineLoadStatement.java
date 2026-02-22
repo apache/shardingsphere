@@ -23,7 +23,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnMappingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
@@ -52,7 +52,7 @@ public final class DorisCreateRoutineLoadStatement extends DMLStatement {
     
     private String columnSeparator;
     
-    private final Collection<ColumnSegment> columns = new LinkedList<>();
+    private final Collection<ColumnMappingSegment> columnMappings = new LinkedList<>();
     
     private final Collection<PartitionSegment> partitions = new LinkedList<>();
     

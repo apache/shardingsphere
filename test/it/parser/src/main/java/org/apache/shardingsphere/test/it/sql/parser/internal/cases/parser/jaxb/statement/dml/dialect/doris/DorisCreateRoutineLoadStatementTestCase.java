@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumnMapping;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedPartition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.orderby.ExpectedOrderByClause;
@@ -59,8 +59,8 @@ public final class DorisCreateRoutineLoadStatementTestCase extends SQLParserTest
     @XmlAttribute(name = "column-separator")
     private String columnSeparator;
     
-    @XmlElement(name = "column")
-    private final List<ExpectedColumn> columns = new LinkedList<>();
+    @XmlElement(name = "column-mapping")
+    private final List<ExpectedColumnMapping> columnMappings = new LinkedList<>();
     
     @XmlElement(name = "partition")
     private final List<ExpectedPartition> partitions = new LinkedList<>();

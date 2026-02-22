@@ -22,6 +22,8 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CallContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnsClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnMappingContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateRoutineLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DataSourcePropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DoStatementContext;
@@ -44,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.Partition
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnMappingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
@@ -142,9 +145,7 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
                     result.setColumnSeparator(SQLUtils.getExactlyValue(loadPropCtx.columnSeparatorClause().string_().getText()));
                 }
                 if (null != loadPropCtx.columnsClause()) {
-                    for (int j = 0; j < loadPropCtx.columnsClause().columnMapping().size(); j++) {
-                        result.getColumns().add((ColumnSegment) visit(loadPropCtx.columnsClause().columnMapping(j).columnName()));
-                    }
+                    processColumnMappings(loadPropCtx.columnsClause(), result);
                 }
                 if (null != loadPropCtx.precedingFilterClause()) {
                     result.setPrecedingFilter((ExpressionSegment) visit(loadPropCtx.precedingFilterClause().expr()));
@@ -196,6 +197,18 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
+    }
+    
+    private void processColumnMappings(final ColumnsClauseContext columnsClauseCtx, final DorisCreateRoutineLoadStatement statement) {
+        for (int i = 0; i < columnsClauseCtx.columnMapping().size(); i++) {
+            ColumnMappingContext mappingCtx = columnsClauseCtx.columnMapping(i);
+            ColumnSegment column = (ColumnSegment) visit(mappingCtx.columnName());
+            ColumnMappingSegment columnMapping = new ColumnMappingSegment(mappingCtx.start.getStartIndex(), mappingCtx.stop.getStopIndex(), column);
+            if (null != mappingCtx.expr()) {
+                columnMapping.setMappingExpression((ExpressionSegment) visit(mappingCtx.expr()));
+            }
+            statement.getColumnMappings().add(columnMapping);
+        }
     }
     
     private String getPropertyKey(final IdentifierContext identifier, final TerminalNode singleQuotedText, final TerminalNode doubleQuotedText) {

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnMappingSegment;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisCreateRoutineLoadStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
@@ -32,6 +32,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.own
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.partition.PartitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.where.WhereClauseAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumnMapping;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.PropertyTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisCreateRoutineLoadStatementTestCase;
 import org.hamcrest.CoreMatchers;
@@ -56,7 +57,7 @@ public final class DorisCreateRoutineLoadStatementAssert {
         assertTable(assertContext, actual, expected);
         assertMergeType(assertContext, actual, expected);
         assertColumnSeparator(assertContext, actual, expected);
-        assertColumns(assertContext, actual, expected);
+        assertColumnMappings(assertContext, actual, expected);
         assertPartitions(assertContext, actual, expected);
         assertPrecedingFilter(assertContext, actual, expected);
         assertWhere(assertContext, actual, expected);
@@ -95,15 +96,23 @@ public final class DorisCreateRoutineLoadStatementAssert {
         }
     }
     
-    private static void assertColumns(final SQLCaseAssertContext assertContext, final DorisCreateRoutineLoadStatement actual, final DorisCreateRoutineLoadStatementTestCase expected) {
-        if (!expected.getColumns().isEmpty()) {
-            MatcherAssert.assertThat(assertContext.getText("Columns size does not match: "), actual.getColumns().size(), CoreMatchers.is(expected.getColumns().size()));
+    private static void assertColumnMappings(final SQLCaseAssertContext assertContext, final DorisCreateRoutineLoadStatement actual, final DorisCreateRoutineLoadStatementTestCase expected) {
+        if (!expected.getColumnMappings().isEmpty()) {
+            MatcherAssert.assertThat(assertContext.getText("Column mappings size does not match: "), actual.getColumnMappings().size(), CoreMatchers.is(expected.getColumnMappings().size()));
             int count = 0;
-            for (ColumnSegment each : actual.getColumns()) {
-                ColumnAssert.assertIs(assertContext, each, expected.getColumns().get(count));
+            for (ColumnMappingSegment each : actual.getColumnMappings()) {
+                assertColumnMapping(assertContext, each, expected.getColumnMappings().get(count));
                 count++;
             }
         }
+    }
+    
+    private static void assertColumnMapping(final SQLCaseAssertContext assertContext, final ColumnMappingSegment actual, final ExpectedColumnMapping expected) {
+        ColumnAssert.assertIs(assertContext, actual.getColumn(), expected.getColumn());
+        if (null != expected.getMappingExpression()) {
+            ExpressionAssert.assertExpression(assertContext, actual.getMappingExpression().orElse(null), expected.getMappingExpression());
+        }
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     
     private static void assertPartitions(final SQLCaseAssertContext assertContext, final DorisCreateRoutineLoadStatement actual, final DorisCreateRoutineLoadStatementTestCase expected) {
