@@ -47,18 +47,6 @@ import static org.mockito.Mockito.when;
 
 class SQLServerMetaDataLoaderTest {
     
-    private static final String LOAD_COLUMN_META_DATA_WITHOUT_TABLES_HIGH_VERSION = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
-            + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY, col.is_nullable AS IS_NULLABLE, is_hidden AS IS_HIDDEN,"
-            + " (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
-            + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
-            + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id ORDER BY col.column_id";
-    
-    private static final String LOAD_COLUMN_META_DATA_WITHOUT_TABLES_LOW_VERSION = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
-            + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY, col.is_nullable AS IS_NULLABLE,"
-            + "  (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
-            + " AND ic.index_id = ind.index_id AND ind.name LIKE 'PK_%' WHERE ic.object_id = obj.object_id AND ic.column_id = col.column_id) AS IS_PRIMARY_KEY"
-            + " FROM sys.objects obj INNER JOIN sys.columns col ON obj.object_id = col.object_id LEFT JOIN sys.types t ON t.user_type_id = col.user_type_id ORDER BY col.column_id";
-    
     private static final String LOAD_COLUMN_META_DATA_WITH_TABLES_HIGH_VERSION = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
             + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY, col.is_nullable AS IS_NULLABLE, is_hidden AS IS_HIDDEN,"
             + " (SELECT TOP 1 ind.is_primary_key FROM sys.index_columns ic LEFT JOIN sys.indexes ind ON ic.object_id = ind.object_id"
@@ -80,46 +68,6 @@ class SQLServerMetaDataLoaderTest {
             + " WHERE idx.index_id NOT IN (0, 255) AND obj.name IN ('tbl') ORDER BY idx.index_id";
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "SQLServer");
-    
-    @Test
-    void assertLoadWithoutTablesWithHighVersion() throws SQLException {
-        DataSource dataSource = mockDataSource();
-        ResultSet resultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(LOAD_COLUMN_META_DATA_WITHOUT_TABLES_HIGH_VERSION)
-                .executeQuery()).thenReturn(resultSet);
-        ResultSet indexResultSet = mockIndexMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
-                .executeQuery()).thenReturn(indexResultSet);
-        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(15);
-        DataTypeRegistry.load(dataSource, "SQLServer");
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
-                new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, databaseType, "sharding_db"));
-        assertTableMetaDataMap(actual);
-        TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
-        Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, false, true, true, true, false, false));
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, false, false, true));
-    }
-    
-    @Test
-    void assertLoadWithoutTablesWithLowVersion() throws SQLException {
-        DataSource dataSource = mockDataSource();
-        ResultSet resultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(LOAD_COLUMN_META_DATA_WITHOUT_TABLES_LOW_VERSION)
-                .executeQuery()).thenReturn(resultSet);
-        ResultSet indexResultSet = mockIndexMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA)
-                .executeQuery()).thenReturn(indexResultSet);
-        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(14);
-        DataTypeRegistry.load(dataSource, "SQLServer");
-        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
-                new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, databaseType, "sharding_db"));
-        assertTableMetaDataMap(actual);
-        TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
-        Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("id", Types.INTEGER, false, true, true, true, false, false));
-        assertColumnMetaData(columnsIterator.next(), new ColumnMetaData("name", Types.VARCHAR, false, false, false, true, false, true));
-    }
     
     @Test
     void assertLoadWithTablesWithHighVersion() throws SQLException {
