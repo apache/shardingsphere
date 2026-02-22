@@ -17,26 +17,50 @@
 
 package org.apache.shardingsphere.database.connector.postgresql.metadata.database;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLDataTypeOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PostgreSQLDatabaseMetaDataTest {
     
-    private final DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
+    private final DialectDatabaseMetaData dialectDatabaseMetaData = DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType);
     
     @Test
     void assertGetQuoteCharacter() {
         assertThat(dialectDatabaseMetaData.getQuoteCharacter(), is(QuoteCharacter.QUOTE));
+    }
+    
+    @Test
+    void assertGetIdentifierPatternType() {
+        assertThat(dialectDatabaseMetaData.getIdentifierPatternType(), is(IdentifierPatternType.LOWER_CASE));
+    }
+    
+    @Test
+    void assertGetDefaultNullsOrderType() {
+        assertThat(dialectDatabaseMetaData.getDefaultNullsOrderType(), is(NullsOrderType.HIGH));
+    }
+    
+    @Test
+    void assertGetDataTypeOption() {
+        assertThat(dialectDatabaseMetaData.getDataTypeOption(), isA(PostgreSQLDataTypeOption.class));
     }
     
     @Test
@@ -47,5 +71,35 @@ class PostgreSQLDatabaseMetaDataTest {
     @Test
     void assertGetDefaultSchema() {
         assertThat(dialectDatabaseMetaData.getSchemaOption().getDefaultSchema(), is(Optional.of("public")));
+    }
+    
+    @Test
+    void assertGetIndexOption() {
+        assertTrue(dialectDatabaseMetaData.getIndexOption().isSchemaUniquenessLevel());
+    }
+    
+    @Test
+    void assertGetTransactionOption() {
+        DialectTransactionOption actual = dialectDatabaseMetaData.getTransactionOption();
+        assertFalse(actual.isSupportGlobalCSN());
+        assertFalse(actual.isDDLNeedImplicitCommit());
+        assertFalse(actual.isSupportAutoCommitInNestedTransaction());
+        assertTrue(actual.isSupportDDLInXATransaction());
+        assertFalse(actual.isSupportMetaDataRefreshInTransaction());
+        assertThat(actual.getDefaultIsolationLevel(), is(Connection.TRANSACTION_READ_COMMITTED));
+        assertTrue(actual.isReturnRollbackStatementWhenCommitFailed());
+        assertTrue(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
+        assertThat(actual.getXaDriverClassNames().size(), is(1));
+        assertTrue(actual.getXaDriverClassNames().contains("org.postgresql.xa.PGXADataSource"));
+    }
+    
+    @Test
+    void assertGetProtocolVersionOption() {
+        assertThat(dialectDatabaseMetaData.getProtocolVersionOption().getDefaultVersion(), is("12.3"));
+    }
+    
+    @Test
+    void assertIsCaseSensitive() {
+        assertTrue(dialectDatabaseMetaData.isCaseSensitive());
     }
 }

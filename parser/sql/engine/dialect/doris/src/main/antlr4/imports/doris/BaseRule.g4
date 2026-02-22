@@ -610,6 +610,7 @@ identifierKeywordsAmbiguous3Roles
     : EVENT
     | FILE
     | JOB
+    | KAFKA
     | NONE
     | PROCESS
     | PROXY

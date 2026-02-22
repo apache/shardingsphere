@@ -17,15 +17,23 @@
 
 package org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.type;
 
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CallContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnsClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnMappingContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateRoutineLoadContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DataSourcePropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.HandlerStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ImportStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IndexHintContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.JobPropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadDataStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadPropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadXmlStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowClauseContext;
@@ -34,17 +42,28 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowI
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowingClauseContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnMappingSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.IndexHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.CallStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisCreateRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLHandlerStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLImportStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
@@ -99,6 +118,107 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitLoadXmlStatement(final LoadXmlStatementContext ctx) {
         return new MySQLLoadXMLStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+    }
+    
+    @Override
+    public ASTNode visitCreateRoutineLoad(final CreateRoutineLoadContext ctx) {
+        DorisCreateRoutineLoadStatement result = new DorisCreateRoutineLoadStatement(getDatabaseType());
+        if (null != ctx.jobName()) {
+            JobNameSegment jobName = new JobNameSegment(ctx.jobName().start.getStartIndex(), ctx.jobName().stop.getStopIndex(), new IdentifierValue(ctx.jobName().getText()));
+            if (null != ctx.owner()) {
+                OwnerSegment owner = (OwnerSegment) visit(ctx.owner());
+                jobName.setOwner(owner);
+                result.setDatabase(new DatabaseSegment(ctx.owner().start.getStartIndex(), ctx.owner().stop.getStopIndex(), new IdentifierValue(ctx.owner().getText())));
+            }
+            result.setJobName(jobName);
+        }
+        if (null != ctx.tableName()) {
+            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        }
+        if (null != ctx.mergeType()) {
+            result.setMergeType(ctx.mergeType().getText());
+        }
+        if (null != ctx.loadProperty()) {
+            for (int i = 0; i < ctx.loadProperty().size(); i++) {
+                LoadPropertyContext loadPropCtx = ctx.loadProperty(i);
+                if (null != loadPropCtx.columnSeparatorClause()) {
+                    result.setColumnSeparator(SQLUtils.getExactlyValue(loadPropCtx.columnSeparatorClause().string_().getText()));
+                }
+                if (null != loadPropCtx.columnsClause()) {
+                    processColumnMappings(loadPropCtx.columnsClause(), result);
+                }
+                if (null != loadPropCtx.precedingFilterClause()) {
+                    result.setPrecedingFilter((ExpressionSegment) visit(loadPropCtx.precedingFilterClause().expr()));
+                }
+                if (null != loadPropCtx.whereClause()) {
+                    result.setWhere((WhereSegment) visit(loadPropCtx.whereClause()));
+                }
+                if (null != loadPropCtx.partitionNames()) {
+                    for (IdentifierContext each : loadPropCtx.partitionNames().identifier()) {
+                        PartitionSegment partitionSegment = new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each));
+                        result.getPartitions().add(partitionSegment);
+                    }
+                }
+                if (null != loadPropCtx.deleteOnClause()) {
+                    result.setDeleteOn((ExpressionSegment) visit(loadPropCtx.deleteOnClause().expr()));
+                }
+                if (null != loadPropCtx.orderByClause()) {
+                    result.setOrderBy((OrderBySegment) visit(loadPropCtx.orderByClause()));
+                }
+            }
+        }
+        if (null != ctx.jobProperties()) {
+            PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.jobProperties().start.getStartIndex(), ctx.jobProperties().stop.getStopIndex());
+            for (int i = 0; i < ctx.jobProperties().jobProperty().size(); i++) {
+                JobPropertyContext propertyCtx = ctx.jobProperties().jobProperty(i);
+                String key = getPropertyKey(propertyCtx.identifier(), propertyCtx.SINGLE_QUOTED_TEXT(), propertyCtx.DOUBLE_QUOTED_TEXT());
+                String value = SQLUtils.getExactlyValue(propertyCtx.literals().getText());
+                PropertySegment propertySegment = new PropertySegment(propertyCtx.start.getStartIndex(), propertyCtx.stop.getStopIndex(), key, value);
+                propertiesSegment.getProperties().add(propertySegment);
+            }
+            result.setJobProperties(propertiesSegment);
+        }
+        if (null != ctx.dataSource()) {
+            result.setDataSource(ctx.dataSource().getText());
+        }
+        if (null != ctx.dataSourceProperties() && null != ctx.dataSourceProperties().dataSourceProperty()) {
+            PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.dataSourceProperties().start.getStartIndex(), ctx.dataSourceProperties().stop.getStopIndex());
+            for (int i = 0; i < ctx.dataSourceProperties().dataSourceProperty().size(); i++) {
+                DataSourcePropertyContext propertyCtx = ctx.dataSourceProperties().dataSourceProperty(i);
+                String key = getPropertyKey(propertyCtx.identifier(), propertyCtx.SINGLE_QUOTED_TEXT(), propertyCtx.DOUBLE_QUOTED_TEXT());
+                String value = SQLUtils.getExactlyValue(propertyCtx.literals().getText());
+                PropertySegment propertySegment = new PropertySegment(propertyCtx.start.getStartIndex(), propertyCtx.stop.getStopIndex(), key, value);
+                propertiesSegment.getProperties().add(propertySegment);
+            }
+            result.setDataSourceProperties(propertiesSegment);
+        }
+        if (null != ctx.string_()) {
+            result.setComment(SQLUtils.getExactlyValue(ctx.string_().getText()));
+        }
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    private void processColumnMappings(final ColumnsClauseContext columnsClauseCtx, final DorisCreateRoutineLoadStatement statement) {
+        for (int i = 0; i < columnsClauseCtx.columnMapping().size(); i++) {
+            ColumnMappingContext mappingCtx = columnsClauseCtx.columnMapping(i);
+            ColumnSegment column = (ColumnSegment) visit(mappingCtx.columnName());
+            ColumnMappingSegment columnMapping = new ColumnMappingSegment(mappingCtx.start.getStartIndex(), mappingCtx.stop.getStopIndex(), column);
+            if (null != mappingCtx.expr()) {
+                columnMapping.setMappingExpression((ExpressionSegment) visit(mappingCtx.expr()));
+            }
+            statement.getColumnMappings().add(columnMapping);
+        }
+    }
+    
+    private String getPropertyKey(final IdentifierContext identifier, final TerminalNode singleQuotedText, final TerminalNode doubleQuotedText) {
+        if (null != singleQuotedText) {
+            return SQLUtils.getExactlyValue(singleQuotedText.getText());
+        }
+        if (null != doubleQuotedText) {
+            return SQLUtils.getExactlyValue(doubleQuotedText.getText());
+        }
+        return SQLUtils.getExactlyValue(identifier.getText());
     }
     
     @Override

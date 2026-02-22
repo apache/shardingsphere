@@ -86,6 +86,7 @@ execute
     | install
     | kill
     | loadStatement
+    | createRoutineLoad
     | cacheIndex
     | loadIndexInfo
     | optimizeTable

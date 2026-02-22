@@ -1259,6 +1259,10 @@ JOB
     : J O B
     ;
 
+KAFKA
+    : K A F K A
+    ;
+
 KEY
     : K E Y
     ;
