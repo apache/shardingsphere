@@ -55,6 +55,7 @@ Module resolution order:
   - Data-driven scenarios `MUST` use JUnit `@ParameterizedTest(name = "{0}")` with `@MethodSource` + `Arguments`.
   - Parameterized test method signatures `MUST` use `final String name` as the first parameter.
   - Each parameterized test `MUST` provide at least 3 `Arguments` rows; fewer than 3 is a violation and `MUST` be converted to non-parameterized `@Test`.
+  - Parameterized tests `MUST NOT` introduce new nested type declarations (member/local helper `class` / `interface` / `enum` / `record`) for scenario transport; use `Arguments` rows plus existing or JDK types instead.
   - `MUST NOT` use `@RepeatedTest`.
   - Test method naming `MUST` follow `CODE_OF_CONDUCT.md`: use the `assert` prefix; when a single test uniquely covers a production method, use `assert<MethodName>`.
 
@@ -169,6 +170,7 @@ Module resolution order:
   - `R15-D` (parameterized argument floor): each `@ParameterizedTest` `MUST` bind to `@MethodSource` providers that together contain at least 3 `Arguments` rows; otherwise it is a violation.
   - `R15-E` (parameterized name parameter): each `@ParameterizedTest` method `MUST` declare the first parameter exactly as `final String name`.
   - `R15-F` (parameterized switch ban): `@ParameterizedTest` method bodies `MUST NOT` contain `switch` statements.
+  - `R15-G` (parameterized nested-type ban): when a file contains `@ParameterizedTest`, newly introduced diff lines `MUST NOT` add nested helper type declarations (`class` / `interface` / `enum` / `record`) inside the test class.
 
 ## Workflow
 
@@ -524,6 +526,36 @@ for path in (each for each in sys.argv[1:] if each.endswith(".java")):
             violations.append(f"{path}:{line} method={method_name}")
 if violations:
     print("[R15-F] @ParameterizedTest method body must not contain switch")
+    for each in violations:
+        print(each)
+    sys.exit(1)
+PY
+'
+```
+
+5.5 `R15-G` parameterized nested-type ban scan (diff-based):
+```bash
+bash -lc '
+python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+TYPE_DECL_PATTERN = re.compile(r"^\+\s+(?:(?:public|protected|private|static|final|abstract)\s+)*(class|interface|enum|record)\b")
+violations = []
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
+    source = Path(path).read_text(encoding="utf-8")
+    if "@ParameterizedTest" not in source:
+        continue
+    diff = subprocess.run(["git", "diff", "-U0", "--", path], check=True, capture_output=True, text=True).stdout.splitlines()
+    for line in diff:
+        if line.startswith("+++") or line.startswith("@@"):
+            continue
+        if TYPE_DECL_PATTERN.search(line):
+            violations.append(f"{path}: {line[1:].strip()}")
+if violations:
+    print("[R15-G] parameterized tests must not introduce nested helper type declarations")
     for each in violations:
         print(each)
     sys.exit(1)
