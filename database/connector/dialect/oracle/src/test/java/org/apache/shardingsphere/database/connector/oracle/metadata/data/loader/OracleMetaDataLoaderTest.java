@@ -55,6 +55,8 @@ class OracleMetaDataLoaderTest {
     
     private static final String ALL_INDEXES_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME, UNIQUENESS FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN ('tbl')";
     
+    private static final String ALL_INDEX_COLUMNS_SQL = "SELECT INDEX_NAME, COLUMN_NAME FROM ALL_IND_COLUMNS WHERE INDEX_OWNER = ? AND INDEX_NAME IN ('id')";
+    
     private static final String ALL_TAB_COLUMNS_SQL_CONDITION1 = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, NULLABLE, DATA_TYPE, COLUMN_ID, HIDDEN_COLUMN , IDENTITY_COLUMN, COLLATION"
             + " FROM ALL_TAB_COLS WHERE OWNER = ? AND TABLE_NAME IN ('tbl') ORDER BY COLUMN_ID";
     
@@ -238,6 +240,29 @@ class OracleMetaDataLoaderTest {
     }
     
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
+    @Test
+    void assertLoadIndexColumns() throws SQLException {
+        DataSource dataSource = mockDataSource();
+        ResultSet resultSet = mockTableMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(ALL_TAB_COLUMNS_SQL_CONDITION4).executeQuery()).thenReturn(resultSet);
+        ResultSet indexResultSet = mockIndexMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(ALL_INDEXES_SQL).executeQuery()).thenReturn(indexResultSet);
+        when(dataSource.getConnection().getMetaData().getUserName()).thenReturn("TEST");
+        ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(ALL_CONSTRAINTS_SQL_WITH_TABLES).executeQuery()).thenReturn(primaryKeys);
+        ResultSet indexColumnResultSet = mockIndexColumnMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(ALL_INDEX_COLUMNS_SQL).executeQuery()).thenReturn(indexColumnResultSet);
+        when(dataSource.getConnection().getMetaData().getDatabaseMajorVersion()).thenReturn(12);
+        when(dataSource.getConnection().getMetaData().getDatabaseMinorVersion()).thenReturn(2);
+        DataTypeRegistry.load(dataSource, "Oracle");
+        Collection<SchemaMetaData> actual = getDialectTableMetaDataLoader().load(
+                new MetaDataLoaderMaterial(Collections.singleton("tbl"), "foo_ds", dataSource, databaseType, "sharding_db"));
+        TableMetaData actualTableMetaData = actual.iterator().next().getTables().iterator().next();
+        IndexMetaData actualIndexMetaData = actualTableMetaData.getIndexes().iterator().next();
+        assertThat(actualIndexMetaData.getColumns(), is(Collections.singletonList("id")));
+    }
+    
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     private DataSource mockDataSource() throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet typeInfoResultSet = mockTypeInfoResultSet();
@@ -285,6 +310,14 @@ class OracleMetaDataLoaderTest {
         when(result.getString("INDEX_NAME")).thenReturn("id");
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
         when(result.getString("UNIQUENESS")).thenReturn("UNIQUE");
+        return result;
+    }
+    
+    private ResultSet mockIndexColumnMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("INDEX_NAME")).thenReturn("id");
+        when(result.getString("COLUMN_NAME")).thenReturn("id");
         return result;
     }
     
