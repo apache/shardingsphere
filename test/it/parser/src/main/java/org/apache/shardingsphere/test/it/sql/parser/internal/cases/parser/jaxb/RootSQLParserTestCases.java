@@ -35,6 +35,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropSqlBlockRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowCreateRoutineLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisStopRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowProcStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadTaskStatementTestCase;
@@ -634,6 +636,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "resume-routine-load")
     private final List<DorisResumeRoutineLoadStatementTestCase> resumeRoutineLoadTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-create-routine-load")
+    private final List<DorisShowCreateRoutineLoadStatementTestCase> showCreateRoutineLoadTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "stop-routine-load")
+    private final List<DorisStopRoutineLoadStatementTestCase> stopRoutineLoadTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-constraints")
     private final List<SetConstraintsStatementTestCase> setConstraintsTestCases = new LinkedList<>();

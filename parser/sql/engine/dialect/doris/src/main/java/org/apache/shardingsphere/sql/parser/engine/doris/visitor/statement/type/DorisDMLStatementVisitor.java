@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateR
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DataSourcePropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PauseRoutineLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeRoutineLoadContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StopRoutineLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DoStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.HandlerStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ImportStatementContext;
@@ -70,6 +71,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisAlterRoutin
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisCreateRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisPauseRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisResumeRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisStopRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLHandlerStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLImportStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
@@ -265,6 +267,21 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitResumeRoutineLoad(final ResumeRoutineLoadContext ctx) {
         DorisResumeRoutineLoadStatement result = new DorisResumeRoutineLoadStatement(getDatabaseType());
         result.setAll(null != ctx.ALL());
+        if (null != ctx.jobName()) {
+            JobNameSegment jobName = new JobNameSegment(ctx.jobName().start.getStartIndex(), ctx.jobName().stop.getStopIndex(), new IdentifierValue(ctx.jobName().getText()));
+            if (null != ctx.owner()) {
+                OwnerSegment owner = (OwnerSegment) visit(ctx.owner());
+                jobName.setOwner(owner);
+            }
+            result.setJobName(jobName);
+        }
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitStopRoutineLoad(final StopRoutineLoadContext ctx) {
+        DorisStopRoutineLoadStatement result = new DorisStopRoutineLoadStatement(getDatabaseType());
         if (null != ctx.jobName()) {
             JobNameSegment jobName = new JobNameSegment(ctx.jobName().start.getStartIndex(), ctx.jobName().stop.getStopIndex(), new IdentifierValue(ctx.jobName().getText()));
             if (null != ctx.owner()) {

@@ -81,6 +81,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCre
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateProcedureContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateRoutineLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateUserContext;
@@ -216,6 +217,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowProcSta
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowCreateRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSyncStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.RepositoryNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowBuildIndexStatement;
@@ -1241,6 +1243,17 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitShowRoutineLoad(final ShowRoutineLoadContext ctx) {
         DorisShowRoutineLoadStatement result = new DorisShowRoutineLoadStatement(getDatabaseType());
         result.setShowAll(null != ctx.ALL());
+        if (null != ctx.qualifiedJobName()) {
+            result.setJobName((JobNameSegment) visit(ctx.qualifiedJobName()));
+        }
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowCreateRoutineLoad(final ShowCreateRoutineLoadContext ctx) {
+        DorisShowCreateRoutineLoadStatement result = new DorisShowCreateRoutineLoadStatement(getDatabaseType());
+        result.setAll(null != ctx.ALL());
         if (null != ctx.qualifiedJobName()) {
             result.setJobName((JobNameSegment) visit(ctx.qualifiedJobName()));
         }

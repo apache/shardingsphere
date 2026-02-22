@@ -138,6 +138,10 @@ showCreateTable
     : SHOW CREATE TABLE tableName
     ;
 
+showCreateRoutineLoad
+    : SHOW ALL? CREATE ROUTINE LOAD FOR qualifiedJobName
+    ;
+
 showCreateTrigger
     : SHOW CREATE TRIGGER triggerName
     ;
@@ -791,6 +795,7 @@ show
     | showCreateEvent
     | showCreateFunction
     | showCreateProcedure
+    | showCreateRoutineLoad
     | showCreateTrigger
     | showCreateUser
     | showCreateView

@@ -90,6 +90,7 @@ execute
     | alterRoutineLoad
     | pauseRoutineLoad
     | resumeRoutineLoad
+    | stopRoutineLoad
     | cacheIndex
     | loadIndexInfo
     | optimizeTable
