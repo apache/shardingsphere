@@ -54,7 +54,7 @@ class FirebirdAttachPacketTest {
     
     @Test
     void assertGetAuthData() {
-        assertThat( createPacket().getAuthData(), is("ad"));
+        assertThat(createPacket().getAuthData(), is("ad"));
     }
     
     @Test
