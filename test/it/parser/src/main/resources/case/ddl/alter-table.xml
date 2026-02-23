@@ -2802,4 +2802,193 @@
             </properties>
         </replace-table>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partition_values_less_than_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-partition start-index="32" stop-index="114">
+            <partition name="p1" start-index="46" stop-index="47" />
+            <partition-values start-index="49" stop-index="79" type="VALUES_LESS_THAN">
+                <value>
+                    <literal-expression value="2015-01-01" start-index="67" stop-index="78" />
+                </value>
+            </partition-values>
+            <distributed-column name="k1" start-index="101" stop-index="102" />
+            <buckets value="20" start-index="111" stop-index="112" />
+        </add-partition>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partition_with_properties_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-partition start-index="32" stop-index="117">
+            <partition name="p1" start-index="46" stop-index="47" />
+            <partition-values start-index="49" stop-index="93" type="VALUES_LESS_THAN">
+                <value>
+                    <literal-expression value="2015-01-01" start-index="67" stop-index="78" />
+                </value>
+                <value>
+                    <literal-expression value="2015-01-02" start-index="81" stop-index="92" />
+                </value>
+            </partition-values>
+            <properties start-index="96" stop-index="116">
+                <property key="replication_num" value="1" start-index="96" stop-index="116" />
+            </properties>
+        </add-partition>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partition_values_range_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-partition start-index="32" stop-index="87">
+            <partition name="p1" start-index="46" stop-index="47" />
+            <partition-values start-index="49" stop-index="87" type="VALUES_RANGE">
+                <value>
+                    <literal-expression value="2014-01-01" start-index="58" stop-index="69" />
+                </value>
+                <value>
+                    <literal-expression value="2014-02-01" start-index="74" stop-index="85" />
+                </value>
+            </partition-values>
+        </add-partition>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partition_maxvalue_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-partition start-index="32" stop-index="78">
+            <partition name="p_max" start-index="46" stop-index="50" />
+            <partition-values start-index="52" stop-index="78" type="VALUES_LESS_THAN" is-max-value="true" />
+        </add-partition>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_partition_single_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-partition start-index="32" stop-index="77">
+            <partition name="p1" start-index="49" stop-index="50" />
+            <properties start-index="56" stop-index="76">
+                <property key="replication_num" value="1" start-index="56" stop-index="76" />
+            </properties>
+        </modify-partition>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_partition_multiple_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-partition start-index="32" stop-index="87">
+            <partition name="p1" start-index="50" stop-index="51" />
+            <partition name="p2" start-index="54" stop-index="55" />
+            <partition name="p4" start-index="58" stop-index="59" />
+            <properties start-index="66" stop-index="86">
+                <property key="replication_num" value="1" start-index="66" stop-index="86" />
+            </properties>
+        </modify-partition>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_partition_storage_medium_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-partition start-index="32" stop-index="79" all-partitions="true">
+            <properties start-index="57" stop-index="78">
+                <property key="storage_medium" value="HDD" start-index="57" stop-index="78" />
+            </properties>
+        </modify-partition>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partitions_from_to_interval_number_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-partitions start-index="32" stop-index="75">
+            <from-value>
+                <literal-expression value="1" start-index="53" stop-index="53" />
+            </from-value>
+            <to-value>
+                <literal-expression value="100" start-index="60" stop-index="62" />
+            </to-value>
+            <interval-value>
+                <literal-expression value="10" start-index="74" stop-index="75" />
+            </interval-value>
+        </add-partitions>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partitions_from_to_interval_year_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-partitions start-index="32" stop-index="99">
+            <from-value>
+                <literal-expression value="2023-01-01" start-index="53" stop-index="64" />
+            </from-value>
+            <to-value>
+                <literal-expression value="2025-01-01" start-index="71" stop-index="82" />
+            </to-value>
+            <interval-value>
+                <literal-expression value="1" start-index="94" stop-index="94" />
+            </interval-value>
+            <interval-unit name="YEAR" start-index="96" stop-index="99" />
+        </add-partitions>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partitions_from_to_interval_month_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-partitions start-index="32" stop-index="100">
+            <from-value>
+                <literal-expression value="2023-01-01" start-index="53" stop-index="64" />
+            </from-value>
+            <to-value>
+                <literal-expression value="2025-01-01" start-index="71" stop-index="82" />
+            </to-value>
+            <interval-value>
+                <literal-expression value="1" start-index="94" stop-index="94" />
+            </interval-value>
+            <interval-unit name="MONTH" start-index="96" stop-index="100" />
+        </add-partitions>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partitions_from_to_interval_week_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-partitions start-index="32" stop-index="99">
+            <from-value>
+                <literal-expression value="2023-01-01" start-index="53" stop-index="64" />
+            </from-value>
+            <to-value>
+                <literal-expression value="2025-01-01" start-index="71" stop-index="82" />
+            </to-value>
+            <interval-value>
+                <literal-expression value="1" start-index="94" stop-index="94" />
+            </interval-value>
+            <interval-unit name="WEEK" start-index="96" stop-index="99" />
+        </add-partitions>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_partitions_from_to_interval_day_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-partitions start-index="32" stop-index="98">
+            <from-value>
+                <literal-expression value="2023-01-01" start-index="53" stop-index="64" />
+            </from-value>
+            <to-value>
+                <literal-expression value="2025-01-01" start-index="71" stop-index="82" />
+            </to-value>
+            <interval-value>
+                <literal-expression value="1" start-index="94" stop-index="94" />
+            </interval-value>
+            <interval-unit name="DAY" start-index="96" stop-index="98" />
+        </add-partitions>
+    </alter-table>
 </sql-parser-test-cases>

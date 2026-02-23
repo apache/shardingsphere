@@ -402,4 +402,16 @@
     <sql-case id="alter_table_replace_with_table_swap_false" value="ALTER TABLE tbl1 REPLACE WITH TABLE tbl2 PROPERTIES('swap' = 'false')" db-types="Doris" />
     <sql-case id="alter_table_replace_with_table_default" value="ALTER TABLE tbl1 REPLACE WITH TABLE tbl2" db-types="Doris" />
     <sql-case id="alter_table_replace_with_table_with_database" value="ALTER TABLE db1.tbl1 REPLACE WITH TABLE db2.tbl2 PROPERTIES('swap' = 'true')" db-types="Doris" />
+    <sql-case id="alter_table_add_partition_values_less_than_doris" value="ALTER TABLE example_db.my_table ADD PARTITION p1 VALUES LESS THAN (&quot;2015-01-01&quot;) DISTRIBUTED BY HASH(k1) BUCKETS 20" db-types="Doris" />
+    <sql-case id="alter_table_add_partition_with_properties_doris" value="ALTER TABLE example_db.my_table ADD PARTITION p1 VALUES LESS THAN (&quot;2015-01-01&quot;, &quot;2015-01-02&quot;) (&quot;replication_num&quot;=&quot;1&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_partition_values_range_doris" value="ALTER TABLE example_db.my_table ADD PARTITION p1 VALUES [(&quot;2014-01-01&quot;), (&quot;2014-02-01&quot;))" db-types="Doris" />
+    <sql-case id="alter_table_add_partition_maxvalue_doris" value="ALTER TABLE example_db.my_table ADD PARTITION p_max VALUES LESS THAN (MAXVALUE)" db-types="Doris" />
+    <sql-case id="alter_table_modify_partition_single_doris" value="ALTER TABLE example_db.my_table MODIFY PARTITION p1 SET(&quot;replication_num&quot;=&quot;1&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_modify_partition_multiple_doris" value="ALTER TABLE example_db.my_table MODIFY PARTITION (p1, p2, p4) SET(&quot;replication_num&quot;=&quot;1&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_modify_partition_storage_medium_doris" value="ALTER TABLE example_db.my_table MODIFY PARTITION (*) SET(&quot;storage_medium&quot;=&quot;HDD&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_partitions_from_to_interval_number_doris" value="ALTER TABLE example_db.my_table ADD PARTITIONS FROM (1) TO (100) INTERVAL 10" db-types="Doris" />
+    <sql-case id="alter_table_add_partitions_from_to_interval_year_doris" value="ALTER TABLE example_db.my_table ADD PARTITIONS FROM (&quot;2023-01-01&quot;) TO (&quot;2025-01-01&quot;) INTERVAL 1 YEAR" db-types="Doris" />
+    <sql-case id="alter_table_add_partitions_from_to_interval_month_doris" value="ALTER TABLE example_db.my_table ADD PARTITIONS FROM (&quot;2023-01-01&quot;) TO (&quot;2025-01-01&quot;) INTERVAL 1 MONTH" db-types="Doris" />
+    <sql-case id="alter_table_add_partitions_from_to_interval_week_doris" value="ALTER TABLE example_db.my_table ADD PARTITIONS FROM (&quot;2023-01-01&quot;) TO (&quot;2025-01-01&quot;) INTERVAL 1 WEEK" db-types="Doris" />
+    <sql-case id="alter_table_add_partitions_from_to_interval_day_doris" value="ALTER TABLE example_db.my_table ADD PARTITIONS FROM (&quot;2023-01-01&quot;) TO (&quot;2025-01-01&quot;) INTERVAL 1 DAY" db-types="Doris" />
 </sql-cases>

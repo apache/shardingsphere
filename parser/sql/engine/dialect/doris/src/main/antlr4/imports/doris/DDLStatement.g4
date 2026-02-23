@@ -185,7 +185,11 @@ standaloneAlterCommands
 
 alterPartition
     : ADD PARTITION noWriteToBinLog? (partitionDefinitions | PARTITIONS NUMBER_)
+    | ADD PARTITION ifNotExists? partitionName dorisPartitionDesc (propertiesClause | LP_ properties RP_)? distributedbyClause?
+    | ADD PARTITIONS FROM LP_ expr RP_ TO LP_ expr RP_ INTERVAL expr intervalUnit?
     | DROP PARTITION identifierList
+    | MODIFY PARTITION LP_ (ASTERISK_ | identifierList) RP_ SET LP_ properties RP_
+    | MODIFY PARTITION identifier SET LP_ properties RP_
     | REBUILD PARTITION noWriteToBinLog? allOrPartitionNameList
     | OPTIMIZE PARTITION noWriteToBinLog? allOrPartitionNameList noWriteToBinLog?
     | ANALYZE PARTITION noWriteToBinLog? allOrPartitionNameList
@@ -197,6 +201,11 @@ alterPartition
     | EXCHANGE PARTITION identifier WITH TABLE tableName withValidation?
     | DISCARD PARTITION allOrPartitionNameList TABLESPACE
     | IMPORT PARTITION allOrPartitionNameList TABLESPACE
+    ;
+
+dorisPartitionDesc
+    : VALUES LESS THAN LP_ (MAXVALUE | partitionValueList) RP_
+    | VALUES LBT_ LP_ partitionValueList RP_ COMMA_ LP_ partitionValueList RP_ RP_
     ;
 
 constraintClause
