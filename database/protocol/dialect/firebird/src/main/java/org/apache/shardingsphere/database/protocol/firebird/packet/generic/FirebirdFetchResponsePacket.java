@@ -31,8 +31,8 @@ import org.firebirdsql.gds.ISCConstants;
 /**
  * SQL fetch packet for Firebird.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class FirebirdFetchResponsePacket extends FirebirdPacket {
     
     private final int status;
