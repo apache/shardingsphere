@@ -57,4 +57,9 @@ class FirebirdTimeBinaryProtocolValueTest {
         new FirebirdTimeBinaryProtocolValue().write(payload, time);
         verify(payload).writeInt4(encoded);
     }
+    
+    @Test
+    void assertGetLength() {
+        assertThat(new FirebirdTimeBinaryProtocolValue().getLength(payload), is(4));
+    }
 }

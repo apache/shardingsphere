@@ -48,4 +48,9 @@ class FirebirdDoubleBinaryProtocolValueTest {
         new FirebirdDoubleBinaryProtocolValue().write(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8), 1.0D);
         verify(byteBuf).writeDouble(1.0D);
     }
+    
+    @Test
+    void assertGetLength() {
+        assertThat(new FirebirdDoubleBinaryProtocolValue().getLength(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8)), is(8));
+    }
 }

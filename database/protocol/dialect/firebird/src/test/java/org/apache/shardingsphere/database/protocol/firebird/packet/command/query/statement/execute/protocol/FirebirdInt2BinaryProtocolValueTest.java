@@ -45,4 +45,9 @@ class FirebirdInt2BinaryProtocolValueTest {
         new FirebirdInt2BinaryProtocolValue().write(payload, 1);
         verify(payload).writeInt4(1);
     }
+    
+    @Test
+    void assertGetLength() {
+        assertThat(new FirebirdInt2BinaryProtocolValue().getLength(payload), is(4));
+    }
 }
