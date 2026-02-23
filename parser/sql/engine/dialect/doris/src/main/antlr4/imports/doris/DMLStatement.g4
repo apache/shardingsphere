@@ -275,6 +275,10 @@ resumeRoutineLoad
     : RESUME (ALL ROUTINE LOAD | (ROUTINE LOAD FOR (owner DOT_)? jobName))
     ;
 
+stopRoutineLoad
+    : STOP ROUTINE LOAD FOR (owner DOT_)? jobName
+    ;
+
 loadDataStatement
     : LOAD DATA
       (LOW_PRIORITY | CONCURRENT)? LOCAL? 
