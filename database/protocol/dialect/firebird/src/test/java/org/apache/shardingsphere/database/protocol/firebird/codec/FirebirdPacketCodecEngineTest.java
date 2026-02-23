@@ -42,7 +42,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
@@ -159,7 +158,7 @@ class FirebirdPacketCodecEngineTest {
     void assertDecodeWithExpectedLengthException() {
         ByteBuf in = createCommandPacket(FirebirdCommandPacketType.PREPARE_STATEMENT, 8);
         List<Object> out = new LinkedList<>();
-        assertThat(in.order(), is(ByteOrder.BIG_ENDIAN));
+        assertThat(in.readableBytes(), is(8));
         try (MockedStatic<FirebirdCommandPacketFactory> ignored = mockExpectedLengthException()) {
             codecEngine.decode(context, in, out);
         }
