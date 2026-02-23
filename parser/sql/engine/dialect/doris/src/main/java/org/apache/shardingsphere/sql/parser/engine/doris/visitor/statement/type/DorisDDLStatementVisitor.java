@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterCa
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PauseSyncJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StopSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ChannelDescriptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BinlogDescriptionContext;
@@ -236,6 +237,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobSt
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisStopSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLCreateEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLDropEventStatement;
@@ -381,6 +383,17 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitPauseSyncJob(final PauseSyncJobContext ctx) {
         DorisPauseSyncJobStatement result = new DorisPauseSyncJobStatement(getDatabaseType());
+        JobNameSegment jobName = new JobNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.owner()) {
+            jobName.setOwner((OwnerSegment) visit(ctx.owner()));
+        }
+        result.setJobName(jobName);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitStopSyncJob(final StopSyncJobContext ctx) {
+        DorisStopSyncJobStatement result = new DorisStopSyncJobStatement(getDatabaseType());
         JobNameSegment jobName = new JobNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
         if (null != ctx.owner()) {
             jobName.setOwner((OwnerSegment) visit(ctx.owner()));

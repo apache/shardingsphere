@@ -143,6 +143,7 @@ execute
     | resumeJob
     | resumeSyncJob
     | pauseSyncJob
+    | stopSyncJob
     | createSyncJob
     | dorisAlterSystem
     | createSqlBlockRule

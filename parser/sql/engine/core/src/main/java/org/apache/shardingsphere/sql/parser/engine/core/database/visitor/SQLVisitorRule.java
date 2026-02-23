@@ -297,6 +297,10 @@ public enum SQLVisitorRule {
     
     CREATE_SYNC_JOB("CreateSyncJob", SQLStatementType.DDL),
     
+    STOP_SYNC_JOB("StopSyncJob", SQLStatementType.DDL),
+    
+    SHOW_SYNC_JOB("ShowSyncJob", SQLStatementType.DAL),
+    
     ALTER_CATALOG("AlterCatalog", SQLStatementType.DDL),
     
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
