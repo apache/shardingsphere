@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test-it</artifactId>
-        <version>5.5.3</version>
+        <version>5.5.4-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-it-spi</artifactId>
     <name>${project.artifactId}</name>

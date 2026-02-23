@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-sql-parser-distsql</artifactId>
-        <version>5.5.3</version>
+        <version>5.5.4-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sql-parser-distsql-handler</artifactId>
     <name>${project.artifactId}</name>

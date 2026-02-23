@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra-url</artifactId>
-        <version>5.5.3</version>
+        <version>5.5.4-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-url-spi</artifactId>
     <name>${project.artifactId}</name>
