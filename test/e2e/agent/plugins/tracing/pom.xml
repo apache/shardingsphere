@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test-e2e-agent-plugins</artifactId>
-        <version>5.5.3-SNAPSHOT</version>
+        <version>5.5.3</version>
     </parent>
     <artifactId>shardingsphere-test-e2e-agent-plugins-tracing</artifactId>
     <packaging>pom</packaging>

@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra-binder-dialect</artifactId>
-        <version>5.5.3-SNAPSHOT</version>
+        <version>5.5.3</version>
     </parent>
     <artifactId>shardingsphere-infra-binder-postgresql</artifactId>
     <name>${project.artifactId}</name>

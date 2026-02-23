@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-authority-distsql</artifactId>
-        <version>5.5.3-SNAPSHOT</version>
+        <version>5.5.3</version>
     </parent>
     <artifactId>shardingsphere-authority-distsql-statement</artifactId>
     <name>${project.artifactId}</name>
