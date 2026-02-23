@@ -32,7 +32,7 @@
     </modules>
     
     <properties>
-        <revision>5.5.3-SNAPSHOT</revision>
+        <revision>5.5.3</revision>
         <java.version>1.8</java.version>
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
