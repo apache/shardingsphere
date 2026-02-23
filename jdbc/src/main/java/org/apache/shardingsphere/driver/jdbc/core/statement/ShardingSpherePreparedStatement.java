@@ -101,6 +101,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final Collection<Comparable<?>> generatedValues = new LinkedList<>();
     
+    private boolean hasBatchGeneratedValues;
+    
     private final boolean statementsCacheable;
     
     private Map<String, Integer> columnLabelAndIndexMap;
@@ -285,6 +287,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statements.clear();
         parameterSets.clear();
         generatedValues.clear();
+        hasBatchGeneratedValues = false;
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {
@@ -318,6 +321,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public void addBatch() {
+        if (!hasBatchGeneratedValues) {
+            generatedValues.clear();
+            hasBatchGeneratedValues = true;
+        }
         currentResultSet = null;
         QueryContext queryContext = createQueryContext();
         this.queryContext = queryContext;
@@ -329,6 +336,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public int[] executeBatch() throws SQLException {
         try {
+            if (!hasBatchGeneratedValues) {
+                generatedValues.clear();
+            }
             return executeBatchExecutor.executeBatch(usedDatabase, sqlStatementContext, generatedValues, statementOption,
                     (StatementAddCallback<PreparedStatement>) (statements, parameterSets) -> this.statements.addAll(statements),
                     this::replaySetParameter,
@@ -352,6 +362,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         closeCurrentBatchGeneratedKeysResultSet();
         executeBatchExecutor.clear();
         clearParameters();
+        hasBatchGeneratedValues = false;
     }
     
     private void closeCurrentBatchGeneratedKeysResultSet() {
