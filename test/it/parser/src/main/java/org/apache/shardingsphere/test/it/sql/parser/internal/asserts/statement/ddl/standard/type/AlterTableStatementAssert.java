@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.AddColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
@@ -29,7 +30,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.al
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ModifyPartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.PartitionValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
@@ -58,10 +64,14 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameIndexDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddPartitionDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyPartitionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenamePartitionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameRollupDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.partition.ExpectedAddPartitions;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperties;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperty;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.partition.ExpectedPartitionValues;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.AlterTableStatementTestCase;
 
 import java.util.Collection;
@@ -103,6 +113,9 @@ public final class AlterTableStatementAssert {
         assertRenameColumnDefinitions(assertContext, actual, expected);
         assertRenameRollupDefinitions(assertContext, actual, expected);
         assertRenamePartitionDefinitions(assertContext, actual, expected);
+        assertAddPartitionDefinitions(assertContext, actual, expected);
+        assertModifyPartitionDefinitions(assertContext, actual, expected);
+        assertAddPartitionsSegments(assertContext, actual, expected);
         assertConvertTable(assertContext, actual, expected);
         assertModifyCollectionRetrievalDefinitions(assertContext, actual, expected);
         assertDropPrimaryKeyDefinition(assertContext, actual, expected);
@@ -314,6 +327,98 @@ public final class AlterTableStatementAssert {
             PartitionAssert.assertIs(assertContext, each.getPartitionSegment(), expectedRenamePartitionDefinition.getOldPartition());
             PartitionAssert.assertIs(assertContext, each.getRenamePartitionSegment(), expectedRenamePartitionDefinition.getNewPartition());
             SQLSegmentAssert.assertIs(assertContext, each, expectedRenamePartitionDefinition);
+            count++;
+        }
+    }
+    
+    private static void assertAddPartitionDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Add partition definitions size assertion error: "), actual.getAddPartitionDefinitions().size(), is(expected.getAddPartitions().size()));
+        int count = 0;
+        for (AddPartitionDefinitionSegment each : actual.getAddPartitionDefinitions()) {
+            ExpectedAddPartitionDefinition expectedAddPartition = expected.getAddPartitions().get(count);
+            PartitionAssert.assertIs(assertContext, each.getPartition(), expectedAddPartition.getPartition());
+            if (each.getPartitionValues().isPresent()) {
+                assertNotNull(expectedAddPartition.getPartitionValues(), assertContext.getText("Expected partition values should exist."));
+                assertPartitionValues(assertContext, each.getPartitionValues().get(), expectedAddPartition.getPartitionValues());
+            } else {
+                assertNull(expectedAddPartition.getPartitionValues(), assertContext.getText("Expected partition values should not exist."));
+            }
+            if (each.getProperties().isPresent()) {
+                assertNotNull(expectedAddPartition.getProperties(), assertContext.getText("Expected properties should exist."));
+                assertProperties(assertContext, each.getProperties().get(), expectedAddPartition.getProperties());
+            } else {
+                assertNull(expectedAddPartition.getProperties(), assertContext.getText("Expected properties should not exist."));
+            }
+            if (each.getDistributedColumn().isPresent()) {
+                assertNotNull(expectedAddPartition.getDistributedColumn(), assertContext.getText("Expected distributed column should exist."));
+                ColumnAssert.assertIs(assertContext, each.getDistributedColumn().get(), expectedAddPartition.getDistributedColumn());
+            } else {
+                assertNull(expectedAddPartition.getDistributedColumn(), assertContext.getText("Expected distributed column should not exist."));
+            }
+            if (each.getBuckets().isPresent()) {
+                assertNotNull(expectedAddPartition.getBuckets(), assertContext.getText("Expected buckets should exist."));
+                assertThat(assertContext.getText("Buckets value assertion error: "), each.getBuckets().get(), is(Integer.parseInt(expectedAddPartition.getBuckets().getValue())));
+            } else {
+                assertNull(expectedAddPartition.getBuckets(), assertContext.getText("Expected buckets should not exist."));
+            }
+            SQLSegmentAssert.assertIs(assertContext, each, expectedAddPartition);
+            count++;
+        }
+    }
+    
+    private static void assertPartitionValues(final SQLCaseAssertContext assertContext, final PartitionValuesSegment actual, final ExpectedPartitionValues expected) {
+        assertThat(assertContext.getText("Partition values type assertion error: "), actual.getValuesType().name(), is(expected.getType()));
+        if (null != expected.getIsMaxValue()) {
+            assertThat(assertContext.getText("Partition values max value assertion error: "), actual.isMaxValue(), is(expected.getIsMaxValue()));
+        }
+        assertThat(assertContext.getText("Partition values size assertion error: "), actual.getValues().size(), is(expected.getValues().size()));
+        int count = 0;
+        for (ExpressionSegment each : actual.getValues()) {
+            ExpressionAssert.assertExpression(assertContext, each, expected.getValues().get(count));
+            count++;
+        }
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+    }
+    
+    private static void assertModifyPartitionDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Modify partition definitions size assertion error: "), actual.getModifyPartitionDefinitions().size(), is(expected.getModifyPartitions().size()));
+        int count = 0;
+        for (ModifyPartitionDefinitionSegment each : actual.getModifyPartitionDefinitions()) {
+            ExpectedModifyPartitionDefinition expectedModifyPartition = expected.getModifyPartitions().get(count);
+            if (null != expectedModifyPartition.getAllPartitions()) {
+                assertThat(assertContext.getText("Modify partition all partitions assertion error: "), each.isAllPartitions(), is(expectedModifyPartition.getAllPartitions()));
+            }
+            assertThat(assertContext.getText("Modify partition partitions size assertion error: "), each.getPartitions().size(), is(expectedModifyPartition.getPartitions().size()));
+            int partitionCount = 0;
+            for (PartitionSegment partition : each.getPartitions()) {
+                PartitionAssert.assertIs(assertContext, partition, expectedModifyPartition.getPartitions().get(partitionCount));
+                partitionCount++;
+            }
+            assertNotNull(each.getProperties(), assertContext.getText("Actual properties should exist."));
+            assertNotNull(expectedModifyPartition.getProperties(), assertContext.getText("Expected properties should exist."));
+            assertProperties(assertContext, each.getProperties(), expectedModifyPartition.getProperties());
+            SQLSegmentAssert.assertIs(assertContext, each, expectedModifyPartition);
+            count++;
+        }
+    }
+    
+    private static void assertAddPartitionsSegments(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Add partitions segments size assertion error: "), actual.getAddPartitionsSegments().size(), is(expected.getAddPartitionsList().size()));
+        int count = 0;
+        for (AddPartitionsSegment each : actual.getAddPartitionsSegments()) {
+            ExpectedAddPartitions expectedAddPartitions = expected.getAddPartitionsList().get(count);
+            ExpressionAssert.assertExpression(assertContext, each.getFromValue(), expectedAddPartitions.getFromValue());
+            ExpressionAssert.assertExpression(assertContext, each.getToValue(), expectedAddPartitions.getToValue());
+            ExpressionAssert.assertExpression(assertContext, each.getIntervalValue(), expectedAddPartitions.getIntervalValue());
+            if (each.getIntervalUnit().isPresent()) {
+                assertNotNull(expectedAddPartitions.getIntervalUnit(), assertContext.getText("Expected interval unit should exist."));
+                assertThat(assertContext.getText("Interval unit value assertion error: "), each.getIntervalUnit().get().getIdentifier().getValue(),
+                        is(expectedAddPartitions.getIntervalUnit().getName()));
+                SQLSegmentAssert.assertIs(assertContext, each.getIntervalUnit().get(), expectedAddPartitions.getIntervalUnit());
+            } else {
+                assertNull(expectedAddPartitions.getIntervalUnit(), assertContext.getText("Expected interval unit should not exist."));
+            }
+            SQLSegmentAssert.assertIs(assertContext, each, expectedAddPartitions);
             count++;
         }
     }

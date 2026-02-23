@@ -126,7 +126,11 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WhileSt
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameRollupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenamePartitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReplaceTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterPartitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterStoragePolicyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisPartitionDescContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DistributedbyClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PartitionValueListContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateEncryptKeyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateFileContext;
@@ -158,7 +162,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Dro
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ModifyPartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.PartitionValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.IntervalUnitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.policy.PolicyNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
@@ -550,6 +559,14 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
         AlterTableStatement result = new AlterTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.standaloneAlterTableAction() && null != ctx.standaloneAlterTableAction().standaloneAlterCommands()
+                && null != ctx.standaloneAlterTableAction().standaloneAlterCommands().alterPartition()) {
+            AlterDefinitionSegment alterDefinition = (AlterDefinitionSegment) visit(ctx.standaloneAlterTableAction().standaloneAlterCommands().alterPartition());
+            if (null != alterDefinition) {
+                setAlterDefinition(result, alterDefinition);
+            }
+            return result;
+        }
         if (null == ctx.alterTableActions() || null == ctx.alterTableActions().alterCommandList() || null == ctx.alterTableActions().alterCommandList().alterList()) {
             return result;
         }
@@ -588,6 +605,12 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             alterTableStatement.getRenameRollupDefinitions().add((RenameRollupDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenamePartitionDefinitionSegment) {
             alterTableStatement.getRenamePartitionDefinitions().add((RenamePartitionDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof AddPartitionDefinitionSegment) {
+            alterTableStatement.getAddPartitionDefinitions().add((AddPartitionDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof AddPartitionsSegment) {
+            alterTableStatement.getAddPartitionsSegments().add((AddPartitionsSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof ModifyPartitionDefinitionSegment) {
+            alterTableStatement.getModifyPartitionDefinitions().add((ModifyPartitionDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof AlgorithmTypeSegment) {
             alterTableStatement.setAlgorithmSegment((AlgorithmTypeSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof LockTableSegment) {
@@ -1052,6 +1075,105 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         PartitionSegment newPartitionSegment = new PartitionSegment(ctx.newPartitionName.getStart().getStartIndex(), ctx.newPartitionName.getStop().getStopIndex(),
                 (IdentifierValue) visit(ctx.newPartitionName));
         return new RenamePartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), oldPartitionSegment, newPartitionSegment);
+    }
+    
+    @Override
+    public ASTNode visitAlterPartition(final AlterPartitionContext ctx) {
+        if (null != ctx.ADD() && null != ctx.PARTITION() && null != ctx.partitionName() && null != ctx.dorisPartitionDesc()) {
+            return visitAddPartitionDoris(ctx);
+        }
+        if (null != ctx.ADD() && null != ctx.PARTITIONS() && null != ctx.FROM() && null != ctx.TO() && null != ctx.INTERVAL()) {
+            return visitAddPartitionsDoris(ctx);
+        }
+        if (null != ctx.MODIFY() && null != ctx.PARTITION()) {
+            return visitModifyPartitionDoris(ctx);
+        }
+        return null;
+    }
+    
+    private AddPartitionDefinitionSegment visitAddPartitionDoris(final AlterPartitionContext ctx) {
+        PartitionSegment partitionSegment =
+                new PartitionSegment(ctx.partitionName().start.getStartIndex(), ctx.partitionName().stop.getStopIndex(), (IdentifierValue) visit(ctx.partitionName().identifier()));
+        AddPartitionDefinitionSegment result = new AddPartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), partitionSegment);
+        if (null != ctx.dorisPartitionDesc()) {
+            result.setPartitionValues((PartitionValuesSegment) visit(ctx.dorisPartitionDesc()));
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        } else if (null != ctx.properties()) {
+            PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.properties().start.getStartIndex(), ctx.properties().stop.getStopIndex());
+            for (PropertyContext each : ctx.properties().property()) {
+                propertiesSegment.getProperties().add(createPropertySegment(each));
+            }
+            result.setProperties(propertiesSegment);
+        }
+        if (null != ctx.distributedbyClause()) {
+            DistributedbyClauseContext distCtx = ctx.distributedbyClause();
+            result.setDistributedColumn((ColumnSegment) visit(distCtx.columnName()));
+            result.setBuckets(Integer.parseInt(distCtx.NUMBER_().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDorisPartitionDesc(final DorisPartitionDescContext ctx) {
+        if (null != ctx.VALUES() && null != ctx.LESS() && null != ctx.THAN()) {
+            PartitionValuesSegment result = new PartitionValuesSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PartitionValuesSegment.PartitionValuesType.VALUES_LESS_THAN);
+            if (null != ctx.MAXVALUE()) {
+                result.setMaxValue(true);
+            } else if (!ctx.partitionValueList().isEmpty()) {
+                PartitionValueListContext valueListCtx = ctx.partitionValueList(0);
+                for (int i = 0; i < valueListCtx.expr().size(); i++) {
+                    result.getValues().add((ExpressionSegment) visit(valueListCtx.expr(i)));
+                }
+            }
+            return result;
+        }
+        if (null != ctx.VALUES() && null != ctx.LBT_()) {
+            PartitionValuesSegment result = new PartitionValuesSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PartitionValuesSegment.PartitionValuesType.VALUES_RANGE);
+            for (PartitionValueListContext each : ctx.partitionValueList()) {
+                for (int i = 0; i < each.expr().size(); i++) {
+                    result.getValues().add((ExpressionSegment) visit(each.expr(i)));
+                }
+            }
+            return result;
+        }
+        return null;
+    }
+    
+    private AddPartitionsSegment visitAddPartitionsDoris(final AlterPartitionContext ctx) {
+        ExpressionSegment fromValue = (ExpressionSegment) visit(ctx.expr(0));
+        ExpressionSegment toValue = (ExpressionSegment) visit(ctx.expr(1));
+        ExpressionSegment intervalValue = (ExpressionSegment) visit(ctx.expr(2));
+        AddPartitionsSegment result = new AddPartitionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), fromValue, toValue, intervalValue);
+        if (null != ctx.intervalUnit()) {
+            int startIndex = ctx.intervalUnit().getStart().getStartIndex();
+            int stopIndex = ctx.intervalUnit().getStop().getStopIndex();
+            IdentifierValue identifier = new IdentifierValue(ctx.intervalUnit().getText());
+            result.setIntervalUnit(new IntervalUnitSegment(startIndex, stopIndex, identifier));
+        }
+        return result;
+    }
+    
+    private ModifyPartitionDefinitionSegment visitModifyPartitionDoris(final AlterPartitionContext ctx) {
+        PropertiesSegment properties = new PropertiesSegment(ctx.properties().start.getStartIndex(), ctx.properties().stop.getStopIndex());
+        for (PropertyContext each : ctx.properties().property()) {
+            properties.getProperties().add(createPropertySegment(each));
+        }
+        if (null != ctx.ASTERISK_()) {
+            return new ModifyPartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), properties, true);
+        }
+        ModifyPartitionDefinitionSegment result = new ModifyPartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), properties, false);
+        if (null != ctx.identifier() && ctx.identifierList() == null) {
+            PartitionSegment partition = new PartitionSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+            result.getPartitions().add(partition);
+        } else if (null != ctx.identifierList()) {
+            for (IdentifierContext each : ctx.identifierList().identifier()) {
+                PartitionSegment partition = new PartitionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), (IdentifierValue) visit(each));
+                result.getPartitions().add(partition);
+            }
+        }
+        return result;
     }
     
     @Override
