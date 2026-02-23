@@ -505,6 +505,10 @@ showProc
     : SHOW PROC string_
     ;
 
+showSyncJob
+    : SHOW SYNC JOB (FROM databaseName)?
+    ;
+
 binlog
     : BINLOG stringLiterals
     ;
@@ -831,4 +835,5 @@ show
     | showRoutineLoadTask
     | showRoutineLoad
     | showProc
+    | showSyncJob
     ;

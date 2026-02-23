@@ -973,6 +973,10 @@ pauseSyncJob
     : PAUSE SYNC JOB (owner DOT_)? identifier
     ;
 
+stopSyncJob
+    : STOP SYNC JOB (owner DOT_)? identifier
+    ;
+
 createSyncJob
     : CREATE SYNC (owner DOT_)? identifier LP_ channelDescription (COMMA_ channelDescription)* RP_ binlogDescription
     ;

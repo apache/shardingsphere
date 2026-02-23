@@ -146,6 +146,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Propert
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowQueryStatsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowProcContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSqlBlockRuleContext;
@@ -214,6 +215,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropReposit
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowFunctionsStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowProcStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadStatement;
@@ -1388,6 +1390,16 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitShowProc(final ShowProcContext ctx) {
         String procPath = SQLUtils.getExactlyValue(ctx.string_().getText());
         DorisShowProcStatement result = new DorisShowProcStatement(getDatabaseType(), procPath);
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowSyncJob(final ShowSyncJobContext ctx) {
+        DorisShowSyncJobStatement result = new DorisShowSyncJobStatement(getDatabaseType());
+        if (null != ctx.databaseName()) {
+            result.setFromDatabase((DatabaseSegment) visit(ctx.databaseName()));
+        }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
