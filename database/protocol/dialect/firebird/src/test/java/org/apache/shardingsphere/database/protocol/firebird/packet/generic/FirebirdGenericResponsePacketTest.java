@@ -31,9 +31,16 @@ import java.sql.SQLException;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.atLeastOnce;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdGenericResponsePacketTest {
@@ -44,28 +51,72 @@ class FirebirdGenericResponsePacketTest {
     @Mock
     private ByteBuf byteBuf;
     
-    @Mock
-    private FirebirdPacket data;
+    @Test
+    void assertGetPacket() {
+        assertThat(FirebirdGenericResponsePacket.getPacket(), isA(FirebirdGenericResponsePacket.class));
+    }
     
     @Test
-    void assertGetHandleAndId() {
-        FirebirdGenericResponsePacket packet = FirebirdGenericResponsePacket.getPacket().setHandle(1).setId(2);
+    void assertSetHandle() {
+        FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket();
+        assertThat(packet.setHandle(1), is(packet));
         assertThat(packet.getHandle(), is(1));
+    }
+    
+    @Test
+    void assertSetIdWithInt() {
+        FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket();
+        assertThat(packet.setId(2), is(packet));
         assertThat(packet.getId(), is(2L));
     }
     
     @Test
-    void assertGetErrorStatusVector() {
+    void assertSetIdWithLong() {
+        FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket();
+        assertThat(packet.setId(2L), is(packet));
+        assertThat(packet.getId(), is(2L));
+    }
+    
+    @Test
+    void assertSetData() {
+        FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket();
+        FirebirdPacket data = mock(FirebirdPacket.class);
+        assertThat(packet.setData(data), is(packet));
+        assertThat(packet.getData(), is(data));
+    }
+    
+    @Test
+    void assertSetErrorStatusVector() {
         SQLException ex = new SQLException("foo_error", "42000", ISCConstants.isc_random + 1);
-        FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket().setErrorStatusVector(ex);
+        FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket();
+        assertThat(packet.setErrorStatusVector(ex), is(packet));
+        assertNotNull(packet.getStatusVector());
         assertThat(packet.getErrorCode(), is(ex.getErrorCode()));
         assertThat(packet.getErrorMessage(), is("foo_error"));
     }
     
     @Test
-    void assertWriteWithoutData() {
+    void assertGetErrorCodeWithNullStatusVector() {
+        assertThat(new FirebirdGenericResponsePacket().getErrorCode(), is(-1));
+    }
+    
+    @Test
+    void assertGetErrorMessageWithNullStatusVector() {
+        assertThat(new FirebirdGenericResponsePacket().getErrorMessage(), is(""));
+    }
+    
+    @Test
+    void assertSetWriteZeroStatementId() {
+        FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket();
+        FirebirdGenericResponsePacket actual = packet.setWriteZeroStatementId(true);
+        assertThat(actual, is(packet));
+        assertTrue(packet.isWriteZeroStatementId());
+    }
+    
+    @Test
+    void assertWriteWithoutDataAndStatusVector() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
-        new FirebirdGenericResponsePacket().setHandle(3).setId(4).write(payload);
+        FirebirdGenericResponsePacket.getPacket().setHandle(3).setId(4L).write(payload);
         verify(payload).writeInt4(FirebirdCommandPacketType.RESPONSE.getValue());
         verify(payload).writeInt4(3);
         verify(payload).writeInt8(4L);
@@ -75,16 +126,30 @@ class FirebirdGenericResponsePacketTest {
     
     @Test
     void assertWriteWithDataAndStatusVector() {
-        when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.writeZero(4)).thenReturn(byteBuf);
         when(byteBuf.readableBytes()).thenReturn(4, 8);
         SQLException ex = new SQLException("foo_error", "42000", ISCConstants.isc_arith_except);
-        FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket().setHandle(1).setId(2).setData(data).setErrorStatusVector(ex);
-        packet.write(payload);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        FirebirdPacket data = mock(FirebirdPacket.class);
+        new FirebirdGenericResponsePacket().setData(data).setHandle(1).setId(2L).setErrorStatusVector(ex).write(payload);
         verify(data).write(payload);
         verify(payload, atLeastOnce()).writeInt4(ISCConstants.isc_arg_gds);
         verify(payload, atLeastOnce()).writeInt4(ISCConstants.isc_arg_string);
         verify(payload).writeString("foo_error");
         verify(payload, atLeastOnce()).writeInt4(ISCConstants.isc_arg_end);
+    }
+    
+    @Test
+    void assertWriteWithZeroStatementId() {
+        FirebirdGenericResponsePacket packet = new FirebirdGenericResponsePacket().setHandle(8).setWriteZeroStatementId(true).setId(5L);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        packet.write(payload);
+        verify(payload).writeInt4(FirebirdCommandPacketType.RESPONSE.getValue());
+        verify(payload).writeInt8(5L);
+        verify(payload, never()).writeInt4(8);
+        verify(payload, atLeastOnce()).writeInt4(0);
+        verify(byteBuf).writeZero(4);
+        assertFalse(packet.isWriteZeroStatementId());
+        assertNull(packet.getData());
     }
 }
