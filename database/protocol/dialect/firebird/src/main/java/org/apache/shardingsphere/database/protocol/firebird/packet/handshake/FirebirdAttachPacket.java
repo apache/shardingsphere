@@ -59,6 +59,5 @@ public final class FirebirdAttachPacket extends FirebirdPacket {
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        
     }
 }
