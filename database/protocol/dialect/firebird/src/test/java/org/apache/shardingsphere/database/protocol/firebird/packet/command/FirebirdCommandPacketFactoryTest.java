@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command;
 
-import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.admin.FirebirdUnsupportedCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
@@ -37,18 +36,20 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdRollbackTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.transaction.FirebirdStartTransactionPacket;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.Matchers.is;
+import java.util.stream.Stream;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdCommandPacketFactoryTest {
@@ -56,128 +57,68 @@ class FirebirdCommandPacketFactoryTest {
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private FirebirdPacketPayload payload;
     
-    @Test
-    void assertNewInstanceWithInfoDatabase() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.INFO_DATABASE, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdInfoPacket.class));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("newInstanceArguments")
+    void assertNewInstance(final String name, final FirebirdCommandPacketType commandPacketType, final Class<? extends FirebirdCommandPacket> expectedPacketType) {
+        lenient().when(payload.readString()).thenReturn("");
+        assertThat(FirebirdCommandPacketFactory.newInstance(commandPacketType, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(expectedPacketType));
     }
     
-    @Test
-    void assertNewInstanceWithInfoBlob() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.INFO_BLOB, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdInfoPacket.class));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("expectedLengthArguments")
+    void assertGetExpectedLength(final String name, final FirebirdCommandPacketType commandPacketType, final int expectedLength) {
+        assertThat(FirebirdCommandPacketFactory.getExpectedLength(commandPacketType, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), is(expectedLength));
     }
     
-    @Test
-    void assertNewInstanceWithTransaction() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.TRANSACTION, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdStartTransactionPacket.class));
+    private static Stream<Arguments> newInstanceArguments() {
+        return Stream.of(
+                Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, FirebirdInfoPacket.class),
+                Arguments.of("info_blob", FirebirdCommandPacketType.INFO_BLOB, FirebirdInfoPacket.class),
+                Arguments.of("transaction", FirebirdCommandPacketType.TRANSACTION, FirebirdStartTransactionPacket.class),
+                Arguments.of("create_blob", FirebirdCommandPacketType.CREATE_BLOB, FirebirdCreateBlobCommandPacket.class),
+                Arguments.of("create_blob2", FirebirdCommandPacketType.CREATE_BLOB2, FirebirdCreateBlobCommandPacket.class),
+                Arguments.of("open_blob", FirebirdCommandPacketType.OPEN_BLOB, FirebirdOpenBlobCommandPacket.class),
+                Arguments.of("open_blob2", FirebirdCommandPacketType.OPEN_BLOB2, FirebirdOpenBlobCommandPacket.class),
+                Arguments.of("get_segment", FirebirdCommandPacketType.GET_SEGMENT, FirebirdGetBlobSegmentCommandPacket.class),
+                Arguments.of("put_segment", FirebirdCommandPacketType.PUT_SEGMENT, FirebirdPutBlobSegmentCommandPacket.class),
+                Arguments.of("cancel_blob", FirebirdCommandPacketType.CANCEL_BLOB, FirebirdCancelBlobCommandPacket.class),
+                Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, FirebirdCloseBlobCommandPacket.class),
+                Arguments.of("seek_blob", FirebirdCommandPacketType.SEEK_BLOB, FirebirdSeekBlobCommandPacket.class),
+                Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, FirebirdAllocateStatementPacket.class),
+                Arguments.of("prepare_statement", FirebirdCommandPacketType.PREPARE_STATEMENT, FirebirdPrepareStatementPacket.class),
+                Arguments.of("execute", FirebirdCommandPacketType.EXECUTE, FirebirdExecuteStatementPacket.class),
+                Arguments.of("execute2", FirebirdCommandPacketType.EXECUTE2, FirebirdExecuteStatementPacket.class),
+                Arguments.of("fetch", FirebirdCommandPacketType.FETCH, FirebirdFetchStatementPacket.class),
+                Arguments.of("info_sql", FirebirdCommandPacketType.INFO_SQL, FirebirdInfoPacket.class),
+                Arguments.of("commit", FirebirdCommandPacketType.COMMIT, FirebirdCommitTransactionPacket.class),
+                Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, FirebirdRollbackTransactionPacket.class),
+                Arguments.of("free_statement", FirebirdCommandPacketType.FREE_STATEMENT, FirebirdFreeStatementPacket.class),
+                Arguments.of("void_as_default", FirebirdCommandPacketType.VOID, FirebirdUnsupportedCommandPacket.class));
     }
     
-    @Test
-    void assertNewInstanceWithCreateBlob() {
-        when(payload.readInt4()).thenReturn(0);
-        when(payload.readInt8()).thenReturn(0L);
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.CREATE_BLOB, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                isA(FirebirdCreateBlobCommandPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithOpenBlob() {
-        when(payload.readInt4()).thenReturn(0);
-        when(payload.readInt8()).thenReturn(0L);
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.OPEN_BLOB, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                isA(FirebirdOpenBlobCommandPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithGetBlobSegment() {
-        when(payload.readInt4()).thenReturn(0, 0);
-        when(payload.readBuffer()).thenReturn(mock(ByteBuf.class));
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.GET_SEGMENT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                isA(FirebirdGetBlobSegmentCommandPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithPutBlobSegment() {
-        when(payload.readInt4()).thenReturn(0, 0);
-        when(payload.readBuffer()).thenReturn(mock(ByteBuf.class));
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.PUT_SEGMENT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                isA(FirebirdPutBlobSegmentCommandPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithCancelBlob() {
-        when(payload.readInt4()).thenReturn(0);
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.CANCEL_BLOB, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                isA(FirebirdCancelBlobCommandPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithCloseBlob() {
-        when(payload.readInt4()).thenReturn(0);
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.CLOSE_BLOB, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                isA(FirebirdCloseBlobCommandPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithSeekBlob() {
-        when(payload.readInt4()).thenReturn(0, 0, 0);
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.SEEK_BLOB, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                isA(FirebirdSeekBlobCommandPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithAllocateStatement() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.ALLOCATE_STATEMENT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                isA(FirebirdAllocateStatementPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithPrepareStatement() {
-        when(payload.readInt4()).thenReturn(0, 0, 0, 0);
-        when(payload.readString()).thenReturn("");
-        when(payload.readBuffer()).thenReturn(mock(ByteBuf.class));
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.PREPARE_STATEMENT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                isA(FirebirdPrepareStatementPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithExecuteStatement() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.EXECUTE, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdExecuteStatementPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithFetch() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.FETCH, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdFetchStatementPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithInfoSQL() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.INFO_SQL, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdInfoPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithCommit() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.COMMIT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdCommitTransactionPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithRollback() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.ROLLBACK, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdRollbackTransactionPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithFreeStatement() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.FREE_STATEMENT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdFreeStatementPacket.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithUnsupportedCommand() {
-        assertThat(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.VOID, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13), isA(FirebirdUnsupportedCommandPacket.class));
-    }
-    
-    @Test
-    void assertGetExpectedLength() {
-        assertThat(FirebirdCommandPacketFactory.getExpectedLength(FirebirdCommandPacketType.ALLOCATE_STATEMENT, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13),
-                is(FirebirdAllocateStatementPacket.getLength()));
-        assertTrue(FirebirdCommandPacketFactory.getExpectedLength(FirebirdCommandPacketType.CANCEL_BLOB, payload, FirebirdProtocolVersion.PROTOCOL_VERSION13) > 0);
+    private static Stream<Arguments> expectedLengthArguments() {
+        return Stream.of(
+                Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, 16),
+                Arguments.of("info_sql", FirebirdCommandPacketType.INFO_SQL, 16),
+                Arguments.of("info_blob", FirebirdCommandPacketType.INFO_BLOB, 16),
+                Arguments.of("transaction", FirebirdCommandPacketType.TRANSACTION, 8),
+                Arguments.of("create_blob", FirebirdCommandPacketType.CREATE_BLOB, 16),
+                Arguments.of("create_blob2", FirebirdCommandPacketType.CREATE_BLOB2, 16),
+                Arguments.of("open_blob", FirebirdCommandPacketType.OPEN_BLOB, 16),
+                Arguments.of("open_blob2", FirebirdCommandPacketType.OPEN_BLOB2, 16),
+                Arguments.of("get_segment", FirebirdCommandPacketType.GET_SEGMENT, 12),
+                Arguments.of("put_segment", FirebirdCommandPacketType.PUT_SEGMENT, 12),
+                Arguments.of("cancel_blob", FirebirdCommandPacketType.CANCEL_BLOB, 8),
+                Arguments.of("close_blob", FirebirdCommandPacketType.CLOSE_BLOB, 8),
+                Arguments.of("seek_blob", FirebirdCommandPacketType.SEEK_BLOB, 16),
+                Arguments.of("allocate_statement", FirebirdCommandPacketType.ALLOCATE_STATEMENT, 8),
+                Arguments.of("prepare_statement", FirebirdCommandPacketType.PREPARE_STATEMENT, 20),
+                Arguments.of("execute", FirebirdCommandPacketType.EXECUTE, 0),
+                Arguments.of("execute2", FirebirdCommandPacketType.EXECUTE2, 0),
+                Arguments.of("fetch", FirebirdCommandPacketType.FETCH, 16),
+                Arguments.of("commit", FirebirdCommandPacketType.COMMIT, 8),
+                Arguments.of("rollback", FirebirdCommandPacketType.ROLLBACK, 8),
+                Arguments.of("free_statement", FirebirdCommandPacketType.FREE_STATEMENT, 12),
+                Arguments.of("void_as_default", FirebirdCommandPacketType.VOID, 0));
     }
 }
