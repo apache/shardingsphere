@@ -19,28 +19,26 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class FirebirdCancelBlobCommandPacketTest {
-    
-    @Mock
-    private FirebirdPacketPayload payload;
     
     @Test
     void assertCancelBlobPacket() {
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         when(payload.readInt4()).thenReturn(42);
         FirebirdCancelBlobCommandPacket packet = new FirebirdCancelBlobCommandPacket(payload);
         verify(payload).skipReserved(4);
         verify(payload).readInt4();
         assertThat(packet.getBlobHandle(), is(42));
+        packet.write(payload);
+        verifyNoMoreInteractions(payload);
     }
     
     @Test

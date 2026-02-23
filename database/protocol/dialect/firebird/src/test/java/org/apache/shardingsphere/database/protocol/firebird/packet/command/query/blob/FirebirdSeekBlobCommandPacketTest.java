@@ -19,29 +19,29 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class FirebirdSeekBlobCommandPacketTest {
-    
-    @Mock
-    private FirebirdPacketPayload payload;
     
     @Test
     void assertSeekBlobPacket() {
+        FirebirdPacketPayload payload = mock(FirebirdPacketPayload.class);
         when(payload.readInt4()).thenReturn(21, 2, 128);
         FirebirdSeekBlobCommandPacket packet = new FirebirdSeekBlobCommandPacket(payload);
         verify(payload).skipReserved(4);
+        verify(payload, times(3)).readInt4();
         assertThat(packet.getBlobHandle(), is(21));
         assertThat(packet.getSeekMode(), is(2));
         assertThat(packet.getOffset(), is(128));
+        packet.write(payload);
+        verifyNoMoreInteractions(payload);
     }
     
     @Test
