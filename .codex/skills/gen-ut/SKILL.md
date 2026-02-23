@@ -157,6 +157,8 @@ Module resolution order:
 
 - `R14`: boolean assertion hard gate
   - Boolean literal/boolean constant assertions `MUST` use `assertTrue`/`assertFalse`.
+  - For boolean assertions where expected value is variable-driven (for example: parameter/local variable/field), `MUST` use `assertThat(actual, is(expected))`.
+  - `MUST NOT` dispatch boolean assertions through control flow (for example `if/else`, `switch`, or ternary) only to choose between `assertTrue` and `assertFalse`.
   - `MUST NOT` use:
     - `assertThat(<boolean expression>, is(true|false|Boolean.TRUE|Boolean.FALSE))`
     - `assertEquals(true|false|Boolean.TRUE|Boolean.FALSE, ...)`
@@ -171,6 +173,7 @@ Module resolution order:
   - `R15-E` (parameterized name parameter): each `@ParameterizedTest` method `MUST` declare the first parameter exactly as `final String name`.
   - `R15-F` (parameterized switch ban): `@ParameterizedTest` method bodies `MUST NOT` contain `switch` statements.
   - `R15-G` (parameterized nested-type ban): when a file contains `@ParameterizedTest`, newly introduced diff lines `MUST NOT` add nested helper type declarations (`class` / `interface` / `enum` / `record`) inside the test class.
+  - `R15-H` (boolean variable assertion style): for variable-driven boolean expectations, tests `MUST` assert with `assertThat(actual, is(expected))`, and `MUST NOT` use control-flow dispatch only to choose `assertTrue`/`assertFalse`.
 
 ## Workflow
 
@@ -572,6 +575,52 @@ if rg -n -U --pcre2 "$BOOLEAN_ASSERTION_BAN_REGEX" <ResolvedTestFileSet>; then
   echo "[R14] forbidden boolean assertion found"
   exit 1
 fi'
+```
+
+6.1 `R15-H` boolean control-flow dispatch scan:
+```bash
+bash -lc '
+python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
+import re
+import sys
+from pathlib import Path
+
+METHOD_DECL_PATTERN = re.compile(r"(?:@Test|@ParameterizedTest(?:\\s*\\([^)]*\\))?(?:\\s*@\\w+(?:\\s*\\([^)]*\\))?)*)\\s*void\\s+(assert\\w+)\\s*\\([^)]*\\)\\s*\\{", re.S)
+IF_ELSE_PATTERN = re.compile(r"if\\s*\\([^)]*\\)\\s*\\{[\\s\\S]*?assertTrue\\s*\\([^;]+\\)\\s*;[\\s\\S]*?\\}\\s*else\\s*\\{[\\s\\S]*?assertFalse\\s*\\([^;]+\\)\\s*;[\\s\\S]*?\\}|if\\s*\\([^)]*\\)\\s*\\{[\\s\\S]*?assertFalse\\s*\\([^;]+\\)\\s*;[\\s\\S]*?\\}\\s*else\\s*\\{[\\s\\S]*?assertTrue\\s*\\([^;]+\\)\\s*;[\\s\\S]*?\\}", re.S)
+IF_RETURN_PATTERN = re.compile(r"if\\s*\\([^)]*\\)\\s*\\{[\\s\\S]*?assertTrue\\s*\\([^;]+\\)\\s*;[\\s\\S]*?return\\s*;[\\s\\S]*?\\}\\s*assertFalse\\s*\\([^;]+\\)\\s*;|if\\s*\\([^)]*\\)\\s*\\{[\\s\\S]*?assertFalse\\s*\\([^;]+\\)\\s*;[\\s\\S]*?return\\s*;[\\s\\S]*?\\}\\s*assertTrue\\s*\\([^;]+\\)\\s*;", re.S)
+
+def extract_block(text, brace_index):
+    depth = 0
+    i = brace_index
+    while i < len(text):
+        if "{" == text[i]:
+            depth += 1
+        elif "}" == text[i]:
+            depth -= 1
+            if 0 == depth:
+                return text[brace_index + 1:i]
+        i += 1
+    return ""
+
+violations = []
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
+    source = Path(path).read_text(encoding="utf-8")
+    for match in METHOD_DECL_PATTERN.finditer(source):
+        method_name = match.group(1)
+        line = source.count("\\n", 0, match.start()) + 1
+        brace_index = source.find("{", match.start())
+        if brace_index < 0:
+            continue
+        body = extract_block(source, brace_index)
+        if IF_ELSE_PATTERN.search(body) or IF_RETURN_PATTERN.search(body):
+            violations.append(f"{path}:{line} method={method_name}")
+if violations:
+    print("[R15-H] do not dispatch boolean assertions by control flow to choose assertTrue/assertFalse")
+    for each in violations:
+        print(each)
+    sys.exit(1)
+PY
+'
 ```
 
 7. `R15-B` metadata accessor test ban scan (skip only when explicitly requested by user):
