@@ -76,6 +76,5 @@ public final class MySQLBinlogFormatDescriptionEventPacket extends AbstractMySQL
     
     @Override
     protected void writeEvent(final MySQLPacketPayload payload) {
-        // TODO
     }
 }
