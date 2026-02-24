@@ -125,9 +125,11 @@ createTableOptionsSpaceSeparated
 alterListItem
     : ADD COLUMN? (columnDefinition place? | LP_ tableElementList RP_)  # addColumn
     | ADD tableConstraintDef  # addTableConstraint
+    | ADD ROLLUP rollupItem (COMMA_ rollupItem)*  # addRollup
     | CHANGE COLUMN? columnInternalRef=identifier columnDefinition place?  # changeColumn
     | MODIFY COLUMN? columnInternalRef=identifier fieldDefinition place?   # modifyColumn
     | DROP (COLUMN? columnInternalRef=identifier restrict? | FOREIGN KEY columnInternalRef=identifier | PRIMARY KEY | keyOrIndex indexName | CHECK identifier | CONSTRAINT identifier)  # alterTableDrop
+    | DROP ROLLUP rollupNameItem (COMMA_ rollupNameItem)*  # dropRollup
     | DISABLE KEYS  # disableKeys
     | ENABLE KEYS   # enableKeys
     | ALTER COLUMN? columnInternalRef=identifier (SET DEFAULT (LP_ expr RP_| literals)| SET visibility | DROP DEFAULT) # alterColumn
@@ -147,6 +149,14 @@ alterListItem
 
 alterOrderList
     : columnRef direction? (COMMA_ columnRef direction?)*
+    ;
+
+rollupItem
+    : rollupName=identifier LP_ columnNames RP_ (FROM fromIndexName=indexName)? propertiesClause?
+    ;
+
+rollupNameItem
+    : rollupName=identifier propertiesClause?
     ;
 
 alterStoragePolicy

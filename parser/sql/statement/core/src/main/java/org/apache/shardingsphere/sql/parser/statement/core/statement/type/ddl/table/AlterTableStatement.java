@@ -41,6 +41,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ModifyPartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.AddRollupDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.DropRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
@@ -105,6 +107,10 @@ public final class AlterTableStatement extends DDLStatement {
     private final Collection<RenameIndexDefinitionSegment> renameIndexDefinitions = new LinkedList<>();
     
     private final Collection<ReplaceColumnDefinitionSegment> replaceColumnDefinitions = new LinkedList<>();
+    
+    private final Collection<AddRollupDefinitionSegment> addRollupDefinitions = new LinkedList<>();
+    
+    private final Collection<DropRollupDefinitionSegment> dropRollupDefinitions = new LinkedList<>();
     
     private final Collection<RenameRollupDefinitionSegment> renameRollupDefinitions = new LinkedList<>();
     
