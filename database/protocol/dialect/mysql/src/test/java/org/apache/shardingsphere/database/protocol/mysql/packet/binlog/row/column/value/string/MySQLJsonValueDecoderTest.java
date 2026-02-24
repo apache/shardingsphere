@@ -314,7 +314,9 @@ class MySQLJsonValueDecoderTest {
                         "{\"key1\":9223372036854775807,\"key2\":9223372036854775808}"),
                 Arguments.of("decode small object with double", Arrays.asList(new Object[][]{new Object[]{JsonValueTypes.DOUBLE, "key1", Double.MAX_VALUE}}),
                         "{\"key1\":1.7976931348623157E308}"),
-                Arguments.of("decode small object with string", Arrays.asList(new Object[]{JsonValueTypes.STRING, "key1", value1}, new Object[]{JsonValueTypes.STRING, "key2", value2}, new Object[]{JsonValueTypes.STRING, "key3", value3}, new Object[]{JsonValueTypes.STRING, "key4", value4}),
+                Arguments.of("decode small object with string",
+                        Arrays.asList(new Object[]{JsonValueTypes.STRING, "key1", value1}, new Object[]{JsonValueTypes.STRING, "key2", value2}, new Object[]{JsonValueTypes.STRING, "key3", value3},
+                                new Object[]{JsonValueTypes.STRING, "key4", value4}),
                         String.format("{\"key1\":\"%s\",\"key2\":\"%s\",\"key3\":\"%s\",\"key4\":\"%s\"}", value1, value2, value3, value4)));
     }
     
