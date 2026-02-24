@@ -24,11 +24,16 @@ import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayl
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.OngoingStubbing;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,48 +50,55 @@ class MySQLDatetime2BinlogProtocolValueTest {
     
     private MySQLBinlogColumnDef columnDef;
     
+    private MySQLDatetime2BinlogProtocolValue protocolValue;
+    
     @BeforeEach
     void setUp() {
         columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.DATETIME2);
+        protocolValue = new MySQLDatetime2BinlogProtocolValue();
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("readCases")
+    void assertReadWithDatetime(final String name, final int columnMeta, final int[] readInt1Values, final Integer unsignedShortValue, final Integer unsignedMediumValue,
+                                final LocalDateTime expectedDateTime) {
+        columnDef.setColumnMeta(columnMeta);
+        stubReadInt1(readInt1Values);
+        if (null != unsignedShortValue || null != unsignedMediumValue) {
+            when(payload.getByteBuf()).thenReturn(byteBuf);
+        }
+        if (null != unsignedShortValue) {
+            when(byteBuf.readUnsignedShort()).thenReturn(unsignedShortValue);
+        }
+        if (null != unsignedMediumValue) {
+            when(byteBuf.readUnsignedMedium()).thenReturn(unsignedMediumValue);
+        }
+        assertThat(protocolValue.read(columnDef, payload), is(Timestamp.valueOf(expectedDateTime)));
+    }
+    
+    private void stubReadInt1(final int[] readInt1Values) {
+        OngoingStubbing<Integer> stubbing = when(payload.readInt1()).thenReturn(readInt1Values[0]);
+        for (int i = 1; i < readInt1Values.length; i++) {
+            stubbing = stubbing.thenReturn(readInt1Values[i]);
+        }
     }
     
     @Test
-    void assertReadWithoutFraction() {
-        when(payload.readInt1()).thenReturn(0xfe, 0xf3, 0xff, 0x7e, 0xfb);
-        LocalDateTime expected = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
-        assertThat(new MySQLDatetime2BinlogProtocolValue().read(columnDef, payload), is(Timestamp.valueOf(expected)));
+    void assertReadWithZeroDatetime() {
+        assertThat(protocolValue.read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO));
     }
     
     @Test
-    void assertReadWithoutFraction1() {
-        columnDef.setColumnMeta(1);
-        when(payload.readInt1()).thenReturn(0xfe, 0xf3, 0xff, 0x7e, 0xfb, 0x00);
-        LocalDateTime expected = LocalDateTime.of(9999, 12, 31, 23, 59, 59, 0);
-        assertThat(new MySQLDatetime2BinlogProtocolValue().read(columnDef, payload), is(Timestamp.valueOf(expected)));
+    void assertReadWithSignedZeroDatetime() {
+        when(payload.readInt1()).thenReturn(0x80, 0x00, 0x00, 0x00, 0x00);
+        assertThat(protocolValue.read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO));
     }
     
-    @Test
-    void assertReadWithoutFraction3() {
-        columnDef.setColumnMeta(3);
-        when(payload.readInt1()).thenReturn(0xfe, 0xf3, 0xff, 0x7e, 0xfb);
-        when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readUnsignedShort()).thenReturn(9990);
-        LocalDateTime expected = LocalDateTime.of(9999, 12, 31, 23, 59, 59, 999 * 1000 * 1000);
-        assertThat(new MySQLDatetime2BinlogProtocolValue().read(columnDef, payload), is(Timestamp.valueOf(expected)));
-    }
-    
-    @Test
-    void assertReadWithoutFraction5() {
-        columnDef.setColumnMeta(5);
-        when(payload.readInt1()).thenReturn(0xfe, 0xf3, 0xff, 0x7e, 0xfb);
-        when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readUnsignedMedium()).thenReturn(999990);
-        LocalDateTime expected = LocalDateTime.of(9999, 12, 31, 23, 59, 59, 999990000);
-        assertThat(new MySQLDatetime2BinlogProtocolValue().read(columnDef, payload), is(Timestamp.valueOf(expected)));
-    }
-    
-    @Test
-    void assertReadNullTime() {
-        assertThat(new MySQLDatetime2BinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO));
+    private static Stream<Arguments> readCases() {
+        return Stream.of(
+                Arguments.of("no_fraction", 0, new int[]{0xfe, 0xf3, 0xff, 0x7e, 0xfb}, null, null, LocalDateTime.of(9999, 12, 31, 23, 59, 59)),
+                Arguments.of("one_byte_zero", 1, new int[]{0xfe, 0xf3, 0xff, 0x7e, 0xfb, 0x00}, null, null, LocalDateTime.of(9999, 12, 31, 23, 59, 59)),
+                Arguments.of("two_bytes_999ms", 3, new int[]{0xfe, 0xf3, 0xff, 0x7e, 0xfb}, 9990, null, LocalDateTime.of(9999, 12, 31, 23, 59, 59, 999_000_000)),
+                Arguments.of("three_bytes_999990us", 5, new int[]{0xfe, 0xf3, 0xff, 0x7e, 0xfb}, null, 999990, LocalDateTime.of(9999, 12, 31, 23, 59, 59, 999_990_000)));
     }
 }
