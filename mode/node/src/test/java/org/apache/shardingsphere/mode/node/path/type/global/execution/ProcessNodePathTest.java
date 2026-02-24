@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.node.path.type.global.execution;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class ProcessNodePathTest {

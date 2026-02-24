@@ -21,8 +21,8 @@ import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class DriverDataSourceCacheTest {

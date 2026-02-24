@@ -114,7 +114,8 @@ public final class ProxySQLExecutor {
         String currentDatabaseName = Strings.isNullOrEmpty(databaseConnectionManager.getConnectionSession().getCurrentDatabaseName())
                 ? databaseConnectionManager.getConnectionSession().getUsedDatabaseName()
                 : databaseConnectionManager.getConnectionSession().getCurrentDatabaseName();
-        String currentSchemaName = getSchemaName(sqlStatementContext, metaDataContexts.getMetaData().getDatabase(currentDatabaseName));
+        ShardingSphereDatabase currentDatabase = metaDataContexts.getMetaData().getDatabase(currentDatabaseName);
+        String currentSchemaName = getSchemaName(sqlStatementContext, currentDatabase);
         sqlFederationEngine = new SQLFederationEngine(currentDatabaseName, currentSchemaName, metaDataContexts.getMetaData(), metaDataContexts.getStatistics(), jdbcExecutor);
     }
     

@@ -30,9 +30,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -59,6 +59,6 @@ class TypeCastExpressionConverterTest {
         SqlBasicCall actual = (SqlBasicCall) TypeCastExpressionConverter.convert(typeCastExpression).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getOperandList().get(0), is(expressionNode));
-        assertThat(actual.getOperandList().get(1), instanceOf(SqlDataTypeSpec.class));
+        assertThat(actual.getOperandList().get(1), isA(SqlDataTypeSpec.class));
     }
 }

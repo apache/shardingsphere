@@ -36,12 +36,16 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.DropIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ModifyPartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ReplaceTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -65,6 +69,8 @@ public final class AlterTableStatement extends DDLStatement {
     private SimpleTableSegment table;
     
     private SimpleTableSegment renameTable;
+    
+    private ReplaceTableDefinitionSegment replaceTable;
     
     private ConvertTableDefinitionSegment convertTableDefinition;
     
@@ -104,6 +110,12 @@ public final class AlterTableStatement extends DDLStatement {
     
     private final Collection<RenamePartitionDefinitionSegment> renamePartitionDefinitions = new LinkedList<>();
     
+    private final Collection<AddPartitionDefinitionSegment> addPartitionDefinitions = new LinkedList<>();
+    
+    private final Collection<AddPartitionsSegment> addPartitionsSegments = new LinkedList<>();
+    
+    private final Collection<ModifyPartitionDefinitionSegment> modifyPartitionDefinitions = new LinkedList<>();
+    
     private SQLStatementAttributes attributes;
     
     public AlterTableStatement(final DatabaseType databaseType) {
@@ -117,6 +129,15 @@ public final class AlterTableStatement extends DDLStatement {
      */
     public Optional<SimpleTableSegment> getRenameTable() {
         return Optional.ofNullable(renameTable);
+    }
+    
+    /**
+     * Get replace table definition.
+     *
+     * @return replace table definition
+     */
+    public Optional<ReplaceTableDefinitionSegment> getReplaceTable() {
+        return Optional.ofNullable(replaceTable);
     }
     
     /**
@@ -174,6 +195,9 @@ public final class AlterTableStatement extends DDLStatement {
         result.add(table);
         if (getRenameTable().isPresent()) {
             result.add(getRenameTable().get());
+        }
+        if (getReplaceTable().isPresent() && null != getReplaceTable().get().getReplaceTable()) {
+            result.add(getReplaceTable().get().getReplaceTable());
         }
         for (AddColumnDefinitionSegment each : addColumnDefinitions) {
             for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {

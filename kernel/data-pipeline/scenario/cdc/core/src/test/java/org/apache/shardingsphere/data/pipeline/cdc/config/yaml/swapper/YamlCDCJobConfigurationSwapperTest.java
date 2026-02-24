@@ -43,11 +43,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -165,7 +165,7 @@ class YamlCDCJobConfigurationSwapperTest {
         assertThat(actual.getJobId(), is("j0302p00007a8bf46da145dc155ba25c710b550220"));
         assertThat(actual.getJobShardingDataNodes(), empty());
         assertNull(actual.getTablesFirstDataNodes());
-        assertThat(actual.getDataSourceConfig(), instanceOf(ShardingSpherePipelineDataSourceConfiguration.class));
+        assertThat(actual.getDataSourceConfig(), isA(ShardingSpherePipelineDataSourceConfiguration.class));
         assertThat(actual.getSinkConfig().getProps().getProperty("foo_key"), is("foo_value"));
         assertFalse(actual.isDecodeWithTX());
     }

@@ -59,8 +59,6 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     
     private static final String ORDER_BY_COLUMN_ID = " ORDER BY COLUMN_ID";
     
-    private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_SQL_NO_ORDER + ORDER_BY_COLUMN_ID;
-    
     private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_SQL_NO_ORDER + " AND TABLE_NAME IN (%s)" + ORDER_BY_COLUMN_ID;
     
     private static final String VIEW_META_DATA_SQL = "SELECT VIEW_NAME FROM ALL_VIEWS WHERE OWNER = ? AND VIEW_NAME IN (%s)";
@@ -174,8 +172,7 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
             stringBuilder.append(", COLLATION");
         }
         String collation = stringBuilder.toString();
-        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
-                : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+        return String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private boolean versionContainsCollation(final DatabaseMetaData databaseMetaData) throws SQLException {
@@ -211,7 +208,7 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     private void loadIndexColumnNames(final Connection connection, final Map<String, Collection<IndexMetaData>> tableIndexMetaDataMap) throws SQLException {
         List<String> quotedIndexNames =
                 tableIndexMetaDataMap.values().stream().flatMap(Collection::stream).map(IndexMetaData::getName).map(QuoteCharacter.SINGLE_QUOTE::wrap).collect(Collectors.toList());
-        if (!quotedIndexNames.isEmpty()) {
+        if (quotedIndexNames.isEmpty()) {
             return;
         }
         Map<String, Collection<String>> indexColumnsMap = new HashMap<>();
@@ -252,8 +249,7 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private String getPrimaryKeyMetaDataSQL(final String schemaName, final Collection<String> tables) {
-        return tables.isEmpty() ? String.format(PRIMARY_KEY_META_DATA_SQL, schemaName)
-                : String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, schemaName, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+        return String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, schemaName, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     @Override

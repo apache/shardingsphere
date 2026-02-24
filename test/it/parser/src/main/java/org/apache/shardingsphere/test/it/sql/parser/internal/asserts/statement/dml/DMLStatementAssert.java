@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.dialect.doris.DorisDMLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.dialect.mysql.MySQLDMLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.dialect.postgresql.PostgreSQLDMLStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.StandardDMLStatementAssert;
@@ -43,5 +44,6 @@ public final class DMLStatementAssert {
         StandardDMLStatementAssert.assertIs(assertContext, actual, expected);
         MySQLDMLStatementAssert.assertIs(assertContext, actual, expected);
         PostgreSQLDMLStatementAssert.assertIs(assertContext, actual, expected);
+        DorisDMLStatementAssert.assertIs(assertContext, actual, expected);
     }
 }

@@ -22,11 +22,12 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 class UniqueKeyIngestPositionTest {
     
@@ -144,6 +145,55 @@ class UniqueKeyIngestPositionTest {
         UniqueKeyIngestPosition<?> actual = UniqueKeyIngestPosition.newInstance(Range.closed(null, null));
         assertThat(actual.getType(), is('u'));
         assertNull(actual.getLowerBound());
+        assertNull(actual.getUpperBound());
+    }
+    
+    @Test
+    void assertEncodeBinary() {
+        byte[] lowerBound = new byte[]{0x01, 0x02, 0x03};
+        byte[] upperBound = new byte[]{0x04, 0x05, 0x06};
+        String encoded = UniqueKeyIngestPosition.ofBinary(Range.closed(lowerBound, upperBound)).encode();
+        assertThat(encoded, is("b,AQID,BAUG"));
+    }
+    
+    @Test
+    void assertEncodeBinaryWithNullValue() {
+        assertThat(UniqueKeyIngestPosition.ofBinary(Range.closed(null, null)).encode(), is("b,,"));
+    }
+    
+    @Test
+    void assertDecodeBinaryPosition() {
+        UniqueKeyIngestPosition<?> actual = UniqueKeyIngestPosition.decode("b,AQID,BAUG");
+        assertThat(actual, isA(UniqueKeyIngestPosition.class));
+        assertThat(actual.getType(), is('b'));
+        assertArrayEquals(new byte[]{0x01, 0x02, 0x03}, (byte[]) actual.getLowerBound());
+        assertArrayEquals(new byte[]{0x04, 0x05, 0x06}, (byte[]) actual.getUpperBound());
+    }
+    
+    @Test
+    void assertDecodeBinaryPositionWithNullValue() {
+        UniqueKeyIngestPosition<?> actual = UniqueKeyIngestPosition.decode("b,,");
+        assertThat(actual.getType(), is('b'));
+        assertNull(actual.getLowerBound());
+        assertNull(actual.getUpperBound());
+    }
+    
+    @Test
+    void assertNewInstanceWithBinaryRange() {
+        byte[] lowerBound = new byte[]{0x01, 0x02};
+        byte[] upperBound = new byte[]{0x03, 0x04};
+        UniqueKeyIngestPosition<?> actual = UniqueKeyIngestPosition.newInstance(Range.closed(lowerBound, upperBound));
+        assertThat(actual.getType(), is('b'));
+        assertArrayEquals(lowerBound, (byte[]) actual.getLowerBound());
+        assertArrayEquals(upperBound, (byte[]) actual.getUpperBound());
+    }
+    
+    @Test
+    void assertNewInstanceWithBinaryNullEndRange() {
+        byte[] lowerBound = new byte[]{0x01, 0x02};
+        UniqueKeyIngestPosition<?> actual = UniqueKeyIngestPosition.newInstance(Range.closed(lowerBound, null));
+        assertThat(actual.getType(), is('b'));
+        assertArrayEquals(lowerBound, (byte[]) actual.getLowerBound());
         assertNull(actual.getUpperBound());
     }
 }

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,5 +44,10 @@ class FirebirdInt2BinaryProtocolValueTest {
     void assertWrite() {
         new FirebirdInt2BinaryProtocolValue().write(payload, 1);
         verify(payload).writeInt4(1);
+    }
+    
+    @Test
+    void assertGetLength() {
+        assertThat(new FirebirdInt2BinaryProtocolValue().getLength(payload), is(4));
     }
 }

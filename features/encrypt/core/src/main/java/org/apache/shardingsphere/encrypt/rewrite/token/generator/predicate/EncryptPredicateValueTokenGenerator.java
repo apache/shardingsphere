@@ -104,14 +104,14 @@ public final class EncryptPredicateValueTokenGenerator implements CollectionSQLT
         String tableName = encryptCondition.getColumnSegment().getColumnBoundInfo().getOriginalTable().getValue();
         if (encryptCondition instanceof EncryptBinaryCondition && ("LIKE".equalsIgnoreCase(((EncryptBinaryCondition) encryptCondition).getOperator())
                 || "NOT LIKE".equalsIgnoreCase(((EncryptBinaryCondition) encryptCondition).getOperator()))) {
-            return getLikeQueryEncryptedValues(schemaName, encryptTable, encryptCondition, originalValues, encryptColumn, tableName, columnName);
+            return getLikeQueryEncryptedValues(schemaName, encryptCondition, originalValues, encryptColumn, tableName, columnName);
         }
         return encryptColumn.getAssistedQuery()
                 .map(optional -> optional.encrypt(database.getName(), schemaName, tableName, encryptCondition.getColumnSegment().getIdentifier().getValue(), originalValues))
                 .orElseGet(() -> encryptColumn.getCipher().encrypt(database.getName(), schemaName, tableName, encryptCondition.getColumnSegment().getIdentifier().getValue(), originalValues));
     }
     
-    private List<Object> getLikeQueryEncryptedValues(final String schemaName, final EncryptTable encryptTable, final EncryptCondition encryptCondition,
+    private List<Object> getLikeQueryEncryptedValues(final String schemaName, final EncryptCondition encryptCondition,
                                                      final List<Object> originalValues, final EncryptColumn encryptColumn, final String tableName, final String columnName) {
         ShardingSpherePreconditions.checkState(encryptColumn.getLikeQuery().isPresent() || encryptColumn.getCipher().getEncryptor().getMetaData().isSupportLike(),
                 () -> new MissingMatchedEncryptQueryAlgorithmException(tableName, columnName, "LIKE"));

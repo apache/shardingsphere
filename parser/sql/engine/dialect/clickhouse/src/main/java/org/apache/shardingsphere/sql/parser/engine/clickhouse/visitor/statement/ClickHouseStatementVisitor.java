@@ -37,6 +37,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.IntervalUnit;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
@@ -367,6 +369,9 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
         if (null != ctx.literals()) {
             return SQLUtils.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
         }
+        if (null != ctx.intervalExpression()) {
+            return visit(ctx.intervalExpression());
+        }
         if (null != ctx.functionCall()) {
             return visit(ctx.functionCall());
         }
@@ -378,8 +383,9 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     
     @Override
     public final ASTNode visitIntervalExpression(final ClickHouseStatementParser.IntervalExpressionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new ExpressionProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), getOriginalText(ctx));
+        IntervalUnit intervalUnit = IntervalUnit.valueOf(ctx.intervalUnit().getText().toUpperCase());
+        return new IntervalExpression(ctx.INTERVAL().getSymbol().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) visit(ctx.expr()), intervalUnit,
+                getOriginalText(ctx));
     }
     
     @Override
@@ -434,7 +440,6 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     
     @Override
     public final ASTNode visitCastFunction(final ClickHouseStatementParser.CastFunctionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.expr()));
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
         ASTNode exprSegment = visit(ctx.expr());
         if (exprSegment instanceof ColumnSegment) {
@@ -456,13 +461,6 @@ public abstract class ClickHouseStatementVisitor extends ClickHouseStatementBase
     @Override
     public final ASTNode visitDataTypeName(final ClickHouseStatementParser.DataTypeNameContext ctx) {
         return new KeywordValue(IntStream.range(0, ctx.getChildCount()).mapToObj(i -> ctx.getChild(i).getText()).collect(Collectors.joining(" ")));
-    }
-    
-    // TODO :FIXME, sql case id: insert_with_str_to_date
-    private void calculateParameterCount(final Collection<ClickHouseStatementParser.ExprContext> exprContexts) {
-        for (ClickHouseStatementParser.ExprContext each : exprContexts) {
-            visit(each);
-        }
     }
     
     @Override

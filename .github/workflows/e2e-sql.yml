@@ -62,6 +62,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
+      - uses: docker/setup-docker-action@v4
+        with:
+          version: v28.0.4
+          set-host: true
       - uses: actions/cache@v5.0.1
         with:
           path: |
@@ -129,6 +133,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 17
+      - uses: docker/setup-docker-action@v4
+        with:
+          version: v28.0.4
+          set-host: true
       - name: Download E2E Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v4

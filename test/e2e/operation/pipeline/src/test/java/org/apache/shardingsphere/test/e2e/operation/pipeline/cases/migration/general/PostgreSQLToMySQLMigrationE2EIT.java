@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.operation.pipeline.cases.migration.general;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.shardingsphere.data.pipeline.cdc.util.RandomStrings;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.test.e2e.env.runtime.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.env.runtime.type.RunEnvironment.Type;
@@ -82,7 +82,7 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
             distSQLFacade.waitJobIncrementalStageStarted(jobId);
             try (Connection connection = DriverManager.getConnection(jdbcUrl, "postgres", "postgres")) {
                 connection.createStatement().execute(String.format("INSERT INTO t_order (order_id,user_id,status) VALUES (%s, %s, '%s')", "1000000000", 1, "incremental"));
-                connection.createStatement().execute(String.format("UPDATE t_order SET status='%s' WHERE order_id IN (1,2)", RandomStringUtils.randomAlphanumeric(10)));
+                connection.createStatement().execute(String.format("UPDATE t_order SET status='%s' WHERE order_id IN (1,2)", RandomStrings.randomAlphanumeric(10)));
             }
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
             distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
@@ -110,7 +110,7 @@ class PostgreSQLToMySQLMigrationE2EIT extends AbstractMigrationE2EIT {
             for (int i = 1; i <= 10; i++) {
                 preparedStatement.setObject(1, i);
                 preparedStatement.setObject(2, i + 10);
-                preparedStatement.setObject(3, RandomStringUtils.randomAlphanumeric(10));
+                preparedStatement.setObject(3, RandomStrings.randomAlphanumeric(10));
                 preparedStatement.setObject(4, LocalDateTime.now());
                 preparedStatement.setObject(5, LocalDate.now());
                 preparedStatement.setObject(6, LocalTime.now().withNano(0));

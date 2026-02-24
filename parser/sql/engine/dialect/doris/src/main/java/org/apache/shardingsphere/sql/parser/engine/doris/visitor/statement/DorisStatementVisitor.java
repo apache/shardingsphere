@@ -98,11 +98,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.NumberL
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OnDuplicateKeyClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OrderByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OrderByItemContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OutfilePropertyContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectFieldsIntoContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectIntoExpressionContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectLinesIntoContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.OwnerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ParameterMarkerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PositionFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PrecisionContext;
@@ -121,6 +118,9 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Replace
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReplaceValuesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RowConstructorListContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectFieldsIntoContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectIntoExpressionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectLinesIntoContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SelectWithIntoContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SetAssignmentsClauseContext;
@@ -151,17 +151,13 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UpdateC
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UserVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ValuesFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.VariableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ViewColumnDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ViewColumnDefinitionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ViewNamesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WeightStringFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WithClauseContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ViewColumnDefinitionContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ViewColumnDefinitionsContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileColumnsSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileLinesSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.CombineType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.JoinType;
@@ -173,6 +169,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.engine.EngineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -214,6 +211,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileLinesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.PaginationValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
@@ -257,11 +257,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Map;
-import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Statement visitor for Doris.
@@ -1123,8 +1123,6 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.extractUrlParameterFunction()) {
             return visit(ctx.extractUrlParameterFunction());
         }
-        // DORIS ADDED END
-        // DORIS ADDED BEGIN
         if (null != ctx.instrFunction()) {
             return visit(ctx.instrFunction());
         }
@@ -1161,7 +1159,6 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     @Override
     public final ASTNode visitGroupConcatFunction(final GroupConcatFunctionContext ctx) {
-        calculateParameterCount(ctx.expr());
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.GROUP_CONCAT().getText(), getOriginalText(ctx));
         for (ExprContext each : getTargetRuleContextFromParseTree(ctx, ExprContext.class)) {
             result.getParameters().add((ExpressionSegment) visit(each));
@@ -1191,9 +1188,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         }
         return result;
     }
-    // DORIS ADDED END
     
-    // DORIS ADDED BEGIN
     @Override
     public final ASTNode visitExtractUrlParameterFunction(final ExtractUrlParameterFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.EXTRACT_URL_PARAMETER().getText(), getOriginalText(ctx));
@@ -1201,9 +1196,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         result.getParameters().add(new LiteralExpressionSegment(ctx.expr(1).getStart().getStartIndex(), ctx.expr(1).getStop().getStopIndex(), ctx.expr(1).getText()));
         return result;
     }
-    // DORIS ADDED END
     
-    // DORIS ADDED BEGIN
     @Override
     public final ASTNode visitInstrFunction(final InstrFunctionContext ctx) {
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.INSTR().getText(), getOriginalText(ctx));
@@ -1263,7 +1256,6 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     @Override
     public final ASTNode visitPositionFunction(final PositionFunctionContext ctx) {
-        calculateParameterCount(ctx.expr());
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.POSITION().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr(0)));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr(1)));
@@ -1283,7 +1275,6 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     @Override
     public final ASTNode visitExtractFunction(final ExtractFunctionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.expr()));
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.EXTRACT().getText(), getOriginalText(ctx));
         result.getParameters().add(new LiteralExpressionSegment(ctx.intervalUnit().getStart().getStartIndex(), ctx.intervalUnit().getStop().getStopIndex(), ctx.intervalUnit().getText()));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
@@ -1292,7 +1283,6 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     @Override
     public final ASTNode visitCharFunction(final CharFunctionContext ctx) {
-        calculateParameterCount(ctx.expr());
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHAR().getText(), getOriginalText(ctx));
         for (ExprContext each : ctx.expr()) {
             ASTNode expr = visit(each);
@@ -1324,7 +1314,6 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     @Override
     public final ASTNode visitWeightStringFunction(final WeightStringFunctionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.expr()));
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.WEIGHT_STRING().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
@@ -1462,13 +1451,6 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             result.getColumns().add((ColumnSegment) visit(each));
         }
         return result;
-    }
-    
-    // TODO :FIXME, sql case id: insert_with_str_to_date
-    private void calculateParameterCount(final Collection<ExprContext> exprContexts) {
-        for (ExprContext each : exprContexts) {
-            visit(each);
-        }
     }
     
     @Override
@@ -1978,12 +1960,10 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             }
             return result;
         }
-        // DORIS ADDED BEGIN
         if (null != ctx.regularFunction()) {
             FunctionSegment functionSegment = (FunctionSegment) visit(ctx.regularFunction());
             return new FunctionTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), functionSegment);
         }
-        // DORIS ADDED END
         return result;
     }
     

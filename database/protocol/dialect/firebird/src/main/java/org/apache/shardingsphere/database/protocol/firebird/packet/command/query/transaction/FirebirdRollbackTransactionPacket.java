@@ -36,7 +36,6 @@ public final class FirebirdRollbackTransactionPacket extends FirebirdCommandPack
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        
     }
     
     /**

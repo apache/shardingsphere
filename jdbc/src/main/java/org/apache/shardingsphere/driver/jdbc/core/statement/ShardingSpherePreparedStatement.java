@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
@@ -102,6 +101,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private final Collection<Comparable<?>> generatedValues = new LinkedList<>();
     
+    private boolean hasBatchGeneratedValues;
+    
     private final boolean statementsCacheable;
     
     private Map<String, Integer> columnLabelAndIndexMap;
@@ -140,8 +141,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
         sql = SQLHintUtils.removeHint(originSQL);
         hintValueContext = SQLHintUtils.extractHint(originSQL);
-        DatabaseType databaseType = metaData.getDatabase(connection.getCurrentDatabaseName()).getProtocolType();
-        SQLStatement sqlStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(databaseType).parse(sql, true);
+        ShardingSphereDatabase currentDatabase = metaData.getDatabase(connection.getCurrentDatabaseName());
+        SQLStatement sqlStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(currentDatabase.getProtocolType()).parse(sql, true);
         sqlStatementContext = new SQLBindEngine(metaData, connection.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
         String usedDatabaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName());
         connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabaseName(connection.getCurrentDatabaseName());
@@ -150,7 +151,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statementManager = new StatementManager();
         connection.getStatementManagers().add(statementManager);
         parameterMetaData = new ShardingSphereParameterMetaData(sqlStatement);
-        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.PREPARED_STATEMENT);
+        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.PREPARED_STATEMENT, currentDatabase);
         executeBatchExecutor = new DriverExecuteBatchExecutor(connection, metaData, statementOption, statementManager, usedDatabase);
         statementsCacheable = isStatementsCacheable();
     }
@@ -286,6 +287,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statements.clear();
         parameterSets.clear();
         generatedValues.clear();
+        hasBatchGeneratedValues = false;
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {
@@ -301,14 +303,15 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (generatedKey.isPresent() && statementOption.isReturnGeneratedKeys() && !generatedValues.isEmpty()) {
             return new GeneratedKeysResultSet(getGeneratedKeysColumnName(generatedKey.get().getColumnName()), generatedValues.iterator(), this);
         }
+        String columnName = generatedKey.map(GeneratedKeyContext::getColumnName).orElse(null);
+        String generatedKeysColumnName = getGeneratedKeysColumnName(columnName);
         for (PreparedStatement each : statements) {
             ResultSet resultSet = each.getGeneratedKeys();
             while (resultSet.next()) {
-                generatedValues.add((Comparable<?>) resultSet.getObject(1));
+                generatedValues.add(GeneratedValueUtils.getGeneratedValue(resultSet, generatedKeysColumnName, columnName));
             }
         }
-        String columnName = generatedKey.map(GeneratedKeyContext::getColumnName).orElse(null);
-        return new GeneratedKeysResultSet(getGeneratedKeysColumnName(columnName), generatedValues.iterator(), this);
+        return new GeneratedKeysResultSet(generatedKeysColumnName, generatedValues.iterator(), this);
     }
     
     private String getGeneratedKeysColumnName(final String columnName) {
@@ -318,6 +321,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     @Override
     public void addBatch() {
+        if (!hasBatchGeneratedValues) {
+            generatedValues.clear();
+            hasBatchGeneratedValues = true;
+        }
         currentResultSet = null;
         QueryContext queryContext = createQueryContext();
         this.queryContext = queryContext;
@@ -329,6 +336,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     @Override
     public int[] executeBatch() throws SQLException {
         try {
+            if (!hasBatchGeneratedValues) {
+                generatedValues.clear();
+            }
             return executeBatchExecutor.executeBatch(usedDatabase, sqlStatementContext, generatedValues, statementOption,
                     (StatementAddCallback<PreparedStatement>) (statements, parameterSets) -> this.statements.addAll(statements),
                     this::replaySetParameter,
@@ -352,6 +362,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         closeCurrentBatchGeneratedKeysResultSet();
         executeBatchExecutor.clear();
         clearParameters();
+        hasBatchGeneratedValues = false;
     }
     
     private void closeCurrentBatchGeneratedKeysResultSet() {

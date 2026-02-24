@@ -33,9 +33,7 @@ import java.util.Collection;
  */
 public final class SingleSupportedSQLCheckersBuilder implements SupportedSQLCheckersBuilder<SingleRule> {
     
-    private final Collection<SupportedSQLChecker<?, SingleRule>> supportedSQLCheckers = Arrays.asList(
-            new SingleDropSchemaSupportedChecker(),
-            new SingleDropTableSupportedChecker());
+    private final Collection<SupportedSQLChecker<?, SingleRule>> supportedSQLCheckers = Arrays.asList(new SingleDropSchemaSupportedChecker(), new SingleDropTableSupportedChecker());
     
     @HighFrequencyInvocation
     @Override

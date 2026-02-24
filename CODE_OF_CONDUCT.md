@@ -59,6 +59,7 @@ The following code of conduct is based on full compliance with the [Apache Softw
 - Access control for classes and methods should be minimal.
 - Private methods used by a method should immediately follow that method. If there are multiple private methods, they should be written in the same order as they appear in the original method.
 - Method parameters and return values are not allowed to be `null`.
+- Method parameters must not use `Optional`; pass plain values (nullable when needed).
 - Prefer using lombok instead of constructors, getter, setter methods and log variables.
 - Do not leave fully-qualified class names inline; add import statements instead.
 - Consider using `LinkedList` first, only use `ArrayList` when you need to get element values from the collection by index.
@@ -92,9 +93,9 @@ The following code of conduct is based on full compliance with the [Apache Softw
    - Reasonable design: Combined with production code design, design high-quality unit tests.
    - Error tolerance testing: Get expected results through incorrect inputs such as illegal data, exception flows, etc.
 - Use `assert` prefix for all test method names.
-- Unit tests must exercise behavior through public APIs only; do not use reflection or other means to access private members.
+- Unit tests must exercise behavior through public APIs only. Reflection-based invocation of private members is forbidden. If tests must access fields via reflection, use `Plugins.getMemberAccessor()` and limit reflection to `Field` access only.
 - When a production method is covered by only one test case, name that test method `assert<MethodName>` without extra suffixes, and prefer isolating one public production method per dedicated test method; when practical, keep test method ordering aligned with the corresponding production methods.
-- For parameterized tests, provide display names via parameters and prefix each with `{index}:` to include the sequence number.
+- For parameterized tests, provide display names via parameters and use `"{0}"` as the display-name template.
 - Each test case needs precise assertions, try not to use `not`, `containsString` assertions.
 - Separate environment preparation code from test code.
 - Only Mockito, junit `Assertions`, hamcrest `CoreMatchers` and `MatcherAssert` related can use static import.

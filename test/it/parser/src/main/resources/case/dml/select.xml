@@ -3466,6 +3466,93 @@
             </expr>
         </where>
     </select>
+    
+    <select sql-case-id="select_like_escape_backslash_postgresql">
+        <from>
+            <simple-table name="t_user" start-index="14" stop-index="19" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="21" stop-index="57">
+            <expr>
+                <binary-operation-expression start-index="27" stop-index="57">
+                    <left>
+                        <column name="name" start-index="27" stop-index="30" />
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="37" stop-index="57">
+                            <items>
+                                <literal-expression value="abc\_def" start-index="37" stop-index="46" />
+                            </items>
+                            <items>
+                                <literal-expression value="\" start-index="55" stop-index="57" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_like_escape_backslash_oracle">
+        <from>
+            <simple-table name="t_user" start-index="14" stop-index="19" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="21" stop-index="57">
+            <expr>
+                <binary-operation-expression start-index="27" stop-index="57">
+                    <left>
+                        <column name="name" start-index="27" stop-index="30" />
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="37" stop-index="57">
+                            <items>
+                                <literal-expression value="abc\_def" start-index="37" stop-index="46" />
+                            </items>
+                            <items>
+                                <literal-expression value="\" start-index="55" stop-index="57" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
+    
+    <select sql-case-id="select_like_escape_backslash_sql92">
+        <from>
+            <simple-table name="t_user" start-index="14" stop-index="19" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="21" stop-index="57">
+            <expr>
+                <binary-operation-expression start-index="27" stop-index="57">
+                    <left>
+                        <column name="name" start-index="27" stop-index="30" />
+                    </left>
+                    <operator>LIKE</operator>
+                    <right>
+                        <list-expression start-index="37" stop-index="57">
+                            <items>
+                                <literal-expression value="abc\_def" start-index="37" stop-index="46" />
+                            </items>
+                            <items>
+                                <literal-expression value="\" start-index="55" stop-index="57" />
+                            </items>
+                        </list-expression>
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+    </select>
 
     <select sql-case-id="select_with_block_comment" >
         <from>
@@ -12414,6 +12501,14 @@
     <select sql-case-id="select_interval_firebird">
         <projections start-index="7" stop-index="20">
             <expression-projection text="INTERVAL 1 DAY" start-index="7" stop-index="20">
+                <expr>
+                    <interval-expression start-index="7" stop-index="20">
+                        <value>
+                            <literal-expression value="1" start-index="16" stop-index="16" />
+                        </value>
+                        <interval-unit>DAY</interval-unit>
+                    </interval-expression>
+                </expr>
             </expression-projection>
         </projections>
         <from>
@@ -13349,7 +13444,15 @@
 
     <select sql-case-id="select_interval_expression_sql92">
         <projections start-index="7" stop-index="20">
-            <expression-projection text="INTERVAL1DAY" start-index="7" stop-index="20">
+            <expression-projection text="INTERVAL 1 DAY" start-index="7" stop-index="20">
+                <expr>
+                    <interval-expression start-index="7" stop-index="20">
+                        <value>
+                            <literal-expression value="1" start-index="16" stop-index="16" />
+                        </value>
+                        <interval-unit>DAY</interval-unit>
+                    </interval-expression>
+                </expr>
             </expression-projection>
         </projections>
     </select>
@@ -13625,5 +13728,340 @@
                 </binary-operation-expression>
             </expr>
         </where>
+    </select>
+    
+    <select sql-case-id="select_order_by_order">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="test" start-index="15" stop-index="18" />
+        </from>
+        <order-by>
+            <column-item name="order" start-delimiter="`" end-delimiter="`" start-index="29" stop-index="35" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_order_by_order_two">
+        <projections start-index="7" stop-index="8">
+            <column-projection name="id" start-index="7" stop-index="8" />
+        </projections>
+        <from>
+            <simple-table name="t_test" start-index="15" stop-index="20" />
+        </from>
+        <order-by>
+            <column-item name="order" start-index="31" stop-index="42">
+                <owner name="t_test" start-index="31" stop-index="36" />
+            </column-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_pg_database_info">
+        <projections start-index="7" stop-index="250">
+            <column-projection name="datname" alias="Name" start-index="7" stop-index="25">
+                <owner name="d" start-index="7" stop-index="7"/>
+            </column-projection>
+            <expression-projection alias="Owner" text="pg_catalog.pg_get_userbyid(d.datdba)" start-index="28" stop-index="74">
+                <expr>
+                    <function function-name="pg_get_userbyid" text="pg_catalog.pg_get_userbyid(d.datdba)" start-index="28" stop-index="63">
+                        <parameter>
+                            <column name="datdba" start-index="55" stop-index="62">
+                                <owner name="d" start-index="55" stop-index="55"/>
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection alias="Encoding" text="pg_catalog.pg_encoding_to_char(d.encoding)" start-index="77" stop-index="132">
+                <expr>
+                    <function function-name="pg_encoding_to_char" text="pg_catalog.pg_encoding_to_char(d.encoding)" start-index="77" stop-index="118">
+                        <parameter>
+                            <column name="encoding" start-index="108" stop-index="117">
+                                <owner name="d" start-index="108" stop-index="108"/>
+                            </column>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <column-projection name="datcollate" alias="Collate" start-index="135" stop-index="159">
+                <owner name="d" start-index="135" stop-index="135"/>
+            </column-projection>
+            <column-projection name="datctype" alias="Ctype" start-index="162" stop-index="182">
+                <owner name="d" start-index="162" stop-index="162"/>
+            </column-projection>
+            <expression-projection alias="Access privileges" text="pg_catalog.array_to_string(d.datacl, E'\n')" start-index="185" stop-index="250">
+                <expr>
+                    <function function-name="array_to_string" text="pg_catalog.array_to_string(d.datacl, E'\n')" start-index="185" stop-index="227">
+                        <parameter>
+                            <column name="datacl" start-index="212" stop-index="219">
+                                <owner name="d" start-index="212" stop-index="212"/>
+                            </column>
+                        </parameter>
+                        <parameter>
+                            <type-cast-expression>
+                                <expression>
+                                    <literal-expression value="\n" start-index="223" stop-index="226"/>
+                                </expression>
+                                <data-type>E</data-type>
+                            </type-cast-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from start-index="252" stop-index="280">
+            <simple-table name="pg_database" alias="d" start-index="257" stop-index="280">
+                <owner name="pg_catalog" start-index="257" stop-index="266"/>
+            </simple-table>
+        </from>
+        <order-by>
+            <index-item index="1" start-index="291" stop-index="291"/>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_pg_int">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="30">
+            <row-count value="2" start-index="23" stop-index="30">
+                <type-cast-expression>
+                    <expression>
+                        <literal-expression value="2" start-index="23" stop-index="25" />
+                    </expression>
+                    <data-type>int</data-type>
+                </type-cast-expression>
+            </row-count>
+        </limit>
+    </select>
+
+    <select sql-case-id="select_pg_offset_int">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="32">
+            <offset value="10" start-index="24" stop-index="32">
+                <type-cast-expression>
+                    <expression>
+                        <literal-expression value="10" start-index="25" stop-index="27" />
+                    </expression>
+                    <data-type>int</data-type>
+                </type-cast-expression>
+            </offset>
+        </limit>
+    </select>
+
+    <select sql-case-id="select_pg_fetch_next_int">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <order-by start-index="17" stop-index="27">
+            <column-item name="id" order-direction="ASC" start-index="26" stop-index="27" />
+        </order-by>
+        <limit start-index="29" stop-index="60">
+            <row-count value="10" start-index="40" stop-index="50">
+                <type-cast-expression>
+                    <expression>
+                        <literal-expression value="10" start-index="41" stop-index="43" />
+                    </expression>
+                    <data-type>int</data-type>
+                </type-cast-expression>
+            </row-count>
+        </limit>
+    </select>
+
+    <select sql-case-id="select_limit_constant">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="24">
+            <row-count value="10" start-index="23" stop-index="24" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_limit_all">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="25" />
+    </select>
+
+    <select sql-case-id="select_limit_null">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="26" />
+    </select>
+
+    <select sql-case-id="select_limit_expression">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="29">
+            <row-count expression="5 + 3" start-index="23" stop-index="29" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_limit_cast">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="36">
+            <row-count value="8" start-index="23" stop-index="36" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_limit_subquery">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="48">
+            <row-count expression="(SELECT 6 FROM t4 LIMIT 1)" start-index="23" stop-index="48" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_offset_constant">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="34">
+            <offset value="5" start-index="34" stop-index="34" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_offset_null">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="36">
+            <row-count value="10" start-index="23" stop-index="24" />
+            <offset value="0" start-index="33" stop-index="36">
+                <literal-expression value="NULL" start-index="33" stop-index="36" />
+            </offset>
+        </limit>
+    </select>
+
+    <select sql-case-id="select_offset_expression">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="40">
+            <row-count value="10" start-index="23" stop-index="24" />
+            <offset expression="10 - 2" start-index="33" stop-index="40" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_offset_cast_string">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="40">
+            <row-count value="10" start-index="23" stop-index="24" />
+            <offset value="8" start-index="33" stop-index="40">
+                <type-cast-expression>
+                    <expression>
+                        <literal-expression value="8" start-index="33" stop-index="35" />
+                    </expression>
+                    <data-type>int</data-type>
+                </type-cast-expression>
+            </offset>
+        </limit>
+    </select>
+
+    <select sql-case-id="select_limit_offset_combined">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="33">
+            <row-count value="5" start-index="23" stop-index="23" />
+            <offset value="10" start-index="32" stop-index="33" />
+        </limit>
+    </select>
+    
+    <select sql-case-id="select_limit_parameter" parameters="1">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="23">
+            <row-count value="1" parameter-index="0" start-index="23" stop-index="23" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_limit_complex_expr">
+        <from>
+            <simple-table name="t4" start-index="14" stop-index="15" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <limit start-index="17" stop-index="58">
+            <row-count expression="CASE WHEN true THEN 10 ELSE 20 END" start-index="23" stop-index="58" />
+        </limit>
+    </select>
+
+    <select sql-case-id="select_func">
+        <projections start-index="7" stop-index="38">
+            <expression-projection text="public.int4range(400, 500, '[]')" start-index="7" stop-index="38">
+                <expr>
+                    <function start-index="7" stop-index="38" text="public.int4range(400, 500, '[]')" function-name="int4range">
+                        <owner name="public" start-index="7" stop-index="12" />
+                        <parameter>
+                            <literal-expression value="400" start-index="24" stop-index="26" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="500" start-index="29" stop-index="31" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="[]" start-index="34" stop-index="37" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
     </select>
 </sql-parser-test-cases>

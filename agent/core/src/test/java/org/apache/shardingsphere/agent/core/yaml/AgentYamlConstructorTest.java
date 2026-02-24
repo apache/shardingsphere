@@ -21,7 +21,7 @@ import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentC
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.LoaderOptions;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class AgentYamlConstructorTest {

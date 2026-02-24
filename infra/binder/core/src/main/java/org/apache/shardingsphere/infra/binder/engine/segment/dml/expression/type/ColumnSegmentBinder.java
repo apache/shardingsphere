@@ -128,7 +128,10 @@ public final class ColumnSegmentBinder {
     private static Collection<TableSegmentBinderContext> getTableBinderContextByOwner(final String owner, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
                                                                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> externalTableBinderContexts) {
-        CaseInsensitiveString caseInsensitiveOwner = new CaseInsensitiveString(owner);
+        if (null == owner) {
+            return Collections.emptyList();
+        }
+        CaseInsensitiveString caseInsensitiveOwner = CaseInsensitiveString.of(owner);
         if (tableBinderContexts.containsKey(caseInsensitiveOwner)) {
             return tableBinderContexts.get(caseInsensitiveOwner);
         }

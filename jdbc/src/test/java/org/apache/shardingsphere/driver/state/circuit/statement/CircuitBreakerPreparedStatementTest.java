@@ -35,11 +35,12 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SuppressWarnings("resource")
 class CircuitBreakerPreparedStatementTest {
@@ -191,7 +192,7 @@ class CircuitBreakerPreparedStatementTest {
     
     @Test
     void assertExecute() {
-        assertThat(new CircuitBreakerPreparedStatement().execute(), is(false));
+        assertFalse(new CircuitBreakerPreparedStatement().execute());
     }
     
     @Test
@@ -261,7 +262,7 @@ class CircuitBreakerPreparedStatementTest {
     
     @Test
     void assertGetParameterMetaData() {
-        Assertions.assertNull(new CircuitBreakerPreparedStatement().getParameterMetaData());
+        assertNull(new CircuitBreakerPreparedStatement().getParameterMetaData());
     }
     
     @Test
@@ -276,12 +277,12 @@ class CircuitBreakerPreparedStatementTest {
     
     @Test
     void assertGetConnection() {
-        assertThat(new CircuitBreakerPreparedStatement().getConnection(), instanceOf(CircuitBreakerConnection.class));
+        assertThat(new CircuitBreakerPreparedStatement().getConnection(), isA(CircuitBreakerConnection.class));
     }
     
     @Test
     void assertGetGeneratedKeys() {
-        assertThat(new CircuitBreakerPreparedStatement().getGeneratedKeys(), instanceOf(CircuitBreakerResultSet.class));
+        assertThat(new CircuitBreakerPreparedStatement().getGeneratedKeys(), isA(CircuitBreakerResultSet.class));
     }
     
     @Test
@@ -291,7 +292,7 @@ class CircuitBreakerPreparedStatementTest {
     
     @Test
     void assertGetResultSet() {
-        assertThat(new CircuitBreakerPreparedStatement().getResultSet(), instanceOf(CircuitBreakerResultSet.class));
+        assertThat(new CircuitBreakerPreparedStatement().getResultSet(), isA(CircuitBreakerResultSet.class));
     }
     
     @Test
@@ -306,7 +307,7 @@ class CircuitBreakerPreparedStatementTest {
     
     @Test
     void assertIsAccumulate() {
-        assertThat(new CircuitBreakerPreparedStatement().isAccumulate(), is(false));
+        assertFalse(new CircuitBreakerPreparedStatement().isAccumulate());
     }
     
     @Test
@@ -316,12 +317,12 @@ class CircuitBreakerPreparedStatementTest {
     
     @Test
     void assertGetStatementManager() {
-        assertThat(new CircuitBreakerPreparedStatement().getStatementManager(), is(nullValue()));
+        assertNull(new CircuitBreakerPreparedStatement().getStatementManager());
     }
     
     @Test
     void assertExecuteQuery() {
-        assertThat(new CircuitBreakerPreparedStatement().executeQuery(), instanceOf(CircuitBreakerResultSet.class));
+        assertThat(new CircuitBreakerPreparedStatement().executeQuery(), isA(CircuitBreakerResultSet.class));
     }
     
     @Test

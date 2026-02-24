@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -57,7 +57,8 @@ class ShardingSphereResultSetUtilsTest {
         List<Projection> projections = new ArrayList<>(2);
         projections.add(new ColumnProjection(null, "col1", null, mock(DatabaseType.class)));
         projections.add(new ColumnProjection(null, "col2", null, mock(DatabaseType.class)));
-        when(selectStatementContext.getProjectionsContext()).thenReturn(new ProjectionsContext(0, 0, false, projections));
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, projections);
+        when(selectStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
         Map<String, Integer> expected = new HashMap<>(2, 1F);
         expected.put("col1", 1);
         expected.put("col2", 2);

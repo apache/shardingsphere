@@ -58,6 +58,9 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
+      props:
+        # TODO This is to avoid `Algorithm 'SnowflakeKeyGenerateAlgorithm' execute failed, reason is: Clock is moving backwards, last time is 1770301289456 milliseconds, current time is 1770301287565 milliseconds..`, this requires investigating what is happening inside Presto
+        max-tolerate-time-difference-milliseconds: 1891
   auditors:
     sharding_key_required_auditor:
       type: DML_SHARDING_CONDITIONS

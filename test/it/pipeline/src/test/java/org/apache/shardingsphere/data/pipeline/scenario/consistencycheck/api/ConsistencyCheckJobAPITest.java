@@ -50,11 +50,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -227,12 +228,11 @@ class ConsistencyCheckJobAPITest {
     void assertFinishedJobProgress() {
         MigrationJobConfiguration parentJobConfig = jobConfigSwapper.swapToObject(JobConfigurationBuilder.createYamlMigrationJobConfiguration());
         String parentJobId = parentJobConfig.getJobId();
-        String checkJobId = jobAPI.start(new CreateConsistencyCheckJobParameter(parentJobId, null, null,
-                parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
+        String checkJobId = jobAPI.start(new CreateConsistencyCheckJobParameter(parentJobId, null, null, parentJobConfig.getSourceDatabaseType(), parentJobConfig.getTargetDatabaseType()));
         persistCheckJobProgress(createFinishedCheckJobItemProgress(), checkJobId, JobStatus.FINISHED, 1000);
         persistCheckJobResult(parentJobId, checkJobId);
         ConsistencyCheckJobItemInfo actual = jobAPI.getJobItemInfo(parentJobId);
-        assertThat(actual.getCheckSuccess(), is(true));
+        assertTrue(actual.getCheckSuccess());
         assertThat(actual.getCheckFailedTableNames(), is(""));
         assertThat(actual.getIgnoredTableNames(), is(""));
         assertThat(actual.getInventoryFinishedPercentage(), is(100));

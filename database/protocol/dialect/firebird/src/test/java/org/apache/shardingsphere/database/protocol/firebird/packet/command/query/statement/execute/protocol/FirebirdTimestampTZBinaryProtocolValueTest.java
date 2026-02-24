@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -58,5 +58,10 @@ class FirebirdTimestampTZBinaryProtocolValueTest {
         verify(payload).writeInt4(encodedDate);
         verify(payload).writeInt4(encodedTime);
         verify(payload).writeInt4(120);
+    }
+    
+    @Test
+    void assertGetLength() {
+        assertThat(new FirebirdTimestampTZBinaryProtocolValue().getLength(payload), is(12));
     }
 }

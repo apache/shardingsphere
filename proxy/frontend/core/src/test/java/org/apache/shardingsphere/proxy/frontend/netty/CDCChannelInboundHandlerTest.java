@@ -78,7 +78,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -197,6 +197,18 @@ class CDCChannelInboundHandlerTest {
     void assertIllegalLoginRequest() {
         CDCRequest request = CDCRequest.newBuilder().setType(Type.LOGIN).setVersion(1).setRequestId("test").build();
         channel.writeInbound(request);
+        CDCResponse greeting = channel.readOutbound();
+        assertTrue(greeting.hasServerGreetingResult());
+        CDCResponse loginResult = channel.readOutbound();
+        assertThat(loginResult.getStatus(), is(Status.FAILED));
+        assertThat(loginResult.getErrorCode(), is(XOpenSQLState.NOT_FOUND.getValue()));
+        assertFalse(channel.isOpen());
+    }
+    
+    @Test
+    void assertLoginRequestBodyWithoutBasicBody() {
+        channel.writeInbound(CDCRequest.newBuilder().setType(Type.LOGIN).setRequestId("login-without-basic-body")
+                .setLoginRequestBody(LoginRequestBody.newBuilder().setType(LoginRequestBody.LoginType.BASIC).build()).build());
         CDCResponse greeting = channel.readOutbound();
         assertTrue(greeting.hasServerGreetingResult());
         CDCResponse loginResult = channel.readOutbound();

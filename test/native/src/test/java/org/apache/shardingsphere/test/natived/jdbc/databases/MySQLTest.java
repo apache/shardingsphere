@@ -39,9 +39,7 @@ import java.sql.Statement;
 import java.time.Duration;
 import java.util.Properties;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Unable to use `org.testcontainers:mysql:1.20.0` under GraalVM Native Image.
@@ -69,9 +67,9 @@ class MySQLTest {
     
     @BeforeEach
     void beforeEach() {
-        assertThat(System.getProperty(systemPropKeyPrefix + "ds0.jdbc-url"), is(nullValue()));
-        assertThat(System.getProperty(systemPropKeyPrefix + "ds1.jdbc-url"), is(nullValue()));
-        assertThat(System.getProperty(systemPropKeyPrefix + "ds2.jdbc-url"), is(nullValue()));
+        assertNull(System.getProperty(systemPropKeyPrefix + "ds0.jdbc-url"));
+        assertNull(System.getProperty(systemPropKeyPrefix + "ds1.jdbc-url"));
+        assertNull(System.getProperty(systemPropKeyPrefix + "ds2.jdbc-url"));
     }
     
     @AfterEach

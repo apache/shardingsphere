@@ -99,6 +99,8 @@ public enum SQLVisitorRule {
     
     CANCEL_BUILD_INDEX("CancelBuildIndex", SQLStatementType.DDL),
     
+    CANCEL_ALTER_TABLE("CancelAlterTable", SQLStatementType.DDL),
+    
     CREATE_PROCEDURE("CreateProcedure", SQLStatementType.DDL),
     
     CREATE_PUBLICATION("CreatePublication", SQLStatementType.DDL),
@@ -134,6 +136,8 @@ public enum SQLVisitorRule {
     RELOAD_FUNCTION("ReloadFunction", SQLStatementType.DDL),
     
     DROP_GROUP("DropGroup", SQLStatementType.DDL),
+    
+    DORIS_DROP_FUNCTION("DorisDropFunction", SQLStatementType.DDL),
     
     CREATE_DATABASE("CreateDatabase", SQLStatementType.DDL),
     
@@ -215,6 +219,10 @@ public enum SQLVisitorRule {
     
     ANALYZE("Analyze", SQLStatementType.DDL),
     
+    CREATE_FILE("CreateFile", SQLStatementType.DDL),
+    
+    DROP_FILE("DropFile", SQLStatementType.DDL),
+    
     CREATE_SEQUENCE("CreateSequence", SQLStatementType.DDL),
     
     ALTER_SEQUENCE("AlterSequence", SQLStatementType.DDL),
@@ -282,6 +290,16 @@ public enum SQLVisitorRule {
     UNLISTEN("Unlisten", SQLStatementType.DDL),
     
     RESUME_JOB("ResumeJob", SQLStatementType.DDL),
+    
+    RESUME_SYNC_JOB("ResumeSyncJob", SQLStatementType.DDL),
+    
+    PAUSE_SYNC_JOB("PauseSyncJob", SQLStatementType.DDL),
+    
+    CREATE_SYNC_JOB("CreateSyncJob", SQLStatementType.DDL),
+    
+    STOP_SYNC_JOB("StopSyncJob", SQLStatementType.DDL),
+    
+    SHOW_SYNC_JOB("ShowSyncJob", SQLStatementType.DAL),
     
     ALTER_CATALOG("AlterCatalog", SQLStatementType.DDL),
     
@@ -409,6 +427,18 @@ public enum SQLVisitorRule {
     
     SHOW_ROUTINE_LOAD("ShowRoutineLoad", SQLStatementType.DAL),
     
+    CREATE_ROUTINE_LOAD("CreateRoutineLoad", SQLStatementType.DML),
+    
+    ALTER_ROUTINE_LOAD("AlterRoutineLoad", SQLStatementType.DML),
+    
+    PAUSE_ROUTINE_LOAD("PauseRoutineLoad", SQLStatementType.DML),
+    
+    RESUME_ROUTINE_LOAD("ResumeRoutineLoad", SQLStatementType.DML),
+    
+    STOP_ROUTINE_LOAD("StopRoutineLoad", SQLStatementType.DML),
+    
+    SHOW_CREATE_ROUTINE_LOAD("ShowCreateRoutineLoad", SQLStatementType.DAL),
+    
     SHOW_CREATE_TABLE("ShowCreateTable", SQLStatementType.DAL),
     
     SHOW_OTHER("ShowOther", SQLStatementType.DAL),
@@ -433,13 +463,25 @@ public enum SQLVisitorRule {
     
     SHOW_TRIGGERS("ShowTriggers", SQLStatementType.DAL),
     
+    SHOW_FUNCTIONS("ShowFunctions", SQLStatementType.DAL),
+    
+    DESC_FUNCTION("DescFunction", SQLStatementType.DAL),
+    
+    SHOW_ALTER_TABLE("ShowAlterTable", SQLStatementType.DAL),
+    
+    SHOW_PROC("ShowProc", SQLStatementType.DAL),
+    
     SET_VARIABLE("SetVariable", SQLStatementType.DAL),
+    
+    UNSET_VARIABLE("UnsetVariable", SQLStatementType.DAL),
     
     SET("Set", SQLStatementType.DAL),
     
     SET_NAME("SetName", SQLStatementType.DAL),
     
     SET_CHARACTER("SetCharacter", SQLStatementType.DAL),
+    
+    SYNC("Sync", SQLStatementType.DAL),
     
     RESET_PARAMETER("ResetParameter", SQLStatementType.DAL),
     
@@ -496,6 +538,10 @@ public enum SQLVisitorRule {
     ALTER_RESOURCE_GROUP("AlterResourceGroup", SQLStatementType.DAL),
     
     ALTER_RESOURCE("AlterResource", SQLStatementType.DAL),
+    
+    DROP_REPOSITORY("DropRepository", SQLStatementType.DAL),
+    
+    CREATE_REPOSITORY("CreateRepository", SQLStatementType.DAL),
     
     DORIS_ALTER_SYSTEM("DorisAlterSystem", SQLStatementType.DAL),
     

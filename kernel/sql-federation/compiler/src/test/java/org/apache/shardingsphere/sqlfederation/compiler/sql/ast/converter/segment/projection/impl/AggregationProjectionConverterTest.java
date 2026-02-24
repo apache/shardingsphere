@@ -38,9 +38,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -70,7 +70,7 @@ class AggregationProjectionConverterTest {
         assertThat(innerCall.getOperator(), is(SqlStdOperatorTable.COUNT));
         assertNotNull(innerCall.getFunctionQuantifier());
         assertThat(innerCall.getOperandList().size(), is(1));
-        assertThat(innerCall.getOperandList().get(0), instanceOf(SqlIdentifier.class));
+        assertThat(innerCall.getOperandList().get(0), isA(SqlIdentifier.class));
         SqlIdentifier starIdentifier = (SqlIdentifier) innerCall.getOperandList().get(0);
         assertTrue(starIdentifier.isStar());
         SqlIdentifier aliasIdentifier = (SqlIdentifier) asCall.getOperandList().get(1);
@@ -94,7 +94,7 @@ class AggregationProjectionConverterTest {
         assertThat(sqlBasicCall.getOperandList().size(), is(3));
         assertThat(sqlBasicCall.getOperandList().get(0), is(firstNode));
         assertThat(sqlBasicCall.getOperandList().get(1), is(secondNode));
-        assertThat(sqlBasicCall.getOperandList().get(2), instanceOf(SqlLiteral.class));
+        assertThat(sqlBasicCall.getOperandList().get(2), isA(SqlLiteral.class));
         assertNull(sqlBasicCall.getFunctionQuantifier());
     }
     

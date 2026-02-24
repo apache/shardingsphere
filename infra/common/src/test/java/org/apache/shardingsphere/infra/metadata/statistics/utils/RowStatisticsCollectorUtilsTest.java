@@ -29,9 +29,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RowStatisticsCollectorUtilsTest {
     
@@ -48,7 +49,7 @@ class RowStatisticsCollectorUtilsTest {
         assertThat(actual.get(5), is(100));
         assertThat(actual.get(6), is(25));
         assertThat(actual.get(7), is(3.14f));
-        assertThat(actual.get(8), is(true));
+        assertTrue((boolean) actual.get(8));
         assertNull(actual.get(9));
     }
     

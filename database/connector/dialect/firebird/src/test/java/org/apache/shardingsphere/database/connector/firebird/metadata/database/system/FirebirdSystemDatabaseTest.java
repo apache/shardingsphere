@@ -25,12 +25,25 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirebirdSystemDatabaseTest {
     
-    private final DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, TypedSPILoader.getService(DatabaseType.class, "Firebird"));
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
+    
+    private final DialectSystemDatabase systemDatabase = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, databaseType);
+    
+    @Test
+    void assertGetSystemDatabases() {
+        assertTrue(systemDatabase.getSystemDatabases().isEmpty());
+    }
+    
+    @Test
+    void assertGetSystemSchemasWithDatabaseName() {
+        assertThat(systemDatabase.getSystemSchemas("foo_db"), is(Collections.singleton("system_tables")));
+    }
     
     @Test
     void assertGetSystemSchemas() {

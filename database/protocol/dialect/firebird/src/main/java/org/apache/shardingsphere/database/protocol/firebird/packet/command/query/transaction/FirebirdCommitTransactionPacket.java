@@ -36,7 +36,6 @@ public final class FirebirdCommitTransactionPacket extends FirebirdCommandPacket
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        
     }
     
     /**

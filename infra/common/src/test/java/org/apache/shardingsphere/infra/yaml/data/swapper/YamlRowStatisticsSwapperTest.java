@@ -32,7 +32,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 
 class YamlRowStatisticsSwapperTest {
     
@@ -53,7 +52,7 @@ class YamlRowStatisticsSwapperTest {
                 new ShardingSphereColumn("varchar_col", Types.VARCHAR, false, false, false, true, false, true));
         List<Object> rows = Arrays.asList(null, 5L, new BigDecimal("7.5"), "raw");
         YamlRowStatisticsSwapper swapper = new YamlRowStatisticsSwapper(columns);
-        assertThat(swapper.swapToYamlConfiguration(new RowStatistics("uk", rows)).getRows(), contains(nullValue(), is("5"), is("7.5"), is("raw")));
+        assertThat(swapper.swapToYamlConfiguration(new RowStatistics("uk", rows)).getRows(), contains(null, is("5"), is("7.5"), is("raw")));
     }
     
     @Test

@@ -54,7 +54,7 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         }
         PipelineContextKey contextKey = new PipelineContextKey(preSelectedDatabaseName, contextManager.getComputeNodeInstanceContext().getInstance().getMetaData().getType());
         PipelineContextManager.putContext(contextKey, contextManager);
-        PipelineMetaDataNodeWatcher.getInstance(contextKey);
+        PipelineMetaDataNodeWatcher.init(contextKey);
         ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);
         try {
             dispatchEnablePipelineJobStartEvent(contextKey);

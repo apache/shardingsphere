@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.Invali
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -71,7 +71,7 @@ class DataNodeTest {
         assertThat(dataNode, is(new DataNode("ds_0.tbl_0")));
         assertThat(dataNode, is(new DataNode("DS_0.TBL_0")));
         assertThat(dataNode, not(new DataNode("ds_0.tbl_1")));
-        assertThat(dataNode.equals("ds.tbl"), is(false));
+        assertFalse(dataNode.equals("ds.tbl"));
         assertFalse(dataNode.equals(null));
     }
     

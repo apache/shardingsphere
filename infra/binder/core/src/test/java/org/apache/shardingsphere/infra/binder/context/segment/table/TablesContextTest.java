@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -40,12 +40,12 @@ class TablesContextTest {
     
     @Test
     void assertGetTableNamesWithoutTableSegments() {
-        assertTrue(new TablesContext(Collections.emptyList(), Collections.emptyMap()).getTableNames().isEmpty());
+        assertTrue(new TablesContext(Collections.emptyList()).getTableNames().isEmpty());
     }
     
     @Test
     void assertGetTableNamesWithoutSimpleTableSegments() {
-        assertTrue(new TablesContext(Collections.singleton(mock(TableSegment.class)), Collections.emptyMap()).getTableNames().isEmpty());
+        assertTrue(new TablesContext(Collections.singleton(mock(TableSegment.class))).getTableNames().isEmpty());
     }
     
     @Test

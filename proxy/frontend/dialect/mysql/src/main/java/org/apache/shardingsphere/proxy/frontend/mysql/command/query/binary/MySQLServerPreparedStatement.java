@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -44,6 +45,8 @@ public final class MySQLServerPreparedStatement implements ServerPreparedStateme
     private final HintValueContext hintValueContext;
     
     private final List<Integer> parameterColumnDefinitionFlags;
+    
+    private final List<MySQLBinaryColumnType> parameterColumnTypes = new CopyOnWriteArrayList<>();
     
     private final List<MySQLPreparedStatementParameterType> parameterTypes = new CopyOnWriteArrayList<>();
     

@@ -24,8 +24,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,8 +50,8 @@ class PostgreSQLTablePropertiesLoaderTest {
         assertThat(actual.get("scid"), is(20));
         assertThat(actual.get("autovacuum_enabled"), is("x"));
         assertThat(actual.get("toast_autovacuum_enabled"), is("x"));
-        assertThat(actual.get("autovacuum_custom"), is(false));
-        assertThat(actual.get("toast_autovacuum"), is(false));
+        assertFalse((boolean) actual.get("autovacuum_custom"));
+        assertFalse((boolean) actual.get("toast_autovacuum"));
     }
     
     private ResultSet mockFetchDatabaseIdResultSet() throws SQLException {

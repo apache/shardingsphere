@@ -32,6 +32,10 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameIndexDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenamePartitionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameRollupDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedReplaceTableDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddPartitionDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyPartitionDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.partition.ExpectedAddPartitions;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -50,6 +54,9 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "rename-table")
     private ExpectedSimpleTable renameTable;
+    
+    @XmlElement(name = "replace-table")
+    private ExpectedReplaceTableDefinition replaceTable;
     
     @XmlElement(name = "convert-table")
     private ExpectedConvertTableDefinition convertTable;
@@ -80,6 +87,15 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "rename-partition")
     private final List<ExpectedRenamePartitionDefinition> renamePartitions = new LinkedList<>();
+    
+    @XmlElement(name = "add-partition")
+    private final List<ExpectedAddPartitionDefinition> addPartitions = new LinkedList<>();
+    
+    @XmlElement(name = "add-partitions")
+    private final List<ExpectedAddPartitions> addPartitionsList = new LinkedList<>();
+    
+    @XmlElement(name = "modify-partition")
+    private final List<ExpectedModifyPartitionDefinition> modifyPartitions = new LinkedList<>();
     
     @XmlElement(name = "drop-column")
     private final List<ExpectedColumn> dropColumns = new LinkedList<>();

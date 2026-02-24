@@ -53,8 +53,6 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
     
     private static final String ORDER_BY_COLUMN_ID = " ORDER BY col.column_id";
     
-    private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_SQL_NO_ORDER + ORDER_BY_COLUMN_ID;
-    
     private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_SQL_NO_ORDER + " WHERE obj.name IN (%s)" + ORDER_BY_COLUMN_ID;
     
     private static final String INDEX_META_DATA_SQL = "SELECT idx.name AS INDEX_NAME, obj.name AS TABLE_NAME, col.name AS COLUMN_NAME,"
@@ -116,8 +114,7 @@ public final class SQLServerMetaDataLoader implements DialectMetaDataLoader {
             stringBuilder.append("is_hidden AS IS_HIDDEN,");
         }
         String hiddenFlag = stringBuilder.toString();
-        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, hiddenFlag)
-                : String.format(TABLE_META_DATA_SQL_IN_TABLES, hiddenFlag, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+        return String.format(TABLE_META_DATA_SQL_IN_TABLES, hiddenFlag, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private boolean versionContainsHiddenColumn(final DatabaseMetaData databaseMetaData) throws SQLException {

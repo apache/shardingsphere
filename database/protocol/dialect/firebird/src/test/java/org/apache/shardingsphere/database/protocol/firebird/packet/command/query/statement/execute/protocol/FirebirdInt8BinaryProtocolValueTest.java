@@ -20,12 +20,18 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,31 +44,26 @@ class FirebirdInt8BinaryProtocolValueTest {
     @Test
     void assertRead() {
         when(payload.readInt8()).thenReturn(1L);
-        new FirebirdInt8BinaryProtocolValue().read(payload);
-        verify(payload).readInt8();
+        assertThat(new FirebirdInt8BinaryProtocolValue().read(payload), is(1L));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("writeArguments")
+    void assertWrite(final String name, final Object value, final long expected) {
+        new FirebirdInt8BinaryProtocolValue().write(payload, value);
+        verify(payload).writeInt8(expected);
+    }
+    
+    private static Stream<Arguments> writeArguments() {
+        return Stream.of(
+                Arguments.of("big decimal", BigDecimal.ONE, 1L),
+                Arguments.of("integer", 1, 1L),
+                Arguments.of("big integer", BigInteger.ONE, 1L),
+                Arguments.of("long", 1L, 1L));
     }
     
     @Test
-    void assertWriteWithBigDecimal() {
-        new FirebirdInt8BinaryProtocolValue().write(payload, BigDecimal.ONE);
-        verify(payload).writeInt8(1L);
-    }
-    
-    @Test
-    void assertWriteWithInteger() {
-        new FirebirdInt8BinaryProtocolValue().write(payload, 1);
-        verify(payload).writeInt8(1L);
-    }
-    
-    @Test
-    void assertWriteWithBigInteger() {
-        new FirebirdInt8BinaryProtocolValue().write(payload, BigInteger.ONE);
-        verify(payload).writeInt8(1L);
-    }
-    
-    @Test
-    void assertWriteWithLong() {
-        new FirebirdInt8BinaryProtocolValue().write(payload, 1L);
-        verify(payload).writeInt8(1L);
+    void assertGetLength() {
+        assertThat(new FirebirdInt8BinaryProtocolValue().getLength(payload), is(8));
     }
 }

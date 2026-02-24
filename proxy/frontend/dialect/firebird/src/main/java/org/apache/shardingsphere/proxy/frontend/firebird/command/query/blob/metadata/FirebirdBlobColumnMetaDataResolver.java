@@ -49,7 +49,7 @@ public final class FirebirdBlobColumnMetaDataResolver {
     }
     
     private Integer resolveBlobSubtype(final ShardingSphereTable table, final ShardingSphereColumn column, final boolean blobColumn) {
-        if (!blobColumn || null == table || null == column) {
+        if (!blobColumn) {
             return null;
         }
         OptionalInt subtype = FirebirdBlobInfoRegistry.findBlobSubtype(databaseName, table.getName(), column.getName());

@@ -141,6 +141,6 @@ class BroadcastRouteEngineFactoryTest {
     }
     
     private TablesContext createTablesContext() {
-        return new TablesContext(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))), null);
+        return new TablesContext(Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))));
     }
 }

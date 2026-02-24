@@ -37,9 +37,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
@@ -66,7 +65,7 @@ class MetaDataContextManagerTest {
         MetaDataContexts metaDataContexts = createMetaDataContexts();
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         MetaDataContextManager manager = new MetaDataContextManager(metaDataContexts, computeNodeInstanceContext, persistRepository);
-        assertThat(manager.getStatisticsManager(), notNullValue());
+        assertNotNull(manager.getStatisticsManager());
     }
     
     @Test
@@ -74,7 +73,7 @@ class MetaDataContextManagerTest {
         MetaDataContexts metaDataContexts = createMetaDataContexts();
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         MetaDataContextManager manager = new MetaDataContextManager(metaDataContexts, computeNodeInstanceContext, persistRepository);
-        assertThat(manager.getDatabaseMetaDataManager(), notNullValue());
+        assertNotNull(manager.getDatabaseMetaDataManager());
     }
     
     @Test
@@ -82,7 +81,7 @@ class MetaDataContextManagerTest {
         MetaDataContexts metaDataContexts = createMetaDataContexts();
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         MetaDataContextManager manager = new MetaDataContextManager(metaDataContexts, computeNodeInstanceContext, persistRepository);
-        assertThat(manager.getDatabaseRuleItemManager(), notNullValue());
+        assertNotNull(manager.getDatabaseRuleItemManager());
     }
     
     @Test
@@ -90,7 +89,7 @@ class MetaDataContextManagerTest {
         MetaDataContexts metaDataContexts = createMetaDataContexts();
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         MetaDataContextManager manager = new MetaDataContextManager(metaDataContexts, computeNodeInstanceContext, persistRepository);
-        assertThat(manager.getResourceSwitchManager(), notNullValue());
+        assertNotNull(manager.getResourceSwitchManager());
     }
     
     @Test
@@ -98,7 +97,7 @@ class MetaDataContextManagerTest {
         MetaDataContexts metaDataContexts = createMetaDataContexts();
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         MetaDataContextManager manager = new MetaDataContextManager(metaDataContexts, computeNodeInstanceContext, persistRepository);
-        assertThat(manager.getStorageUnitManager(), notNullValue());
+        assertNotNull(manager.getStorageUnitManager());
     }
     
     @Test
@@ -106,7 +105,7 @@ class MetaDataContextManagerTest {
         MetaDataContexts metaDataContexts = createMetaDataContexts();
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         MetaDataContextManager manager = new MetaDataContextManager(metaDataContexts, computeNodeInstanceContext, persistRepository);
-        assertThat(manager.getDatabaseRuleConfigurationManager(), notNullValue());
+        assertNotNull(manager.getDatabaseRuleConfigurationManager());
     }
     
     @Test
@@ -114,7 +113,7 @@ class MetaDataContextManagerTest {
         MetaDataContexts metaDataContexts = createMetaDataContexts();
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         MetaDataContextManager manager = new MetaDataContextManager(metaDataContexts, computeNodeInstanceContext, persistRepository);
-        assertThat(manager.getGlobalConfigurationManager(), notNullValue());
+        assertNotNull(manager.getGlobalConfigurationManager());
     }
     
     @Test
@@ -122,7 +121,7 @@ class MetaDataContextManagerTest {
         MetaDataContexts metaDataContexts = createMetaDataContexts();
         ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
         MetaDataContextManager manager = new MetaDataContextManager(metaDataContexts, computeNodeInstanceContext, persistRepository);
-        assertThat(manager.getMetaDataPersistFacade(), notNullValue());
+        assertNotNull(manager.getMetaDataPersistFacade());
     }
     
     private MetaDataContexts createMetaDataContexts() {

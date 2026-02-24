@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -47,7 +47,7 @@ class OpenGaussSelectVersionExecutorTest {
         assertThat(actualMetaData.getColumnLabel(1), is("version"));
         MergedResult actualResult = executor.getMergedResult();
         assertTrue(actualResult.next());
-        assertThat(actualResult.getValue(1, String.class), notNullValue());
+        assertNotNull(actualResult.getValue(1, String.class));
         assertFalse(actualResult.next());
     }
 }

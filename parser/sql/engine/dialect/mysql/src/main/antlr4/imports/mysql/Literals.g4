@@ -69,6 +69,10 @@ BIT_NUM_
     : '0b' ('0' | '1')+ | B SQ_ ('0' | '1')+ SQ_
     ;
 
+DOLLAR_QUOTED_TEXT
+    : '$$' .*? '$$'
+    ;
+
 IDENTIFIER_
     : [A-Za-z_$0-9\u0080-\uFFFF]*?[A-Za-z_$\u0080-\uFFFF]+?[A-Za-z_$0-9\u0080-\uFFFF]*
     | BQ_ ~'`'+ BQ_

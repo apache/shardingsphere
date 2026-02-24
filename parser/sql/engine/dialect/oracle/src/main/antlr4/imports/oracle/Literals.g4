@@ -28,7 +28,7 @@ STRING_
     ;
 
 SINGLE_QUOTED_TEXT
-    : (SQ_ (('\\' +) | '\'\'' | ~('\'' | '\\'))* SQ_)
+    : (SQ_ ('\'\'' | ~'\'')* SQ_)
     ;
 
 DOUBLE_QUOTED_TEXT

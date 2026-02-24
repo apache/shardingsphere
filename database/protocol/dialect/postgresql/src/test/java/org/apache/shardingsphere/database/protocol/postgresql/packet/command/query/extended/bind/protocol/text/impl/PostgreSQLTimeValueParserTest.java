@@ -27,7 +27,7 @@ import org.junit.jupiter.params.support.ParameterDeclarations;
 import java.time.LocalTime;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class PostgreSQLTimeValueParserTest {

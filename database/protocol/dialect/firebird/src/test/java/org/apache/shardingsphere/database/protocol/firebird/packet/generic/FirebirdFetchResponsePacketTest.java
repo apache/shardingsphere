@@ -34,9 +34,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -53,15 +55,39 @@ class FirebirdFetchResponsePacketTest {
     private FirebirdBinaryProtocolValue protocolValue;
     
     @Test
-    void assertWriteRow() {
+    void assertGetFetchRowPacket() {
+        BinaryRow row = new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.LONG, 123)));
+        FirebirdFetchResponsePacket actual = FirebirdFetchResponsePacket.getFetchRowPacket(row);
+        assertThat(actual.getStatus(), is(ISCConstants.FETCH_OK));
+        assertThat(actual.getCount(), is(1));
+        assertThat(actual.getRow(), is(row));
+    }
+    
+    @Test
+    void assertGetFetchNoMoreRowsPacket() {
+        FirebirdFetchResponsePacket actual = FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket();
+        assertThat(actual.getStatus(), is(ISCConstants.FETCH_NO_MORE_ROWS));
+        assertThat(actual.getCount(), is(0));
+        assertNull(actual.getRow());
+    }
+    
+    @Test
+    void assertGetFetchEndPacket() {
+        FirebirdFetchResponsePacket actual = FirebirdFetchResponsePacket.getFetchEndPacket();
+        assertThat(actual.getStatus(), is(ISCConstants.FETCH_OK));
+        assertThat(actual.getCount(), is(0));
+        assertNull(actual.getRow());
+    }
+    
+    @Test
+    void assertWriteWithNonNullCellData() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.writerIndex()).thenReturn(0);
         when(byteBuf.writeZero(4)).thenReturn(byteBuf);
         BinaryRow row = new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.LONG, 123)));
         try (MockedStatic<FirebirdBinaryProtocolValueFactory> mocked = mockStatic(FirebirdBinaryProtocolValueFactory.class)) {
             mocked.when(() -> FirebirdBinaryProtocolValueFactory.getBinaryProtocolValue(FirebirdBinaryColumnType.LONG)).thenReturn(protocolValue);
-            FirebirdFetchResponsePacket packet = FirebirdFetchResponsePacket.getFetchRowPacket(row);
-            packet.write(payload);
+            FirebirdFetchResponsePacket.getFetchRowPacket(row).write(payload);
             verify(payload).writeInt4(FirebirdCommandPacketType.FETCH_RESPONSE.getValue());
             verify(payload).writeInt4(ISCConstants.FETCH_OK);
             verify(payload).writeInt4(1);
@@ -71,21 +97,23 @@ class FirebirdFetchResponsePacketTest {
     }
     
     @Test
-    void assertWriteNoMoreRows() {
-        FirebirdFetchResponsePacket packet = FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket();
-        packet.write(payload);
+    void assertWriteWithNullCellData() {
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.writerIndex()).thenReturn(0);
+        when(byteBuf.writeZero(4)).thenReturn(byteBuf);
+        when(byteBuf.getByte(0)).thenReturn((byte) 0);
+        FirebirdFetchResponsePacket.getFetchRowPacket(new BinaryRow(Collections.singleton(new BinaryCell(FirebirdBinaryColumnType.LONG, null)))).write(payload);
         verify(payload).writeInt4(FirebirdCommandPacketType.FETCH_RESPONSE.getValue());
-        verify(payload).writeInt4(ISCConstants.FETCH_NO_MORE_ROWS);
-        verify(payload).writeInt4(0);
-        verify(payload, never()).getByteBuf();
+        verify(payload).writeInt4(ISCConstants.FETCH_OK);
+        verify(byteBuf).setByte(0, 1);
     }
     
     @Test
-    void assertWriteEnd() {
-        FirebirdFetchResponsePacket packet = FirebirdFetchResponsePacket.getFetchEndPacket();
-        packet.write(payload);
+    void assertWriteWithNullRowData() {
+        FirebirdFetchResponsePacket.getFetchNoMoreRowsPacket().write(payload);
         verify(payload).writeInt4(FirebirdCommandPacketType.FETCH_RESPONSE.getValue());
-        verify(payload, times(2)).writeInt4(0);
+        verify(payload).writeInt4(ISCConstants.FETCH_NO_MORE_ROWS);
+        verify(payload).writeInt4(0);
         verify(payload, never()).getByteBuf();
     }
 }

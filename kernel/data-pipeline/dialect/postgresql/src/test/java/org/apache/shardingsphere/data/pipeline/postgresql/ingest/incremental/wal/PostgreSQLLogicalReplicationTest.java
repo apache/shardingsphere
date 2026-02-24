@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wa
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.BaseLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.PostgreSQLLogSequenceNumber;
+import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +30,7 @@ import org.postgresql.PGConnection;
 import org.postgresql.jdbc.PgConnection;
 import org.postgresql.replication.LogSequenceNumber;
 import org.postgresql.replication.PGReplicationConnection;
+import org.postgresql.replication.PGReplicationStream;
 import org.postgresql.replication.fluent.ChainedStreamBuilder;
 import org.postgresql.replication.fluent.logical.ChainedLogicalStreamBuilder;
 
@@ -88,7 +90,12 @@ class PostgreSQLLogicalReplicationTest {
         when(chainedLogicalStreamBuilder.withSlotOption(anyString(), eq(true))).thenReturn(chainedLogicalStreamBuilder, chainedLogicalStreamBuilder);
         BaseLogSequenceNumber basePosition = new PostgreSQLLogSequenceNumber(startPosition);
         logicalReplication.createReplicationStream(connection, "", basePosition);
-        verify(chainedLogicalStreamBuilder).start();
+        PGReplicationStream stream = null;
+        try {
+            stream = verify(chainedLogicalStreamBuilder).start();
+        } finally {
+            QuietlyCloser.close(stream);
+        }
     }
     
     @Test

@@ -54,8 +54,7 @@ public final class FirebirdCommandExecuteEngine implements CommandExecuteEngine 
     @Override
     public FirebirdCommandPacket getCommandPacket(final PacketPayload payload, final CommandPacketType type, final ConnectionSession connectionSession) {
         return FirebirdCommandPacketFactory.newInstance((FirebirdCommandPacketType) type,
-                (FirebirdPacketPayload) payload, FirebirdConnectionProtocolVersion.getInstance()
-                        .getProtocolVersion(connectionSession.getConnectionId()));
+                (FirebirdPacketPayload) payload, FirebirdConnectionProtocolVersion.getInstance().getProtocolVersion(connectionSession.getConnectionId()));
     }
     
     @Override

@@ -438,6 +438,12 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager"
+      },
+      "type": "java.lang.Record"
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy"
       },
       "type": "java.lang.RuntimeException"
@@ -495,18 +501,6 @@
         "typeReached": "org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"
       },
       "type": "java.lang.Throwable"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
-      },
-      "type": "java.lang.Throwable",
-      "methods": [
-        {
-          "name": "getSuppressed",
-          "parameterTypes": []
-        }
-      ]
     },
     {
       "condition": {
@@ -9683,12 +9677,6 @@
         "typeReached": "org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.variable.charset.PostgreSQLCharacterSets"
       },
       "glob": "META-INF/services/java.nio.charset.spi.CharsetProvider"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository"
-      },
-      "glob": "META-INF/services/java.time.zone.ZoneRulesProvider"
     },
     {
       "condition": {

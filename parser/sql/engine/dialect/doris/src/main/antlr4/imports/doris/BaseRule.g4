@@ -162,6 +162,7 @@ identifierKeywordsUnambiguous
     | BOOL
     | BTREE
     | BUCKETS
+    | BUILTIN
     | CASCADED
     | CATALOG_NAME
     | CHAIN
@@ -258,6 +259,7 @@ identifierKeywordsUnambiguous
     | GROUP_REPLICATION
     | GROUPS
     | HASH
+    | HDFS
     | HISTOGRAM
     | HISTORY
     | HOSTS
@@ -291,6 +293,7 @@ identifierKeywordsUnambiguous
     | LEVEL
     | LINESTRING
     | LIST
+    | LOCATION
     | LOCKED
     | LOCKS
     | LOGFILE
@@ -370,6 +373,7 @@ identifierKeywordsUnambiguous
     | OPEN
     | OPTIONAL
     | OPTIONS
+    | ORDER
     | ORDINALITY
     | ORGANIZATION
     | OTHERS
@@ -386,6 +390,7 @@ identifierKeywordsUnambiguous
     | PASSWORD
     | PASSWORD_LOCK_TIME
     | PATH
+    | PAUSE
     | PHASE
     | PLUGINS
     | PLUGIN_DIR
@@ -398,6 +403,7 @@ identifierKeywordsUnambiguous
     | PREV
     | PRIVILEGES
     | PRIVILEGE_CHECKS_USER
+    | PROC
     | PROCESSLIST
     | PROFILES
     | PROFILE
@@ -429,6 +435,7 @@ identifierKeywordsUnambiguous
     | REPLICATE_REWRITE_DB
     | REPLICATE_WILD_DO_TABLE
     | REPLICATE_WILD_IGNORE_TABLE
+    | REPOSITORY
     | REQUIRE_ROW_FORMAT
 //    | REQUIRE_TABLE_PRIMARY_KEY_CHECK
     | USER_RESOURCES
@@ -498,6 +505,7 @@ identifierKeywordsUnambiguous
     | SWAPS
     | SWITCHES
     | SYSTEM
+    | S3
     | TABLE
     | TABLES
     | TABLESPACE
@@ -525,12 +533,14 @@ identifierKeywordsUnambiguous
     | UNDOFILE
     | UNDO_BUFFER_SIZE
     | UNKNOWN
+    | UNSET
     | UNTIL
     | UPGRADE
     | USER
     | USE_FRM
     | VALIDATION
     | VALUE
+    | VARIABLE
     | VARIABLES
     | VCPU
     | VERBOSE
@@ -600,6 +610,7 @@ identifierKeywordsAmbiguous3Roles
     : EVENT
     | FILE
     | JOB
+    | KAFKA
     | NONE
     | PROCESS
     | PROXY
@@ -803,6 +814,10 @@ columnNames
     ;
 
 groupName
+    : identifier
+    ;
+
+repositoryName
     : identifier
     ;
 

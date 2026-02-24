@@ -25,12 +25,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,6 +58,30 @@ class DataSourceUnitPersistServiceTest {
         Map<String, DataSourcePoolProperties> actual = persistService.load("foo_db");
         assertThat(actual.size(), is(1));
         assertThat(actual.get("foo_ds").getPoolClassName(), is("org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource"));
+    }
+    
+    @Test
+    void assertLoadWhenActiveVersionIsEmpty() {
+        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/active_version")).thenReturn("");
+        assertFalse(persistService.load("foo_db", "foo_ds").isPresent());
+    }
+    
+    @Test
+    void assertLoadWhenDataSourceContentIsEmpty() {
+        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/active_version")).thenReturn("10");
+        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/versions/10")).thenReturn("");
+        assertFalse(persistService.load("foo_db", "foo_ds").isPresent());
+    }
+    
+    @Test
+    void assertLoadWithInvalidDataSource() {
+        when(repository.getChildrenKeys("/metadata/foo_db/data_sources/units")).thenReturn(Arrays.asList("foo_ds", "bar_ds"));
+        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/active_version")).thenReturn("10");
+        when(repository.query("/metadata/foo_db/data_sources/units/foo_ds/versions/10")).thenReturn("{dataSourceClassName: org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource}");
+        Map<String, DataSourcePoolProperties> actual = persistService.load("foo_db");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get("foo_ds").getPoolClassName(), is("org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource"));
+        assertFalse(actual.containsKey("bar_ds"));
     }
     
     @Test

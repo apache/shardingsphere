@@ -35,7 +35,7 @@ import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -100,7 +100,7 @@ class LiteralExpressionConverterTest {
     void assertConvertBooleanLiteral() {
         SqlLiteral actual = (SqlLiteral) LiteralExpressionConverter.convert(new LiteralExpressionSegment(0, 0, true), null).orElse(null);
         assertNotNull(actual);
-        assertThat(actual.getValueAs(Boolean.class), is(true));
+        assertTrue(actual.getValueAs(Boolean.class));
     }
     
     @Test

@@ -98,7 +98,7 @@ public final class MergeEngine {
         return Optional.empty();
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("rawtypes")
     private MergedResult decorate(final MergedResult mergedResult, final QueryContext queryContext) throws SQLException {
         MergedResult result = null;
         for (ResultProcessEngine each : engines) {

@@ -29,8 +29,8 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RequiredArgsConstructor
 @SuppressWarnings({"SqlDialectInspection", "SqlNoDataSourceInspection"})
@@ -373,7 +373,7 @@ public final class OrderItemRepository {
         }
         try (Connection conn = dataSource.getConnection()) {
             ResultSet resultSet = conn.createStatement().executeQuery("SELECT * FROM t_order_item WHERE user_id = 2024");
-            assertThat(resultSet.next(), is(false));
+            assertFalse(resultSet.next());
         }
         try (Connection conn = dataSource.getConnection()) {
             try {
@@ -388,7 +388,7 @@ public final class OrderItemRepository {
         }
         try (Connection conn = dataSource.getConnection()) {
             ResultSet resultSet = conn.createStatement().executeQuery("SELECT * FROM t_order_item WHERE user_id = 2025");
-            assertThat(resultSet.next(), is(true));
+            assertTrue(resultSet.next());
         }
     }
 }

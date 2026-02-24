@@ -17,19 +17,32 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.prepare;
 
+import org.apache.shardingsphere.database.protocol.firebird.exception.FirebirdProtocolException;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,9 +54,7 @@ class FirebirdReturnColumnPacketTest {
     
     @Test
     void assertWrite() {
-        ShardingSphereColumn column = new ShardingSphereColumn("col", Types.VARCHAR, false, false, false, true, false, true);
-        ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
-        FirebirdReturnColumnPacket packet = new FirebirdReturnColumnPacket(Arrays.asList(
+        FirebirdReturnColumnPacket packet = createPacket(Arrays.asList(
                 FirebirdSQLInfoPacketType.SQLDA_SEQ,
                 FirebirdSQLInfoPacketType.TYPE,
                 FirebirdSQLInfoPacketType.SUB_TYPE,
@@ -54,31 +65,60 @@ class FirebirdReturnColumnPacketTest {
                 FirebirdSQLInfoPacketType.RELATION,
                 FirebirdSQLInfoPacketType.RELATION_ALIAS,
                 FirebirdSQLInfoPacketType.OWNER,
-                FirebirdSQLInfoPacketType.DESCRIBE_END), 1, table, column, "t", "c", "o", 99, false, null);
-        when(payload.getCharset()).thenReturn(java.nio.charset.StandardCharsets.UTF_8);
+                FirebirdSQLInfoPacketType.DESCRIBE_END), Types.VARCHAR, 99, false, null);
+        when(payload.getCharset()).thenReturn(StandardCharsets.UTF_8);
         packet.write(payload);
         verify(payload).writeInt1(FirebirdSQLInfoPacketType.SQLDA_SEQ.getCode());
         verify(payload).writeInt1(FirebirdSQLInfoPacketType.DESCRIBE_END.getCode());
         verify(payload).writeInt4LE(99);
     }
     
-    @Test
-    void assertWriteUsesDefaultColumnLength() {
-        ShardingSphereColumn column = new ShardingSphereColumn("col", Types.INTEGER, false, false, false, true, false, true);
-        ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
-        FirebirdReturnColumnPacket packet = new FirebirdReturnColumnPacket(Collections.singletonList(FirebirdSQLInfoPacketType.LENGTH),
-                1, table, column, "t", "c", "o", null, false, null);
-        packet.write(payload);
-        verify(payload).writeInt4LE(4);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertWriteLengthArguments")
+    void assertWriteLength(final String name, final FirebirdBinaryColumnType columnType, final int expectedLength) {
+        FirebirdReturnColumnPacket packet = createPacket(Collections.singletonList(FirebirdSQLInfoPacketType.LENGTH), Types.INTEGER, 99, false, null);
+        try (MockedStatic<FirebirdBinaryColumnType> mocked = mockStatic(FirebirdBinaryColumnType.class)) {
+            mocked.when(() -> FirebirdBinaryColumnType.valueOfJDBCType(Types.INTEGER)).thenReturn(columnType);
+            packet.write(payload);
+        }
+        verify(payload).writeInt4LE(expectedLength);
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertWriteSubTypeArguments")
+    void assertWriteSubType(final String name, final boolean blobColumn, final Integer blobSubType, final int expectedSubType) {
+        createPacket(Collections.singletonList(FirebirdSQLInfoPacketType.SUB_TYPE), Types.INTEGER, null, blobColumn, blobSubType).write(payload);
+        verify(payload).writeInt4LE(expectedSubType);
     }
     
     @Test
-    void assertWriteUsesBlobSubtype() {
-        ShardingSphereColumn column = new ShardingSphereColumn("col", Types.BLOB, false, false, false, true, false, true);
+    void assertWriteWithUnsupportedRequestedItem() {
+        FirebirdReturnColumnPacket packet = createPacket(Collections.singletonList(FirebirdSQLInfoPacketType.SELECT), Types.INTEGER, null, false, null);
+        try (MockedConstruction<FirebirdProtocolException> ignored = mockConstruction(FirebirdProtocolException.class)) {
+            assertThrows(FirebirdProtocolException.class, () -> packet.write(payload));
+        }
+    }
+    
+    private FirebirdReturnColumnPacket createPacket(final Collection<FirebirdSQLInfoPacketType> requestedItems, final int dataType, final Integer columnLength,
+                                                    final boolean blobColumn, final Integer blobSubType) {
+        ShardingSphereColumn column = new ShardingSphereColumn("col", dataType, false, false, false, true, false, true);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
-        FirebirdReturnColumnPacket packet = new FirebirdReturnColumnPacket(Collections.singletonList(FirebirdSQLInfoPacketType.SUB_TYPE),
-                1, table, column, "t", "c", "o", null, true, 7);
-        packet.write(payload);
-        verify(payload).writeInt4LE(7);
+        return new FirebirdReturnColumnPacket(requestedItems, 1, table, column, "t", "c", "o", columnLength, blobColumn, blobSubType);
+    }
+    
+    private static Stream<Arguments> assertWriteLengthArguments() {
+        return Stream.of(
+                Arguments.of("length_varying", FirebirdBinaryColumnType.VARYING, 99),
+                Arguments.of("length_legacy_varying", FirebirdBinaryColumnType.LEGACY_VARYING, 99),
+                Arguments.of("length_text", FirebirdBinaryColumnType.TEXT, 99),
+                Arguments.of("length_legacy_text", FirebirdBinaryColumnType.LEGACY_TEXT, 99),
+                Arguments.of("length_long", FirebirdBinaryColumnType.LONG, FirebirdBinaryColumnType.LONG.getLength()));
+    }
+    
+    private static Stream<Arguments> assertWriteSubTypeArguments() {
+        return Stream.of(
+                Arguments.of("blob_with_subtype", true, 7, 7),
+                Arguments.of("blob_without_subtype", true, null, FirebirdBinaryColumnType.BLOB.getSubtype()),
+                Arguments.of("long_default_subtype", false, null, FirebirdBinaryColumnType.LONG.getSubtype()));
     }
 }

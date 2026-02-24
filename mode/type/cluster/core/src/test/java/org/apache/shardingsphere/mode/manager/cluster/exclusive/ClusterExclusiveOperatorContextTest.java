@@ -26,8 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +44,7 @@ class ClusterExclusiveOperatorContextTest {
     void assertStartTryLock() {
         when(DistributedLockHolder.getDistributedLock("op", repository)).thenReturn(distributedLock);
         when(distributedLock.tryLock(50L)).thenReturn(true);
-        assertThat(new ClusterExclusiveOperatorContext(repository).start("op", 50L), is(true));
+        assertTrue(new ClusterExclusiveOperatorContext(repository).start("op", 50L));
         verify(distributedLock).tryLock(50L);
     }
     

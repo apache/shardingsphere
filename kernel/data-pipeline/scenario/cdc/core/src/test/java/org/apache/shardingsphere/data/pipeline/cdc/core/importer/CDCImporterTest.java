@@ -39,10 +39,10 @@ import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
@@ -81,7 +81,7 @@ class CDCImporterTest {
         CDCImporter importer = new CDCImporter(new LinkedList<>(Collections.singletonList(new CDCChannelProgressPair(channel, progressListener))), 1, 1L, sink, false, null);
         importer.start();
         importer.stop();
-        assertThat(captureAckRecords(channel, 1).get(0).get(0), instanceOf(FinishedRecord.class));
+        assertThat(captureAckRecords(channel, 1).get(0).get(0), isA(FinishedRecord.class));
         assertThat(captureProgressCounts(progressListener, 2), contains(0, 0));
     }
     
@@ -113,7 +113,7 @@ class CDCImporterTest {
         importer.stop();
         List<List<Record>> ackedRecords = captureAckRecords(channel, 1);
         assertThat(ackedRecords.size(), is(1));
-        assertThat(ackedRecords.get(0).get(0), instanceOf(FinishedRecord.class));
+        assertThat(ackedRecords.get(0).get(0), isA(FinishedRecord.class));
         assertThat(captureProgressCounts(progressListener, 2), contains(0, 1));
     }
     

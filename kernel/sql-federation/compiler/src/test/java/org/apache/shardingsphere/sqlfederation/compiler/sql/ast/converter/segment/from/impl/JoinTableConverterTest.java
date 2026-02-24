@@ -40,9 +40,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -98,7 +98,7 @@ class JoinTableConverterTest {
         assertNotNull(actual);
         assertThat(actual.getJoinType(), is(JoinType.INNER));
         assertThat(actual.getConditionType(), is(JoinConditionType.USING));
-        assertThat(actual.getCondition(), instanceOf(SqlNodeList.class));
+        assertThat(actual.getCondition(), isA(SqlNodeList.class));
         assertNotNull(actual.getCondition());
         assertThat(((SqlNodeList) actual.getCondition()).get(0), is(usingNode));
         assertTrue(actual.isNaturalNode().booleanValue());

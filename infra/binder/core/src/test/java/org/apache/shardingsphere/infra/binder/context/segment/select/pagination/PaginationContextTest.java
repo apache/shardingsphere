@@ -34,11 +34,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -78,6 +79,11 @@ class PaginationContextTest {
     }
     
     @Test
+    void assertGetActualOffsetWithByteArrayParameters() {
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getByteArrayParameters()).getActualOffset(), is(30L));
+    }
+    
+    @Test
     void assertGetActualOffsetWithNullOffsetSegment() {
         assertThat(new PaginationContext(null, getRowCountSegment(), getParameters()).getActualOffset(), is(0L));
     }
@@ -91,6 +97,11 @@ class PaginationContextTest {
     void assertGetActualRowCountWithNumberLiteralPaginationValueSegment() {
         assertThat(new PaginationContext(getOffsetSegmentWithNumberLiteralPaginationValueSegment(),
                 getRowCountSegmentWithNumberLiteralPaginationValueSegment(), getParameters()).getActualRowCount().orElse(null), is(20L));
+    }
+    
+    @Test
+    void assertGetActualRowCountWithByteArrayParameters() {
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getByteArrayParameters()).getActualRowCount().orElse(null), is(20L));
     }
     
     @Test
@@ -126,6 +137,10 @@ class PaginationContextTest {
     
     private List<Object> getParameters() {
         return Arrays.asList(30, 20);
+    }
+    
+    private List<Object> getByteArrayParameters() {
+        return Arrays.asList("30".getBytes(StandardCharsets.UTF_8), "20".getBytes(StandardCharsets.UTF_8));
     }
     
     @Test

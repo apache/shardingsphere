@@ -25,8 +25,10 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.assignment.ExpectedRowAlias;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Row alias segment assert.
@@ -43,9 +45,10 @@ public final class RowAliasSegmentAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RowAliasSegment actual, final ExpectedRowAlias expected) {
         assertThat(assertContext.getText("Row alias name assertion error: "), actual.getAlias().getIdentifier().getValue(), is(expected.getAlias()));
-        if (null != expected.getDerivedColumns() && !expected.getDerivedColumns().isEmpty()) {
-            assertThat(assertContext.getText("Row alias derived columns size assertion error: "),
-                    actual.getDerivedColumns().isPresent(), is(true));
+        if (expected.getDerivedColumns().isEmpty()) {
+            assertFalse(actual.getDerivedColumns().isPresent(), assertContext.getText("Row alias derived columns assertion error: "));
+        } else {
+            assertTrue(actual.getDerivedColumns().isPresent(), assertContext.getText("Row alias derived columns size assertion error: "));
             assertThat(assertContext.getText("Row alias derived columns size assertion error: "),
                     actual.getDerivedColumns().get().size(), is(expected.getDerivedColumns().size()));
             int count = 0;
@@ -53,9 +56,6 @@ public final class RowAliasSegmentAssert {
                 ColumnAssert.assertIs(assertContext, each, expected.getDerivedColumns().get(count));
                 count++;
             }
-        } else {
-            assertThat(assertContext.getText("Row alias derived columns assertion error: "),
-                    actual.getDerivedColumns().isPresent(), is(false));
         }
     }
 }

@@ -20,10 +20,6 @@ package org.apache.shardingsphere.infra.binder.engine.statement.dal;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
@@ -31,30 +27,18 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.Ex
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.hamcrest.Matchers.isA;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class ExplainStatementBinderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-    
-    @Mock
-    private ShardingSphereMetaData metaData;
-    
-    @Mock
-    private ShardingSphereDatabase database;
-    
-    @Mock
-    private ShardingSphereSchema schema;
-    
-    @Mock
-    private ShardingSphereTable table;
     
     @Test
     void assertBindWithDMLStatement() {
@@ -62,11 +46,11 @@ class ExplainStatementBinderTest {
         ExplainStatement original = new ExplainStatement(databaseType, dmlStatement);
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, original);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(), "foo_db", hintValueContext, original);
         ExplainStatement actual = new ExplainStatementBinder().bind(original, binderContext);
-        assertNotSame(original, actual);
-        assertThat(actual.getExplainableSQLStatement().getClass(), is(TestDMLStatement.class));
-        assertSame(dmlStatement, actual.getExplainableSQLStatement());
+        assertThat(original, not(actual));
+        assertThat(actual.getExplainableSQLStatement(), isA(TestDMLStatement.class));
+        assertThat(dmlStatement, is(actual.getExplainableSQLStatement()));
     }
     
     @Test
@@ -75,10 +59,10 @@ class ExplainStatementBinderTest {
         ExplainStatement original = new ExplainStatement(databaseType, nonDMLStatement);
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
-        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, original);
+        SQLStatementBinderContext binderContext = new SQLStatementBinderContext(mock(), "foo_db", hintValueContext, original);
         ExplainStatement actual = new ExplainStatementBinder().bind(original, binderContext);
-        assertNotSame(original, actual);
-        assertSame(nonDMLStatement, actual.getExplainableSQLStatement());
+        assertThat(original, not(actual));
+        assertThat(nonDMLStatement, is(actual.getExplainableSQLStatement()));
     }
     
     private static final class TestDMLStatement extends DMLStatement {

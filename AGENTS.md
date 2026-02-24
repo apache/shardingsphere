@@ -20,6 +20,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
     - Use clear naming and reasonable abstractions.
     - Delete unused code; when changing functionality, remove legacy compatibility shims.
     - Keep variable declarations adjacent to first use; if a value must be retained, declare it `final` to satisfy Checkstyle VariableDeclarationUsageDistance.
+    - Single-use local variables must be inlined by default; keep a local variable only when it is reused (for stubbing/verification/assertions) or materially improves readability.
 - **Complete Implementation**: no MVPs/placeholders/TODOs—deliver fully runnable solutions.
 
 ### Performance Standards
@@ -35,7 +36,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Test Naming Simplicity**: keep test names concise and scenario-focused (avoid “ReturnsXXX”/overly wordy or AI-like phrasing); describe the scenario directly.
 - **Coverage Discipline**: follow the dedicated coverage & branch checklist before coding when coverage targets are stated.
 - **Dedicated and scoped tests**: each public production method must be covered by dedicated test methods; each test method covers only one scenario and invokes the target public method at most once (repeat only when the same scenario needs extra assertions), and different branches/inputs belong in separate test methods.
-- **Parameterized tests naming**: all parameterized tests must set an explicit `name` including the index (e.g., `"[{index}] foo={0}"`) so scenarios are distinguishable in reports.
+- **Parameterized tests naming**: all parameterized tests must set an explicit `name` and use the `"{0}"` template for display names.
 - **Mocking Rule**: default to mocks; see Mocking & SPI Guidance for static/constructor mocking and spy avoidance details.
 - **Reflection Rule**: when tests must touch fields or methods via reflection, use `Plugins.getMemberAccessor()`—direct reflection APIs are forbidden.
 
@@ -62,7 +63,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
     - `topic`: technical topic or concept (e.g., "adaptive servo control").
     - `depth`: 1-3 to control semantic layers.
 
-## ⚠️ Dangerous Operation Confirmation Mechanism
+## Dangerous Operation Confirmation Mechanism
 
 ### High-Risk Operation Checklist—obtain explicit confirmation **before** doing any of the following:
 - **File System**: deleting files/directories, bulk edits, or moving system files.
@@ -74,7 +75,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 
 ### Confirmation Template
 
-⚠️ Dangerous operation detected! Operation type: [specific action] Scope of impact: [affected area] Risk assessment: [potential consequence] Please confirm whether to continue. [Requires explicit “yes”, “confirm”, or “proceed”]
+Dangerous operation detected! Operation type: [specific action] Scope of impact: [affected area] Risk assessment: [potential consequence] Please confirm whether to continue. [Requires explicit “yes”, “confirm”, or “proceed”]
 
 ## Workflow
 - Use Sequential Thinking when tasks need decomposition: 6-10 steps (fallback 3-5), one sentence each, actionable.
@@ -88,9 +89,9 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Pre-task checklist (do before planning/coding):** re-read AGENTS.md and `CODE_OF_CONDUCT.md`; restate user goal, constraints, forbidden tools/APIs, coverage expectations, sandbox/network/approval limits; prefer `rg`/`./mvnw`/`apply_patch`; avoid destructive commands (`git reset --hard`, `git checkout --`, bulk deletes) and generated paths like `target/`.
 - **Risk gate:** if any action fits the Dangerous Operation Checklist, pause and use the confirmation template before proceeding.
 - **Planning rules:** use Sequential Thinking with 3-10 actionable steps (no single-step plans) via the plan tool for non-trivial tasks; convert all hard requirements (SPI usage, mocking rules, coverage/test naming, forbidden APIs) into a checklist inside the plan and do not code until each item is addressed or explicitly waived.
-- **Execution discipline:** inspect existing code before edits; keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use and mark retained values `final`; delete dead code and avoid placeholders/TODOs.
-- **Post-task self-check (before replying):** confirm all instructions were honored; verify no placeholders/unused code; ensure Checkstyle/Spotless gates for touched modules are satisfied or explain why not run and what to run; list commands with exit codes; call out risks and follow-ups.
-- **Final response template:** include intent/why, changed files with paths, rationale per file/section, commands run (with exit codes), verification status, and remaining risks/next actions (if tests skipped, state reason and the exact command to run).
+- **Execution discipline:** inspect existing code before edits; keep changes minimal; default to mocks and SPI loaders; keep variable declarations near first use and mark retained values `final`; inline single-use locals by default unless reuse/readability justifies retention; delete dead code and avoid placeholders/TODOs.
+- **Post-task self-check (before replying):** confirm all instructions were honored; verify no placeholders/unused code; ensure Checkstyle/Spotless gates for touched modules are satisfied or explain why not run and what to run; list commands with exit codes; call out risks and follow-ups; complete all applicable checks before replying and do not rely on users to find missed rule violations.
+- **Final response template:** include intent/why, changed files with paths, rationale per file/section, commands run (with exit codes), verification status, and remaining risks/next actions (if tests skipped, state reason and the exact command to run); include a concise self-check result statement confirming final clean status after fixes.
 
 ## Coverage & Branch Checklist
 - When coverage targets are declared (including 100%), list every branch/path with its planned test before coding.
@@ -101,8 +102,9 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 ## Response Style
 
 ### Language and Tone
+- **Language Consistency**: respond in the same language as the user; if the user explicitly specifies a language, prioritize that language.
 - **Friendly and Natural**: interact like a professional peer; avoid stiff formal language.
-- **Use Light Accents**: prepend headings or bullets with emojis such as ✨⚠️ to highlight key points.
+- **No Emojis or Symbols**: do not use emojis or decorative graphic symbols in any reply.
 - **Hit the Point Fast**: start with a sentence that captures the core idea, especially for complex problems.
 
 ### Content Organization
@@ -110,7 +112,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Focused Bullets**: break long paragraphs into short sentences or bullets, each covering a single idea.
 - **Logical Flow**: use ordered lists for multi-step work (1. 2. 3.) and unordered lists for peers (- or *).
 - **Proper Spacing**: keep blank lines or `---` between blocks to boost readability.
-> ❌ Avoid complex tables in the terminal (especially for long, code-heavy, or narrative content).
+> Avoid complex tables in the terminal (especially for long, code-heavy, or narrative content).
 
 ### Visual & Layout Optimization
 - **Keep It Simple**: limit each line length to ≤200 characters.
@@ -135,7 +137,7 @@ This guide is written **for AI coding agents only**. Follow it literally; improv
 - **Visible Status**: surface progress for important actions (e.g., “Processing...”).
 - **Friendly Errors**: clearly explain failures and suggest actionable fixes.
 
-### ✅ Ending Suggestions
+### Ending Suggestions
 - Append a **short summary** after complex content to reiterate the core points.
 - **Guide the Next Step**: close with actionable advice, instructions, or an invitation for follow-up questions.
 

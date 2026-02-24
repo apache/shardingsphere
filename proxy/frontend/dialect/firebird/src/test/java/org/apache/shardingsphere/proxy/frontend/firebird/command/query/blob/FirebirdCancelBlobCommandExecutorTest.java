@@ -33,11 +33,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collection;
-import java.util.OptionalLong;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -76,7 +76,6 @@ class FirebirdCancelBlobCommandExecutorTest {
         DatabasePacket response = actual.iterator().next();
         assertThat(response, isA(FirebirdGenericResponsePacket.class));
         assertThat(((FirebirdGenericResponsePacket) response).getHandle(), is(1));
-        OptionalLong actualBlobId = FirebirdBlobUploadCache.getInstance().getBlobId(CONNECTION_ID, blobHandle);
-        assertThat(actualBlobId.isPresent(), is(false));
+        assertFalse(FirebirdBlobUploadCache.getInstance().getBlobId(CONNECTION_ID, blobHandle).isPresent());
     }
 }

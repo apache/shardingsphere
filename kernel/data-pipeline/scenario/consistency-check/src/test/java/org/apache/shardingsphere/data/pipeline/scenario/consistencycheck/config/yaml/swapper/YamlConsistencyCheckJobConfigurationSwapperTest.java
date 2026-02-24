@@ -29,7 +29,6 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 final class YamlConsistencyCheckJobConfigurationSwapperTest {
@@ -70,7 +69,7 @@ final class YamlConsistencyCheckJobConfigurationSwapperTest {
         assertThat(actual.getJobId(), is("foo_job"));
         assertThat(actual.getParentJobId(), is("parent_job"));
         assertThat(actual.getAlgorithmTypeName(), is("FIXTURE"));
-        assertThat(actual.getSourceDatabaseType(), is(nullValue()));
+        assertNull(actual.getSourceDatabaseType());
     }
     
     @Test

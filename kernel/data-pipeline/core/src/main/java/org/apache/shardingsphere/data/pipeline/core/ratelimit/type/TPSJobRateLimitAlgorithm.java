@@ -29,6 +29,7 @@ import java.util.Properties;
 /**
  * TPS job rate limit algorithm.
  */
+@SuppressWarnings("UnstableApiUsage")
 public final class TPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
     private static final String TPS_KEY = "tps";

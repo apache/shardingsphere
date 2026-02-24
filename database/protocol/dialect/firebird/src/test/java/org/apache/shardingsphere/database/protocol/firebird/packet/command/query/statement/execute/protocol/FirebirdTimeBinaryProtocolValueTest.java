@@ -30,7 +30,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,5 +56,10 @@ class FirebirdTimeBinaryProtocolValueTest {
         int encoded = new FirebirdDateTimeUtils(localDateTime).getEncodedTime();
         new FirebirdTimeBinaryProtocolValue().write(payload, time);
         verify(payload).writeInt4(encoded);
+    }
+    
+    @Test
+    void assertGetLength() {
+        assertThat(new FirebirdTimeBinaryProtocolValue().getLength(payload), is(4));
     }
 }

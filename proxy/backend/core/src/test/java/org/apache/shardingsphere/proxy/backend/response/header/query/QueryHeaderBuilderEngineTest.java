@@ -31,7 +31,7 @@ import org.mockito.MockedStatic;
 import java.sql.SQLException;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -63,6 +63,7 @@ class QueryHeaderBuilderEngineTest {
         Projection projection = mock(Projection.class);
         when(projection.getColumnName()).thenReturn("c1");
         when(projection.getColumnLabel()).thenReturn("l1");
+        when(projection.getExpression()).thenReturn("c1");
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projection));
         QueryResultMetaData queryResultMetaData = mock(QueryResultMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
@@ -78,7 +79,11 @@ class QueryHeaderBuilderEngineTest {
     
     @Test
     void assertBuildWithProjectionsColumnIndexOutOfRange() {
-        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(mock(Projection.class)));
+        Projection projection = mock(Projection.class);
+        when(projection.getColumnLabel()).thenReturn("label");
+        when(projection.getColumnName()).thenReturn("column");
+        when(projection.getExpression()).thenReturn("column");
+        ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projection));
         assertThrows(ColumnIndexOutOfRangeException.class, () -> new QueryHeaderBuilderEngine(databaseType).build(projectionsContext, mock(), mock(), 2));
     }
 }

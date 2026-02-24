@@ -42,7 +42,6 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -78,7 +77,7 @@ class PushDownMetaDataRefreshEngineTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         PushDownMetaDataRefresher<SQLStatement> refresher = mock(PushDownMetaDataRefresher.class);
         when(TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatement.getClass())).thenReturn(Optional.of(refresher));
-        assertTrue(new PushDownMetaDataRefreshEngine(sqlStatementContext).isNeedRefresh());
+        assertFalse(new PushDownMetaDataRefreshEngine(sqlStatementContext).isNeedRefresh());
     }
     
     @SuppressWarnings("unchecked")
@@ -95,7 +94,8 @@ class PushDownMetaDataRefreshEngineTest {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         PushDownMetaDataRefresher<SQLStatement> refresher = mock(PushDownMetaDataRefresher.class);
-        new PushDownMetaDataRefreshEngine(sqlStatementContext, refresher).refresh(
+        when(TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatement.getClass())).thenReturn(Optional.of(refresher));
+        new PushDownMetaDataRefreshEngine(sqlStatementContext).refresh(
                 metaDataManagerPersistService, database, props, Collections.singleton(new RouteUnit(new RouteMapper("logic_ds", "actual_ds"), Collections.emptyList())));
         verify(refresher).refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", storageType, sqlStatement, props);
     }
@@ -108,7 +108,8 @@ class PushDownMetaDataRefreshEngineTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         PushDownMetaDataRefresher<SQLStatement> refresher = mock(PushDownMetaDataRefresher.class);
-        new PushDownMetaDataRefreshEngine(sqlStatementContext, refresher).refresh(metaDataManagerPersistService, database, props, Collections.emptyList());
+        when(TypedSPILoader.findService(PushDownMetaDataRefresher.class, sqlStatement.getClass())).thenReturn(Optional.of(refresher));
+        new PushDownMetaDataRefreshEngine(sqlStatementContext).refresh(metaDataManagerPersistService, database, props, Collections.emptyList());
         verify(refresher).refresh(metaDataManagerPersistService, database, null, "foo_schema", databaseType, sqlStatement, props);
     }
 }

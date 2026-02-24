@@ -72,9 +72,6 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
     }
     
     private boolean isInnerCommaJoin(final SQLStatement sqlStatement) {
-        if (!(sqlStatement instanceof SelectStatement)) {
-            return true;
-        }
         SelectStatement selectStatement = (SelectStatement) sqlStatement;
         if (!selectStatement.getFrom().isPresent() || !(selectStatement.getFrom().get() instanceof JoinTableSegment)) {
             return true;

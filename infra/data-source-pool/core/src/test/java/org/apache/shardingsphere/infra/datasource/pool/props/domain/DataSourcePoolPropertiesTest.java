@@ -28,12 +28,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -102,7 +102,7 @@ class DataSourcePoolPropertiesTest {
     
     @Test
     void assertNotEqualsWithNullValue() {
-        assertThat(new DataSourcePoolProperties(MockedDataSource.class.getName(), Collections.emptyMap()), not(nullValue()));
+        assertNotNull(new DataSourcePoolProperties(MockedDataSource.class.getName(), Collections.emptyMap()));
     }
     
     @Test

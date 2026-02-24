@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.firebird.handler.admin;
 
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
@@ -26,55 +27,71 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.FirebirdSetVariableAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.firebird.handler.admin.executor.FirebirdShowVariableExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class FirebirdAdminExecutorCreatorTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Firebird");
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "Firebird");
     
-    @Test
-    void assertCreateWithSelectNonSystem() {
-        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
-        when(selectStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
-        assertThat(new FirebirdAdminExecutorCreator().create(selectStatementContext, "SELECT 1", "", Collections.emptyList()), is(Optional.empty()));
+    private final DatabaseAdminExecutorCreator creator = DatabaseTypedSPILoader.getService(DatabaseAdminExecutorCreator.class, DATABASE_TYPE);
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("createArguments")
+    void assertCreate(final String name, final SQLStatementContext sqlStatementContext, final String sql, final Class<? extends DatabaseAdminExecutor> expectedExecutorType) {
+        final Optional<DatabaseAdminExecutor> actual = creator.create(sqlStatementContext, sql, "", Collections.emptyList());
+        if (null == expectedExecutorType) {
+            assertFalse(actual.isPresent(), name);
+        } else {
+            assertTrue(actual.isPresent(), name);
+            assertThat(actual.get(), isA(expectedExecutorType));
+        }
     }
     
-    @Test
-    void assertCreateWithSetStatement() {
-        SetStatement sqlStatement = new SetStatement(databaseType, Collections.emptyList());
+    private static Stream<Arguments> createArguments() {
+        return Stream.of(
+                Arguments.of("select statement returns empty", createSelectStatementContext(), "SELECT 1", null),
+                Arguments.of("set statement returns set executor", createSetStatementContext(), "SET NAMES utf8", FirebirdSetVariableAdminExecutor.class),
+                Arguments.of("show statement returns show executor", createShowStatementContext(), "SHOW server_version", FirebirdShowVariableExecutor.class),
+                Arguments.of("delete statement returns empty", createOtherStatementContext(), "DELETE FROM t WHERE id = 1", null));
+    }
+    
+    private static SQLStatementContext createSetStatementContext() {
+        SetStatement sqlStatement = new SetStatement(DATABASE_TYPE, Collections.emptyList());
         sqlStatement.buildAttributes();
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
-        Optional<DatabaseAdminExecutor> actual = new FirebirdAdminExecutorCreator().create(sqlStatementContext, "SET NAMES utf8", "", Collections.emptyList());
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(FirebirdSetVariableAdminExecutor.class));
+        return new CommonSQLStatementContext(sqlStatement);
     }
     
-    @Test
-    void assertCreateWithShowSQLStatement() {
-        ShowStatement sqlStatement = new ShowStatement(databaseType, "server_version");
+    private static SQLStatementContext createShowStatementContext() {
+        ShowStatement sqlStatement = new ShowStatement(DATABASE_TYPE, "server_version");
         sqlStatement.buildAttributes();
-        Optional<DatabaseAdminExecutor> actual = new FirebirdAdminExecutorCreator().create(new CommonSQLStatementContext(sqlStatement), "SHOW server_version", "", Collections.emptyList());
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), isA(FirebirdShowVariableExecutor.class));
+        return new CommonSQLStatementContext(sqlStatement);
     }
     
-    @Test
-    void assertCreateWithDMLStatement() {
-        DeleteStatementContext sqlStatementContext = new DeleteStatementContext(new DeleteStatement(databaseType));
-        assertThat(new FirebirdAdminExecutorCreator().create(sqlStatementContext, "DELETE FROM t WHERE id = 1", "", Collections.emptyList()), is(Optional.empty()));
+    private static SQLStatementContext createSelectStatementContext() {
+        SelectStatementContext result = mock(SelectStatementContext.class);
+        when(result.getSqlStatement()).thenReturn(new SelectStatement(DATABASE_TYPE));
+        return result;
+    }
+    
+    private static SQLStatementContext createOtherStatementContext() {
+        return new DeleteStatementContext(new DeleteStatement(DATABASE_TYPE));
     }
 }

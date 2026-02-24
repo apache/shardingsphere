@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.quer
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 
 import java.math.BigInteger;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -62,7 +63,11 @@ public final class UniqueKeyIngestPosition<T> implements IngestPosition {
             String upper = null == upperBound ? null : upperBound.toString();
             return ofString(range.isLowerInclusive() ? Range.closed(lower, upper) : Range.openClosed(lower, upper));
         }
-        // TODO support more types, e.g. byte[] (MySQL varbinary)
+        if (lowerBound instanceof byte[]) {
+            byte[] lower = (byte[]) lowerBound;
+            byte[] upper = (byte[]) upperBound;
+            return ofBinary(range.isLowerInclusive() ? Range.closed(lower, upper) : Range.openClosed(lower, upper));
+        }
         return ofUnsplit();
     }
     
@@ -91,6 +96,16 @@ public final class UniqueKeyIngestPosition<T> implements IngestPosition {
      */
     public static UniqueKeyIngestPosition<String> ofString(final Range<String> range) {
         return new UniqueKeyIngestPosition<>('s', range);
+    }
+    
+    /**
+     * Create binary unique key ingest position.
+     *
+     * @param range range
+     * @return binary unique key ingest position
+     */
+    public static UniqueKeyIngestPosition<byte[]> ofBinary(final Range<byte[]> range) {
+        return new UniqueKeyIngestPosition<>('b', range);
     }
     
     /**
@@ -123,6 +138,10 @@ public final class UniqueKeyIngestPosition<T> implements IngestPosition {
                 return ofInteger(Range.closed(lower, upper));
             case 's':
                 return ofString(Range.closed(lowerBound, upperBound));
+            case 'b':
+                byte[] lowerBytes = Strings.isNullOrEmpty(lowerBound) ? null : Base64.getDecoder().decode(lowerBound);
+                byte[] upperBytes = Strings.isNullOrEmpty(upperBound) ? null : Base64.getDecoder().decode(upperBound);
+                return ofBinary(Range.closed(lowerBytes, upperBytes));
             case 'u':
                 return ofUnsplit();
             default:
@@ -147,6 +166,10 @@ public final class UniqueKeyIngestPosition<T> implements IngestPosition {
             case 'u':
                 encodedLowerBound = null == lowerBound ? "" : lowerBound.toString();
                 encodedUpperBound = null == upperBound ? "" : upperBound.toString();
+                break;
+            case 'b':
+                encodedLowerBound = null == lowerBound ? "" : Base64.getEncoder().encodeToString((byte[]) lowerBound);
+                encodedUpperBound = null == upperBound ? "" : Base64.getEncoder().encodeToString((byte[]) upperBound);
                 break;
             default:
                 throw new RuntimeException("Unknown unique key position type: " + getType());

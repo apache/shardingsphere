@@ -157,9 +157,10 @@ public final class JoinTableSegmentBinder {
     
     private static Collection<ProjectionSegment> getProjectionSegmentsByTableAliasOrName(final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                                          final String tableAliasOrName) {
-        ShardingSpherePreconditions.checkContains(tableBinderContexts.keySet(), new CaseInsensitiveString(tableAliasOrName),
+        ShardingSpherePreconditions.checkNotNull(tableAliasOrName, () -> new IllegalStateException("Table alias or name for shorthand projection segment owner can not be null."));
+        ShardingSpherePreconditions.checkContains(tableBinderContexts.keySet(), CaseInsensitiveString.of(tableAliasOrName),
                 () -> new IllegalStateException(String.format("Can not find table binder context by table alias or name %s.", tableAliasOrName)));
-        return tableBinderContexts.get(new CaseInsensitiveString(tableAliasOrName)).iterator().next().getProjectionSegments();
+        return tableBinderContexts.get(CaseInsensitiveString.of(tableAliasOrName)).iterator().next().getProjectionSegments();
     }
     
     private static Map<String, ProjectionSegment> getUsingColumnsByNaturalJoin(final JoinTableSegment segment, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
@@ -178,10 +179,14 @@ public final class JoinTableSegmentBinder {
     
     private static Map<String, ProjectionSegment> getUsingColumns(final Collection<ProjectionSegment> projectionSegments, final Collection<ColumnSegment> usingColumns, final String joinType) {
         Multimap<CaseInsensitiveString, ProjectionSegment> columnLabelProjectionSegments = LinkedHashMultimap.create();
-        projectionSegments.forEach(each -> columnLabelProjectionSegments.put(new CaseInsensitiveString(each.getColumnLabel()), each));
+        for (ProjectionSegment projectionSegment : projectionSegments) {
+            if (null != projectionSegment.getColumnLabel()) {
+                columnLabelProjectionSegments.put(CaseInsensitiveString.of(projectionSegment.getColumnLabel()), projectionSegment);
+            }
+        }
         Map<String, ProjectionSegment> result = new CaseInsensitiveMap<>();
         for (ColumnSegment each : usingColumns) {
-            LinkedList<ProjectionSegment> groupProjectionSegments = new LinkedList<>(columnLabelProjectionSegments.get(new CaseInsensitiveString(each.getIdentifier().getValue())));
+            LinkedList<ProjectionSegment> groupProjectionSegments = new LinkedList<>(columnLabelProjectionSegments.get(CaseInsensitiveString.of(each.getIdentifier().getValue())));
             if (!groupProjectionSegments.isEmpty()) {
                 ProjectionSegment targetProjectionSegment =
                         JoinType.RIGHT.name().equalsIgnoreCase(joinType) ? groupProjectionSegments.descendingIterator().next() : groupProjectionSegments.iterator().next();

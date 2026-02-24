@@ -203,13 +203,13 @@ After enabling WSL2, download and install `rancher-sandbox/rancher-desktop` usin
 and configure `dockerd(moby)` to use the `Container Engine`.
 
 ```shell
-[Environment]::SetEnvironmentVariable('DOCKER_API_VERSION','1.44','Machine')
 winget install --id SUSE.RancherDesktop --source winget --skip-dependencies
 # Open a new PowerShell 7 terminal
 rdctl start --application.start-in-background --container-engine.name=moby --kubernetes.enabled=false
 
 @'
 {
+  "min-api-version": "1.41",
   "features": {
     "containerd-snapshotter": true
   },
@@ -301,7 +301,7 @@ However, it is not necessary to install Container Runtime.
 
 ##### Native toolchain for static compilation
 
-Developers who want to build a `mostly statically linked GraalVM Native Image` or a `fully statically linked GraalVM Native Image`,
+Developers who want to build a `fully statically linked GraalVM Native Image`,
 will need to build musl from source as described in https://www.graalvm.org/latest/reference-manual/native-image/guides/build-static-executables/ .
 
 #### Build a dynamically linked GraalVM Native Image

@@ -79,10 +79,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -257,6 +258,22 @@ class PostgreSQLAuthenticationEngineTest {
     }
     
     @Test
+    void assertLoginWithAuthorizedDatabase() {
+        PostgreSQLPacketPayload payload = createStartupPayload(USERNAME, DATABASE_NAME);
+        AuthorityRule authorityRule = createAuthorityRule(new UserConfiguration(USERNAME, PASSWORD, "", null, false), Collections.emptyMap(), null);
+        MetaDataContexts metaDataContexts = createMetaDataContexts(authorityRule, true, DATABASE_NAME);
+        ContextManager contextManager = mockContextManager(metaDataContexts);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        authenticationEngine.authenticate(channelHandlerContext, payload);
+        byte[] md5Salt = getMd5Salt(authenticationEngine);
+        PostgreSQLPacketPayload passwordPayload = createPasswordMessage(createMd5Digest(USERNAME, PASSWORD, md5Salt));
+        AuthenticationResult actual = authenticationEngine.authenticate(channelHandlerContext, passwordPayload);
+        verify(channelHandlerContext).write(any(PostgreSQLAuthenticationOKPacket.class));
+        verify(channelHandlerContext).writeAndFlush(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
+        assertTrue(actual.isFinished());
+    }
+    
+    @Test
     void assertLoginWithNullDatabase() {
         PostgreSQLPacketPayload payload = createStartupPayload(USERNAME, null);
         AuthorityRule authorityRule = createAuthorityRule(new UserConfiguration(USERNAME, PASSWORD, "", null, false), Collections.emptyMap(), null);
@@ -269,7 +286,7 @@ class PostgreSQLAuthenticationEngineTest {
         AuthenticationResult actual = authenticationEngine.authenticate(channelHandlerContext, passwordPayload);
         verify(channelHandlerContext).write(any(PostgreSQLAuthenticationOKPacket.class));
         verify(channelHandlerContext).writeAndFlush(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
-        assertThat(actual.isFinished(), is(true));
+        assertTrue(actual.isFinished());
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {

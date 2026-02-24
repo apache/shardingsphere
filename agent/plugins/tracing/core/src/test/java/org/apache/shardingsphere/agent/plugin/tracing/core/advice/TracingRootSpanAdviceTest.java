@@ -23,7 +23,7 @@ import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class TracingRootSpanAdviceTest {

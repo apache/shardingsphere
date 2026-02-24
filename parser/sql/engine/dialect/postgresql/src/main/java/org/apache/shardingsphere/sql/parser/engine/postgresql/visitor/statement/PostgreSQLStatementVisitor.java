@@ -168,6 +168,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitValueSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ExpressionLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.ParameterMarkerLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
@@ -254,11 +255,16 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     }
     
     @Override
+    public final ASTNode visitOwner(final OwnerContext ctx) {
+        return new OwnerSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+    }
+    
+    @Override
     public final ASTNode visitTableName(final TableNameContext ctx) {
         SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(ctx.name().getStart().getStartIndex(), ctx.name().getStop().getStopIndex(), (IdentifierValue) visit(ctx.name())));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
+            result.setOwner((OwnerSegment) visit(owner));
         }
         return result;
     }
@@ -268,7 +274,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         ColumnSegment result = new ColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx.name()));
         OwnerContext owner = ctx.owner();
         if (null != owner) {
-            result.setOwner(new OwnerSegment(owner.getStart().getStartIndex(), owner.getStop().getStopIndex(), (IdentifierValue) visit(owner.identifier())));
+            result.setOwner((OwnerSegment) visit(owner));
         }
         return result;
     }
@@ -445,7 +451,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         }
         ExpressionSegment caseExpr = null == ctx.caseArg() ? null : (ExpressionSegment) visit(ctx.caseArg().aExpr());
         ExpressionSegment elseExpr = null == ctx.caseDefault() ? null : (ExpressionSegment) visit(ctx.caseDefault().aExpr());
-        return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr);
+        return new CaseWhenExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), caseExpr, whenExprs, thenExprs, elseExpr, getOriginalText(ctx));
     }
     
     @Override
@@ -1251,6 +1257,8 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         FunctionSegment result = new FunctionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), functionName, getOriginalText(ctx));
         if (null != funcNameContext.colId()) {
             result.setOwner(new OwnerSegment(funcNameContext.colId().start.getStartIndex(), funcNameContext.colId().stop.getStopIndex(), new IdentifierValue(funcNameContext.colId().getText())));
+        } else if (null != funcNameContext.owner() && null != funcNameContext.typeFunctionName()) {
+            result.setOwner((OwnerSegment) visit(funcNameContext.owner()));
         }
         result.getParameters().addAll(expressionSegments);
         return result;
@@ -1361,32 +1369,34 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.ALL()) {
             return null;
         }
-        ASTNode astNode = visit(ctx.cExpr());
-        if (astNode instanceof ParameterMarkerExpressionSegment) {
-            return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
-        }
-        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
-                (null == ((ExpressionSegment) astNode).getText()) ? null : Long.parseLong(((ExpressionSegment) astNode).getText()));
+        return createLimitValueSegment(ctx, (ExpressionSegment) visit(ctx.aExpr()));
     }
     
     @Override
     public ASTNode visitSelectOffsetValue(final SelectOffsetValueContext ctx) {
-        ASTNode astNode = visit(ctx.cExpr());
-        if (astNode instanceof ParameterMarkerExpressionSegment) {
-            return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
-        }
-        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
-                (null == ((ExpressionSegment) astNode).getText()) ? null : Long.parseLong(((ExpressionSegment) astNode).getText()));
+        return createLimitValueSegment(ctx, (ExpressionSegment) visit(ctx.aExpr()));
     }
     
     @Override
     public ASTNode visitSelectFetchValue(final SelectFetchValueContext ctx) {
-        ASTNode astNode = visit(ctx.cExpr());
-        if (astNode instanceof ParameterMarkerExpressionSegment) {
-            return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
+        return createLimitValueSegment(ctx, (ExpressionSegment) visit(ctx.aExpr()));
+    }
+    
+    private LimitValueSegment createLimitValueSegment(final ParserRuleContext ctx, final ExpressionSegment segment) {
+        if (segment instanceof ParameterMarkerExpressionSegment) {
+            return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) segment).getParameterMarkerIndex());
         }
-        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
-                (null == ((ExpressionSegment) astNode).getText()) ? null : Long.parseLong(((ExpressionSegment) astNode).getText()));
+        if (segment instanceof TypeCastExpression) {
+            return createLimitValueSegment(ctx, ((TypeCastExpression) segment).getExpression());
+        }
+        if (segment instanceof LiteralExpressionSegment) {
+            Object literals = ((LiteralExpressionSegment) segment).getLiterals();
+            if (null == literals) {
+                return ctx instanceof SelectOffsetValueContext ? new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), 0L) : null;
+            }
+            return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(literals.toString()));
+        }
+        return new ExpressionLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), segment);
     }
     
     private LimitSegment createLimitSegmentWhenLimitAndOffset(final SelectLimitContext ctx) {

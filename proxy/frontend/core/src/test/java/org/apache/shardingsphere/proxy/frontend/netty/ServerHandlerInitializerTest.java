@@ -19,22 +19,29 @@ package org.apache.shardingsphere.proxy.frontend.netty;
 
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.ConstructionMockSettings;
+import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @ConstructionMockSettings(FrontendChannelInboundHandler.class)
+@StaticMockSettings(ProxyContext.class)
 class ServerHandlerInitializerTest {
     
     @Test
@@ -42,10 +49,14 @@ class ServerHandlerInitializerTest {
         SocketChannel channel = mock(SocketChannel.class);
         ChannelPipeline pipeline = mock(ChannelPipeline.class);
         when(channel.pipeline()).thenReturn(pipeline);
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_CONNECTION_IDLE_TIMEOUT)).thenReturn(28800L);
         new ServerHandlerInitializer(TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).initChannel(channel);
         verify(pipeline).addLast(any(ChannelAttrInitializer.class));
         verify(pipeline).addLast(any(PacketCodec.class));
         verify(pipeline).addLast(any(FrontendChannelLimitationInboundHandler.class));
+        verify(pipeline).addLast(any(IdleStateHandler.class));
         verify(pipeline).addLast(eq(ProxyFlowControlHandler.class.getSimpleName()), any(ProxyFlowControlHandler.class));
         verify(pipeline).addLast(eq(FrontendChannelInboundHandler.class.getSimpleName()), any(FrontendChannelInboundHandler.class));
     }

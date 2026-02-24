@@ -935,7 +935,8 @@ funcApplication
     ;
 
 funcName
-    : typeFunctionName | colId indirection
+    : (owner DOT_)? typeFunctionName
+    | colId indirection
     ;
 
 aexprConst
@@ -967,7 +968,15 @@ channelName
     ;
 
 typeFunctionName
-    : identifier | unreservedWord | typeFuncNameKeyword
+    : identifier
+    | unreservedWord
+    | typeFuncNameKeyword
+    | INT4RANGE
+    | INT8RANGE
+    | NUMRANGE
+    | TSRANGE
+    | TSTZRANGE
+    | DATERANGE
     ;
 
 functionTable

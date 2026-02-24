@@ -29,9 +29,8 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -58,10 +57,10 @@ class JDBCDataRowEnumeratorTest {
         JDBCDataRowEnumerator enumerator = new JDBCDataRowEnumerator(firstQueryResult, firstMetaData, Arrays.asList(firstStatement, secondStatement));
         assertTrue(enumerator.moveNext());
         Object actualRow = enumerator.current();
-        assertThat(actualRow, instanceOf(Object[].class));
+        assertThat(actualRow, isA(Object[].class));
         Object[] actualRowValues = (Object[]) actualRow;
         assertThat(actualRowValues.length, is(2));
-        assertThat(actualRowValues[0], instanceOf(Timestamp.class));
+        assertThat(actualRowValues[0], isA(Timestamp.class));
         assertThat(actualRowValues[0], is(Timestamp.valueOf(expectedDateTime)));
         assertThat(actualRowValues[1], is("bar_value"));
         assertFalse(enumerator.moveNext());

@@ -38,8 +38,8 @@ import org.mockito.invocation.InvocationOnMock;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -60,7 +60,7 @@ class CombineSegmentBinderTest {
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(
                 mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS), "foo_db", new HintValueContext(), mock(SQLStatement.class));
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> externalContexts = binderContext.getExternalTableBinderContexts();
-        CaseInsensitiveString tableKey = new CaseInsensitiveString("t_order");
+        CaseInsensitiveString tableKey = CaseInsensitiveString.of("t_order");
         externalContexts.put(tableKey, mock(TableSegmentBinderContext.class));
         Collection<String> cteAliases = binderContext.getCommonTableExpressionsSegmentsUniqueAliases();
         cteAliases.add("existing_cte");

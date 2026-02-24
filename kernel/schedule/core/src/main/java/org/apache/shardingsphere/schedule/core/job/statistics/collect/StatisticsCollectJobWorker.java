@@ -88,16 +88,16 @@ public final class StatisticsCollectJobWorker {
         // TODO Merge registry center code in ElasticJob and ShardingSphere mode; Use SPI to load impl
         ZookeeperConfiguration result = new ZookeeperConfiguration(repositoryConfig.getServerLists(), namespace);
         Properties props = repositoryConfig.getProps();
-        int retryIntervalMilliseconds = props.containsKey("retryIntervalMilliseconds") ? (int) props.get("retryIntervalMilliseconds") : 500;
-        int maxRetries = props.containsKey("maxRetries") ? (int) props.get("maxRetries") : 3;
+        int retryIntervalMilliseconds = props.containsKey("retryIntervalMilliseconds") ? Integer.parseInt(props.get("retryIntervalMilliseconds").toString()) : 500;
+        int maxRetries = props.containsKey("maxRetries") ? Integer.parseInt(props.get("maxRetries").toString()) : 3;
         result.setBaseSleepTimeMilliseconds(retryIntervalMilliseconds);
         result.setMaxRetries(maxRetries);
         result.setMaxSleepTimeMilliseconds(retryIntervalMilliseconds * maxRetries);
-        int timeToLiveSeconds = props.containsKey("timeToLiveSeconds") ? (int) props.get("timeToLiveSeconds") : 60;
+        int timeToLiveSeconds = props.containsKey("timeToLiveSeconds") ? Integer.parseInt(props.get("timeToLiveSeconds").toString()) : 60;
         if (0 != timeToLiveSeconds) {
             result.setSessionTimeoutMilliseconds(timeToLiveSeconds * 1000);
         }
-        int operationTimeoutMilliseconds = props.containsKey("operationTimeoutMilliseconds") ? (int) props.get("operationTimeoutMilliseconds") : 500;
+        int operationTimeoutMilliseconds = props.containsKey("operationTimeoutMilliseconds") ? Integer.parseInt(props.get("operationTimeoutMilliseconds").toString()) : 500;
         if (0 != operationTimeoutMilliseconds) {
             result.setConnectionTimeoutMilliseconds(operationTimeoutMilliseconds);
         }
