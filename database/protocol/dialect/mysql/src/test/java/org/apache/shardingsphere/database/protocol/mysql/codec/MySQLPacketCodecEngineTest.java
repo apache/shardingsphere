@@ -29,6 +29,9 @@ import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayl
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -42,11 +45,10 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doThrow;
@@ -70,43 +72,21 @@ class MySQLPacketCodecEngineTest {
         when(context.channel().attr(MySQLConstants.SEQUENCE_ID_ATTRIBUTE_KEY).get()).thenReturn(new AtomicInteger());
     }
     
-    @Test
-    void assertIsValidHeader() {
-        assertTrue(new MySQLPacketCodecEngine().isValidHeader(50));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("isValidHeaderArguments")
+    void assertIsValidHeader(final String name, final int readableBytes, final boolean expected) {
+        assertThat(new MySQLPacketCodecEngine().isValidHeader(readableBytes), is(expected));
     }
     
-    @Test
-    void assertIsInvalidHeader() {
-        assertFalse(new MySQLPacketCodecEngine().isValidHeader(3));
-    }
-    
-    @Test
-    void assertDecode() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("decodeArguments")
+    void assertDecode(final String name, final int payloadLength, final int readableBytes, final int expectedOutSize) {
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
-        when(byteBuf.readUnsignedMediumLE()).thenReturn(50);
-        when(byteBuf.readableBytes()).thenReturn(51);
+        when(byteBuf.readUnsignedMediumLE()).thenReturn(payloadLength);
+        when(byteBuf.readableBytes()).thenReturn(readableBytes);
         List<Object> out = new LinkedList<>();
         new MySQLPacketCodecEngine().decode(context, byteBuf, out);
-        assertThat(out.size(), is(1));
-    }
-    
-    @Test
-    void assertDecodeWithEmptyPacket() {
-        when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
-        when(byteBuf.readableBytes()).thenReturn(1);
-        when(byteBuf.readUnsignedMediumLE()).thenReturn(0);
-        List<Object> out = new LinkedList<>();
-        new MySQLPacketCodecEngine().decode(context, byteBuf, out);
-        assertThat(out.size(), is(1));
-    }
-    
-    @Test
-    void assertDecodeWithStickyPacket() {
-        when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
-        when(byteBuf.readUnsignedMediumLE()).thenReturn(50);
-        List<Object> out = new LinkedList<>();
-        new MySQLPacketCodecEngine().decode(context, byteBuf, out);
-        assertTrue(out.isEmpty());
+        assertThat(out.size(), is(expectedOutSize));
     }
     
     @Test
@@ -121,12 +101,34 @@ class MySQLPacketCodecEngineTest {
         assertThat(((ByteBuf) actual.get(0)).readableBytes(), is(1 << 24));
     }
     
+    @Test
+    void assertDecodePacketMoreThan32MB() {
+        MySQLPacketCodecEngine engine = new MySQLPacketCodecEngine();
+        List<ByteBuf> packets = preparePacketMoreThan32MB();
+        List<Object> actual = new ArrayList<>(1);
+        engine.decode(context, packets.get(0), actual);
+        engine.decode(context, packets.get(1), actual);
+        when(context.alloc().compositeBuffer(4)).thenReturn(new CompositeByteBuf(UnpooledByteBufAllocator.DEFAULT, false, 4));
+        engine.decode(context, packets.get(2), actual);
+        assertThat(actual.size(), is(1));
+        assertThat(((ByteBuf) actual.get(0)).readableBytes(), is(1 << 25));
+    }
+    
     private List<ByteBuf> preparePacketMoreThan16MB() {
         byte[] firstPacketData = new byte[4 + (1 << 24) - 1];
         firstPacketData[0] = firstPacketData[1] = firstPacketData[2] = (byte) 0xff;
         firstPacketData[3] = (byte) 0;
         byte[] secondPacketData = new byte[]{0x00, 0x00, 0x00, 0x01};
         return Arrays.asList(Unpooled.wrappedBuffer(firstPacketData), Unpooled.wrappedBuffer(secondPacketData));
+    }
+    
+    private List<ByteBuf> preparePacketMoreThan32MB() {
+        byte[] firstPacketData = new byte[4 + (1 << 24) - 1];
+        firstPacketData[0] = firstPacketData[1] = firstPacketData[2] = (byte) 0xff;
+        byte[] secondPacketData = new byte[4 + (1 << 24) - 1];
+        secondPacketData[0] = secondPacketData[1] = secondPacketData[2] = (byte) 0xff;
+        byte[] thirdPacketData = new byte[]{0x01, 0x00, 0x00, 0x02, 0x01};
+        return Arrays.asList(Unpooled.wrappedBuffer(firstPacketData), Unpooled.wrappedBuffer(secondPacketData), Unpooled.wrappedBuffer(thirdPacketData));
     }
     
     @Test
@@ -187,5 +189,19 @@ class MySQLPacketCodecEngineTest {
     @Test
     void assertCreatePacketPayload() {
         assertThat(new MySQLPacketCodecEngine().createPacketPayload(byteBuf, StandardCharsets.UTF_8).getByteBuf(), is(byteBuf));
+    }
+    
+    private static Stream<Arguments> isValidHeaderArguments() {
+        return Stream.of(
+                Arguments.of("exact header size", 4, true),
+                Arguments.of("larger than header size", 50, true),
+                Arguments.of("smaller than header size", 3, false));
+    }
+    
+    private static Stream<Arguments> decodeArguments() {
+        return Stream.of(
+                Arguments.of("normal packet", 50, 51, 1),
+                Arguments.of("empty payload packet", 0, 1, 1),
+                Arguments.of("sticky packet", 50, 0, 0));
     }
 }
