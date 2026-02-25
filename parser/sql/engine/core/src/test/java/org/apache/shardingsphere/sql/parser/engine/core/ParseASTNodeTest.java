@@ -33,6 +33,7 @@ import java.util.Iterator;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,14 +50,14 @@ class ParseASTNodeTest {
     void assertGetHiddenTokensWithEmptyTokenList() {
         CommonTokenStream tokenStream = mock(CommonTokenStream.class);
         when(tokenStream.getTokens()).thenReturn(Collections.emptyList());
-        assertThat(new ParseASTNode(mock(ParseTree.class), tokenStream).getHiddenTokens().isEmpty(), is(true));
+        assertTrue(new ParseASTNode(mock(ParseTree.class), tokenStream).getHiddenTokens().isEmpty());
     }
     
     @Test
     void assertGetHiddenTokensWithNonHiddenTokens() {
         CommonTokenStream tokenStream = mock(CommonTokenStream.class);
         when(tokenStream.getTokens()).thenReturn(Collections.singletonList(createToken("SELECT", Token.DEFAULT_CHANNEL, 0, 5)));
-        assertThat(new ParseASTNode(mock(ParseTree.class), tokenStream).getHiddenTokens().isEmpty(), is(true));
+        assertTrue(new ParseASTNode(mock(ParseTree.class), tokenStream).getHiddenTokens().isEmpty());
     }
     
     @Test
