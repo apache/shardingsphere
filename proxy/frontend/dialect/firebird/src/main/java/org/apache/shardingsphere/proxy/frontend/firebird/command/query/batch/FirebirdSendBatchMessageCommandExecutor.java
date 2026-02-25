@@ -29,7 +29,7 @@ import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPack
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobParameterBinder;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Batch message command executor for Firebird.
@@ -66,8 +65,8 @@ public final class FirebirdSendBatchMessageCommandExecutor implements CommandExe
         for (int index = 0; index < batchStatement.getBatchMessageCount() && payload.getByteBuf().isReadable(); index++) {
             final int startRowIndex = payload.getByteBuf().readerIndex();
             List<Object> rowParams = readParameterValues(payload, parameterTypes);
-            if (containsBlob(parameterTypes)) {
-                bindBlobParameters(rowParams, parameterTypes);
+            if (FirebirdBlobParameterBinder.containsBlob(parameterTypes)) {
+                rowParams = FirebirdBlobParameterBinder.bindBlobParameters(connectionSession.getConnectionId(), rowParams, parameterTypes).getParams();
             }
             result.add(rowParams);
             final int rowSize = payload.getByteBuf().readerIndex() - startRowIndex;
@@ -105,42 +104,5 @@ public final class FirebirdSendBatchMessageCommandExecutor implements CommandExe
             }
         }
         return result;
-    }
-    
-    // TODO move BLOB processing to a separate file, check whether anything from the current implementation can be removed. BLOB processing is also implemented in the
-    // FirebirdExecuteStatementCommandExecutor class.
-    private void bindBlobParameters(final List<Object> params, final List<FirebirdBinaryColumnType> parameterTypes) {
-        int paramCount = Math.min(parameterTypes.size(), params.size());
-        for (int i = 0; i < paramCount; i++) {
-            if (parameterTypes.get(i) != FirebirdBinaryColumnType.BLOB) {
-                continue;
-            }
-            Object paramValue = params.get(i);
-            if (!(paramValue instanceof Long)) {
-                params.set(i, null);
-                continue;
-            }
-            long blobId = (Long) paramValue;
-            if (blobId <= 0L) {
-                params.set(i, null);
-                continue;
-            }
-            if (!FirebirdBlobUploadCache.getInstance().isClosed(connectionSession.getConnectionId(), blobId)) {
-                params.set(i, null);
-                continue;
-            }
-            Optional<byte[]> blobData = FirebirdBlobUploadCache.getInstance().getBlobData(connectionSession.getConnectionId(), blobId);
-            byte[] bytes = blobData.get();
-            params.set(i, bytes);
-        }
-    }
-    
-    private boolean containsBlob(final List<FirebirdBinaryColumnType> parameterTypes) {
-        for (FirebirdBinaryColumnType type : parameterTypes) {
-            if (type == FirebirdBinaryColumnType.BLOB) {
-                return true;
-            }
-        }
-        return false;
     }
 }
