@@ -326,7 +326,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.patternMatchingOperator()) {
             return createPatternMatchingOperationSegment(ctx);
         }
-        if (null != ctx.NOT() && 1 == ctx.aExpr().size()) {
+        if (null != ctx.NOT() && null == ctx.IS() && 1 == ctx.aExpr().size()) {
             return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.aExpr(0)), false);
         }
         Optional<String> binaryOperator = findBinaryOperator(ctx);
