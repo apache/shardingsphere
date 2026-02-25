@@ -588,6 +588,9 @@ public final class AlterTableStatementAssert {
             } else {
                 assertNull(each.getBuckets(), assertContext.getText("Modify distribution buckets should not exist"));
             }
+            if (null != expectedModifyDistribution.getAutoBuckets()) {
+                assertThat(assertContext.getText("Auto buckets assertion error: "), each.isAutoBuckets(), is(expectedModifyDistribution.getAutoBuckets()));
+            }
             SQLSegmentAssert.assertIs(assertContext, each, expectedModifyDistribution);
             count++;
         }

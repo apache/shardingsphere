@@ -627,11 +627,16 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitDistributedbyClause(final DistributedbyClauseContext ctx) {
         ModifyDistributionSegment result = new ModifyDistributionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
-        if (null != ctx.columnName()) {
-            result.getColumns().add((ColumnSegment) visit(ctx.columnName()));
+        if (null != ctx.columnNames()) {
+            for (ColumnNameContext each : ctx.columnNames().columnName()) {
+                result.getColumns().add((ColumnSegment) visit(each));
+            }
         }
         if (null != ctx.NUMBER_()) {
             result.setBuckets(Integer.parseInt(ctx.NUMBER_().getText()));
+        }
+        if (null != ctx.AUTO()) {
+            result.setAutoBuckets(true);
         }
         return result;
     }
@@ -1038,7 +1043,13 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
+        TruncateStatement result = new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
+        if (null != ctx.partitionNames()) {
+            for (IdentifierContext each : ctx.partitionNames().identifier()) {
+                result.getPartitions().add(new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each)));
+            }
+        }
+        return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -1227,8 +1238,12 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.distributedbyClause()) {
             DistributedbyClauseContext distCtx = ctx.distributedbyClause();
-            result.setDistributedColumn((ColumnSegment) visit(distCtx.columnName()));
-            result.setBuckets(Integer.parseInt(distCtx.NUMBER_().getText()));
+            if (null != distCtx.columnNames()) {
+                result.setDistributedColumn((ColumnSegment) visit(distCtx.columnNames().columnName(0)));
+            }
+            if (null != distCtx.NUMBER_()) {
+                result.setBuckets(Integer.parseInt(distCtx.NUMBER_().getText()));
+            }
         }
         return result;
     }

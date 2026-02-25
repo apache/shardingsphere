@@ -41,4 +41,6 @@ public final class ModifyDistributionSegment implements AlterDefinitionSegment {
     private final Collection<ColumnSegment> columns = new LinkedList<>();
     
     private Integer buckets;
+    
+    private boolean autoBuckets;
 }

@@ -49,7 +49,8 @@ commentClause
     ;
 
 distributedbyClause
-    : DISTRIBUTED BY HASH (LP_ columnName RP_) BUCKETS NUMBER_
+    : DISTRIBUTED BY HASH LP_ columnNames RP_ BUCKETS (NUMBER_ | AUTO)
+    | DISTRIBUTED BY RANDOM BUCKETS (NUMBER_ | AUTO)
     ;
 
 propertiesClause
@@ -289,7 +290,7 @@ alterLockOption
     ;
 
 truncateTable
-    : TRUNCATE TABLE? tableName
+    : TRUNCATE TABLE? tableName partitionNames?
     ;
 
 createIndex

@@ -129,4 +129,24 @@
             <partition-key name="dt" value="'2025-01-01'" />
         </partition>
     </truncate>
+    
+    <truncate sql-case-id="truncate_table_with_partition_doris">
+        <table name="tbl" start-index="15" stop-index="17" />
+        <partition name="p1" start-index="29" stop-index="30" />
+        <partition name="p2" start-index="33" stop-index="34" />
+    </truncate>
+    
+    <truncate sql-case-id="truncate_table_with_db_and_partition_doris">
+        <table name="tbl" start-index="15" stop-index="28">
+            <owner name="example_db" start-index="15" stop-index="24" />
+        </table>
+        <partition name="p1" start-index="40" stop-index="41" />
+        <partition name="p2" start-index="44" stop-index="45" />
+        <partition name="p3" start-index="48" stop-index="49" />
+    </truncate>
+    
+    <truncate sql-case-id="truncate_table_with_single_partition_doris">
+        <table name="tbl" start-index="15" stop-index="17" />
+        <partition name="p1" start-index="29" stop-index="30" />
+    </truncate>
 </sql-parser-test-cases>

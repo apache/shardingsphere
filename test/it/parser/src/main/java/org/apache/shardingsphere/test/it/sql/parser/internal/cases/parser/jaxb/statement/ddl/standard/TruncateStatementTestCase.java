@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedPartition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -33,4 +34,7 @@ public final class TruncateStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "table")
     private final List<ExpectedSimpleTable> tables = new LinkedList<>();
+    
+    @XmlElement(name = "partition")
+    private final List<ExpectedPartition> partitions = new LinkedList<>();
 }
