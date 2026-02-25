@@ -27,6 +27,10 @@ inputs:
     description: 'Java distribution'
     required: false
     default: 'temurin'
+  cache-prefix:
+    description: 'Cache key prefix for multi-project isolation. Default: apache-shardingsphere'
+    required: false
+    default: 'apache-shardingsphere'
 
 runs:
   using: composite
@@ -35,4 +39,13 @@ runs:
       with:
         distribution: ${{ inputs.distribution }}
         java-version: ${{ inputs.java-version }}
-        cache: 'maven'
+    - uses: actions/cache@v5.0.1
+      with:
+        path: |
+          ~/.m2/repository
+          !~/.m2/repository/org/apache/shardingsphere
+          ~/.m2/repository/org/apache/shardingsphere/elasticjob
+        key: ${{ inputs.cache-prefix }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ inputs.cache-prefix }}-maven-
+          ${{ inputs.cache-prefix }}-
