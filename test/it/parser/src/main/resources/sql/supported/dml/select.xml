@@ -515,4 +515,7 @@
     <sql-case id="select_limit_parameter" value="SELECT * FROM t4 LIMIT ?;" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_limit_complex_expr" value="SELECT * FROM t4 LIMIT (CASE WHEN true THEN 10 ELSE 20 END);" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_func" value="select public.int4range(400, 500, '[]');" db-types="PostgreSQL" />
+    <sql-case id="select_ltrim_function" value="SELECT LTRIM('  barbar')" db-types="MySQL" />
+    <sql-case id="select_ltrim_as_column_alias" value="SELECT id AS ltrim FROM t" db-types="MySQL" />
+    <sql-case id="select_ltrim_as_qualified_column" value="SELECT t.ltrim FROM t" db-types="MySQL" />
 </sql-cases>

@@ -14064,4 +14064,48 @@
             </expression-projection>
         </projections>
     </select>
+
+<!--    <select sql-case-id="select_ltrim_function">-->
+<!--        <projections start-index="7" stop-index="23">-->
+<!--            <expression-projection text="LTRIM('  barbar')" start-index="7" stop-index="23">-->
+<!--                <expr>-->
+<!--                    <function start-index="7" stop-index="23" text="LTRIM('  barbar')" function-name="LTRIM('  barbar')" />-->
+<!--                </expr>-->
+<!--            </expression-projection>-->
+<!--        </projections>-->
+<!--    </select>-->
+
+    <select sql-case-id="select_ltrim_function">
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="LTRIM('  barbar')" start-index="7" stop-index="23" >
+                <expr>
+                    <function start-index="7" stop-index="23" text="LTRIM('  barbar')" function-name="LTRIM">
+                        <parameter>
+                            <literal-expression start-index="13" stop-index="22" value="  barbar" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_ltrim_as_column_alias">
+        <projections start-index="7" stop-index="17">
+            <column-projection name="id" alias="ltrim" start-index="7" stop-index="17" />
+        </projections>
+        <from>
+            <simple-table name="t" start-index="24" stop-index="24" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_ltrim_as_qualified_column">
+        <projections start-index="7" stop-index="13">
+            <column-projection name="ltrim" start-index="7" stop-index="13">
+                <owner name="t" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
+        <from>
+            <simple-table name="t" start-index="20" stop-index="20" />
+        </from>
+    </select>
 </sql-parser-test-cases>
