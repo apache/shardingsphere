@@ -57,7 +57,6 @@ jobs:
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           java-version: 21
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
           cache-suffix: 'e2e-agent'
       - uses: docker/setup-docker-action@v4
         with:
@@ -124,7 +123,6 @@ jobs:
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           java-version: 21
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
           cache-suffix: 'e2e-agent'
       - uses: docker/setup-docker-action@v4
         with:

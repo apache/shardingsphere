@@ -47,7 +47,9 @@ inputs:
     description: |
       Cache key prefix for multi-project isolation.
       Used to separate caches between different projects or forks.
-    required: true
+      Default: 'apache-shardingsphere'
+    required: false
+    default: 'apache-shardingsphere'
   cache-suffix:
     description: |
       Cache key suffix for build scope optimization.
