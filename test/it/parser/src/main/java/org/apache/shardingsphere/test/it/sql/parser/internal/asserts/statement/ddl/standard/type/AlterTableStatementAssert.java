@@ -288,19 +288,22 @@ public final class AlterTableStatementAssert {
     }
     
     private static void assertDropColumns(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
-        assertThat(assertContext.getText("Drop column definitions size assertion error: "), actual.getDropColumnDefinitions().size(), is(expected.getDropColumns().size()));
+        int actualColumnCount = 0;
+        for (DropColumnDefinitionSegment each : actual.getDropColumnDefinitions()) {
+            actualColumnCount += each.getColumns().size();
+        }
+        assertThat(assertContext.getText("Drop column definitions size assertion error: "), actualColumnCount, is(expected.getDropColumns().size()));
         int count = 0;
         for (DropColumnDefinitionSegment each : actual.getDropColumnDefinitions()) {
-            ExpectedColumn expectedColumn = expected.getDropColumns().get(count);
-            assertThat(assertContext.getText("Drop column columns size assertion error: "), each.getColumns().size(), is(1));
-            ColumnAssert.assertIs(assertContext, each.getColumns().iterator().next(), expectedColumn);
-            if (null != expectedColumn.getProperties()) {
-                assertTrue(each.getProperties().isPresent(), assertContext.getText("Drop column properties should exist"));
-                assertProperties(assertContext, each.getProperties().get(), expectedColumn.getProperties());
-            } else {
-                assertFalse(each.getProperties().isPresent(), assertContext.getText("Drop column properties should not exist"));
+            for (ColumnSegment column : each.getColumns()) {
+                ExpectedColumn expectedColumn = expected.getDropColumns().get(count);
+                ColumnAssert.assertIs(assertContext, column, expectedColumn);
+                if (null != expectedColumn.getProperties()) {
+                    assertTrue(each.getProperties().isPresent(), assertContext.getText("Drop column properties should exist"));
+                    assertProperties(assertContext, each.getProperties().get(), expectedColumn.getProperties());
+                }
+                count++;
             }
-            count++;
         }
     }
     
