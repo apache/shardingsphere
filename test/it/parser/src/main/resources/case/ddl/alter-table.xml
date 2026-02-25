@@ -3233,4 +3233,108 @@
             <interval-unit name="DAY" start-index="96" stop-index="98" />
         </add-partitions>
     </alter-table>
+    
+    <alter-table sql-case-id="alter_table_set_bloom_filter_columns_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <set-properties start-index="37" stop-index="69">
+            <property key="bloom_filter_columns" value="k1,k2,k3" start-index="37" stop-index="69" />
+        </set-properties>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_set_colocate_with_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <set-properties start-index="37" stop-index="58">
+            <property key="colocate_with" value="t1" start-index="37" stop-index="58" />
+        </set-properties>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_drop_column_with_properties_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <drop-column name="col2" start-index="44" stop-index="47">
+            <properties start-index="49" stop-index="94">
+                <property key="bloom_filter_columns" value="k1,k2,k3" start-index="61" stop-index="93" />
+            </properties>
+        </drop-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_enable_feature_batch_delete_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <enable-feature feature-name="&quot;BATCH_DELETE&quot;" start-index="32" stop-index="60" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_enable_feature_sequence_load_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <enable-feature feature-name="&quot;SEQUENCE_LOAD&quot;" start-index="32" stop-index="120">
+            <properties start-index="80" stop-index="119">
+                <property key="function_column.sequence_type" value="Date" start-index="80" stop-index="119" />
+            </properties>
+        </enable-feature>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_distribution_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-distribution start-index="52" stop-index="85" buckets="50">
+            <column name="k1" start-index="72" stop-index="73" />
+        </modify-distribution>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_table_comment_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-table-comment table-comment="&quot;new comment&quot;" start-index="32" stop-index="59" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_column_comment_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-column>
+            <column-definition start-index="46" stop-index="60">
+                <column name="k1" />
+                <comment text="k1" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_multiple_column_comments_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-column>
+            <column-definition start-index="46" stop-index="60">
+                <column name="k1" />
+                <comment text="k1" />
+            </column-definition>
+        </modify-column>
+        <modify-column>
+            <column-definition start-index="77" stop-index="91">
+                <column name="k2" />
+                <comment text="k2" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_engine_doris">
+        <table name="mysql_table" start-index="12" stop-index="33">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-engine engine-type="odbc" start-index="42" stop-index="86">
+            <properties start-index="68" stop-index="85">
+                <property key="driver" value="MySQL" start-index="68" stop-index="85" />
+            </properties>
+        </modify-engine>
+    </alter-table>
 </sql-parser-test-cases>

@@ -15,34 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.feature;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Drop column definition segment.
+ * Enable feature segment.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class DropColumnDefinitionSegment implements AlterDefinitionSegment {
+@Setter
+public final class EnableFeatureSegment implements AlterDefinitionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final Collection<ColumnSegment> columns;
+    private final String featureName;
     
-    @Setter
     private PropertiesSegment properties;
     
     /**
