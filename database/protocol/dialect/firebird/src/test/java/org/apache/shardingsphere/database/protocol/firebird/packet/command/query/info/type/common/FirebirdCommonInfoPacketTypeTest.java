@@ -24,9 +24,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,8 +38,7 @@ class FirebirdCommonInfoPacketTypeTest {
     
     @Test
     void assertValueOf() {
-        assertThat(FirebirdCommonInfoPacketType.valueOf(FirebirdCommonInfoPacketType.END.getCode()),
-                is(FirebirdCommonInfoPacketType.END));
+        assertThat(FirebirdCommonInfoPacketType.valueOf(FirebirdCommonInfoPacketType.END.getCode()), is(FirebirdCommonInfoPacketType.END));
     }
     
     @Test
@@ -54,6 +54,6 @@ class FirebirdCommonInfoPacketTypeTest {
     
     @Test
     void assertIsCommon() {
-        assertThat(FirebirdCommonInfoPacketType.DATA_NOT_READY.isCommon(), is(true));
+        assertTrue(FirebirdCommonInfoPacketType.DATA_NOT_READY.isCommon());
     }
 }

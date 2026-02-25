@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher
 import org.apache.shardingsphere.mode.node.path.type.global.state.coordinator.table.TableCoordinatorTypeNodePath;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class TableCoordinatorTypeNodePathTest {

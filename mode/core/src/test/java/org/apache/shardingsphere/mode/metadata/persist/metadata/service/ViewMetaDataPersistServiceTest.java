@@ -29,8 +29,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,6 +58,19 @@ class ViewMetaDataPersistServiceTest {
         Collection<ShardingSphereView> actual = persistService.load("foo_db", "foo_schema");
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getName(), is("foo_view"));
+    }
+    
+    @Test
+    void assertLoadWhenActiveVersionIsEmpty() {
+        when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version")).thenReturn("");
+        assertFalse(persistService.load("foo_db", "foo_schema", "foo_view").isPresent());
+    }
+    
+    @Test
+    void assertLoadWhenViewContentIsEmpty() {
+        when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version")).thenReturn("0");
+        when(repository.query("/metadata/foo_db/schemas/foo_schema/views/foo_view/versions/0")).thenReturn("");
+        assertFalse(persistService.load("foo_db", "foo_schema", "foo_view").isPresent());
     }
     
     @Test

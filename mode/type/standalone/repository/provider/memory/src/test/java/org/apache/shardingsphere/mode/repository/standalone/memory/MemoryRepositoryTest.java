@@ -24,6 +24,8 @@ import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MemoryRepositoryTest {
     
@@ -46,21 +48,20 @@ class MemoryRepositoryTest {
     @Test
     void assertUpdate() {
         memoryRepository.update("/metadata/sharding_db/schemas/sharding_db/tables/t_order/versions/0", "t_order_updated");
-        assertThat(memoryRepository.query("/metadata/sharding_db/schemas/sharding_db/tables/t_order/versions/0"),
-                is("t_order_updated"));
+        assertThat(memoryRepository.query("/metadata/sharding_db/schemas/sharding_db/tables/t_order/versions/0"), is("t_order_updated"));
     }
     
     @Test
     void assertDelete() {
         memoryRepository.delete("/metadata/sharding_db/schemas/sharding_db/tables/t_order/versions/0");
-        assertThat(memoryRepository.isExisted("/metadata/sharding_db/schemas/sharding_db/tables/t_order/versions/0"), is(false));
+        assertFalse(memoryRepository.isExisted("/metadata/sharding_db/schemas/sharding_db/tables/t_order/versions/0"));
         assertThat(memoryRepository.query("/metadata/sharding_db/schemas/sharding_db/tables/t_order/versions/0"), is((String) null));
     }
     
     @Test
     void assertGetChildrenKeys() {
         assertThat(memoryRepository.getChildrenKeys("/metadata").size(), is(2));
-        assertThat(memoryRepository.getChildrenKeys("/metadata").containsAll(Arrays.asList("encrypt_db", "sharding_db")), is(true));
+        assertTrue(memoryRepository.getChildrenKeys("/metadata").containsAll(Arrays.asList("encrypt_db", "sharding_db")));
         assertThat(memoryRepository.getChildrenKeys("/metadata/sharding_db/schemas/sharding_db/tables/").size(), is(2));
         assertThat(memoryRepository.getChildrenKeys("/metadata/encrypt_db/schemas/encrypt_db/tables/").size(), is(2));
     }

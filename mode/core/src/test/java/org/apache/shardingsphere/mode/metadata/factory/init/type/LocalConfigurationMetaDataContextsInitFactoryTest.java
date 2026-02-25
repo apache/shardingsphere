@@ -38,7 +38,6 @@ import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mode.manager.builder.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -56,10 +55,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -99,8 +96,7 @@ class LocalConfigurationMetaDataContextsInitFactoryTest {
                 MockedConstruction<MetaDataPersistFacade> persistFacadeMocked = mockConstruction(MetaDataPersistFacade.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS),
                         (mock, context) -> when(mock.getStatisticsService().load(any())).thenReturn(new ShardingSphereStatistics()))) {
             LocalConfigurationMetaDataContextsInitFactory factory = new LocalConfigurationMetaDataContextsInitFactory(repository, instanceContext, props);
-            MetaDataContexts actual = factory.create(createContextManagerBuilderParameter(databaseConfigs, new Properties()));
-            assertThat(actual, is(notNullValue()));
+            assertNotNull(factory.create(createContextManagerBuilderParameter(databaseConfigs, new Properties())));
             MetaDataPersistFacade persistFacade = persistFacadeMocked.constructed().get(0);
             verify(persistFacade).persistGlobalRuleConfiguration(Collections.emptyList(), new Properties());
             verify(persistFacade).persistConfigurations(eq("foo_db"), eq(databaseConfigs.get("foo_db")),

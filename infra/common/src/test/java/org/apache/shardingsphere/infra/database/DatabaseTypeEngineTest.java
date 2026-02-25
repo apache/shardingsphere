@@ -41,9 +41,9 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.any;
@@ -151,7 +151,7 @@ class DatabaseTypeEngineTest {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)).thenReturn(Collections.singleton(mock(DialectJdbcUrlFetcher.class)));
             SQLWrapperException exception = assertThrows(SQLWrapperException.class, () -> DatabaseTypeEngine.getStorageType(new MockedDataSource(connection)));
-            assertThat(exception.getCause(), instanceOf(SQLFeatureNotSupportedException.class));
+            assertThat(exception.getCause(), isA(SQLFeatureNotSupportedException.class));
         }
     }
     
@@ -165,7 +165,7 @@ class DatabaseTypeEngineTest {
             when(dialectJdbcUrlFetcher.fetch(connection)).thenThrow(SQLException.class);
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(DialectJdbcUrlFetcher.class)).thenReturn(Collections.singleton(dialectJdbcUrlFetcher));
             SQLWrapperException exception = assertThrows(SQLWrapperException.class, () -> DatabaseTypeEngine.getStorageType(new MockedDataSource(connection)));
-            assertThat(exception.getCause(), instanceOf(SQLException.class));
+            assertThat(exception.getCause(), isA(SQLException.class));
         }
     }
 }

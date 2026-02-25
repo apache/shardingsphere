@@ -31,9 +31,13 @@ help
     : HELP textOrIdentifier
     ;
 
+descFunction
+    : DESC FUNCTION functionName (LP_ RP_)?
+    ;
+
 explain
     : (DESC | DESCRIBE | EXPLAIN)
-    (tableName (columnRef | textString)?
+    (tableName (columnRef | textString)? ALL?
     | explainType? (explainableStatement | FOR CONNECTION connectionId)
     | ANALYZE (FORMAT EQ_ TREE)? (select | delete | update | insert))
     ;
@@ -76,6 +80,14 @@ optionValueNoOptionType
     | userVariable equal expr
     | setSystemVariable equal setExprOrDefault
     | NAMES (equal expr | charsetName collateClause? | DEFAULT)
+    ;
+
+unsetVariable
+    : UNSET optionType? VARIABLE (LP_ unsetVariableName RP_ | unsetVariableName)
+    ;
+
+unsetVariableName
+    : internalVariableName | ALL
     ;
 
 equal
@@ -126,6 +138,10 @@ showCreateTable
     : SHOW CREATE TABLE tableName
     ;
 
+showCreateRoutineLoad
+    : SHOW ALL? CREATE ROUTINE LOAD FOR qualifiedJobName
+    ;
+
 showCreateTrigger
     : SHOW CREATE TRIGGER triggerName
     ;
@@ -162,6 +178,11 @@ showFunctionCode
     : SHOW FUNCTION CODE functionName
     ;
 
+showFunctions
+    : SHOW GLOBAL FULL? FUNCTIONS showLike?
+    | SHOW FULL? BUILTIN? FUNCTIONS fromDatabase? showLike?
+    ;
+
 showFunctionStatus
     : SHOW FUNCTION STATUS showFilter?
     ;
@@ -176,6 +197,10 @@ showIndex
 
 showBuildIndex
     : SHOW BUILD INDEX fromDatabase? showWhereClause? orderByClause? limitClause?
+    ;
+
+showAlterTable
+    : SHOW ALTER TABLE (COLUMN | ROLLUP)? fromDatabase? showWhereClause? orderByClause? limitClause?
     ;
 
 showMasterStatus
@@ -264,6 +289,10 @@ showCharset
 
 setCharacter
     : SET (CHARACTER SET | CHARSET) (charsetName | DEFAULT)
+    ;
+
+sync
+    : SYNC
     ;
 
 clone
@@ -453,12 +482,31 @@ dropResourceGroup
     : DROP RESOURCE GROUP groupName FORCE?
     ;
 
+dropRepository
+    : DROP REPOSITORY repositoryName
+    ;
+
+createRepository
+    : CREATE (READ ONLY)? REPOSITORY repositoryName 
+      WITH (S3 | HDFS)
+      ON LOCATION string_
+      propertiesClause
+    ;
+
 setResourceGroup
     : SET RESOURCE GROUP groupName (FOR NUMBER_ (COMMA_ NUMBER_)*)?
     ;
 
 showQueryStats
     : SHOW QUERY STATS (FOR databaseName | fromTable)? ALL? VERBOSE?
+    ;
+
+showProc
+    : SHOW PROC string_
+    ;
+
+showSyncJob
+    : SHOW SYNC JOB (FROM databaseName)?
     ;
 
 binlog
@@ -742,6 +790,7 @@ show
     | showColumns
     | showIndex
     | showBuildIndex
+    | showAlterTable
     | showCreateDatabase
     | showCreateTable
     | showBinlogEvents
@@ -750,6 +799,7 @@ show
     | showCreateEvent
     | showCreateFunction
     | showCreateProcedure
+    | showCreateRoutineLoad
     | showCreateTrigger
     | showCreateUser
     | showCreateView
@@ -759,6 +809,7 @@ show
     | showErrors
     | showEvents
     | showFunctionCode
+    | showFunctions
     | showFunctionStatus
     | showGrants
     | showMasterStatus
@@ -783,4 +834,6 @@ show
     | showSqlBlockRule
     | showRoutineLoadTask
     | showRoutineLoad
+    | showProc
+    | showSyncJob
     ;

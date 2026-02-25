@@ -38,12 +38,7 @@
                 <groupId>org.apache.seata</groupId>
                 <artifactId>seata-all</artifactId>
                 <version>${seata.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.antlr</groupId>
-                        <artifactId>antlr4-runtime</artifactId>
-                    </exclusion>
-                </exclusions>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>commons-lang</groupId>

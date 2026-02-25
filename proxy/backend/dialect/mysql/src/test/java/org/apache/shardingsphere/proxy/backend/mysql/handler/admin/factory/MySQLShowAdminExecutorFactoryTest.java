@@ -39,8 +39,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -52,7 +52,7 @@ class MySQLShowAdminExecutorFactoryTest {
     void assertCreateExecutor(final String caseName, final SQLStatement statement, final Class<? extends DatabaseAdminExecutor> expectedType) {
         Optional<DatabaseAdminExecutor> actual = MySQLShowAdminExecutorFactory.newInstance(statement);
         assertTrue(actual.isPresent(), caseName);
-        assertThat(actual.get(), instanceOf(expectedType));
+        assertThat(actual.get(), isA(expectedType));
     }
     
     @Test

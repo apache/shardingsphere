@@ -30,6 +30,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -53,14 +55,14 @@ class StorageUnitChangedHandlerTest {
     
     @Test
     void assertHandleStorageUnitRegistered() {
-        when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDataSourceUnitService().load("foo_db", "foo_unit")).thenReturn(mock(DataSourcePoolProperties.class));
+        when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDataSourceUnitService().load("foo_db", "foo_unit")).thenReturn(Optional.of(mock(DataSourcePoolProperties.class)));
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/data_sources/units/foo_unit/active_version", "0", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).register(eq("foo_db"), any());
     }
     
     @Test
     void assertHandleStorageUnitAltered() {
-        when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDataSourceUnitService().load("foo_db", "foo_unit")).thenReturn(mock(DataSourcePoolProperties.class));
+        when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDataSourceUnitService().load("foo_db", "foo_unit")).thenReturn(Optional.of(mock(DataSourcePoolProperties.class)));
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/data_sources/units/foo_unit/active_version", "0", Type.UPDATED));
         verify(contextManager.getMetaDataContextManager().getStorageUnitManager()).alter(eq("foo_db"), any());
     }

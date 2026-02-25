@@ -33,9 +33,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +51,7 @@ class ColumnProjectionConverterTest {
         SqlIdentifier columnNode = new SqlIdentifier("col", SqlParserPos.ZERO);
         when(ColumnConverter.convert(columnSegment)).thenReturn(columnNode);
         SqlBasicCall actual = (SqlBasicCall) ColumnProjectionConverter.convert(projectionSegment);
-        assertThat(actual.getOperator(), instanceOf(SqlAsOperator.class));
+        assertThat(actual.getOperator(), isA(SqlAsOperator.class));
         assertThat(actual.getOperandList().get(0), is(columnNode));
         assertThat(((SqlIdentifier) actual.getOperandList().get(1)).names, is(Collections.singletonList("alias")));
     }

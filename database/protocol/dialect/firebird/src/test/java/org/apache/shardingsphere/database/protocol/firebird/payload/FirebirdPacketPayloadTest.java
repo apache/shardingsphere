@@ -25,7 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -122,10 +122,16 @@ class FirebirdPacketPayloadTest {
     }
     
     @Test
-    void assertReadBuffer() {
-        when(byteBuf.readInt()).thenReturn(4);
+    void assertReadBytes() {
         ByteBuf sliced = mock(ByteBuf.class);
         when(byteBuf.readSlice(4)).thenReturn(sliced);
+        assertThat(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).readBytes(4), is(sliced));
+    }
+    
+    @Test
+    void assertReadBuffer() {
+        ByteBuf sliced = mock(ByteBuf.class);
+        when(byteBuf.readSlice(0)).thenReturn(sliced);
         assertThat(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8).readBuffer(), is(sliced));
     }
     

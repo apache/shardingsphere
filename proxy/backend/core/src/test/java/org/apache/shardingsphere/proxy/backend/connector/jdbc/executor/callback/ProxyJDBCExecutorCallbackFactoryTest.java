@@ -23,9 +23,9 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.callback.impl.ProxyStatementExecutorCallback;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
@@ -34,13 +34,13 @@ class ProxyJDBCExecutorCallbackFactoryTest {
     @Test
     void assertNewInstanceWithStatementDriverType() {
         ProxyJDBCExecutorCallback actual = ProxyJDBCExecutorCallbackFactory.newInstance(JDBCDriverType.STATEMENT, mock(), mock(), mock(), mock(), true, true, true);
-        assertThat(actual, instanceOf(ProxyStatementExecutorCallback.class));
+        assertThat(actual, isA(ProxyStatementExecutorCallback.class));
     }
     
     @Test
     void assertNewInstanceWithPreparedStatementDriverType() {
         ProxyJDBCExecutorCallback actual = ProxyJDBCExecutorCallbackFactory.newInstance(JDBCDriverType.PREPARED_STATEMENT, mock(), mock(), mock(), mock(), false, false, false);
-        assertThat(actual, instanceOf(ProxyPreparedStatementExecutorCallback.class));
+        assertThat(actual, isA(ProxyPreparedStatementExecutorCallback.class));
     }
     
     @Test

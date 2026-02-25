@@ -119,4 +119,10 @@
         </simple-table>
         <column-wild name="products" start-index="54" stop-index="61" />
     </describe>
+
+    <describe sql-case-id="desc_table_all_doris" db-types="Doris" show-all="true">
+        <simple-table name="test_table" start-index="5" stop-index="19" >
+            <owner start-index="5" stop-index="8" name="demo" />
+        </simple-table>
+    </describe>
 </sql-parser-test-cases>

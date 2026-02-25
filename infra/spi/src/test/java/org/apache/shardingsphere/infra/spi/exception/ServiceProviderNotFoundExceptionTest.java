@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.spi.exception;
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class ServiceProviderNotFoundExceptionTest {

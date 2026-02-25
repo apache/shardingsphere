@@ -20,7 +20,7 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.handshake;
 import com.google.common.primitives.Bytes;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class MySQLAuthenticationPluginDataTest {

@@ -37,9 +37,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SuppressWarnings("SqlNoDataSourceInspection")
 @EnabledInNativeImage
@@ -53,7 +51,7 @@ class ZookeeperTest {
     
     @BeforeEach
     void beforeEach() {
-        assertThat(System.getProperty(systemPropKeyPrefix + "server-lists"), is(nullValue()));
+        assertNull(System.getProperty(systemPropKeyPrefix + "server-lists"));
     }
     
     @AfterEach

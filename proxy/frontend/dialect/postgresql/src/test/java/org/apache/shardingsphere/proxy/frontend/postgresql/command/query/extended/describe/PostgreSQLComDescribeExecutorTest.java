@@ -83,15 +83,17 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -212,7 +214,7 @@ class PostgreSQLComDescribeExecutorTest {
         PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
         parameterDescription.write(mockPayload);
         verify(mockPayload).writeInt2(0);
-        assertThat(actualIterator.hasNext(), is(false));
+        assertFalse(actualIterator.hasNext());
     }
     
     @Test
@@ -356,7 +358,7 @@ class PostgreSQLComDescribeExecutorTest {
         verify(mockPayload).writeInt2(expectedParamTypes.size());
         Map<Integer, Long> expectedTypeCounts = expectedParamTypes.stream()
                 .collect(Collectors.groupingBy(PostgreSQLColumnType::getValue, Collectors.counting()));
-        for (Map.Entry<Integer, Long> entry : expectedTypeCounts.entrySet()) {
+        for (Entry<Integer, Long> entry : expectedTypeCounts.entrySet()) {
             verify(mockPayload, times(entry.getValue().intValue())).writeInt4(entry.getKey());
         }
         PostgreSQLRowDescriptionPacket rowDescriptionPacket = (PostgreSQLRowDescriptionPacket) actualIterator.next();

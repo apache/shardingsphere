@@ -27,9 +27,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataNodeUtilsTest {
     
@@ -93,7 +96,7 @@ class DataNodeUtilsTest {
     void assertGetFormattedDataNodesWithZeroAmount() {
         List<String> actual = DataNodeUtils.getFormattedDataNodes(0, "t_order", Arrays.asList("ds_0", "ds_1"));
         assertThat(actual.size(), is(0));
-        assertThat(actual.isEmpty(), is(true));
+        assertTrue(actual.isEmpty());
     }
     
     @Test
@@ -123,11 +126,7 @@ class DataNodeUtilsTest {
     
     @Test
     void assertGetFormattedDataNodesWithEmptyDataSources() {
-        try {
-            DataNodeUtils.getFormattedDataNodes(1, "t_order", Collections.emptyList());
-        } catch (final java.util.NoSuchElementException ex) {
-            assertThat(true, is(true));
-        }
+        assertThrows(NoSuchElementException.class, () -> DataNodeUtils.getFormattedDataNodes(1, "t_order", Collections.emptyList()));
     }
     
     @Test

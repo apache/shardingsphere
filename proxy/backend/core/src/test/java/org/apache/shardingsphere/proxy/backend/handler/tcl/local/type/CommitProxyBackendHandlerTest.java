@@ -37,9 +37,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
@@ -67,7 +67,7 @@ class CommitProxyBackendHandlerTest {
             ResponseHeader actual = new CommitProxyBackendHandler(sqlStatement, connectionSession).execute();
             ProxyBackendTransactionManager transactionManager = mockedConstruction.constructed().get(0);
             verify(transactionManager).commit();
-            assertThat(((UpdateResponseHeader) actual).getSqlStatement(), instanceOf(RollbackStatement.class));
+            assertThat(((UpdateResponseHeader) actual).getSqlStatement(), isA(RollbackStatement.class));
         }
     }
     

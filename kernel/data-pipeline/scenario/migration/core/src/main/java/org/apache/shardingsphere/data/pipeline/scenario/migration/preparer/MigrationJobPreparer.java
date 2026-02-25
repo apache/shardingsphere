@@ -88,7 +88,7 @@ public final class MigrationJobPreparer implements PipelineJobPreparer<Migration
                 jobItemContext.getTaskConfig().getDumperContext().getCommonContext().getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("Migration inventory dumper only support StandardPipelineDataSourceConfiguration."));
         DatabaseType sourceDatabaseType = jobItemContext.getJobConfig().getSourceDatabaseType();
-        new PipelineDataSourceCheckEngine(sourceDatabaseType).checkSourceDataSources(Collections.singleton(jobItemContext.getSourceDataSource()));
+        new PipelineDataSourceCheckEngine(sourceDatabaseType).checkSourceDataSource(jobItemContext.getSourceDataSource());
         ShardingSpherePreconditions.checkState(!jobItemContext.isStopping(), PipelineJobCancelingException::new);
         prepareAndCheckTargetWithLock(jobItemContext);
         ShardingSpherePreconditions.checkState(!jobItemContext.isStopping(), PipelineJobCancelingException::new);
@@ -131,8 +131,8 @@ public final class MigrationJobPreparer implements PipelineJobPreparer<Migration
         }
         if (null == jobItemContext.getInitProgress()) {
             PipelineDataSource targetDataSource = jobItemContext.getDataSourceManager().getDataSource(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
-            new PipelineDataSourceCheckEngine(jobItemContext.getJobConfig().getTargetDatabaseType()).checkTargetDataSources(Collections.singleton(targetDataSource),
-                    jobItemContext.getTaskConfig().getImporterConfig());
+            new PipelineDataSourceCheckEngine(jobItemContext.getJobConfig().getTargetDatabaseType())
+                    .checkTargetDataSource(targetDataSource, jobItemContext.getTaskConfig().getImporterConfig().getTableAndSchemaNameMapper().getQualifiedTables());
         }
     }
     

@@ -26,7 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,5 +47,10 @@ class FirebirdFloatBinaryProtocolValueTest {
     void assertWrite() {
         new FirebirdFloatBinaryProtocolValue().write(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8), 1.0F);
         verify(byteBuf).writeFloat(1.0F);
+    }
+    
+    @Test
+    void assertGetLength() {
+        assertThat(new FirebirdFloatBinaryProtocolValue().getLength(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8)), is(4));
     }
 }

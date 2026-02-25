@@ -19,15 +19,20 @@ package org.apache.shardingsphere.data.pipeline.cdc.util;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import java.util.regex.Pattern;
+
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RandomStringsTest {
+    
+    private static final Pattern PATTERN = Pattern.compile("^[a-zA-Z0-9]+$");
     
     @Test
     void assertRandomAlphanumeric() {
         String actual = RandomStrings.randomAlphanumeric(16);
         assertThat(actual.length(), is(16));
-        assert actual.matches("^[a-zA-Z0-9]+$");
+        assertTrue(PATTERN.matcher(actual).matches());
     }
 }

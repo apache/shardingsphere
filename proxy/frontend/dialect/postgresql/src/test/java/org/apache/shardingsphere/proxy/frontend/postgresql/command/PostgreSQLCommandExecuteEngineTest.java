@@ -62,8 +62,9 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -156,14 +157,14 @@ class PostgreSQLCommandExecuteEngineTest {
     void assertGetOtherPacketWhenInTransaction() {
         transactionStatus.setInTransaction(true);
         Optional<DatabasePacket> actual = commandExecuteEngine.getOtherPacket(connectionSession);
-        assertThat(actual.isPresent(), is(true));
+        assertTrue(actual.isPresent());
         assertThat(actual.get(), is(PostgreSQLReadyForQueryPacket.TRANSACTION_FAILED));
     }
     
     @Test
     void assertGetOtherPacketWhenNotInTransaction() {
         Optional<DatabasePacket> actual = commandExecuteEngine.getOtherPacket(connectionSession);
-        assertThat(actual.isPresent(), is(true));
+        assertTrue(actual.isPresent());
         assertThat(actual.get(), is(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION));
     }
     

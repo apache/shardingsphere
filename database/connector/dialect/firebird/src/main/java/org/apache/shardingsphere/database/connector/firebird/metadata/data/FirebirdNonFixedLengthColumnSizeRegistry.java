@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.OptionalInt;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -52,7 +53,7 @@ public final class FirebirdNonFixedLengthColumnSizeRegistry {
             return;
         }
         Map<String, Integer> normalizedColumnSizes = new HashMap<>(columnSizes.size(), 1F);
-        for (Map.Entry<String, Integer> entry : columnSizes.entrySet()) {
+        for (Entry<String, Integer> entry : columnSizes.entrySet()) {
             if (null == entry.getKey()) {
                 continue;
             }

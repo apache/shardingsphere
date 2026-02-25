@@ -37,9 +37,11 @@ import java.util.Collections;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.startsWith;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -86,18 +88,18 @@ class MySQLShowProcessListExecutorTest {
         showProcessListExecutor.execute(new ConnectionSession(databaseType, new DefaultAttributeMap()), mock());
         MergedResult mergedResult = showProcessListExecutor.getMergedResult();
         int rowCount = 0;
-        assertThat(mergedResult.next(), is(true));
+        assertTrue(mergedResult.next());
         rowCount++;
         assertThat(mergedResult.getValue(5, String.class), is("Sleep"));
         assertThat(mergedResult.getValue(7, String.class), is(""));
         assertThat(mergedResult.getValue(8, String.class), is(""));
-        assertThat(mergedResult.next(), is(true));
+        assertTrue(mergedResult.next());
         rowCount++;
         assertThat(mergedResult.getValue(5, String.class), is("Execute"));
         assertThat(mergedResult.getValue(7, String.class), is("Executing 2/4"));
         assertThat(((String) mergedResult.getValue(8, String.class)).length(), is(100));
         assertThat((String) mergedResult.getValue(8, String.class), startsWith(longSql.substring(0, 50)));
-        assertThat(mergedResult.next(), is(false));
+        assertFalse(mergedResult.next());
         assertThat(rowCount, is(2));
     }
     
@@ -112,8 +114,8 @@ class MySQLShowProcessListExecutorTest {
         MySQLShowProcessListExecutor executor = new MySQLShowProcessListExecutor(new MySQLShowProcessListStatement(databaseType, true));
         executor.execute(new ConnectionSession(databaseType, new DefaultAttributeMap()), mock());
         MergedResult mergedResult = executor.getMergedResult();
-        assertThat(mergedResult.next(), is(true));
+        assertTrue(mergedResult.next());
         assertThat(((String) mergedResult.getValue(8, String.class)).length(), is(120));
-        assertThat(mergedResult.next(), is(false));
+        assertFalse(mergedResult.next());
     }
 }

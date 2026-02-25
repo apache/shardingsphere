@@ -79,10 +79,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -269,7 +270,7 @@ class PostgreSQLAuthenticationEngineTest {
         AuthenticationResult actual = authenticationEngine.authenticate(channelHandlerContext, passwordPayload);
         verify(channelHandlerContext).write(any(PostgreSQLAuthenticationOKPacket.class));
         verify(channelHandlerContext).writeAndFlush(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
-        assertThat(actual.isFinished(), is(true));
+        assertTrue(actual.isFinished());
     }
     
     @Test
@@ -285,7 +286,7 @@ class PostgreSQLAuthenticationEngineTest {
         AuthenticationResult actual = authenticationEngine.authenticate(channelHandlerContext, passwordPayload);
         verify(channelHandlerContext).write(any(PostgreSQLAuthenticationOKPacket.class));
         verify(channelHandlerContext).writeAndFlush(PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
-        assertThat(actual.isFinished(), is(true));
+        assertTrue(actual.isFinished());
     }
     
     private ByteBuf createByteBuf(final int initialCapacity, final int maxCapacity) {

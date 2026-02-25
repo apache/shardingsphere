@@ -36,9 +36,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -76,7 +76,7 @@ class MatchExpressionConverterTest {
         segment.getColumns().add(columnSegment);
         SqlBasicCall actual = MatchExpressionConverter.convert(segment);
         assertThat(actual.getOperandList().size(), is(2));
-        assertThat(actual.getOperandList().get(0), instanceOf(SqlIdentifier.class));
+        assertThat(actual.getOperandList().get(0), isA(SqlIdentifier.class));
         SqlLiteral modifier = (SqlLiteral) actual.getOperandList().get(1);
         assertThat(modifier.getValueAs(String.class), is("modifier"));
     }

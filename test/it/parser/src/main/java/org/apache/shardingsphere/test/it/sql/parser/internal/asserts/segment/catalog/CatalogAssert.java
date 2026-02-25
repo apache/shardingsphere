@@ -28,8 +28,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Catalog assert.
@@ -74,7 +75,7 @@ public final class CatalogAssert {
     }
     
     private static void assertProperty(final SQLCaseAssertContext assertContext, final Map<String, String> actual, final ExpectedCatalogProperty expected) {
-        assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.containsKey(expected.getKey()), is(true));
+        assertTrue(actual.containsKey(expected.getKey()), assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())));
         assertThat(assertContext.getText(String.format("Property value '%s' assertion error: ", expected.getKey())), actual.get(expected.getKey()), is(expected.getValue()));
     }
     

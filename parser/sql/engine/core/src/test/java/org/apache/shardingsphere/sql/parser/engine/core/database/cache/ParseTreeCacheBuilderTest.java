@@ -24,8 +24,8 @@ import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 
 class ParseTreeCacheBuilderTest {
     

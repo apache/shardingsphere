@@ -217,6 +217,10 @@ BUILD
     : B U I L D
     ;
 
+BUILTIN
+    : B U I L T I N
+    ;
+
 BY
     : B Y
     ;
@@ -927,6 +931,10 @@ FUNCTION
     : F U N C T I O N
     ;
 
+FUNCTIONS
+    : F U N C T I O N S
+    ;
+
 GENERAL
     : G E N E R A L
     ;
@@ -1009,6 +1017,10 @@ HASH
 
 HAVING
     : H A V I N G
+    ;
+
+HDFS
+    : H D F S
     ;
 
 HELP
@@ -1247,6 +1259,10 @@ JOB
     : J O B
     ;
 
+KAFKA
+    : K A F K A
+    ;
+
 KEY
     : K E Y
     ;
@@ -1365,6 +1381,10 @@ LOCKED
 
 LOCKS
     : L O C K S
+    ;
+
+LOCATION
+    : L O C A T I O N
     ;
 
 LOGFILE
@@ -1926,6 +1946,10 @@ PATH
     : P A T H
     ;
 
+PAUSE
+    : P A U S E
+    ;
+
 PERCENT_RANK
     : P E R C E N T UL_ R A N K
     ;
@@ -2000,6 +2024,10 @@ PRIVILEGES
 
 PRIVILEGE_CHECKS_USER
     : P R I V I L E G E UL_ C H E C K S UL_ U S E R
+    ;
+
+PROC
+    : P R O C
     ;
 
 PROCEDURE
@@ -2224,6 +2252,10 @@ REPLICATION
     : R E P L I C A T I O N
     ;
 
+REPOSITORY
+    : R E P O S I T O R Y
+    ;
+
 REQUIRE
     : R E Q U I R E
     ;
@@ -2334,6 +2366,10 @@ ROW
 
 ROWS
     : R O W S
+    ;
+
+S3
+    : S '3'
     ;
 
 ROW_COUNT
@@ -2714,6 +2750,10 @@ SWITCHES
     : S W I T C H E S
     ;
 
+SYNC
+    :S Y N C
+    ;
+
 SYSTEM
     : S Y S T E M
     ;
@@ -2998,6 +3038,10 @@ UNLOCK
     : U N L O C K
     ;
 
+UNSET
+    : U N S E T
+    ;
+
 UNSIGNED
     : U N S I G N E D
     ;
@@ -3080,6 +3124,10 @@ VARCHAR
 
 VARCHARACTER
     : V A R C H A R A C T E R
+    ;
+
+VARIABLE
+    : V A R I A B L E
     ;
 
 VARIABLES

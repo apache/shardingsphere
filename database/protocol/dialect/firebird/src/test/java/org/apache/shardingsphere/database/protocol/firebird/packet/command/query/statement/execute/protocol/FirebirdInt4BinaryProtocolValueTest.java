@@ -20,11 +20,17 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -37,25 +43,25 @@ class FirebirdInt4BinaryProtocolValueTest {
     @Test
     void assertRead() {
         when(payload.readInt4()).thenReturn(1);
-        new FirebirdInt4BinaryProtocolValue().read(payload);
-        verify(payload).readInt4();
+        assertThat(new FirebirdInt4BinaryProtocolValue().read(payload), is(1));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("writeArguments")
+    void assertWrite(final String name, final Object value, final int expected) {
+        new FirebirdInt4BinaryProtocolValue().write(payload, value);
+        verify(payload).writeInt4(expected);
+    }
+    
+    private static Stream<Arguments> writeArguments() {
+        return Stream.of(
+                Arguments.of("big decimal", BigDecimal.ONE, 1),
+                Arguments.of("integer", 1, 1),
+                Arguments.of("long", 1L, 1));
     }
     
     @Test
-    void assertWriteWithBigDecimal() {
-        new FirebirdInt4BinaryProtocolValue().write(payload, BigDecimal.ONE);
-        verify(payload).writeInt4(1);
-    }
-    
-    @Test
-    void assertWriteWithInteger() {
-        new FirebirdInt4BinaryProtocolValue().write(payload, 1);
-        verify(payload).writeInt4(1);
-    }
-    
-    @Test
-    void assertWriteWithLong() {
-        new FirebirdInt4BinaryProtocolValue().write(payload, 1L);
-        verify(payload).writeInt4(1);
+    void assertGetLength() {
+        assertThat(new FirebirdInt4BinaryProtocolValue().getLength(payload), is(4));
     }
 }

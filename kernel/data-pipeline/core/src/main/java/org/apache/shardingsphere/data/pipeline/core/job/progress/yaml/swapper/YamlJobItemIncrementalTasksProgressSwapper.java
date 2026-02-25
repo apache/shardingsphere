@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.swapper;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIncrementalPositionManager;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.config.YamlJobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
@@ -45,7 +46,10 @@ public final class YamlJobItemIncrementalTasksProgressSwapper {
             return new YamlJobItemIncrementalTasksProgress();
         }
         YamlJobItemIncrementalTasksProgress result = new YamlJobItemIncrementalTasksProgress();
-        result.setPosition(progress.getIncrementalTaskProgress().getPosition().toString());
+        IngestPosition position = progress.getIncrementalTaskProgress().getPosition();
+        if (null != position) {
+            result.setPosition(position.toString());
+        }
         result.setDelay(progress.getIncrementalTaskProgress().getIncrementalTaskDelay());
         return result;
     }
@@ -62,8 +66,11 @@ public final class YamlJobItemIncrementalTasksProgressSwapper {
             return new JobItemIncrementalTasksProgress(null);
         }
         DialectIncrementalPositionManager positionInitializer = DatabaseTypedSPILoader.getService(DialectIncrementalPositionManager.class, TypedSPILoader.getService(DatabaseType.class, databaseType));
-        IncrementalTaskProgress taskProgress = new IncrementalTaskProgress(positionInitializer.init(yamlProgress.getPosition()));
-        taskProgress.setIncrementalTaskDelay(yamlProgress.getDelay());
+        IncrementalTaskProgress taskProgress = null;
+        if (null != yamlProgress.getPosition()) {
+            taskProgress = new IncrementalTaskProgress(positionInitializer.init(yamlProgress.getPosition()));
+            taskProgress.setIncrementalTaskDelay(yamlProgress.getDelay());
+        }
         return new JobItemIncrementalTasksProgress(taskProgress);
     }
 }

@@ -31,7 +31,7 @@ public final class ZookeeperGovernanceContainerOption implements GovernanceConta
     
     @Override
     public String getDefaultImageName() {
-        return "zookeeper:3.6.2";
+        return "zookeeper:3.9.4-jre-17";
     }
     
     @Override

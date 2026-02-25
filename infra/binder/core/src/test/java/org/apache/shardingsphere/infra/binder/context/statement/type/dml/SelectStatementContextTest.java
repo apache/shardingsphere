@@ -67,11 +67,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.infra.binder.context.segment.select.pagination.PaginationContext;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -356,6 +357,23 @@ class SelectStatementContextTest {
         selectStatement.setLimit(limitSegment);
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
         selectStatementContext.bindParameters(Collections.singletonList(7L));
+        PaginationContext paginationContext = selectStatementContext.getPaginationContext();
+        assertTrue(paginationContext.getOffsetParameterIndex().isPresent());
+        assertThat(paginationContext.getOffsetParameterIndex().get(), is(0));
+        assertThat(paginationContext.getActualOffset(), is(7L));
+        assertFalse(paginationContext.getRowCountParameterIndex().isPresent());
+        assertThat(paginationContext.getActualRowCount(), is(Optional.of(5L)));
+    }
+    
+    @Test
+    void assertBindParametersPopulatePaginationContextWithByteArrayParameters() {
+        SelectStatement selectStatement = new SelectStatement(databaseType);
+        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        LimitSegment limitSegment = new LimitSegment(0, 0,
+                new ParameterMarkerLimitValueSegment(0, 0, 0), new NumberLiteralLimitValueSegment(1, 1, 5L));
+        selectStatement.setLimit(limitSegment);
+        SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
+        selectStatementContext.bindParameters(Collections.singletonList("7".getBytes(StandardCharsets.UTF_8)));
         PaginationContext paginationContext = selectStatementContext.getPaginationContext();
         assertTrue(paginationContext.getOffsetParameterIndex().isPresent());
         assertThat(paginationContext.getOffsetParameterIndex().get(), is(0));

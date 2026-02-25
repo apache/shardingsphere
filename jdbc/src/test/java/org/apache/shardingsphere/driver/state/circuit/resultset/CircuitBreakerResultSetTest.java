@@ -22,18 +22,20 @@ import org.junit.jupiter.api.Test;
 import java.sql.ResultSet;
 import java.util.Calendar;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("resource")
 class CircuitBreakerResultSetTest {
     
     @Test
     void assertNext() {
-        assertThat(new CircuitBreakerResultSet().next(), is(false));
+        assertFalse(new CircuitBreakerResultSet().next());
     }
     
     @Test
@@ -43,7 +45,7 @@ class CircuitBreakerResultSetTest {
     
     @Test
     void assertWasNull() {
-        assertThat(new CircuitBreakerResultSet().wasNull(), is(true));
+        assertTrue(new CircuitBreakerResultSet().wasNull());
     }
     
     @Test
@@ -68,12 +70,12 @@ class CircuitBreakerResultSetTest {
     
     @Test
     void assertGetBooleanByIndex() {
-        assertThat(new CircuitBreakerResultSet().getBoolean(1), is(false));
+        assertFalse(new CircuitBreakerResultSet().getBoolean(1));
     }
     
     @Test
     void assertGetBooleanByLabel() {
-        assertThat(new CircuitBreakerResultSet().getBoolean("foo"), is(false));
+        assertFalse(new CircuitBreakerResultSet().getBoolean("foo"));
     }
     
     @Test
@@ -148,97 +150,97 @@ class CircuitBreakerResultSetTest {
     
     @Test
     void assertGetDateByIndex() {
-        assertThat(new CircuitBreakerResultSet().getDate(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getDate(1));
     }
     
     @Test
     void assertGetDateByLabel() {
-        assertThat(new CircuitBreakerResultSet().getDate("foo"), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getDate("foo"));
     }
     
     @Test
     void assertGetDateWithCalendarByIndex() {
-        assertThat(new CircuitBreakerResultSet().getDate(1, Calendar.getInstance()), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getDate(1, Calendar.getInstance()));
     }
     
     @Test
     void assertGetDateWithCalendarByLabel() {
-        assertThat(new CircuitBreakerResultSet().getDate("foo", Calendar.getInstance()), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getDate("foo", Calendar.getInstance()));
     }
     
     @Test
     void assertGetTimeByIndex() {
-        assertThat(new CircuitBreakerResultSet().getTime(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getTime(1));
     }
     
     @Test
     void assertGetTimeByLabel() {
-        assertThat(new CircuitBreakerResultSet().getTime("foo"), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getTime("foo"));
     }
     
     @Test
     void assertGetTimeWithCalendarByIndex() {
-        assertThat(new CircuitBreakerResultSet().getTime(1, Calendar.getInstance()), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getTime(1, Calendar.getInstance()));
     }
     
     @Test
     void assertGetTimeWithCalendarByLabel() {
-        assertThat(new CircuitBreakerResultSet().getTime("foo", Calendar.getInstance()), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getTime("foo", Calendar.getInstance()));
     }
     
     @Test
     void assertGetTimestampByIndex() {
-        assertThat(new CircuitBreakerResultSet().getTimestamp(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getTimestamp(1));
     }
     
     @Test
     void assertGetTimestampByLabel() {
-        assertThat(new CircuitBreakerResultSet().getTimestamp("foo"), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getTimestamp("foo"));
     }
     
     @Test
     void assertGetTimestampWithCalendarByIndex() {
-        assertThat(new CircuitBreakerResultSet().getTimestamp(1, Calendar.getInstance()), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getTimestamp(1, Calendar.getInstance()));
     }
     
     @Test
     void assertGetTimestampWithCalendarByLabel() {
-        assertThat(new CircuitBreakerResultSet().getTimestamp("foo", Calendar.getInstance()), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getTimestamp("foo", Calendar.getInstance()));
     }
     
     @Test
     void assertGetAsciiStreamByIndex() {
-        assertThat(new CircuitBreakerResultSet().getAsciiStream(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getAsciiStream(1));
     }
     
     @Test
     void assertGetAsciiStreamByLabel() {
-        assertThat(new CircuitBreakerResultSet().getAsciiStream("foo"), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getAsciiStream("foo"));
     }
     
     @Test
     void assertGetUnicodeStreamByIndex() {
-        assertThat(new CircuitBreakerResultSet().getUnicodeStream(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getUnicodeStream(1));
     }
     
     @Test
     void assertGetUnicodeStreamByLabel() {
-        assertThat(new CircuitBreakerResultSet().getUnicodeStream("foo"), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getUnicodeStream("foo"));
     }
     
     @Test
     void assertGetBinaryStreamByIndex() {
-        assertThat(new CircuitBreakerResultSet().getBinaryStream(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getBinaryStream(1));
     }
     
     @Test
     void assertGetBinaryStreamByLabel() {
-        assertThat(new CircuitBreakerResultSet().getBinaryStream("foo"), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getBinaryStream("foo"));
     }
     
     @Test
     void assertGetWarnings() {
-        assertThat(new CircuitBreakerResultSet().getWarnings(), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getWarnings());
     }
     
     @Test
@@ -248,17 +250,17 @@ class CircuitBreakerResultSetTest {
     
     @Test
     void assertGetMetaData() {
-        assertThat(new CircuitBreakerResultSet().getMetaData(), instanceOf(CircuitBreakerResultSetMetaData.class));
+        assertThat(new CircuitBreakerResultSet().getMetaData(), isA(CircuitBreakerResultSetMetaData.class));
     }
     
     @Test
     void assertGetObjectByIndex() {
-        assertThat(new CircuitBreakerResultSet().getObject(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getObject(1));
     }
     
     @Test
     void assertGetObjectByLabel() {
-        assertThat(new CircuitBreakerResultSet().getObject("foo"), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getObject("foo"));
     }
     
     @Test
@@ -268,32 +270,32 @@ class CircuitBreakerResultSetTest {
     
     @Test
     void assertGetCharacterStreamByIndex() {
-        assertThat(new CircuitBreakerResultSet().getCharacterStream(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getCharacterStream(1));
     }
     
     @Test
     void assertGetCharacterStreamByLabel() {
-        assertThat(new CircuitBreakerResultSet().getCharacterStream("foo"), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getCharacterStream("foo"));
     }
     
     @Test
     void assertGetBigDecimalByIndex() {
-        assertThat(new CircuitBreakerResultSet().getBigDecimal(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getBigDecimal(1));
     }
     
     @Test
     void assertGetBigDecimalByLabel() {
-        assertThat(new CircuitBreakerResultSet().getBigDecimal("foo"), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getBigDecimal("foo"));
     }
     
     @Test
     void assertGetBigDecimalWithScaleByIndex() {
-        assertThat(new CircuitBreakerResultSet().getBigDecimal(1, 1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getBigDecimal(1, 1));
     }
     
     @Test
     void assertGetBigDecimalWithScaleByLabel() {
-        assertThat(new CircuitBreakerResultSet().getBigDecimal("foo", 1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getBigDecimal("foo", 1));
     }
     
     @Test
@@ -328,61 +330,61 @@ class CircuitBreakerResultSetTest {
     
     @Test
     void assertGetStatement() {
-        assertThat(new CircuitBreakerResultSet().getStatement(), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getStatement());
     }
     
     @Test
     void assertGetArrayByIndex() {
-        assertThat(new CircuitBreakerResultSet().getArray(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getArray(1));
     }
     
     @Test
     void assertGetArrayByLabel() {
-        assertThat(new CircuitBreakerResultSet().getArray("foo"), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getArray("foo"));
     }
     
     @Test
     void assertGetBlobByIndex() {
-        assertThat(new CircuitBreakerResultSet().getBlob(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getBlob(1));
     }
     
     @Test
     void assertGetBlobByLabel() {
-        assertThat(new CircuitBreakerResultSet().getBlob("foo"), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getBlob("foo"));
     }
     
     @Test
     void assertGetClobByIndex() {
-        assertThat(new CircuitBreakerResultSet().getClob(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getClob(1));
     }
     
     @Test
     void assertGetClobByLabel() {
-        assertThat(new CircuitBreakerResultSet().getClob("foo"), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getClob("foo"));
     }
     
     @Test
     void assertGetURLByIndex() {
-        assertThat(new CircuitBreakerResultSet().getURL(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getURL(1));
     }
     
     @Test
     void assertGetURLByLabel() {
-        assertThat(new CircuitBreakerResultSet().getURL("foo"), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getURL("foo"));
     }
     
     @Test
     void assertIsClosed() {
-        assertThat(new CircuitBreakerResultSet().isClosed(), is(false));
+        assertFalse(new CircuitBreakerResultSet().isClosed());
     }
     
     @Test
     void assertGetSQLXMLByIndex() {
-        assertThat(new CircuitBreakerResultSet().getSQLXML(1), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getSQLXML(1));
     }
     
     @Test
     void assertGetSQLXMLByLabel() {
-        assertThat(new CircuitBreakerResultSet().getSQLXML("foo"), is(nullValue()));
+        assertNull(new CircuitBreakerResultSet().getSQLXML("foo"));
     }
 }

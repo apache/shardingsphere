@@ -29,7 +29,7 @@ import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,7 +50,7 @@ class MemoryDataRowEnumeratorTest {
         assertNull(enumerator.current());
         assertTrue(enumerator.moveNext());
         Object firstRow = enumerator.current();
-        assertThat(firstRow, instanceOf(Object[].class));
+        assertThat(firstRow, isA(Object[].class));
         assertThat((Object[]) firstRow, arrayContaining(1, "foo_name"));
         assertTrue(enumerator.moveNext());
         assertThat((Object[]) enumerator.current(), arrayContaining(2, "bar_name"));

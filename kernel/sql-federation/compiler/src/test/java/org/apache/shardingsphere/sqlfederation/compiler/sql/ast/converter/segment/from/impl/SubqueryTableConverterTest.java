@@ -44,9 +44,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
@@ -72,7 +72,7 @@ class SubqueryTableConverterTest {
         SqlBasicCall actual = (SqlBasicCall) SubqueryTableConverter.convert(segment).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.AS));
-        assertThat(actual.getOperandList().get(0), instanceOf(SqlBasicCall.class));
+        assertThat(actual.getOperandList().get(0), isA(SqlBasicCall.class));
         SqlBasicCall explicitTable = (SqlBasicCall) actual.getOperandList().get(0);
         assertThat(explicitTable.getOperator(), is(SqlStdOperatorTable.EXPLICIT_TABLE));
         assertThat(((SqlIdentifier) actual.getOperandList().get(1)).names, is(Collections.singletonList("alias")));
@@ -89,7 +89,7 @@ class SubqueryTableConverterTest {
         SqlBasicCall actual = (SqlBasicCall) SubqueryTableConverter.convert(segment).orElse(null);
         assertNotNull(actual);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.AS));
-        assertThat(actual.getOperandList().get(0), instanceOf(SqlSelect.class));
+        assertThat(actual.getOperandList().get(0), isA(SqlSelect.class));
         assertThat(actual.getOperandList().size(), is(1));
     }
 }

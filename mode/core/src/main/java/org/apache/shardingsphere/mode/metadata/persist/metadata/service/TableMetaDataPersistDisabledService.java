@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Table meta data persist service for disabled persist.
@@ -47,8 +48,8 @@ public final class TableMetaDataPersistDisabledService implements TableMetaDataP
     }
     
     @Override
-    public ShardingSphereTable load(final String databaseName, final String schemaName, final String tableName) {
-        return null;
+    public Optional<ShardingSphereTable> load(final String databaseName, final String schemaName, final String tableName) {
+        return Optional.empty();
     }
     
     @Override

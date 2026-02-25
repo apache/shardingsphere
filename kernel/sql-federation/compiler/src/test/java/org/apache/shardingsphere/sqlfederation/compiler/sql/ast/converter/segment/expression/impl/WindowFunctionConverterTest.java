@@ -31,9 +31,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -52,7 +52,7 @@ class WindowFunctionConverterTest {
         SqlBasicCall actual = WindowFunctionConverter.convert(segment);
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.OVER));
         assertThat(actual.getOperandList().get(0), is(paramNode));
-        assertThat(actual.getOperandList().get(1), instanceOf(SqlWindow.class));
+        assertThat(actual.getOperandList().get(1), isA(SqlWindow.class));
     }
     
     @Test
@@ -61,7 +61,6 @@ class WindowFunctionConverterTest {
         LiteralExpressionSegment parameter = new LiteralExpressionSegment(0, 0, "value");
         segment.getParameters().add(parameter);
         when(ExpressionConverter.convert(parameter)).thenReturn(Optional.empty());
-        SqlBasicCall actual = WindowFunctionConverter.convert(segment);
-        assertTrue(actual.getOperandList().isEmpty());
+        assertTrue(WindowFunctionConverter.convert(segment).getOperandList().isEmpty());
     }
 }

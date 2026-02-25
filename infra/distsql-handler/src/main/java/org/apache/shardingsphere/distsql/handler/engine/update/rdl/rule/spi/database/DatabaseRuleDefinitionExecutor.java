@@ -20,7 +20,6 @@ package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.dat
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatemen
  * @param <T> type of SQL statement
  * @param <R> type of rule
  */
-@SingletonSPI
 public interface DatabaseRuleDefinitionExecutor<T extends SQLStatement, R extends ShardingSphereRule> extends TypedSPI, DistSQLExecutorDatabaseAware, DistSQLExecutorRuleAware<R> {
     
     /**

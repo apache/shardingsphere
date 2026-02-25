@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal
 import org.junit.jupiter.api.Test;
 import org.postgresql.replication.LogSequenceNumber;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class WALPositionTest {

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.config.database;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
@@ -30,7 +31,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 /**
  * Data source unit persist service.
@@ -57,8 +58,11 @@ public final class DataSourceUnitPersistService {
      */
     public Map<String, DataSourcePoolProperties> load(final String databaseName) {
         Collection<String> childrenKeys = repository.getChildrenKeys(NodePathGenerator.toPath(new StorageUnitNodePath(databaseName, null)));
-        return childrenKeys.stream()
-                .collect(Collectors.toMap(each -> each, each -> load(databaseName, each), (oldValue, currentValue) -> currentValue, () -> new LinkedHashMap<>(childrenKeys.size(), 1F)));
+        Map<String, DataSourcePoolProperties> result = new LinkedHashMap<>(childrenKeys.size(), 1F);
+        for (String each : childrenKeys) {
+            load(databaseName, each).ifPresent(dataSourcePoolProps -> result.put(each, dataSourcePoolProps));
+        }
+        return result;
     }
     
     /**
@@ -69,11 +73,17 @@ public final class DataSourceUnitPersistService {
      * @return data source pool properties
      */
     @SuppressWarnings("unchecked")
-    public DataSourcePoolProperties load(final String databaseName, final String dataSourceName) {
+    public Optional<DataSourcePoolProperties> load(final String databaseName, final String dataSourceName) {
         VersionNodePath versionNodePath = new VersionNodePath(new StorageUnitNodePath(databaseName, dataSourceName));
-        int activeVersion = Integer.parseInt(repository.query(versionNodePath.getActiveVersionPath()));
-        String dataSourceContent = repository.query(versionNodePath.getVersionPath(activeVersion));
-        return yamlDataSourceConfigurationSwapper.swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceContent, Map.class));
+        String activeVersion = repository.query(versionNodePath.getActiveVersionPath());
+        if (Strings.isNullOrEmpty(activeVersion)) {
+            return Optional.empty();
+        }
+        String dataSourceContent = repository.query(versionNodePath.getVersionPath(Integer.parseInt(activeVersion)));
+        if (Strings.isNullOrEmpty(dataSourceContent)) {
+            return Optional.empty();
+        }
+        return Optional.of(yamlDataSourceConfigurationSwapper.swapToDataSourcePoolProperties(YamlEngine.unmarshal(dataSourceContent, Map.class)));
     }
     
     /**

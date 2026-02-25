@@ -40,8 +40,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -57,7 +57,7 @@ class MySQLSelectWithoutFromAdminExecutorFactoryTest {
         Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(
                 mockSelectStatementContext(selectStatement), "", null, mock(ShardingSphereMetaData.class));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(MySQLSystemVariableQueryExecutor.class));
+        assertThat(actual.get(), isA(MySQLSystemVariableQueryExecutor.class));
     }
     
     @Test
@@ -66,7 +66,7 @@ class MySQLSelectWithoutFromAdminExecutorFactoryTest {
         Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(
                 mockSelectStatementContext(selectStatement), "", null, mock(ShardingSphereMetaData.class));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowConnectionIdExecutor.class));
+        assertThat(actual.get(), isA(ShowConnectionIdExecutor.class));
     }
     
     @Test
@@ -75,7 +75,7 @@ class MySQLSelectWithoutFromAdminExecutorFactoryTest {
         Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(
                 mockSelectStatementContext(selectStatement), "", null, mock(ShardingSphereMetaData.class));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowVersionExecutor.class));
+        assertThat(actual.get(), isA(ShowVersionExecutor.class));
     }
     
     @Test
@@ -84,7 +84,7 @@ class MySQLSelectWithoutFromAdminExecutorFactoryTest {
         Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(
                 mockSelectStatementContext(selectStatement), "", null, mock(ShardingSphereMetaData.class));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowCurrentUserExecutor.class));
+        assertThat(actual.get(), isA(ShowCurrentUserExecutor.class));
     }
     
     @Test
@@ -93,7 +93,7 @@ class MySQLSelectWithoutFromAdminExecutorFactoryTest {
         Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(
                 mockSelectStatementContext(selectStatement), "", null, mock(ShardingSphereMetaData.class));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowCurrentDatabaseExecutor.class));
+        assertThat(actual.get(), isA(ShowCurrentDatabaseExecutor.class));
     }
     
     @Test
@@ -104,7 +104,7 @@ class MySQLSelectWithoutFromAdminExecutorFactoryTest {
         Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(
                 mockSelectStatementContext(selectStatement), "", null, metaData);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(NoResourceShowExecutor.class));
+        assertThat(actual.get(), isA(NoResourceShowExecutor.class));
     }
     
     @Test
@@ -129,7 +129,7 @@ class MySQLSelectWithoutFromAdminExecutorFactoryTest {
         when(metaData.getAllDatabases()).thenReturn(Collections.singletonList(database));
         Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(mockSelectStatementContext(selectStatement), "", null, metaData);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(UnicastResourceShowExecutor.class));
+        assertThat(actual.get(), isA(UnicastResourceShowExecutor.class));
     }
     
     @Test
@@ -152,7 +152,7 @@ class MySQLSelectWithoutFromAdminExecutorFactoryTest {
         Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(
                 mockSelectStatementContext(selectStatement), "", null, metaData);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(UnicastResourceShowExecutor.class));
+        assertThat(actual.get(), isA(UnicastResourceShowExecutor.class));
     }
     
     @Test
@@ -162,7 +162,7 @@ class MySQLSelectWithoutFromAdminExecutorFactoryTest {
         Optional<DatabaseAdminExecutor> actual = MySQLSelectWithoutFromAdminExecutorFactory.newInstance(
                 mockSelectStatementContext(selectStatement), "", null, mock(ShardingSphereMetaData.class));
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ShowCurrentUserExecutor.class));
+        assertThat(actual.get(), isA(ShowCurrentUserExecutor.class));
     }
     
     private SelectStatement createSelectStatement(final Iterable<ProjectionSegment> projections) {

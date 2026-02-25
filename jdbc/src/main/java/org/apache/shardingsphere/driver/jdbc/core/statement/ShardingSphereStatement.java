@@ -346,15 +346,16 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (returnGeneratedKeys && generatedKey.isPresent() && !generatedKey.get().getGeneratedValues().isEmpty()) {
             return new GeneratedKeysResultSet(getGeneratedKeysColumnName(generatedKey.get().getColumnName()), generatedKey.get().getGeneratedValues().iterator(), this);
         }
+        String columnName = generatedKey.map(GeneratedKeyContext::getColumnName).orElse(null);
+        String generatedKeysColumnName = getGeneratedKeysColumnName(columnName);
         Collection<Comparable<?>> generatedValues = new LinkedList<>();
         for (Statement each : statements) {
             ResultSet resultSet = each.getGeneratedKeys();
             while (resultSet.next()) {
-                generatedValues.add((Comparable<?>) resultSet.getObject(1));
+                generatedValues.add(GeneratedValueUtils.getGeneratedValue(resultSet, generatedKeysColumnName, columnName));
             }
         }
-        String columnName = generatedKey.map(GeneratedKeyContext::getColumnName).orElse(null);
-        return new GeneratedKeysResultSet(getGeneratedKeysColumnName(columnName), generatedValues.iterator(), this);
+        return new GeneratedKeysResultSet(generatedKeysColumnName, generatedValues.iterator(), this);
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {

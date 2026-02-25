@@ -26,7 +26,7 @@ import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class MetricsCollectorRegistryTest {

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.handler.engine.update;
 
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -29,7 +28,6 @@ import java.sql.SQLException;
  * 
  * @param <T> type of DistSQL statement
  */
-@SingletonSPI
 public interface DistSQLUpdateExecutor<T extends DistSQLStatement> extends TypedSPI {
     
     /**

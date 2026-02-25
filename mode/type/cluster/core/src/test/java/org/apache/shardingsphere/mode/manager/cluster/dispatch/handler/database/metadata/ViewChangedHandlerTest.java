@@ -28,6 +28,8 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -48,7 +50,8 @@ class ViewChangedHandlerTest {
     @Test
     void assertHandleViewCreated() {
         ShardingSphereView view = mock(ShardingSphereView.class);
-        when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getView().load("foo_db", "foo_schema", "foo_view")).thenReturn(view);
+        when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getView().load("foo_db", "foo_schema", "foo_view"))
+                .thenReturn(Optional.of(view));
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "0", Type.ADDED));
         verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterView("foo_db", "foo_schema", view);
     }
@@ -56,7 +59,8 @@ class ViewChangedHandlerTest {
     @Test
     void assertHandleViewAltered() {
         ShardingSphereView view = mock(ShardingSphereView.class);
-        when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getView().load("foo_db", "foo_schema", "foo_view")).thenReturn(view);
+        when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getView().load("foo_db", "foo_schema", "foo_view"))
+                .thenReturn(Optional.of(view));
         handler.handle("foo_db", new DataChangedEvent("/metadata/foo_db/schemas/foo_schema/views/foo_view/active_version", "0", Type.UPDATED));
         verify(contextManager.getMetaDataContextManager().getDatabaseMetaDataManager()).alterView("foo_db", "foo_schema", view);
     }

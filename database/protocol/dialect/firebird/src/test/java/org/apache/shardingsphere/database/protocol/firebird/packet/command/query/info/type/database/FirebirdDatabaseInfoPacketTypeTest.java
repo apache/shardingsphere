@@ -19,8 +19,9 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.command.quer
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class FirebirdDatabaseInfoPacketTypeTest {
     
@@ -32,6 +33,6 @@ class FirebirdDatabaseInfoPacketTypeTest {
     
     @Test
     void assertIsCommon() {
-        assertThat(FirebirdDatabaseInfoPacketType.DB_SIZE_IN_PAGES.isCommon(), is(false));
+        assertFalse(FirebirdDatabaseInfoPacketType.DB_SIZE_IN_PAGES.isCommon());
     }
 }

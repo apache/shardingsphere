@@ -36,7 +36,8 @@ execute
     | createProcedure
     | dropProcedure
     | createFunction
-    | dropFunction
+    | dorisDropFunction
+    | descFunction
     | createDatabase
     | dropDatabase
     | createEvent
@@ -85,6 +86,11 @@ execute
     | install
     | kill
     | loadStatement
+    | createRoutineLoad
+    | alterRoutineLoad
+    | pauseRoutineLoad
+    | resumeRoutineLoad
+    | stopRoutineLoad
     | cacheIndex
     | loadIndexInfo
     | optimizeTable
@@ -135,12 +141,23 @@ execute
     | startReplica
     | createMaterializedView
     | resumeJob
+    | resumeSyncJob
+    | pauseSyncJob
+    | stopSyncJob
+    | createSyncJob
     | dorisAlterSystem
     | createSqlBlockRule
     | alterSqlBlockRule
     | dropSqlBlockRule
+    | dropRepository
+    | createRepository
     | buildIndex
     | cancelBuildIndex
+    | cancelAlterTable
+    | createFile
+    | dropFile
+    | sync
+    | unsetVariable
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

@@ -24,9 +24,9 @@ import org.postgresql.util.PGobject;
 
 import java.sql.SQLException;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -45,7 +45,7 @@ class PostgreSQLVarcharArrayValueParserTest {
     void assertParseThrowsOnSQLException() {
         try (MockedConstruction<PGobject> mocked = mockConstruction(PGobject.class, (mock, context) -> doThrow(new SQLException("failed")).when(mock).setValue(anyString()))) {
             SQLWrapperException ex = assertThrows(SQLWrapperException.class, () -> new PostgreSQLVarcharArrayValueParser().parse("bad"));
-            assertThat(ex.getCause(), instanceOf(SQLException.class));
+            assertThat(ex.getCause(), isA(SQLException.class));
             assertThat(mocked.constructed().size(), is(1));
         }
     }

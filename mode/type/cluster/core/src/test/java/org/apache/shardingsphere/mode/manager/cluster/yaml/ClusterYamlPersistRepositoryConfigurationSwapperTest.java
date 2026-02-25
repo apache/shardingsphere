@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlPersistRepos
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @SuppressWarnings({"unchecked", "rawtypes"})

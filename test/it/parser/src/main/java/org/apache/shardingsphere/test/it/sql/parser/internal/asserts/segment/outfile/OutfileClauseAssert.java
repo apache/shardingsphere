@@ -25,11 +25,13 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.outfile.ExpectedOutfileClause;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Outfile clause assert.
@@ -67,14 +69,13 @@ public final class OutfileClauseAssert {
     private static void assertProperties(final SQLCaseAssertContext assertContext, final Map<String, String> actual, final Map<String, String> expected) {
         if (null == expected || expected.isEmpty()) {
             if (null != actual && !actual.isEmpty()) {
-                assertThat(assertContext.getText("Actual outfile properties should be empty."), actual.isEmpty(), is(true));
+                fail(assertContext.getText("Actual outfile properties should be empty."));
             }
         } else {
             assertNotNull(actual, assertContext.getText("Actual outfile properties should exist."));
             assertThat(assertContext.getText("Outfile properties size assertion error: "), actual.size(), is(expected.size()));
-            for (Map.Entry<String, String> entry : expected.entrySet()) {
-                assertThat(assertContext.getText(String.format("Outfile property '%s' assertion error: ", entry.getKey())),
-                        actual.get(entry.getKey()), is(entry.getValue()));
+            for (Entry<String, String> entry : expected.entrySet()) {
+                assertThat(assertContext.getText(String.format("Outfile property '%s' assertion error: ", entry.getKey())), actual.get(entry.getKey()), is(entry.getValue()));
             }
         }
     }

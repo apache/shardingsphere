@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute.protocol;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,6 +36,9 @@ class FirebirdByteBinaryProtocolValueTest {
     
     @Mock
     private FirebirdPacketPayload payload;
+    
+    @Mock
+    private ByteBuf byteBuf;
     
     @Test
     void assertRead() {
@@ -52,5 +58,13 @@ class FirebirdByteBinaryProtocolValueTest {
         byte[] bytes = {1, 2};
         new FirebirdByteBinaryProtocolValue().write(payload, bytes);
         verify(payload).writeBuffer(bytes);
+    }
+    
+    @Test
+    void assertGetLength() {
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readerIndex()).thenReturn(2);
+        when(payload.getBufferLength(2)).thenReturn(8);
+        assertThat(new FirebirdByteBinaryProtocolValue().getLength(payload), is(8));
     }
 }

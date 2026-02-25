@@ -17,59 +17,56 @@
 
 package org.apache.shardingsphere.single.checker.sql.table;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.UnsupportedDropCascadeTableException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class SingleDropTableSupportedCheckerTest {
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private SingleRule rule;
+    private final SingleDropTableSupportedChecker checker = new SingleDropTableSupportedChecker();
+    
+    @Test
+    void assertIsCheckWithDropTableStatement() {
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DropTableStatement.class));
+        assertTrue(checker.isCheck(sqlStatementContext));
+    }
+    
+    @Test
+    void assertIsCheckWithoutDropTableStatement() {
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SQLStatement.class));
+        assertFalse(checker.isCheck(sqlStatementContext));
+    }
     
     @Test
     void assertCheckWithCascade() {
-        assertThrows(UnsupportedDropCascadeTableException.class, () -> new SingleDropTableSupportedChecker().check(rule, mockDatabase(), mock(), createSQLStatementContext(true)));
+        assertThrows(UnsupportedDropCascadeTableException.class,
+                () -> checker.check(mock(SingleRule.class), mock(ShardingSphereDatabase.class), mock(ShardingSphereSchema.class), mockSQLStatementContext(true)));
     }
     
     @Test
     void assertCheckWithoutCascade() {
-        assertDoesNotThrow(() -> new SingleDropTableSupportedChecker().check(rule, mockDatabase(), mock(), createSQLStatementContext(false)));
+        assertDoesNotThrow(() -> checker.check(mock(SingleRule.class), mock(ShardingSphereDatabase.class), mock(ShardingSphereSchema.class), mockSQLStatementContext(false)));
     }
     
-    private ShardingSphereDatabase mockDatabase() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class),
-                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList());
-        when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
+    private SQLStatementContext mockSQLStatementContext(final boolean containsCascade) {
+        SQLStatementContext result = mock(SQLStatementContext.class);
+        DropTableStatement sqlStatement = mock(DropTableStatement.class);
+        when(sqlStatement.isContainsCascade()).thenReturn(containsCascade);
+        when(result.getSqlStatement()).thenReturn(sqlStatement);
         return result;
-    }
-    
-    private CommonSQLStatementContext createSQLStatementContext(final boolean containsCascade) {
-        DropTableStatement dropSchemaStatement = mock(DropTableStatement.class, RETURNS_DEEP_STUBS);
-        when(dropSchemaStatement.isContainsCascade()).thenReturn(containsCascade);
-        when(dropSchemaStatement.getTables()).thenReturn(Collections.emptyList());
-        when(dropSchemaStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
-        return new CommonSQLStatementContext(dropSchemaStatement);
     }
 }

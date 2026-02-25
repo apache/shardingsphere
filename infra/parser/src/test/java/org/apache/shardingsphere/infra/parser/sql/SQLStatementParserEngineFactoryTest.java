@@ -22,7 +22,8 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 class SQLStatementParserEngineFactoryTest {
     
@@ -32,13 +33,13 @@ class SQLStatementParserEngineFactoryTest {
     void assertGetSQLStatementParserEngineNotSame() {
         SQLStatementParserEngine before = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(64, 1024L));
         SQLStatementParserEngine after = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
-        assertSame(before, after);
+        assertThat(before, is(after));
     }
     
     @Test
     void assertGetSQLStatementParserEngineSame() {
         SQLStatementParserEngine before = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
         SQLStatementParserEngine after = SQLStatementParserEngineFactory.getSQLStatementParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
-        assertSame(before, after);
+        assertThat(before, is(after));
     }
 }

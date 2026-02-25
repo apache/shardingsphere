@@ -52,7 +52,11 @@ Module resolution order:
 
 - `R2`: test types and naming
   - Non-parameterized scenarios `MUST` use JUnit `@Test`.
-  - Data-driven scenarios `MUST` use JUnit `@ParameterizedTest`, and display names `MUST` use `@ParameterizedTest(name = "{0}")`.
+  - Data-driven scenarios `MUST` use JUnit `@ParameterizedTest(name = "{0}")` with `@MethodSource` + `Arguments`.
+  - Parameterized test method signatures `MUST` use `final String name` as the first parameter.
+  - Parameterized tests `MUST NOT` use `Consumer` (including `java.util.function.Consumer` and its generic forms) in method signatures or scenario-transport arguments.
+  - Each parameterized test `MUST` provide at least 3 `Arguments` rows; fewer than 3 is a violation and `MUST` be converted to non-parameterized `@Test`.
+  - Parameterized tests `MUST NOT` introduce new nested type declarations (member/local helper `class` / `interface` / `enum` / `record`) for scenario transport; use `Arguments` rows plus existing or JDK types instead.
   - `MUST NOT` use `@RepeatedTest`.
   - Test method naming `MUST` follow `CODE_OF_CONDUCT.md`: use the `assert` prefix; when a single test uniquely covers a production method, use `assert<MethodName>`.
 
@@ -73,11 +77,14 @@ Module resolution order:
   - Each test method `MUST` cover only one scenario.
   - Each test method `MUST` call the target public method at most once; additional assertions are allowed in the same scenario.
   - For parameterized tests, each `Arguments` row `MUST` represent one independent scenario and one branch/path mapping unit for `R4`.
+  - For parameterized tests, `Arguments` row count `MUST` be greater than or equal to 3.
   - Tests `MUST` exercise behavior through public methods only.
   - Public production methods with business logic `MUST` be covered with dedicated test methods.
+  - For interface targets, only `default` public methods are required test targets by default, and non-`default` public methods `MUST NOT` be tested unless the user explicitly requests them in the current turn.
   - Dedicated test targets `MUST` follow the `R4` branch-mapping exclusion scope.
 
 - `R6`: SPI, Mock, and reflection
+  - For interface `default` methods, this rule overrides SPI instantiation requirements in `R6`: tests `MUST` use Mockito `CALLS_REAL_METHODS` to invoke real default implementations, and this path does not require SPI-bypass justification.
   - If the class under test can be obtained via SPI, `MUST` instantiate by default with `TypedSPILoader`/`OrderedSPILoader` (or database-specific loaders), and `MUST` keep the resolved instance as a test-class-level field (global variable) by default.
   - SPI metadata accessor methods `TypedSPI#getType`, `OrderedSPI#getOrder`, and `getTypeClass` are default no-test-required targets.
   - For these accessors, tests `MUST NOT` be added by default; they are allowed only when the user explicitly requests tests for them in the current turn.
@@ -99,11 +106,13 @@ Module resolution order:
     - A. target public method and branch skeleton are consistent;
     - B. scenario differences mainly come from input data;
     - C. assertion skeleton is consistent, or only declared assertion differences exist;
-    - D. parameter sample count is at least 3.
+    - D. parameter sample count is at least 3;
+    - E. parameterized test body does not require dispatch logic via `switch`.
   - "Declared assertion differences" means differences explicitly recorded in the delivery report.
+  - If a candidate requires `switch` in a `@ParameterizedTest` body to distinguish argument rows, it is not high-fit and `MUST NOT` be refactored to parameterized form.
   - High-fit candidates `MUST` be refactored directly to parameterized form.
   - For high-fit candidates, a "do not recommend refactor" conclusion is allowed only when refactoring causes significant readability/diagnosability regression, and the exception `MUST` include a `Necessity reason tag` with concrete evidence.
-  - Parameter construction `SHOULD` prefer `Arguments + @MethodSource`; `MAY` use clearer options such as `@CsvSource`/`@EnumSource`.
+  - Parameter construction `MUST` use `Arguments + @MethodSource`.
   - `MUST` provide either a "recommend refactor" or "do not recommend refactor" conclusion with reasons for each candidate; when no candidates exist, `MUST` output "no candidates + decision reason".
   - If high-fit candidates exist but neither parameterized refactor nor valid `KEEP` evidence is present, status `MUST NOT` be concluded as `R10-A`.
 
@@ -141,6 +150,7 @@ Module resolution order:
 - `R13`: test necessity trimming
   - Trimming order `MUST` be fixed as "objective trimming -> exception retention review".
   - In objective trimming stage, `MUST` first remove coverage-equivalent tests and re-verify coverage uniformly, then remove redundant mock/stub/assertion and single-use local variables that do not affect branch selection/collaborator interaction behavior (call count, parameters)/observable assertions; if retention significantly improves readability, `MAY` keep and mark `Necessity reason tag`.
+  - Local variable declarations in test code `MUST NOT` use `final`; this rule applies only to local variables and does not change `R15-E` for parameterized-test method parameters.
   - Each retained item `MUST` carry a `KEEP:<id>:<reason>` tag and be recorded in the delivery report; items without tags are treated as redundant.
   - Each test method `MUST` provide unique value: cover a new branch/path, or add assertion differences.
   - If deleting a test method does not change line/branch coverage and has no assertion differences, `MUST` delete it.
@@ -148,6 +158,8 @@ Module resolution order:
 
 - `R14`: boolean assertion hard gate
   - Boolean literal/boolean constant assertions `MUST` use `assertTrue`/`assertFalse`.
+  - For boolean assertions where expected value is variable-driven (for example: parameter/local variable/field), `MUST` use `assertThat(actual, is(expected))`.
+  - `MUST NOT` dispatch boolean assertions through control flow (for example `if/else`, `switch`, or ternary) only to choose between `assertTrue` and `assertFalse`.
   - `MUST NOT` use:
     - `assertThat(<boolean expression>, is(true|false|Boolean.TRUE|Boolean.FALSE))`
     - `assertEquals(true|false|Boolean.TRUE|Boolean.FALSE, ...)`
@@ -158,6 +170,12 @@ Module resolution order:
   - `R15-A` (parameterization enforcement): if an `R8` high-fit candidate exists, the corresponding tests `MUST` be parameterized with `@ParameterizedTest(name = "{0}")`, unless a valid `KEEP` exception is recorded.
   - `R15-B` (metadata accessor test ban): unless the user explicitly requests it in the current turn, tests targeting `getType` / `getOrder` / `getTypeClass` `MUST NOT` be added.
   - `R15-C` (scope mutation guard): test-generation tasks `MUST NOT` introduce new diffs under any `src/main/` path.
+  - `R15-D` (parameterized argument floor): each `@ParameterizedTest` `MUST` bind to `@MethodSource` providers that together contain at least 3 `Arguments` rows; otherwise it is a violation.
+  - `R15-E` (parameterized name parameter): each `@ParameterizedTest` method `MUST` declare the first parameter exactly as `final String name`.
+  - `R15-F` (parameterized switch ban): `@ParameterizedTest` method bodies `MUST NOT` contain `switch` statements.
+  - `R15-G` (parameterized nested-type ban): when a file contains `@ParameterizedTest`, newly introduced diff lines `MUST NOT` add nested helper type declarations (`class` / `interface` / `enum` / `record`) inside the test class.
+  - `R15-H` (boolean variable assertion style): for variable-driven boolean expectations, tests `MUST` assert with `assertThat(actual, is(expected))`, and `MUST NOT` use control-flow dispatch only to choose `assertTrue`/`assertFalse`.
+  - `R15-I` (parameterized Consumer ban): files containing `@ParameterizedTest` `MUST NOT` introduce or retain `Consumer`-based scenario transport in parameterized method signatures or `@MethodSource` argument rows.
 
 ## Workflow
 
@@ -359,6 +377,271 @@ PY
 '
 ```
 
+5.2 `R15-D` parameterized minimum arguments scan:
+```bash
+bash -lc '
+python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
+import re
+import sys
+from pathlib import Path
+
+PARAM_METHOD_PATTERN = re.compile(r"@ParameterizedTest(?:\\s*\\([^)]*\\))?\\s*((?:@\\w+(?:\\s*\\([^)]*\\))?\\s*)*)void\\s+(assert\\w+)\\s*\\(", re.S)
+METHOD_SOURCE_PATTERN = re.compile(r"@MethodSource(?:\\s*\\(([^)]*)\\))?")
+METHOD_DECL_PATTERN = re.compile(r"(?:private|protected|public)?\\s*(?:static\\s+)?[\\w$<>\\[\\], ?]+\\s+(\\w+)\\s*\\([^)]*\\)\\s*\\{", re.S)
+ARGUMENT_ROW_PATTERN = re.compile(r"\\b(?:Arguments\\.of|arguments)\\s*\\(")
+
+def extract_block(text, brace_index):
+    depth = 0
+    index = brace_index
+    while index < len(text):
+        if "{" == text[index]:
+            depth += 1
+        elif "}" == text[index]:
+            depth -= 1
+            if 0 == depth:
+                return text[brace_index + 1:index]
+        index += 1
+    return ""
+
+def parse_method_sources(method_name, annotation_block):
+    resolved = []
+    matches = list(METHOD_SOURCE_PATTERN.finditer(annotation_block))
+    if not matches:
+        return resolved
+    for each in matches:
+        raw = each.group(1)
+        if raw is None or not raw.strip():
+            resolved.append(method_name)
+            continue
+        raw = raw.strip()
+        normalized = re.sub(r"\\bvalue\\s*=\\s*", "", raw)
+        names = re.findall(r'"([^"]+)"', normalized)
+        for name in names:
+            # Ignore external references such as "pkg.Class#method"; they are unresolved in this scan.
+            resolved.append(name.split("#", 1)[-1])
+    return resolved
+
+violations = []
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
+    source = Path(path).read_text(encoding="utf-8")
+    method_bodies = {}
+    for match in METHOD_DECL_PATTERN.finditer(source):
+        method_name = match.group(1)
+        brace_index = source.find("{", match.start())
+        if brace_index < 0:
+            continue
+        method_bodies[method_name] = extract_block(source, brace_index)
+    for match in PARAM_METHOD_PATTERN.finditer(source):
+        annotation_block = match.group(1)
+        method_name = match.group(2)
+        line = source.count("\\n", 0, match.start()) + 1
+        source_methods = parse_method_sources(method_name, annotation_block)
+        if not source_methods:
+            violations.append(f"{path}:{line} method={method_name} missing @MethodSource")
+            continue
+        total_rows = 0
+        unresolved = []
+        for provider in source_methods:
+            body = method_bodies.get(provider)
+            if body is None:
+                unresolved.append(provider)
+                continue
+            total_rows += len(ARGUMENT_ROW_PATTERN.findall(body))
+        if unresolved:
+            violations.append(f"{path}:{line} method={method_name} unresolvedProviders={','.join(unresolved)}")
+            continue
+        if total_rows < 3:
+            violations.append(f"{path}:{line} method={method_name} argumentsRows={total_rows}")
+if violations:
+    print("[R15-D] each @ParameterizedTest must have >= 3 Arguments rows from @MethodSource")
+    for each in violations:
+        print(each)
+    sys.exit(1)
+PY
+'
+```
+
+5.3 `R15-E` parameterized first-parameter scan:
+```bash
+bash -lc '
+python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
+import re
+import sys
+from pathlib import Path
+
+PARAM_METHOD_PATTERN = re.compile(r"@ParameterizedTest(?:\\s*\\([^)]*\\))?\\s*(?:@\\w+(?:\\s*\\([^)]*\\))?\\s*)*void\\s+(assert\\w+)\\s*\\(([^)]*)\\)", re.S)
+violations = []
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
+    source = Path(path).read_text(encoding="utf-8")
+    for match in PARAM_METHOD_PATTERN.finditer(source):
+        method_name = match.group(1)
+        params = match.group(2).strip()
+        line = source.count("\\n", 0, match.start()) + 1
+        if not params:
+            violations.append(f"{path}:{line} method={method_name} missingParameters")
+            continue
+        first_param = params.split(",", 1)[0].strip()
+        normalized = re.sub(r"\\s+", " ", first_param)
+        if "final String name" != normalized:
+            violations.append(f"{path}:{line} method={method_name} firstParam={first_param}")
+if violations:
+    print("[R15-E] each @ParameterizedTest method must declare first parameter as `final String name`")
+    for each in violations:
+        print(each)
+    sys.exit(1)
+PY
+'
+```
+
+5.4 `R15-F` parameterized switch ban scan:
+```bash
+bash -lc '
+python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
+import re
+import sys
+from pathlib import Path
+
+PARAM_METHOD_PATTERN = re.compile(r"@ParameterizedTest(?:\\s*\\([^)]*\\))?\\s*(?:@\\w+(?:\\s*\\([^)]*\\))?\\s*)*void\\s+(assert\\w+)\\s*\\([^)]*\\)\\s*\\{", re.S)
+SWITCH_PATTERN = re.compile(r"\\bswitch\\s*\\(")
+
+def extract_block(text, brace_index):
+    depth = 0
+    index = brace_index
+    while index < len(text):
+        if "{" == text[index]:
+            depth += 1
+        elif "}" == text[index]:
+            depth -= 1
+            if 0 == depth:
+                return text[brace_index + 1:index]
+        index += 1
+    return ""
+
+violations = []
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
+    source = Path(path).read_text(encoding="utf-8")
+    for match in PARAM_METHOD_PATTERN.finditer(source):
+        method_name = match.group(1)
+        line = source.count("\\n", 0, match.start()) + 1
+        brace_index = source.find("{", match.start())
+        if brace_index < 0:
+            continue
+        body = extract_block(source, brace_index)
+        if SWITCH_PATTERN.search(body):
+            violations.append(f"{path}:{line} method={method_name}")
+if violations:
+    print("[R15-F] @ParameterizedTest method body must not contain switch")
+    for each in violations:
+        print(each)
+    sys.exit(1)
+PY
+'
+```
+
+5.5 `R15-G` parameterized nested-type ban scan (diff-based):
+```bash
+bash -lc '
+python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+TYPE_DECL_PATTERN = re.compile(r"^\+\s+(?:(?:public|protected|private|static|final|abstract)\s+)*(class|interface|enum|record)\b")
+violations = []
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
+    source = Path(path).read_text(encoding="utf-8")
+    if "@ParameterizedTest" not in source:
+        continue
+    diff = subprocess.run(["git", "diff", "-U0", "--", path], check=True, capture_output=True, text=True).stdout.splitlines()
+    for line in diff:
+        if line.startswith("+++") or line.startswith("@@"):
+            continue
+        if TYPE_DECL_PATTERN.search(line):
+            violations.append(f"{path}: {line[1:].strip()}")
+if violations:
+    print("[R15-G] parameterized tests must not introduce nested helper type declarations")
+    for each in violations:
+        print(each)
+    sys.exit(1)
+PY
+'
+```
+
+5.6 `R15-I` parameterized Consumer ban scan:
+```bash
+bash -lc '
+python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
+import re
+import sys
+from pathlib import Path
+
+PARAM_METHOD_PATTERN = re.compile(r"@ParameterizedTest(?:\\s*\\([^)]*\\))?\\s*(?:@\\w+(?:\\s*\\([^)]*\\))?\\s*)*void\\s+(assert\\w+)\\s*\\(([^)]*)\\)", re.S)
+METHOD_SOURCE_PATTERN = re.compile(r"@MethodSource(?:\\s*\\(([^)]*)\\))?")
+METHOD_DECL_PATTERN = re.compile(r"(?:private|protected|public)?\\s*(?:static\\s+)?[\\w$<>\\[\\], ?]+\\s+(\\w+)\\s*\\([^)]*\\)\\s*\\{", re.S)
+CONSUMER_TOKEN_PATTERN = re.compile(r"\\bConsumer\\s*(?:<|\\b)")
+
+def extract_block(text, brace_index):
+    depth = 0
+    index = brace_index
+    while index < len(text):
+        if "{" == text[index]:
+            depth += 1
+        elif "}" == text[index]:
+            depth -= 1
+            if 0 == depth:
+                return text[brace_index + 1:index]
+        index += 1
+    return ""
+
+def parse_method_sources(method_name, source, method_start):
+    header = source[max(0, method_start - 320):method_start]
+    matches = list(METHOD_SOURCE_PATTERN.finditer(header))
+    if not matches:
+        return []
+    resolved = []
+    for each in matches:
+        raw = each.group(1)
+        if raw is None or not raw.strip():
+            resolved.append(method_name)
+            continue
+        normalized = re.sub(r"\\bvalue\\s*=\\s*", "", raw.strip())
+        for name in re.findall(r'"([^"]+)"', normalized):
+            resolved.append(name.split("#", 1)[-1])
+    return resolved
+
+violations = []
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
+    source = Path(path).read_text(encoding="utf-8")
+    if "@ParameterizedTest" not in source:
+        continue
+    method_bodies = {}
+    for match in METHOD_DECL_PATTERN.finditer(source):
+        method_name = match.group(1)
+        brace_index = source.find("{", match.start())
+        if brace_index < 0:
+            continue
+        method_bodies[method_name] = extract_block(source, brace_index)
+    for match in PARAM_METHOD_PATTERN.finditer(source):
+        method_name = match.group(1)
+        params = match.group(2)
+        line = source.count("\\n", 0, match.start()) + 1
+        if CONSUMER_TOKEN_PATTERN.search(params):
+            violations.append(f"{path}:{line} method={method_name} reason=consumerInParameterizedMethodSignature")
+        provider_names = parse_method_sources(method_name, source, match.start())
+        for each_provider in provider_names:
+            body = method_bodies.get(each_provider)
+            if body and CONSUMER_TOKEN_PATTERN.search(body):
+                violations.append(f"{path}:{line} method={method_name} provider={each_provider} reason=consumerInMethodSourceArguments")
+if violations:
+    print("[R15-I] parameterized tests must not use Consumer in signatures or @MethodSource argument rows")
+    for each in violations:
+        print(each)
+    sys.exit(1)
+PY
+'
+```
+
 6. `R14` hard-gate scan:
 ```bash
 bash -lc '
@@ -368,6 +651,52 @@ if rg -n -U --pcre2 "$BOOLEAN_ASSERTION_BAN_REGEX" <ResolvedTestFileSet>; then
   echo "[R14] forbidden boolean assertion found"
   exit 1
 fi'
+```
+
+6.1 `R15-H` boolean control-flow dispatch scan:
+```bash
+bash -lc '
+python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
+import re
+import sys
+from pathlib import Path
+
+METHOD_DECL_PATTERN = re.compile(r"(?:@Test|@ParameterizedTest(?:\\s*\\([^)]*\\))?(?:\\s*@\\w+(?:\\s*\\([^)]*\\))?)*)\\s*void\\s+(assert\\w+)\\s*\\([^)]*\\)\\s*\\{", re.S)
+IF_ELSE_PATTERN = re.compile(r"if\\s*\\([^)]*\\)\\s*\\{[\\s\\S]*?assertTrue\\s*\\([^;]+\\)\\s*;[\\s\\S]*?\\}\\s*else\\s*\\{[\\s\\S]*?assertFalse\\s*\\([^;]+\\)\\s*;[\\s\\S]*?\\}|if\\s*\\([^)]*\\)\\s*\\{[\\s\\S]*?assertFalse\\s*\\([^;]+\\)\\s*;[\\s\\S]*?\\}\\s*else\\s*\\{[\\s\\S]*?assertTrue\\s*\\([^;]+\\)\\s*;[\\s\\S]*?\\}", re.S)
+IF_RETURN_PATTERN = re.compile(r"if\\s*\\([^)]*\\)\\s*\\{[\\s\\S]*?assertTrue\\s*\\([^;]+\\)\\s*;[\\s\\S]*?return\\s*;[\\s\\S]*?\\}\\s*assertFalse\\s*\\([^;]+\\)\\s*;|if\\s*\\([^)]*\\)\\s*\\{[\\s\\S]*?assertFalse\\s*\\([^;]+\\)\\s*;[\\s\\S]*?return\\s*;[\\s\\S]*?\\}\\s*assertTrue\\s*\\([^;]+\\)\\s*;", re.S)
+
+def extract_block(text, brace_index):
+    depth = 0
+    i = brace_index
+    while i < len(text):
+        if "{" == text[i]:
+            depth += 1
+        elif "}" == text[i]:
+            depth -= 1
+            if 0 == depth:
+                return text[brace_index + 1:i]
+        i += 1
+    return ""
+
+violations = []
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
+    source = Path(path).read_text(encoding="utf-8")
+    for match in METHOD_DECL_PATTERN.finditer(source):
+        method_name = match.group(1)
+        line = source.count("\\n", 0, match.start()) + 1
+        brace_index = source.find("{", match.start())
+        if brace_index < 0:
+            continue
+        body = extract_block(source, brace_index)
+        if IF_ELSE_PATTERN.search(body) or IF_RETURN_PATTERN.search(body):
+            violations.append(f"{path}:{line} method={method_name}")
+if violations:
+    print("[R15-H] do not dispatch boolean assertions by control flow to choose assertTrue/assertFalse")
+    for each in violations:
+        print(each)
+    sys.exit(1)
+PY
+'
 ```
 
 7. `R15-B` metadata accessor test ban scan (skip only when explicitly requested by user):

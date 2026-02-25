@@ -43,11 +43,12 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -189,7 +190,7 @@ class TestDecodingPluginTest {
         assertThat(actual.getAfterRow().get(3), is(1234567890123L));
         assertThat(actual.getAfterRow().get(4), is(1.5F));
         assertThat(actual.getAfterRow().get(5), is(2.5D));
-        assertThat(actual.getAfterRow().get(6), is(true));
+        assertTrue((boolean) actual.getAfterRow().get(6));
         assertThat(actual.getAfterRow().get(7), is(Date.valueOf("2020-01-02")));
         assertThat(actual.getAfterRow().get(8), is(Time.valueOf("12:34:56")));
         assertThat(actual.getAfterRow().get(9), is(Timestamp.valueOf("2020-01-02 03:04:05")));

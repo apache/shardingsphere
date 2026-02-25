@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.mode.persist.service.TableMetaDataPersistServic
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -47,15 +49,22 @@ public final class TableMetaDataPersistEnabledService implements TableMetaDataPe
     @Override
     public Collection<ShardingSphereTable> load(final String databaseName, final String schemaName) {
         return repository.getChildrenKeys(NodePathGenerator.toPath(new TableMetaDataNodePath(databaseName, schemaName, null))).stream()
-                .map(each -> load(databaseName, schemaName, each)).collect(Collectors.toList());
+                .map(each -> load(databaseName, schemaName, each))
+                .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
     
     @Override
-    public ShardingSphereTable load(final String databaseName, final String schemaName, final String tableName) {
+    public Optional<ShardingSphereTable> load(final String databaseName, final String schemaName, final String tableName) {
         VersionNodePath versionNodePath = new VersionNodePath(new TableMetaDataNodePath(databaseName, schemaName, tableName));
-        int activeVersion = Integer.parseInt(repository.query(versionNodePath.getActiveVersionPath()));
-        String tableContent = repository.query(versionNodePath.getVersionPath(activeVersion));
-        return swapper.swapToObject(YamlEngine.unmarshal(tableContent, YamlShardingSphereTable.class));
+        String activeVersion = repository.query(versionNodePath.getActiveVersionPath());
+        if (Strings.isNullOrEmpty(activeVersion)) {
+            return Optional.empty();
+        }
+        String tableContent = repository.query(versionNodePath.getVersionPath(Integer.parseInt(activeVersion)));
+        if (Strings.isNullOrEmpty(tableContent)) {
+            return Optional.empty();
+        }
+        return Optional.of(swapper.swapToObject(YamlEngine.unmarshal(tableContent, YamlShardingSphereTable.class)));
     }
     
     @Override

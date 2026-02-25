@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Describe statement test case for MySQL.
@@ -37,4 +38,7 @@ public final class MySQLDescribeStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "column-wild")
     private ExpectedColumn column;
+    
+    @XmlAttribute(name = "show-all")
+    private boolean showAll;
 }

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeho
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.FinishedRecord;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class CDCAckPositionTest {

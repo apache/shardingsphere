@@ -30,9 +30,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -64,6 +64,6 @@ class SimpleTableConverterTest {
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.AS));
         assertThat(((SqlIdentifier) actual.getOperandList().get(0)).names, is(Arrays.asList("schema", "t_complex", "db", "remote")));
         assertThat(((SqlIdentifier) actual.getOperandList().get(1)).names, is(Collections.singletonList("t_alias")));
-        assertThat(actual.getOperandList().get(0), instanceOf(SqlIdentifier.class));
+        assertThat(actual.getOperandList().get(0), isA(SqlIdentifier.class));
     }
 }

@@ -34,9 +34,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,7 +56,7 @@ class InExpressionConverterTest {
         SqlBasicCall actual = InExpressionConverter.convert(new InExpression(0, 0, left, right, true));
         assertThat(actual.getOperator(), is(SqlStdOperatorTable.NOT_IN));
         SqlNode secondOperand = actual.getOperandList().get(1);
-        assertThat(secondOperand, instanceOf(SqlNodeList.class));
+        assertThat(secondOperand, isA(SqlNodeList.class));
         assertThat(((SqlNodeList) secondOperand).size(), is(1));
         assertThat(((SqlNodeList) secondOperand).get(0), is(rightOperand));
     }

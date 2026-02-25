@@ -125,9 +125,11 @@ createTableOptionsSpaceSeparated
 alterListItem
     : ADD COLUMN? (columnDefinition place? | LP_ tableElementList RP_)  # addColumn
     | ADD tableConstraintDef  # addTableConstraint
+    | ADD ROLLUP rollupItem (COMMA_ rollupItem)*  # addRollup
     | CHANGE COLUMN? columnInternalRef=identifier columnDefinition place?  # changeColumn
     | MODIFY COLUMN? columnInternalRef=identifier fieldDefinition place?   # modifyColumn
     | DROP (COLUMN? columnInternalRef=identifier restrict? | FOREIGN KEY columnInternalRef=identifier | PRIMARY KEY | keyOrIndex indexName | CHECK identifier | CONSTRAINT identifier)  # alterTableDrop
+    | DROP ROLLUP rollupNameItem (COMMA_ rollupNameItem)*  # dropRollup
     | DISABLE KEYS  # disableKeys
     | ENABLE KEYS   # enableKeys
     | ALTER COLUMN? columnInternalRef=identifier (SET DEFAULT (LP_ expr RP_| literals)| SET visibility | DROP DEFAULT) # alterColumn
@@ -139,6 +141,7 @@ alterListItem
     | RENAME keyOrIndex indexName TO indexName  # renameIndex
     | RENAME ROLLUP oldRollupName=identifier newRollupName=identifier  # renameRollup
     | RENAME PARTITION oldPartitionName=identifier newPartitionName=identifier  # renamePartition
+    | REPLACE WITH TABLE tableName propertiesClause?  # replaceTable
     | CONVERT TO charset charsetName collateClause?  # alterConvert
     | FORCE  # alterTableForce
     | ORDER BY alterOrderList  # alterTableOrder
@@ -146,6 +149,14 @@ alterListItem
 
 alterOrderList
     : columnRef direction? (COMMA_ columnRef direction?)*
+    ;
+
+rollupItem
+    : rollupName=identifier LP_ columnNames RP_ (FROM fromIndexName=indexName)? propertiesClause?
+    ;
+
+rollupNameItem
+    : rollupName=identifier propertiesClause?
     ;
 
 alterStoragePolicy
@@ -184,7 +195,11 @@ standaloneAlterCommands
 
 alterPartition
     : ADD PARTITION noWriteToBinLog? (partitionDefinitions | PARTITIONS NUMBER_)
+    | ADD PARTITION ifNotExists? partitionName dorisPartitionDesc (propertiesClause | LP_ properties RP_)? distributedbyClause?
+    | ADD PARTITIONS FROM LP_ expr RP_ TO LP_ expr RP_ INTERVAL expr intervalUnit?
     | DROP PARTITION identifierList
+    | MODIFY PARTITION LP_ (ASTERISK_ | identifierList) RP_ SET LP_ properties RP_
+    | MODIFY PARTITION identifier SET LP_ properties RP_
     | REBUILD PARTITION noWriteToBinLog? allOrPartitionNameList
     | OPTIMIZE PARTITION noWriteToBinLog? allOrPartitionNameList noWriteToBinLog?
     | ANALYZE PARTITION noWriteToBinLog? allOrPartitionNameList
@@ -196,6 +211,11 @@ alterPartition
     | EXCHANGE PARTITION identifier WITH TABLE tableName withValidation?
     | DISCARD PARTITION allOrPartitionNameList TABLESPACE
     | IMPORT PARTITION allOrPartitionNameList TABLESPACE
+    ;
+
+dorisPartitionDesc
+    : VALUES LESS THAN LP_ (MAXVALUE | partitionValueList) RP_
+    | VALUES LBT_ LP_ partitionValueList RP_ COMMA_ LP_ partitionValueList RP_ RP_
     ;
 
 constraintClause
@@ -234,6 +254,10 @@ buildIndex
 
 cancelBuildIndex
     : CANCEL BUILD INDEX ON tableName jobIdList?
+    ;
+
+cancelAlterTable
+    : CANCEL ALTER TABLE (COLUMN | MATERIALIZED VIEW | ROLLUP) FROM tableName jobIdList?
     ;
 
 jobIdList
@@ -356,8 +380,20 @@ alterFunction
     : ALTER FUNCTION functionName routineOption*
     ;
 
-dropFunction
-    : DROP FUNCTION ifExists? functionName
+dorisDropFunction
+    : DROP GLOBAL? FUNCTION functionName LP_ dataType (COMMA_ dataType)* RP_
+    ;
+
+createFile
+    : CREATE FILE fileName ((FROM | IN) databaseName)? propertiesClause
+    ;
+
+dropFile
+    : DROP FILE fileName ((FROM | IN) databaseName)? propertiesClause
+    ;
+
+fileName
+    : identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT
     ;
 
 createProcedure
@@ -946,6 +982,30 @@ signalInformationItem
 
 resumeJob
     : RESUME JOB WHERE jobName EQ_ stringLiterals
+    ;
+
+resumeSyncJob
+    : RESUME SYNC JOB (owner DOT_)? identifier
+    ;
+
+pauseSyncJob
+    : PAUSE SYNC JOB (owner DOT_)? identifier
+    ;
+
+stopSyncJob
+    : STOP SYNC JOB (owner DOT_)? identifier
+    ;
+
+createSyncJob
+    : CREATE SYNC (owner DOT_)? identifier LP_ channelDescription (COMMA_ channelDescription)* RP_ binlogDescription
+    ;
+
+channelDescription
+    : FROM tableName INTO tableName (LP_ columnNames RP_)?
+    ;
+
+binlogDescription
+    : FROM BINLOG LP_ properties RP_
     ;
 
 prepare

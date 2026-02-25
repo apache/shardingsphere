@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.pk.Uniq
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.InventoryDataSparsenessCalculator;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.estimated.InventoryPositionEstimatedCalculator;
+import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.exact.BinaryPositionHandler;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.exact.IntegerPositionHandler;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.exact.InventoryPositionExactCalculator;
 import org.apache.shardingsphere.data.pipeline.core.preparer.inventory.calculator.position.exact.StringPositionHandler;
@@ -68,6 +69,9 @@ public final class InventoryPositionCalculator {
         if (dataTypeOption.isStringDataType(firstColumnDataType)) {
             return getStringPositions();
         }
+        if (dataTypeOption.isBinaryDataType(firstColumnDataType)) {
+            return getBinaryPositions();
+        }
         log.info("Unsupported unique key type, unique key columns: {}", uniqueKeyColumns);
         return Collections.singletonList(UniqueKeyIngestPosition.ofUnsplit());
     }
@@ -84,5 +88,10 @@ public final class InventoryPositionCalculator {
     private List<IngestPosition> getStringPositions() {
         String uniqueKey = uniqueKeyColumns.get(0).getName();
         return InventoryPositionExactCalculator.getPositions(qualifiedTable, uniqueKey, shardingSize, dataSource, new StringPositionHandler());
+    }
+    
+    private List<IngestPosition> getBinaryPositions() {
+        String uniqueKey = uniqueKeyColumns.get(0).getName();
+        return InventoryPositionExactCalculator.getPositions(qualifiedTable, uniqueKey, shardingSize, dataSource, new BinaryPositionHandler());
     }
 }

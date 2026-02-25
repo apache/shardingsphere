@@ -28,6 +28,8 @@ import org.apache.shardingsphere.mode.node.path.engine.searcher.NodePathSearcher
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.ViewMetaDataNodePath;
 
+import java.util.Optional;
+
 /**
  * View changed handler.
  */
@@ -65,9 +67,11 @@ public final class ViewChangedHandler implements DatabaseLeafValueChangedHandler
     }
     
     private void handleCreatedOrAltered(final String databaseName, final String schemaName, final String viewName) {
-        ShardingSphereView view = contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
-        contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterView(databaseName, schemaName, view);
-        statisticsRefreshEngine.asyncRefresh();
+        Optional<ShardingSphereView> view = contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseMetaDataFacade().getView().load(databaseName, schemaName, viewName);
+        if (view.isPresent()) {
+            contextManager.getMetaDataContextManager().getDatabaseMetaDataManager().alterView(databaseName, schemaName, view.get());
+            statisticsRefreshEngine.asyncRefresh();
+        }
     }
     
     private void handleDropped(final String databaseName, final String schemaName, final String viewName) {

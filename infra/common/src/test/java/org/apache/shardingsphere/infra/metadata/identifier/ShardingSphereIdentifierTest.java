@@ -25,10 +25,10 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ShardingSphereIdentifierTest {
     
@@ -62,9 +62,9 @@ class ShardingSphereIdentifierTest {
     
     @Test
     void assertEqualsWithNullValue() {
-        assertThat(new ShardingSphereIdentifier("foo"), not(new ShardingSphereIdentifier((String) null)));
-        assertThat(new ShardingSphereIdentifier((String) null), not(new ShardingSphereIdentifier("foo")));
-        assertThat(new ShardingSphereIdentifier((String) null), is(new ShardingSphereIdentifier((String) null)));
+        assertThat(new ShardingSphereIdentifier("foo"), not(new ShardingSphereIdentifier(null)));
+        assertThat(new ShardingSphereIdentifier(null), not(new ShardingSphereIdentifier("foo")));
+        assertThat(new ShardingSphereIdentifier(null), is(new ShardingSphereIdentifier(null)));
     }
     
     @Test
@@ -102,8 +102,8 @@ class ShardingSphereIdentifierTest {
         Map<ShardingSphereIdentifier, String> map = new HashMap<>();
         map.put(new ShardingSphereIdentifier(new IdentifierValue("\"MyTable\""), postgresql), "value1");
         assertThat(map.get(new ShardingSphereIdentifier(new IdentifierValue("\"MyTable\""), postgresql)), is("value1"));
-        assertThat(map.get(new ShardingSphereIdentifier("MyTable", postgresql)), is(nullValue()));
-        assertThat(map.get(new ShardingSphereIdentifier("mytable", postgresql)), is(nullValue()));
+        assertNull(map.get(new ShardingSphereIdentifier("MyTable", postgresql)));
+        assertNull(map.get(new ShardingSphereIdentifier("mytable", postgresql)));
     }
     
     @Test
@@ -189,23 +189,23 @@ class ShardingSphereIdentifierTest {
     @Test
     void assertNullValue() {
         DatabaseType postgresql = getDatabaseType("PostgreSQL");
-        ShardingSphereIdentifier nullIdentifier = new ShardingSphereIdentifier((String) null);
-        assertThat(nullIdentifier.getValue(), is(nullValue()));
-        assertThat(nullIdentifier.getStandardizeValue(), is(nullValue()));
-        ShardingSphereIdentifier nullIdentifierWithDatabaseType = new ShardingSphereIdentifier(new IdentifierValue((String) null), postgresql);
-        assertThat(nullIdentifierWithDatabaseType.getValue(), is(nullValue()));
-        assertThat(nullIdentifierWithDatabaseType.getStandardizeValue(), is(nullValue()));
+        ShardingSphereIdentifier nullIdentifier = new ShardingSphereIdentifier(null);
+        assertNull(nullIdentifier.getValue());
+        assertNull(nullIdentifier.getStandardizeValue());
+        ShardingSphereIdentifier nullIdentifierWithDatabaseType = new ShardingSphereIdentifier(new IdentifierValue(null), postgresql);
+        assertNull(nullIdentifierWithDatabaseType.getValue());
+        assertNull(nullIdentifierWithDatabaseType.getStandardizeValue());
     }
     
     @Test
     void assertEqualsWithNullValues() {
         DatabaseType postgresql = getDatabaseType("PostgreSQL");
-        ShardingSphereIdentifier null1 = new ShardingSphereIdentifier((String) null);
-        ShardingSphereIdentifier null2 = new ShardingSphereIdentifier((String) null);
+        ShardingSphereIdentifier null1 = new ShardingSphereIdentifier(null);
+        ShardingSphereIdentifier null2 = new ShardingSphereIdentifier(null);
         assertThat(null1, is(null2));
         assertThat(null1.hashCode(), is(null2.hashCode()));
-        ShardingSphereIdentifier null3 = new ShardingSphereIdentifier(new IdentifierValue((String) null), postgresql);
-        ShardingSphereIdentifier null4 = new ShardingSphereIdentifier(new IdentifierValue((String) null), postgresql);
+        ShardingSphereIdentifier null3 = new ShardingSphereIdentifier(new IdentifierValue(null), postgresql);
+        ShardingSphereIdentifier null4 = new ShardingSphereIdentifier(new IdentifierValue(null), postgresql);
         assertThat(null3, is(null4));
         assertThat(null3.hashCode(), is(null4.hashCode()));
     }
@@ -213,10 +213,10 @@ class ShardingSphereIdentifierTest {
     @Test
     void assertNotEqualsWithOneNullValue() {
         DatabaseType postgresql = getDatabaseType("PostgreSQL");
-        ShardingSphereIdentifier nullIdentifier = new ShardingSphereIdentifier((String) null);
+        ShardingSphereIdentifier nullIdentifier = new ShardingSphereIdentifier(null);
         ShardingSphereIdentifier nonNullIdentifier = new ShardingSphereIdentifier("foo");
         assertThat(nullIdentifier, not(nonNullIdentifier));
-        ShardingSphereIdentifier nullIdentifierWithDatabaseType = new ShardingSphereIdentifier(new IdentifierValue((String) null), postgresql);
+        ShardingSphereIdentifier nullIdentifierWithDatabaseType = new ShardingSphereIdentifier(new IdentifierValue(null), postgresql);
         ShardingSphereIdentifier nonNullIdentifierWithDatabaseType = new ShardingSphereIdentifier("foo", postgresql);
         assertThat(nullIdentifierWithDatabaseType, not(nonNullIdentifierWithDatabaseType));
     }
@@ -265,8 +265,8 @@ class ShardingSphereIdentifierTest {
         Map<ShardingSphereIdentifier, String> map = new HashMap<>();
         map.put(new ShardingSphereIdentifier(new IdentifierValue("\"MyTable\""), opengauss), "value1");
         assertThat(map.get(new ShardingSphereIdentifier(new IdentifierValue("\"MyTable\""), opengauss)), is("value1"));
-        assertThat(map.get(new ShardingSphereIdentifier("MyTable", opengauss)), is(nullValue()));
-        assertThat(map.get(new ShardingSphereIdentifier("mytable", opengauss)), is(nullValue()));
+        assertNull(map.get(new ShardingSphereIdentifier("MyTable", opengauss)));
+        assertNull(map.get(new ShardingSphereIdentifier("mytable", opengauss)));
     }
     
     @Test

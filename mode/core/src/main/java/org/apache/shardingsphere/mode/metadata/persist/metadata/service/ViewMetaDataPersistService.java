@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.metadata.service;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.mode.node.path.version.VersionNodePath;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -52,7 +54,7 @@ public final class ViewMetaDataPersistService {
      */
     public Collection<ShardingSphereView> load(final String databaseName, final String schemaName) {
         return repository.getChildrenKeys(NodePathGenerator.toPath(new ViewMetaDataNodePath(databaseName, schemaName, null))).stream()
-                .map(each -> load(databaseName, schemaName, each)).collect(Collectors.toList());
+                .map(each -> load(databaseName, schemaName, each)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
     
     /**
@@ -63,11 +65,17 @@ public final class ViewMetaDataPersistService {
      * @param viewName view name
      * @return loaded view
      */
-    public ShardingSphereView load(final String databaseName, final String schemaName, final String viewName) {
+    public Optional<ShardingSphereView> load(final String databaseName, final String schemaName, final String viewName) {
         VersionNodePath versionNodePath = new VersionNodePath(new ViewMetaDataNodePath(databaseName, schemaName, viewName));
-        int activeVersion = Integer.parseInt(repository.query(versionNodePath.getActiveVersionPath()));
-        String view = repository.query(versionNodePath.getVersionPath(activeVersion));
-        return swapper.swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class));
+        String activeVersion = repository.query(versionNodePath.getActiveVersionPath());
+        if (Strings.isNullOrEmpty(activeVersion)) {
+            return Optional.empty();
+        }
+        String view = repository.query(versionNodePath.getVersionPath(Integer.parseInt(activeVersion)));
+        if (Strings.isNullOrEmpty(view)) {
+            return Optional.empty();
+        }
+        return Optional.of(swapper.swapToObject(YamlEngine.unmarshal(view, YamlShardingSphereView.class)));
     }
     
     /**

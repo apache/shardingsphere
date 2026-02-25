@@ -44,9 +44,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -124,7 +124,7 @@ class FunctionConverterTest {
         when(OwnerConverter.convert(owner)).thenReturn(new ArrayList<>());
         when(ExpressionConverter.convert(param)).thenReturn(Optional.of(paramNode));
         SqlBasicCall actual = (SqlBasicCall) FunctionConverter.convert(segment);
-        assertThat(actual.getOperator(), instanceOf(SqlUnresolvedFunction.class));
+        assertThat(actual.getOperator(), isA(SqlUnresolvedFunction.class));
         SqlIdentifier functionName = actual.getOperator().getNameAsId();
         assertThat(functionName.names, is(Collections.singletonList("custom_func")));
         assertThat(functionName.getSimple(), is("custom_func"));

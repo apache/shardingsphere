@@ -19,10 +19,9 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 class PostgreSQLPortalContextRegistryTest {
     
@@ -31,7 +30,7 @@ class PostgreSQLPortalContextRegistryTest {
         PostgreSQLPortalContextRegistry registry = PostgreSQLPortalContextRegistry.getInstance();
         PortalContext first = registry.get(1);
         PortalContext second = registry.get(1);
-        assertSame(first, second);
+        assertThat(first, is(second));
         assertThat(registry.remove(1), is(first));
         assertNull(registry.remove(2));
     }

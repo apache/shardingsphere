@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -115,7 +115,7 @@ class YamlDataSourceConfigurationSwapperTest {
         yamlConfig.put("password", "");
         DataSourcePoolProperties actual = swapper.swapToDataSourcePoolProperties(yamlConfig);
         assertThat(actual.getPoolClassName(), is("com.zaxxer.hikari.HikariDataSource"));
-        assertThat(actual.getAllLocalProperties().containsKey("dataSourceClassName"), is(false));
+        assertFalse(actual.getAllLocalProperties().containsKey("dataSourceClassName"));
         assertThat(actual.getAllLocalProperties().get("url").toString(), is("jdbc:h2:mem:test"));
         assertThat(actual.getAllLocalProperties().get("username").toString(), is("sa"));
     }
