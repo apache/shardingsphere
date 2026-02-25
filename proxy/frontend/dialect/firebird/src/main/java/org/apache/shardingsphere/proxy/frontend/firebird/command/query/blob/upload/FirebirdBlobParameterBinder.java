@@ -32,7 +32,7 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FirebirdBlobParameterBinder {
-
+    
     /**
      * Bind BLOB parameters and update parameter values.
      *
@@ -97,7 +97,7 @@ public final class FirebirdBlobParameterBinder {
         }
         return false;
     }
-
+    
     /**
      * Bind BLOB parameter result.
      */
@@ -106,7 +106,7 @@ public final class FirebirdBlobParameterBinder {
     public static final class BindResult {
         
         private final List<Object> params;
-
+        
         private final List<Long> blobIds;
     }
 }
