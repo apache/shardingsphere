@@ -54,6 +54,7 @@ Module resolution order:
   - Non-parameterized scenarios `MUST` use JUnit `@Test`.
   - Data-driven scenarios `MUST` use JUnit `@ParameterizedTest(name = "{0}")` with `@MethodSource` + `Arguments`.
   - Parameterized test method signatures `MUST` use `final String name` as the first parameter.
+  - Parameterized tests `MUST NOT` use `Consumer` (including `java.util.function.Consumer` and its generic forms) in method signatures or scenario-transport arguments.
   - Each parameterized test `MUST` provide at least 3 `Arguments` rows; fewer than 3 is a violation and `MUST` be converted to non-parameterized `@Test`.
   - Parameterized tests `MUST NOT` introduce new nested type declarations (member/local helper `class` / `interface` / `enum` / `record`) for scenario transport; use `Arguments` rows plus existing or JDK types instead.
   - `MUST NOT` use `@RepeatedTest`.
@@ -174,6 +175,7 @@ Module resolution order:
   - `R15-F` (parameterized switch ban): `@ParameterizedTest` method bodies `MUST NOT` contain `switch` statements.
   - `R15-G` (parameterized nested-type ban): when a file contains `@ParameterizedTest`, newly introduced diff lines `MUST NOT` add nested helper type declarations (`class` / `interface` / `enum` / `record`) inside the test class.
   - `R15-H` (boolean variable assertion style): for variable-driven boolean expectations, tests `MUST` assert with `assertThat(actual, is(expected))`, and `MUST NOT` use control-flow dispatch only to choose `assertTrue`/`assertFalse`.
+  - `R15-I` (parameterized Consumer ban): files containing `@ParameterizedTest` `MUST NOT` introduce or retain `Consumer`-based scenario transport in parameterized method signatures or `@MethodSource` argument rows.
 
 ## Workflow
 
@@ -559,6 +561,80 @@ for path in (each for each in sys.argv[1:] if each.endswith(".java")):
             violations.append(f"{path}: {line[1:].strip()}")
 if violations:
     print("[R15-G] parameterized tests must not introduce nested helper type declarations")
+    for each in violations:
+        print(each)
+    sys.exit(1)
+PY
+'
+```
+
+5.6 `R15-I` parameterized Consumer ban scan:
+```bash
+bash -lc '
+python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
+import re
+import sys
+from pathlib import Path
+
+PARAM_METHOD_PATTERN = re.compile(r"@ParameterizedTest(?:\\s*\\([^)]*\\))?\\s*(?:@\\w+(?:\\s*\\([^)]*\\))?\\s*)*void\\s+(assert\\w+)\\s*\\(([^)]*)\\)", re.S)
+METHOD_SOURCE_PATTERN = re.compile(r"@MethodSource(?:\\s*\\(([^)]*)\\))?")
+METHOD_DECL_PATTERN = re.compile(r"(?:private|protected|public)?\\s*(?:static\\s+)?[\\w$<>\\[\\], ?]+\\s+(\\w+)\\s*\\([^)]*\\)\\s*\\{", re.S)
+CONSUMER_TOKEN_PATTERN = re.compile(r"\\bConsumer\\s*(?:<|\\b)")
+
+def extract_block(text, brace_index):
+    depth = 0
+    index = brace_index
+    while index < len(text):
+        if "{" == text[index]:
+            depth += 1
+        elif "}" == text[index]:
+            depth -= 1
+            if 0 == depth:
+                return text[brace_index + 1:index]
+        index += 1
+    return ""
+
+def parse_method_sources(method_name, source, method_start):
+    header = source[max(0, method_start - 320):method_start]
+    matches = list(METHOD_SOURCE_PATTERN.finditer(header))
+    if not matches:
+        return []
+    resolved = []
+    for each in matches:
+        raw = each.group(1)
+        if raw is None or not raw.strip():
+            resolved.append(method_name)
+            continue
+        normalized = re.sub(r"\\bvalue\\s*=\\s*", "", raw.strip())
+        for name in re.findall(r'"([^"]+)"', normalized):
+            resolved.append(name.split("#", 1)[-1])
+    return resolved
+
+violations = []
+for path in (each for each in sys.argv[1:] if each.endswith(".java")):
+    source = Path(path).read_text(encoding="utf-8")
+    if "@ParameterizedTest" not in source:
+        continue
+    method_bodies = {}
+    for match in METHOD_DECL_PATTERN.finditer(source):
+        method_name = match.group(1)
+        brace_index = source.find("{", match.start())
+        if brace_index < 0:
+            continue
+        method_bodies[method_name] = extract_block(source, brace_index)
+    for match in PARAM_METHOD_PATTERN.finditer(source):
+        method_name = match.group(1)
+        params = match.group(2)
+        line = source.count("\\n", 0, match.start()) + 1
+        if CONSUMER_TOKEN_PATTERN.search(params):
+            violations.append(f"{path}:{line} method={method_name} reason=consumerInParameterizedMethodSignature")
+        provider_names = parse_method_sources(method_name, source, match.start())
+        for each_provider in provider_names:
+            body = method_bodies.get(each_provider)
+            if body and CONSUMER_TOKEN_PATTERN.search(body):
+                violations.append(f"{path}:{line} method={method_name} provider={each_provider} reason=consumerInMethodSourceArguments")
+if violations:
+    print("[R15-I] parameterized tests must not use Consumer in signatures or @MethodSource argument rows")
     for each in violations:
         print(each)
     sys.exit(1)
