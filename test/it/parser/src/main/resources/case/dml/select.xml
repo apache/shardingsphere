@@ -14065,16 +14065,6 @@
         </projections>
     </select>
 
-<!--    <select sql-case-id="select_ltrim_function">-->
-<!--        <projections start-index="7" stop-index="23">-->
-<!--            <expression-projection text="LTRIM('  barbar')" start-index="7" stop-index="23">-->
-<!--                <expr>-->
-<!--                    <function start-index="7" stop-index="23" text="LTRIM('  barbar')" function-name="LTRIM('  barbar')" />-->
-<!--                </expr>-->
-<!--            </expression-projection>-->
-<!--        </projections>-->
-<!--    </select>-->
-
     <select sql-case-id="select_ltrim_function">
         <projections start-index="7" stop-index="23">
             <expression-projection text="LTRIM('  barbar')" start-index="7" stop-index="23" >
