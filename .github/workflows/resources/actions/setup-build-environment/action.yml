@@ -31,6 +31,10 @@ inputs:
     description: 'Cache key prefix for multi-project isolation. Default: apache-shardingsphere'
     required: false
     default: 'apache-shardingsphere'
+  cache-suffix:
+    description: 'Cache key suffix for build scope optimization (e.g., full, e2e, dist). Default: full'
+    required: false
+    default: 'full'
 
 runs:
   using: composite
@@ -45,7 +49,9 @@ runs:
           ~/.m2/repository
           !~/.m2/repository/org/apache/shardingsphere
           ~/.m2/repository/org/apache/shardingsphere/elasticjob
-        key: ${{ inputs.cache-prefix }}-maven-${{ hashFiles('**/pom.xml') }}
+        key: ${{ inputs.cache-prefix }}-maven-${{ inputs.cache-suffix }}-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
+          ${{ inputs.cache-prefix }}-maven-${{ inputs.cache-suffix }}-
+          ${{ inputs.cache-prefix }}-maven-full-
           ${{ inputs.cache-prefix }}-maven-
           ${{ inputs.cache-prefix }}-

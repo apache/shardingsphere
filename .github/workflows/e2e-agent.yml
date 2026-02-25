@@ -57,6 +57,7 @@ jobs:
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           java-version: 21
+          cache-suffix: 'e2e'
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4
@@ -122,6 +123,7 @@ jobs:
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           java-version: 21
+          cache-suffix: 'e2e'
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4
