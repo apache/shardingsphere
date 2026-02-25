@@ -39,7 +39,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -74,9 +73,17 @@ class MySQLTextResultSetRowPacketTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("writeBasicValueArguments")
-    void assertWriteBasicValue(final String name, final Object value, final Consumer<MySQLPacketPayload> assertion) {
+    void assertWriteBasicValue(final String name, final Object value, final boolean writeNullMarker, final String expectedStringValue, final byte[] expectedBytesValue) {
         new MySQLTextResultSetRowPacket(Collections.singletonList(value)).write((PacketPayload) payload);
-        assertion.accept(payload);
+        if (writeNullMarker) {
+            verify(payload).writeInt1(0xfb);
+        }
+        if (null != expectedStringValue) {
+            verify(payload).writeStringLenenc(expectedStringValue);
+        }
+        if (null != expectedBytesValue) {
+            verify(payload).writeBytesLenenc(argThat(actual -> Arrays.equals(actual, expectedBytesValue)));
+        }
     }
     
     @ParameterizedTest(name = "{0}")
@@ -138,12 +145,12 @@ class MySQLTextResultSetRowPacketTest {
     private static Stream<Arguments> writeBasicValueArguments() {
         byte[] binary = new byte[]{1, 2, 3};
         return Stream.of(
-                Arguments.of("Null", null, (Consumer<MySQLPacketPayload>) each -> verify(each).writeInt1(0xfb)),
-                Arguments.of("ByteArray", binary, (Consumer<MySQLPacketPayload>) each -> verify(each).writeBytesLenenc(binary)),
-                Arguments.of("BigDecimal", new BigDecimal("123.4500"), (Consumer<MySQLPacketPayload>) each -> verify(each).writeStringLenenc("123.4500")),
-                Arguments.of("BooleanTrue", Boolean.TRUE, (Consumer<MySQLPacketPayload>) each -> verify(each).writeBytesLenenc(argThat(actual -> Arrays.equals(actual, new byte[]{1})))),
-                Arguments.of("BooleanFalse", Boolean.FALSE, (Consumer<MySQLPacketPayload>) each -> verify(each).writeBytesLenenc(argThat(actual -> Arrays.equals(actual, new byte[]{0})))),
-                Arguments.of("DefaultToString", "value_a", (Consumer<MySQLPacketPayload>) each -> verify(each).writeStringLenenc("value_a")));
+                Arguments.of("Null", null, true, null, null),
+                Arguments.of("ByteArray", binary, false, null, binary),
+                Arguments.of("BigDecimal", new BigDecimal("123.4500"), false, "123.4500", null),
+                Arguments.of("BooleanTrue", Boolean.TRUE, false, null, new byte[]{1}),
+                Arguments.of("BooleanFalse", Boolean.FALSE, false, null, new byte[]{0}),
+                Arguments.of("DefaultToString", "value_a", false, "value_a", null));
     }
     
     private static Stream<Arguments> writeTimestampArguments() {
