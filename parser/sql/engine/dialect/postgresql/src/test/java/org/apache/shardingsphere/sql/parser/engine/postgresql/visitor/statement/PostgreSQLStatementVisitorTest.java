@@ -24,14 +24,13 @@ import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PostgreSQLStatementVisitorTest {
@@ -43,11 +42,11 @@ class PostgreSQLStatementVisitorTest {
         ParseASTNode parseASTNode = new SQLParserEngine("PostgreSQL", new CacheOption(128, 1024L)).parse(sql, false);
         SelectStatement statement = (SelectStatement) new SQLStatementVisitorEngine("PostgreSQL").visit(parseASTNode);
         assertTrue(statement.getWhere().isPresent());
-        assertThat(statement.getWhere().get().getExpr(), instanceOf(NotExpression.class));
+        assertThat(statement.getWhere().get().getExpr(), Matchers.instanceOf(NotExpression.class));
         TableExtractor tableExtractor = new TableExtractor();
         tableExtractor.extractTablesFromSelect(statement);
         Collection<String> rewriteTableNames = tableExtractor.getRewriteTables().stream()
                 .map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toList());
-        assertThat(rewriteTableNames, hasItems("t17", "t23", "t22"));
+        assertThat(rewriteTableNames, Matchers.hasItems("t17", "t23", "t22"));
     }
 }
