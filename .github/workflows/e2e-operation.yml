@@ -59,7 +59,7 @@ jobs:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          cache-suffix: 'e2e'
+          cache-suffix: 'e2e-operation'
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4
@@ -109,7 +109,7 @@ jobs:
           java-version: 17
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          cache-suffix: 'e2e'
+          cache-suffix: 'e2e-operation'
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4
