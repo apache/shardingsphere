@@ -1,0 +1,39 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: 'Upload E2E Artifacts'
+description: 'Package and upload E2E build artifacts including Maven repository and Docker image'
+
+runs:
+  using: composite
+  steps:
+    - name: Package shardingsphere Maven Repository
+      shell: bash
+      run: |
+        tar -czf /tmp/maven-repo-output.tar.gz -C ~/.m2/repository org/apache/shardingsphere
+    - name: Save E2E Image
+      shell: bash
+      run: |
+        docker save -o /tmp/apache-shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-outputs
+        path: |
+          /tmp/maven-repo-output.tar.gz
+          /tmp/apache-shardingsphere-proxy-test.tar
+        retention-days: 1
