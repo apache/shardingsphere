@@ -35,6 +35,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ModifyPartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.PartitionValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.AddRollupDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.DropRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
@@ -54,6 +56,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.def
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.ConstraintDefinitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.IndexDefinitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.expression.ExpressionAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.partition.PartitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.rollup.RollupAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
@@ -67,6 +70,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddPartitionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyPartitionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenamePartitionDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddRollupDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedDropRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.partition.ExpectedAddPartitions;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperties;
@@ -111,6 +116,8 @@ public final class AlterTableStatementAssert {
         assertDropColumns(assertContext, actual, expected);
         assertRenameIndexDefinitions(assertContext, actual, expected);
         assertRenameColumnDefinitions(assertContext, actual, expected);
+        assertAddRollupDefinitions(assertContext, actual, expected);
+        assertDropRollupDefinitions(assertContext, actual, expected);
         assertRenameRollupDefinitions(assertContext, actual, expected);
         assertRenamePartitionDefinitions(assertContext, actual, expected);
         assertAddPartitionDefinitions(assertContext, actual, expected);
@@ -303,6 +310,52 @@ public final class AlterTableStatementAssert {
             ExpectedRenameColumnDefinition expectedRenameColumnDefinition = expected.getRenameColumns().get(count);
             ColumnAssert.assertIs(assertContext, each.getOldColumnName(), expectedRenameColumnDefinition.getOldColumnName());
             ColumnAssert.assertIs(assertContext, each.getColumnName(), expectedRenameColumnDefinition.getColumnName());
+            count++;
+        }
+    }
+    
+    private static void assertAddRollupDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Add rollup definitions size assertion error: "), actual.getAddRollupDefinitions().size(), is(expected.getAddRollups().size()));
+        int count = 0;
+        for (AddRollupDefinitionSegment each : actual.getAddRollupDefinitions()) {
+            ExpectedAddRollupDefinition expectedAddRollupDefinition = expected.getAddRollups().get(count);
+            RollupAssert.assertIs(assertContext, each.getRollupSegment(), expectedAddRollupDefinition.getRollup());
+            assertThat(assertContext.getText("Add rollup columns size assertion error: "), each.getColumns().size(), is(expectedAddRollupDefinition.getColumns().size()));
+            int columnCount = 0;
+            for (ColumnSegment columnSegment : each.getColumns()) {
+                ColumnAssert.assertIs(assertContext, columnSegment, expectedAddRollupDefinition.getColumns().get(columnCount));
+                columnCount++;
+            }
+            if (null != expectedAddRollupDefinition.getFromIndex()) {
+                assertTrue(each.getFromIndex().isPresent(), assertContext.getText("Add rollup from index should exist"));
+                IndexAssert.assertIs(assertContext, each.getFromIndex().get(), expectedAddRollupDefinition.getFromIndex());
+            } else {
+                assertFalse(each.getFromIndex().isPresent(), assertContext.getText("Add rollup from index should not exist"));
+            }
+            if (null != expectedAddRollupDefinition.getProperties()) {
+                assertTrue(each.getProperties().isPresent(), assertContext.getText("Add rollup properties should exist"));
+                assertProperties(assertContext, each.getProperties().get(), expectedAddRollupDefinition.getProperties());
+            } else {
+                assertFalse(each.getProperties().isPresent(), assertContext.getText("Add rollup properties should not exist"));
+            }
+            SQLSegmentAssert.assertIs(assertContext, each, expectedAddRollupDefinition);
+            count++;
+        }
+    }
+    
+    private static void assertDropRollupDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Drop rollup definitions size assertion error: "), actual.getDropRollupDefinitions().size(), is(expected.getDropRollups().size()));
+        int count = 0;
+        for (DropRollupDefinitionSegment each : actual.getDropRollupDefinitions()) {
+            ExpectedDropRollupDefinition expectedDropRollupDefinition = expected.getDropRollups().get(count);
+            RollupAssert.assertIs(assertContext, each.getRollupSegment(), expectedDropRollupDefinition.getRollup());
+            if (null != expectedDropRollupDefinition.getProperties()) {
+                assertTrue(each.getProperties().isPresent(), assertContext.getText("Drop rollup properties should exist"));
+                assertProperties(assertContext, each.getProperties().get(), expectedDropRollupDefinition.getProperties());
+            } else {
+                assertFalse(each.getProperties().isPresent(), assertContext.getText("Drop rollup properties should not exist"));
+            }
+            SQLSegmentAssert.assertIs(assertContext, each, expectedDropRollupDefinition);
             count++;
         }
     }

@@ -31,6 +31,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameIndexDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenamePartitionDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddRollupDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedDropRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedReplaceTableDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddPartitionDefinition;
@@ -81,6 +83,12 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "rename-column")
     private final List<ExpectedRenameColumnDefinition> renameColumns = new LinkedList<>();
+    
+    @XmlElement(name = "add-rollup")
+    private final List<ExpectedAddRollupDefinition> addRollups = new LinkedList<>();
+    
+    @XmlElement(name = "drop-rollup")
+    private final List<ExpectedDropRollupDefinition> dropRollups = new LinkedList<>();
     
     @XmlElement(name = "rename-rollup")
     private final List<ExpectedRenameRollupDefinition> renameRollups = new LinkedList<>();

@@ -378,6 +378,21 @@
     <sql-case id="alter_table_rename_table_doris" value="ALTER TABLE table1 RENAME table2" db-types="Doris" />
     <sql-case id="alter_table_without_actions_doris" value="ALTER TABLE t_order" db-types="Doris" />
     <sql-case id="alter_table_rename_column_doris" value="ALTER TABLE example_table RENAME COLUMN c1 c2" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_simple" value="ALTER TABLE example_db.my_table ADD ROLLUP example_rollup_index(k1, k3, v1, v2)" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_from_index" value="ALTER TABLE example_db.my_table ADD ROLLUP example_rollup_index2 (k1, v1) FROM example_rollup_index" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_with_properties" value="ALTER TABLE example_db.my_table ADD ROLLUP example_rollup_index(k1, k3, v1) PROPERTIES(&quot;timeout&quot; = &quot;3600&quot;, &quot;in_memory&quot; = &quot;true&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_from_index_with_properties" value="ALTER TABLE example_db.my_table ADD ROLLUP example_rollup_index3 (k1, k2, v1) FROM example_rollup_index PROPERTIES(&quot;timeout&quot; = &quot;1200&quot;, &quot;replication_num&quot; = &quot;3&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_batch_simple" value="ALTER TABLE example_db.my_table ADD ROLLUP rollup_index1(k1, k2), rollup_index2(k1, k3)" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_batch_from" value="ALTER TABLE example_db.my_table ADD ROLLUP rollup_index1(k1, v1) FROM base_index, rollup_index2(k2, v2) FROM base_index" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_batch_properties" value="ALTER TABLE example_db.my_table ADD ROLLUP rollup_index1(k1, k2) PROPERTIES(&quot;timeout&quot; = &quot;600&quot;), rollup_index2(k1, k3) PROPERTIES(&quot;timeout&quot; = &quot;900&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_batch_all" value="ALTER TABLE example_db.my_table ADD ROLLUP rollup_index1(k1, v1) FROM base_index PROPERTIES(&quot;timeout&quot; = &quot;800&quot;), rollup_index2(k2, v2) FROM base_index PROPERTIES(&quot;timeout&quot; = &quot;1000&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_batch_mixed_from" value="ALTER TABLE example_db.my_table ADD ROLLUP rollup_index1(k1, v1) FROM base_index, rollup_index2(k2, v2)" db-types="Doris" />
+    <sql-case id="alter_table_add_rollup_batch_mixed_properties" value="ALTER TABLE example_db.my_table ADD ROLLUP rollup_index1(k1, k2) PROPERTIES(&quot;timeout&quot; = &quot;500&quot;), rollup_index2(k1, k3)" db-types="Doris" />
+    <sql-case id="alter_table_drop_rollup_simple" value="ALTER TABLE example_db.my_table DROP ROLLUP example_rollup_index2" db-types="Doris" />
+    <sql-case id="alter_table_drop_rollup_batch" value="ALTER TABLE example_db.my_table DROP ROLLUP example_rollup_index2,example_rollup_index3" db-types="Doris" />
+    <sql-case id="alter_table_drop_rollup_with_properties" value="ALTER TABLE example_db.my_table DROP ROLLUP example_rollup_index PROPERTIES(&quot;timeout&quot; = &quot;1800&quot;, &quot;force&quot; = &quot;false&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_drop_rollup_batch_properties" value="ALTER TABLE example_db.my_table DROP ROLLUP rollup_index1 PROPERTIES(&quot;timeout&quot; = &quot;600&quot;), rollup_index2 PROPERTIES(&quot;timeout&quot; = &quot;900&quot;, &quot;force&quot; = &quot;true&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_drop_rollup_batch_mixed" value="ALTER TABLE example_db.my_table DROP ROLLUP rollup_index1 PROPERTIES(&quot;timeout&quot; = &quot;1200&quot;), rollup_index2" db-types="Doris" />
     <sql-case id="alter_table_rename_rollup" value="ALTER TABLE example_table RENAME ROLLUP rollup1 rollup2" db-types="Doris" />
     <sql-case id="alter_table_rename_partition" value="ALTER TABLE example_table RENAME PARTITION partition1 partition2" db-types="Doris" />
     <sql-case id="alter_table_with_algorithm_lock_doris" value="ALTER TABLE t_order ADD COLUMN col_alg INT, ALGORITHM=INSTANT, LOCK=NONE" db-types="Doris" />

@@ -21,55 +21,34 @@ import io.netty.buffer.ByteBufUtil;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.math.BigDecimal;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class MySQLDecimalBinlogProtocolValueTest {
     
-    @Mock
-    private MySQLPacketPayload payload;
-    
-    private MySQLBinlogColumnDef columnDef;
-    
-    @BeforeEach
-    void setUp() {
-        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.NEWDECIMAL);
-        columnDef.setColumnMeta((14 << 8) + 4);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertReadArguments")
+    void assertRead(final String name, final int columnMeta, final String binaryValue, final String expected) {
+        MySQLBinlogColumnDef columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.NEWDECIMAL);
+        columnDef.setColumnMeta(columnMeta);
+        MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
+        byte[] decimalBytes = ByteBufUtil.decodeHexDump(binaryValue);
+        when(payload.readStringFixByBytes(decimalBytes.length)).thenReturn(decimalBytes);
+        assertThat(new MySQLDecimalBinlogProtocolValue().read(columnDef, payload).toString(), is(expected));
     }
     
-    @Test
-    void assertDecodePositiveNewDecimal() {
-        byte[] newDecimalBytes = ByteBufUtil.decodeHexDump("810DFB38D204D2");
-        when(payload.readStringFixByBytes(newDecimalBytes.length)).thenReturn(newDecimalBytes);
-        BigDecimal actual = (BigDecimal) new MySQLDecimalBinlogProtocolValue().read(columnDef, payload);
-        assertThat(actual.toString(), is("1234567890.1234"));
-    }
-    
-    @Test
-    void assertDecodeNegativeNewDecimal() {
-        byte[] newDecimalBytes = ByteBufUtil.decodeHexDump("7EF204C72DFB2D");
-        when(payload.readStringFixByBytes(newDecimalBytes.length)).thenReturn(newDecimalBytes);
-        BigDecimal actual = (BigDecimal) new MySQLDecimalBinlogProtocolValue().read(columnDef, payload);
-        assertThat(actual.toString(), is("-1234567890.1234"));
-    }
-    
-    @Test
-    void assertDecodeNegativeNewDecimalWithLargeNumber() {
-        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.NEWDECIMAL);
-        columnDef.setColumnMeta(32 << 8 | 6);
-        byte[] newDecimalBytes = ByteBufUtil.decodeHexDump("7DFEFDB5CC2741EFDEBE4154FD52E7");
-        when(payload.readStringFixByBytes(newDecimalBytes.length)).thenReturn(newDecimalBytes);
-        BigDecimal actual = (BigDecimal) new MySQLDecimalBinlogProtocolValue().read(columnDef, payload);
-        assertThat(actual.toString(), is("-33620554869842448557956779.175384"));
+    private static Stream<Arguments> assertReadArguments() {
+        return Stream.of(
+                Arguments.of("positive with extra integer and extra scale", (14 << 8) + 4, "810DFB38D204D2", "1234567890.1234"),
+                Arguments.of("negative with extra integer and extra scale", (14 << 8) + 4, "7EF204C72DFB2D", "-1234567890.1234"),
+                Arguments.of("positive with full integer and full scale chunks", (18 << 8) + 9, "875BCD15075BCD15", "123456789.123456789"));
     }
 }

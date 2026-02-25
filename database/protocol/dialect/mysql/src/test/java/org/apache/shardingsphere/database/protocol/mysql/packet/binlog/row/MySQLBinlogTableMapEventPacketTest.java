@@ -25,16 +25,20 @@ import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.bi
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,36 +55,59 @@ class MySQLBinlogTableMapEventPacketTest {
     @Mock
     private MySQLBinlogEventHeader binlogEventHeader;
     
-    @Test
-    void assertNew() {
-        when(payload.readInt6()).thenReturn(1L);
-        when(payload.readInt2()).thenReturn(0, 255);
-        when(payload.readInt1()).thenReturn(4, 4, MySQLBinaryColumnType.LONGLONG.getValue(), MySQLBinaryColumnType.VARCHAR.getValue(),
-                MySQLBinaryColumnType.NEWDECIMAL.getValue(), MySQLBinaryColumnType.DATETIME2.getValue(), 11,
-                0x0e);
-        when(payload.readStringFix(4)).thenReturn("test");
-        when(payload.readIntLenenc()).thenReturn(4L);
-        when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readUnsignedShort()).thenReturn(10);
-        when(byteBuf.readerIndex()).thenReturn(1);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertNewArguments")
+    void assertNew(final String name, final int eventSize, final int checksumLength, final int readerIndex, final int expectedRemainBytesLength) {
+        when(binlogEventHeader.getEventSize()).thenReturn(eventSize);
+        when(binlogEventHeader.getChecksumLength()).thenReturn(checksumLength);
+        mockReadPayload(readerIndex);
         MySQLBinlogTableMapEventPacket actual = new MySQLBinlogTableMapEventPacket(binlogEventHeader, payload);
         assertThat(actual.getTableId(), is(1L));
         assertThat(actual.getFlags(), is(0));
         assertThat(actual.getSchemaName(), is("test"));
         assertThat(actual.getTableName(), is("test"));
         verify(payload, times(2)).skipReserved(1);
+        if (0 < expectedRemainBytesLength) {
+            verify(payload).skipReserved(expectedRemainBytesLength);
+        } else {
+            verify(payload, never()).skipReserved(expectedRemainBytesLength);
+        }
         assertThat(actual.getColumnCount(), is(4));
         assertColumnDefs(actual.getColumnDefs());
         assertNullBitmap(actual.getNullBitMap());
     }
     
-    private void assertColumnDefs(final Collection<MySQLBinlogColumnDef> columnDefs) {
+    @Test
+    void assertWrite() {
+        MySQLBinlogEventHeader eventHeader = new MySQLBinlogEventHeader(1, 2, 3, 4, 5, 6, 0);
+        mockReadPayload(1);
+        new MySQLBinlogTableMapEventPacket(eventHeader, payload).write(payload);
+        verify(payload).writeInt4(1);
+        verify(payload).writeInt1(2);
+        verify(payload).writeInt4(3);
+        verify(payload).writeInt4(4);
+        verify(payload).writeInt4(5);
+        verify(payload).writeInt2(6);
+    }
+    
+    private void mockReadPayload(final int readerIndex) {
+        when(payload.readInt6()).thenReturn(1L);
+        when(payload.readInt2()).thenReturn(0, 255);
+        when(payload.readInt1()).thenReturn(4, 4, MySQLBinaryColumnType.LONGLONG.getValue(), MySQLBinaryColumnType.VARCHAR.getValue(),
+                MySQLBinaryColumnType.NEWDECIMAL.getValue(), MySQLBinaryColumnType.DATETIME2.getValue(), 11, 0x0e);
+        when(payload.readStringFix(4)).thenReturn("test");
+        when(payload.readIntLenenc()).thenReturn(4L);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(byteBuf.readUnsignedShort()).thenReturn(10);
+        when(byteBuf.readerIndex()).thenReturn(readerIndex);
+    }
+    
+    private void assertColumnDefs(final List<MySQLBinlogColumnDef> columnDefs) {
         assertThat(columnDefs.size(), is(4));
-        Iterator<MySQLBinlogColumnDef> columnDefIterator = columnDefs.iterator();
-        assertColumnDef(columnDefIterator.next(), MySQLBinaryColumnType.LONGLONG, 0);
-        assertColumnDef(columnDefIterator.next(), MySQLBinaryColumnType.VARCHAR, 255);
-        assertColumnDef(columnDefIterator.next(), MySQLBinaryColumnType.NEWDECIMAL, 10);
-        assertColumnDef(columnDefIterator.next(), MySQLBinaryColumnType.DATETIME2, 11);
+        assertColumnDef(columnDefs.get(0), MySQLBinaryColumnType.LONGLONG, 0);
+        assertColumnDef(columnDefs.get(1), MySQLBinaryColumnType.VARCHAR, 255);
+        assertColumnDef(columnDefs.get(2), MySQLBinaryColumnType.NEWDECIMAL, 10);
+        assertColumnDef(columnDefs.get(3), MySQLBinaryColumnType.DATETIME2, 11);
     }
     
     private void assertColumnDef(final MySQLBinlogColumnDef actual, final MySQLBinaryColumnType columnType, final int columnMeta) {
@@ -93,5 +120,12 @@ class MySQLBinlogTableMapEventPacketTest {
         assertTrue(actualNullBitMap.isNullParameter(1));
         assertTrue(actualNullBitMap.isNullParameter(2));
         assertTrue(actualNullBitMap.isNullParameter(3));
+    }
+    
+    private static Stream<Arguments> assertNewArguments() {
+        return Stream.of(
+                Arguments.of("remain bytes is zero", 0, 0, 1, 0),
+                Arguments.of("remain bytes is positive", 8, 0, 1, 8),
+                Arguments.of("remain bytes is negative", 2, 0, 4, -1));
     }
 }

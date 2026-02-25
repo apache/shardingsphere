@@ -19,11 +19,16 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.command.query.b
 
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,15 +47,18 @@ class MySQLInt8BinaryProtocolValueTest {
         assertThat(new MySQLInt8BinaryProtocolValue().read(payload, false), is(1L));
     }
     
-    @Test
-    void assertWriteWithLong() {
-        new MySQLInt8BinaryProtocolValue().write(payload, 1L);
-        verify(payload).writeInt8(1L);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("writeArguments")
+    void assertWrite(final String name, final Object value, final long expectedValue) {
+        new MySQLInt8BinaryProtocolValue().write(payload, value);
+        verify(payload).writeInt8(expectedValue);
     }
     
-    @Test
-    void assertWriteWithBigDecimal() {
-        new MySQLInt8BinaryProtocolValue().write(payload, new BigDecimal(1L));
-        verify(payload).writeInt8(1L);
+    private static Stream<Arguments> writeArguments() {
+        return Stream.of(
+                Arguments.of("big-decimal", new BigDecimal("1"), 1L),
+                Arguments.of("integer", 1, 1L),
+                Arguments.of("big-integer", new BigInteger("1"), 1L),
+                Arguments.of("long", 1L, 1L));
     }
 }

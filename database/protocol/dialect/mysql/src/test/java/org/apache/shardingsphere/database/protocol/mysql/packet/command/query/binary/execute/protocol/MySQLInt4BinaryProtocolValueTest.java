@@ -20,9 +20,15 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.command.query.b
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.math.BigDecimal;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,15 +42,28 @@ class MySQLInt4BinaryProtocolValueTest {
     private MySQLPacketPayload payload;
     
     @Test
-    void assertRead() {
-        when(payload.getByteBuf()).thenReturn(Unpooled.wrappedBuffer(new byte[]{1, 0, 0, 0, 1, 0, 0, 0}));
+    void assertReadWithSigned() {
+        when(payload.getByteBuf()).thenReturn(Unpooled.wrappedBuffer(new byte[]{1, 0, 0, 0}));
         assertThat(new MySQLInt4BinaryProtocolValue().read(payload, false), is(1));
-        assertThat(new MySQLInt4BinaryProtocolValue().read(payload, true), is(1L));
     }
     
     @Test
-    void assertWrite() {
-        new MySQLInt4BinaryProtocolValue().write(payload, 1);
-        verify(payload).writeInt4(1);
+    void assertReadWithUnsigned() {
+        when(payload.getByteBuf()).thenReturn(Unpooled.wrappedBuffer(new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff}));
+        assertThat(new MySQLInt4BinaryProtocolValue().read(payload, true), is(4294967295L));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("writeArguments")
+    void assertWrite(final String name, final Object value, final int expectedValue) {
+        new MySQLInt4BinaryProtocolValue().write(payload, value);
+        verify(payload).writeInt4(expectedValue);
+    }
+    
+    private static Stream<Arguments> writeArguments() {
+        return Stream.of(
+                Arguments.of("big-decimal", new BigDecimal("1"), 1),
+                Arguments.of("integer", 1, 1),
+                Arguments.of("long", 1L, 1));
     }
 }

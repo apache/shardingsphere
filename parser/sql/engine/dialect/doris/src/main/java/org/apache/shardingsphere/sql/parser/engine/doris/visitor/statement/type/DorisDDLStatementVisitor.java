@@ -123,6 +123,10 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TableNa
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WhileStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AddRollupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropRollupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RollupItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RollupNameItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameRollupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenamePartitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReplaceTableContext;
@@ -171,6 +175,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Inter
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.policy.PolicyNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.AddRollupDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.DropRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RollupSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
@@ -601,6 +607,10 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             alterTableStatement.getRenameIndexDefinitions().add((RenameIndexDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameColumnSegment) {
             alterTableStatement.getRenameColumnDefinitions().add((RenameColumnSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof AddRollupDefinitionSegment) {
+            alterTableStatement.getAddRollupDefinitions().add((AddRollupDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof DropRollupDefinitionSegment) {
+            alterTableStatement.getDropRollupDefinitions().add((DropRollupDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameRollupDefinitionSegment) {
             alterTableStatement.getRenameRollupDefinitions().add((RenameRollupDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenamePartitionDefinitionSegment) {
@@ -657,7 +667,13 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     private Collection<AlterDefinitionSegment> getAlterDefinitionSegments(final AlterListContext ctx) {
         Collection<AlterDefinitionSegment> result = new LinkedList<>();
         for (AlterListItemContext each : ctx.alterListItem()) {
-            getAlterDefinitionSegment(ctx, each).ifPresent(result::add);
+            if (each instanceof AddRollupContext) {
+                result.addAll(((CollectionValue<AddRollupDefinitionSegment>) visit(each)).getValue());
+            } else if (each instanceof DropRollupContext) {
+                result.addAll(((CollectionValue<DropRollupDefinitionSegment>) visit(each)).getValue());
+            } else {
+                getAlterDefinitionSegment(ctx, each).ifPresent(result::add);
+            }
         }
         return result;
     }
@@ -1055,6 +1071,39 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             for (JobIdContext each : ctx.jobIdList().jobId()) {
                 result.getJobIds().add(each.getText());
             }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAddRollup(final AddRollupContext ctx) {
+        CollectionValue<AddRollupDefinitionSegment> result = new CollectionValue<>();
+        for (RollupItemContext each : ctx.rollupItem()) {
+            RollupSegment rollupSegment = new RollupSegment(each.rollupName.getStart().getStartIndex(), each.rollupName.getStop().getStopIndex(), (IdentifierValue) visit(each.rollupName));
+            AddRollupDefinitionSegment addRollupDefinitionSegment = new AddRollupDefinitionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), rollupSegment);
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(each.columnNames());
+            addRollupDefinitionSegment.getColumns().addAll(columns.getValue());
+            if (null != each.fromIndexName) {
+                addRollupDefinitionSegment.setFromIndex((IndexSegment) visit(each.fromIndexName));
+            }
+            if (null != each.propertiesClause()) {
+                addRollupDefinitionSegment.setProperties(extractPropertiesSegment(each.propertiesClause()));
+            }
+            result.getValue().add(addRollupDefinitionSegment);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDropRollup(final DropRollupContext ctx) {
+        CollectionValue<DropRollupDefinitionSegment> result = new CollectionValue<>();
+        for (RollupNameItemContext each : ctx.rollupNameItem()) {
+            RollupSegment rollupSegment = new RollupSegment(each.rollupName.getStart().getStartIndex(), each.rollupName.getStop().getStopIndex(), (IdentifierValue) visit(each.rollupName));
+            DropRollupDefinitionSegment dropRollupDefinitionSegment = new DropRollupDefinitionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), rollupSegment);
+            if (null != each.propertiesClause()) {
+                dropRollupDefinitionSegment.setProperties(extractPropertiesSegment(each.propertiesClause()));
+            }
+            result.getValue().add(dropRollupDefinitionSegment);
         }
         return result;
     }
