@@ -1455,6 +1455,9 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     @Override
     public final ASTNode visitDataType(final DataTypeContext ctx) {
+        if (null == ctx.dataTypeName) {
+            return null;
+        }
         DataTypeSegment result = new DataTypeSegment();
         result.setDataTypeName(ctx.dataTypeName.getText());
         result.setStartIndex(ctx.start.getStartIndex());

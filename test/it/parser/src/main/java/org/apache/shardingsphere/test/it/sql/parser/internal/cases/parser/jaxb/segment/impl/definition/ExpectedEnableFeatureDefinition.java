@@ -15,30 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.bound.ExpectedColumnBoundInfo;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperties;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpressionSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedOwner;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Expected column.
+ * Expected enable feature definition.
  */
 @Getter
 @Setter
-public final class ExpectedColumn extends AbstractExpectedIdentifierSQLSegment implements ExpectedExpressionSegment {
+public final class ExpectedEnableFeatureDefinition extends AbstractExpectedSQLSegment {
     
-    @XmlElement
-    private ExpectedOwner owner;
-    
-    @XmlElement(name = "column-bound")
-    private ExpectedColumnBoundInfo columnBound;
+    @XmlAttribute(name = "feature-name")
+    private String featureName;
     
     @XmlElement(name = "properties")
     private ExpectedProperties properties;

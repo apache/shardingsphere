@@ -673,6 +673,10 @@ DISTRIBUTED
     ;
 // DORIS ADDED END
 
+DISTRIBUTION
+    : D I S T R I B U T I O N
+    ;
+
 DYNAMIC
     : D Y N A M I C
     ;
@@ -833,6 +837,10 @@ FAST
 
 FAULTS
     : F A U L T S
+    ;
+
+FEATURE
+    : F E A T U R E
     ;
 
 FETCH

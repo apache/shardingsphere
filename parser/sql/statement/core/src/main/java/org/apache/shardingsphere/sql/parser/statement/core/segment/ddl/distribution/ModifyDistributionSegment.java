@@ -15,54 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.distribution;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.CreateDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Column definition segment.
+ * Modify distribution segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
+@Setter
+public final class ModifyDistributionSegment implements AlterDefinitionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final ColumnSegment columnName;
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
     
-    private final DataTypeSegment dataType;
-    
-    private final boolean primaryKey;
-    
-    @Setter
-    private boolean autoIncrement;
-    
-    private final boolean notNull;
-    
-    private final String text;
-    
-    private final Collection<SimpleTableSegment> referencedTables = new LinkedList<>();
-    
-    @Setter
-    private boolean isRef;
-    
-    @Setter
-    private String charsetName;
-    
-    @Setter
-    private String collateName;
-    
-    @Setter
-    private String comment;
+    private Integer buckets;
 }

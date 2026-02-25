@@ -35,8 +35,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ModifyPartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.PartitionValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.distribution.ModifyDistributionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.engine.ModifyEngineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.feature.EnableFeatureSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.AddRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.DropRollupDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ModifyTableCommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
@@ -62,6 +66,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.rol
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedChangeColumnDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedConstraintDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyColumnDefinition;
@@ -73,6 +78,10 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedDropRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameRollupDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedEnableFeatureDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyEngineDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyTableCommentDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyDistributionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.partition.ExpectedAddPartitions;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperties;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperty;
@@ -80,7 +89,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.AlterTableStatementTestCase;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -126,6 +134,11 @@ public final class AlterTableStatementAssert {
         assertConvertTable(assertContext, actual, expected);
         assertModifyCollectionRetrievalDefinitions(assertContext, actual, expected);
         assertDropPrimaryKeyDefinition(assertContext, actual, expected);
+        assertSetPropertiesDefinitions(assertContext, actual, expected);
+        assertEnableFeatureDefinitions(assertContext, actual, expected);
+        assertModifyTableCommentDefinitions(assertContext, actual, expected);
+        assertModifyEngineDefinitions(assertContext, actual, expected);
+        assertModifyDistributionDefinitions(assertContext, actual, expected);
     }
     
     private static void assertConvertTable(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
@@ -275,21 +288,23 @@ public final class AlterTableStatementAssert {
     }
     
     private static void assertDropColumns(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
-        Collection<ColumnSegment> actualDropColumns = getDropColumns(actual);
-        assertThat(assertContext.getText("Drop columns size assertion error: "), actualDropColumns.size(), is(expected.getDropColumns().size()));
-        int count = 0;
-        for (ColumnSegment each : actualDropColumns) {
-            ColumnAssert.assertIs(assertContext, each, expected.getDropColumns().get(count));
-            count++;
-        }
-    }
-    
-    private static Collection<ColumnSegment> getDropColumns(final AlterTableStatement actual) {
-        Collection<ColumnSegment> result = new LinkedList<>();
+        int actualColumnCount = 0;
         for (DropColumnDefinitionSegment each : actual.getDropColumnDefinitions()) {
-            result.addAll(each.getColumns());
+            actualColumnCount += each.getColumns().size();
         }
-        return result;
+        assertThat(assertContext.getText("Drop column definitions size assertion error: "), actualColumnCount, is(expected.getDropColumns().size()));
+        int count = 0;
+        for (DropColumnDefinitionSegment each : actual.getDropColumnDefinitions()) {
+            for (ColumnSegment column : each.getColumns()) {
+                ExpectedColumn expectedColumn = expected.getDropColumns().get(count);
+                ColumnAssert.assertIs(assertContext, column, expectedColumn);
+                if (null != expectedColumn.getProperties()) {
+                    assertTrue(each.getProperties().isPresent(), assertContext.getText("Drop column properties should exist"));
+                    assertProperties(assertContext, each.getProperties().get(), expectedColumn.getProperties());
+                }
+                count++;
+            }
+        }
     }
     
     private static void assertRenameIndexDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
@@ -498,5 +513,83 @@ public final class AlterTableStatementAssert {
         }
         assertNotNull(expected.getDropPrimaryKeyDefinition(), assertContext.getText("Actual drop primary key definition should exist."));
         SQLSegmentAssert.assertIs(assertContext, actual.getDropPrimaryKeyDefinition().get(), expected.getDropPrimaryKeyDefinition());
+    }
+    
+    private static void assertSetPropertiesDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Set properties definitions size assertion error: "), actual.getSetPropertiesDefinitions().size(), is(expected.getSetProperties().size()));
+        int count = 0;
+        for (PropertiesSegment each : actual.getSetPropertiesDefinitions()) {
+            ExpectedProperties expectedProperties = expected.getSetProperties().get(count);
+            assertProperties(assertContext, each, expectedProperties);
+            SQLSegmentAssert.assertIs(assertContext, each, expectedProperties);
+            count++;
+        }
+    }
+    
+    private static void assertEnableFeatureDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Enable feature definitions size assertion error: "), actual.getEnableFeatureDefinitions().size(), is(expected.getEnableFeatures().size()));
+        int count = 0;
+        for (EnableFeatureSegment each : actual.getEnableFeatureDefinitions()) {
+            ExpectedEnableFeatureDefinition expectedEnableFeature = expected.getEnableFeatures().get(count);
+            assertThat(assertContext.getText("Feature name assertion error: "), each.getFeatureName(), is(expectedEnableFeature.getFeatureName()));
+            if (null != expectedEnableFeature.getProperties()) {
+                assertTrue(each.getProperties().isPresent(), assertContext.getText("Enable feature properties should exist"));
+                assertProperties(assertContext, each.getProperties().get(), expectedEnableFeature.getProperties());
+            } else {
+                assertFalse(each.getProperties().isPresent(), assertContext.getText("Enable feature properties should not exist"));
+            }
+            SQLSegmentAssert.assertIs(assertContext, each, expectedEnableFeature);
+            count++;
+        }
+    }
+    
+    private static void assertModifyTableCommentDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Modify table comment definitions size assertion error: "), actual.getModifyTableCommentDefinitions().size(), is(expected.getModifyTableComments().size()));
+        int count = 0;
+        for (ModifyTableCommentSegment each : actual.getModifyTableCommentDefinitions()) {
+            ExpectedModifyTableCommentDefinition expectedModifyTableComment = expected.getModifyTableComments().get(count);
+            assertThat(assertContext.getText("Table comment assertion error: "), each.getTableComment(), is(expectedModifyTableComment.getTableComment()));
+            SQLSegmentAssert.assertIs(assertContext, each, expectedModifyTableComment);
+            count++;
+        }
+    }
+    
+    private static void assertModifyEngineDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Modify engine definitions size assertion error: "), actual.getModifyEngineDefinitions().size(), is(expected.getModifyEngines().size()));
+        int count = 0;
+        for (ModifyEngineSegment each : actual.getModifyEngineDefinitions()) {
+            ExpectedModifyEngineDefinition expectedModifyEngine = expected.getModifyEngines().get(count);
+            assertThat(assertContext.getText("Engine type assertion error: "), each.getEngineType(), is(expectedModifyEngine.getEngineType()));
+            if (null != expectedModifyEngine.getProperties()) {
+                assertTrue(each.getProperties().isPresent(), assertContext.getText("Modify engine properties should exist"));
+                assertProperties(assertContext, each.getProperties().get(), expectedModifyEngine.getProperties());
+            } else {
+                assertFalse(each.getProperties().isPresent(), assertContext.getText("Modify engine properties should not exist"));
+            }
+            SQLSegmentAssert.assertIs(assertContext, each, expectedModifyEngine);
+            count++;
+        }
+    }
+    
+    private static void assertModifyDistributionDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Modify distribution definitions size assertion error: "), actual.getModifyDistributionDefinitions().size(), is(expected.getModifyDistributions().size()));
+        int count = 0;
+        for (ModifyDistributionSegment each : actual.getModifyDistributionDefinitions()) {
+            ExpectedModifyDistributionDefinition expectedModifyDistribution = expected.getModifyDistributions().get(count);
+            assertThat(assertContext.getText("Modify distribution columns size assertion error: "), each.getColumns().size(), is(expectedModifyDistribution.getColumns().size()));
+            int columnCount = 0;
+            for (ColumnSegment columnSegment : each.getColumns()) {
+                ColumnAssert.assertIs(assertContext, columnSegment, expectedModifyDistribution.getColumns().get(columnCount));
+                columnCount++;
+            }
+            if (null != expectedModifyDistribution.getBuckets()) {
+                assertNotNull(each.getBuckets(), assertContext.getText("Modify distribution buckets should exist"));
+                assertThat(assertContext.getText("Buckets assertion error: "), each.getBuckets(), is(expectedModifyDistribution.getBuckets()));
+            } else {
+                assertNull(each.getBuckets(), assertContext.getText("Modify distribution buckets should not exist"));
+            }
+            SQLSegmentAssert.assertIs(assertContext, each, expectedModifyDistribution);
+            count++;
+        }
     }
 }

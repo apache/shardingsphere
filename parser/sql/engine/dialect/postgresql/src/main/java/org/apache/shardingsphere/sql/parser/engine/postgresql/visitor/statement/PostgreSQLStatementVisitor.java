@@ -145,6 +145,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Extr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
@@ -324,6 +325,9 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         }
         if (null != ctx.patternMatchingOperator()) {
             return createPatternMatchingOperationSegment(ctx);
+        }
+        if (null != ctx.NOT() && null == ctx.IS() && 1 == ctx.aExpr().size()) {
+            return new NotExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (ExpressionSegment) visit(ctx.aExpr(0)), false);
         }
         Optional<String> binaryOperator = findBinaryOperator(ctx);
         if (binaryOperator.isPresent()) {
