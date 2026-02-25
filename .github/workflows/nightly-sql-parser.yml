@@ -45,6 +45,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Build Project with Maven
         run: ./mvnw -T1C -B -ntp clean install
       - name: Run SQL Parser

@@ -16,23 +16,44 @@
 #
 
 name: 'Setup Build Environment'
-description: 'Setup Java and Maven cache for ShardingSphere builds'
+description: |
+  Setup Java and Maven cache for ShardingSphere builds.
+
+  This action configures Java environment and sets up Maven dependency caching
+  with support for multi-project isolation and build scope optimization.
+
+  Usage:
+    - uses: ./.github/workflows/resources/actions/setup-build-environment
+
+    - uses: ./.github/workflows/resources/actions/setup-build-environment
+      with:
+        java-version: '21'
+        cache-suffix: 'e2e-sql'
+
+  Cache key format: {cache-prefix}-maven-{cache-suffix}-{pom.xml hash}
+  Default cache-prefix: 'apache-shardingsphere'
+  Default cache-suffix: 'full'
 
 inputs:
   java-version:
-    description: 'Java version to setup'
+    description: 'Java version to setup (default: 17)'
     required: false
     default: '17'
   distribution:
-    description: 'Java distribution'
+    description: 'Java distribution (default: temurin)'
     required: false
     default: 'temurin'
   cache-prefix:
-    description: 'Cache key prefix for multi-project isolation. Default: apache-shardingsphere'
-    required: false
-    default: 'apache-shardingsphere'
+    description: |
+      Cache key prefix for multi-project isolation.
+      Used to separate caches between different projects or forks.
+    required: true
   cache-suffix:
-    description: 'Cache key suffix for build scope optimization (e.g., full, e2e, dist). Default: full'
+    description: |
+      Cache key suffix for build scope optimization.
+      Examples: 'full' for full build, 'e2e-sql' for E2E SQL tests, 'e2e-agent' for E2E Agent tests.
+      Different suffixes allow separate caches for different build scopes while maintaining fallback chain.
+      Default: 'full'
     required: false
     default: 'full'
 

@@ -50,6 +50,7 @@ jobs:
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           java-version: ${{ matrix.java-version }}
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Build Project with Maven
         run: ./mvnw clean install -B -ntp -T1C
       - name: Build Examples with Maven

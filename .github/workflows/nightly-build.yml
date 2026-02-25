@@ -48,6 +48,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Build Project
         run: |
           ./mvnw -B clean install -Prelease,default-dep
@@ -73,6 +75,8 @@ jobs:
         with:
           ref: ${{ inputs.commit-id }}
       - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Login Container Registry
         uses: docker/login-action@v3
         with:
@@ -132,6 +136,8 @@ jobs:
         with:
           ref: ${{ inputs.commit-id }}
       - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.HUB }}
@@ -150,6 +156,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Build with Maven
         run: ./mvnw clean install -B -ntp -T1C -DskipTests
   
@@ -202,6 +210,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4
