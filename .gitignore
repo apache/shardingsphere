@@ -58,3 +58,9 @@ community/public/
 document/public/
 .hugo_build.lock
 *.html-e
+
+# codex ignore
+.codex/log/
+.codex/sessions/
+.codex/tmp/
+.codex/prompts/
