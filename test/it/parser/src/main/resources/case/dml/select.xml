@@ -14064,4 +14064,168 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_ltrim_function">
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="LTRIM('  barbar')" start-index="7" stop-index="23" >
+                <expr>
+                    <function start-index="7" stop-index="23" text="LTRIM('  barbar')" function-name="LTRIM">
+                        <parameter>
+                            <literal-expression start-index="13" stop-index="22" value="  barbar" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_ltrim_as_column_alias">
+        <projections start-index="7" stop-index="17">
+            <column-projection name="id" alias="ltrim" start-index="7" stop-index="17" />
+        </projections>
+        <from>
+            <simple-table name="t" start-index="24" stop-index="24" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_ltrim_as_qualified_column">
+        <projections start-index="7" stop-index="13">
+            <column-projection name="ltrim" start-index="7" stop-index="13">
+                <owner name="t" start-index="7" stop-index="7" />
+            </column-projection>
+        </projections>
+        <from>
+            <simple-table name="t" start-index="20" stop-index="20" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_make_set_single">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="MAKE_SET(1,'a','b','c')" start-index="7" stop-index="29">
+                <expr>
+                    <function start-index="7" stop-index="29" text="MAKE_SET(1,'a','b','c')" function-name="MAKE_SET">
+                        <parameter><literal-expression start-index="16" stop-index="16" value="1" /></parameter>
+                        <parameter><literal-expression start-index="18" stop-index="20" value="a" /></parameter>
+                        <parameter><literal-expression start-index="22" stop-index="24" value="b" /></parameter>
+                        <parameter><literal-expression start-index="26" stop-index="28" value="c" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_make_set_bits_or">
+        <projections start-index="7" stop-index="42">
+            <expression-projection text="MAKE_SET(1|4,'hello','nice','world')" start-index="7" stop-index="42">
+                <expr>
+                    <function start-index="7" stop-index="42" text="MAKE_SET(1|4,'hello','nice','world')" function-name="MAKE_SET">
+                        <parameter>
+                            <binary-operation-expression start-index="16" stop-index="18">
+                                <left><literal-expression start-index="16" stop-index="16" value="1" /></left>
+                                <operator>|</operator>
+                                <right><literal-expression start-index="18" stop-index="18" value="4" /></right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter><literal-expression start-index="20" stop-index="26" value="hello" /></parameter>
+                        <parameter><literal-expression start-index="28" stop-index="33" value="nice" /></parameter>
+                        <parameter><literal-expression start-index="35" stop-index="41" value="world" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_make_set_with_null">
+        <projections start-index="7" stop-index="47">
+            <expression-projection text="MAKE_SET(1|4,'hello','nice',NULL,'world')" start-index="7" stop-index="47">
+                <expr>
+                    <function start-index="7" stop-index="47" text="MAKE_SET(1|4,'hello','nice',NULL,'world')" function-name="MAKE_SET">
+                        <parameter>
+                            <binary-operation-expression start-index="16" stop-index="18">
+                                <left><literal-expression start-index="16" stop-index="16" value="1" /></left>
+                                <operator>|</operator>
+                                <right><literal-expression start-index="18" stop-index="18" value="4" /></right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter><literal-expression start-index="20" stop-index="26" value="hello" /></parameter>
+                        <parameter><literal-expression start-index="28" stop-index="33" value="nice" /></parameter>
+                        <parameter><literal-expression start-index="35" stop-index="38" value="null" /></parameter>
+                        <parameter><literal-expression start-index="40" stop-index="46" value="world" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_make_set_zero">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="MAKE_SET(0,'a','b','c')" start-index="7" stop-index="29">
+                <expr>
+                    <function start-index="7" stop-index="29" text="MAKE_SET(0,'a','b','c')" function-name="MAKE_SET">
+                        <parameter><literal-expression start-index="16" stop-index="16" value="0" /></parameter>
+                        <parameter><literal-expression start-index="18" stop-index="20" value="a" /></parameter>
+                        <parameter><literal-expression start-index="22" stop-index="24" value="b" /></parameter>
+                        <parameter><literal-expression start-index="26" stop-index="28" value="c" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_makedate_function">
+        <projections start-index="7" stop-index="42">
+            <expression-projection text="MAKEDATE(2011,31)" start-index="7" stop-index="23">
+                <expr>
+                    <function function-name="MAKEDATE" start-index="7" stop-index="23" text="MAKEDATE(2011,31)">
+                        <parameter><literal-expression value="2011" start-index="16" stop-index="19" /></parameter>
+                        <parameter><literal-expression value="31" start-index="21" stop-index="22" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="MAKEDATE(2011,32)" start-index="26" stop-index="42">
+                <expr>
+                    <function function-name="MAKEDATE" start-index="26" stop-index="42" text="MAKEDATE(2011,32)">
+                        <parameter><literal-expression value="2011" start-index="35" stop-index="38" /></parameter>
+                        <parameter><literal-expression value="32" start-index="40" stop-index="41" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_maketime_function">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="MAKETIME(12,15,30)" start-index="7" stop-index="24">
+                <expr>
+                    <function function-name="MAKETIME" start-index="7" stop-index="24" text="MAKETIME(12,15,30)">
+                        <parameter><literal-expression value="12" start-index="16" stop-index="17" /></parameter>
+                        <parameter><literal-expression value="15" start-index="19" stop-index="20" /></parameter>
+                        <parameter><literal-expression value="30" start-index="22" stop-index="23" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_source_pos_wait_function">
+        <projections start-index="7" stop-index="82">
+            <expression-projection text="SOURCE_POS_WAIT('mysql-bin.000001', 100)" start-index="7" stop-index="46">
+                <expr>
+                    <function function-name="SOURCE_POS_WAIT" start-index="7" stop-index="46" text="SOURCE_POS_WAIT('mysql-bin.000001', 100)">
+                        <parameter><literal-expression value="mysql-bin.000001" start-index="23" stop-index="40" /></parameter>
+                        <parameter><literal-expression value="100" start-index="43" stop-index="45" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="SOURCE_POS_WAIT('bin.002', 200, 5)" start-index="49" stop-index="82">
+                <expr>
+                    <function function-name="SOURCE_POS_WAIT" start-index="49" stop-index="82" text="SOURCE_POS_WAIT('bin.002', 200, 5)">
+                        <parameter><literal-expression value="bin.002" start-index="65" stop-index="73" /></parameter>
+                        <parameter><literal-expression value="200" start-index="76" stop-index="78" /></parameter>
+                        <parameter><literal-expression value="5" start-index="81" stop-index="81" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

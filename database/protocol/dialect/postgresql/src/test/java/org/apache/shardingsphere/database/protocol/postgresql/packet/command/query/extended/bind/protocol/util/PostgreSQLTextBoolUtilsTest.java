@@ -17,17 +17,27 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.hamcrest.Matchers.is;
+import java.util.stream.Stream;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class PostgreSQLTextBoolUtilsTest {
     
-    @Test
-    void assertGetTextValue() {
-        Object jdbcBoolValue = true;
-        String textValue = PostgreSQLTextBoolUtils.getTextValue(jdbcBoolValue);
-        assertThat(textValue, is("t"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertGetTextValueArguments")
+    void assertGetTextValue(final String name, final Object jdbcBoolValue, final String expectedTextValue) {
+        assertThat(PostgreSQLTextBoolUtils.getTextValue(jdbcBoolValue), is(expectedTextValue));
+    }
+    
+    private static Stream<Arguments> assertGetTextValueArguments() {
+        return Stream.of(
+                Arguments.of("null-input", null, null),
+                Arguments.of("true-input", true, "t"),
+                Arguments.of("false-input", false, "f"));
     }
 }
