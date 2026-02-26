@@ -47,7 +47,8 @@ class BroadcastDataNodeRuleAttributeTest {
     
     @Test
     void assertGetDataNodesByTableName() {
-        assertThat(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).getDataNodesByTableName("foo_tbl"), is(Arrays.asList(new DataNode("foo_ds.foo_tbl"), new DataNode("bar_ds.foo_tbl"))));
+        assertThat(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).getDataNodesByTableName("foo_tbl"),
+                is(Arrays.asList(new DataNode("foo_ds.foo_tbl"), new DataNode("bar_ds.foo_tbl"))));
     }
     
     @Test
