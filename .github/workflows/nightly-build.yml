@@ -105,6 +105,8 @@ jobs:
         with:
           ref: ${{ inputs.commit-id }}
       - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.HUB }}

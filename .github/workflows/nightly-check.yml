@@ -169,8 +169,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
-        with:
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Install Project
         run: ./mvnw clean install -DskipTests -T1C
       - name: Build with maven and execute jacoco aggregation script
