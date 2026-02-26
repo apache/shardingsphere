@@ -18,32 +18,31 @@
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query;
 
 import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.util.Collections;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class PostgreSQLDataRowPacketTest {
     
     @Mock
@@ -52,76 +51,34 @@ class PostgreSQLDataRowPacketTest {
     @Mock
     private SQLXML sqlxml;
     
-    @BeforeEach
-    void setup() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("textValueCases")
+    void assertWriteWithTextValue(final String name, final Object value, final byte[] expectedBytes) {
         when(payload.getCharset()).thenReturn(StandardCharsets.UTF_8);
-    }
-    
-    @Test
-    void assertWriteWithNull() {
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(null));
-        actual.write(payload);
-        verify(payload).writeInt4(0xFFFFFFFF);
-    }
-    
-    @Test
-    void assertWriteWithBytes() {
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(new byte[]{'a'}));
-        actual.write(payload);
-        byte[] expectedBytes = buildExpectedByteaText(new byte[]{'a'});
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(value));
+        actual.write((PacketPayload) payload);
+        verify(payload).writeInt2(1);
         verify(payload).writeInt4(expectedBytes.length);
         verify(payload).writeBytes(expectedBytes);
     }
     
     @Test
-    void assertWriteWithSQLXML() throws SQLException {
-        when(sqlxml.getString()).thenReturn("value");
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(sqlxml));
-        actual.write(payload);
-        byte[] valueBytes = "value".getBytes(StandardCharsets.UTF_8);
-        verify(payload).writeInt4(valueBytes.length);
-        verify(payload).writeBytes(valueBytes);
-    }
-    
-    @Test
-    void assertWriteWithString() {
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton("value"));
-        assertThat(actual.getData(), is(Collections.singleton("value")));
-        actual.write(payload);
-        byte[] valueBytes = "value".getBytes(StandardCharsets.UTF_8);
-        verify(payload).writeInt4(valueBytes.length);
-        verify(payload).writeBytes(valueBytes);
-    }
-    
-    @Test
-    void assertWriteWithSQLXML4Error() throws SQLException {
-        when(sqlxml.getString()).thenThrow(new SQLException("mock"));
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(sqlxml));
-        assertThrows(RuntimeException.class, () -> actual.write(payload));
-        verify(payload, never()).writeStringEOF(any());
-    }
-    
-    @Test
-    void assertWriteBinaryNull() {
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(new BinaryCell(PostgreSQLColumnType.INT4, null)));
-        actual.write(payload);
+    void assertWriteWithNullValue() {
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(null));
+        actual.write((PacketPayload) payload);
         verify(payload).writeInt2(1);
         verify(payload).writeInt4(0xFFFFFFFF);
     }
     
     @Test
-    void assertWriteBinaryInt4() {
-        final int value = 12345678;
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(new BinaryCell(PostgreSQLColumnType.INT4, value)));
-        actual.write(payload);
+    void assertWriteWithByteArrayValue() {
+        byte[] value = new byte[]{'a'};
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(value));
+        actual.write((PacketPayload) payload);
+        byte[] expectedBytes = buildExpectedByteaText(value);
         verify(payload).writeInt2(1);
-        verify(payload).writeInt4(4);
-        verify(payload).writeInt4(value);
-    }
-    
-    @Test
-    void assertGetIdentifier() {
-        assertThat(new PostgreSQLDataRowPacket(Collections.emptyList()).getIdentifier(), is(PostgreSQLMessagePacketType.DATA_ROW));
+        verify(payload).writeInt4(expectedBytes.length);
+        verify(payload).writeBytes(expectedBytes);
     }
     
     private byte[] buildExpectedByteaText(final byte[] value) {
@@ -135,5 +92,54 @@ class PostgreSQLDataRowPacketTest {
             result[3 + i * 2] = hexDigits[unsignedByte & 0x0F];
         }
         return result;
+    }
+    
+    @Test
+    void assertWriteWithSQLXMLValue() throws SQLException {
+        when(payload.getCharset()).thenReturn(StandardCharsets.UTF_8);
+        when(sqlxml.getString()).thenReturn("value");
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(sqlxml));
+        actual.write((PacketPayload) payload);
+        byte[] valueBytes = "value".getBytes(StandardCharsets.UTF_8);
+        verify(payload).writeInt2(1);
+        verify(payload).writeInt4(valueBytes.length);
+        verify(payload).writeBytes(valueBytes);
+    }
+    
+    @Test
+    void assertWriteWithSQLXMLError() throws SQLException {
+        when(sqlxml.getString()).thenThrow(new SQLException("mock"));
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singletonList(sqlxml));
+        assertThrows(IllegalStateException.class, () -> actual.write((PacketPayload) payload));
+    }
+    
+    @Test
+    void assertWriteWithBinaryNullValue() {
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.nCopies(1, new BinaryCell(PostgreSQLColumnType.INT4, null)));
+        actual.write((PacketPayload) payload);
+        verify(payload).writeInt2(1);
+        verify(payload).writeInt4(0xFFFFFFFF);
+    }
+    
+    @Test
+    void assertWriteWithBinaryInt4Value() {
+        int value = 12345678;
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(new BinaryCell(PostgreSQLColumnType.INT4, value)));
+        actual.write((PacketPayload) payload);
+        verify(payload).writeInt2(1);
+        verify(payload).writeInt4(4);
+        verify(payload).writeInt4(value);
+    }
+    
+    @Test
+    void assertGetIdentifier() {
+        assertThat(new PostgreSQLDataRowPacket(Collections.emptyList()).getIdentifier(), is(PostgreSQLMessagePacketType.DATA_ROW));
+    }
+    
+    private static Stream<Arguments> textValueCases() {
+        return Stream.of(
+                Arguments.of("boolean_true", true, "t".getBytes(StandardCharsets.UTF_8)),
+                Arguments.of("boolean_false", false, "f".getBytes(StandardCharsets.UTF_8)),
+                Arguments.of("string_value", "value", "value".getBytes(StandardCharsets.UTF_8)));
     }
 }
