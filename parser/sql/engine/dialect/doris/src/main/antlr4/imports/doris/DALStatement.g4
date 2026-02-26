@@ -135,7 +135,7 @@ showCreateProcedure
     ;
 
 showCreateTable
-    : SHOW CREATE TABLE tableName
+    : SHOW BRIEF? CREATE TABLE tableName
     ;
 
 showCreateRoutineLoad

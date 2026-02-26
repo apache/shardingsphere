@@ -205,6 +205,10 @@ BOTH
     : B O T H
     ;
 
+BRIEF
+    : B R I E F
+    ;
+
 BTREE
     : B T R E E
     ;

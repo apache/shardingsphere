@@ -120,6 +120,16 @@
         </table>
     </drop-table>
 
+    <drop-table sql-case-id="drop_table_force_doris">
+        <table name="my_table" start-index="11" stop-index="18" />
+    </drop-table>
+
+    <drop-table sql-case-id="drop_table_if_exists_force_doris">
+        <table name="my_table" start-index="21" stop-index="39">
+            <owner name="example_db" start-index="21" stop-index="30" />
+        </table>
+    </drop-table>
+
     <drop-table sql-case-id="drop_table_firebird">
         <table name="t_firebird_drop" start-index="11" stop-index="25" />
     </drop-table>

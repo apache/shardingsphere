@@ -273,4 +273,6 @@
     <sql-case id="show_all_routine_load" value="SHOW ALL ROUTINE LOAD" db-types="Doris" />
     <sql-case id="show_routine_load_for_job" value="SHOW ROUTINE LOAD FOR test1" db-types="Doris" />
     <sql-case id="show_all_routine_load_for_job_with_db" value="SHOW ALL ROUTINE LOAD FOR example_db.test1" db-types="Doris" />
+    <sql-case id="show_brief_create_table_doris" value="SHOW BRIEF CREATE TABLE test_table" db-types="Doris" />
+    <sql-case id="show_brief_create_table_with_db_doris" value="SHOW BRIEF CREATE TABLE demo.test_table" db-types="Doris" />
 </sql-cases>

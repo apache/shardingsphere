@@ -251,7 +251,7 @@ fulltextIndexOption
     ;
 
 dropTable
-    : DROP TEMPORARY? tableOrTables ifExists? tableList restrict?
+    : DROP TEMPORARY? tableOrTables ifExists? tableList (restrict | FORCE)?
     ;
 
 dropIndex

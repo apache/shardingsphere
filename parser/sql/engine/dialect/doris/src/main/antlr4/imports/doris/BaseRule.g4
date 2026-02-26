@@ -160,6 +160,7 @@ identifierKeywordsUnambiguous
     | BLOCK
     | BOOLEAN
     | BOOL
+    | BRIEF
     | BTREE
     | BUCKETS
     | BUILTIN
