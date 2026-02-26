@@ -22,10 +22,10 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 
 /**
- * Column type for PostgreSQL.
+ * DDL column type for PostgreSQL.
  */
 @RequiredArgsConstructor
-public enum PostgreSQLColumnType {
+public enum PostgreSQLDDLColumnType {
     
     NUMERIC(new Long[]{1231L, 1700L}),
     
@@ -43,8 +43,8 @@ public enum PostgreSQLColumnType {
      * @param elemoid elemoid
      * @return value of column type
      */
-    public static PostgreSQLColumnType valueOf(final Long elemoid) {
-        for (PostgreSQLColumnType each : values()) {
+    public static PostgreSQLDDLColumnType valueOf(final Long elemoid) {
+        for (PostgreSQLDDLColumnType each : values()) {
             if (Arrays.asList(each.values).contains(elemoid)) {
                 return each;
             }

@@ -26,20 +26,20 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class PostgreSQLColumnTypeTest {
+class PostgreSQLDDLColumnTypeTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertValueOfArguments")
-    void assertValueOf(final String name, final Long elemoid, final PostgreSQLColumnType expectedColumnType) {
-        assertThat(PostgreSQLColumnType.valueOf(elemoid), is(expectedColumnType));
+    void assertValueOf(final String name, final Long elemoid, final PostgreSQLDDLColumnType expectedColumnType) {
+        assertThat(PostgreSQLDDLColumnType.valueOf(elemoid), is(expectedColumnType));
     }
     
     private static Stream<Arguments> assertValueOfArguments() {
         return Stream.of(
-                Arguments.of("numeric", 1231L, PostgreSQLColumnType.NUMERIC),
-                Arguments.of("date", 1083L, PostgreSQLColumnType.DATE),
-                Arguments.of("varchar", 1043L, PostgreSQLColumnType.VARCHAR),
-                Arguments.of("unknownZero", 0L, PostgreSQLColumnType.UNKNOWN),
-                Arguments.of("unknownNotExisted", 1L, PostgreSQLColumnType.UNKNOWN));
+                Arguments.of("numeric", 1231L, PostgreSQLDDLColumnType.NUMERIC),
+                Arguments.of("date", 1083L, PostgreSQLDDLColumnType.DATE),
+                Arguments.of("varchar", 1043L, PostgreSQLDDLColumnType.VARCHAR),
+                Arguments.of("unknownZero", 0L, PostgreSQLDDLColumnType.UNKNOWN),
+                Arguments.of("unknownNotExisted", 1L, PostgreSQLDDLColumnType.UNKNOWN));
     }
 }

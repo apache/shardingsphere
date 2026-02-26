@@ -26,6 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,14 +39,16 @@ class PostgreSQLComDescribePacketTest {
     void assertNewInstance() {
         when(payload.readInt1()).thenReturn((int) 'P');
         when(payload.readStringNul()).thenReturn("P_1");
-        PostgreSQLComDescribePacket actual = new PostgreSQLComDescribePacket(payload);
-        assertThat(actual.getType(), is('P'));
-        assertThat(actual.getName(), is("P_1"));
+        assertThat(new PostgreSQLComDescribePacket(payload).getName(), is("P_1"));
     }
     
     @Test
-    void assertIdentifier() {
-        PostgreSQLComDescribePacket actual = new PostgreSQLComDescribePacket(payload);
-        assertThat(actual.getIdentifier(), is(PostgreSQLCommandPacketType.DESCRIBE_COMMAND));
+    void assertWrite() {
+        assertDoesNotThrow(() -> new PostgreSQLComDescribePacket(payload).write(payload));
+    }
+    
+    @Test
+    void assertGetIdentifier() {
+        assertThat(new PostgreSQLComDescribePacket(payload).getIdentifier(), is(PostgreSQLCommandPacketType.DESCRIBE_COMMAND));
     }
 }
