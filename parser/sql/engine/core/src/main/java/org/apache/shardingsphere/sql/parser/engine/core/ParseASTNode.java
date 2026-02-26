@@ -78,11 +78,11 @@ public final class ParseASTNode implements ASTNode {
         }
         return result;
     }
-
+    
     private boolean isExecutableCommentStart(final Token token) {
         return token.getText().startsWith("/*!");
     }
-
+    
     private int findExecutableCommentEnd(final List<Token> tokens, final int startIndex) {
         for (int i = startIndex + 1; i < tokens.size(); i++) {
             Token each = tokens.get(i);
@@ -92,7 +92,7 @@ public final class ParseASTNode implements ASTNode {
         }
         return -1;
     }
-
+    
     private Token buildMergedExecutableCommentToken(final Token startToken, final Token endToken) {
         CharStream charStream = tokenStream.getTokenSource().getInputStream();
         String fullText = charStream.getText(Interval.of(startToken.getStartIndex(), endToken.getStopIndex()));
