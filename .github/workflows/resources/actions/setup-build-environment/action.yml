@@ -62,10 +62,20 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: actions/setup-java@v5.1.0
+    - name: Setup Java (Temurin)
+      if: inputs.distribution != 'graalvm'
+      uses: actions/setup-java@v5.1.0
       with:
         distribution: ${{ inputs.distribution }}
         java-version: ${{ inputs.java-version }}
+    - name: Setup GraalVM
+      if: inputs.distribution == 'graalvm'
+      uses: graalvm/setup-graalvm@v1
+      with:
+        distribution: 'graalvm-community'
+        java-version: ${{ inputs.java-version }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        native-image-job-reports: 'true'
     - uses: actions/cache@v5.0.1
       with:
         path: |
