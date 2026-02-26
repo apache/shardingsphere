@@ -17,54 +17,46 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
-import org.junit.jupiter.api.extension.ExtensionContext;
+import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
-import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.jupiter.params.support.ParameterDeclarations;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalTime;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PostgreSQLTimeValueParserTest {
     
     @ParameterizedTest(name = "{0}")
-    @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertParse(final String input, final LocalTime expected) {
+    @MethodSource("parseSuccessArguments")
+    void assertParse(final String name, final String input, final LocalTime expected) {
         assertThat(new PostgreSQLTimeValueParser().parse(input), is(expected));
     }
     
-    private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
-        
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
-            return Stream.of(Arguments.of("2323", LocalTime.of(23, 23, 0)),
-                    Arguments.of("23:23", LocalTime.of(23, 23, 0)),
-                    Arguments.of("232323", LocalTime.of(23, 23, 23)),
-                    Arguments.of("23:23:23", LocalTime.of(23, 23, 23)),
-                    Arguments.of("23:23:23.1", LocalTime.of(23, 23, 23, 100_000_000)),
-                    Arguments.of("23:23:23.12", LocalTime.of(23, 23, 23, 120_000_000)),
-                    Arguments.of("23:23:23.123", LocalTime.of(23, 23, 23, 123_000_000)),
-                    Arguments.of("23:23:23.123+08", LocalTime.of(23, 23, 23, 123_000_000)),
-                    Arguments.of("23:23:23.123+08", LocalTime.of(23, 23, 23, 123_000_000)),
-                    Arguments.of("23:23:23.12345", LocalTime.of(23, 23, 23, 123_450_000)),
-                    Arguments.of("23:23:23.12345+0800", LocalTime.of(23, 23, 23, 123_450_000)),
-                    Arguments.of("23:23:23.12345+0800", LocalTime.of(23, 23, 23, 123_450_000)),
-                    Arguments.of("23:23:23.12345+08:00:00", LocalTime.of(23, 23, 23, 123_450_000)),
-                    Arguments.of("23:23:23.12345+08:00:00", LocalTime.of(23, 23, 23, 123_450_000)),
-                    Arguments.of("23:23:23.12345+08:00:00", LocalTime.of(23, 23, 23, 123_450_000)),
-                    Arguments.of("23:23:23.123456", LocalTime.of(23, 23, 23, 123_456_000)),
-                    Arguments.of("23:23:23.1234567", LocalTime.of(23, 23, 23, 123_456_700)),
-                    Arguments.of("23:23:23.12345678", LocalTime.of(23, 23, 23, 123_456_780)),
-                    Arguments.of("23:23:23.123456789", LocalTime.of(23, 23, 23, 123_456_789)),
-                    Arguments.of("23:23:23.123456 +08:00", LocalTime.of(23, 23, 23, 123_456_000)),
-                    Arguments.of("23:23:23.123456 -08:00", LocalTime.of(23, 23, 23, 123_456_000)),
-                    Arguments.of("23:23:23.123456789 +08:00", LocalTime.of(23, 23, 23, 123_456_789)),
-                    Arguments.of("23:23:23.123456", LocalTime.of(23, 23, 23, 123_456_000)));
-        }
+    @Test
+    void assertParseWithUnsupportedTimeFormat() {
+        assertThat(assertThrows(UnsupportedSQLOperationException.class,
+                () -> new PostgreSQLTimeValueParser().parse("bad")).getMessage(), is("Unsupported SQL operation: Unsupported time format: [bad]."));
+    }
+    
+    private static Stream<Arguments> parseSuccessArguments() {
+        return Stream.of(
+                Arguments.of("compact hour minute", "2323", LocalTime.of(23, 23, 0)),
+                Arguments.of("hour minute", "23:23", LocalTime.of(23, 23, 0)),
+                Arguments.of("compact with second", "232323", LocalTime.of(23, 23, 23)),
+                Arguments.of("with second", "23:23:23", LocalTime.of(23, 23, 23)),
+                Arguments.of("single fraction", "23:23:23.1", LocalTime.of(23, 23, 23, 100_000_000)),
+                Arguments.of("three fractions", "23:23:23.123", LocalTime.of(23, 23, 23, 123_000_000)),
+                Arguments.of("with offset", "23:23:23.123+08", LocalTime.of(23, 23, 23, 123_000_000)),
+                Arguments.of("with long fraction and compact zone", "23:23:23.12345+0800", LocalTime.of(23, 23, 23, 123_450_000)),
+                Arguments.of("with long zone", "23:23:23.12345+08:00:00", LocalTime.of(23, 23, 23, 123_450_000)),
+                Arguments.of("with spacing and positive zone", "23:23:23.123456 +08:00", LocalTime.of(23, 23, 23, 123_456_000)),
+                Arguments.of("with spacing and negative zone", "23:23:23.123456 -08:00", LocalTime.of(23, 23, 23, 123_456_000)),
+                Arguments.of("with max nanos", "23:23:23.123456789", LocalTime.of(23, 23, 23, 123_456_789)));
     }
 }
