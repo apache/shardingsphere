@@ -19,15 +19,19 @@ package org.apache.shardingsphere.broadcast.rule.attribute;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -43,60 +47,59 @@ class BroadcastDataNodeRuleAttributeTest {
     
     @Test
     void assertGetDataNodesByTableName() {
-        Collection<DataNode> actual = new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).getDataNodesByTableName("foo_tbl");
-        assertThat(actual, is(Arrays.asList(new DataNode("foo_ds.foo_tbl"), new DataNode("bar_ds.foo_tbl"))));
+        assertThat(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).getDataNodesByTableName("foo_tbl"),
+                is(Arrays.asList(new DataNode("foo_ds.foo_tbl"), new DataNode("bar_ds.foo_tbl"))));
     }
     
     @Test
     void assertFindFirstActualTable() {
-        Optional<String> actual = new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).findFirstActualTable("foo_tbl");
-        assertThat(actual, is(Optional.of("foo_tbl")));
+        assertThat(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).findFirstActualTable("foo_tbl"), is(Optional.of("foo_tbl")));
     }
     
     @Test
     void assertNotFindFirstActualTable() {
-        Optional<String> actual = new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).findFirstActualTable("no_tbl");
-        assertFalse(actual.isPresent());
+        assertFalse(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).findFirstActualTable("no_tbl").isPresent());
     }
     
-    @Test
-    void assertIsNeedAccumulateWithEmptyTables() {
-        assertTrue(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).isNeedAccumulate(Collections.emptyList()));
-    }
-    
-    @Test
-    void assertIsNeedAccumulate() {
-        assertTrue(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).isNeedAccumulate(Collections.singleton("no_tbl")));
-        assertFalse(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).isNeedAccumulate(Arrays.asList("foo_tbl", "bar_tbl")));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getIsNeedAccumulateArguments")
+    void assertIsNeedAccumulate(final String name, final Collection<String> tables, final boolean expected) {
+        assertThat(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).isNeedAccumulate(tables), is(expected));
     }
     
     @Test
     void assertFindLogicTableByActualTable() {
-        Optional<String> actual = new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).findLogicTableByActualTable("foo_tbl");
-        assertThat(actual, is(Optional.of("foo_tbl")));
+        assertThat(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).findLogicTableByActualTable("foo_tbl"), is(Optional.of("foo_tbl")));
     }
     
     @Test
     void assertNotFindLogicTableByActualTable() {
-        Optional<String> actual = new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).findLogicTableByActualTable("no_tbl");
-        assertFalse(actual.isPresent());
+        assertFalse(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).findLogicTableByActualTable("no_tbl").isPresent());
     }
     
     @Test
-    void assertFindActualTableByCatalog() {
-        Optional<String> actual = new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).findActualTableByCatalog("foo_ds", "foo_tbl");
-        assertThat(actual, is(Optional.of("foo_tbl")));
+    void assertIsReplicaBasedDistribution() {
+        assertTrue(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).isReplicaBasedDistribution());
     }
     
-    @Test
-    void assertNotFindActualTableByCatalogWithNotExistedCatalog() {
-        Optional<String> actual = new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).findActualTableByCatalog("no_ds", "foo_tbl");
-        assertFalse(actual.isPresent());
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getFindActualTableByCatalogArguments")
+    void assertFindActualTableByCatalog(final String name, final String catalog, final String logicTable, final String expected) {
+        assertThat(new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).findActualTableByCatalog(catalog, logicTable),
+                is(Optional.ofNullable(expected)));
     }
     
-    @Test
-    void assertNotFindActualTableByCatalogWithNotExistedTable() {
-        Optional<String> actual = new BroadcastDataNodeRuleAttribute(Arrays.asList("foo_ds", "bar_ds"), Arrays.asList("foo_tbl", "bar_tbl")).findActualTableByCatalog("foo_ds", "no_tbl");
-        assertFalse(actual.isPresent());
+    private static Stream<Arguments> getIsNeedAccumulateArguments() {
+        return Stream.of(
+                Arguments.of("empty tables", Collections.emptyList(), true),
+                Arguments.of("table not found", Collections.singleton("no_tbl"), true),
+                Arguments.of("all tables are included", Arrays.asList("foo_tbl", "bar_tbl"), false));
+    }
+    
+    private static Stream<Arguments> getFindActualTableByCatalogArguments() {
+        return Stream.of(
+                Arguments.of("matched data source and table", "foo_ds", "foo_tbl", "foo_tbl"),
+                Arguments.of("unmatched data source", "no_ds", "foo_tbl", null),
+                Arguments.of("table not found", "foo_ds", "no_tbl", null));
     }
 }
