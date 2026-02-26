@@ -67,8 +67,8 @@ class BroadcastSchemaTableAggregationReviserTest {
     }
     
     private Collection<TableMetaData> createMismatchedTableMetaDataList() {
-        TableMetaData tableMetaData1 = new TableMetaData("foo_tbl", null, null, null);
-        TableMetaData tableMetaData2 = new TableMetaData("foo_tbl", Collections.singletonList(mock(ColumnMetaData.class)), null, null);
+        TableMetaData tableMetaData1 = new TableMetaData("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        TableMetaData tableMetaData2 = new TableMetaData("foo_tbl", Collections.singletonList(mock(ColumnMetaData.class)), Collections.emptyList(), Collections.emptyList());
         return Arrays.asList(tableMetaData1, tableMetaData2);
     }
     
