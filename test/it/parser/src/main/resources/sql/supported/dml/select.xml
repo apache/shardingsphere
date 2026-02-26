@@ -518,4 +518,9 @@
     <sql-case id="select_ltrim_function" value="SELECT LTRIM('  barbar')" db-types="MySQL" />
     <sql-case id="select_ltrim_as_column_alias" value="SELECT id AS ltrim FROM t" db-types="MySQL" />
     <sql-case id="select_ltrim_as_qualified_column" value="SELECT t.ltrim FROM t" db-types="MySQL" />
+    <sql-case id="select_make_set_single" value="SELECT MAKE_SET(1,'a','b','c')" db-types="MySQL" />
+    <sql-case id="select_make_set_bits_or" value="SELECT MAKE_SET(1|4,'hello','nice','world')" db-types="MySQL" />
+    <sql-case id="select_make_set_with_null" value="SELECT MAKE_SET(1|4,'hello','nice',NULL,'world')" db-types="MySQL" />
+    <sql-case id="select_make_set_zero" value="SELECT MAKE_SET(0,'a','b','c')" db-types="MySQL" />
+    <sql-case id="select_makedate_function" value="SELECT MAKEDATE(2011,31), MAKEDATE(2011,32)" db-types="MySQL" />
 </sql-cases>
