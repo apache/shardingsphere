@@ -19,15 +19,15 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 
 import org.apache.shardingsphere.database.protocol.postgresql.exception.PostgreSQLProtocolException;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -39,31 +39,32 @@ class PostgreSQLComClosePacketTest {
     
     @Test
     void assertClosePreparedStatement() {
-        when(payload.readInt1()).thenReturn((int) 'S');
-        when(payload.readStringNul()).thenReturn("S_1");
-        PostgreSQLComClosePacket actual = new PostgreSQLComClosePacket(payload);
-        assertThat(actual.getType(), is(PostgreSQLComClosePacket.Type.PREPARED_STATEMENT));
-        assertThat(actual.getName(), is("S_1"));
+        assertThat(newPacket('S', "S_1").getName(), is("S_1"));
     }
     
     @Test
     void assertClosePortal() {
-        when(payload.readInt1()).thenReturn((int) 'P');
-        when(payload.readStringNul()).thenReturn("P_1");
-        PostgreSQLComClosePacket actual = new PostgreSQLComClosePacket(payload);
-        assertThat(actual.getType(), is(PostgreSQLComClosePacket.Type.PORTAL));
-        assertThat(actual.getName(), is("P_1"));
+        assertThat(newPacket('P', "P_1").getName(), is("P_1"));
     }
     
     @Test
-    void assertIdentifier() {
-        when(payload.readInt1()).thenReturn((int) 'S');
-        PostgreSQLIdentifierTag actual = new PostgreSQLComClosePacket(payload).getIdentifier();
-        assertThat(actual, is(PostgreSQLCommandPacketType.CLOSE_COMMAND));
+    void assertWrite() {
+        assertDoesNotThrow(() -> newPacket('S', "S_1").write(payload));
+    }
+    
+    @Test
+    void assertGetIdentifier() {
+        assertThat(newPacket('S', "S_1").getIdentifier(), is(PostgreSQLCommandPacketType.CLOSE_COMMAND));
     }
     
     @Test
     void assertInvalidType() {
         assertThrows(PostgreSQLProtocolException.class, () -> new PostgreSQLComClosePacket(payload));
+    }
+    
+    private PostgreSQLComClosePacket newPacket(final char type, final String name) {
+        when(payload.readInt1()).thenReturn((int) type);
+        when(payload.readStringNul()).thenReturn(name);
+        return new PostgreSQLComClosePacket(payload);
     }
 }
