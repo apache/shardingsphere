@@ -58,6 +58,10 @@ inputs:
       Default: 'full'
     required: false
     default: 'full'
+  github-token:
+    description: 'GitHub token for GraalVM setup (required when distribution is graalvm)'
+    required: false
+    default: ''
 
 runs:
   using: composite
@@ -74,7 +78,7 @@ runs:
       with:
         distribution: 'graalvm-community'
         java-version: ${{ inputs.java-version }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ inputs.github-token }}
         native-image-job-reports: 'true'
     - uses: actions/cache@v5.0.1
       with:

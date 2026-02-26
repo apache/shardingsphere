@@ -81,6 +81,7 @@ jobs:
         with:
           java-version: '24.0.2'
           distribution: 'graalvm'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
           cache-suffix: 'native-test'
       # TODO Remove this workaround after. The graalvm native image built with windows server is missing some GRMs for testcontainers
