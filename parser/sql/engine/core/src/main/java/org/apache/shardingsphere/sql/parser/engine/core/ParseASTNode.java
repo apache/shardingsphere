@@ -57,44 +57,32 @@ public final class ParseASTNode implements ASTNode {
     public Collection<Token> getHiddenTokens() {
         Collection<Token> result = new LinkedList<>();
         List<Token> allTokens = tokenStream.getTokens();
-        int i = 0;
-        while (i < allTokens.size()) {
+        int mergedEndIndex = -1;
+        for (int i = 0; i < allTokens.size(); i++) {
+            if (i <= mergedEndIndex) {
+                continue;
+            }
             Token each = allTokens.get(i);
             if (Token.HIDDEN_CHANNEL != each.getChannel()) {
-                i++;
                 continue;
             }
             if (isExecutableCommentStart(each)) {
                 int endIndex = findExecutableCommentEnd(allTokens, i);
                 if (endIndex > i) {
                     result.add(buildMergedExecutableCommentToken(each, allTokens.get(endIndex)));
-                    i = endIndex + 1;
+                    mergedEndIndex = endIndex;
                     continue;
                 }
             }
             result.add(each);
-            i++;
         }
         return result;
     }
-    
-    /**
-     * Check if token is executable comment start.
-     *
-     * @param token token to check
-     * @return true if executable comment start
-     */
+
     private boolean isExecutableCommentStart(final Token token) {
         return token.getText().startsWith("/*!");
     }
-    
-    /**
-     * Find executable comment end index.
-     *
-     * @param tokens all tokens
-     * @param startIndex start index
-     * @return end index or -1 if not found
-     */
+
     private int findExecutableCommentEnd(final List<Token> tokens, final int startIndex) {
         for (int i = startIndex + 1; i < tokens.size(); i++) {
             Token each = tokens.get(i);
@@ -104,14 +92,7 @@ public final class ParseASTNode implements ASTNode {
         }
         return -1;
     }
-    
-    /**
-     * Build merged executable comment token.
-     *
-     * @param startToken start token
-     * @param endToken end token
-     * @return merged token
-     */
+
     private Token buildMergedExecutableCommentToken(final Token startToken, final Token endToken) {
         CharStream charStream = tokenStream.getTokenSource().getInputStream();
         String fullText = charStream.getText(Interval.of(startToken.getStartIndex(), endToken.getStopIndex()));

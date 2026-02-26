@@ -30,10 +30,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -134,6 +136,47 @@ class ParseASTNodeTest {
         Iterator<Token> iterator = actual.iterator();
         assertThat(iterator.next().getText(), is(" "));
         assertThat(iterator.next().getText(), is(execFullText));
+    }
+    
+    @Test
+    void assertGetHiddenTokensWithTwoExecutableComments() {
+        String firstComment = "/*! SET x=1 */";
+        String secondComment = "/*!80029 SET y=2 */";
+        List<Token> tokens = Arrays.asList(
+                createToken("/*!", Token.HIDDEN_CHANNEL, 0, 2),
+                createToken("*/", Token.HIDDEN_CHANNEL, 13, 14),
+                createToken("SELECT", Token.DEFAULT_CHANNEL, 16, 21),
+                createToken("/*!", Token.HIDDEN_CHANNEL, 23, 28),
+                createToken("*/", Token.HIDDEN_CHANNEL, 44, 45));
+        CommonTokenStream tokenStream = mock(CommonTokenStream.class);
+        when(tokenStream.getTokens()).thenReturn(tokens);
+        TokenSource tokenSource = mock(TokenSource.class);
+        when(tokenStream.getTokenSource()).thenReturn(tokenSource);
+        CharStream charStream = mock(CharStream.class);
+        when(tokenSource.getInputStream()).thenReturn(charStream);
+        when(charStream.getText(any(Interval.class))).thenAnswer(invocation -> {
+            Interval interval = invocation.getArgument(0);
+            if (interval.a == 0 && interval.b == 14) {
+                return firstComment;
+            }
+            if (interval.a == 23 && interval.b == 45) {
+                return secondComment;
+            }
+            return "";
+        });
+        Collection<Token> actual = new ParseASTNode(mock(ParseTree.class), tokenStream).getHiddenTokens();
+        assertThat(actual.size(), is(2));
+        Iterator<Token> iterator = actual.iterator();
+        Token first = iterator.next();
+        assertThat(first.getText(), is(firstComment));
+        assertThat(first.getStartIndex(), is(0));
+        assertThat(first.getStopIndex(), is(14));
+        assertThat(first.getChannel(), is(Token.HIDDEN_CHANNEL));
+        Token second = iterator.next();
+        assertThat(second.getText(), is(secondComment));
+        assertThat(second.getStartIndex(), is(23));
+        assertThat(second.getStopIndex(), is(45));
+        assertThat(second.getChannel(), is(Token.HIDDEN_CHANNEL));
     }
     
     private static CommonToken createToken(final String text, final int channel, final int startIndex, final int stopIndex) {
