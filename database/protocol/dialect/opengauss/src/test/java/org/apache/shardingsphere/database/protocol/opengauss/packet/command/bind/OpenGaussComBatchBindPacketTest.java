@@ -20,7 +20,7 @@ package org.apache.shardingsphere.database.protocol.opengauss.packet.command.bin
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.opengauss.packet.command.OpenGaussCommandPacketType;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -67,7 +67,7 @@ class OpenGaussComBatchBindPacketTest {
         assertThat(actual.getEachGroupParametersCount(), is(3));
         assertThat(actual.getParameterFormats(), is(Arrays.asList(0, 0, 0)));
         assertTrue(actual.getResultFormats().isEmpty());
-        List<List<Object>> actualParameterSets = actual.readParameterSets(Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR, PostgreSQLColumnType.INT4));
+        List<List<Object>> actualParameterSets = actual.readParameterSets(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR, PostgreSQLBinaryColumnType.INT4));
         assertThat(actualParameterSets.size(), is(3));
         assertThat(actualParameterSets, is(Arrays.asList(Arrays.asList(1, "Foo", 18), Arrays.asList(2, "Bar", 36), Arrays.asList(3, "Tom", 54))));
     }
@@ -75,7 +75,7 @@ class OpenGaussComBatchBindPacketTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("readParameterSetsCases")
     void assertReadParameterSets(final String name, final OpenGaussComBatchBindPacket packet, final PostgreSQLPacketPayload payload,
-                                 final List<PostgreSQLColumnType> parameterTypes, final List<List<Object>> expectedParameterSets, final int expectedSkipReservedBytes) {
+                                 final List<PostgreSQLBinaryColumnType> parameterTypes, final List<List<Object>> expectedParameterSets, final int expectedSkipReservedBytes) {
         List<List<Object>> actualParameterSets = packet.readParameterSets(parameterTypes);
         assertThat(actualParameterSets, is(expectedParameterSets));
         verify(payload).skipReserved(expectedSkipReservedBytes);
@@ -124,11 +124,11 @@ class OpenGaussComBatchBindPacketTest {
         OpenGaussComBatchBindPacket emptyFormatPacket = new OpenGaussComBatchBindPacket(emptyFormatPayload);
         OpenGaussComBatchBindPacket binaryPacket = new OpenGaussComBatchBindPacket(binaryPayload);
         return Stream.of(
-                Arguments.of("textParametersWithSingleTextFormat", textPacket, textPayload, Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR),
+                Arguments.of("textParametersWithSingleTextFormat", textPacket, textPayload, Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR),
                         Collections.singletonList(Arrays.asList(7, "foo")), 6),
-                Arguments.of("textParametersWhenFormatListIsEmpty", emptyFormatPacket, emptyFormatPayload, Collections.singletonList(PostgreSQLColumnType.INT4),
+                Arguments.of("textParametersWhenFormatListIsEmpty", emptyFormatPacket, emptyFormatPayload, Collections.singletonList(PostgreSQLBinaryColumnType.INT4),
                         Collections.singletonList(Collections.singletonList(42)), 0),
-                Arguments.of("nullAndBinaryParameters", binaryPacket, binaryPayload, Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.INT4),
+                Arguments.of("nullAndBinaryParameters", binaryPacket, binaryPayload, Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.INT4),
                         Collections.singletonList(Arrays.asList(null, 9)), 3));
     }
     

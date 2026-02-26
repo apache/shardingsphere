@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
@@ -111,7 +111,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
         ContextManager contextManager = mockContextManager(databaseType);
         ConnectionSession connectionSession = mockConnectionSession();
         PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)", mockInsertStatementContext(),
-                new HintValueContext(), Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR), Arrays.asList(0, 1));
+                new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR), Arrays.asList(0, 1));
         List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, new PostgreSQLTypeUnspecifiedSQLParameter("foo")),
                 Arrays.asList(2, new PostgreSQLTypeUnspecifiedSQLParameter("bar")), Arrays.asList(3, new PostgreSQLTypeUnspecifiedSQLParameter("baz")));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -140,7 +140,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
         ContextManager contextManager = mockContextManager(mysqlDatabaseType);
         ConnectionSession connectionSession = mockConnectionSession();
         PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("UPDATE t SET col = ? WHERE id = ?", mockUpdateStatementContext(),
-                new HintValueContext(), Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR), Arrays.asList(0, 1));
+                new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR), Arrays.asList(0, 1));
         List<List<Object>> parameterSets = Collections.singletonList(Arrays.asList(10, "foo"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(connectionSession, postgresqlPreparedStatement, parameterSets);
@@ -167,7 +167,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ConnectionSession connectionSession = mockConnectionSession();
         PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)", mockInsertStatementContext(),
-                new HintValueContext(), Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR), Arrays.asList(0, 1));
+                new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR), Arrays.asList(0, 1));
         PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(connectionSession, postgresqlPreparedStatement, Collections.emptyList());
         Map<ExecutionUnit, List<List<Object>>> executionUnitParams = (Map<ExecutionUnit, List<List<Object>>>) Plugins.getMemberAccessor()
                 .get(PostgreSQLBatchedStatementsExecutor.class.getDeclaredField("executionUnitParams"), actual);
@@ -184,7 +184,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ConnectionSession connectionSession = mockConnectionSession();
         PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("UPDATE t SET col = ? WHERE id = ?", mockUpdateStatementContext(),
-                new HintValueContext(), Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR), Arrays.asList(0, 1));
+                new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR), Arrays.asList(0, 1));
         List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, "foo"), Arrays.asList(2, "bar"));
         PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(connectionSession, postgresqlPreparedStatement, parameterSets);
         Map<ExecutionUnit, List<List<Object>>> executionUnitParams = (Map<ExecutionUnit, List<List<Object>>>) Plugins.getMemberAccessor()

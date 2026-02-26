@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
@@ -129,7 +129,7 @@ class PostgreSQLComBindExecutorTest {
         List<Object> parameters = Arrays.asList(1, "updated_name");
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement("UPDATE test SET name = $2 WHERE id = $1",
                 new CommonSQLStatementContext(new EmptyStatement(databaseType)), new HintValueContext(),
-                Arrays.asList(PostgreSQLColumnType.VARCHAR, PostgreSQLColumnType.INT4), Arrays.asList(1, 0));
+                Arrays.asList(PostgreSQLBinaryColumnType.VARCHAR, PostgreSQLBinaryColumnType.INT4), Arrays.asList(1, 0));
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
         when(bindPacket.getStatementId()).thenReturn(statementId);
         when(bindPacket.getPortal()).thenReturn("C_1");

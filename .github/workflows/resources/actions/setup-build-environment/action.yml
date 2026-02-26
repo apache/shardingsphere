@@ -1,0 +1,94 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: 'Setup Build Environment'
+description: |
+  Setup Java and Maven cache for ShardingSphere builds.
+
+  This action configures Java environment and sets up Maven dependency caching
+  with support for multi-project isolation and build scope optimization.
+
+  Usage:
+    - uses: ./.github/workflows/resources/actions/setup-build-environment
+
+    - uses: ./.github/workflows/resources/actions/setup-build-environment
+      with:
+        java-version: '21'
+        cache-suffix: 'e2e-sql'
+
+  Cache key format: {cache-prefix}-maven-{cache-suffix}-{pom.xml hash}
+  Default cache-prefix: 'apache-shardingsphere'
+  Default cache-suffix: 'full'
+
+inputs:
+  java-version:
+    description: 'Java version to setup (default: 17)'
+    required: false
+    default: '17'
+  distribution:
+    description: 'Java distribution (default: temurin)'
+    required: false
+    default: 'temurin'
+  cache-prefix:
+    description: |
+      Cache key prefix for multi-project isolation.
+      Used to separate caches between different projects or forks.
+      Default: 'apache-shardingsphere'
+    required: false
+    default: 'apache-shardingsphere'
+  cache-suffix:
+    description: |
+      Cache key suffix for build scope optimization.
+      Examples: 'full' for full build, 'e2e-sql' for E2E SQL tests, 'e2e-agent' for E2E Agent tests.
+      Different suffixes allow separate caches for different build scopes while maintaining fallback chain.
+      Default: 'full'
+    required: false
+    default: 'full'
+  github-token:
+    description: 'GitHub token for GraalVM setup (required when distribution is graalvm)'
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Java (Temurin)
+      if: inputs.distribution != 'graalvm'
+      uses: actions/setup-java@v5.1.0
+      with:
+        distribution: ${{ inputs.distribution }}
+        java-version: ${{ inputs.java-version }}
+    - name: Setup GraalVM
+      if: inputs.distribution == 'graalvm'
+      uses: graalvm/setup-graalvm@v1
+      with:
+        distribution: 'graalvm-community'
+        java-version: ${{ inputs.java-version }}
+        github-token: ${{ inputs.github-token }}
+        native-image-job-reports: 'true'
+    - uses: actions/cache@v5.0.1
+      with:
+        path: |
+          ~/.m2/repository
+          !~/.m2/repository/org/apache/shardingsphere
+          ~/.m2/repository/org/apache/shardingsphere/elasticjob
+        key: ${{ inputs.cache-prefix }}-maven-${{ inputs.cache-suffix }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ inputs.cache-prefix }}-maven-${{ inputs.cache-suffix }}-
+          ${{ inputs.cache-prefix }}-maven-full-
+          ${{ inputs.cache-prefix }}-maven-
+          ${{ inputs.cache-prefix }}-

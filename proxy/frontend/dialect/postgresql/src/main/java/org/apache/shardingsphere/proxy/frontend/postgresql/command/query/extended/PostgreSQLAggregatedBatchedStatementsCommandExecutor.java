@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
@@ -74,7 +74,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutor implemen
         return connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(bindPacket.getStatementId());
     }
     
-    private List<List<Object>> readParameterSets(final List<PostgreSQLColumnType> parameterTypes) {
+    private List<List<Object>> readParameterSets(final List<PostgreSQLBinaryColumnType> parameterTypes) {
         List<List<Object>> result = new LinkedList<>();
         for (PostgreSQLCommandPacket each : packets) {
             if (each instanceof PostgreSQLComBindPacket) {

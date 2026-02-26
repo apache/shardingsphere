@@ -57,11 +57,9 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: actions/setup-java@v5.1.0
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
-          java-version: 17
-          cache: 'maven'
+          cache-suffix: 'e2e-operation'
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4
@@ -105,11 +103,9 @@ jobs:
     steps:
       - name: Checkout Project
         uses: actions/checkout@v6.0.1
-      - uses: actions/setup-java@v5.1.0
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
-          java-version: 17
-          cache: 'maven'
+          cache-suffix: 'e2e-operation'
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4

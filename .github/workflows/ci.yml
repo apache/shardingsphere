@@ -54,26 +54,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6.0.1
-      - name: Setup JDK for Build
-        uses: actions/setup-java@v5.1.0
-        with:
-          distribution: 'temurin'
-          java-version: 17
-      - uses: actions/cache@v5.0.1
-        with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/org/apache/shardingsphere
-            ~/.m2/repository/org/apache/shardingsphere/elasticjob
-          key: apache-shardingsphere-maven-third-party-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            apache-shardingsphere-maven-third-party-
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
       - name: Build Project with Maven
         run: ./mvnw clean install -B -ntp -DskipTests -T1C
-      - name: Setup JDK for Test
-        uses: actions/setup-java@v5.1.0
-        with:
-          distribution: 'temurin'
-          java-version: 17
       - name: Run Tests
         run: ./mvnw install -T1C -B -ntp -fae

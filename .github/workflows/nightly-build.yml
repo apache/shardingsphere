@@ -46,28 +46,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/cache@v5.0.1
-        with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/org/apache/shardingsphere
-            ~/.m2/repository/org/apache/shardingsphere/elasticjob
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - uses: actions/checkout@v6.0.1
-      - uses: actions/setup-java@v5.1.0
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
-          java-version: 17
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Build Project
         run: |
           ./mvnw -B clean install -Prelease,default-dep
       - name: Upload Proxy Tarball Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: proxy-tarball-${{ github.sha }}
+          name: proxy-tarball-${{ github.run_id }}
           path: distribution/proxy/target/apache-shardingsphere-*.tar.gz
           if-no-files-found: error
           retention-days: 7
@@ -85,20 +74,9 @@ jobs:
       - uses: actions/checkout@v6.0.1
         with:
           ref: ${{ inputs.commit-id }}
-      - uses: actions/setup-java@v5.1.0
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
-          java-version: 17
-      - uses: actions/cache@v5.0.1
-        with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/org/apache/shardingsphere
-            ~/.m2/repository/org/apache/shardingsphere/elasticjob
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Login Container Registry
         uses: docker/login-action@v3
         with:
@@ -108,7 +86,7 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - name: Push Docker Image
-        run: ./mvnw -am -pl distribution/proxy -B -Prelease,default-dep,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install
+        run: ./mvnw -am -pl distribution/proxy -B -Prelease,default-dep,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.run_id }} clean install
   
   build-proxy-native-image:
     if: github.repository == 'apache/shardingsphere'
@@ -126,36 +104,25 @@ jobs:
       - uses: actions/checkout@v6.0.1
         with:
           ref: ${{ inputs.commit-id }}
-      - uses: actions/setup-java@v5.1.0
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
-          java-version: 17
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.HUB }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/cache@v5.0.1
-        with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/org/apache/shardingsphere
-            ~/.m2/repository/org/apache/shardingsphere/elasticjob
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Push dynamic linked Docker Image by x64 or arm64
         run: |
-          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }} "-DskipTests" clean package
+          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }} "-DskipTests" clean package
       - name: Push mostly static linked Docker Image by x64
         if: matrix.os == 'ubuntu-latest'
         run: |
-          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }}-mostly "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-DskipTests" clean package
+          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }}-mostly "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-DskipTests" clean package
       - name: Push fully static linked Docker Image by x64
         if: matrix.os == 'ubuntu-latest'
         run: |
-          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.sha }}-static "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-DskipTests" clean package
+          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }}-static "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-DskipTests" clean package
 
   build-agent-image:
     if: github.repository == 'apache/shardingsphere'
@@ -170,28 +137,17 @@ jobs:
       - uses: actions/checkout@v6.0.1
         with:
           ref: ${{ inputs.commit-id }}
-      - uses: actions/setup-java@v5.1.0
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
-          java-version: 17
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.HUB }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/cache@v5.0.1
-        with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/org/apache/shardingsphere
-            ~/.m2/repository/org/apache/shardingsphere/elasticjob
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Push Docker Image
         run: |
-          ./mvnw -am -pl distribution/agent -Prelease,default-dep,docker.buildx.push -B -T1C -DskipTests -Dagent.image.repository=${{ env.AGENT }} -Dagent.image.tag=${{ github.sha }} clean package
+          ./mvnw -am -pl distribution/agent -Prelease,default-dep,docker.buildx.push -B -T1C -DskipTests -Dagent.image.repository=${{ env.AGENT }} -Dagent.image.tag=${{ github.run_id }} clean package
   
   build-cache:
     if: github.repository == 'apache/shardingsphere'
@@ -201,19 +157,9 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: actions/setup-java@v5.1.0
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
-          java-version: 17
-      - uses: actions/cache@v5.0.1
-        with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/org/apache/shardingsphere
-            ~/.m2/repository/org/apache/shardingsphere/elasticjob
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Build with Maven
         run: ./mvnw clean install -B -ntp -T1C -DskipTests
   
@@ -265,23 +211,13 @@ jobs:
         options: --health-cmd="echo ruok | nc localhost 2181" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: actions/setup-java@v5.1.0
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
-          java-version: 17
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4
           set-host: true
-      - uses: actions/cache@v5.0.1
-        with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/org/apache/shardingsphere
-            ~/.m2/repository/org/apache/shardingsphere/elasticjob
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
       - name: Build with Maven
         run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
       - name: Generate Examples
@@ -305,7 +241,7 @@ jobs:
       - name: Upload Generated Example Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: example-${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}--${{ github.sha }}
+          name: example-${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}--${{ github.run_id }}
           path: examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz
           if-no-files-found: error
           retention-days: 7

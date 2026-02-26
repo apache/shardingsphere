@@ -29,7 +29,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLEmptyQueryResponsePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.PostgreSQLTextBitUtils;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.util.PostgreSQLTextBoolUtils;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
@@ -190,14 +190,14 @@ public final class Portal {
     }
     
     private BinaryCell createBinaryCell(final QueryResponseCell cell) {
-        return new BinaryCell(PostgreSQLColumnType.valueOfJDBCType(cell.getJdbcType(), cell.getColumnTypeName().orElse(null)), getCellData(cell));
+        return new BinaryCell(PostgreSQLBinaryColumnType.valueOfJDBCType(cell.getJdbcType(), cell.getColumnTypeName().orElse(null)), getCellData(cell));
     }
     
     private Object getCellData(final QueryResponseCell cell) {
-        if (PostgreSQLColumnType.isBit(cell.getJdbcType(), cell.getColumnTypeName().orElse(null))) {
+        if (PostgreSQLBinaryColumnType.isBit(cell.getJdbcType(), cell.getColumnTypeName().orElse(null))) {
             return PostgreSQLTextBitUtils.getTextValue(cell.getData());
         }
-        if (PostgreSQLColumnType.isBool(cell.getJdbcType(), cell.getColumnTypeName().orElse(null))) {
+        if (PostgreSQLBinaryColumnType.isBool(cell.getJdbcType(), cell.getColumnTypeName().orElse(null))) {
             return PostgreSQLTextBoolUtils.getTextValue(cell.getData());
         }
         return cell.getData();

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query;
 
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
@@ -41,17 +41,17 @@ class PostgreSQLParameterDescriptionPacketTest {
     
     @Test
     void assertWrite() {
-        new PostgreSQLParameterDescriptionPacket(Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.TEXT)).write(payload);
+        new PostgreSQLParameterDescriptionPacket(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.TEXT)).write(payload);
         InOrder inOrder = inOrder(payload);
         inOrder.verify(payload).writeInt2(2);
-        inOrder.verify(payload).writeInt4(PostgreSQLColumnType.INT4.getValue());
-        inOrder.verify(payload).writeInt4(PostgreSQLColumnType.TEXT.getValue());
+        inOrder.verify(payload).writeInt4(PostgreSQLBinaryColumnType.INT4.getValue());
+        inOrder.verify(payload).writeInt4(PostgreSQLBinaryColumnType.TEXT.getValue());
         verifyNoMoreInteractions(payload);
     }
     
     @Test
     void assertGetIdentifier() {
-        assertThat(new PostgreSQLParameterDescriptionPacket(Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.TEXT)).getIdentifier(),
+        assertThat(new PostgreSQLParameterDescriptionPacket(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.TEXT)).getIdentifier(),
                 is(PostgreSQLMessagePacketType.PARAMETER_DESCRIPTION));
     }
 }

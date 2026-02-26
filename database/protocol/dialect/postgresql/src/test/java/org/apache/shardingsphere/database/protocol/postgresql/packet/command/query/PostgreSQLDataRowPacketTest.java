@@ -19,7 +19,7 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 
 import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
@@ -115,7 +115,7 @@ class PostgreSQLDataRowPacketTest {
     
     @Test
     void assertWriteWithBinaryNullValue() {
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.nCopies(1, new BinaryCell(PostgreSQLColumnType.INT4, null)));
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.nCopies(1, new BinaryCell(PostgreSQLBinaryColumnType.INT4, null)));
         actual.write((PacketPayload) payload);
         verify(payload).writeInt2(1);
         verify(payload).writeInt4(0xFFFFFFFF);
@@ -124,7 +124,7 @@ class PostgreSQLDataRowPacketTest {
     @Test
     void assertWriteWithBinaryInt4Value() {
         int value = 12345678;
-        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(new BinaryCell(PostgreSQLColumnType.INT4, value)));
+        PostgreSQLDataRowPacket actual = new PostgreSQLDataRowPacket(Collections.singleton(new BinaryCell(PostgreSQLBinaryColumnType.INT4, value)));
         actual.write((PacketPayload) payload);
         verify(payload).writeInt2(1);
         verify(payload).writeInt4(4);

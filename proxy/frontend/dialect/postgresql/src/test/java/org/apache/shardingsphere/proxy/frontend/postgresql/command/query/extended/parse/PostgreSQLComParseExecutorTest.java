@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowDistVariableStatement;
@@ -115,7 +115,7 @@ class PostgreSQLComParseExecutorTest {
         final String statementId = "S_2";
         when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
-        when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.INT4));
+        when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLBinaryColumnType.INT4));
         when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
         when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
         Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
@@ -128,7 +128,7 @@ class PostgreSQLComParseExecutorTest {
         assertThat(actualPreparedStatement.getSqlStatementContext(), isA(InsertStatementContext.class));
         assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), isA(InsertStatement.class));
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
-        assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.UNSPECIFIED)));
+        assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED)));
     }
     
     @Test
@@ -139,14 +139,14 @@ class PostgreSQLComParseExecutorTest {
         when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getHintValueContext()).thenReturn(new HintValueContext());
         when(parsePacket.getStatementId()).thenReturn(statementId);
-        when(parsePacket.readParameterTypes()).thenReturn(Arrays.asList(PostgreSQLColumnType.JSON, PostgreSQLColumnType.INT4));
+        when(parsePacket.readParameterTypes()).thenReturn(Arrays.asList(PostgreSQLBinaryColumnType.JSON, PostgreSQLBinaryColumnType.INT4));
         Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.execute();
         PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
-        assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.JSON, PostgreSQLColumnType.INT4)));
+        assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLBinaryColumnType.JSON, PostgreSQLBinaryColumnType.INT4)));
         assertThat(actualPreparedStatement.getActualParameterMarkerIndexes(), is(Arrays.asList(1, 0)));
     }
     

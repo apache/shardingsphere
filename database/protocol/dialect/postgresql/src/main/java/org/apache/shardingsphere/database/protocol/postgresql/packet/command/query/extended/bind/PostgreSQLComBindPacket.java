@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
@@ -57,7 +57,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
      * @param paramTypes parameter types
      * @return values of parameter
      */
-    public List<Object> readParameters(final List<PostgreSQLColumnType> paramTypes) {
+    public List<Object> readParameters(final List<PostgreSQLBinaryColumnType> paramTypes) {
         List<Integer> paramFormats = getParameterFormats();
         int parameterCount = payload.readInt2();
         List<Object> result = new ArrayList<>(parameterCount);
@@ -91,12 +91,12 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         return PostgreSQLValueFormat.TEXT.getCode() == paramFormats.get(1 == paramFormats.size() ? 0 : paramIndex);
     }
     
-    private Object getTextParameterValue(final PostgreSQLPacketPayload payload, final int paramValueLength, final PostgreSQLColumnType paramType) {
+    private Object getTextParameterValue(final PostgreSQLPacketPayload payload, final int paramValueLength, final PostgreSQLBinaryColumnType paramType) {
         String value = payload.getByteBuf().readCharSequence(paramValueLength, payload.getCharset()).toString();
         return paramType.getTextValueParser().parse(value);
     }
     
-    private Object getBinaryParameterValue(final PostgreSQLPacketPayload payload, final int paramValueLength, final PostgreSQLColumnType paramType) {
+    private Object getBinaryParameterValue(final PostgreSQLPacketPayload payload, final int paramValueLength, final PostgreSQLBinaryColumnType paramType) {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(paramType);
         return binaryProtocolValue.read(payload, paramValueLength);
     }
