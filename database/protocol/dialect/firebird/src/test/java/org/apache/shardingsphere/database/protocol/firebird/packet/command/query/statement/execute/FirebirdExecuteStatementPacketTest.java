@@ -58,6 +58,7 @@ class FirebirdExecuteStatementPacketTest {
         when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1, 123);
         when(payload.readInt1()).thenReturn(0);
         when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.duplicate()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, blrType, (short) BlrConstants.blr_end);
         when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
@@ -73,6 +74,7 @@ class FirebirdExecuteStatementPacketTest {
         when(payload.readInt1()).thenReturn(1);
         when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1);
         when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.duplicate()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
         when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
@@ -84,6 +86,8 @@ class FirebirdExecuteStatementPacketTest {
     @Test
     void assertExecuteStatementPacketWhenBLRIsNotReadable() {
         when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.duplicate()).thenReturn(byteBuf);
+        when(byteBuf.isReadable()).thenReturn(false);
         when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 0);
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         assertThat(packet.getParameterTypes(), is(Collections.emptyList()));
@@ -96,9 +100,11 @@ class FirebirdExecuteStatementPacketTest {
         when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE2.getValue(), 1, 2, 0, 1, 123, 9);
         ByteBuf returnBlr = mock(ByteBuf.class);
         when(payload.readBuffer()).thenReturn(byteBuf, returnBlr);
+        when(byteBuf.duplicate()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
         when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
+        when(returnBlr.duplicate()).thenReturn(returnBlr);
         when(returnBlr.isReadable()).thenReturn(true);
         when(returnBlr.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
         when(returnBlr.skipBytes(anyInt())).thenReturn(returnBlr);
@@ -117,6 +123,8 @@ class FirebirdExecuteStatementPacketTest {
     void assertIsStoredProcedure(final String name, final FirebirdCommandPacketType commandPacketType, final boolean expectedStoredProcedure) {
         when(payload.readInt4()).thenReturn(commandPacketType.getValue(), 1, 2, 0, 0);
         when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.duplicate()).thenReturn(byteBuf);
+        when(byteBuf.isReadable()).thenReturn(false);
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         assertThat(packet.isStoredProcedure(), is(expectedStoredProcedure));
     }
@@ -124,6 +132,8 @@ class FirebirdExecuteStatementPacketTest {
     @Test
     void assertWrite() {
         when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.duplicate()).thenReturn(byteBuf);
+        when(byteBuf.isReadable()).thenReturn(false);
         when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 0);
         FirebirdExecuteStatementPacket packet = new FirebirdExecuteStatementPacket(payload, FirebirdProtocolVersion.PROTOCOL_VERSION13);
         FirebirdPacketPayload writePayload = mock(FirebirdPacketPayload.class);
@@ -137,6 +147,7 @@ class FirebirdExecuteStatementPacketTest {
         when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.EXECUTE.getValue(), 1, 2, 0, 1, 123);
         when(payload.readInt1()).thenReturn(0);
         when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.duplicate()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
         when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);

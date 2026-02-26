@@ -54,6 +54,7 @@ class FirebirdFetchStatementPacketTest {
     void assertFetchStatementPacket(final String name, final short blrType, final FirebirdBinaryColumnType expectedParameterType) {
         when(payload.readInt4()).thenReturn(3, 7, 10);
         when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.duplicate()).thenReturn(byteBuf);
         when(byteBuf.isReadable()).thenReturn(true);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 2, (short) 0, blrType, (short) BlrConstants.blr_end);
         when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
@@ -70,6 +71,8 @@ class FirebirdFetchStatementPacketTest {
     void assertFetchStatementPacketWhenBLRIsNotReadable() {
         when(payload.readInt4()).thenReturn(3, 7, 10);
         when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.duplicate()).thenReturn(byteBuf);
+        when(byteBuf.isReadable()).thenReturn(false);
         FirebirdFetchStatementPacket packet = new FirebirdFetchStatementPacket(payload);
         verify(payload).skipReserved(4);
         assertThat(packet.getStatementId(), is(3));
@@ -89,6 +92,8 @@ class FirebirdFetchStatementPacketTest {
     void assertWrite() {
         when(payload.readInt4()).thenReturn(3, 7, 10);
         when(payload.readBuffer()).thenReturn(byteBuf);
+        when(byteBuf.duplicate()).thenReturn(byteBuf);
+        when(byteBuf.isReadable()).thenReturn(false);
         FirebirdFetchStatementPacket packet = new FirebirdFetchStatementPacket(payload);
         FirebirdPacketPayload writePayload = mock(FirebirdPacketPayload.class);
         packet.write((PacketPayload) writePayload);
