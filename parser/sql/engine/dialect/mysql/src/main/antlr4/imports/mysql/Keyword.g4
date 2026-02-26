@@ -169,5 +169,5 @@ TOKUDB
     ;
 
 LTRIM
-    :L T R I M
+    : L T R I M
     ;
