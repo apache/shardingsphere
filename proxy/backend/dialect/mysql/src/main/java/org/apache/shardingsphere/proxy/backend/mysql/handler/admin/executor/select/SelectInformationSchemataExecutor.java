@@ -67,6 +67,8 @@ public final class SelectInformationSchemataExecutor extends DatabaseMetaDataExe
     
     private boolean queryDatabase;
     
+    private boolean rowsUpdated;
+    
     public SelectInformationSchemataExecutor(final SelectStatement sqlStatement, final String sql, final List<Object> parameters) {
         super(sql, parameters);
         this.sqlStatement = sqlStatement;
@@ -76,6 +78,7 @@ public final class SelectInformationSchemataExecutor extends DatabaseMetaDataExe
     protected Collection<ShardingSphereDatabase> getDatabases(final ConnectionSession connectionSession, final ShardingSphereMetaData metaData) {
         AuthorityChecker authorityChecker = new AuthorityChecker(metaData.getGlobalRuleMetaData().getSingleRule(AuthorityRule.class), connectionSession.getConnectionContext().getGrantee());
         Collection<ShardingSphereDatabase> databases = metaData.getAllDatabases().stream().filter(each -> authorityChecker.isAuthorized(each.getName())).collect(Collectors.toList());
+        EMPTY_DATABASES.clear();
         EMPTY_DATABASES.addAll(databases.stream().filter(each -> !each.containsDataSource()).map(ShardingSphereDatabase::getName).collect(Collectors.toSet()));
         Collection<ShardingSphereDatabase> result = databases.stream().filter(ShardingSphereDatabase::containsDataSource).collect(Collectors.toList());
         if (!EMPTY_DATABASES.isEmpty()) {
@@ -90,7 +93,6 @@ public final class SelectInformationSchemataExecutor extends DatabaseMetaDataExe
             row.replace(schemaNameAlias, each);
             getRows().add(row);
         }
-        EMPTY_DATABASES.clear();
     }
     
     private Map<String, String> getDefaultRowData() {
@@ -127,6 +129,10 @@ public final class SelectInformationSchemataExecutor extends DatabaseMetaDataExe
     
     @Override
     protected void preProcess(final ShardingSphereDatabase database, final Map<String, Object> rows, final Map<String, String> alias) throws SQLException {
+        if (!rowsUpdated) {
+            updateRows(rows);
+            rowsUpdated = true;
+        }
         Optional<String> catalog = findCatalog(database.getResourceMetaData());
         schemaNameAlias = alias.getOrDefault(SCHEMA_NAME, alias.getOrDefault(schemaNameAlias, schemaNameAlias));
         String rowValue = rows.getOrDefault(schemaNameAlias, "").toString();
@@ -136,6 +142,19 @@ public final class SelectInformationSchemataExecutor extends DatabaseMetaDataExe
         } else {
             rows.clear();
         }
+    }
+    
+    private void updateRows(final Map<String, Object> rows) {
+        Map<String, String> newRow = rows.keySet().stream().collect(Collectors.toMap(each -> each, each -> "", (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        List<Map<String, Object>> newRows = new LinkedList<>();
+        for (String each : EMPTY_DATABASES) {
+            Map<String, Object> row = new LinkedHashMap<>(newRow);
+            row.replace(CATALOG_NAME, "def");
+            row.replace(schemaNameAlias, each);
+            newRows.add(row);
+        }
+        getRows().clear();
+        getRows().addAll(newRows);
     }
     
     private Optional<String> findCatalog(final ResourceMetaData resourceMetaData) throws SQLException {
