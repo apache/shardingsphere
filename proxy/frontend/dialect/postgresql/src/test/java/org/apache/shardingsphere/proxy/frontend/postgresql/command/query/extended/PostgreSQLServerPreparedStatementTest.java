@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
 import org.apache.shardingsphere.database.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.junit.jupiter.api.Test;
 
@@ -57,6 +57,6 @@ class PostgreSQLServerPreparedStatementTest {
     
     private PostgreSQLServerPreparedStatement createPreparedStatement() {
         return new PostgreSQLServerPreparedStatement(
-                "INSERT INTO t VALUES ($1, $2)", mock(), new HintValueContext(), Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.VARCHAR), Arrays.asList(1, 0));
+                "INSERT INTO t VALUES ($1, $2)", mock(), new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR), Arrays.asList(1, 0));
     }
 }

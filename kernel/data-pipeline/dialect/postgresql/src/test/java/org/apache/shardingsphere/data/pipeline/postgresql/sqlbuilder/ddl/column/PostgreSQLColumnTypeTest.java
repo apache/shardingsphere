@@ -17,25 +17,29 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.column;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 class PostgreSQLColumnTypeTest {
     
-    @Test
-    void assertValueOfZeroValue() {
-        assertThat(PostgreSQLColumnType.valueOf(0L), is(PostgreSQLColumnType.UNKNOWN));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertValueOfArguments")
+    void assertValueOf(final String name, final Long elemoid, final PostgreSQLColumnType expectedColumnType) {
+        assertThat(PostgreSQLColumnType.valueOf(elemoid), is(expectedColumnType));
     }
     
-    @Test
-    void assertValueOfFoundValue() {
-        assertThat(PostgreSQLColumnType.valueOf(1231L), is(PostgreSQLColumnType.NUMERIC));
-    }
-    
-    @Test
-    void assertValueOfNotExistedValue() {
-        assertThat(PostgreSQLColumnType.valueOf(1L), is(PostgreSQLColumnType.UNKNOWN));
+    private static Stream<Arguments> assertValueOfArguments() {
+        return Stream.of(
+                Arguments.of("numeric", 1231L, PostgreSQLColumnType.NUMERIC),
+                Arguments.of("date", 1083L, PostgreSQLColumnType.DATE),
+                Arguments.of("varchar", 1043L, PostgreSQLColumnType.VARCHAR),
+                Arguments.of("unknownZero", 0L, PostgreSQLColumnType.UNKNOWN),
+                Arguments.of("unknownNotExisted", 1L, PostgreSQLColumnType.UNKNOWN));
     }
 }

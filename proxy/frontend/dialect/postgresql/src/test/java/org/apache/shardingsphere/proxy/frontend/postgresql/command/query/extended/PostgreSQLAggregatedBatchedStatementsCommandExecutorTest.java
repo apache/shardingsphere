@@ -21,7 +21,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
@@ -120,7 +120,7 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         when(result.getConnectionContext()).thenReturn(connectionContext);
         when(result.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         result.getServerPreparedStatementRegistry().addPreparedStatement(STATEMENT_ID,
-                new PostgreSQLServerPreparedStatement(SQL, sqlStatementContext, new HintValueContext(), Collections.singletonList(PostgreSQLColumnType.INT4), Collections.singletonList(0)));
+                new PostgreSQLServerPreparedStatement(SQL, sqlStatementContext, new HintValueContext(), Collections.singletonList(PostgreSQLBinaryColumnType.INT4), Collections.singletonList(0)));
         when(result.getConnectionId()).thenReturn(CONNECTION_ID);
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
@@ -141,7 +141,7 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         for (int i = 0; i < BATCH_SIZE; i++) {
             PostgreSQLComBindPacket bindPacket = mock(PostgreSQLComBindPacket.class);
             when(bindPacket.getStatementId()).thenReturn(STATEMENT_ID);
-            when(bindPacket.readParameters(Collections.singletonList(PostgreSQLColumnType.INT4))).thenReturn(Collections.singletonList(i));
+            when(bindPacket.readParameters(Collections.singletonList(PostgreSQLBinaryColumnType.INT4))).thenReturn(Collections.singletonList(i));
             PostgreSQLComDescribePacket describePacket = mock(PostgreSQLComDescribePacket.class);
             PostgreSQLComExecutePacket executePacket = mock(PostgreSQLComExecutePacket.class);
             result.add(bindPacket);

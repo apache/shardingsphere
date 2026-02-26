@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
@@ -32,12 +32,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class PostgreSQLParameterDescriptionPacket extends PostgreSQLIdentifierPacket {
     
-    private final List<PostgreSQLColumnType> parameterTypes;
+    private final List<PostgreSQLBinaryColumnType> parameterTypes;
     
     @Override
     protected void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt2(parameterTypes.size());
-        for (PostgreSQLColumnType each : parameterTypes) {
+        for (PostgreSQLBinaryColumnType each : parameterTypes) {
             payload.writeInt4(each.getValue());
         }
     }

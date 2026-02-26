@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind;
 
 import io.netty.buffer.Unpooled;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +43,7 @@ class PostgreSQLComBindPacketTest {
         PostgreSQLComBindPacket actual = new PostgreSQLComBindPacket(new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(BIND_MESSAGE_BYTES), StandardCharsets.UTF_8));
         assertThat(actual.getPortal(), is(""));
         assertThat(actual.getStatementId(), is("S_1"));
-        assertThat(actual.readParameters(Collections.singletonList(PostgreSQLColumnType.INT4)), is(Collections.singletonList(10)));
+        assertThat(actual.readParameters(Collections.singletonList(PostgreSQLBinaryColumnType.INT4)), is(Collections.singletonList(10)));
         assertTrue(actual.readResultFormats().isEmpty());
     }
 }

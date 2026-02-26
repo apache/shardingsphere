@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.parse;
 
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,8 +47,8 @@ class PostgreSQLComParsePacketTest {
         assertThat(actual.getIdentifier(), is(PostgreSQLCommandPacketType.PARSE_COMMAND));
         assertThat(actual.getSQL(), is("sql"));
         assertThat(actual.getStatementId(), is("sql"));
-        List<PostgreSQLColumnType> types = actual.readParameterTypes();
+        List<PostgreSQLBinaryColumnType> types = actual.readParameterTypes();
         assertThat(types.size(), is(1));
-        assertThat(types.get(0), is(PostgreSQLColumnType.UNSPECIFIED));
+        assertThat(types.get(0), is(PostgreSQLBinaryColumnType.UNSPECIFIED));
     }
 }

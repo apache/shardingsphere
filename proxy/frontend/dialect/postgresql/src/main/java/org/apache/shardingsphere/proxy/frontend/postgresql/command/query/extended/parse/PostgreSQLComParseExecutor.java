@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
@@ -77,7 +77,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
             sql = convertSQLToJDBCStyle(parameterMarkerSegments, sql);
             sqlStatement = sqlParserEngine.parse(sql, true);
         }
-        List<PostgreSQLColumnType> paddedColumnTypes = paddingColumnTypes(sqlStatement.getParameterCount(), packet.readParameterTypes());
+        List<PostgreSQLBinaryColumnType> paddedColumnTypes = paddingColumnTypes(sqlStatement.getParameterCount(), packet.readParameterTypes());
         SQLStatementContext sqlStatementContext = sqlStatement instanceof DistSQLStatement
                 ? new DistSQLStatementContext((DistSQLStatement) sqlStatement)
                 : new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), packet.getHintValueContext()).bind(sqlStatement);
@@ -101,15 +101,15 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         return result.toString();
     }
     
-    private List<PostgreSQLColumnType> paddingColumnTypes(final int parameterCount, final List<PostgreSQLColumnType> specifiedColumnTypes) {
+    private List<PostgreSQLBinaryColumnType> paddingColumnTypes(final int parameterCount, final List<PostgreSQLBinaryColumnType> specifiedColumnTypes) {
         if (parameterCount == specifiedColumnTypes.size()) {
             return specifiedColumnTypes;
         }
-        List<PostgreSQLColumnType> result = new ArrayList<>(parameterCount);
+        List<PostgreSQLBinaryColumnType> result = new ArrayList<>(parameterCount);
         result.addAll(specifiedColumnTypes);
         int unspecifiedCount = parameterCount - specifiedColumnTypes.size();
         for (int i = 0; i < unspecifiedCount; i++) {
-            result.add(PostgreSQLColumnType.UNSPECIFIED);
+            result.add(PostgreSQLBinaryColumnType.UNSPECIFIED);
         }
         return result;
     }
