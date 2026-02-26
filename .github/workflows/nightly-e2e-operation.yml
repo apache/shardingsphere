@@ -100,7 +100,7 @@ jobs:
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           java-version: ${{ matrix.java-version }}
-          cache-suffix: 'e2e'
+          cache-suffix: 'e2e-operation'
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4
