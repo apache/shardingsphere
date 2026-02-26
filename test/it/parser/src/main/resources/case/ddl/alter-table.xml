@@ -3290,6 +3290,50 @@
         </modify-distribution>
     </alter-table>
     
+    <alter-table sql-case-id="alter_table_modify_distribution_hash_auto_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-distribution start-index="52" stop-index="87" auto-buckets="true">
+            <column name="k1" start-index="72" stop-index="73" />
+        </modify-distribution>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_distribution_hash_multi_columns_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-distribution start-index="52" stop-index="89" buckets="50">
+            <column name="k1" start-index="72" stop-index="73" />
+            <column name="k2" start-index="76" stop-index="77" />
+        </modify-distribution>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_distribution_hash_multi_columns_auto_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-distribution start-index="52" stop-index="95" auto-buckets="true">
+            <column name="k1" start-index="72" stop-index="73" />
+            <column name="k2" start-index="76" stop-index="77" />
+            <column name="k3" start-index="80" stop-index="81" />
+        </modify-distribution>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_distribution_random_number_doris">
+        <table name="my_random_table" start-index="12" stop-index="37">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-distribution start-index="59" stop-index="90" buckets="12" />
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_distribution_random_auto_doris">
+        <table name="my_random_table" start-index="12" stop-index="37">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-distribution start-index="59" stop-index="92" auto-buckets="true" />
+    </alter-table>
+    
     <alter-table sql-case-id="alter_table_modify_table_comment_doris">
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />

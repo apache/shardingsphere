@@ -52,6 +52,11 @@ distributedbyClause
     : DISTRIBUTED BY HASH (LP_ columnName RP_) BUCKETS NUMBER_
     ;
 
+modifyDistributionClause
+    : DISTRIBUTED BY HASH LP_ columnNames RP_ BUCKETS (NUMBER_ | AUTO)
+    | DISTRIBUTED BY RANDOM BUCKETS (NUMBER_ | AUTO)
+    ;
+
 propertiesClause
     : PROPERTIES LP_ properties RP_
     ;
@@ -193,7 +198,7 @@ standaloneAlterCommands
     | (SECONDARY_LOAD | SECONDARY_UNLOAD)
     | SET LP_ properties RP_
     | ENABLE FEATURE string_ (WITH PROPERTIES LP_ properties RP_)?
-    | MODIFY DISTRIBUTION distributedbyClause
+    | MODIFY DISTRIBUTION modifyDistributionClause
     | MODIFY COMMENT string_
     | MODIFY ENGINE TO identifier PROPERTIES LP_ properties RP_
     ;
@@ -289,7 +294,7 @@ alterLockOption
     ;
 
 truncateTable
-    : TRUNCATE TABLE? tableName
+    : TRUNCATE TABLE? tableName partitionNames?
     ;
 
 createIndex

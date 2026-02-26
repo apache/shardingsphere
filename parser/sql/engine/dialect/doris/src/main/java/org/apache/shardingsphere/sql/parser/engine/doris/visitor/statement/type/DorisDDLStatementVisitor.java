@@ -135,6 +135,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterPa
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterStoragePolicyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisPartitionDescContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DistributedbyClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ModifyDistributionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PartitionValueListContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesContext;
@@ -606,8 +607,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             }
             statement.getEnableFeatureDefinitions().add(enableFeatureSegment);
         }
-        if (null != ctx.distributedbyClause()) {
-            ModifyDistributionSegment modifyDistributionSegment = (ModifyDistributionSegment) visit(ctx.distributedbyClause());
+        if (null != ctx.modifyDistributionClause()) {
+            ModifyDistributionSegment modifyDistributionSegment = (ModifyDistributionSegment) visit(ctx.modifyDistributionClause());
             statement.getModifyDistributionDefinitions().add(modifyDistributionSegment);
         }
         if (null != ctx.MODIFY() && null != ctx.COMMENT() && null != ctx.string_()) {
@@ -632,6 +633,23 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.NUMBER_()) {
             result.setBuckets(Integer.parseInt(ctx.NUMBER_().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitModifyDistributionClause(final ModifyDistributionClauseContext ctx) {
+        ModifyDistributionSegment result = new ModifyDistributionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.columnNames()) {
+            for (ColumnNameContext each : ctx.columnNames().columnName()) {
+                result.getColumns().add((ColumnSegment) visit(each));
+            }
+        }
+        if (null != ctx.NUMBER_()) {
+            result.setBuckets(Integer.parseInt(ctx.NUMBER_().getText()));
+        }
+        if (null != ctx.AUTO()) {
+            result.setAutoBuckets(true);
         }
         return result;
     }
@@ -1038,7 +1056,13 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
+        TruncateStatement result = new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
+        if (null != ctx.partitionNames()) {
+            for (IdentifierContext each : ctx.partitionNames().identifier()) {
+                result.getPartitions().add(new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each)));
+            }
+        }
+        return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})

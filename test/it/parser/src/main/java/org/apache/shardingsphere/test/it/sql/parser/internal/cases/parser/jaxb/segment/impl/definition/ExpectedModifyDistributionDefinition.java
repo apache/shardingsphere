@@ -39,4 +39,7 @@ public final class ExpectedModifyDistributionDefinition extends AbstractExpected
     
     @XmlAttribute(name = "buckets")
     private Integer buckets;
+    
+    @XmlAttribute(name = "auto-buckets")
+    private Boolean autoBuckets;
 }

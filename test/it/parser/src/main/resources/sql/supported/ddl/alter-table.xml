@@ -435,6 +435,11 @@
     <sql-case id="alter_table_enable_feature_batch_delete_doris" value="ALTER TABLE example_db.my_table ENABLE FEATURE &quot;BATCH_DELETE&quot;" db-types="Doris" />
     <sql-case id="alter_table_enable_feature_sequence_load_doris" value="ALTER TABLE example_db.my_table ENABLE FEATURE &quot;SEQUENCE_LOAD&quot; WITH PROPERTIES (&quot;function_column.sequence_type&quot; = &quot;Date&quot;)" db-types="Doris" />
     <sql-case id="alter_table_modify_distribution_doris" value="ALTER TABLE example_db.my_table MODIFY DISTRIBUTION DISTRIBUTED BY HASH(k1) BUCKETS 50" db-types="Doris" />
+    <sql-case id="alter_table_modify_distribution_hash_auto_doris" value="ALTER TABLE example_db.my_table MODIFY DISTRIBUTION DISTRIBUTED BY HASH(k1) BUCKETS AUTO" db-types="Doris" />
+    <sql-case id="alter_table_modify_distribution_hash_multi_columns_doris" value="ALTER TABLE example_db.my_table MODIFY DISTRIBUTION DISTRIBUTED BY HASH(k1, k2) BUCKETS 50" db-types="Doris" />
+    <sql-case id="alter_table_modify_distribution_hash_multi_columns_auto_doris" value="ALTER TABLE example_db.my_table MODIFY DISTRIBUTION DISTRIBUTED BY HASH(k1, k2, k3) BUCKETS AUTO" db-types="Doris" />
+    <sql-case id="alter_table_modify_distribution_random_number_doris" value="ALTER TABLE example_db.my_random_table MODIFY DISTRIBUTION DISTRIBUTED BY RANDOM BUCKETS 12" db-types="Doris" />
+    <sql-case id="alter_table_modify_distribution_random_auto_doris" value="ALTER TABLE example_db.my_random_table MODIFY DISTRIBUTION DISTRIBUTED BY RANDOM BUCKETS AUTO" db-types="Doris" />
     <sql-case id="alter_table_modify_table_comment_doris" value="ALTER TABLE example_db.my_table MODIFY COMMENT &quot;new comment&quot;" db-types="Doris" />
     <sql-case id="alter_table_modify_column_comment_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k1 COMMENT &quot;k1&quot;" db-types="Doris" />
     <sql-case id="alter_table_modify_multiple_column_comments_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k1 COMMENT &quot;k1&quot;, MODIFY COLUMN k2 COMMENT &quot;k2&quot;" db-types="Doris" />
