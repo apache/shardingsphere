@@ -135,6 +135,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterPa
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterStoragePolicyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisPartitionDescContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DistributedbyClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ModifyDistributionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PartitionValueListContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesContext;
@@ -606,8 +607,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             }
             statement.getEnableFeatureDefinitions().add(enableFeatureSegment);
         }
-        if (null != ctx.distributedbyClause()) {
-            ModifyDistributionSegment modifyDistributionSegment = (ModifyDistributionSegment) visit(ctx.distributedbyClause());
+        if (null != ctx.modifyDistributionClause()) {
+            ModifyDistributionSegment modifyDistributionSegment = (ModifyDistributionSegment) visit(ctx.modifyDistributionClause());
             statement.getModifyDistributionDefinitions().add(modifyDistributionSegment);
         }
         if (null != ctx.MODIFY() && null != ctx.COMMENT() && null != ctx.string_()) {
@@ -626,6 +627,18 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDistributedbyClause(final DistributedbyClauseContext ctx) {
+        ModifyDistributionSegment result = new ModifyDistributionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.columnName()) {
+            result.getColumns().add((ColumnSegment) visit(ctx.columnName()));
+        }
+        if (null != ctx.NUMBER_()) {
+            result.setBuckets(Integer.parseInt(ctx.NUMBER_().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitModifyDistributionClause(final ModifyDistributionClauseContext ctx) {
         ModifyDistributionSegment result = new ModifyDistributionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         if (null != ctx.columnNames()) {
             for (ColumnNameContext each : ctx.columnNames().columnName()) {
@@ -1238,12 +1251,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.distributedbyClause()) {
             DistributedbyClauseContext distCtx = ctx.distributedbyClause();
-            if (null != distCtx.columnNames()) {
-                result.setDistributedColumn((ColumnSegment) visit(distCtx.columnNames().columnName(0)));
-            }
-            if (null != distCtx.NUMBER_()) {
-                result.setBuckets(Integer.parseInt(distCtx.NUMBER_().getText()));
-            }
+            result.setDistributedColumn((ColumnSegment) visit(distCtx.columnName()));
+            result.setBuckets(Integer.parseInt(distCtx.NUMBER_().getText()));
         }
         return result;
     }
