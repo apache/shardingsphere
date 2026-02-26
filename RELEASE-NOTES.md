@@ -51,7 +51,7 @@
 1. SQL Parser: Support to parse more SQL statements for MySQL - [#36689](https://github.com/apache/shardingsphere/issues/36689)
 1. SQL Parser: Support to parse more SQL statements for SQLServer - [#36695](https://github.com/apache/shardingsphere/issues/36695)
 1. SQL Parser: Support to parse more SQL statements for Oracle - [#36696](https://github.com/apache/shardingsphere/issues/36696)
-1. SQL Parser: Support to parse more SQL statements for Hive - [#36694](https://github.com/apache/shardingsphere/pull/36694) [#37074](https://github.com/apache/shardingsphere/pull/37074)
+1. SQL Parser: Suppor to parse more SQL statements for Hive - [#36694](https://github.com/apache/shardingsphere/pull/36694) [#37074](https://github.com/apache/shardingsphere/pull/37074)
 1. SQL Parser: Support to parse CREATE MATERIALIZED VIEW for Doris - [#31499](https://github.com/apache/shardingsphere/pull/31499)
 1. SQL Parser: Support to parse CREATE FUNCTION with $$ symbol for PostgreSQL and openGauss - [#35947](https://github.com/apache/shardingsphere/pull/35947)
 1. SQL Parser: Support Oracle SQL parser correctly extract REGEXP_SUBSTR parameters - [#37924](https://github.com/apache/shardingsphere/pull/37924)
