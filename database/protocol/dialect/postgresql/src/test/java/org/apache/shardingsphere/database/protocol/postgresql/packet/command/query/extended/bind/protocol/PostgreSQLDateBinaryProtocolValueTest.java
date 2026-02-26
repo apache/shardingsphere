@@ -21,15 +21,22 @@ import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.postgresql.jdbc.TimestampUtils;
 import org.postgresql.util.PSQLException;
+import org.postgresql.util.PSQLState;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PostgreSQLDateBinaryProtocolValueTest {
@@ -46,6 +53,20 @@ class PostgreSQLDateBinaryProtocolValueTest {
         new TimestampUtils(false, null).toBinDate(null, payloadBytes, expected);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(payloadBytes), StandardCharsets.UTF_8);
         assertThat(new PostgreSQLDateBinaryProtocolValue().read(payload, 4), is(expected));
+    }
+    
+    @Test
+    void assertReadWithException() {
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(new byte[4]), StandardCharsets.UTF_8);
+        try (MockedConstruction<TimestampUtils> ignored = mockConstruction(TimestampUtils.class, (mock, context) -> {
+            try {
+                when(mock.toDateBin(isNull(), any(byte[].class))).thenThrow(new PSQLException("failed", PSQLState.DATA_ERROR));
+            } catch (final PSQLException ex) {
+                throw new IllegalStateException(ex);
+            }
+        })) {
+            assertThrows(PSQLException.class, () -> new PostgreSQLDateBinaryProtocolValue().read(payload, 4));
+        }
     }
     
     @Test
