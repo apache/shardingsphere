@@ -22,10 +22,14 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.UnaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonTableExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -84,6 +88,45 @@ public final class ColumnExtractor {
         if (expression instanceof FunctionSegment) {
             extractColumnsInFunctionSegment((FunctionSegment) expression, result);
         }
+        if (expression instanceof CaseWhenExpression) {
+            extractColumnsInCaseWhenExpression((CaseWhenExpression) expression, result);
+        }
+        if (expression instanceof NotExpression) {
+            result.addAll(extract(((NotExpression) expression).getExpression()));
+        }
+        if (expression instanceof UnaryOperationExpression) {
+            result.addAll(extract(((UnaryOperationExpression) expression).getExpression()));
+        }
+        if (expression instanceof CollateExpression) {
+            ((CollateExpression) expression).getExpr().ifPresent(optional -> result.addAll(extract(optional)));
+        }
+        if (expression instanceof RowExpression) {
+            extractColumnsInRowExpression((RowExpression) expression, result);
+        }
+        return result;
+    }
+    
+    private static void extractColumnsInCaseWhenExpression(final CaseWhenExpression expression, final Collection<ColumnSegment> result) {
+        if (null != expression.getCaseExpr()) {
+            result.addAll(extractIncludeColumnSegment(expression.getCaseExpr()));
+        }
+        if (null != expression.getWhenExprs()) {
+            expression.getWhenExprs().stream().map(ColumnExtractor::extractIncludeColumnSegment).forEach(result::addAll);
+        }
+        if (null != expression.getThenExprs()) {
+            expression.getThenExprs().stream().map(ColumnExtractor::extractIncludeColumnSegment).forEach(result::addAll);
+        }
+        if (null != expression.getElseExpr()) {
+            result.addAll(extractIncludeColumnSegment(expression.getElseExpr()));
+        }
+    }
+    
+    private static Collection<ColumnSegment> extractIncludeColumnSegment(final ExpressionSegment expression) {
+        Collection<ColumnSegment> result = new LinkedList<>();
+        if (expression instanceof ColumnSegment) {
+            result.add((ColumnSegment) expression);
+        }
+        result.addAll(extract(expression));
         return result;
     }
     
@@ -136,6 +179,8 @@ public final class ColumnExtractor {
         for (ExpressionSegment each : expression.getItems()) {
             if (each instanceof ColumnSegment) {
                 result.add((ColumnSegment) each);
+            } else {
+                result.addAll(extract(each));
             }
         }
     }

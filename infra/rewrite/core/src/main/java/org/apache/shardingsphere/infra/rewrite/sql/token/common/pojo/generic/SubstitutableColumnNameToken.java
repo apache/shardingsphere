@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.DerivedProjection;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.RouteUnitAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Substitutable;
@@ -63,8 +64,13 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     
     @Override
     public String toString(final RouteUnit routeUnit) {
-        Map<String, String> logicAndActualTables = getLogicAndActualTables(routeUnit);
         StringBuilder result = new StringBuilder();
+        appendProjections(routeUnit, result);
+        return result.toString();
+    }
+    
+    private void appendProjections(final RouteUnit routeUnit, final StringBuilder result) {
+        Map<String, String> logicAndActualTables = getLogicAndActualTables(routeUnit);
         int index = 0;
         for (Projection each : projections) {
             if (index > 0) {
@@ -73,7 +79,6 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
             result.append(getColumnExpression(each, logicAndActualTables));
             index++;
         }
-        return result.toString();
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {
@@ -91,6 +96,8 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         StringBuilder builder = new StringBuilder();
         if (projection instanceof ColumnProjection) {
             appendColumnProjection((ColumnProjection) projection, logicActualTableNames, builder);
+        } else if (projection instanceof DerivedProjection) {
+            builder.append(projection.getExpression());
         } else {
             builder.append(quoteCharacter.wrap(projection.getColumnLabel()));
         }

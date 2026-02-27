@@ -39,6 +39,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+          cache-suffix: 'required-check'
       - name: Run CheckStyle
         run: ./mvnw checkstyle:check -Pcheck -T1C
 
@@ -50,6 +54,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+          cache-suffix: 'required-check'
       - name: Run Spotless
         run: ./mvnw spotless:check -Pcheck -T1C
 
@@ -61,5 +69,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+          cache-suffix: 'required-check'
       - name: Run Apache Rat
         run: ./mvnw apache-rat:check -Pcheck -T1C
