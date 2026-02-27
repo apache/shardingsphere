@@ -41,6 +41,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -83,6 +87,15 @@ public final class SubqueryExtractor {
         if (selectStatement.getWith().isPresent()) {
             extractSubquerySegmentsFromCTEs(result, selectStatement.getWith().get().getCommonTableExpressions(), needRecursive);
         }
+        if (selectStatement.getOrderBy().isPresent()) {
+            extractSubquerySegmentsFromOrderBy(result, selectStatement.getOrderBy().get(), needRecursive);
+        }
+        if (selectStatement.getGroupBy().isPresent()) {
+            extractSubquerySegmentsFromGroupBy(result, selectStatement.getGroupBy().get(), needRecursive);
+        }
+        if (selectStatement.getHaving().isPresent()) {
+            extractSubquerySegmentsFromWhere(result, selectStatement.getHaving().get().getExpr(), needRecursive);
+        }
     }
     
     private static void extractSubquerySegmentsFromCTEs(final List<SubquerySegment> result, final Collection<CommonTableExpressionSegment> withSegment, final boolean needRecursive) {
@@ -93,9 +106,31 @@ public final class SubqueryExtractor {
         }
     }
     
+    private static void extractSubquerySegmentsFromOrderBy(final List<SubquerySegment> result, final OrderBySegment orderBySegment, final boolean needRecursive) {
+        for (OrderByItemSegment each : orderBySegment.getOrderByItems()) {
+            if (each instanceof ExpressionOrderByItemSegment) {
+                extractSubquerySegmentsFromExpression(result, ((ExpressionOrderByItemSegment) each).getExpr(), SubqueryType.ORDER_BY, needRecursive);
+            }
+        }
+    }
+    
+    private static void extractSubquerySegmentsFromGroupBy(final List<SubquerySegment> result, final GroupBySegment groupBySegment, final boolean needRecursive) {
+        for (OrderByItemSegment each : groupBySegment.getGroupByItems()) {
+            if (each instanceof ExpressionOrderByItemSegment) {
+                extractSubquerySegmentsFromExpression(result, ((ExpressionOrderByItemSegment) each).getExpr(), SubqueryType.GROUP_BY, needRecursive);
+            }
+        }
+    }
+    
     private static void extractRecursive(final boolean needRecursive, final List<SubquerySegment> result, final SelectStatement select, final SubqueryType parentSubqueryType) {
         if (needRecursive) {
             extractSubquerySegments(result, select, true, parentSubqueryType);
+            if (!select.getSubqueryType().isPresent() && parentSubqueryType != null) {
+                select.setSubqueryType(parentSubqueryType);
+            }
+            if (parentSubqueryType == SubqueryType.WITH) {
+                select.setSubqueryType(SubqueryType.WITH);
+            }
         }
     }
     
@@ -122,6 +157,7 @@ public final class SubqueryExtractor {
         if (tableSegment instanceof JoinTableSegment) {
             extractSubquerySegmentsFromJoinTableSegment(result, ((JoinTableSegment) tableSegment).getLeft(), needRecursive);
             extractSubquerySegmentsFromJoinTableSegment(result, ((JoinTableSegment) tableSegment).getRight(), needRecursive);
+            extractSubquerySegmentsFromExpression(result, ((JoinTableSegment) tableSegment).getCondition(), SubqueryType.PREDICATE, needRecursive);
         }
     }
     
@@ -187,13 +223,13 @@ public final class SubqueryExtractor {
             extractSubquerySegmentsFromExpression(result, ((NotExpression) expressionSegment).getExpression(), subqueryType, needRecursive);
         }
         if (expressionSegment instanceof FunctionSegment) {
-            ((FunctionSegment) expressionSegment).getParameters().forEach(each -> extractSubquerySegmentsFromExpression(result, each, subqueryType, needRecursive));
+            ((FunctionSegment) expressionSegment).getParameters().forEach(each -> extractSubquerySegmentsFromExpression(result, each, SubqueryType.FUNCTION, needRecursive));
         }
         if (expressionSegment instanceof MatchAgainstExpression) {
             extractSubquerySegmentsFromExpression(result, ((MatchAgainstExpression) expressionSegment).getExpr(), subqueryType, needRecursive);
         }
         if (expressionSegment instanceof CaseWhenExpression) {
-            extractSubquerySegmentsFromCaseWhenExpression(result, (CaseWhenExpression) expressionSegment, subqueryType, needRecursive);
+            extractSubquerySegmentsFromCaseWhenExpression(result, (CaseWhenExpression) expressionSegment, SubqueryType.FUNCTION, needRecursive);
         }
         if (expressionSegment instanceof CollateExpression) {
             extractSubquerySegmentsFromExpression(result, ((CollateExpression) expressionSegment).getCollateName(), subqueryType, needRecursive);

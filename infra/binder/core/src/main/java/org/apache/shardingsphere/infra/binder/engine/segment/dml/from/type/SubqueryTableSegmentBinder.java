@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -62,7 +63,9 @@ public final class SubqueryTableSegmentBinder {
                 binderContext.getMetaData(), binderContext.getCurrentDatabaseName(), binderContext.getHintValueContext(), segment.getSubquery().getSelect());
         subqueryBinderContext.getExternalTableBinderContexts().putAll(binderContext.getExternalTableBinderContexts());
         subqueryBinderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(binderContext.getCommonTableExpressionsSegmentsUniqueAliases());
-        SelectStatement boundSubSelect = new SelectStatementBinder(outerTableBinderContexts).bind(segment.getSubquery().getSelect(), subqueryBinderContext);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> subqueryOuterTableBinderContexts = LinkedHashMultimap.create(outerTableBinderContexts);
+        subqueryOuterTableBinderContexts.putAll(tableBinderContexts);
+        SelectStatement boundSubSelect = new SelectStatementBinder(subqueryOuterTableBinderContexts).bind(segment.getSubquery().getSelect(), subqueryBinderContext);
         binderContext.getCommonTableExpressionsSegmentsUniqueAliases().addAll(subqueryBinderContext.getCommonTableExpressionsSegmentsUniqueAliases());
         SubquerySegment boundSubquerySegment = new SubquerySegment(segment.getSubquery().getStartIndex(), segment.getSubquery().getStopIndex(), boundSubSelect, segment.getSubquery().getText());
         IdentifierValue subqueryTableName = segment.getAliasSegment().map(AliasSegment::getIdentifier).orElseGet(() -> new IdentifierValue(""));

@@ -26,11 +26,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.datetime.
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CollateExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.NotExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ValuesExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
@@ -39,11 +41,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subq
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.IntervalExpressionProjection;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.join.OuterJoinExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.multiset.MultisetExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match.MatchAgainstExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -297,5 +302,148 @@ public final class ExpressionExtractor {
             ColumnExtractor.extractFromSelectStatement(result, ((SubqueryExpressionSegment) expression).getSubquery().getSelect(), true);
         }
         return result;
+    }
+    
+    /**
+     * Get nested subquery compare expressions from select statement.
+     * Extract expressions where a subquery is connected by comparison operators (=, !=, <>, >, <, >=, <=).
+     *
+     * @param selectStatement select statement
+     * @return collection of expressions containing subquery with comparison operators
+     */
+    public static Collection<ExpressionSegment> getNestedSubqueryCompareExpressions(final SelectStatement selectStatement) {
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        extractSubqueryCompareExpressionsFromProjections(result, selectStatement);
+        extractSubqueryCompareExpressionsFromWhere(result, selectStatement);
+        extractSubqueryCompareExpressionsFromHaving(result, selectStatement);
+        extractSubqueryCompareExpressionsFromJoin(result, selectStatement);
+        return result;
+    }
+    
+    private static void extractSubqueryCompareExpressionsFromProjections(final Collection<ExpressionSegment> result, final SelectStatement selectStatement) {
+        for (ProjectionSegment each : selectStatement.getProjections().getProjections()) {
+            if (each instanceof ExpressionProjectionSegment) {
+                extractSubqueryCompareExpressionsFromExpression(result, ((ExpressionProjectionSegment) each).getExpr());
+            }
+        }
+    }
+    
+    private static void extractSubqueryCompareExpressionsFromWhere(final Collection<ExpressionSegment> result, final SelectStatement selectStatement) {
+        if (selectStatement.getWhere().isPresent()) {
+            extractSubqueryCompareExpressionsFromExpression(result, selectStatement.getWhere().get().getExpr());
+        }
+    }
+    
+    private static void extractSubqueryCompareExpressionsFromHaving(final Collection<ExpressionSegment> result, final SelectStatement selectStatement) {
+        if (selectStatement.getHaving().isPresent()) {
+            extractSubqueryCompareExpressionsFromExpression(result, selectStatement.getHaving().get().getExpr());
+        }
+    }
+    
+    private static void extractSubqueryCompareExpressionsFromJoin(final Collection<ExpressionSegment> result, final SelectStatement selectStatement) {
+        if (selectStatement.getFrom().isPresent() && selectStatement.getFrom().get() instanceof JoinTableSegment) {
+            extractSubqueryCompareExpressionsFromJoinTableSegment(result, (JoinTableSegment) selectStatement.getFrom().get());
+        }
+    }
+    
+    private static void extractSubqueryCompareExpressionsFromJoinTableSegment(final Collection<ExpressionSegment> result, final JoinTableSegment joinTableSegment) {
+        if (null != joinTableSegment.getCondition()) {
+            extractSubqueryCompareExpressionsFromExpression(result, joinTableSegment.getCondition());
+        }
+        if (joinTableSegment.getLeft() instanceof JoinTableSegment) {
+            extractSubqueryCompareExpressionsFromJoinTableSegment(result, (JoinTableSegment) joinTableSegment.getLeft());
+        }
+        if (joinTableSegment.getRight() instanceof JoinTableSegment) {
+            extractSubqueryCompareExpressionsFromJoinTableSegment(result, (JoinTableSegment) joinTableSegment.getRight());
+        }
+    }
+    
+    private static void extractSubqueryCompareExpressionsFromExpression(final Collection<ExpressionSegment> result, final ExpressionSegment expressionSegment) {
+        if (expressionSegment instanceof BinaryOperationExpression) {
+            BinaryOperationExpression binaryExpression = (BinaryOperationExpression) expressionSegment;
+            if (isComparisonOperator(binaryExpression.getOperator()) && containsSubquery(binaryExpression)) {
+                result.add(binaryExpression);
+            }
+            extractSubqueryCompareExpressionsFromExpression(result, binaryExpression.getLeft());
+            extractSubqueryCompareExpressionsFromExpression(result, binaryExpression.getRight());
+        }
+        if (expressionSegment instanceof FunctionSegment) {
+            for (ExpressionSegment each : ((FunctionSegment) expressionSegment).getParameters()) {
+                extractSubqueryCompareExpressionsFromExpression(result, each);
+            }
+        }
+        if (expressionSegment instanceof CaseWhenExpression) {
+            CaseWhenExpression caseWhenExpression = (CaseWhenExpression) expressionSegment;
+            extractSubqueryCompareExpressionsFromExpression(result, caseWhenExpression.getCaseExpr());
+            caseWhenExpression.getWhenExprs().forEach(each -> extractSubqueryCompareExpressionsFromExpression(result, each));
+            caseWhenExpression.getThenExprs().forEach(each -> extractSubqueryCompareExpressionsFromExpression(result, each));
+            extractSubqueryCompareExpressionsFromExpression(result, caseWhenExpression.getElseExpr());
+        }
+        if (expressionSegment instanceof BetweenExpression) {
+            BetweenExpression betweenExpression = (BetweenExpression) expressionSegment;
+            if (containsSubqueryInBetween(betweenExpression)) {
+                result.add(betweenExpression);
+            }
+            extractSubqueryCompareExpressionsFromExpression(result, betweenExpression.getLeft());
+            extractSubqueryCompareExpressionsFromExpression(result, betweenExpression.getBetweenExpr());
+            extractSubqueryCompareExpressionsFromExpression(result, betweenExpression.getAndExpr());
+        }
+        if (expressionSegment instanceof InExpression) {
+            InExpression inExpression = (InExpression) expressionSegment;
+            if (containsSubqueryInIn(inExpression)) {
+                result.add(inExpression);
+            }
+            extractSubqueryCompareExpressionsFromExpression(result, inExpression.getLeft());
+            extractSubqueryCompareExpressionsFromExpression(result, inExpression.getRight());
+        }
+        if (expressionSegment instanceof NotExpression) {
+            extractSubqueryCompareExpressionsFromExpression(result, ((NotExpression) expressionSegment).getExpression());
+        }
+        if (expressionSegment instanceof ListExpression) {
+            for (ExpressionSegment each : ((ListExpression) expressionSegment).getItems()) {
+                extractSubqueryCompareExpressionsFromExpression(result, each);
+            }
+        }
+        if (expressionSegment instanceof CollateExpression) {
+            ((CollateExpression) expressionSegment).getExpr().ifPresent(optional -> extractSubqueryCompareExpressionsFromExpression(result, optional));
+        }
+        if (expressionSegment instanceof TypeCastExpression) {
+            extractSubqueryCompareExpressionsFromExpression(result, ((TypeCastExpression) expressionSegment).getExpression());
+        }
+    }
+    
+    private static boolean containsSubqueryInBetween(final BetweenExpression betweenExpression) {
+        return isSubqueryExpression(betweenExpression.getLeft())
+                || isSubqueryExpression(betweenExpression.getBetweenExpr())
+                || isSubqueryExpression(betweenExpression.getAndExpr());
+    }
+    
+    private static boolean containsSubqueryInIn(final InExpression inExpression) {
+        return isSubqueryExpression(inExpression.getLeft()) || isSubqueryExpression(inExpression.getRight());
+    }
+    
+    private static boolean isComparisonOperator(final String operator) {
+        if (null == operator) {
+            return false;
+        }
+        String upperOperator = operator.toUpperCase();
+        return "=".equals(upperOperator) || "!=".equals(upperOperator) || "<>".equals(upperOperator)
+                || ">".equals(upperOperator) || "<".equals(upperOperator)
+                || ">=".equals(upperOperator) || "<=".equals(upperOperator);
+    }
+    
+    private static boolean containsSubquery(final BinaryOperationExpression binaryExpression) {
+        return isSubqueryExpression(binaryExpression.getLeft()) || isSubqueryExpression(binaryExpression.getRight());
+    }
+    
+    private static boolean isSubqueryExpression(final ExpressionSegment expressionSegment) {
+        if (expressionSegment instanceof SubqueryExpressionSegment || expressionSegment instanceof SubquerySegment
+                || expressionSegment instanceof QuantifySubqueryExpression) {
+            return true;
+        }
+        if (expressionSegment instanceof ListExpression) {
+            return ((ListExpression) expressionSegment).getItems().stream().anyMatch(ExpressionExtractor::isSubqueryExpression);
+        }
+        return false;
     }
 }

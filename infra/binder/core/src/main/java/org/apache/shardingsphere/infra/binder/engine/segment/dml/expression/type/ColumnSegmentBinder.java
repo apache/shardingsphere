@@ -36,8 +36,12 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.ColumnNotFoundE
 import org.apache.shardingsphere.infra.exception.kernel.syntax.AmbiguousColumnException;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
@@ -120,7 +124,7 @@ public final class ColumnSegmentBinder {
             return getTableBinderContextByOwner(owner, tableBinderContexts, outerTableBinderContexts, binderContext.getExternalTableBinderContexts());
         }
         if (!binderContext.getJoinTableProjectionSegments().isEmpty() && isNeedUseJoinTableProjectionBind(segment, parentSegmentType, binderContext)) {
-            return Collections.singleton(new SimpleTableSegmentBinderContext(binderContext.getJoinTableProjectionSegments(), TableSourceType.TEMPORARY_TABLE));
+            return Collections.singleton(new SimpleTableSegmentBinderContext(binderContext.getJoinTableProjectionSegments(), TableSourceType.MIXED_TABLE));
         }
         return tableBinderContexts.values();
     }
@@ -154,10 +158,12 @@ public final class ColumnSegmentBinder {
                                                           final SQLStatementBinderContext binderContext) {
         ColumnSegmentInfo result = getInputInfoFromTableBinderContexts(tableBinderContexts, segment, parentSegmentType);
         if (!result.getInputColumnSegment().isPresent()) {
-            result = new ColumnSegmentInfo(findInputColumnSegmentFromOuterTable(segment, outerTableBinderContexts).orElse(null), TableSourceType.TEMPORARY_TABLE);
+            ColumnSegment inputColumnSegment = findInputColumnSegmentFromOuterTable(segment, outerTableBinderContexts).orElse(null);
+            result = new ColumnSegmentInfo(inputColumnSegment, null == inputColumnSegment ? TableSourceType.TEMPORARY_TABLE : inputColumnSegment.getColumnBoundInfo().getTableSourceType());
         }
         if (!result.getInputColumnSegment().isPresent()) {
-            result = new ColumnSegmentInfo(findInputColumnSegmentFromExternalTables(segment, binderContext.getExternalTableBinderContexts()).orElse(null), TableSourceType.TEMPORARY_TABLE);
+            ColumnSegment inputColumnSegment = findInputColumnSegmentFromExternalTables(segment, binderContext.getExternalTableBinderContexts()).orElse(null);
+            result = new ColumnSegmentInfo(inputColumnSegment, null == inputColumnSegment ? TableSourceType.TEMPORARY_TABLE : inputColumnSegment.getColumnBoundInfo().getTableSourceType());
         }
         if (!result.getInputColumnSegment().isPresent()) {
             result = new ColumnSegmentInfo(findInputColumnSegmentByVariables(segment, binderContext.getSqlStatement().getVariableNames()).orElse(null), TableSourceType.TEMPORARY_TABLE);
@@ -184,6 +190,9 @@ public final class ColumnSegmentBinder {
                         () -> new AmbiguousColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
             }
             inputColumnSegment = getColumnSegment(projectionSegment.get());
+            // SPEX ADDED: BEGIN
+            // NOTE: MIXED_TABLE 用于表示 JOIN 之后的字段，其中可能会包含部分物理表字段，以及派生的临时表字段，同层级查询的 ORDER BY, GROUP BY, HAVING 会引用 JOIN 之后的字段
+            // SPEX ADDED: END
             tableSourceType = TableSourceType.MIXED_TABLE == each.getTableSourceType() ? getTableSourceTypeFromInputColumn(inputColumnSegment) : each.getTableSourceType();
             if (each instanceof SimpleTableSegmentBinderContext && ((SimpleTableSegmentBinderContext) each).isFromWithSegment()) {
                 break;
@@ -200,7 +209,36 @@ public final class ColumnSegmentBinder {
         if (projectionSegment instanceof ColumnProjectionSegment) {
             return ((ColumnProjectionSegment) projectionSegment).getColumn();
         }
+        // SPEX ADDED: BEGIN
+        if (projectionSegment instanceof ExpressionProjectionSegment
+                && ((ExpressionProjectionSegment) projectionSegment).getExpr() instanceof FunctionSegment) {
+            Optional<ColumnSegment> columnSegment = getFirstColumnParameter(((FunctionSegment) ((ExpressionProjectionSegment) projectionSegment).getExpr()).getParameters());
+            if (columnSegment.isPresent()) {
+                return columnSegment.get();
+            }
+        }
+        if (projectionSegment instanceof SubqueryProjectionSegment && 1 == ((SubqueryProjectionSegment) projectionSegment).getSubquery().getSelect().getProjections().getProjections().size()) {
+            return getColumnSegment(((SubqueryProjectionSegment) projectionSegment).getSubquery().getSelect().getProjections().getProjections().iterator().next());
+        }
+        // SPEX ADDED: END
         return new ColumnSegment(0, 0, new IdentifierValue(projectionSegment.getColumnLabel()));
+    }
+    
+    private static Optional<ColumnSegment> getFirstColumnParameter(final Collection<ExpressionSegment> parameters) {
+        int count = 0;
+        ColumnSegment columnSegment = null;
+        // TODO consider how to bind multi parameters
+        for (ExpressionSegment each : parameters) {
+            if (each instanceof ColumnSegment) {
+                count++;
+                columnSegment = (ColumnSegment) each;
+            }
+        }
+        if (1 == count) {
+            return Optional.of(columnSegment);
+        } else {
+            return Optional.empty();
+        }
     }
     
     private static Optional<ColumnSegment> findInputColumnSegmentByPivotColumns(final ColumnSegment segment, final Collection<String> pivotColumnNames) {
@@ -313,7 +351,9 @@ public final class ColumnSegmentBinder {
                 : segmentOriginalTable;
         IdentifierValue segmentOriginalColumn = segment.getColumnBoundInfo().getOriginalColumn();
         IdentifierValue originalColumn = Optional.ofNullable(inputColumnSegment).map(optional -> optional.getColumnBoundInfo().getOriginalColumn()).orElse(segmentOriginalColumn);
-        return new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(originalDatabase, originalSchema), originalTable, originalColumn, tableSourceType);
+        ColumnSegmentBoundInfo result = new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(originalDatabase, originalSchema), originalTable, originalColumn, tableSourceType);
+        Optional.ofNullable(inputColumnSegment).flatMap(ColumnSegment::getOwner).ifPresent(result::setOwner);
+        return result;
     }
     
     @RequiredArgsConstructor
