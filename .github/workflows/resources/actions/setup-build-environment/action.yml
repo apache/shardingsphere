@@ -68,7 +68,7 @@ runs:
   steps:
     - name: Setup Java (Temurin)
       if: inputs.distribution != 'graalvm'
-      uses: actions/setup-java@v5.1.0
+      uses: actions/setup-java@v5.2.0
       with:
         distribution: ${{ inputs.distribution }}
         java-version: ${{ inputs.java-version }}
