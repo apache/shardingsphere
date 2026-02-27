@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.statement.DropShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -36,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 class DropShadowAlgorithmExecutorTest {
     
-    private final DropShadowAlgorithmExecutor executor = new DropShadowAlgorithmExecutor();
+    private final DropShadowAlgorithmExecutor executor = (DropShadowAlgorithmExecutor) TypedSPILoader.getService(DatabaseRuleDefinitionExecutor.class, DropShadowAlgorithmStatement.class);
     
     @BeforeEach
     void setUp() {
@@ -45,7 +47,7 @@ class DropShadowAlgorithmExecutorTest {
     
     @Test
     void assertExecuteWithIfExists() {
-        DropShadowAlgorithmStatement sqlStatement = createSQLStatement(true, "ruleSegment");
+        DropShadowAlgorithmStatement sqlStatement = new DropShadowAlgorithmStatement(true, Arrays.asList("ruleSegment"));
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(new ShadowRuleConfiguration());
         executor.setRule(rule);
@@ -59,7 +61,7 @@ class DropShadowAlgorithmExecutorTest {
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         executor.setRule(rule);
-        DropShadowAlgorithmStatement sqlStatement = createSQLStatement("shadow_algorithm");
+        DropShadowAlgorithmStatement sqlStatement = new DropShadowAlgorithmStatement(false, Arrays.asList("shadow_algorithm"));
         executor.checkBeforeUpdate(sqlStatement);
         ShadowRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
         assertThat(toBeDroppedRuleConfig.getShadowAlgorithms().size(), is(1));
@@ -76,11 +78,8 @@ class DropShadowAlgorithmExecutorTest {
         executor.checkBeforeUpdate(sqlStatement);
     }
     
-    private DropShadowAlgorithmStatement createSQLStatement(final String... ruleName) {
-        return new DropShadowAlgorithmStatement(false, Arrays.asList(ruleName));
-    }
-    
-    private DropShadowAlgorithmStatement createSQLStatement(final boolean ifExists, final String... ruleName) {
-        return new DropShadowAlgorithmStatement(ifExists, Arrays.asList(ruleName));
+    @Test
+    void assertGetRuleClass() {
+        assertThat(executor.getRuleClass(), is(ShadowRule.class));
     }
 }

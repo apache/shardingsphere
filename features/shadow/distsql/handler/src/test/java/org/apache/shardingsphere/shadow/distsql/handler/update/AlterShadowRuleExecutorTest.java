@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.algorithm.core.exception.InUsedAlgorithmException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
@@ -47,6 +49,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -57,7 +61,7 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class AlterShadowRuleExecutorTest {
     
-    private final AlterShadowRuleExecutor executor = new AlterShadowRuleExecutor();
+    private final AlterShadowRuleExecutor executor = (AlterShadowRuleExecutor) TypedSPILoader.getService(DatabaseRuleDefinitionExecutor.class, AlterShadowRuleStatement.class);
     
     @Mock
     private ResourceMetaData resourceMetaData;
@@ -163,5 +167,10 @@ class AlterShadowRuleExecutorTest {
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
+    }
+    
+    @Test
+    void assertGetRuleClass() {
+        assertThat(executor.getRuleClass(), is(ShadowRule.class));
     }
 }

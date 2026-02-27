@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowAlgorithmSegment;
@@ -30,6 +32,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -38,7 +42,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CreateDefaultShadowAlgorithmExecutorTest {
     
-    private final CreateDefaultShadowAlgorithmExecutor executor = new CreateDefaultShadowAlgorithmExecutor();
+    private final CreateDefaultShadowAlgorithmExecutor executor = (CreateDefaultShadowAlgorithmExecutor) TypedSPILoader.getService(
+            DatabaseRuleDefinitionExecutor.class, CreateDefaultShadowAlgorithmStatement.class);
     
     @BeforeEach
     void setUp() {
@@ -69,5 +74,10 @@ class CreateDefaultShadowAlgorithmExecutorTest {
         ShadowAlgorithmSegment shadowAlgorithmSegment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value"))));
         CreateDefaultShadowAlgorithmStatement sqlStatement = new CreateDefaultShadowAlgorithmStatement(true, shadowAlgorithmSegment);
         executor.checkBeforeUpdate(sqlStatement);
+    }
+    
+    @Test
+    void assertGetRuleClass() {
+        assertThat(executor.getRuleClass(), is(ShadowRule.class));
     }
 }

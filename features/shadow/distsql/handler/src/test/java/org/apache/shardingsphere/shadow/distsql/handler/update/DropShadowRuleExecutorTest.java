@@ -19,7 +19,9 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
@@ -42,7 +44,7 @@ import static org.mockito.Mockito.when;
 
 class DropShadowRuleExecutorTest {
     
-    private final DropShadowRuleExecutor executor = new DropShadowRuleExecutor();
+    private final DropShadowRuleExecutor executor = (DropShadowRuleExecutor) TypedSPILoader.getService(DatabaseRuleDefinitionExecutor.class, DropShadowRuleStatement.class);
     
     @BeforeEach
     void setUp() {
@@ -108,7 +110,7 @@ class DropShadowRuleExecutorTest {
     
     private ShadowRuleConfiguration createCurrentRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.getDataSources().add(createShadowDataSourceConfiguration("shadow_group"));
+        result.getDataSources().add(new ShadowDataSourceConfiguration("shadow_group", "production", "shadow"));
         result.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("shadow_group")), Collections.emptyList()));
         result.getShadowAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("SHADOW", new Properties()));
         return result;
@@ -116,7 +118,7 @@ class DropShadowRuleExecutorTest {
     
     private ShadowRuleConfiguration createMultipleCurrentRuleConfiguration() {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
-        result.getDataSources().add(createShadowDataSourceConfiguration("shadow_group"));
+        result.getDataSources().add(new ShadowDataSourceConfiguration("shadow_group", "production", "shadow"));
         result.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("shadow_group")), Collections.emptyList()));
         result.getShadowAlgorithms().put("t_order_algorithm_inUsed", new AlgorithmConfiguration("SHADOW", new Properties()));
         result.getShadowAlgorithms().put("t_order_algorithm_unused", new AlgorithmConfiguration("SHADOW", new Properties()));
@@ -124,7 +126,8 @@ class DropShadowRuleExecutorTest {
         return result;
     }
     
-    private ShadowDataSourceConfiguration createShadowDataSourceConfiguration(final String ruleName) {
-        return new ShadowDataSourceConfiguration(ruleName, "production", "shadow");
+    @Test
+    void assertGetRuleClass() {
+        assertThat(executor.getRuleClass(), is(ShadowRule.class));
     }
 }

@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
@@ -49,7 +51,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AlterDefaultShadowAlgorithmExecutorTest {
     
-    private final AlterDefaultShadowAlgorithmExecutor executor = new AlterDefaultShadowAlgorithmExecutor();
+    private final AlterDefaultShadowAlgorithmExecutor executor = (AlterDefaultShadowAlgorithmExecutor) TypedSPILoader.getService(
+            DatabaseRuleDefinitionExecutor.class, AlterDefaultShadowAlgorithmStatement.class);
     
     @Mock
     private ShadowRuleConfiguration currentConfig;
