@@ -525,4 +525,12 @@
     <sql-case id="select_makedate_function" value="SELECT MAKEDATE(2011,31), MAKEDATE(2011,32)" db-types="MySQL" />
     <sql-case id="select_maketime_function" value="SELECT MAKETIME(12,15,30)" db-types="MySQL" />
     <sql-case id="select_source_pos_wait_function" value="SELECT SOURCE_POS_WAIT('mysql-bin.000001', 100), SOURCE_POS_WAIT('bin.002', 200, 5)" db-types="MySQL" />
+    <sql-case id="select_mbrcontains" value="SELECT MBRContains(@g1, @g2)" db-types="MySQL" />
+    <sql-case id="select_mbrcovers_mbrcoveredby" value="SELECT MBRCovers(@g1,@g2), MBRCoveredby(@g1,@g2)" db-types="MySQL" />
+    <sql-case id="select_mbrdisjoint" value="SELECT MBRDisjoint(@g1, @g4)" db-types="MySQL" />
+    <sql-case id="select_mbrequals" value="SELECT MBREquals(@g1, @g1)" db-types="MySQL" />
+    <sql-case id="select_mbrintersects" value="SELECT MBRIntersects(@g1, @g1)" db-types="MySQL" />
+    <sql-case id="select_mbroverlaps" value="SELECT MBROverlaps(@g1, @g2)" db-types="MySQL" />
+    <sql-case id="select_mbrtouches" value="SELECT MBRTouches(@g1, @g2)" db-types="MySQL" />
+    <sql-case id="select_mbrwithin" value="SELECT MBRWithin(@g1, @g2)" db-types="MySQL" />
 </sql-cases>

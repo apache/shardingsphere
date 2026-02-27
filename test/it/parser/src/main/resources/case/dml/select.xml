@@ -14228,4 +14228,116 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_mbrcontains">
+        <projections start-index="7" stop-index="27">
+            <expression-projection text="MBRContains(@g1, @g2)" start-index="7" stop-index="27">
+                <expr>
+                    <function function-name="MBRContains" start-index="7" stop-index="27" text="MBRContains(@g1, @g2)">
+                        <parameter><variable-segment start-index="19" stop-index="21" variable="g1" /></parameter>
+                        <parameter><variable-segment start-index="24" stop-index="26" variable="g2" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_mbrcovers_mbrcoveredby">
+        <projections start-index="7" stop-index="47">
+            <expression-projection text="MBRCovers(@g1,@g2)" start-index="7" stop-index="24">
+                <expr>
+                    <function function-name="MBRCovers" start-index="7" stop-index="24" text="MBRCovers(@g1,@g2)">
+                        <parameter><variable-segment start-index="17" stop-index="19" variable="g1" /></parameter>
+                        <parameter><variable-segment start-index="21" stop-index="23" variable="g2" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection text="MBRCoveredby(@g1,@g2)" start-index="27" stop-index="47">
+                <expr>
+                    <function function-name="MBRCoveredby" start-index="27" stop-index="47" text="MBRCoveredby(@g1,@g2)">
+                        <parameter><variable-segment start-index="40" stop-index="42" variable="g1" /></parameter>
+                        <parameter><variable-segment start-index="44" stop-index="46" variable="g2" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_mbrdisjoint">
+        <projections start-index="7" stop-index="27">
+            <expression-projection text="MBRDisjoint(@g1, @g4)" start-index="7" stop-index="27">
+                <expr>
+                    <function function-name="MBRDisjoint" start-index="7" stop-index="27" text="MBRDisjoint(@g1, @g4)">
+                        <parameter><variable-segment start-index="19" stop-index="21" variable="g1" /></parameter>
+                        <parameter><variable-segment start-index="24" stop-index="26" variable="g4" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_mbrequals">
+        <projections start-index="7" stop-index="25">
+            <expression-projection text="MBREquals(@g1, @g1)" start-index="7" stop-index="25">
+                <expr>
+                    <function function-name="MBREquals" start-index="7" stop-index="25" text="MBREquals(@g1, @g1)">
+                        <parameter><variable-segment start-index="17" stop-index="19" variable="g1" /></parameter>
+                        <parameter><variable-segment start-index="22" stop-index="24" variable="g1" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_mbrintersects">
+        <projections start-index="7" stop-index="29">
+            <expression-projection text="MBRIntersects(@g1, @g1)" start-index="7" stop-index="29">
+                <expr>
+                    <function function-name="MBRIntersects" start-index="7" stop-index="29" text="MBRIntersects(@g1, @g1)">
+                        <parameter><variable-segment start-index="21" stop-index="23" variable="g1" /></parameter>
+                        <parameter><variable-segment start-index="26" stop-index="28" variable="g1" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_mbroverlaps">
+        <projections start-index="7" stop-index="27">
+            <expression-projection text="MBROverlaps(@g1, @g2)" start-index="7" stop-index="27">
+                <expr>
+                    <function function-name="MBROverlaps" start-index="7" stop-index="27" text="MBROverlaps(@g1, @g2)">
+                        <parameter><variable-segment start-index="19" stop-index="21" variable="g1" /></parameter>
+                        <parameter><variable-segment start-index="24" stop-index="26" variable="g2" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_mbrtouches">
+        <projections start-index="7" stop-index="26">
+            <expression-projection text="MBRTouches(@g1, @g2)" start-index="7" stop-index="26">
+                <expr>
+                    <function function-name="MBRTouches" start-index="7" stop-index="26" text="MBRTouches(@g1, @g2)">
+                        <parameter><variable-segment start-index="18" stop-index="20" variable="g1" /></parameter>
+                        <parameter><variable-segment start-index="23" stop-index="25" variable="g2" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_mbrwithin">
+        <projections start-index="7" stop-index="25">
+            <expression-projection text="MBRWithin(@g1, @g2)" start-index="7" stop-index="25">
+                <expr>
+                    <function function-name="MBRWithin" start-index="7" stop-index="25" text="MBRWithin(@g1, @g2)">
+                        <parameter><variable-segment start-index="17" stop-index="19" variable="g1" /></parameter>
+                        <parameter><variable-segment start-index="22" stop-index="24" variable="g2" /></parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>
