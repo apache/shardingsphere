@@ -80,7 +80,9 @@ runs:
         java-version: ${{ inputs.java-version }}
         github-token: ${{ inputs.github-token }}
         native-image-job-reports: 'true'
-    - uses: actions/cache@v5.0.1
+    - name: Restore Maven Cache
+      id: restore-maven-cache
+      uses: actions/cache/restore@v5.0.1
       with:
         path: |
           ~/.m2/repository
@@ -92,3 +94,12 @@ runs:
           ${{ inputs.cache-prefix }}-maven-full-
           ${{ inputs.cache-prefix }}-maven-
           ${{ inputs.cache-prefix }}-
+    - name: Save Maven Cache
+      if: github.event_name != 'pull_request' && steps.restore-maven-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v5.0.1
+      with:
+        path: |
+          ~/.m2/repository
+          !~/.m2/repository/org/apache/shardingsphere
+          ~/.m2/repository/org/apache/shardingsphere/elasticjob
+        key: ${{ inputs.cache-prefix }}-maven-${{ inputs.cache-suffix }}-${{ hashFiles('**/pom.xml') }}
