@@ -292,6 +292,12 @@
     <sql-case id="select_instr" value="SELECT INSTR('foobar','bar')" db-types="Doris" />
     <sql-case id="select_strright" value="SELECT STRRIGHT('foobarbar',4)" db-types="Doris" />
     <sql-case id="select_extract_url_parameter" value="SELECT EXTRACT_URL_PARAMETER('http://foo.com/?bar=baz','bar')" db-types="Doris" />
+    <sql-case id="select_cosine_distance" value="SELECT COSINE_DISTANCE([1, 2], [2, 3])" db-types="Doris" />
+    <sql-case id="select_cosine_distance_multiple" value="SELECT COSINE_DISTANCE([1, 2], [2, 3]),COSINE_DISTANCE([3, 6], [4, 7])" db-types="Doris" />
+    <sql-case id="select_cosine_distance_three_elements" value="SELECT COSINE_DISTANCE([1, 2, 3], [4, 5, 6])" db-types="Doris" />
+    <sql-case id="select_cosine_distance_from_table" value="SELECT COSINE_DISTANCE([1, 2], [2, 3]) FROM t_order" db-types="Doris" />
+    <sql-case id="select_cosine_distance_empty_array" value="SELECT COSINE_DISTANCE([], [])" db-types="Doris" />
+    <sql-case id="select_cosine_distance_single_element" value="SELECT COSINE_DISTANCE([1], [2])" db-types="Doris" />
     <sql-case id="select_last_insert_id" value="SELECT LAST_INSERT_ID()" db-types="MySQL" />
     <sql-case id="select_last_value" value="SELECT LAST_VALUE(AGE) OVER (PARTITION BY AGE ORDER BY AGE) from TEST" db-types="MySQL" />
     <sql-case id="select_lcase_function" value="SELECT LCASE('QUADRATICALLY')" db-types="MySQL" />
