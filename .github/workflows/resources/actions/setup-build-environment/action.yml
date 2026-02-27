@@ -58,10 +58,21 @@ inputs:
       Default: 'full'
     required: false
     default: 'full'
+  cache-save-enabled:
+    description: 'Whether to save Maven cache in this action (default: true)'
+    required: false
+    default: 'true'
   github-token:
     description: 'GitHub token for GraalVM setup (required when distribution is graalvm)'
     required: false
     default: ''
+outputs:
+  cache-hit:
+    description: 'A boolean value to indicate an exact match was found for the primary key'
+    value: ${{ steps.restore-maven-cache.outputs.cache-hit }}
+  cache-primary-key:
+    description: 'A resolved cache key for which cache match was attempted'
+    value: ${{ steps.restore-maven-cache.outputs.cache-primary-key }}
 
 runs:
   using: composite
@@ -95,7 +106,7 @@ runs:
           ${{ inputs.cache-prefix }}-maven-
           ${{ inputs.cache-prefix }}-
     - name: Save Maven Cache
-      if: github.event_name != 'pull_request' && steps.restore-maven-cache.outputs.cache-hit != 'true'
+      if: inputs.cache-save-enabled == 'true' && github.event_name != 'pull_request' && steps.restore-maven-cache.outputs.cache-hit != 'true'
       uses: actions/cache/save@v5.0.1
       with:
         path: |

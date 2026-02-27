@@ -47,9 +47,11 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - id: setup-build-environment
+        uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-operation'
+          cache-save-enabled: 'false'
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4
@@ -62,6 +64,10 @@ jobs:
           FORMATTED_PL=$(echo "$MODULE_LIST" | sed "s|,|,$PREFIX|g" | sed "s|^|$PREFIX|")
           echo "Ready to build: $FORMATTED_PL"
           ./mvnw -B clean install -am -pl "$FORMATTED_PL" -Pe2e.env.docker -DskipTests
+      - uses: ./.github/workflows/resources/actions/save-maven-cache
+        with:
+          cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
+          cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
       - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
 
   e2e-operation-job:
@@ -101,6 +107,7 @@ jobs:
         with:
           java-version: ${{ matrix.java-version }}
           cache-suffix: 'e2e-operation'
+          cache-save-enabled: 'false'
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4
