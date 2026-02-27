@@ -994,6 +994,12 @@ simpleExpr
     | matchExpression
     | caseExpression
     | intervalExpression
+    | arrayExpression
+    ;
+
+arrayExpression
+    : LBT_ expr (COMMA_ expr)* RBT_
+    | LBT_ RBT_
     ;
 
 path

@@ -56,6 +56,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -190,24 +191,47 @@ class StatisticsCollectJobWorkerTest {
     }
     
     @Test
-    void assertDestroy() {
+    void assertDestroyWhenNotInitialized() {
+        ScheduleJobBootstrap scheduleJobBootstrap = mock(ScheduleJobBootstrap.class);
+        CoordinatorRegistryCenter registryCenter = mock(CoordinatorRegistryCenter.class);
+        setStaticField("scheduleJobBootstrap", scheduleJobBootstrap);
+        setStaticField("registryCenter", registryCenter);
+        setStaticField("contextManager", contextManager);
         jobWorker.destroy();
-        jobWorker.destroy();
-        assertNull(getScheduleJobBootstrap());
+        verifyNoInteractions(scheduleJobBootstrap, registryCenter);
+        assertThat(getScheduleJobBootstrap(), is(scheduleJobBootstrap));
+        assertThat(getRegistryCenter(), is(registryCenter));
+        assertThat(getContextManager(), is(contextManager));
     }
     
     @Test
     void assertDestroyWhenInitialized() {
         ScheduleJobBootstrap scheduleJobBootstrap = mock(ScheduleJobBootstrap.class);
+        CoordinatorRegistryCenter registryCenter = mock(CoordinatorRegistryCenter.class);
         setStaticField("scheduleJobBootstrap", scheduleJobBootstrap);
+        setStaticField("registryCenter", registryCenter);
+        setStaticField("contextManager", contextManager);
         workerInitialized.set(true);
         jobWorker.destroy();
         verify(scheduleJobBootstrap).shutdown();
+        verify(registryCenter).close();
         assertNull(getScheduleJobBootstrap());
+        assertNull(getRegistryCenter());
+        assertNull(getContextManager());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private ScheduleJobBootstrap getScheduleJobBootstrap() {
         return (ScheduleJobBootstrap) Plugins.getMemberAccessor().get(StatisticsCollectJobWorker.class.getDeclaredField("scheduleJobBootstrap"), StatisticsCollectJobWorker.class);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private CoordinatorRegistryCenter getRegistryCenter() {
+        return (CoordinatorRegistryCenter) Plugins.getMemberAccessor().get(StatisticsCollectJobWorker.class.getDeclaredField("registryCenter"), StatisticsCollectJobWorker.class);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private ContextManager getContextManager() {
+        return (ContextManager) Plugins.getMemberAccessor().get(StatisticsCollectJobWorker.class.getDeclaredField("contextManager"), StatisticsCollectJobWorker.class);
     }
 }
