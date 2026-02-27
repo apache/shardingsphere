@@ -38,6 +38,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -91,5 +94,27 @@ class AlterDefaultShadowAlgorithmExecutorTest {
         executor.setRule(rule);
         AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("SQL_HINT", props)));
         executor.checkBeforeUpdate(sqlStatement);
+    }
+    
+    @Test
+    void assertBuildToBeAlteredRuleConfiguration() {
+        Properties props = PropertiesBuilder.build(new Property("foo", "bar"));
+        AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(
+                new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("SQL_HINT", props)));
+        ShadowRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
+        assertThat(actual.getDefaultShadowAlgorithmName(), is("default_shadow_algorithm"));
+        assertThat(actual.getShadowAlgorithms().size(), is(1));
+        assertThat(actual.getShadowAlgorithms().get("default_shadow_algorithm").getType(), is("SQL_HINT"));
+        assertThat(actual.getShadowAlgorithms().get("default_shadow_algorithm").getProps(), is(props));
+    }
+    
+    @Test
+    void assertBuildToBeDroppedRuleConfiguration() {
+        assertNull(executor.buildToBeDroppedRuleConfiguration(new ShadowRuleConfiguration()));
+    }
+    
+    @Test
+    void assertGetRuleClass() {
+        assertThat(executor.getRuleClass(), is(ShadowRule.class));
     }
 }

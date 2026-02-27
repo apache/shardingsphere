@@ -26,6 +26,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -62,6 +63,17 @@ class DropShadowAlgorithmExecutorTest {
         executor.checkBeforeUpdate(sqlStatement);
         ShadowRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
         assertThat(toBeDroppedRuleConfig.getShadowAlgorithms().size(), is(1));
+    }
+    
+    @Test
+    void assertExecuteWhenIfExistsChangesBetweenChecks() {
+        DropShadowAlgorithmStatement sqlStatement = mock(DropShadowAlgorithmStatement.class);
+        when(sqlStatement.isIfExists()).thenReturn(false, true);
+        when(sqlStatement.getNames()).thenReturn(Collections.singleton("missing_algorithm"));
+        ShadowRule rule = mock(ShadowRule.class);
+        when(rule.getConfiguration()).thenReturn(new ShadowRuleConfiguration());
+        executor.setRule(rule);
+        executor.checkBeforeUpdate(sqlStatement);
     }
     
     private DropShadowAlgorithmStatement createSQLStatement(final String... ruleName) {
