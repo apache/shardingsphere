@@ -31,6 +31,9 @@ concurrency:
   group: nightly-build-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -DskipITs -DskipTests -Dspotless.apply.skip=true
   HUB: ghcr.io/apache/shardingsphere

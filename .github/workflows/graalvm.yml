@@ -32,6 +32,9 @@ concurrency:
   group: graalvm-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   global-environment:
     name: Import Global Environment
