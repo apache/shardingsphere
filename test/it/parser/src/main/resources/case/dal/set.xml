@@ -144,4 +144,16 @@
             <parameter name="time_zone" scope="PERSIST_ONLY" />
         </parameter-assign>
     </set-parameter>
+    <set-parameter sql-case-id="set_mysql_version_comment">
+        <parameter-assign value="123">
+            <parameter name="max_connections" scope="GLOBAL" />
+        </parameter-assign>
+        <comment start-index="0" stop-index="36" text="/*! SET GLOBAL max_connections=123 */" />
+    </set-parameter>
+    <set-parameter sql-case-id="set_mysql_version_comment_with_version">
+        <parameter-assign value="456">
+            <parameter name="max_connections" scope="GLOBAL" />
+        </parameter-assign>
+        <comment start-index="0" stop-index="41" text="/*!80029 SET GLOBAL max_connections=456 */" />
+    </set-parameter>
 </sql-parser-test-cases>
