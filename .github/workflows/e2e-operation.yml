@@ -52,7 +52,7 @@ jobs:
   prepare-e2e-artifacts:
     name: Prepare E2E Artifacts
     if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]'
-    needs: global-environment
+    needs: [ global-environment, detect-changed-files ]
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
