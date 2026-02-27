@@ -20,15 +20,21 @@ package org.apache.shardingsphere.sharding.checker.config;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
+import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 class ShardingRuleConfigurationEmptyCheckerTest {
     
@@ -42,28 +48,84 @@ class ShardingRuleConfigurationEmptyCheckerTest {
     @Test
     void assertIsNotEmptyWithTables() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getTables().add(mock(ShardingTableRuleConfiguration.class));
+        ruleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_0.t_order"));
         assertFalse(checker.isEmpty(ruleConfig));
     }
     
     @Test
     void assertIsNotEmptyWithAutoTables() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getAutoTables().add(mock(ShardingAutoTableRuleConfiguration.class));
+        ruleConfig.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order", "ds_0"));
+        assertFalse(checker.isEmpty(ruleConfig));
+    }
+    
+    @Test
+    void assertIsNotEmptyWithBindingTableGroups() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("binding_group", "t_order,t_order_item"));
         assertFalse(checker.isEmpty(ruleConfig));
     }
     
     @Test
     void assertIsNotEmptyWithGetDefaultDatabaseShardingStrategy() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.setDefaultDatabaseShardingStrategy(mock(ShardingStrategyConfiguration.class));
+        ruleConfig.setDefaultDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
         assertFalse(checker.isEmpty(ruleConfig));
     }
     
     @Test
     void assertIsNotEmptyWithGetDefaultTableShardingStrategy() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.setDefaultTableShardingStrategy(mock(ShardingStrategyConfiguration.class));
+        ruleConfig.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
+        assertFalse(checker.isEmpty(ruleConfig));
+    }
+    
+    @Test
+    void assertIsNotEmptyWithDefaultKeyGenerateStrategy() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
+        assertFalse(checker.isEmpty(ruleConfig));
+    }
+    
+    @Test
+    void assertIsNotEmptyWithDefaultAuditStrategy() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.setDefaultAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("foo_auditor"), false));
+        assertFalse(checker.isEmpty(ruleConfig));
+    }
+    
+    @Test
+    void assertIsNotEmptyWithDefaultShardingColumn() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.setDefaultShardingColumn("user_id");
+        assertFalse(checker.isEmpty(ruleConfig));
+    }
+    
+    @Test
+    void assertIsNotEmptyWithShardingAlgorithms() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getShardingAlgorithms().put("foo_algorithm", null);
+        assertFalse(checker.isEmpty(ruleConfig));
+    }
+    
+    @Test
+    void assertIsNotEmptyWithKeyGenerators() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getKeyGenerators().put("foo_key_generator", null);
+        assertFalse(checker.isEmpty(ruleConfig));
+    }
+    
+    @Test
+    void assertIsNotEmptyWithAuditors() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getAuditors().put("foo_auditor", null);
+        assertFalse(checker.isEmpty(ruleConfig));
+    }
+    
+    @Test
+    void assertIsNotEmptyWithShardingCache() {
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.setShardingCache(new ShardingCacheConfiguration(1, new ShardingCacheOptionsConfiguration(false, 1, 1)));
         assertFalse(checker.isEmpty(ruleConfig));
     }
     
