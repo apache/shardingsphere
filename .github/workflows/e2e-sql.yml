@@ -58,15 +58,21 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - id: setup-build-environment
+        uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'
+          cache-save-enabled: 'false'
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4
           set-host: true
       - name: Build E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/sql -Pe2e.env.docker -DskipTests -Dspotless.apply.skip=true
+      - uses: ./.github/workflows/resources/actions/save-maven-cache
+        with:
+          cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
+          cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
       - name: Save E2E Image
         run: docker save -o /tmp/apache-shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
       - uses: actions/upload-artifact@v4
@@ -114,6 +120,7 @@ jobs:
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'
+          cache-save-enabled: 'false'
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4
