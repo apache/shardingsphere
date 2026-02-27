@@ -33,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -63,7 +64,7 @@ class DropDefaultShadowAlgorithmExecutorTest {
     
     @Test
     void assertCheckWithIfExists() {
-        executor.checkBeforeUpdate(new DropDefaultShadowAlgorithmStatement(true));
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(new DropDefaultShadowAlgorithmStatement(true)));
     }
     
     @Test
