@@ -39,8 +39,7 @@ class UnusedAlgorithmFinderTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("findUnusedShadowAlgorithmArguments")
     void assertFindUnusedShadowAlgorithm(final String name, final ShadowRuleConfiguration ruleConfig, final Collection<String> expected) {
-        Collection<String> actual = UnusedAlgorithmFinder.findUnusedShadowAlgorithm(ruleConfig);
-        assertThat(new LinkedHashSet<>(actual), is(new LinkedHashSet<>(expected)));
+        assertThat(new LinkedHashSet<>(UnusedAlgorithmFinder.findUnusedShadowAlgorithm(ruleConfig)), is(new LinkedHashSet<>(expected)));
     }
     
     private static Stream<Arguments> findUnusedShadowAlgorithmArguments() {
