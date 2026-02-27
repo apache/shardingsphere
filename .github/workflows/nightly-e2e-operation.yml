@@ -64,15 +64,10 @@ jobs:
           FORMATTED_PL=$(echo "$MODULE_LIST" | sed "s|,|,$PREFIX|g" | sed "s|^|$PREFIX|")
           echo "Ready to build: $FORMATTED_PL"
           ./mvnw -B clean install -am -pl "$FORMATTED_PL" -Pe2e.env.docker -DskipTests
-      - name: Save Maven Cache
-        if: github.event_name != 'pull_request' && steps.setup-build-environment.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v5.0.1
+      - uses: ./.github/workflows/resources/actions/save-maven-cache
         with:
-          path: |
-            ~/.m2/repository
-            !~/.m2/repository/org/apache/shardingsphere
-            ~/.m2/repository/org/apache/shardingsphere/elasticjob
-          key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
+          cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
+          cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
       - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
 
   e2e-operation-job:
