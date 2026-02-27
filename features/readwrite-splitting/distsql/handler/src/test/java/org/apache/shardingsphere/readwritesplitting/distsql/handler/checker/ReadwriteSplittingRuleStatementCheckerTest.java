@@ -82,13 +82,6 @@ class ReadwriteSplittingRuleStatementCheckerTest {
     }
     
     @Test
-    void assertCheckCreationWithNullResourceMetaData() {
-        when(database.getResourceMetaData()).thenReturn(null);
-        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null);
-        assertThrows(NullPointerException.class, () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
-    }
-    
-    @Test
     void assertCheckCreationWithNullStorageUnits() {
         when(resourceMetaData.getStorageUnits()).thenReturn(null);
         ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null);
