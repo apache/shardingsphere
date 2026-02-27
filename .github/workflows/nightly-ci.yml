@@ -22,6 +22,10 @@ on:
     - cron: '0 13 * * 1-5' # Once a day between Monday and Friday. UTC time
   workflow_dispatch:
 
+concurrency:
+  group: nightly-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
 
