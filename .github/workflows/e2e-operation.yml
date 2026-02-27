@@ -20,6 +20,8 @@ name: E2E - Operation
 on:
   pull_request:
     branches: [ master ]
+    paths-ignore:
+      - '**/*.md'
   workflow_dispatch:
 
 concurrency:
