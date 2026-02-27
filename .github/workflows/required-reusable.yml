@@ -27,6 +27,9 @@ on:
       GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE:
         value: ${{ jobs.init-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE }}
 
+permissions:
+  contents: read
+
 jobs:
   init-environment:
     runs-on: ubuntu-latest
