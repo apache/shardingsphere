@@ -8,6 +8,7 @@
 ### Enhancements
 
 1. SQL Parser: Support MySQL Function statement parse - [#38182](https://github.com/apache/shardingsphere/pull/38182) [#38219](https://github.com/apache/shardingsphere/pull/38219)
+2. SQL Parser: Support parsing MySQL SELECT sql - [#38233](https://github.com/apache/shardingsphere/pull/38233)
 
 ## Release 5.5.3
 
