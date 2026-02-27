@@ -55,7 +55,5 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
-      - name: Build Project with Maven
-        run: ./mvnw clean install -B -ntp -DskipTests -T1C
-      - name: Run Tests
-        run: ./mvnw install -T1C -B -ntp -fae
+      - name: Build and Run Tests
+        run: ./mvnw clean install -T1C -B -ntp -fae
