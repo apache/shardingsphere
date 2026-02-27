@@ -42,10 +42,12 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
+      - id: setup-build-environment
+        uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           java-version: 21
           cache-suffix: 'e2e-agent'
+          cache-save-enabled: 'false'
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4
@@ -63,6 +65,10 @@ jobs:
           retention-days: 10
       - name: Build JDBC E2E Image
         run: ./mvnw clean install -DskipTests -Pe2e.env.jdbc -f test/e2e/agent/engine/pom.xml
+      - uses: ./.github/workflows/resources/actions/save-maven-cache
+        with:
+          cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
+          cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
       - name: Save JDBC E2E Image
         run: docker save -o /tmp/apache-shardingsphere-jdbc-agent-test.tar apache/shardingsphere-jdbc-agent-test:latest
       - uses: actions/upload-artifact@v4
@@ -112,6 +118,7 @@ jobs:
         with:
           java-version: 21
           cache-suffix: 'e2e-agent'
+          cache-save-enabled: 'false'
       - uses: docker/setup-docker-action@v4
         with:
           version: v28.0.4
