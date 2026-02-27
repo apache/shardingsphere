@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,72 +28,72 @@ class PostgreSQLBinaryProtocolValueFactoryTest {
     
     @Test
     void assertGetStringBinaryProtocolValueByVarchar() {
-        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.VARCHAR);
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.VARCHAR);
         assertThat(binaryProtocolValue, isA(PostgreSQLStringBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetStringBinaryProtocolValueByChar() {
-        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.CHAR);
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.CHAR);
         assertThat(binaryProtocolValue, isA(PostgreSQLStringBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetInt8BinaryProtocolValue() {
-        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.INT8);
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.INT8);
         assertThat(binaryProtocolValue, isA(PostgreSQLInt8BinaryProtocolValue.class));
     }
     
     @Test
     void assertGetInt4BinaryProtocolValue() {
-        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.INT4);
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.INT4);
         assertThat(binaryProtocolValue, isA(PostgreSQLInt4BinaryProtocolValue.class));
     }
     
     @Test
     void assertGetInt2BinaryProtocolValue() {
-        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.INT2);
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.INT2);
         assertThat(binaryProtocolValue, isA(PostgreSQLInt2BinaryProtocolValue.class));
     }
     
     @Test
     void assertGetDoubleBinaryProtocolValue() {
-        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.FLOAT8);
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.FLOAT8);
         assertThat(binaryProtocolValue, isA(PostgreSQLDoubleBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetFloatBinaryProtocolValue() {
-        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.FLOAT4);
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.FLOAT4);
         assertThat(binaryProtocolValue, isA(PostgreSQLFloatBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetNumericBinaryProtocolValue() {
-        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.NUMERIC);
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.NUMERIC);
         assertThat(binaryProtocolValue, isA(PostgreSQLNumericBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetDateBinaryProtocolValue() {
-        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.DATE);
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.DATE);
         assertThat(binaryProtocolValue, isA(PostgreSQLDateBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetTimeBinaryProtocolValue() {
-        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.TIMESTAMP);
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.TIMESTAMP);
         assertThat(binaryProtocolValue, isA(PostgreSQLTimeBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBoolBinaryProtocolValue() {
-        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.BOOL);
+        PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.BOOL);
         assertThat(binaryProtocolValue, isA(PostgreSQLBoolBinaryProtocolValue.class));
     }
     
     @Test
     void assertGetBinaryProtocolValueExThrown() {
-        assertThrows(IllegalArgumentException.class, () -> PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLColumnType.XML));
+        assertThrows(IllegalArgumentException.class, () -> PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(PostgreSQLBinaryColumnType.XML));
     }
 }

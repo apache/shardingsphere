@@ -35,6 +35,8 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MySQLCharsetVariableProviderTest {
@@ -45,7 +47,7 @@ class MySQLCharsetVariableProviderTest {
     
     @Test
     void assertCharsetVariablesAndDatabaseType() {
-        assertThat(provider.getCharsetVariables(), contains("charset", "character_set_client"));
+        assertThat(provider.getCharsetVariables(), contains("charset", "character_set_client", "character_set_results", "character_set_connection"));
     }
     
     @Test
@@ -53,7 +55,17 @@ class MySQLCharsetVariableProviderTest {
         assertThrows(UnknownCharsetException.class, () -> provider.parseCharset("unknown_charset"));
     }
     
-    @ParameterizedTest
+    @Test
+    void assertShouldSetWhenCharacterSetResultsWithNull() {
+        assertFalse(provider.shouldSet("character_set_results", "NULL"));
+    }
+    
+    @Test
+    void assertShouldSetWhenCharacterSetResultsWithCharset() {
+        assertTrue(provider.shouldSet("character_set_results", "'utf8mb4'"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("successArguments")
     void assertParseCharset(final String input, final Charset expected) {
         assertThat(provider.parseCharset(input), is(expected));

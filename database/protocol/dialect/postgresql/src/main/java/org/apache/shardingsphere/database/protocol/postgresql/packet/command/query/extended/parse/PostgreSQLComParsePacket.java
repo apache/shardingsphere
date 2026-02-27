@@ -22,7 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.packet.sql.SQLReceivedPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -60,11 +60,11 @@ public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket impl
      *
      * @return types of parameters
      */
-    public List<PostgreSQLColumnType> readParameterTypes() {
+    public List<PostgreSQLBinaryColumnType> readParameterTypes() {
         int parameterCount = payload.readInt2();
-        List<PostgreSQLColumnType> result = new ArrayList<>(parameterCount);
+        List<PostgreSQLBinaryColumnType> result = new ArrayList<>(parameterCount);
         for (int i = 0; i < parameterCount; i++) {
-            result.add(PostgreSQLColumnType.valueOf(payload.readInt4()));
+            result.add(PostgreSQLBinaryColumnType.valueOf(payload.readInt4()));
         }
         return result;
     }

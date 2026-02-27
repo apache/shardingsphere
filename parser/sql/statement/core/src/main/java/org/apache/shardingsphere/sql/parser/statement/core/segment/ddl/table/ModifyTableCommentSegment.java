@@ -15,40 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.column;
+package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Arrays;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 
 /**
- * Column type for PostgreSQL.
+ * Modify table comment segment.
  */
 @RequiredArgsConstructor
-public enum PostgreSQLColumnType {
+@Getter
+public final class ModifyTableCommentSegment implements AlterDefinitionSegment {
     
-    NUMERIC(new Long[]{1231L, 1700L}),
+    private final int startIndex;
     
-    DATE(new Long[]{1083L, 1114L, 1115L, 1183L, 1184L, 1185L, 1186L, 1187L, 1266L, 1270L}),
+    private final int stopIndex;
     
-    VARCHAR(new Long[]{1560L, 1561L, 1562L, 1563L, 1042L, 1043L, 1014L, 1015L}),
-    
-    UNKNOWN(new Long[]{0L});
-    
-    private final Long[] values;
-    
-    /**
-     * Get value of column type.
-     *
-     * @param elemoid elemoid
-     * @return value of column type
-     */
-    public static PostgreSQLColumnType valueOf(final Long elemoid) {
-        for (PostgreSQLColumnType each : values()) {
-            if (Arrays.asList(each.values).contains(elemoid)) {
-                return each;
-            }
-        }
-        return UNKNOWN;
-    }
+    private final String tableComment;
 }

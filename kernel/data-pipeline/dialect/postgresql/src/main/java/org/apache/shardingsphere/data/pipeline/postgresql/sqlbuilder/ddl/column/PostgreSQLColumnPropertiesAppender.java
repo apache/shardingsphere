@@ -209,7 +209,7 @@ public final class PostgreSQLColumnPropertiesAppender {
     }
     
     private void handleLengthPrecision(final Long elemoid, final Map<String, Object> column, final String fullType) {
-        switch (PostgreSQLColumnType.valueOf(elemoid)) {
+        switch (PostgreSQLDDLColumnType.valueOf(elemoid)) {
             case NUMERIC:
                 setColumnPrecision(column, fullType);
                 break;

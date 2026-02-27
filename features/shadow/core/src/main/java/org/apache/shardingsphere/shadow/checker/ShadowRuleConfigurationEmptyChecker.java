@@ -27,7 +27,7 @@ public final class ShadowRuleConfigurationEmptyChecker implements DatabaseRuleCo
     
     @Override
     public boolean isEmpty(final ShadowRuleConfiguration ruleConfig) {
-        return ruleConfig.getDataSources().isEmpty() || ruleConfig.getTables().isEmpty();
+        return ruleConfig.getDataSources().isEmpty() && ruleConfig.getTables().isEmpty() && ruleConfig.getShadowAlgorithms().isEmpty();
     }
     
     @Override

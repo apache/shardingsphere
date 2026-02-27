@@ -15,27 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.column;
+package org.apache.shardingsphere.broadcast.rule.attribute;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class PostgreSQLColumnTypeTest {
+class BroadcastUnregisterStorageUnitRuleAttributeTest {
     
+    @SuppressWarnings("ConstantValue")
     @Test
-    void assertValueOfZeroValue() {
-        assertThat(PostgreSQLColumnType.valueOf(0L), is(PostgreSQLColumnType.UNKNOWN));
-    }
-    
-    @Test
-    void assertValueOfFoundValue() {
-        assertThat(PostgreSQLColumnType.valueOf(1231L), is(PostgreSQLColumnType.NUMERIC));
-    }
-    
-    @Test
-    void assertValueOfNotExistedValue() {
-        assertThat(PostgreSQLColumnType.valueOf(1L), is(PostgreSQLColumnType.UNKNOWN));
+    void assertIgnoreUsageCheck() {
+        assertTrue(new BroadcastUnregisterStorageUnitRuleAttribute().ignoreUsageCheck(false, true));
     }
 }

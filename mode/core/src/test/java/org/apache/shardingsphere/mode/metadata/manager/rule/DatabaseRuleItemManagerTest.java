@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.metadata.manager.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -68,7 +67,7 @@ class DatabaseRuleItemManagerTest {
         when((TypedSPI) TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("ruleType", "type"))).thenReturn(processor);
         DatabaseRuleItemManager manager = new DatabaseRuleItemManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS), ruleConfigManager, persistFacade);
         manager.alter(new DatabaseRuleNodePath(DATABASE_NAME, "ruleType", new DatabaseRuleItem("type/item")));
-        verify(ruleConfigManager).refresh(DATABASE_NAME, currentRuleConfig, true);
+        verify(ruleConfigManager).refresh(DATABASE_NAME, currentRuleConfig);
         verify(processor).changeRuleItemConfiguration(eq("item"), eq(currentRuleConfig), any());
     }
     
@@ -80,7 +79,7 @@ class DatabaseRuleItemManagerTest {
         when(processor.findRuleConfiguration(any(ShardingSphereDatabase.class))).thenReturn(currentRuleConfig);
         when(processor.swapRuleItemConfiguration(any(), any())).thenReturn(new Object());
         when((TypedSPI) TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("ruleType", "type"))).thenReturn(processor);
-        doThrow(SQLException.class).when(ruleConfigManager).refresh(DATABASE_NAME, currentRuleConfig, true);
+        doThrow(SQLException.class).when(ruleConfigManager).refresh(DATABASE_NAME, currentRuleConfig);
         DatabaseRuleItemManager manager = new DatabaseRuleItemManager(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS), ruleConfigManager, persistFacade);
         assertThrows(SQLWrapperException.class, () -> manager.alter(new DatabaseRuleNodePath(DATABASE_NAME, "ruleType", new DatabaseRuleItem("type/item"))));
         verify(processor).changeRuleItemConfiguration(eq("item"), eq(currentRuleConfig), any());
@@ -94,11 +93,10 @@ class DatabaseRuleItemManagerTest {
         RuleItemConfigurationChangedProcessor processor = mock(RuleItemConfigurationChangedProcessor.class);
         when(processor.findRuleConfiguration(any(ShardingSphereDatabase.class))).thenReturn(currentRuleConfig);
         when((TypedSPI) TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("ruleType", null))).thenReturn(processor);
-        when((TypedSPI) TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, currentRuleConfig.getClass())).thenReturn(mock(DatabaseRuleConfigurationEmptyChecker.class));
         DatabaseRuleItemManager manager = new DatabaseRuleItemManager(metaDataContexts, ruleConfigManager, mock(MetaDataPersistFacade.class));
         manager.drop(new DatabaseRuleNodePath(DATABASE_NAME, "ruleType", null));
         verify(processor).dropRuleItemConfiguration(null, currentRuleConfig);
-        verify(ruleConfigManager).refresh(DATABASE_NAME, currentRuleConfig, true);
+        verify(ruleConfigManager).refresh(DATABASE_NAME, currentRuleConfig);
     }
     
     @Test
@@ -109,8 +107,7 @@ class DatabaseRuleItemManagerTest {
         RuleItemConfigurationChangedProcessor processor = mock(RuleItemConfigurationChangedProcessor.class);
         when(processor.findRuleConfiguration(any(ShardingSphereDatabase.class))).thenReturn(currentRuleConfig);
         when((TypedSPI) TypedSPILoader.getService(RuleItemConfigurationChangedProcessor.class, new RuleChangedItemType("ruleType", "type"))).thenReturn(processor);
-        when((TypedSPI) TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, currentRuleConfig.getClass())).thenReturn(mock(DatabaseRuleConfigurationEmptyChecker.class));
-        doThrow(new SQLException("drop")).when(ruleConfigManager).refresh(DATABASE_NAME, currentRuleConfig, true);
+        doThrow(new SQLException("drop")).when(ruleConfigManager).refresh(DATABASE_NAME, currentRuleConfig);
         DatabaseRuleItemManager manager = new DatabaseRuleItemManager(metaDataContexts, ruleConfigManager, mock(MetaDataPersistFacade.class));
         assertThrows(SQLWrapperException.class, () -> manager.drop(new DatabaseRuleNodePath(DATABASE_NAME, "ruleType", new DatabaseRuleItem("type/item"))));
         verify(processor).dropRuleItemConfiguration("item", currentRuleConfig);

@@ -62,4 +62,7 @@ public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
     
     @Setter
     private String collateName;
+    
+    @Setter
+    private String comment;
 }

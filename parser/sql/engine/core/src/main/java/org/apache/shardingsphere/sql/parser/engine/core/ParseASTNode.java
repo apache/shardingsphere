@@ -18,13 +18,17 @@
 package org.apache.shardingsphere.sql.parser.engine.core;
 
 import lombok.RequiredArgsConstructor;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Parse AST node.
@@ -52,11 +56,51 @@ public final class ParseASTNode implements ASTNode {
      */
     public Collection<Token> getHiddenTokens() {
         Collection<Token> result = new LinkedList<>();
-        for (Token each : tokenStream.getTokens()) {
-            if (Token.HIDDEN_CHANNEL == each.getChannel()) {
-                result.add(each);
+        List<Token> allTokens = tokenStream.getTokens();
+        int mergedEndIndex = -1;
+        for (int i = 0; i < allTokens.size(); i++) {
+            if (i <= mergedEndIndex) {
+                continue;
             }
+            Token each = allTokens.get(i);
+            if (Token.HIDDEN_CHANNEL != each.getChannel()) {
+                continue;
+            }
+            if (isExecutableCommentStart(each)) {
+                int endIndex = findExecutableCommentEnd(allTokens, i);
+                if (endIndex > i) {
+                    result.add(buildMergedExecutableCommentToken(each, allTokens.get(endIndex)));
+                    mergedEndIndex = endIndex;
+                    continue;
+                }
+            }
+            result.add(each);
         }
         return result;
+    }
+    
+    private boolean isExecutableCommentStart(final Token token) {
+        return token.getText().startsWith("/*!");
+    }
+    
+    private int findExecutableCommentEnd(final List<Token> tokens, final int startIndex) {
+        for (int i = startIndex + 1; i < tokens.size(); i++) {
+            Token each = tokens.get(i);
+            if (Token.HIDDEN_CHANNEL == each.getChannel() && "*/".equals(each.getText())) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    private Token buildMergedExecutableCommentToken(final Token startToken, final Token endToken) {
+        CharStream charStream = tokenStream.getTokenSource().getInputStream();
+        String fullText = charStream.getText(Interval.of(startToken.getStartIndex(), endToken.getStopIndex()));
+        CommonToken merged = new CommonToken(startToken.getType());
+        merged.setText(fullText);
+        merged.setStartIndex(startToken.getStartIndex());
+        merged.setStopIndex(endToken.getStopIndex());
+        merged.setChannel(Token.HIDDEN_CHANNEL);
+        return merged;
     }
 }

@@ -149,13 +149,23 @@ public final class TableAssert {
     }
     
     private static void assertIs(final SQLCaseAssertContext assertContext, final IndexHintSegment actual, final ExpectedIndexHint expected) {
+        assertThat(assertContext.getText("Index hint start index assertion error: "), actual.getStartIndex(), is(expected.getStartIndex()));
+        assertThat(assertContext.getText("Index hint stop index assertion error: "), actual.getStopIndex(), is(expected.getStopIndex()));
         assertThat(expected.getHintIndexNames().size(), is(actual.getIndexNames().size()));
         Iterator<ExpectedHintIndexName> expectedIndexNameIterator = expected.getHintIndexNames().iterator();
         Iterator<String> actualIndexNameIterator = actual.getIndexNames().iterator();
+        int indexPosition = 0;
         while (expectedIndexNameIterator.hasNext()) {
             ExpectedHintIndexName expectedIndexName = expectedIndexNameIterator.next();
             String actualIndexName = actualIndexNameIterator.next();
             assertThat(assertContext.getText("Index hint name assertion error: "), actualIndexName, is(expectedIndexName.getName()));
+            if (indexPosition < actual.getIndexStartIndices().size() && indexPosition < actual.getIndexStopIndices().size()) {
+                assertThat(assertContext.getText("Index hint name start index assertion error: "),
+                        actual.getIndexStartIndices().get(indexPosition), is(expectedIndexName.getStartIndex()));
+                assertThat(assertContext.getText("Index hint name stop index assertion error: "),
+                        actual.getIndexStopIndices().get(indexPosition), is(expectedIndexName.getStopIndex()));
+            }
+            indexPosition++;
         }
         assertThat(assertContext.getText("Index hint origin text assertion error: "), actual.getOriginText(), is(expected.getOriginText()));
     }

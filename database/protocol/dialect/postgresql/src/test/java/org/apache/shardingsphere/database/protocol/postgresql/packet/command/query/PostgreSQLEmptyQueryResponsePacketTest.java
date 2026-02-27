@@ -17,18 +17,27 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query;
 
-import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.identifier.PostgreSQLMessagePacketType;
+import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 class PostgreSQLEmptyQueryResponsePacketTest {
     
     @Test
-    void assertIdentifier() {
-        PostgreSQLIdentifierTag actual = new PostgreSQLEmptyQueryResponsePacket().getIdentifier();
-        assertThat(actual, is(PostgreSQLMessagePacketType.EMPTY_QUERY_RESPONSE));
+    void assertWrite() {
+        PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
+        new PostgreSQLEmptyQueryResponsePacket().write((PacketPayload) payload);
+        verifyNoInteractions(payload);
+    }
+    
+    @Test
+    void assertGetIdentifier() {
+        assertThat(new PostgreSQLEmptyQueryResponsePacket().getIdentifier(), is(PostgreSQLMessagePacketType.EMPTY_QUERY_RESPONSE));
     }
 }

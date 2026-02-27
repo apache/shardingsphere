@@ -37,6 +37,17 @@ public interface CharsetVariableProvider extends DatabaseTypedSPI {
     Collection<String> getCharsetVariables();
     
     /**
+     * Determine whether charset should be set.
+     *
+     * @param variableName variable name
+     * @param variableValue variable value
+     * @return true if charset should be set
+     */
+    default boolean shouldSet(final String variableName, final String variableValue) {
+        return true;
+    }
+    
+    /**
      * Parse charset from variable.
      *
      * @param variableValue variable value

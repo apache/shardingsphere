@@ -63,6 +63,12 @@ public final class ColumnDefinitionAssert {
         if (expected.isNotNull()) {
             assertThat(assertContext.getText("Column definition not null assertion error: "), actual.isNotNull(), is(expected.isNotNull()));
         }
+        if (null != expected.getComment()) {
+            assertNotNull(actual.getComment(), assertContext.getText("Column definition comment should exist."));
+            assertThat(assertContext.getText("Column definition comment assertion error: "), actual.getComment(), is(expected.getComment().getText()));
+        } else {
+            assertNull(actual.getComment(), assertContext.getText("Column definition comment should not exist."));
+        }
     }
     
     private static void assertColumnName(final SQLCaseAssertContext assertContext, final ColumnDefinitionSegment actual, final ExpectedColumnDefinition expected) {

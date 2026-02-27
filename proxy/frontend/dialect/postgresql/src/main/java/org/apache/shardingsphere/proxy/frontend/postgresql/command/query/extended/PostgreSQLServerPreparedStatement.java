@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLParameterDescriptionPacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatement;
@@ -46,7 +46,7 @@ public final class PostgreSQLServerPreparedStatement implements ServerPreparedSt
     
     private final HintValueContext hintValueContext;
     
-    private final List<PostgreSQLColumnType> parameterTypes;
+    private final List<PostgreSQLBinaryColumnType> parameterTypes;
     
     private final List<Integer> actualParameterMarkerIndexes;
     

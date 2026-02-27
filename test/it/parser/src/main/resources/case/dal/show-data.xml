@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <doris-show-data sql-case-id="show_data" />
+
+    <doris-show-data sql-case-id="show_data_from_table">
+        <table name="table1" start-index="15" stop-index="20" />
+    </doris-show-data>
+
+    <doris-show-data sql-case-id="show_data_from_db_table">
+        <table name="table1" start-index="15" stop-index="24">
+            <owner name="db1" start-index="15" stop-index="17" />
+        </table>
+    </doris-show-data>
+
+    <doris-show-data sql-case-id="show_data_order_by">
+        <order-by>
+            <column-item name="ReplicaCount" order-direction="DESC" start-index="19" stop-index="30" />
+            <column-item name="Size" order-direction="ASC" start-index="38" stop-index="41" />
+        </order-by>
+    </doris-show-data>
+
+    <doris-show-data sql-case-id="show_data_from_table_order_by">
+        <table name="table1" start-index="15" stop-index="20" />
+        <order-by>
+            <column-item name="Size" order-direction="DESC" start-index="31" stop-index="34" />
+        </order-by>
+    </doris-show-data>
+</sql-parser-test-cases>

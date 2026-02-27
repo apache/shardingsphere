@@ -52,6 +52,11 @@ distributedbyClause
     : DISTRIBUTED BY HASH (LP_ columnName RP_) BUCKETS NUMBER_
     ;
 
+modifyDistributionClause
+    : DISTRIBUTED BY HASH LP_ columnNames RP_ BUCKETS (NUMBER_ | AUTO)
+    | DISTRIBUTED BY RANDOM BUCKETS (NUMBER_ | AUTO)
+    ;
+
 propertiesClause
     : PROPERTIES LP_ properties RP_
     ;
@@ -127,8 +132,8 @@ alterListItem
     | ADD tableConstraintDef  # addTableConstraint
     | ADD ROLLUP rollupItem (COMMA_ rollupItem)*  # addRollup
     | CHANGE COLUMN? columnInternalRef=identifier columnDefinition place?  # changeColumn
-    | MODIFY COLUMN? columnInternalRef=identifier fieldDefinition place?   # modifyColumn
-    | DROP (COLUMN? columnInternalRef=identifier restrict? | FOREIGN KEY columnInternalRef=identifier | PRIMARY KEY | keyOrIndex indexName | CHECK identifier | CONSTRAINT identifier)  # alterTableDrop
+    | MODIFY COLUMN? columnInternalRef=identifier (fieldDefinition place? | COMMENT string_)   # modifyColumn
+    | DROP (COLUMN? columnInternalRef=identifier restrict? | FOREIGN KEY columnInternalRef=identifier | PRIMARY KEY | keyOrIndex indexName | CHECK identifier | CONSTRAINT identifier) propertiesClause?  # alterTableDrop
     | DROP ROLLUP rollupNameItem (COMMA_ rollupNameItem)*  # dropRollup
     | DISABLE KEYS  # disableKeys
     | ENABLE KEYS   # enableKeys
@@ -191,6 +196,11 @@ standaloneAlterCommands
     | IMPORT TABLESPACE
     | alterPartition
     | (SECONDARY_LOAD | SECONDARY_UNLOAD)
+    | SET LP_ properties RP_
+    | ENABLE FEATURE string_ (WITH PROPERTIES LP_ properties RP_)?
+    | MODIFY DISTRIBUTION modifyDistributionClause
+    | MODIFY COMMENT string_
+    | MODIFY ENGINE TO identifier PROPERTIES LP_ properties RP_
     ;
 
 alterPartition
@@ -241,7 +251,7 @@ fulltextIndexOption
     ;
 
 dropTable
-    : DROP TEMPORARY? tableOrTables ifExists? tableList restrict?
+    : DROP TEMPORARY? tableOrTables ifExists? tableList (restrict | FORCE)?
     ;
 
 dropIndex
@@ -284,7 +294,7 @@ alterLockOption
     ;
 
 truncateTable
-    : TRUNCATE TABLE? tableName
+    : TRUNCATE TABLE? tableName partitionNames?
     ;
 
 createIndex

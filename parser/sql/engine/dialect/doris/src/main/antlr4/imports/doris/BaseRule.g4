@@ -160,6 +160,7 @@ identifierKeywordsUnambiguous
     | BLOCK
     | BOOLEAN
     | BOOL
+    | BRIEF
     | BTREE
     | BUCKETS
     | BUILTIN
@@ -242,6 +243,7 @@ identifierKeywordsUnambiguous
     | FAILED_LOGIN_ATTEMPTS
     | FAST
     | FAULTS
+    | FEATURE
     | FILE_BLOCK_SIZE
     | FILTER
     | FIRST

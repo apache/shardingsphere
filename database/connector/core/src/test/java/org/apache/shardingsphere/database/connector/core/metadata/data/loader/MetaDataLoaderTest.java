@@ -35,6 +35,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -95,15 +97,25 @@ class MetaDataLoaderTest {
     }
     
     @Test
-    void assertLoadWhenInterrupted() throws SQLException {
+    void assertLoadWhenInterrupted() throws Exception {
         MetaDataLoaderMaterial material = new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", mock(DataSource.class, RETURNS_DEEP_STUBS), databaseType, "foo_db");
-        Thread.currentThread().interrupt();
-        try {
-            Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(material));
-            assertTrue(actual.isEmpty());
-            assertTrue(Thread.currentThread().isInterrupted());
-        } finally {
-            Thread.interrupted();
+        CountDownLatch latch = new CountDownLatch(1);
+        DialectMetaDataLoader dialectMetaDataLoader = mock(DialectMetaDataLoader.class);
+        when(dialectMetaDataLoader.getType()).thenReturn(databaseType);
+        when(dialectMetaDataLoader.load(any(MetaDataLoaderMaterial.class))).thenAnswer(invocation -> {
+            latch.await(5L, TimeUnit.SECONDS);
+            return Collections.singleton(new SchemaMetaData("foo_db", Collections.emptyList()));
+        });
+        try (AutoCloseable ignored = registerDialectMetaDataLoader(dialectMetaDataLoader)) {
+            Thread.currentThread().interrupt();
+            try {
+                Map<String, SchemaMetaData> actual = MetaDataLoader.load(Collections.singleton(material));
+                assertTrue(actual.isEmpty());
+                assertTrue(Thread.currentThread().isInterrupted());
+            } finally {
+                Thread.interrupted();
+                latch.countDown();
+            }
         }
     }
     

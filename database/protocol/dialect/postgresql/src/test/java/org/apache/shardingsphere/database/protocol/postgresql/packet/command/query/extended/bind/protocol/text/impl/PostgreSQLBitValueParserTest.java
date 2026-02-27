@@ -17,18 +17,38 @@
 
 package org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
 import org.postgresql.util.PGobject;
+
+import java.sql.SQLException;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mockConstruction;
 
 class PostgreSQLBitValueParserTest {
     
     @Test
-    void assertParse() {
+    void assertParse() throws SQLException {
+        PGobject expected = new PGobject();
+        expected.setType("bit");
+        expected.setValue("1");
         PGobject actual = new PostgreSQLBitValueParser().parse("1");
-        assertThat(actual.getType(), is("bit"));
-        assertThat(actual.getValue(), is("1"));
+        assertThat(actual, is(expected));
+    }
+    
+    @Test
+    void assertParseWithSQLException() {
+        try (MockedConstruction<PGobject> mocked = mockConstruction(PGobject.class, (mock, context) -> doThrow(new SQLException("failed")).when(mock).setValue(anyString()))) {
+            SQLWrapperException actual = assertThrows(SQLWrapperException.class, () -> new PostgreSQLBitValueParser().parse("1"));
+            assertThat(actual.getCause(), isA(SQLException.class));
+            assertThat(mocked.constructed().size(), is(1));
+        }
     }
 }

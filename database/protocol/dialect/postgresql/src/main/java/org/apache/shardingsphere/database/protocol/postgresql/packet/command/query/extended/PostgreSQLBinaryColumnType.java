@@ -44,11 +44,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Column type for PostgreSQL.
+ * Binary column type for PostgreSQL.
  */
 @RequiredArgsConstructor
 @Getter
-public enum PostgreSQLColumnType implements BinaryColumnType {
+public enum PostgreSQLBinaryColumnType implements BinaryColumnType {
     
     UNSPECIFIED(0, new PostgreSQLUnspecifiedValueParser()),
     
@@ -170,7 +170,7 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     
     REF_CURSOR_ARRAY(2201, new PostgreSQLVarcharValueParser());
     
-    private static final Map<Integer, PostgreSQLColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
+    private static final Map<Integer, PostgreSQLBinaryColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
     
     private final int value;
     
@@ -206,7 +206,7 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
      * @param jdbcType JDBC type
      * @return PostgreSQL column type enum
      */
-    public static PostgreSQLColumnType valueOfJDBCType(final int jdbcType) {
+    public static PostgreSQLBinaryColumnType valueOfJDBCType(final int jdbcType) {
         Preconditions.checkArgument(JDBC_TYPE_AND_COLUMN_TYPE_MAP.containsKey(jdbcType), "Can not find JDBC type `%s` in PostgreSQL column type", jdbcType);
         return JDBC_TYPE_AND_COLUMN_TYPE_MAP.get(jdbcType);
     }
@@ -218,7 +218,7 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
      * @param columnTypeName column type name
      * @return PostgreSQL column type enum
      */
-    public static PostgreSQLColumnType valueOfJDBCType(final int jdbcType, final String columnTypeName) {
+    public static PostgreSQLBinaryColumnType valueOfJDBCType(final int jdbcType, final String columnTypeName) {
         if (isBit(jdbcType, columnTypeName)) {
             return BIT;
         }
@@ -271,8 +271,8 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
      * @return PostgreSQL column type
      * @throws PostgreSQLProtocolException PostgreSQL protocol exception
      */
-    public static PostgreSQLColumnType valueOf(final int value) {
-        for (PostgreSQLColumnType each : values()) {
+    public static PostgreSQLBinaryColumnType valueOf(final int value) {
+        for (PostgreSQLBinaryColumnType each : values()) {
             if (value == each.value) {
                 return each;
             }

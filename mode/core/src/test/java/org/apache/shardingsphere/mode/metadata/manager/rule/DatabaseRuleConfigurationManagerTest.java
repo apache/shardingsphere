@@ -18,12 +18,16 @@
 package org.apache.shardingsphere.mode.metadata.manager.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
@@ -55,14 +59,14 @@ import static org.mockito.Mockito.withSettings;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(DatabaseRulesBuilder.class)
+@StaticMockSettings({DatabaseRulesBuilder.class, TypedSPILoader.class})
 class DatabaseRuleConfigurationManagerTest {
     
     private static final String DATABASE_NAME = "foo_db";
     
     @Test
     void assertRefreshWithPartialUpdateAndRebuild() throws SQLException {
-        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
+        DatabaseRuleConfiguration ruleConfig = mockDatabaseRuleConfiguration(false);
         ShardingSphereRule closableRule = mock(ShardingSphereRule.class, withSettings().extraInterfaces(PartialRuleUpdateSupported.class, AutoCloseable.class));
         when(closableRule.getConfiguration()).thenReturn(ruleConfig);
         PartialRuleUpdateSupported updater = (PartialRuleUpdateSupported) closableRule;
@@ -79,7 +83,7 @@ class DatabaseRuleConfigurationManagerTest {
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
             when(DatabaseRulesBuilder.build(eq(DATABASE_NAME), any(), any(), eq(ruleConfig), any(), any())).thenReturn(rebuiltRule);
-            new DatabaseRuleConfigurationManager(metaDataContexts, mock(ComputeNodeInstanceContext.class), mock(MetaDataPersistFacade.class)).refresh(DATABASE_NAME, ruleConfig, true);
+            new DatabaseRuleConfigurationManager(metaDataContexts, mock(ComputeNodeInstanceContext.class), mock(MetaDataPersistFacade.class)).refresh(DATABASE_NAME, ruleConfig);
             verify((PartialRuleUpdateSupported) closableRule).updateConfiguration(ruleConfig);
             verify(metaDataContexts).update(any(MetaDataContexts.class));
             assertDoesNotThrow(() -> verify((AutoCloseable) closableRule).close());
@@ -88,21 +92,41 @@ class DatabaseRuleConfigurationManagerTest {
     
     @Test
     void assertRefreshWithPartialUpdateSkipMetadata() throws SQLException {
-        RuleConfiguration ruleConfig = mock(RuleConfiguration.class, withSettings().extraInterfaces(Serializable.class));
+        DatabaseRuleConfiguration ruleConfig = mockDatabaseRuleConfiguration(false);
         ShardingSphereRule partialRule = mock(ShardingSphereRule.class, withSettings().extraInterfaces(PartialRuleUpdateSupported.class));
         when(partialRule.getConfiguration()).thenReturn(ruleConfig);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(partialRule)));
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
-        new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig, true);
+        new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
         verify((PartialRuleUpdateSupported) partialRule).updateConfiguration(ruleConfig);
         verify(metaDataContexts, never()).update(any(MetaDataContexts.class));
     }
     
     @Test
-    void assertRefreshWithPartialUpdateWithoutRebuild() throws SQLException {
-        RuleConfiguration ruleConfig = mock(RuleConfiguration.class, withSettings().extraInterfaces(Serializable.class));
+    void assertRefreshWithEmptyRuleConfigurationAndPartialRule() throws SQLException {
+        DatabaseRuleConfiguration ruleConfig = mockDatabaseRuleConfiguration(true);
+        ShardingSphereRule partialRule = mock(ShardingSphereRule.class, withSettings().extraInterfaces(PartialRuleUpdateSupported.class));
+        when(partialRule.getConfiguration()).thenReturn(ruleConfig);
+        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(Collections.singleton(partialRule)));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
+        try (
+                MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
+                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
+            new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
+            verify((PartialRuleUpdateSupported) partialRule, never()).partialUpdate(ruleConfig);
+            verify((PartialRuleUpdateSupported) partialRule, never()).updateConfiguration(ruleConfig);
+            verify(metaDataContexts).update(any(MetaDataContexts.class));
+        }
+    }
+    
+    @Test
+    void assertRefreshWithPartialUpdateNeedRefreshMetadata() throws SQLException {
+        DatabaseRuleConfiguration ruleConfig = mockDatabaseRuleConfiguration(false);
         ShardingSphereRule partialRule = mock(ShardingSphereRule.class, withSettings().extraInterfaces(PartialRuleUpdateSupported.class));
         when(partialRule.getConfiguration()).thenReturn(ruleConfig);
         PartialRuleUpdateSupported updater = (PartialRuleUpdateSupported) partialRule;
@@ -115,15 +139,15 @@ class DatabaseRuleConfigurationManagerTest {
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
-            new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig, false);
+            new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
             verify(metaDataContexts).update(any(MetaDataContexts.class));
             verify(updater).updateConfiguration(ruleConfig);
         }
     }
     
     @Test
-    void assertRefreshWithoutExistingRuleAndWithoutRebuild() throws SQLException {
-        RuleConfiguration ruleConfig = mock(RuleConfiguration.class, withSettings().extraInterfaces(Serializable.class));
+    void assertRefreshWithoutExistingRule() throws SQLException {
+        DatabaseRuleConfiguration ruleConfig = mockDatabaseRuleConfiguration(false);
         ShardingSphereRule otherRule = mock(ShardingSphereRule.class);
         when(otherRule.getConfiguration()).thenReturn(mock(RuleConfiguration.class, withSettings().extraInterfaces(Cloneable.class)));
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(otherRule));
@@ -131,17 +155,19 @@ class DatabaseRuleConfigurationManagerTest {
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
+        ShardingSphereRule rebuiltRule = mock(ShardingSphereRule.class);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
-            new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig, false);
+            when(DatabaseRulesBuilder.build(eq(DATABASE_NAME), any(), any(), eq(ruleConfig), any(), any())).thenReturn(rebuiltRule);
+            new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
             verify(metaDataContexts).update(any(MetaDataContexts.class));
         }
     }
     
     @Test
     void assertRefreshWithExistingNonPartialRule() throws SQLException {
-        RuleConfiguration ruleConfig = mock(RuleConfiguration.class, withSettings().extraInterfaces(Serializable.class));
+        DatabaseRuleConfiguration ruleConfig = mockDatabaseRuleConfiguration(false);
         ShardingSphereRule existingRule = mock(ShardingSphereRule.class);
         when(existingRule.getConfiguration()).thenReturn(ruleConfig);
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(existingRule));
@@ -154,14 +180,14 @@ class DatabaseRuleConfigurationManagerTest {
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
             when(DatabaseRulesBuilder.build(eq(DATABASE_NAME), any(), any(), eq(ruleConfig), any(), any())).thenReturn(rebuiltRule);
-            new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig, true);
+            new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
             verify(metaDataContexts).update(any(MetaDataContexts.class));
         }
     }
     
     @Test
     void assertRefreshWrapsException() {
-        RuleConfiguration ruleConfig = mock(RuleConfiguration.class, withSettings().extraInterfaces(Serializable.class));
+        DatabaseRuleConfiguration ruleConfig = mockDatabaseRuleConfiguration(false);
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(rule));
@@ -173,13 +199,13 @@ class DatabaseRuleConfigurationManagerTest {
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenThrow(new SQLException("failed")))) {
             assertThrows(SQLException.class,
-                    () -> new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig, false));
+                    () -> new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig));
         }
     }
     
     @Test
     void assertRefreshThrowsWhenCloseOriginalRuleFailed() throws Exception {
-        RuleConfiguration ruleConfig = mock(RuleConfiguration.class, withSettings().extraInterfaces(Serializable.class));
+        DatabaseRuleConfiguration ruleConfig = mockDatabaseRuleConfiguration(false);
         ShardingSphereRule closableRule = mock(ShardingSphereRule.class, withSettings().extraInterfaces(PartialRuleUpdateSupported.class, AutoCloseable.class));
         when(closableRule.getConfiguration()).thenReturn(ruleConfig);
         PartialRuleUpdateSupported updater = (PartialRuleUpdateSupported) closableRule;
@@ -194,7 +220,15 @@ class DatabaseRuleConfigurationManagerTest {
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
             assertThrows(Exception.class,
-                    () -> new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig, false));
+                    () -> new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig));
         }
+    }
+    
+    private DatabaseRuleConfiguration mockDatabaseRuleConfiguration(final boolean isEmpty) {
+        DatabaseRuleConfiguration result = mock(DatabaseRuleConfiguration.class, withSettings().extraInterfaces(Serializable.class));
+        DatabaseRuleConfigurationEmptyChecker checker = mock(DatabaseRuleConfigurationEmptyChecker.class);
+        when(checker.isEmpty(result)).thenReturn(isEmpty);
+        when((TypedSPI) TypedSPILoader.getService(DatabaseRuleConfigurationEmptyChecker.class, result.getClass())).thenReturn(checker);
+        return result;
     }
 }

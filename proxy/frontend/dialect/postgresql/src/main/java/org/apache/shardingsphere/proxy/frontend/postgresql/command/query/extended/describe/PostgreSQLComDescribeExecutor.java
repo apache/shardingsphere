@@ -25,7 +25,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.PostgreSQLP
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
@@ -147,16 +147,16 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 }
                 String columnName = columnNamesOfInsert.get(i).toString();
                 ShardingSpherePreconditions.checkState(table.containsColumn(columnName), () -> new ColumnNotFoundException(logicTableName, columnName));
-                preparedStatement.getParameterTypes().set(parameterMarkerIndex++, PostgreSQLColumnType.valueOfJDBCType(table.getColumn(columnName).getDataType()));
+                preparedStatement.getParameterTypes().set(parameterMarkerIndex++, PostgreSQLBinaryColumnType.valueOfJDBCType(table.getColumn(columnName).getDataType()));
             }
         }
     }
     
     private Collection<Integer> getUnspecifiedTypeParameterIndexes(final PostgreSQLServerPreparedStatement preparedStatement) {
         Collection<Integer> result = new HashSet<>();
-        ListIterator<PostgreSQLColumnType> parameterTypesListIterator = preparedStatement.getParameterTypes().listIterator();
+        ListIterator<PostgreSQLBinaryColumnType> parameterTypesListIterator = preparedStatement.getParameterTypes().listIterator();
         for (int index = parameterTypesListIterator.nextIndex(); parameterTypesListIterator.hasNext(); index = parameterTypesListIterator.nextIndex()) {
-            if (PostgreSQLColumnType.UNSPECIFIED == parameterTypesListIterator.next()) {
+            if (PostgreSQLBinaryColumnType.UNSPECIFIED == parameterTypesListIterator.next()) {
                 result.add(index);
             }
         }
@@ -255,13 +255,13 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     private void populateParameterTypes(final PostgreSQLServerPreparedStatement logicPreparedStatement, final PreparedStatement actualPreparedStatement) throws SQLException {
         if (0 == logicPreparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount()
-                || logicPreparedStatement.getParameterTypes().stream().noneMatch(each -> PostgreSQLColumnType.UNSPECIFIED == each)) {
+                || logicPreparedStatement.getParameterTypes().stream().noneMatch(each -> PostgreSQLBinaryColumnType.UNSPECIFIED == each)) {
             return;
         }
         ParameterMetaData parameterMetaData = actualPreparedStatement.getParameterMetaData();
         for (int i = 0; i < logicPreparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount(); i++) {
-            if (PostgreSQLColumnType.UNSPECIFIED == logicPreparedStatement.getParameterTypes().get(i)) {
-                logicPreparedStatement.getParameterTypes().set(i, PostgreSQLColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1), parameterMetaData.getParameterTypeName(i + 1)));
+            if (PostgreSQLBinaryColumnType.UNSPECIFIED == logicPreparedStatement.getParameterTypes().get(i)) {
+                logicPreparedStatement.getParameterTypes().set(i, PostgreSQLBinaryColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1), parameterMetaData.getParameterTypeName(i + 1)));
             }
         }
     }

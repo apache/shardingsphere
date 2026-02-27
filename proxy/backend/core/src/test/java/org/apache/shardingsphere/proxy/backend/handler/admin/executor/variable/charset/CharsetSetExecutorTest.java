@@ -34,6 +34,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,6 +49,7 @@ class CharsetSetExecutorTest {
     void assertSetWhenProviderPresentAndVariableMatched() {
         CharsetVariableProvider provider = mock(CharsetVariableProvider.class);
         when(provider.getCharsetVariables()).thenReturn(Collections.singletonList("character_set_client"));
+        when(provider.shouldSet("CHARACTER_SET_CLIENT", "utf8")).thenReturn(true);
         when(provider.parseCharset("utf8")).thenReturn(StandardCharsets.UTF_8);
         when(DatabaseTypedSPILoader.findService(CharsetVariableProvider.class, databaseType)).thenReturn(Optional.of(provider));
         AttributeMap attributeMap = mock(AttributeMap.class);
@@ -71,5 +73,34 @@ class CharsetSetExecutorTest {
         when(provider.getCharsetVariables()).thenReturn(Collections.singletonList("character_set_server"));
         when(DatabaseTypedSPILoader.findService(CharsetVariableProvider.class, databaseType)).thenReturn(Optional.of(provider));
         assertDoesNotThrow(() -> new CharsetSetExecutor(databaseType, mock()).set("character_set_client", "utf8"));
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Test
+    void assertSetWhenCharacterSetResultsMatched() {
+        CharsetVariableProvider provider = mock(CharsetVariableProvider.class);
+        when(provider.getCharsetVariables()).thenReturn(Collections.singletonList("character_set_results"));
+        when(provider.shouldSet("CHARACTER_SET_RESULTS", "utf8")).thenReturn(true);
+        when(provider.parseCharset("utf8")).thenReturn(StandardCharsets.UTF_8);
+        when(DatabaseTypedSPILoader.findService(CharsetVariableProvider.class, databaseType)).thenReturn(Optional.of(provider));
+        AttributeMap attributeMap = mock(AttributeMap.class);
+        Attribute attribute = mock(Attribute.class);
+        when(attributeMap.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(attribute);
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        when(connectionSession.getAttributeMap()).thenReturn(attributeMap);
+        new CharsetSetExecutor(databaseType, connectionSession).set("CHARACTER_SET_RESULTS", "utf8");
+        verify(attribute).set(StandardCharsets.UTF_8);
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Test
+    void assertSetWhenProviderRejectsVariableValue() {
+        CharsetVariableProvider provider = mock(CharsetVariableProvider.class);
+        when(provider.getCharsetVariables()).thenReturn(Collections.singletonList("character_set_results"));
+        when(provider.shouldSet("CHARACTER_SET_RESULTS", "NULL")).thenReturn(false);
+        when(DatabaseTypedSPILoader.findService(CharsetVariableProvider.class, databaseType)).thenReturn(Optional.of(provider));
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        new CharsetSetExecutor(databaseType, connectionSession).set("CHARACTER_SET_RESULTS", "NULL");
+        verify(connectionSession, never()).getAttributeMap();
     }
 }
