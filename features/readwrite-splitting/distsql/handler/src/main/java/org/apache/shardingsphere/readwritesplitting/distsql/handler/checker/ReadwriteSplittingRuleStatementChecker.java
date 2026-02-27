@@ -61,7 +61,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
      *
      * @param database database
      * @param segments segments
-     * @param currentRuleConfig current rule config
+     * @param currentRuleConfig current rule configuration
      * @param ifNotExists rule if not exists
      */
     public static void checkCreation(final ShardingSphereDatabase database, final Collection<ReadwriteSplittingRuleSegment> segments,
@@ -79,7 +79,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
      *
      * @param database database
      * @param segments segments
-     * @param currentRuleConfig current rule config
+     * @param currentRuleConfig current rule configuration
      */
     public static void checkAlteration(final ShardingSphereDatabase database, final Collection<ReadwriteSplittingRuleSegment> segments, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         String databaseName = database.getName();
