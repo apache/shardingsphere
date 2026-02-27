@@ -287,6 +287,14 @@ showCharset
     : SHOW CHARSET
     ;
 
+showDataTypes
+    : SHOW DATA TYPES
+    ;
+
+showData
+    : SHOW DATA (FROM tableName)? orderByClause?
+    ;
+
 setCharacter
     : SET (CHARACTER SET | CHARSET) (charsetName | DEFAULT)
     ;
@@ -836,4 +844,6 @@ show
     | showRoutineLoad
     | showProc
     | showSyncJob
+    | showDataTypes
+    | showData
     ;

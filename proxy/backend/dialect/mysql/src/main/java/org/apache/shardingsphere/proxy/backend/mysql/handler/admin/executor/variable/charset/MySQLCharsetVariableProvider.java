@@ -35,7 +35,12 @@ public final class MySQLCharsetVariableProvider implements CharsetVariableProvid
     
     @Override
     public Collection<String> getCharsetVariables() {
-        return Arrays.asList("charset", "character_set_client");
+        return Arrays.asList("charset", "character_set_client", "character_set_results", "character_set_connection");
+    }
+    
+    @Override
+    public boolean shouldSet(final String variableName, final String variableValue) {
+        return !"character_set_results".equalsIgnoreCase(variableName) || !"null".equalsIgnoreCase(formatValue(variableValue));
     }
     
     @Override

@@ -27,7 +27,7 @@ public final class EncryptRuleConfigurationEmptyChecker implements DatabaseRuleC
     
     @Override
     public boolean isEmpty(final EncryptRuleConfiguration ruleConfig) {
-        return ruleConfig.getTables().isEmpty();
+        return ruleConfig.getTables().isEmpty() && ruleConfig.getEncryptors().isEmpty();
     }
     
     @Override

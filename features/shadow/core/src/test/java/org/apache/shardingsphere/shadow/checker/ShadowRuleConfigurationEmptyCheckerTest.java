@@ -29,7 +29,6 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 class ShadowRuleConfigurationEmptyCheckerTest {
     
@@ -43,22 +42,27 @@ class ShadowRuleConfigurationEmptyCheckerTest {
     @Test
     void assertIsEmptyDataSources() {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
-        ruleConfig.setTables(Collections.singletonMap("foo_tbl", mock(ShadowTableConfiguration.class)));
-        assertTrue(checker.isEmpty(ruleConfig));
+        ruleConfig.setTables(Collections.singletonMap("foo_tbl", new ShadowTableConfiguration(Collections.emptyList(), Collections.emptyList())));
+        assertFalse(checker.isEmpty(ruleConfig));
     }
     
     @Test
     void assertIsEmptyTables() {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
-        ruleConfig.setDataSources(Collections.singleton(mock(ShadowDataSourceConfiguration.class)));
-        assertTrue(checker.isEmpty(ruleConfig));
+        ruleConfig.setDataSources(Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "foo", "foo_shadow")));
+        assertFalse(checker.isEmpty(ruleConfig));
+    }
+    
+    @Test
+    void assertIsEmpty() {
+        assertTrue(checker.isEmpty(new ShadowRuleConfiguration()));
     }
     
     @Test
     void assertIsNotEmpty() {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
-        ruleConfig.setDataSources(Collections.singleton(mock(ShadowDataSourceConfiguration.class)));
-        ruleConfig.setTables(Collections.singletonMap("foo_tbl", mock(ShadowTableConfiguration.class)));
+        ruleConfig.setDataSources(Collections.singleton(new ShadowDataSourceConfiguration("foo_ds", "foo", "foo_shadow")));
+        ruleConfig.setTables(Collections.singletonMap("foo_tbl", new ShadowTableConfiguration(Collections.emptyList(), Collections.emptyList())));
         assertFalse(checker.isEmpty(ruleConfig));
     }
 }

@@ -15,23 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.checker;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris;
 
-import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
-import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.orderby.ExpectedOrderByClause;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Shadow rule configuration empty checker.
+ * Show data statement test case for Doris.
  */
-public final class ShadowRuleConfigurationEmptyChecker implements DatabaseRuleConfigurationEmptyChecker<ShadowRuleConfiguration> {
+@Getter
+@Setter
+public final class DorisShowDataStatementTestCase extends SQLParserTestCase {
     
-    @Override
-    public boolean isEmpty(final ShadowRuleConfiguration ruleConfig) {
-        return ruleConfig.getDataSources().isEmpty() && ruleConfig.getTables().isEmpty() && ruleConfig.getShadowAlgorithms().isEmpty();
-    }
+    @XmlElement
+    private ExpectedSimpleTable table;
     
-    @Override
-    public Class<ShadowRuleConfiguration> getType() {
-        return ShadowRuleConfiguration.class;
-    }
+    @XmlElement(name = "order-by")
+    private ExpectedOrderByClause orderBy;
 }

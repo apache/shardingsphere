@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.checker;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris;
 
-import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
-import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
- * Shadow rule configuration empty checker.
+ * Show data types statement test case for Doris.
  */
-public final class ShadowRuleConfigurationEmptyChecker implements DatabaseRuleConfigurationEmptyChecker<ShadowRuleConfiguration> {
-    
-    @Override
-    public boolean isEmpty(final ShadowRuleConfiguration ruleConfig) {
-        return ruleConfig.getDataSources().isEmpty() && ruleConfig.getTables().isEmpty() && ruleConfig.getShadowAlgorithms().isEmpty();
-    }
-    
-    @Override
-    public Class<ShadowRuleConfiguration> getType() {
-        return ShadowRuleConfiguration.class;
-    }
+public final class DorisShowDataTypesStatementTestCase extends SQLParserTestCase {
 }

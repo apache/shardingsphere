@@ -99,6 +99,12 @@
         <parameter-assign value="'utf8'">
             <parameter name="character_set_client" />
         </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_results" />
+        </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_connection" />
+        </parameter-assign>
     </set-parameter>
     <set-parameter sql-case-id="set_character_set_doris">
         <parameter-assign value="utf8mb4">
@@ -111,6 +117,12 @@
     <set-parameter sql-case-id="set_charset_mysql">
         <parameter-assign value="'utf8'">
             <parameter name="character_set_client" />
+        </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_results" />
+        </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_connection" />
         </parameter-assign>
     </set-parameter>
     <set-parameter sql-case-id="set_charset_postgresql">

@@ -15,23 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.checker;
+package org.apache.shardingsphere.sql.parser.statement.doris.dal;
 
-import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
-import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
- * Shadow rule configuration empty checker.
+ * Show data types statement for Doris.
  */
-public final class ShadowRuleConfigurationEmptyChecker implements DatabaseRuleConfigurationEmptyChecker<ShadowRuleConfiguration> {
+public final class DorisShowDataTypesStatement extends DALStatement {
     
-    @Override
-    public boolean isEmpty(final ShadowRuleConfiguration ruleConfig) {
-        return ruleConfig.getDataSources().isEmpty() && ruleConfig.getTables().isEmpty() && ruleConfig.getShadowAlgorithms().isEmpty();
-    }
-    
-    @Override
-    public Class<ShadowRuleConfiguration> getType() {
-        return ShadowRuleConfiguration.class;
+    public DorisShowDataTypesStatement(final DatabaseType databaseType) {
+        super(databaseType);
     }
 }

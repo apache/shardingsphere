@@ -27,7 +27,7 @@ public final class MaskRuleConfigurationEmptyChecker implements DatabaseRuleConf
     
     @Override
     public boolean isEmpty(final MaskRuleConfiguration ruleConfig) {
-        return ruleConfig.getTables().isEmpty();
+        return ruleConfig.getTables().isEmpty() && ruleConfig.getMaskAlgorithms().isEmpty();
     }
     
     @Override

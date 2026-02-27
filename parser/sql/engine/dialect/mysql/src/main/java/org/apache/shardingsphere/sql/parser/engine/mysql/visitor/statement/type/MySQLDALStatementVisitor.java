@@ -788,10 +788,32 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     
     private List<VariableAssignSegment> getVariableAssigns(final OptionValueListContext ctx) {
         List<VariableAssignSegment> result = new LinkedList<>();
-        result.add(null == ctx.optionValueNoOptionType() ? getVariableAssignSegment(ctx) : getVariableAssignSegment(ctx.optionValueNoOptionType()));
-        for (OptionValueContext each : ctx.optionValue()) {
-            result.add(getVariableAssignSegment(each));
+        if (null == ctx.optionValueNoOptionType()) {
+            result.add(getVariableAssignSegment(ctx));
+        } else {
+            result.addAll(getVariableAssignSegments(ctx.optionValueNoOptionType()));
         }
+        for (OptionValueContext each : ctx.optionValue()) {
+            if (null == each.optionValueNoOptionType()) {
+                result.add(getVariableAssignSegment(each));
+            } else {
+                result.addAll(getVariableAssignSegments(each.optionValueNoOptionType()));
+            }
+        }
+        return result;
+    }
+    
+    private List<VariableAssignSegment> getVariableAssignSegments(final OptionValueNoOptionTypeContext ctx) {
+        if (null == ctx.NAMES()) {
+            return Collections.singletonList(getVariableAssignSegment(ctx));
+        }
+        int startIndex = ctx.start.getStartIndex();
+        int stopIndex = ctx.stop.getStopIndex();
+        String assignValue = ctx.charsetName().getText();
+        List<VariableAssignSegment> result = new LinkedList<>();
+        result.add(new VariableAssignSegment(startIndex, stopIndex, new VariableSegment(startIndex, stopIndex, "character_set_client"), assignValue));
+        result.add(new VariableAssignSegment(startIndex, stopIndex, new VariableSegment(startIndex, stopIndex, "character_set_results"), assignValue));
+        result.add(new VariableAssignSegment(startIndex, stopIndex, new VariableSegment(startIndex, stopIndex, "character_set_connection"), assignValue));
         return result;
     }
     
@@ -815,10 +837,6 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     }
     
     private VariableSegment getVariableSegment(final OptionValueNoOptionTypeContext ctx) {
-        if (null != ctx.NAMES()) {
-            // TODO Consider setting all three system variables: character_set_client, character_set_results, character_set_connection
-            return new VariableSegment(ctx.NAMES().getSymbol().getStartIndex(), ctx.NAMES().getSymbol().getStopIndex(), "character_set_client");
-        }
         if (null != ctx.internalVariableName()) {
             return new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
         }
