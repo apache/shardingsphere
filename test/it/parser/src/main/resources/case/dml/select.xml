@@ -10242,7 +10242,7 @@
                 <index-hint origin-text="USE INDEX (i1)" start-index="48" stop-index="61">
                     <hint-index-name name="i1" start-index="59" stop-index="60"/>
                 </index-hint>
-                <index-hint origin-text="USE INDEX (i2)" start-index="63" stop-index="66">
+                <index-hint origin-text="USE INDEX (i2)" start-index="63" stop-index="76">
                     <hint-index-name name="i2" start-index="74" stop-index="75"/>
                 </index-hint>
             </simple-table>
@@ -10341,6 +10341,86 @@
                 </index-hint>
             </simple-table>
         </from>
+    </select>
+
+    <select sql-case-id="select_use_index_ignore_index_for_order_by">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="14" stop-index="15">
+                <index-hint origin-text="USE INDEX (i1)" start-index="17" stop-index="30">
+                    <hint-index-name name="i1" start-index="28" stop-index="29"/>
+                </index-hint>
+                <index-hint origin-text="IGNORE INDEX FOR ORDER BY (i2)" start-index="32" stop-index="61">
+                    <hint-index-name name="i2" start-index="59" stop-index="60"/>
+                </index-hint>
+            </simple-table>
+        </from>
+        <order-by>
+            <column-item name="a" start-index="72" stop-index="72" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_use_index_twice">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="14" stop-index="15">
+                <index-hint origin-text="USE INDEX (i1)" start-index="17" stop-index="30">
+                    <hint-index-name name="i1" start-index="28" stop-index="29"/>
+                </index-hint>
+                <index-hint origin-text="USE INDEX (i1,i1)" start-index="32" stop-index="48">
+                    <hint-index-name name="i1" start-index="43" stop-index="44"/>
+                    <hint-index-name name="i1" start-index="46" stop-index="47"/>
+                </index-hint>
+            </simple-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_use_index_force_index_for_join">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="t1" start-index="14" stop-index="15">
+                <index-hint origin-text="USE INDEX FOR JOIN (i1)" start-index="17" stop-index="39">
+                    <hint-index-name name="i1" start-index="37" stop-index="38"/>
+                </index-hint>
+                <index-hint origin-text="FORCE INDEX FOR JOIN (i2)" start-index="41" stop-index="65">
+                    <hint-index-name name="i2" start-index="63" stop-index="64"/>
+                </index-hint>
+            </simple-table>
+        </from>
+    </select>
+
+    <select sql-case-id="select_group_by_match_against_with_rollup">
+        <projections start-index="7" stop-index="7">
+            <expression-projection text="1" start-index="7" stop-index="7">
+                <expr>
+                    <literal-expression value="1" start-index="7" stop-index="7"/>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t" start-index="14" stop-index="14" />
+        </from>
+        <group-by>
+            <column-item name="a" start-index="25" stop-index="25" />
+            <expression-item start-index="28" stop-index="52" expression="MATCH (a) AGAINST ('abc')">
+                <expr>
+                    <match-expression start-index="31" stop-index="52">
+                        <columns>
+                            <column name="a" start-index="37" stop-index="37"/>
+                        </columns>
+                        <expr>
+                            <literal-expression value="abc" start-index="47" stop-index="51"/>
+                        </expr>
+                    </match-expression>
+                </expr>
+            </expression-item>
+        </group-by>
     </select>
 
     <select sql-case-id="select_with_reserved_word_with_table_ref">

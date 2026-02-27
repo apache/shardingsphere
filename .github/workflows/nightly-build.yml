@@ -166,7 +166,7 @@ jobs:
   generate-and-test-examples:
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
     if: github.repository == 'apache/shardingsphere'
-    needs: build-cache
+    needs: [ build-cache, global-environment ]
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
