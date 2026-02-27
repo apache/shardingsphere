@@ -27,14 +27,18 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.shadow.route.retriever.dml.ShadowDMLStatementDataSourceMappingsRetriever;
+import org.apache.shardingsphere.shadow.route.retriever.hint.ShadowHintDataSourceMappingsRetriever;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
@@ -44,52 +48,55 @@ import static org.mockito.Mockito.when;
 
 class ShadowDataSourceMappingsRetrieverFactoryTest {
     
-    @Test
-    void assertNewInstance() {
-        ShadowDataSourceMappingsRetriever retriever = ShadowDataSourceMappingsRetrieverFactory.newInstance(
-                new QueryContext(createInsertSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(retriever, isA(ShadowDMLStatementDataSourceMappingsRetriever.class));
-        ShadowDataSourceMappingsRetriever shadowUpdateRouteEngine = ShadowDataSourceMappingsRetrieverFactory.newInstance(
-                new QueryContext(createUpdateSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(shadowUpdateRouteEngine, isA(ShadowDMLStatementDataSourceMappingsRetriever.class));
-        ShadowDataSourceMappingsRetriever shadowDeleteRouteEngine = ShadowDataSourceMappingsRetrieverFactory.newInstance(
-                new QueryContext(createDeleteSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(shadowDeleteRouteEngine, isA(ShadowDMLStatementDataSourceMappingsRetriever.class));
-        ShadowDataSourceMappingsRetriever shadowSelectRouteEngine = ShadowDataSourceMappingsRetrieverFactory.newInstance(
-                new QueryContext(createSelectSqlStatementContext(), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class)));
-        assertThat(shadowSelectRouteEngine, isA(ShadowDMLStatementDataSourceMappingsRetriever.class));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("newInstanceArguments")
+    void assertNewInstance(final String name, final SQLStatementContext sqlStatementContext, final Class<? extends ShadowDataSourceMappingsRetriever> expectedRetrieverType) {
+        ConnectionContext connectionContext = mock(ConnectionContext.class);
+        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
+        ShadowDataSourceMappingsRetriever actualRetriever = ShadowDataSourceMappingsRetrieverFactory.newInstance(
+                new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), connectionContext, mock(ShardingSphereMetaData.class)));
+        assertThat(name, actualRetriever, isA(expectedRetrieverType));
     }
     
-    private ConnectionContext mockConnectionContext() {
-        ConnectionContext result = mock(ConnectionContext.class);
-        when(result.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
-        return result;
+    private static Stream<Arguments> newInstanceArguments() {
+        return Stream.of(
+                Arguments.of("insert statement context", createInsertSqlStatementContext(), ShadowDMLStatementDataSourceMappingsRetriever.class),
+                Arguments.of("delete statement context", createDeleteSqlStatementContext(), ShadowDMLStatementDataSourceMappingsRetriever.class),
+                Arguments.of("update statement context", createUpdateSqlStatementContext(), ShadowDMLStatementDataSourceMappingsRetriever.class),
+                Arguments.of("select statement context", createSelectSqlStatementContext(), ShadowDMLStatementDataSourceMappingsRetriever.class),
+                Arguments.of("other statement context", createOtherSqlStatementContext(), ShadowHintDataSourceMappingsRetriever.class));
     }
     
-    private SQLStatementContext createInsertSqlStatementContext() {
+    private static SQLStatementContext createInsertSqlStatementContext() {
         InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(InsertStatement.class));
         when(result.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         return result;
     }
     
-    private SQLStatementContext createUpdateSqlStatementContext() {
+    private static SQLStatementContext createUpdateSqlStatementContext() {
         UpdateStatementContext result = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(UpdateStatement.class));
         when(result.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         return result;
     }
     
-    private SQLStatementContext createDeleteSqlStatementContext() {
+    private static SQLStatementContext createDeleteSqlStatementContext() {
         DeleteStatementContext result = mock(DeleteStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(DeleteStatement.class));
         when(result.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         return result;
     }
     
-    private SQLStatementContext createSelectSqlStatementContext() {
+    private static SQLStatementContext createSelectSqlStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(SelectStatement.class));
+        when(result.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        return result;
+    }
+    
+    private static SQLStatementContext createOtherSqlStatementContext() {
+        SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         return result;
     }
