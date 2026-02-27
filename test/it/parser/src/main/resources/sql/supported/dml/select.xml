@@ -533,4 +533,8 @@
     <sql-case id="select_mbroverlaps" value="SELECT MBROverlaps(@g1, @g2)" db-types="MySQL" />
     <sql-case id="select_mbrtouches" value="SELECT MBRTouches(@g1, @g2)" db-types="MySQL" />
     <sql-case id="select_mbrwithin" value="SELECT MBRWithin(@g1, @g2)" db-types="MySQL" />
+    <sql-case id="select_use_index_ignore_index_for_order_by" value="SELECT * FROM t1 USE INDEX (i1) IGNORE INDEX FOR ORDER BY (i2) ORDER BY a;" db-types="MySQL" />
+    <sql-case id="select_use_index_twice" value="SELECT * FROM t1 USE INDEX (i1) USE INDEX (i1,i1);" db-types="MySQL" />
+    <sql-case id="select_use_index_force_index_for_join" value="SELECT * FROM t1 USE INDEX FOR JOIN (i1) FORCE INDEX FOR JOIN (i2);" db-types="MySQL" />
+    <sql-case id="select_group_by_match_against_with_rollup" value="SELECT 1 FROM t GROUP BY a, MATCH (a) AGAINST ('abc') WITH ROLLUP;" db-types="MySQL" />
 </sql-cases>
