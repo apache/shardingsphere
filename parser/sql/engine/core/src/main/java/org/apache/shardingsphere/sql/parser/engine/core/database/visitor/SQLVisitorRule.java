@@ -417,6 +417,10 @@ public enum SQLVisitorRule {
     
     SHOW_BUILD_INDEX("ShowBuildIndex", SQLStatementType.DAL),
     
+    SHOW_DATA("ShowData", SQLStatementType.DAL),
+    
+    SHOW_DATA_TYPES("ShowDataTypes", SQLStatementType.DAL),
+    
     ALTER_SQL_BLOCK_RULE("AlterSqlBlockRule", SQLStatementType.DAL),
     
     DROP_SQL_BLOCK_RULE("DropSqlBlockRule", SQLStatementType.DAL),

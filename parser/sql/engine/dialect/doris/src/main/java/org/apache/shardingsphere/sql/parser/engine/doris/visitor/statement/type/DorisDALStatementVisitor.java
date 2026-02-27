@@ -147,6 +147,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAl
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowQueryStatsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowProcContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSyncJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataTypesContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSqlBlockRuleContext;
@@ -216,6 +218,8 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropSqlBloc
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowFunctionsStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowProcStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowDataTypesStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadStatement;
@@ -1399,6 +1403,26 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         DorisShowSyncJobStatement result = new DorisShowSyncJobStatement(getDatabaseType());
         if (null != ctx.databaseName()) {
             result.setFromDatabase((DatabaseSegment) visit(ctx.databaseName()));
+        }
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowDataTypes(final ShowDataTypesContext ctx) {
+        DorisShowDataTypesStatement result = new DorisShowDataTypesStatement(getDatabaseType());
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowData(final ShowDataContext ctx) {
+        DorisShowDataStatement result = new DorisShowDataStatement(getDatabaseType());
+        if (null != ctx.tableName()) {
+            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;

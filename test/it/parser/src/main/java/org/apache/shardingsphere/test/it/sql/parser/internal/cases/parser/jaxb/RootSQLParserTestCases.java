@@ -39,6 +39,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowCreateRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisStopRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowProcStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowDataTypesStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowDataStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadTaskStatementTestCase;
@@ -608,6 +610,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "doris-show-proc")
     private final List<DorisShowProcStatementTestCase> dorisShowProcTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-data-types")
+    private final List<DorisShowDataTypesStatementTestCase> dorisShowDataTypesTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-data")
+    private final List<DorisShowDataStatementTestCase> dorisShowDataTestCases = new LinkedList<>();
     
     @XmlElement(name = "build-index")
     private final List<BuildIndexStatementTestCase> buildIndexTestCases = new LinkedList<>();
