@@ -51,7 +51,6 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -82,27 +81,16 @@ class ReadwriteSplittingRuleStatementCheckerTest {
     }
     
     @Test
-    void assertCheckCreationWithNullStorageUnits() {
-        when(resourceMetaData.getStorageUnits()).thenReturn(null);
-        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null);
-        assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
-    }
-    
-    @Test
-    void assertCheckCreationWithEmptyWriteDataSource() {
-        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "", Collections.singleton("read_ds_0"), null, null);
-        assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
-    }
-    
-    @Test
     void assertCheckCreationWithInvalidTransactionalReadQueryStrategy() {
-        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), "invalid", null);
+        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", createReadDataSources(), "invalid", null);
         assertThrows(MissingRequiredStrategyException.class, () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
     }
     
-    @Test
-    void assertCheckCreationWithValidTransactionalReadQueryStrategy() {
-        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), "primary", null);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("validTransactionalReadQueryStrategyArguments")
+    void assertCheckCreationWithValidTransactionalReadQueryStrategy(final String name, final String transactionalReadQueryStrategy) {
+        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0",
+                Arrays.asList("read_ds_0", "read_ds_1"), transactionalReadQueryStrategy, null);
         assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
     }
     
@@ -116,17 +104,6 @@ class ReadwriteSplittingRuleStatementCheckerTest {
     void assertCheckCreationWithValidWeightConfiguration() {
         AlgorithmSegment loadBalancer = new AlgorithmSegment("weight", PropertiesBuilder.build(new Property("read_ds_0", "1"), new Property("read_ds_1", "1")));
         ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, loadBalancer);
-        assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
-    }
-    
-    @Test
-    void assertCheckCreationWithNullReadDataSourcesForDuplicateCheck() {
-        ReadwriteSplittingRuleSegment segment = mock(ReadwriteSplittingRuleSegment.class);
-        when(segment.getName()).thenReturn("foo_rule_0");
-        when(segment.getWriteDataSource()).thenReturn("write_ds_0");
-        when(segment.getReadDataSources()).thenReturn(Collections.singleton("read_ds_0")).thenReturn(null);
-        when(segment.getTransactionalReadQueryStrategy()).thenReturn(null);
-        when(segment.getLoadBalancer()).thenReturn(null);
         assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
     }
     
@@ -151,5 +128,16 @@ class ReadwriteSplittingRuleStatementCheckerTest {
                 Arguments.of("weight property misses required read storage unit",
                         new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null,
                                 new AlgorithmSegment("weight", PropertiesBuilder.build(new Property("read_ds_0", "1"))))));
+    }
+    
+    private static Stream<Arguments> validTransactionalReadQueryStrategyArguments() {
+        return Stream.of(
+                Arguments.of("lowercase strategy", "primary"),
+                Arguments.of("uppercase strategy", "PRIMARY"),
+                Arguments.of("mixed-case strategy", "PrImArY"));
+    }
+    
+    private static Collection<String> createReadDataSources() {
+        return Arrays.asList("read_ds_0", "read_ds_1");
     }
 }
