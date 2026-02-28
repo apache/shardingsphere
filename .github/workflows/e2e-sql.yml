@@ -111,6 +111,12 @@ jobs:
             '$ARGS.named')
           bash .github/workflows/resources/scripts/generate-e2e-sql-matrix.sh "$filters"
           echo "filter-json=$filters" >> "$GITHUB_OUTPUT"
+      - name: Log Outputs
+        run: |
+          echo "matrix=${{ steps.generate-matrix.outputs.matrix }}"
+          echo "has-jobs=${{ steps.generate-matrix.outputs.has-jobs }}"
+          echo "need-proxy-image=${{ steps.generate-matrix.outputs.need-proxy-image }}"
+          echo "filter-json=${{ steps.generate-matrix.outputs.filter-json }}"
 
   build-e2e-image:
     name: Build E2E Image
@@ -192,8 +198,10 @@ jobs:
           bash .github/workflows/resources/scripts/generate-remaining-matrix.sh \
             "$FILTER_JSON" \
             "$PREVIOUS_MATRIX"
-      - name: Log Remaining Matrix
-        run: echo "Remaining matrix: ${{ steps.generate.outputs.matrix }}"
+      - name: Log Outputs
+        run: |
+          echo "matrix=${{ steps.generate.outputs.matrix }}"
+          echo "has-remaining-jobs=${{ steps.generate.outputs.has-remaining-jobs }}"
 
   e2e-sql-stage2:
     name: E2E - SQL (Stage 2)
