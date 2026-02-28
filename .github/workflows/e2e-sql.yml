@@ -61,6 +61,7 @@ jobs:
       matrix: ${{ steps.generate-matrix.outputs.matrix }}
       has-jobs: ${{ steps.generate-matrix.outputs.has-jobs }}
       need-proxy-image: ${{ steps.generate-matrix.outputs.need-proxy-image }}
+      filter-json: ${{ steps.generate-matrix.outputs.filter-json }}
     steps:
       - uses: actions/checkout@v6.0.1
       - id: filter
@@ -109,6 +110,7 @@ jobs:
             --arg pom_changes            "$FILTER_POM_CHANGES" \
             '$ARGS.named')
           bash .github/workflows/resources/scripts/generate-e2e-sql-matrix.sh "$filters"
+          echo "filter-json=$filters" >> "$GITHUB_OUTPUT"
 
   build-e2e-image:
     name: Build E2E Image
@@ -138,8 +140,8 @@ jobs:
           path: /tmp/apache-shardingsphere-proxy-test.tar
           retention-days: 10
 
-  e2e-sql:
-    name: E2E - SQL
+  e2e-sql-smoke:
+    name: E2E - SQL (Smoke)
     needs: [ detect-and-generate-matrix, build-e2e-image, global-environment ]
     if: always() && github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true' && needs.detect-and-generate-matrix.result == 'success' && (needs.build-e2e-image.result == 'success' || needs.build-e2e-image.result == 'skipped')
     runs-on: ubuntu-latest
@@ -148,6 +150,65 @@ jobs:
       max-parallel: 15
       fail-fast: false
       matrix: ${{ fromJSON(needs.detect-and-generate-matrix.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-suffix: 'e2e-sql'
+          cache-save-enabled: 'false'
+          enable-docker-setup: 'true'
+      - name: Download E2E Image
+        if: matrix.adapter == 'proxy'
+        uses: actions/download-artifact@v4
+        with:
+          name: e2e-image
+          path: /tmp/
+      - name: Load E2E Image
+        if: matrix.adapter == 'proxy'
+        run: docker load -i /tmp/apache-shardingsphere-proxy-test.tar
+      - name: Run E2E Test
+        run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -De2e.run.type=DOCKER -De2e.artifact.modes=${{ matrix.mode }} -De2e.artifact.adapters=${{ matrix.adapter }} -De2e.run.additional.cases=false -De2e.scenarios=${{ matrix.scenario }} -De2e.artifact.databases=${{ matrix.database }} ${{ matrix.additional-options }}
+
+  detect-remaining-matrix:
+    name: Detect Remaining Matrix
+    needs: [ detect-and-generate-matrix, e2e-sql-smoke ]
+    if: >-
+      always()
+      && needs.detect-and-generate-matrix.outputs.has-jobs == 'true'
+      && needs.e2e-sql-smoke.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      matrix: ${{ steps.generate.outputs.matrix }}
+      has-remaining-jobs: ${{ steps.generate.outputs.has-remaining-jobs }}
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - name: Detect Remaining Matrix
+        id: generate
+        env:
+          FILTER_JSON: ${{ needs.detect-and-generate-matrix.outputs.filter-json }}
+          PREVIOUS_MATRIX: ${{ needs.detect-and-generate-matrix.outputs.matrix }}
+        run: |
+          bash .github/workflows/resources/scripts/generate-remaining-matrix.sh \
+            "$FILTER_JSON" \
+            "$PREVIOUS_MATRIX"
+      - name: Log Remaining Matrix
+        run: echo "Remaining matrix: ${{ steps.generate.outputs.matrix }}"
+
+  e2e-sql-stage2:
+    name: E2E - SQL (Stage 2)
+    needs: [ detect-remaining-matrix, build-e2e-image, global-environment ]
+    if: >-
+      always()
+      && github.repository == 'apache/shardingsphere'
+      && needs.detect-remaining-matrix.outputs.has-remaining-jobs == 'true'
+      && (needs.build-e2e-image.result == 'success' || needs.build-e2e-image.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      max-parallel: 15
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.detect-remaining-matrix.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
