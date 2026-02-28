@@ -67,6 +67,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Compoun
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateEventContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.JobScheduleExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLikeClauseContext;
@@ -188,7 +190,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.Ro
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobCommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobScheduleIntervalSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobScheduleSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobScheduleTimestampSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.ChannelDescriptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.BinlogDescriptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
@@ -259,6 +265,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobSt
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisStopSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLCreateEventStatement;
@@ -467,6 +474,40 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         String key = getPropertyKey(ctx);
         String value = SQLUtils.getExactlyValue(ctx.literals().getText());
         return new PropertySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), key, value);
+    }
+    
+    @Override
+    public ASTNode visitCreateJob(final CreateJobContext ctx) {
+        DorisCreateJobStatement result = new DorisCreateJobStatement(getDatabaseType());
+        result.setJobName(new JobNameSegment(ctx.jobName().start.getStartIndex(), ctx.jobName().stop.getStopIndex(), (IdentifierValue) visit(ctx.jobName().identifier())));
+        result.setSchedule(createJobScheduleSegment(ctx.jobScheduleExpression()));
+        if (null != ctx.COMMENT() && null != ctx.string_()) {
+            result.setComment(new JobCommentSegment(ctx.COMMENT().getSymbol().getStartIndex(), ctx.string_().stop.getStopIndex(), SQLUtils.getExactlyValue(ctx.string_().getText())));
+        }
+        result.setInsertStatement((InsertStatement) visit(ctx.insert()));
+        return result;
+    }
+    
+    private JobScheduleSegment createJobScheduleSegment(final JobScheduleExpressionContext ctx) {
+        boolean everySchedule = null == ctx.AT();
+        JobScheduleSegment result = new JobScheduleSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), everySchedule);
+        if (!everySchedule) {
+            result.setAtTimestamp(
+                    new JobScheduleTimestampSegment(ctx.timestampValue(0).start.getStartIndex(), ctx.timestampValue(0).stop.getStopIndex(), SQLUtils.getExactlyValue(ctx.timestampValue(0).getText())));
+        } else {
+            result.setInterval(new JobScheduleIntervalSegment(ctx.intervalValue().start.getStartIndex(), ctx.intervalValue().stop.getStopIndex(), Long.parseLong(ctx.intervalValue().expr().getText()),
+                    ctx.intervalValue().intervalUnit().getText()));
+            if (null != ctx.STARTS()) {
+                result.setStartsTimestamp(new JobScheduleTimestampSegment(ctx.timestampValue(0).start.getStartIndex(), ctx.timestampValue(0).stop.getStopIndex(),
+                        SQLUtils.getExactlyValue(ctx.timestampValue(0).getText())));
+            }
+            if (null != ctx.ENDS()) {
+                int endsTimestampIndex = null != ctx.STARTS() ? 1 : 0;
+                result.setEndsTimestamp(new JobScheduleTimestampSegment(ctx.timestampValue(endsTimestampIndex).start.getStartIndex(), ctx.timestampValue(endsTimestampIndex).stop.getStopIndex(),
+                        SQLUtils.getExactlyValue(ctx.timestampValue(endsTimestampIndex).getText())));
+            }
+        }
+        return result;
     }
     
     @SuppressWarnings("unchecked")

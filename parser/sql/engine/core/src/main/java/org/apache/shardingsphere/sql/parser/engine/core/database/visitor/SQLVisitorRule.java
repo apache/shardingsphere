@@ -289,6 +289,8 @@ public enum SQLVisitorRule {
     
     UNLISTEN("Unlisten", SQLStatementType.DDL),
     
+    CREATE_JOB("CreateJob", SQLStatementType.DDL),
+    
     RESUME_JOB("ResumeJob", SQLStatementType.DDL),
     
     RESUME_SYNC_JOB("ResumeSyncJob", SQLStatementType.DDL),
