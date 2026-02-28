@@ -1,0 +1,103 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# ---- Adapter dimension ----
+adapter_proxy:
+  - 'proxy/**/src/main/**'
+  - 'distribution/proxy/**'
+  - '!distribution/proxy/src/main/release-docs/**'
+
+adapter_jdbc:
+  - 'jdbc/src/main/**'
+  - 'jdbc-dialect/**/src/main/**'
+
+# ---- Mode dimension ----
+mode_standalone:
+  - 'mode/type/standalone/**/src/main/**'
+
+mode_cluster:
+  - 'mode/type/cluster/**/src/main/**'
+
+mode_core:
+  - 'mode/core/**/src/main/**'
+  - 'mode/api/**/src/main/**'
+
+# ---- Database dimension ----
+database_mysql:
+  - 'parser/dialect/mysql/**/src/main/**'
+  - 'database/protocol/mysql/**/src/main/**'
+  - 'proxy/frontend/type/mysql/**/src/main/**'
+  - 'jdbc-dialect/mysql/**/src/main/**'
+
+database_postgresql:
+  - 'parser/dialect/postgresql/**/src/main/**'
+  - 'parser/dialect/opengauss/**/src/main/**'
+  - 'database/protocol/postgresql/**/src/main/**'
+  - 'database/protocol/opengauss/**/src/main/**'
+  - 'proxy/frontend/type/postgresql/**/src/main/**'
+  - 'proxy/frontend/type/opengauss/**/src/main/**'
+  - 'jdbc-dialect/postgresql/**/src/main/**'
+  - 'jdbc-dialect/opengauss/**/src/main/**'
+
+# ---- Feature / Scenario dimension ----
+feature_sharding:
+  - 'features/sharding/**/src/main/**'
+
+feature_encrypt:
+  - 'features/encrypt/**/src/main/**'
+
+feature_readwrite_splitting:
+  - 'features/readwrite-splitting/**/src/main/**'
+
+feature_shadow:
+  - 'features/shadow/**/src/main/**'
+
+feature_mask:
+  - 'features/mask/**/src/main/**'
+
+feature_broadcast:
+  - 'features/broadcast/**/src/main/**'
+
+feature_distsql:
+  - '**/*-distsql*/**/src/main/**'
+
+feature_sql_federation:
+  - 'kernel/sql-federation/**/src/main/**'
+
+# ---- Core / Infra (full fallback triggers) ----
+core_infra:
+  - 'infra/**/src/main/**'
+  - 'parser/core/**/src/main/**'
+  - 'database/connector/core/**/src/main/**'
+  - 'database/exception/**/src/main/**'
+  - 'kernel/authority/**/src/main/**'
+  - 'kernel/logging/**/src/main/**'
+  - 'kernel/metadata/**/src/main/**'
+  - 'kernel/single/**/src/main/**'
+  - 'kernel/sql-parser/**/src/main/**'
+
+# ---- Test framework changes (full fallback triggers) ----
+test_framework:
+  - '.github/workflows/e2e-sql.yml'
+  - 'test/pom.xml'
+  - 'test/e2e/fixture/**'
+  - 'test/e2e/env/**'
+  - 'test/e2e/sql/**'
+
+# ---- POM changes (full fallback triggers) ----
+pom_changes:
+  - '**/pom.xml'

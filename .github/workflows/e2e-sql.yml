@@ -53,10 +53,67 @@ jobs:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
+  detect-and-generate-matrix:
+    name: Detect Changes and Generate Matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      matrix: ${{ steps.generate-matrix.outputs.matrix }}
+      has-jobs: ${{ steps.generate-matrix.outputs.has-jobs }}
+      need-proxy-image: ${{ steps.generate-matrix.outputs.need-proxy-image }}
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - id: filter
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
+        with:
+          filters: .github/workflows/resources/filter/e2e-sql-filters.yml
+      - id: generate-matrix
+        env:
+          FILTER_ADAPTER_PROXY: ${{ steps.filter.outputs.adapter_proxy }}
+          FILTER_ADAPTER_JDBC: ${{ steps.filter.outputs.adapter_jdbc }}
+          FILTER_MODE_STANDALONE: ${{ steps.filter.outputs.mode_standalone }}
+          FILTER_MODE_CLUSTER: ${{ steps.filter.outputs.mode_cluster }}
+          FILTER_MODE_CORE: ${{ steps.filter.outputs.mode_core }}
+          FILTER_DATABASE_MYSQL: ${{ steps.filter.outputs.database_mysql }}
+          FILTER_DATABASE_POSTGRESQL: ${{ steps.filter.outputs.database_postgresql }}
+          FILTER_FEATURE_SHARDING: ${{ steps.filter.outputs.feature_sharding }}
+          FILTER_FEATURE_ENCRYPT: ${{ steps.filter.outputs.feature_encrypt }}
+          FILTER_FEATURE_READWRITE_SPLITTING: ${{ steps.filter.outputs.feature_readwrite_splitting }}
+          FILTER_FEATURE_SHADOW: ${{ steps.filter.outputs.feature_shadow }}
+          FILTER_FEATURE_MASK: ${{ steps.filter.outputs.feature_mask }}
+          FILTER_FEATURE_BROADCAST: ${{ steps.filter.outputs.feature_broadcast }}
+          FILTER_FEATURE_DISTSQL: ${{ steps.filter.outputs.feature_distsql }}
+          FILTER_FEATURE_SQL_FEDERATION: ${{ steps.filter.outputs.feature_sql_federation }}
+          FILTER_CORE_INFRA: ${{ steps.filter.outputs.core_infra }}
+          FILTER_TEST_FRAMEWORK: ${{ steps.filter.outputs.test_framework }}
+          FILTER_POM_CHANGES: ${{ steps.filter.outputs.pom_changes }}
+        run: |
+          filters=$(jq -cn \
+            --arg adapter_proxy          "$FILTER_ADAPTER_PROXY" \
+            --arg adapter_jdbc           "$FILTER_ADAPTER_JDBC" \
+            --arg mode_standalone        "$FILTER_MODE_STANDALONE" \
+            --arg mode_cluster           "$FILTER_MODE_CLUSTER" \
+            --arg mode_core              "$FILTER_MODE_CORE" \
+            --arg database_mysql         "$FILTER_DATABASE_MYSQL" \
+            --arg database_postgresql    "$FILTER_DATABASE_POSTGRESQL" \
+            --arg feature_sharding       "$FILTER_FEATURE_SHARDING" \
+            --arg feature_encrypt        "$FILTER_FEATURE_ENCRYPT" \
+            --arg feature_readwrite_splitting "$FILTER_FEATURE_READWRITE_SPLITTING" \
+            --arg feature_shadow         "$FILTER_FEATURE_SHADOW" \
+            --arg feature_mask           "$FILTER_FEATURE_MASK" \
+            --arg feature_broadcast      "$FILTER_FEATURE_BROADCAST" \
+            --arg feature_distsql        "$FILTER_FEATURE_DISTSQL" \
+            --arg feature_sql_federation "$FILTER_FEATURE_SQL_FEDERATION" \
+            --arg core_infra             "$FILTER_CORE_INFRA" \
+            --arg test_framework         "$FILTER_TEST_FRAMEWORK" \
+            --arg pom_changes            "$FILTER_POM_CHANGES" \
+            '$ARGS.named')
+          bash .github/workflows/resources/scripts/generate-e2e-sql-matrix.sh "$filters"
+
   build-e2e-image:
     name: Build E2E Image
-    if: github.repository == 'apache/shardingsphere'
-    needs: global-environment
+    if: github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true' && needs.detect-and-generate-matrix.outputs.need-proxy-image == 'true'
+    needs: [ global-environment, detect-and-generate-matrix ]
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
@@ -80,41 +137,17 @@ jobs:
           name: e2e-image
           path: /tmp/apache-shardingsphere-proxy-test.tar
           retention-days: 10
-  
+
   e2e-sql:
     name: E2E - SQL
-    needs: [ build-e2e-image, global-environment ]
-    if: github.repository == 'apache/shardingsphere'
+    needs: [ detect-and-generate-matrix, build-e2e-image, global-environment ]
+    if: always() && github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true' && needs.detect-and-generate-matrix.result == 'success' && (needs.build-e2e-image.result == 'success' || needs.build-e2e-image.result == 'skipped')
     runs-on: ubuntu-latest
     timeout-minutes: 40
     strategy:
       max-parallel: 15
       fail-fast: false
-      matrix:
-        adapter: [ proxy, jdbc ]
-        mode: [ Standalone, Cluster ]
-        database: [ MySQL, PostgreSQL ]
-        scenario: [ empty_rules, distsql_rdl, passthrough, db, tbl, encrypt, readwrite_splitting, shadow, mask, dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt, encrypt_and_readwrite_splitting, encrypt_shadow, readwrite_splitting_and_shadow, sharding_and_shadow, sharding_encrypt_shadow, mask_encrypt, mask_sharding, mask_encrypt_sharding, db_tbl_sql_federation ]
-        additional-options: [ '' ]
-        include:
-          - adapter: proxy
-            database: MySQL
-            scenario: passthrough
-            additional-options: '-Dmysql-connector-java.version=8.3.0'
-        exclude:
-          - adapter: jdbc
-            scenario: passthrough
-          - adapter: jdbc
-            mode: Cluster
-          - adapter: proxy
-            mode: Standalone
-            scenario: empty_rules
-          - adapter: proxy
-            mode: Standalone
-            scenario: distsql_rdl
-          - adapter: proxy
-            mode: Standalone
-            scenario: passthrough
+      matrix: ${{ fromJSON(needs.detect-and-generate-matrix.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
