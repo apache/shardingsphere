@@ -112,6 +112,8 @@ log_counts() {
   local matrix_json="$2"
   local count
   count=$(echo "$matrix_json" | jq '.include | length')
+  echo "::notice::$name count=$count"
+}
 
 # Check whether any relevant dimension changed at all
 any_relevant_change=false
