@@ -132,10 +132,8 @@ class CreateReadwriteSplittingRuleExecutorTest {
     private static Stream<Arguments> buildToBeCreatedRuleConfigurationArguments() {
         return Stream.of(
                 Arguments.of("if not exists with null rule", null, new LinkedList<>(Collections.singleton(createRuleSegment("readwrite_ds_1"))), 1),
-                Arguments.of("if not exists removes duplicated rule", createCurrentRuleConfiguration(),
-                        new LinkedList<>(Collections.singleton(createRuleSegment("readwrite_ds_0"))), 0),
-                Arguments.of("if not exists keeps non duplicated rule", createCurrentRuleConfiguration(),
-                        new LinkedList<>(Collections.singleton(createRuleSegment("readwrite_ds_1"))), 1));
+                Arguments.of("if not exists removes duplicated rule", createCurrentRuleConfiguration(), new LinkedList<>(Collections.singleton(createRuleSegment("readwrite_ds_0"))), 0),
+                Arguments.of("if not exists keeps non duplicated rule", createCurrentRuleConfiguration(), new LinkedList<>(Collections.singleton(createRuleSegment("readwrite_ds_1"))), 1));
     }
     
     private static ReadwriteSplittingRuleSegment createRuleSegment(final String ruleName) {

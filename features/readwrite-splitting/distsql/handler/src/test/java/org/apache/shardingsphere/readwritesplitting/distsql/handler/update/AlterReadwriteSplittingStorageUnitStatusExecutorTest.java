@@ -117,7 +117,8 @@ class AlterReadwriteSplittingStorageUnitStatusExecutorTest {
     
     private static Stream<Arguments> executeUpdateFailureArguments() {
         return Stream.of(
-                Arguments.of("missing readwrite-splitting rule", null, Collections.singleton("read_ds_0"), Collections.emptySet(), true, MissingRequiredRuleException.class),
+                Arguments.of("missing readwrite-splitting rule", null, Collections.singleton("read_ds_0"), Collections.emptySet(), true,
+                        MissingRequiredRuleException.class),
                 Arguments.of("missing read storage unit", "readwrite_group", Collections.singleton("read_ds_1"), Collections.emptySet(), true,
                         ReadwriteSplittingActualDataSourceNotFoundException.class),
                 Arguments.of("enable storage unit that is not disabled", "readwrite_group", Collections.singleton("read_ds_0"), Collections.emptySet(), true,

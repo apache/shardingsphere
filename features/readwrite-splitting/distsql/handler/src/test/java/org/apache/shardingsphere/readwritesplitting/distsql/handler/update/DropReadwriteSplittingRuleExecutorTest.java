@@ -178,17 +178,14 @@ class DropReadwriteSplittingRuleExecutorTest {
     }
     
     private static ReadwriteSplittingRuleConfiguration createCurrentRuleConfigurationWithoutLoadBalancerName() {
-        ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite_ds",
-                "", new LinkedList<>(), null);
+        ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite_ds", "", new LinkedList<>(), null);
         Map<String, AlgorithmConfiguration> loadBalancers = Collections.singletonMap("readwrite_ds", new AlgorithmConfiguration("TEST", new Properties()));
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceGroupConfig)), loadBalancers);
     }
     
     private static ReadwriteSplittingRuleConfiguration createMultipleCurrentRuleConfigurations() {
-        ReadwriteSplittingDataSourceGroupRuleConfiguration fooDataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
-                "foo_ds", "", new LinkedList<>(), "TEST");
-        ReadwriteSplittingDataSourceGroupRuleConfiguration barDataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
-                "bar_ds", "", new LinkedList<>(), "TEST");
+        ReadwriteSplittingDataSourceGroupRuleConfiguration fooDataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_ds", "", new LinkedList<>(), "TEST");
+        ReadwriteSplittingDataSourceGroupRuleConfiguration barDataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration("bar_ds", "", new LinkedList<>(), "TEST");
         Map<String, AlgorithmConfiguration> loadBalancers = Collections.singletonMap("TEST", new AlgorithmConfiguration("TEST", new Properties()));
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Arrays.asList(fooDataSourceGroupConfig, barDataSourceGroupConfig)), loadBalancers);
     }
