@@ -141,7 +141,8 @@ class ReadwriteSplittingRuleStatementCheckerTest {
     @Test
     void assertCheckCreationWithDuplicateRuleNameInCurrentRuleConfig() {
         ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null);
-        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = Collections.singleton(new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_rule_0", "write_ds_9", Collections.singletonList("read_ds_9"), "RANDOM"));
+        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = Collections.singleton(
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_rule_0", "write_ds_9", Collections.singletonList("read_ds_9"), "RANDOM"));
         ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(dataSourceGroups, Collections.emptyMap());
         assertThrows(DuplicateRuleException.class, () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), currentRuleConfig, false));
     }
