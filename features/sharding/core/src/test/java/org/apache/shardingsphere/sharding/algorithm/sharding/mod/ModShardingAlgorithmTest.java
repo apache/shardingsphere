@@ -150,8 +150,10 @@ class ModShardingAlgorithmTest {
                         "t_order_08", "t_order_09", "t_order_10", "t_order_11", "t_order_12", "t_order_13", "t_order_14", "t_order_15",
                         "t_order_00", "t_order_01", "t_order_02", "t_order_03", "t_order_04", "t_order_05", "t_order_06", "t_order_07"), "12345678910111213141516", "t_order_07"),
                 Arguments.of("start offset zero and stop offset one", TypedSPILoader.getService(ShardingAlgorithm.class, "MOD",
-                        PropertiesBuilder.build(new Property("sharding-count", "16"), new Property("start-offset", "0"), new Property("stop-offset", "1"))), Arrays.asList(
+                        PropertiesBuilder.build(new Property("sharding-count", "16"), new Property("start-offset", "0"), new Property("stop-offset", "1"))),
+                        Arrays.asList(
                                 "t_order_8", "t_order_9", "t_order_10", "t_order_11", "t_order_12", "t_order_13", "t_order_14", "t_order_15",
-                        "t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5", "t_order_6", "t_order_7"), "19", "t_order_1"));
+                                "t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5", "t_order_6", "t_order_7"),
+                        "19", "t_order_1"));
     }
 }
