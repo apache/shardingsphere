@@ -17,7 +17,7 @@
 #
 
 # Usage: generate-e2e-sql-matrix.sh '<json-with-all-18-filter-labels>'
-# Output: writes matrix=<JSON>, has-jobs=<true|false>, and need-proxy-image=<true|false> to $GITHUB_OUTPUT
+# Output: writes smoke-matrix=<JSON>, full-matrix=<JSON>, matrix=<JSON>(alias for full), has-jobs=<true|false>, and need-proxy-image=<true|false> to $GITHUB_OUTPUT
 
 set -euo pipefail
 
@@ -71,12 +71,14 @@ build_matrix() {
   local modes="$2"
   local databases="$3"
   local scenarios="$4"
+  local include_extra_job="${5:-true}"
 
   jq -cn \
     --argjson adapters "$adapters" \
     --argjson modes "$modes" \
     --argjson databases "$databases" \
     --argjson scenarios "$scenarios" \
+    --argjson include_extra_job "$include_extra_job" \
     '
     def should_exclude(adapter; mode; scenario):
       (adapter == "jdbc" and scenario == "passthrough") or
@@ -96,7 +98,7 @@ build_matrix() {
     ([$base_jobs[] | select(.adapter == "proxy" and .mode == "Cluster")] | length > 0) as $has_proxy_cluster |
     ($scenarios | map(select(. == "passthrough")) | length > 0) as $has_passthrough |
 
-    (if $has_proxy_cluster and $has_passthrough
+    (if $include_extra_job and $has_proxy_cluster and $has_passthrough
      then [{adapter:"proxy", mode:"Cluster", database:"MySQL", scenario:"passthrough", "additional-options":"-Dmysql-connector-java.version=8.3.0"}]
      else []
      end) as $extra_job |
@@ -105,14 +107,11 @@ build_matrix() {
     '
 }
 
-# Full fallback: run the entire matrix
-if [ "$core_infra" = "true" ] || [ "$test_framework" = "true" ] || [ "$pom_changes" = "true" ]; then
-  MATRIX=$(build_matrix "$ALL_ADAPTERS" "$ALL_MODES" "$ALL_DATABASES" "$ALL_SCENARIOS")
-  echo "matrix=$(echo "$MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
-  echo "has-jobs=true" >> "$GITHUB_OUTPUT"
-  echo "need-proxy-image=true" >> "$GITHUB_OUTPUT"
-  exit 0
-fi
+log_counts() {
+  local name="$1"
+  local matrix_json="$2"
+  local count
+  count=$(echo "$matrix_json" | jq '.include | length')
 
 # Check whether any relevant dimension changed at all
 any_relevant_change=false
@@ -130,6 +129,8 @@ if [ "$any_relevant_change" = "false" ]; then
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-jobs=false" >> "$GITHUB_OUTPUT"
   echo "need-proxy-image=false" >> "$GITHUB_OUTPUT"
+  echo "smoke-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
+  echo "full-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   exit 0
 fi
 
@@ -229,26 +230,50 @@ if [ "$feature_broadcast" = "true" ]; then
   add_scenario "empty_rules"
 fi
 
-# If no feature triggered, use core smoke scenario set
-if [ "$any_feature_triggered" = "false" ]; then
-  scenarios_json="$SMOKE_SCENARIOS"
+echo "::notice::filters core_infra=$core_infra test_framework=$test_framework pom_changes=$pom_changes"
+echo "::notice::dimensions adapters=$adapters modes=$modes databases=$databases"
+
+# Always generate smoke-matrix (fixed 6 scenarios), and DO NOT add the extra passthrough job
+SMOKE_MATRIX=$(build_matrix "$adapters" "$modes" "$databases" "$SMOKE_SCENARIOS" false)
+log_counts "smoke-matrix" "$SMOKE_MATRIX"
+
+# Build full-matrix scenarios
+if [ "$core_infra" = "true" ] || [ "$test_framework" = "true" ] || [ "$pom_changes" = "true" ]; then
+  full_scenarios_json="$ALL_SCENARIOS"
+  echo "::notice::full-matrix reason=full-fallback"
 else
-  scenarios_json=$(printf '%s\n' "${scenarios_set[@]}" | jq -R . | jq -sc .)
+  if [ "$any_feature_triggered" = "false" ]; then
+    # When no feature triggered, full-matrix is limited to smoke scenario set
+    full_scenarios_json="$SMOKE_SCENARIOS"
+    echo "::notice::full-matrix reason=no-feature-triggered (use smoke scenarios)"
+  else
+    full_scenarios_json=$(printf '%s\n' "${scenarios_set[@]}" | jq -R . | jq -sc .)
+    echo "::notice::full-matrix reason=feature-triggered"
+  fi
 fi
 
-MATRIX=$(build_matrix "$adapters" "$modes" "$databases" "$scenarios_json")
+FULL_MATRIX=$(build_matrix "$adapters" "$modes" "$databases" "$full_scenarios_json" true)
+log_counts "full-matrix" "$FULL_MATRIX"
 
-JOB_COUNT=$(echo "$MATRIX" | jq '.include | length')
-
-if [ "$JOB_COUNT" -eq 0 ]; then
+# Determine whether there are any jobs at all (based on full-matrix)
+FULL_JOB_COUNT=$(echo "$FULL_MATRIX" | jq '.include | length')
+if [ "$FULL_JOB_COUNT" -eq 0 ]; then
+  echo "smoke-matrix=$(echo "$SMOKE_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
+  echo "full-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-jobs=false" >> "$GITHUB_OUTPUT"
   echo "need-proxy-image=false" >> "$GITHUB_OUTPUT"
   exit 0
 fi
 
-HAS_PROXY=$(echo "$MATRIX" | jq '[.include[] | select(.adapter == "proxy")] | length > 0')
+HAS_PROXY_SMOKE=$(echo "$SMOKE_MATRIX" | jq '[.include[] | select(.adapter == "proxy")] | length > 0')
+HAS_PROXY_FULL=$(echo "$FULL_MATRIX" | jq '[.include[] | select(.adapter == "proxy")] | length > 0')
+NEED_PROXY_IMAGE=$(jq -cn --argjson a "$HAS_PROXY_SMOKE" --argjson b "$HAS_PROXY_FULL" '$a or $b')
 
-echo "matrix=$(echo "$MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
+echo "smoke-matrix=$(echo "$SMOKE_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
+echo "full-matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
+echo "matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
 echo "has-jobs=true" >> "$GITHUB_OUTPUT"
-echo "need-proxy-image=$HAS_PROXY" >> "$GITHUB_OUTPUT"
+echo "need-proxy-image=$NEED_PROXY_IMAGE" >> "$GITHUB_OUTPUT"
+
+exit 0

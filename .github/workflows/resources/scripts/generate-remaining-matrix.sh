@@ -16,30 +16,18 @@
 # limitations under the License.
 #
 
-# Usage: generate-remaining-matrix.sh '<filter-json>' '<previous-matrix-json>'
-# Generates the Stage 2 matrix by subtracting Stage 1 combinations from the full matrix.
+# Usage: generate-remaining-matrix.sh '<filter-json>' '<full-matrix-json>' '<smoke-matrix-json>'
+# Generates the Stage 2 matrix by subtracting smoke combinations from the full matrix.
 # Output: writes matrix=<JSON>, has-remaining-jobs=<true|false> to $GITHUB_OUTPUT
 
 set -euo pipefail
 
 FILTER_JSON="$1"
-PREVIOUS_MATRIX="$2"
+FULL_MATRIX="$2"
+SMOKE_MATRIX="$3"
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-
-# Parse completed jobs from Stage 1 matrix
-COMPLETED_JOBS=$(echo "$PREVIOUS_MATRIX" | jq -c '.include // []')
-
-# Generate the full matrix by calling the base script with core_infra=true so all
-# scenario/adapter/mode/database combinations (plus exclude/include rules) are produced.
-# Setting core_infra=true triggers the full-matrix fallback path in generate-e2e-sql-matrix.sh,
-# while resetting test_framework and pom_changes to false avoids double-triggering the same path.
-FULL_FILTER_JSON=$(echo "$FILTER_JSON" | jq -c '.core_infra = "true" | .test_framework = "false" | .pom_changes = "false"')
-
-TEMP_OUTPUT=$(mktemp)
-GITHUB_OUTPUT="$TEMP_OUTPUT" bash "$SCRIPT_DIR/generate-e2e-sql-matrix.sh" "$FULL_FILTER_JSON"
-FULL_MATRIX=$(grep '^matrix=' "$TEMP_OUTPUT" | cut -d= -f2-)
-rm -f "$TEMP_OUTPUT"
+# Parse completed jobs from smoke matrix
+COMPLETED_JOBS=$(echo "$SMOKE_MATRIX" | jq -c '.include // []')
 
 if [ -z "$FULL_MATRIX" ]; then
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"

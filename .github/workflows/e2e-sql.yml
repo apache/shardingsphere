@@ -58,6 +58,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
+      smoke-matrix: ${{ steps.generate-matrix.outputs.smoke-matrix }}
+      full-matrix: ${{ steps.generate-matrix.outputs.full-matrix }}
       matrix: ${{ steps.generate-matrix.outputs.matrix }}
       has-jobs: ${{ steps.generate-matrix.outputs.has-jobs }}
       need-proxy-image: ${{ steps.generate-matrix.outputs.need-proxy-image }}
@@ -155,7 +157,7 @@ jobs:
     strategy:
       max-parallel: 15
       fail-fast: false
-      matrix: ${{ fromJSON(needs.detect-and-generate-matrix.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.detect-and-generate-matrix.outputs.smoke-matrix) }}
     steps:
       - uses: actions/checkout@v6.0.1
       - uses: ./.github/workflows/resources/actions/setup-build-environment
@@ -193,11 +195,13 @@ jobs:
         id: generate
         env:
           FILTER_JSON: ${{ needs.detect-and-generate-matrix.outputs.filter-json }}
-          PREVIOUS_MATRIX: ${{ needs.detect-and-generate-matrix.outputs.matrix }}
+          FULL_MATRIX: ${{ needs.detect-and-generate-matrix.outputs.full-matrix }}
+          SMOKE_MATRIX: ${{ needs.detect-and-generate-matrix.outputs.smoke-matrix }}
         run: |
           bash .github/workflows/resources/scripts/generate-remaining-matrix.sh \
             "$FILTER_JSON" \
-            "$PREVIOUS_MATRIX"
+            "$FULL_MATRIX" \
+            "$SMOKE_MATRIX"
       - name: Log Outputs
         run: |
           echo "matrix=${{ steps.generate.outputs.matrix }}"
