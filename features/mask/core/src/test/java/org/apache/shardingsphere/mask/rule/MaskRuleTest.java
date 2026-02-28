@@ -95,7 +95,7 @@ class MaskRuleTest {
     @Test
     void assertPartialUpdateWithToBeRemovedAlgorithms() {
         maskRule.partialUpdate(createPartialRemovedAlgorithmsMaskRuleConfiguration());
-        Optional<MaskTable> table =  maskRule.findMaskTable("foo_tbl");
+        Optional<MaskTable> table = maskRule.findMaskTable("foo_tbl");
         assertTrue(table.isPresent());
         assertFalse(table.get().findAlgorithm("t_mask_foo_id_md5").isPresent());
     }
