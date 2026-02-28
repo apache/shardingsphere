@@ -57,13 +57,19 @@ jobs:
         run: |
           GLOBAL_CACHE_PREFIX=$(echo '${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }}' | sed 's/\//-/g')
           echo "GLOBAL_CACHE_PREFIX=${GLOBAL_CACHE_PREFIX}" >> $GITHUB_OUTPUT
-          if [ ${{ toJSON(github.repository) }} = ${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }} ]; then
+          if [ "${{ github.repository }}" = "${{ steps.import-variables.outputs.GLOBAL_REPOSITORY }}" ]; then
             echo "GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE=true" >> $GITHUB_OUTPUT
             echo "GLOBAL_JOB_ENABLED=false" >> $GITHUB_OUTPUT
-            if [ -z "${{ steps.import-variables.outputs.DISABLE_CI }}"] || [ "${{ steps.import-variables.outputs.DISABLE_CI }}"=="false" ] ; then
+            if [ -z "${{ steps.import-variables.outputs.DISABLE_CI }}" ] || [ "${{ steps.import-variables.outputs.DISABLE_CI }}" = "false" ]; then
               echo "GLOBAL_JOB_ENABLED=true" >> $GITHUB_OUTPUT
             fi
           fi
+      - name: Print outputs
+        run: |
+          echo "GLOBAL_RUNS_ON(from import)=${{ steps.import-variables.outputs.GLOBAL_RUNS_ON }}"
+          echo "GLOBAL_JOB_ENABLED=${{ steps.check-job-executable.outputs.GLOBAL_JOB_ENABLED }}"
+          echo "GLOBAL_CACHE_PREFIX=${{ steps.check-job-executable.outputs.GLOBAL_CACHE_PREFIX }}"
+          echo "GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE=${{ steps.check-job-executable.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE }}"
     outputs:
       GLOBAL_RUNS_ON: ${{ steps.import-variables.outputs.GLOBAL_RUNS_ON }}
       GLOBAL_JOB_ENABLED: ${{ steps.check-job-executable.outputs.GLOBAL_JOB_ENABLED }}

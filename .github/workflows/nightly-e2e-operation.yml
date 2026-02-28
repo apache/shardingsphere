@@ -101,7 +101,13 @@ jobs:
           - operation: showprocesslist
             image: { type: "e2e.docker.database.mariadb.images", version: "mariadb:11" }
           - operation: showprocesslist
-            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine" }
+            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:11-alpine" }
+          - operation: showprocesslist
+            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:12-alpine" }
+          - operation: showprocesslist
+            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:13-alpine" }
+          - operation: showprocesslist
+            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:14-alpine" }
           - operation: showprocesslist
             image: { type: "e2e.docker.database.opengauss.images", version: "opengauss/opengauss:3.1.0" }
     steps:
