@@ -19,7 +19,10 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.checker;
 
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.exception.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.DuplicateRuleException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredStrategyException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -30,6 +33,7 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.segment.ReadwriteSplittingRuleSegment;
+import org.apache.shardingsphere.readwritesplitting.exception.actual.DuplicateReadwriteSplittingActualDataSourceException;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,7 +78,8 @@ class ReadwriteSplittingRuleStatementCheckerTest {
     
     @Test
     void assertCheckCreationWithDuplicateRuleNames() {
-        Collection<ReadwriteSplittingRuleSegment> segments = Arrays.asList(new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null),
+        Collection<ReadwriteSplittingRuleSegment> segments = Arrays.asList(
+                new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null),
                 new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_2", Arrays.asList("read_ds_2", "read_ds_3"), null, null),
                 new ReadwriteSplittingRuleSegment("bar_rule_0", "write_ds_4", Arrays.asList("read_ds_4", "read_ds_5"), null, null));
         assertThrows(DuplicateRuleException.class, () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, segments, null, false));
@@ -82,15 +87,14 @@ class ReadwriteSplittingRuleStatementCheckerTest {
     
     @Test
     void assertCheckCreationWithInvalidTransactionalReadQueryStrategy() {
-        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", createReadDataSources(), "invalid", null);
+        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), "invalid", null);
         assertThrows(MissingRequiredStrategyException.class, () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("validTransactionalReadQueryStrategyArguments")
     void assertCheckCreationWithValidTransactionalReadQueryStrategy(final String name, final String transactionalReadQueryStrategy) {
-        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0",
-                Arrays.asList("read_ds_0", "read_ds_1"), transactionalReadQueryStrategy, null);
+        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), transactionalReadQueryStrategy, null);
         assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
     }
     
@@ -117,6 +121,71 @@ class ReadwriteSplittingRuleStatementCheckerTest {
         assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkAlteration(database, Collections.singleton(segment), currentRuleConfig));
     }
     
+    @Test
+    void assertCheckCreationWithIfNotExists() {
+        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null);
+        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = Collections.singleton(
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_rule_0", "write_ds_9", Collections.singletonList("read_ds_9"), "RANDOM"));
+        ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(dataSourceGroups, Collections.emptyMap());
+        assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), currentRuleConfig, true));
+    }
+    
+    @Test
+    void assertCheckCreationWithDuplicateRuleNameInLogicDataSources() {
+        DataSourceMapperRuleAttribute ruleAttribute = () -> Collections.singletonMap("foo_rule_0", Collections.singleton("actual_ds_0"));
+        when(database.getRuleMetaData().getAttributes(DataSourceMapperRuleAttribute.class)).thenReturn(Collections.singleton(ruleAttribute));
+        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null);
+        assertThrows(InvalidRuleConfigurationException.class, () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
+    }
+    
+    @Test
+    void assertCheckCreationWithDuplicateRuleNameInCurrentRuleConfig() {
+        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null);
+        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = Collections.singleton(
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_rule_0", "write_ds_9", Collections.singletonList("read_ds_9"), "RANDOM"));
+        ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(dataSourceGroups, Collections.emptyMap());
+        assertThrows(DuplicateRuleException.class, () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), currentRuleConfig, false));
+    }
+    
+    @Test
+    void assertCheckCreationWithMissingRequiredStorageUnits() {
+        when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(Collections.singleton("missing_ds_0"));
+        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null);
+        assertThrows(MissingRequiredStorageUnitsException.class, () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
+    }
+    
+    @Test
+    void assertCheckCreationWithDuplicateWriteDataSource() {
+        Collection<ReadwriteSplittingRuleSegment> segments = Arrays.asList(
+                new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null),
+                new ReadwriteSplittingRuleSegment("bar_rule_0", "write_ds_0", Arrays.asList("read_ds_2", "read_ds_3"), null, null));
+        assertThrows(DuplicateReadwriteSplittingActualDataSourceException.class, () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, segments, null, false));
+    }
+    
+    @Test
+    void assertCheckCreationWithDuplicateReadDataSource() {
+        Collection<ReadwriteSplittingRuleSegment> segments = Arrays.asList(
+                new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null),
+                new ReadwriteSplittingRuleSegment("bar_rule_0", "write_ds_2", Arrays.asList("read_ds_0", "read_ds_3"), null, null));
+        assertThrows(DuplicateReadwriteSplittingActualDataSourceException.class, () -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, segments, null, false));
+    }
+    
+    @Test
+    void assertCheckCreationWithNonWeightLoadBalancer() {
+        AlgorithmSegment loadBalancer = new AlgorithmSegment("RANDOM", new Properties());
+        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, loadBalancer);
+        assertDoesNotThrow(() -> ReadwriteSplittingRuleStatementChecker.checkCreation(database, Collections.singleton(segment), null, false));
+    }
+    
+    @Test
+    void assertCheckAlterationWithMissingRuleName() {
+        ReadwriteSplittingRuleSegment segment = new ReadwriteSplittingRuleSegment("foo_rule_0", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), null, null);
+        Collection<ReadwriteSplittingDataSourceGroupRuleConfiguration> dataSourceGroups = Collections.singleton(
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("bar_rule_0", "write_ds_9", Collections.singletonList("read_ds_9"), "RANDOM"));
+        ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(dataSourceGroups, Collections.emptyMap());
+        assertThrows(MissingRequiredRuleException.class, () -> ReadwriteSplittingRuleStatementChecker.checkAlteration(database, Collections.singleton(segment), currentRuleConfig));
+    }
+    
     private static Stream<Arguments> invalidWeightConfigurationArguments() {
         return Stream.of(
                 Arguments.of("empty weight properties",
@@ -135,9 +204,5 @@ class ReadwriteSplittingRuleStatementCheckerTest {
                 Arguments.of("lowercase strategy", "primary"),
                 Arguments.of("uppercase strategy", "PRIMARY"),
                 Arguments.of("mixed-case strategy", "PrImArY"));
-    }
-    
-    private static Collection<String> createReadDataSources() {
-        return Arrays.asList("read_ds_0", "read_ds_1");
     }
 }
