@@ -172,5 +172,4 @@
     <create-function sql-case-id="create_function_gtid_is_disjoint_union" />
     <create-function sql-case-id="create_function_gtid_intersection" />
     <create-function sql-case-id="create_function_gtid_intersection_with_uuid" />
-    <create-function sql-case-id="create_event" />
 </sql-parser-test-cases>

@@ -95,5 +95,4 @@
     <sql-case id="create_function_gtid_is_disjoint_union" value="CREATE FUNCTION GTID_IS_DISJOINT_UNION(gs1 LONGTEXT, gs2 LONGTEXT, sum LONGTEXT) RETURNS INT RETURN GTID_IS_EQUAL(GTID_SUBTRACT(sum, gs1), gs2) AND GTID_IS_EQUAL(GTID_SUBTRACT(sum, gs2), gs1);" db-types="MySQL" />
     <sql-case id="create_function_gtid_intersection" value="CREATE FUNCTION GTID_INTERSECTION(gs1 LONGTEXT, gs2 LONGTEXT) RETURNS LONGTEXT RETURN GTID_SUBTRACT(gs1, GTID_SUBTRACT(gs1, gs2));" db-types="MySQL" />
     <sql-case id="create_function_gtid_intersection_with_uuid" value="CREATE FUNCTION GTID_INTERSECTION_WITH_UUID(gs LONGTEXT, uuid TEXT) RETURNS LONGTEXT RETURN GTID_SUBTRACT(gs, GTID_SUBTRACT_UUID(gs, uuid));" db-types="MySQL" />
-    <sql-case id="create_event" value="CREATE EVENT e_insert ON SCHEDULE EVERY 7 SECOND DO INSERT INTO myschema.mytable;" db-types="MySQL" />
 </sql-cases>
