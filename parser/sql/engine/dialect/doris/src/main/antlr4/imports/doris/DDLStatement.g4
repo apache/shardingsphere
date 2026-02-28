@@ -990,6 +990,15 @@ signalInformationItem
     : conditionInformationItemName EQ_ expr
     ;
 
+createJob
+    : CREATE JOB jobName ON SCHEDULE jobScheduleExpression (COMMENT string_)? DO insert
+    ;
+
+jobScheduleExpression
+    : AT timestampValue
+    | EVERY intervalValue (STARTS timestampValue)? (ENDS timestampValue)?
+    ;
+
 resumeJob
     : RESUME JOB WHERE jobName EQ_ stringLiterals
     ;
