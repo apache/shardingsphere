@@ -17,97 +17,132 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
+import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.statement.AlterMaskRuleStatement;
 import org.apache.shardingsphere.mask.rule.MaskRule;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class AlterMaskRuleExecutorTest {
     
-    @Test
-    void assertExecuteUpdateWithoutToBeAlteredRules() {
-        MaskRule rule = mock(MaskRule.class);
-        when(rule.getConfiguration()).thenReturn(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
-        assertThrows(MissingRequiredRuleException.class, () -> new DistSQLUpdateExecuteEngine(createSQLStatement(), "foo_db", mockContextManager(rule), null).executeUpdate());
+    private final AlterMaskRuleExecutor executor = (AlterMaskRuleExecutor) TypedSPILoader.getService(DatabaseRuleDefinitionExecutor.class, AlterMaskRuleStatement.class);
+    
+    @Mock
+    private ShardingSphereDatabase database;
+    
+    @BeforeEach
+    void setUp() {
+        executor.setDatabase(database);
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("checkBeforeUpdateArguments")
+    void assertCheckBeforeUpdate(final String name, final AlterMaskRuleStatement sqlStatement, final MaskRuleConfiguration currentRuleConfig, final Class<? extends Exception> expectedException) {
+        executor.setRule(createRule(currentRuleConfig));
+        if (null == expectedException) {
+            assertDoesNotThrow(() -> executor.checkBeforeUpdate(sqlStatement));
+            return;
+        }
+        when(database.getName()).thenReturn("foo_db");
+        assertThrows(expectedException, () -> executor.checkBeforeUpdate(sqlStatement));
     }
     
     @Test
-    void assertExecuteUpdate() throws SQLException {
-        MaskRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
-        MaskColumnSegment columnSegment = new MaskColumnSegment("order_id", new AlgorithmSegment("MD5", new Properties()));
-        MaskRuleSegment ruleSegment = new MaskRuleSegment("t_order", Collections.singleton(columnSegment));
-        AlterMaskRuleStatement sqlStatement = new AlterMaskRuleStatement(Collections.singleton(ruleSegment));
-        sqlStatement.buildAttributes();
-        MaskRule rule = mock(MaskRule.class);
-        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
-        ContextManager contextManager = mockContextManager(rule);
-        new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();
-        MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
-        metaDataManagerPersistService.removeRuleConfigurationItem(any(), ArgumentMatchers.argThat(this::assertToBeDroppedRuleConfiguration));
-        metaDataManagerPersistService.alterRuleConfiguration(any(), ArgumentMatchers.argThat(this::assertToBeAlteredRuleConfiguration));
-    }
-    
-    private boolean assertToBeDroppedRuleConfiguration(final MaskRuleConfiguration actual) {
-        assertTrue(actual.getTables().isEmpty());
-        assertTrue(actual.getMaskAlgorithms().isEmpty());
-        return true;
-    }
-    
-    private boolean assertToBeAlteredRuleConfiguration(final MaskRuleConfiguration actual) {
+    void assertBuildToBeAlteredRuleConfiguration() {
+        AlterMaskRuleStatement sqlStatement = createAlterStatement(Collections.singleton(createRuleSegment("t_order", "order_id", "MD5")));
+        MaskRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         assertThat(actual.getTables().size(), is(1));
-        assertThat(actual.getTables().iterator().next().getName(), is("t_order"));
-        assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("order_id"));
+        MaskTableRuleConfiguration actualTable = actual.getTables().iterator().next();
+        assertThat(actualTable.getName(), is("t_order"));
+        assertThat(actualTable.getColumns().iterator().next().getLogicColumn(), is("order_id"));
         assertThat(actual.getMaskAlgorithms().size(), is(1));
         assertTrue(actual.getMaskAlgorithms().containsKey("t_order_order_id_md5"));
-        return true;
     }
     
-    private AlterMaskRuleStatement createSQLStatement() {
-        MaskColumnSegment columnSegment = new MaskColumnSegment("user_id", new AlgorithmSegment("MD5", new Properties()));
-        MaskRuleSegment ruleSegment = new MaskRuleSegment("t_mask", Collections.singleton(columnSegment));
-        AlterMaskRuleStatement result = new AlterMaskRuleStatement(Collections.singleton(ruleSegment));
+    @Test
+    void assertBuildToBeDroppedRuleConfiguration() {
+        Map<String, AlgorithmConfiguration> currentAlgorithms = new LinkedHashMap<>(3, 1F);
+        currentAlgorithms.put("order_mask", new AlgorithmConfiguration("MD5", new Properties()));
+        currentAlgorithms.put("user_mask", new AlgorithmConfiguration("MD5", new Properties()));
+        currentAlgorithms.put("unused_mask", new AlgorithmConfiguration("SM3", new Properties()));
+        executor.setRule(createRule(new MaskRuleConfiguration(new LinkedList<>(Arrays.asList(
+                new MaskTableRuleConfiguration("t_order", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "order_mask"))),
+                new MaskTableRuleConfiguration("t_user", Collections.singleton(new MaskColumnRuleConfiguration("user_id", "user_mask"))))), currentAlgorithms)));
+        MaskTableRuleConfiguration toBeAlteredTable = new MaskTableRuleConfiguration("t_order", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "order_mask")));
+        MaskRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(new MaskRuleConfiguration(Collections.singleton(toBeAlteredTable), Collections.emptyMap()));
+        assertTrue(actual.getTables().isEmpty());
+        assertThat(actual.getMaskAlgorithms().size(), is(1));
+        assertTrue(actual.getMaskAlgorithms().containsKey("unused_mask"));
+    }
+    
+    @Test
+    void assertGetRuleClass() {
+        assertThat(executor.getRuleClass(), is(MaskRule.class));
+    }
+    
+    private static Stream<Arguments> checkBeforeUpdateArguments() {
+        return Stream.of(
+                Arguments.of("all tables exist", createAlterStatement(Collections.singleton(createRuleSegment("t_order", "order_id", "MD5"))),
+                        createCurrentRuleConfiguration(Collections.singleton("t_order")), null),
+                Arguments.of("single missing table", createAlterStatement(Collections.singleton(createRuleSegment("t_missing", "order_id", "MD5"))),
+                        createCurrentRuleConfiguration(Collections.singleton("t_order")), MissingRequiredRuleException.class),
+                Arguments.of("one table exists and one missing", createAlterStatement(Arrays.asList(createRuleSegment("t_order", "order_id", "MD5"),
+                        createRuleSegment("t_missing", "user_id", "AES"))), createCurrentRuleConfiguration(Collections.singleton("t_order")), MissingRequiredRuleException.class));
+    }
+    
+    private static AlterMaskRuleStatement createAlterStatement(final Collection<MaskRuleSegment> rules) {
+        AlterMaskRuleStatement result = new AlterMaskRuleStatement(rules);
         result.buildAttributes();
         return result;
     }
     
-    private MaskRuleConfiguration createCurrentRuleConfiguration() {
-        Collection<MaskTableRuleConfiguration> tableRuleConfigs = new LinkedList<>();
-        tableRuleConfigs.add(new MaskTableRuleConfiguration("t_order", Collections.emptyList()));
+    private static MaskRuleSegment createRuleSegment(final String tableName, final String columnName, final String algorithmType) {
+        return new MaskRuleSegment(tableName, Collections.singleton(new MaskColumnSegment(columnName, new AlgorithmSegment(algorithmType, new Properties()))));
+    }
+    
+    private static MaskRuleConfiguration createCurrentRuleConfiguration(final Collection<String> tableNames) {
+        Collection<MaskTableRuleConfiguration> tableRuleConfigs = tableNames.stream().map(each -> new MaskTableRuleConfiguration(each, Collections.emptyList())).collect(Collectors.toList());
         return new MaskRuleConfiguration(tableRuleConfigs, Collections.emptyMap());
     }
     
-    private ContextManager mockContextManager(final MaskRule rule) {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getName()).thenReturn("foo_db");
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
-        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getDatabase("foo_db")).thenReturn(database);
+    private MaskRule createRule(final MaskRuleConfiguration ruleConfig) {
+        MaskRule result = mock(MaskRule.class);
+        when(result.getConfiguration()).thenReturn(ruleConfig);
         return result;
     }
 }
