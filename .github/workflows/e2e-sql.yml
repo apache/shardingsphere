@@ -115,7 +115,7 @@ jobs:
           echo "filter-json=$filters" >> "$GITHUB_OUTPUT"
       - name: Log Outputs
         run: |
-          echo "matrix=${{ steps.generate-matrix.outputs.matrix }}"
+          echo "smoke-matrix=${{ steps.generate-matrix.outputs.smoke-matrix }}"
           echo "has-jobs=${{ steps.generate-matrix.outputs.has-jobs }}"
           echo "need-proxy-image=${{ steps.generate-matrix.outputs.need-proxy-image }}"
           echo "filter-json=${{ steps.generate-matrix.outputs.filter-json }}"
