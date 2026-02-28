@@ -43,7 +43,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -100,9 +99,9 @@ class AlterMaskRuleExecutorTest {
         currentAlgorithms.put("order_mask", new AlgorithmConfiguration("MD5", new Properties()));
         currentAlgorithms.put("user_mask", new AlgorithmConfiguration("MD5", new Properties()));
         currentAlgorithms.put("unused_mask", new AlgorithmConfiguration("SM3", new Properties()));
-        executor.setRule(createRule(new MaskRuleConfiguration(new LinkedList<>(Arrays.asList(
+        executor.setRule(createRule(new MaskRuleConfiguration(Arrays.asList(
                 new MaskTableRuleConfiguration("t_order", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "order_mask"))),
-                new MaskTableRuleConfiguration("t_user", Collections.singleton(new MaskColumnRuleConfiguration("user_id", "user_mask"))))), currentAlgorithms)));
+                new MaskTableRuleConfiguration("t_user", Collections.singleton(new MaskColumnRuleConfiguration("user_id", "user_mask")))), currentAlgorithms)));
         MaskTableRuleConfiguration toBeAlteredTable = new MaskTableRuleConfiguration("t_order", Collections.singleton(new MaskColumnRuleConfiguration("order_id", "order_mask")));
         MaskRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(new MaskRuleConfiguration(Collections.singleton(toBeAlteredTable), Collections.emptyMap()));
         assertTrue(actual.getTables().isEmpty());
