@@ -95,7 +95,7 @@ class ModShardingAlgorithmTest {
                         "t_order_00", "t_order_01", "t_order_02", "t_order_03", "t_order_04", "t_order_05", "t_order_06", "t_order_07"), Range.closed(1L, 16L), 16),
                 Arguments.of("very large closed range covers all targets", zeroPaddingAlgorithm, Arrays.asList(
                         "t_order_8", "t_order_9", "t_order_10", "t_order_11", "t_order_12", "t_order_13", "t_order_14", "t_order_15",
-                                "t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5", "t_order_6", "t_order_7"),
+                        "t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5", "t_order_6", "t_order_7"),
                         Range.closed(1164582715995979777L, 1164583049303058023L), 16),
                 Arguments.of("range without upper bound covers all targets", defaultAlgorithm, Arrays.asList(
                         "t_order_8", "t_order_9", "t_order_10", "t_order_11", "t_order_12", "t_order_13", "t_order_14", "t_order_15",
@@ -132,8 +132,10 @@ class ModShardingAlgorithmTest {
         return Stream.of(
                 Arguments.of("missing sharding count", PropertiesBuilder.build()),
                 Arguments.of("non-positive sharding count", PropertiesBuilder.build(new Property("sharding-count", "0"))),
-                Arguments.of("negative start offset", PropertiesBuilder.build(new Property("sharding-count", "16"), new Property("zero-padding", Boolean.TRUE.toString()), new Property("start-offset", "-1"), new Property("stop-offset", "1"))),
-                Arguments.of("negative stop offset", PropertiesBuilder.build(new Property("sharding-count", "16"), new Property("zero-padding", Boolean.TRUE.toString()), new Property("start-offset", "1"), new Property("stop-offset", "-1"))));
+                Arguments.of("negative start offset", PropertiesBuilder.build(
+                        new Property("sharding-count", "16"), new Property("zero-padding", Boolean.TRUE.toString()), new Property("start-offset", "-1"), new Property("stop-offset", "1"))),
+                Arguments.of("negative stop offset", PropertiesBuilder.build(
+                        new Property("sharding-count", "16"), new Property("zero-padding", Boolean.TRUE.toString()), new Property("start-offset", "1"), new Property("stop-offset", "-1"))));
     }
     
     private Stream<Arguments> assertPreciseDoShardingArguments() {
@@ -147,9 +149,10 @@ class ModShardingAlgorithmTest {
                 Arguments.of("string bigint sharding value with zero padding", zeroPaddingAlgorithm, Arrays.asList(
                         "t_order_08", "t_order_09", "t_order_10", "t_order_11", "t_order_12", "t_order_13", "t_order_14", "t_order_15",
                         "t_order_00", "t_order_01", "t_order_02", "t_order_03", "t_order_04", "t_order_05", "t_order_06", "t_order_07"), "12345678910111213141516", "t_order_07"),
-                Arguments.of("start offset zero and stop offset one", TypedSPILoader.getService(ShardingAlgorithm.class, "MOD", 
-                        PropertiesBuilder.build(new Property("sharding-count", "16"), new Property("start-offset", "0"), new Property("stop-offset", "1"))), Arrays.asList(
+                Arguments.of("start offset zero and stop offset one", TypedSPILoader.getService(ShardingAlgorithm.class, "MOD",
+                        PropertiesBuilder.build(new Property("sharding-count", "16"), new Property("start-offset", "0"), new Property("stop-offset", "1"))),
+                        Arrays.asList(
                                 "t_order_8", "t_order_9", "t_order_10", "t_order_11", "t_order_12", "t_order_13", "t_order_14", "t_order_15",
-                        "t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5", "t_order_6", "t_order_7"), "19", "t_order_1"));
+                                "t_order_0", "t_order_1", "t_order_2", "t_order_3", "t_order_4", "t_order_5", "t_order_6", "t_order_7"), "19", "t_order_1"));
     }
 }
