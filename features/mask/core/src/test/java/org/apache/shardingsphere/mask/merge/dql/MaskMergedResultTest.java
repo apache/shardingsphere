@@ -29,13 +29,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -52,8 +48,6 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class MaskMergedResultTest {
     
     @Test
@@ -81,8 +75,7 @@ class MaskMergedResultTest {
         MergedResult mergedResult = mock(MergedResult.class);
         InputStream inputStream = mock(InputStream.class);
         when(mergedResult.getInputStream(1, "asc")).thenReturn(inputStream);
-        assertThat(new MaskMergedResult(mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class), mergedResult).getInputStream(1,
-                "asc"), is(inputStream));
+        assertThat(new MaskMergedResult(mock(), mock(), mock(), mergedResult).getInputStream(1, "asc"), is(inputStream));
     }
     
     @Test
@@ -100,20 +93,20 @@ class MaskMergedResultTest {
     
     private static Stream<Arguments> assertGetValueArguments() throws SQLException {
         return Stream.of(
-                Arguments.of("without column bound info returns merged value", mockMergedResultWithValue(String.class, "VALUE"), mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class),
-                        mockSelectStatementContextWithoutColumnBoundInfo(), String.class, "VALUE"),
-                Arguments.of("without mask rule returns merged value", mockMergedResultWithValue(String.class, "VALUE"), mockDatabaseWithoutMaskRule(), mock(ShardingSphereMetaData.class),
-                        mockSelectStatementContextWithColumnBoundInfo(), String.class, "VALUE"),
-                Arguments.of("without mask table returns merged value", mockMergedResultWithValue(String.class, "VALUE"), mockDatabaseWithoutMaskTable(), mock(ShardingSphereMetaData.class),
-                        mockSelectStatementContextWithColumnBoundInfo(), String.class, "VALUE"),
-                Arguments.of("without mask algorithm on second lookup returns merged value", mockMergedResultWithValue(String.class, "VALUE"), mockDatabaseWithoutMaskAlgorithmOnSecondLookup(),
-                        mock(ShardingSphereMetaData.class), mockSelectStatementContextWithColumnBoundInfo(), String.class, "VALUE"),
-                Arguments.of("null original value returns null", mockMergedResultWithValue(Object.class, null), mockDatabaseWithMaskRule(), mock(ShardingSphereMetaData.class),
-                        mockSelectStatementContextWithColumnBoundInfo(), Object.class, null),
-                Arguments.of("mask algorithm applies to non-null value", mockMergedResultWithValue(Object.class, "VALUE"), mockDatabaseWithMaskRule(), mock(ShardingSphereMetaData.class),
-                        mockSelectStatementContextWithColumnBoundInfo(), String.class, "MASK_VALUE"),
-                Arguments.of("database resolved from metadata returns merged value", mockMergedResultWithValue(String.class, "VALUE"), mock(ShardingSphereDatabase.class), mockMetaDataWithDatabase(),
-                        mockSelectStatementContextWithColumnBoundInfo(), String.class, "VALUE"));
+                Arguments.of("without column bound info returns merged value", mockMergedResultWithValue(String.class, "VALUE"),
+                        mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class), mockSelectStatementContextWithoutColumnBoundInfo(), String.class, "VALUE"),
+                Arguments.of("without mask rule returns merged value", mockMergedResultWithValue(String.class, "VALUE"),
+                        mockDatabaseWithoutMaskRule(), mock(ShardingSphereMetaData.class), mockSelectStatementContextWithColumnBoundInfo(), String.class, "VALUE"),
+                Arguments.of("without mask table returns merged value", mockMergedResultWithValue(String.class, "VALUE"),
+                        mockDatabaseWithoutMaskTable(), mock(ShardingSphereMetaData.class), mockSelectStatementContextWithColumnBoundInfo(), String.class, "VALUE"),
+                Arguments.of("without mask algorithm on second lookup returns merged value", mockMergedResultWithValue(String.class, "VALUE"),
+                        mockDatabaseWithoutMaskAlgorithmOnSecondLookup(), mock(ShardingSphereMetaData.class), mockSelectStatementContextWithColumnBoundInfo(), String.class, "VALUE"),
+                Arguments.of("null original value returns null", mockMergedResultWithValue(Object.class, null),
+                        mockDatabaseWithMaskRule(), mock(ShardingSphereMetaData.class), mockSelectStatementContextWithColumnBoundInfo(), Object.class, null),
+                Arguments.of("mask algorithm applies to non-null value", mockMergedResultWithValue(Object.class, "VALUE"),
+                        mockDatabaseWithMaskRule(), mock(ShardingSphereMetaData.class), mockSelectStatementContextWithColumnBoundInfo(), String.class, "MASK_VALUE"),
+                Arguments.of("database resolved from metadata returns merged value", mockMergedResultWithValue(String.class, "VALUE"),
+                        mock(ShardingSphereDatabase.class), mockMetaDataWithDatabase(), mockSelectStatementContextWithColumnBoundInfo(), String.class, "VALUE"));
     }
     
     private static MergedResult mockMergedResultWithValue(final Class<?> valueType, final Object value) throws SQLException {
