@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mask.merge.dql;
 
-import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -31,7 +30,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -42,13 +43,11 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -57,127 +56,29 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class MaskMergedResultTest {
     
-    @Mock
-    private MergedResult mergedResult;
-    
     @Test
     void assertNext() throws SQLException {
-        assertFalse(new MaskMergedResult(mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class), mergedResult).next());
+        assertFalse(new MaskMergedResult(mock(), mock(), mock(), mock()).next());
     }
     
-    @Test
-    void assertGetValue() throws SQLException {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        assertNull(new MaskMergedResult(database, mock(ShardingSphereMetaData.class), mockSelectStatementContext(), mergedResult).getValue(1, String.class));
-    }
-    
-    @Test
-    void assertGetValueWithNull() throws SQLException {
-        when(mergedResult.getValue(1, Object.class)).thenReturn("VALUE");
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MaskRule maskRule = mockMaskRule();
-        when(database.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.of(maskRule));
-        assertThat(new MaskMergedResult(database, mock(ShardingSphereMetaData.class), mockSelectStatementContext(), mergedResult).getValue(1, String.class), is("MASK_VALUE"));
-    }
-    
-    @Test
-    void assertGetValueWithoutColumnProjection() throws SQLException {
-        when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
-        assertThat(new MaskMergedResult(mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class), mockSelectStatementContextWithoutColumnProjection(), mergedResult)
-                .getValue(1, String.class), is("VALUE"));
-        
-    }
-    
-    @Test
-    void assertGetValueWithoutMaskTable() throws SQLException {
-        when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MaskRule maskRule = mockMaskRuleTableAbsent();
-        when(database.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.of(maskRule));
-        assertThat(new MaskMergedResult(database, mock(ShardingSphereMetaData.class), mockSelectStatementContextForMaskTableAbsent(), mergedResult).getValue(1, String.class),
-                is("VALUE"));
-    }
-    
-    @Test
-    void assertGetValueWithoutMaskAlgorithm() throws SQLException {
-        when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MaskRule maskRule = mockMaskAlgorithmAbsent();
-        when(database.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.of(maskRule));
-        assertThat(new MaskMergedResult(database, mock(ShardingSphereMetaData.class), mockSelectStatementContext(), mergedResult).getValue(1, String.class), is("VALUE"));
-    }
-    
-    @Test
-    void assertGetValueWhenOriginalValueIsNull() throws SQLException {
-        when(mergedResult.getValue(1, Object.class)).thenReturn(null);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        MaskRule maskRule = mockMaskRule();
-        when(database.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.of(maskRule));
-        assertNull(new MaskMergedResult(database, mock(ShardingSphereMetaData.class), mockSelectStatementContext(), mergedResult).getValue(1, Object.class));
-    }
-    
-    @SuppressWarnings("unchecked")
-    private MaskRule mockMaskRule() {
-        MaskAlgorithm<String, String> maskAlgorithm = mock(MaskAlgorithm.class);
-        when(maskAlgorithm.mask("VALUE")).thenReturn("MASK_VALUE");
-        MaskRule result = mock(MaskRule.class);
-        MaskTable maskTable = mock(MaskTable.class);
-        when(maskTable.findAlgorithm("foo_column")).thenReturn(Optional.of(maskAlgorithm));
-        when(result.findMaskTable("foo_table")).thenReturn(Optional.of(maskTable));
-        return result;
-    }
-    
-    private SelectStatementContext mockSelectStatementContext() {
-        ColumnProjection columnProjection = mock(ColumnProjection.class, RETURNS_DEEP_STUBS);
-        when(columnProjection.getOriginalTable().getValue()).thenReturn("foo_table");
-        when(columnProjection.getName().getValue()).thenReturn("foo_column");
-        SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getProjectionsContext().findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
-        when(result.findColumnBoundInfo(1)).thenReturn(Optional.of(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
-                new IdentifierValue("foo_table"), new IdentifierValue("foo_column"), TableSourceType.PHYSICAL_TABLE)));
-        return result;
-    }
-    
-    private SelectStatementContext mockSelectStatementContextWithoutColumnProjection() {
-        SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getProjectionsContext().findColumnProjection(anyInt())).thenReturn(Optional.empty());
-        return result;
-    }
-    
-    private MaskRule mockMaskRuleTableAbsent() {
-        MaskRule result = mock(MaskRule.class);
-        when(result.findMaskTable(anyString())).thenReturn(Optional.empty());
-        return result;
-    }
-    
-    private MaskRule mockMaskAlgorithmAbsent() {
-        MaskRule result = mock(MaskRule.class);
-        MaskTable maskTable = mock(MaskTable.class);
-        when(maskTable.findAlgorithm("col")).thenReturn(Optional.empty());
-        when(result.findMaskTable("tbl")).thenReturn(Optional.of(maskTable));
-        return result;
-    }
-    
-    private SelectStatementContext mockSelectStatementContextForMaskTableAbsent() {
-        ColumnProjection columnProjection = mock(ColumnProjection.class, RETURNS_DEEP_STUBS);
-        when(columnProjection.getOriginalTable().getValue()).thenReturn("foo_table");
-        SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(result.getProjectionsContext().findColumnProjection(1)).thenReturn(Optional.of(columnProjection));
-        when(result.findColumnBoundInfo(1)).thenReturn(Optional.of(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
-                new IdentifierValue("foo_table"), new IdentifierValue("foo_column"), TableSourceType.PHYSICAL_TABLE)));
-        return result;
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertGetValueArguments")
+    void assertGetValue(final String name, final MergedResult mergedResult, final ShardingSphereDatabase database, final ShardingSphereMetaData metaData,
+                        final SelectStatementContext selectStatementContext, final Class<?> valueType, final Object expectedValue) throws SQLException {
+        assertThat(new MaskMergedResult(database, metaData, selectStatementContext, mergedResult).getValue(1, valueType), is(expectedValue));
     }
     
     @Test
     void assertGetCalendarValue() throws SQLException {
+        MergedResult mergedResult = mock(MergedResult.class);
         Calendar calendar = Calendar.getInstance();
         when(mergedResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
-        assertThat(new MaskMergedResult(mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class), mergedResult).getCalendarValue(1,
-                Date.class, calendar), is(new Date(0L)));
+        assertThat(new MaskMergedResult(mock(), mock(), mock(), mergedResult).getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
     }
     
     @Test
     void assertGetInputStream() throws SQLException {
+        MergedResult mergedResult = mock(MergedResult.class);
         InputStream inputStream = mock(InputStream.class);
         when(mergedResult.getInputStream(1, "asc")).thenReturn(inputStream);
         assertThat(new MaskMergedResult(mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class), mergedResult).getInputStream(1,
@@ -186,15 +87,106 @@ class MaskMergedResultTest {
     
     @Test
     void assertGetCharacterStream() throws SQLException {
+        MergedResult mergedResult = mock(MergedResult.class);
         Reader reader = mock(Reader.class);
         when(mergedResult.getCharacterStream(1)).thenReturn(reader);
-        assertThat(
-                new MaskMergedResult(mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class), mergedResult).getCharacterStream(1),
-                is(reader));
+        assertThat(new MaskMergedResult(mock(), mock(), mock(), mergedResult).getCharacterStream(1), is(reader));
     }
     
     @Test
     void assertWasNull() throws SQLException {
-        assertFalse(new MaskMergedResult(mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class), mergedResult).wasNull());
+        assertFalse(new MaskMergedResult(mock(), mock(), mock(), mock()).wasNull());
+    }
+    
+    private static Stream<Arguments> assertGetValueArguments() throws SQLException {
+        return Stream.of(
+                Arguments.of("without column bound info returns merged value", mockMergedResultWithValue(String.class, "VALUE"), mock(ShardingSphereDatabase.class), mock(ShardingSphereMetaData.class),
+                        mockSelectStatementContextWithoutColumnBoundInfo(), String.class, "VALUE"),
+                Arguments.of("without mask rule returns merged value", mockMergedResultWithValue(String.class, "VALUE"), mockDatabaseWithoutMaskRule(), mock(ShardingSphereMetaData.class),
+                        mockSelectStatementContextWithColumnBoundInfo(), String.class, "VALUE"),
+                Arguments.of("without mask table returns merged value", mockMergedResultWithValue(String.class, "VALUE"), mockDatabaseWithoutMaskTable(), mock(ShardingSphereMetaData.class),
+                        mockSelectStatementContextWithColumnBoundInfo(), String.class, "VALUE"),
+                Arguments.of("without mask algorithm on second lookup returns merged value", mockMergedResultWithValue(String.class, "VALUE"), mockDatabaseWithoutMaskAlgorithmOnSecondLookup(),
+                        mock(ShardingSphereMetaData.class), mockSelectStatementContextWithColumnBoundInfo(), String.class, "VALUE"),
+                Arguments.of("null original value returns null", mockMergedResultWithValue(Object.class, null), mockDatabaseWithMaskRule(), mock(ShardingSphereMetaData.class),
+                        mockSelectStatementContextWithColumnBoundInfo(), Object.class, null),
+                Arguments.of("mask algorithm applies to non-null value", mockMergedResultWithValue(Object.class, "VALUE"), mockDatabaseWithMaskRule(), mock(ShardingSphereMetaData.class),
+                        mockSelectStatementContextWithColumnBoundInfo(), String.class, "MASK_VALUE"),
+                Arguments.of("database resolved from metadata returns merged value", mockMergedResultWithValue(String.class, "VALUE"), mock(ShardingSphereDatabase.class), mockMetaDataWithDatabase(),
+                        mockSelectStatementContextWithColumnBoundInfo(), String.class, "VALUE"));
+    }
+    
+    private static MergedResult mockMergedResultWithValue(final Class<?> valueType, final Object value) throws SQLException {
+        MergedResult result = mock(MergedResult.class);
+        when(result.getValue(1, valueType)).thenReturn(value);
+        return result;
+    }
+    
+    private static ShardingSphereDatabase mockDatabaseWithoutMaskRule() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.empty());
+        return result;
+    }
+    
+    private static ShardingSphereDatabase mockDatabaseWithoutMaskTable() {
+        MaskRule maskRule = mock(MaskRule.class);
+        when(maskRule.findMaskTable("foo_tbl")).thenReturn(Optional.empty());
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.of(maskRule));
+        return result;
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static ShardingSphereDatabase mockDatabaseWithoutMaskAlgorithmOnSecondLookup() {
+        MaskAlgorithm maskAlgorithm = mock(MaskAlgorithm.class);
+        MaskTable firstMaskTable = mock(MaskTable.class);
+        when(firstMaskTable.findAlgorithm("foo_col")).thenReturn(Optional.of(maskAlgorithm));
+        MaskTable secondMaskTable = mock(MaskTable.class);
+        when(secondMaskTable.findAlgorithm("foo_col")).thenReturn(Optional.empty());
+        MaskRule maskRule = mock(MaskRule.class);
+        when(maskRule.findMaskTable("foo_tbl")).thenReturn(Optional.of(firstMaskTable), Optional.of(secondMaskTable));
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.of(maskRule));
+        return result;
+    }
+    
+    private static ShardingSphereDatabase mockDatabaseWithMaskRule() {
+        MaskRule maskRule = mockMaskRuleWithAlgorithm();
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getRuleMetaData().findSingleRule(MaskRule.class)).thenReturn(Optional.of(maskRule));
+        return result;
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static MaskRule mockMaskRuleWithAlgorithm() {
+        MaskAlgorithm maskAlgorithm = mock(MaskAlgorithm.class);
+        when(maskAlgorithm.mask("VALUE")).thenReturn("MASK_VALUE");
+        MaskTable maskTable = mock(MaskTable.class);
+        when(maskTable.findAlgorithm("foo_col")).thenReturn(Optional.of(maskAlgorithm));
+        MaskRule result = mock(MaskRule.class);
+        when(result.findMaskTable("foo_tbl")).thenReturn(Optional.of(maskTable));
+        return result;
+    }
+    
+    private static ShardingSphereMetaData mockMetaDataWithDatabase() {
+        ShardingSphereDatabase database = mockDatabaseWithoutMaskRule();
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
+        when(result.containsDatabase("foo_db")).thenReturn(true);
+        when(result.getDatabase("foo_db")).thenReturn(database);
+        return result;
+    }
+    
+    private static SelectStatementContext mockSelectStatementContextWithoutColumnBoundInfo() {
+        SelectStatementContext result = mock(SelectStatementContext.class);
+        when(result.findColumnBoundInfo(1)).thenReturn(Optional.empty());
+        return result;
+    }
+    
+    private static SelectStatementContext mockSelectStatementContextWithColumnBoundInfo() {
+        SelectStatementContext result = mock(SelectStatementContext.class);
+        ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")),
+                new IdentifierValue("foo_tbl"), new IdentifierValue("foo_col"), TableSourceType.PHYSICAL_TABLE);
+        when(result.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
+        return result;
     }
 }

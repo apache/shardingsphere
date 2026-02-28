@@ -66,10 +66,7 @@ jobs:
         with:
           cache-suffix: 'e2e-sql'
           cache-save-enabled: 'false'
-      - uses: docker/setup-docker-action@v4
-        with:
-          version: v28.0.4
-          set-host: true
+          enable-docker-setup: 'true'
       - name: Build E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/sql -Pe2e.env.docker -DskipTests -Dspotless.apply.skip=true
       - uses: ./.github/workflows/resources/actions/save-maven-cache
@@ -124,10 +121,7 @@ jobs:
         with:
           cache-suffix: 'e2e-sql'
           cache-save-enabled: 'false'
-      - uses: docker/setup-docker-action@v4
-        with:
-          version: v28.0.4
-          set-host: true
+          enable-docker-setup: 'true'
       - name: Download E2E Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v4

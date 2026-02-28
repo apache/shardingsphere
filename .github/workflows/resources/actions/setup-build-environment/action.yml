@@ -66,6 +66,10 @@ inputs:
     description: 'GitHub token for GraalVM setup (required when distribution is graalvm)'
     required: false
     default: ''
+  enable-docker-setup:
+    description: 'Whether to setup Docker via docker/setup-docker-action (set to true for GitHub-hosted runners that need Docker setup)'
+    required: false
+    default: 'false'
 outputs:
   cache-hit:
     description: 'A boolean value to indicate an exact match was found for the primary key'
@@ -91,6 +95,12 @@ runs:
         java-version: ${{ inputs.java-version }}
         github-token: ${{ inputs.github-token }}
         native-image-job-reports: 'true'
+    - name: Setup Docker
+      if: inputs.enable-docker-setup == 'true'
+      uses: docker/setup-docker-action@v4
+      with:
+        version: v28.0.4
+        set-host: true
     - name: Restore Maven Cache
       id: restore-maven-cache
       uses: actions/cache/restore@v5.0.1
