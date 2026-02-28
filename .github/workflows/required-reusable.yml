@@ -64,6 +64,12 @@ jobs:
               echo "GLOBAL_JOB_ENABLED=true" >> $GITHUB_OUTPUT
             fi
           fi
+      - name: Print outputs
+        run: |
+          echo "GLOBAL_RUNS_ON(from import)=${{ steps.import-variables.outputs.GLOBAL_RUNS_ON }}"
+          echo "GLOBAL_JOB_ENABLED=${{ steps.check-job-executable.outputs.GLOBAL_JOB_ENABLED }}"
+          echo "GLOBAL_CACHE_PREFIX=${{ steps.check-job-executable.outputs.GLOBAL_CACHE_PREFIX }}"
+          echo "GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE=${{ steps.check-job-executable.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE }}"
     outputs:
       GLOBAL_RUNS_ON: ${{ steps.import-variables.outputs.GLOBAL_RUNS_ON }}
       GLOBAL_JOB_ENABLED: ${{ steps.check-job-executable.outputs.GLOBAL_JOB_ENABLED }}
