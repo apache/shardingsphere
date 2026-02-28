@@ -81,6 +81,10 @@ public final class AlterIndexStatement extends DDLStatement {
         return Optional.ofNullable(simpleTable);
     }
     
+    @Override
+    public void buildAttributes() {
+    }
+    
     private class AlterIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {
         
         @Override
