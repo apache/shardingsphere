@@ -21,7 +21,6 @@ import com.google.common.collect.LinkedHashMultimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SimpleTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
-import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
 
@@ -40,11 +39,6 @@ public final class AlterIndexStatementBinder implements SQLStatementBinder<Alter
     }
     
     private AlterIndexStatement copy(final AlterIndexStatement sqlStatement, final SimpleTableSegment boundTable) {
-        AlterIndexStatement result = new AlterIndexStatement(sqlStatement.getDatabaseType());
-        sqlStatement.getIndex().ifPresent(result::setIndex);
-        sqlStatement.getRenameIndex().ifPresent(result::setRenameIndex);
-        result.setSimpleTable(boundTable);
-        SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
-        return result;
+        return new AlterIndexStatement(sqlStatement.getDatabaseType(), sqlStatement.getIndex().orElse(null), sqlStatement.getRenameIndex().orElse(null), boundTable);
     }
 }

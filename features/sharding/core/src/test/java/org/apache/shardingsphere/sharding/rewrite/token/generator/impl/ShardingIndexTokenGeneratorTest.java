@@ -54,65 +54,46 @@ class ShardingIndexTokenGeneratorTest {
     
     @Test
     void assertIsNotGenerateSQLTokenWithNotIndexContextAvailable() {
-        AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType);
-        sqlStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new AlterIndexStatement(databaseType, null, null, null));
         assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertIsNotGenerateSQLTokenWithEmptyIndex() {
-        AlterIndexStatement sqlStatement = new AlterIndexStatement(postgresqlDatabaseType);
-        sqlStatement.buildAttributes();
-        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new AlterIndexStatement(postgresqlDatabaseType, null, null, null));
         assertFalse(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertIsGenerateSQLToken() {
-        AlterIndexStatement sqlStatement = new AlterIndexStatement(postgresqlDatabaseType);
-        sqlStatement.setIndex(mock(IndexSegment.class));
-        sqlStatement.buildAttributes();
-        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new AlterIndexStatement(postgresqlDatabaseType, mock(IndexSegment.class), null, null));
         assertTrue(generator.isGenerateSQLToken(sqlStatementContext));
     }
     
     @Test
     void assertGenerateSQLTokensWithNotIndexContextAvailable() {
-        AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType);
-        sqlStatement.buildAttributes();
-        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
-        Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
-        assertTrue(actual.isEmpty());
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new AlterIndexStatement(databaseType, null, null, null));
+        assertTrue(generator.generateSQLTokens(sqlStatementContext).isEmpty());
     }
     
     @Test
     void assertGenerateSQLTokensWithSchemaOwner() throws ReflectiveOperationException {
         IndexSegment indexSegment = new IndexSegment(1, 3, new IndexNameSegment(1, 3, mock(IdentifierValue.class)));
         indexSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("foo_schema")));
-        CommonSQLStatementContext sqlStatementContext = mockAlterIndexStatementContext(indexSegment);
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new AlterIndexStatement(databaseType, indexSegment, null, null));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         generator.setSchemas(Collections.singletonMap("foo_schema", schema));
-        Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
-        assertTokens(actual, schema);
+        assertTokens(generator.generateSQLTokens(sqlStatementContext), schema);
     }
     
     @Test
     void assertGenerateSQLTokensWithoutSchemaOwner() throws ReflectiveOperationException {
         IndexSegment indexSegment = new IndexSegment(1, 3, new IndexNameSegment(1, 3, mock(IdentifierValue.class)));
-        CommonSQLStatementContext sqlStatementContext = mockAlterIndexStatementContext(indexSegment);
+        CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(new AlterIndexStatement(databaseType, indexSegment, null, null));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         generator.setDefaultSchema(schema);
-        Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
-        assertTokens(actual, schema);
-    }
-    
-    private CommonSQLStatementContext mockAlterIndexStatementContext(final IndexSegment indexSegment) {
-        AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType);
-        sqlStatement.setIndex(indexSegment);
-        sqlStatement.buildAttributes();
-        return new CommonSQLStatementContext(sqlStatement);
+        assertTokens(generator.generateSQLTokens(sqlStatementContext), schema);
     }
     
     private void assertTokens(final Collection<SQLToken> actual, final ShardingSphereSchema schema) throws ReflectiveOperationException {

@@ -399,12 +399,9 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        AlterIndexStatement result = new AlterIndexStatement(getDatabaseType());
-        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
-                new IdentifierValue(ctx.indexName().getText()));
-        result.setIndex(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(), indexName));
-        result.setSimpleTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
-        return result;
+        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
+        return new AlterIndexStatement(getDatabaseType(),
+                new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(), indexName), null, (SimpleTableSegment) visit(ctx.tableNameWithDb()));
     }
     
     @Override
