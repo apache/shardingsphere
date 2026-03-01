@@ -112,6 +112,5 @@ public final class MySQLBinlogTableMapEventPacket extends AbstractMySQLBinlogEve
     
     @Override
     protected void writeEvent(final MySQLPacketPayload payload) {
-        // TODO
     }
 }

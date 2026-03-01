@@ -199,7 +199,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
         SingleRuleConfiguration singleRuleConfig = ruleMetaData.getSingleRule(SingleRule.class).getConfiguration();
         metaDataPersistFacade.getDatabaseRuleService().persist(database.getName(), Collections.singleton(singleRuleConfig));
         try {
-            metaDataContextManager.getDatabaseRuleConfigurationManager().refresh(database.getName(), singleRuleConfig, true);
+            metaDataContextManager.getDatabaseRuleConfigurationManager().refresh(database.getName(), singleRuleConfig);
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }

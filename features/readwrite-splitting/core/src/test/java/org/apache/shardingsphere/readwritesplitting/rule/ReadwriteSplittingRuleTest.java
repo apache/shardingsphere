@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourc
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 import org.apache.shardingsphere.readwritesplitting.exception.actual.InvalidReadwriteSplittingActualDataSourceInlineExpressionException;
 import org.junit.jupiter.api.Test;
 
@@ -124,5 +125,10 @@ class ReadwriteSplittingRuleTest {
         assertThat(actual.get().getReadwriteSplittingGroup().getWriteDataSource(), is("write_ds"));
         assertThat(actual.get().getReadwriteSplittingGroup().getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1", "read_ds_2", "read_ds_3")));
         assertThat(actual.get().getLoadBalancer().getType(), is("RANDOM"));
+    }
+    
+    @Test
+    void assertGetOrder() {
+        assertThat(createReadwriteSplittingRule().getOrder(), is(ReadwriteSplittingOrder.ORDER));
     }
 }

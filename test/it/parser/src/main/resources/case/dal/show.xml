@@ -1228,4 +1228,14 @@
     <show-slave-hosts sql-case-id="show_slave_hosts_doris" />
     <show-replica-status sql-case-id="show_replica_status_doris" />
     <show-relay-log-events sql-case-id="show_relaylog_events_doris" />
+
+    <show-create-table sql-case-id="show_brief_create_table_doris">
+        <table name="test_table" start-index="24" stop-index="33" />
+    </show-create-table>
+
+    <show-create-table sql-case-id="show_brief_create_table_with_db_doris">
+        <table name="test_table" start-index="24" stop-index="38">
+            <owner name="demo" start-index="24" stop-index="27" />
+        </table>
+    </show-create-table>
 </sql-parser-test-cases>

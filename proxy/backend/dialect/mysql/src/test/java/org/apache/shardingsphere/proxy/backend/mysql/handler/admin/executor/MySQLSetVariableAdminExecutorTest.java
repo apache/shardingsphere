@@ -77,6 +77,30 @@ class MySQLSetVariableAdminExecutorTest {
         assertThat(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get(), is(StandardCharsets.UTF_8));
     }
     
+    @Test
+    void assertExecuteWithCharacterSetResults() throws SQLException {
+        SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(
+                new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "character_set_results"), "'utf8mb4'")));
+        MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        when(connectionSession.getAttributeMap()).thenReturn(new DefaultAttributeMap());
+        executor.execute(connectionSession, mock());
+        assertThat(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get(), is(StandardCharsets.UTF_8));
+    }
+    
+    @Test
+    void assertExecuteWithCharacterSetResultsAsNull() throws SQLException {
+        SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(
+                new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "character_set_results"), "NULL")));
+        MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        DefaultAttributeMap attributeMap = new DefaultAttributeMap();
+        attributeMap.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(StandardCharsets.UTF_8);
+        when(connectionSession.getAttributeMap()).thenReturn(attributeMap);
+        executor.execute(connectionSession, mock());
+        assertThat(connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get(), is(StandardCharsets.UTF_8));
+    }
+    
     private ConnectionContext mockConnectionContext() {
         ConnectionContext result = mock(ConnectionContext.class);
         when(result.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));

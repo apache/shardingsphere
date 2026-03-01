@@ -28,9 +28,9 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegist
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum EncryptDerivedColumnSuffix {
     
-    CIPHER("_CIPHER"),
-    ASSISTED_QUERY("_ASSISTED"),
-    LIKE_QUERY("_LIKE");
+    CIPHER("_C"),
+    ASSISTED_QUERY("_A"),
+    LIKE_QUERY("_L");
     
     private final String suffix;
     

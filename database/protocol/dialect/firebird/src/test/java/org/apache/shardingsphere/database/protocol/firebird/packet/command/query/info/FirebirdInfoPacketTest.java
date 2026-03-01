@@ -21,6 +21,7 @@ import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.common.FirebirdCommonInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.type.sql.FirebirdSQLInfoPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -30,6 +31,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,5 +62,12 @@ class FirebirdInfoPacketTest {
         List<FirebirdInfoPacketType> infoItems = actual.getInfoItems();
         assertThat(infoItems.get(0), is(FirebirdSQLInfoPacketType.RECORDS));
         assertThat(infoItems.get(1), is(FirebirdCommonInfoPacketType.END));
+    }
+    
+    @Test
+    void assertWrite() {
+        FirebirdInfoPacket packet = new FirebirdInfoPacket(1, 2, 100);
+        packet.write((PacketPayload) payload);
+        verifyNoInteractions(payload);
     }
 }

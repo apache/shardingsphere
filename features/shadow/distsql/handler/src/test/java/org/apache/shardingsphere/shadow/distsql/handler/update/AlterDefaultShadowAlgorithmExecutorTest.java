@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
@@ -38,6 +40,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -46,7 +52,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AlterDefaultShadowAlgorithmExecutorTest {
     
-    private final AlterDefaultShadowAlgorithmExecutor executor = new AlterDefaultShadowAlgorithmExecutor();
+    private final AlterDefaultShadowAlgorithmExecutor executor = (AlterDefaultShadowAlgorithmExecutor) TypedSPILoader.getService(
+            DatabaseRuleDefinitionExecutor.class, AlterDefaultShadowAlgorithmStatement.class);
     
     @Mock
     private ShadowRuleConfiguration currentConfig;
@@ -60,8 +67,7 @@ class AlterDefaultShadowAlgorithmExecutorTest {
     void assertExecuteAlgorithmNotInMetaData() {
         Properties props = PropertiesBuilder.build(new Property("type", "value"));
         when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("sqlHintAlgorithm", new AlgorithmConfiguration("type", props)));
-        AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(
-                new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("SQL_HINT", props)));
+        AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("SQL_HINT", props)));
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
@@ -89,7 +95,28 @@ class AlterDefaultShadowAlgorithmExecutorTest {
         ShadowRule rule = mock(ShadowRule.class);
         when(rule.getConfiguration()).thenReturn(currentConfig);
         executor.setRule(rule);
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(
+                new AlterDefaultShadowAlgorithmStatement(new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("SQL_HINT", props)))));
+    }
+    
+    @Test
+    void assertBuildToBeAlteredRuleConfiguration() {
+        Properties props = PropertiesBuilder.build(new Property("foo", "bar"));
         AlterDefaultShadowAlgorithmStatement sqlStatement = new AlterDefaultShadowAlgorithmStatement(new ShadowAlgorithmSegment("default_shadow_algorithm", new AlgorithmSegment("SQL_HINT", props)));
-        executor.checkBeforeUpdate(sqlStatement);
+        ShadowRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
+        assertThat(actual.getDefaultShadowAlgorithmName(), is("default_shadow_algorithm"));
+        assertThat(actual.getShadowAlgorithms().size(), is(1));
+        assertThat(actual.getShadowAlgorithms().get("default_shadow_algorithm").getType(), is("SQL_HINT"));
+        assertThat(actual.getShadowAlgorithms().get("default_shadow_algorithm").getProps(), is(props));
+    }
+    
+    @Test
+    void assertBuildToBeDroppedRuleConfiguration() {
+        assertNull(executor.buildToBeDroppedRuleConfiguration(new ShadowRuleConfiguration()));
+    }
+    
+    @Test
+    void assertGetRuleClass() {
+        assertThat(executor.getRuleClass(), is(ShadowRule.class));
     }
 }

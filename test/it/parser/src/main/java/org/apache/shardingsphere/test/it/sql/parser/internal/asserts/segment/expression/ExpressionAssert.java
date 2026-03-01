@@ -408,6 +408,7 @@ public final class ExpressionAssert {
             assertNull(actual, assertContext.getText("Variable segment should not exist."));
             return;
         }
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
         assertThat(assertContext.getText("Actual scope is different with expected scope."), actual.getScope().orElse(null), is(expected.getScope()));
         assertThat(assertContext.getText("Actual variable is different with expected variable."), actual.getVariable(), is(expected.getVariable()));
     }

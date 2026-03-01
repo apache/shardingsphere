@@ -25,7 +25,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLParameterDescriptionPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -173,9 +173,9 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getType()).thenReturn('S');
         when(packet.getName()).thenReturn(statementId);
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
-        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
-            parameterTypes.add(PostgreSQLColumnType.UNSPECIFIED);
+            parameterTypes.add(PostgreSQLBinaryColumnType.UNSPECIFIED);
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
@@ -190,8 +190,8 @@ class PostgreSQLComDescribeExecutorTest {
         PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
         actualParameterDescription.write(mockPayload);
         verify(mockPayload).writeInt2(expectedParamCount);
-        verify(mockPayload, times(expectedInt4Count)).writeInt4(PostgreSQLColumnType.INT4.getValue());
-        verify(mockPayload, times(expectedCharCount)).writeInt4(PostgreSQLColumnType.CHAR.getValue());
+        verify(mockPayload, times(expectedInt4Count)).writeInt4(PostgreSQLBinaryColumnType.INT4.getValue());
+        verify(mockPayload, times(expectedCharCount)).writeInt4(PostgreSQLBinaryColumnType.CHAR.getValue());
         assertThat(actualPacketsIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
     }
     
@@ -224,7 +224,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getName()).thenReturn(statementId);
         String sql = "INSERT INTO public.t_small (col1, col2) VALUES (?, ?) RETURNING *, col1 + col2 expr_sum";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
-        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.UNSPECIFIED));
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED));
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ShardingSphereTable table = new ShardingSphereTable("t_small",
@@ -243,8 +243,8 @@ class PostgreSQLComDescribeExecutorTest {
         PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
         parameterDescription.write(mockPayload);
         verify(mockPayload).writeInt2(2);
-        verify(mockPayload).writeInt4(PostgreSQLColumnType.INT4.getValue());
-        verify(mockPayload).writeInt4(PostgreSQLColumnType.INT2.getValue());
+        verify(mockPayload).writeInt4(PostgreSQLBinaryColumnType.INT4.getValue());
+        verify(mockPayload).writeInt4(PostgreSQLBinaryColumnType.INT2.getValue());
         PostgreSQLRowDescriptionPacket rowDescriptionPacket = (PostgreSQLRowDescriptionPacket) actualIterator.next();
         List<PostgreSQLColumnDescription> columnDescriptions = getColumnDescriptions(rowDescriptionPacket);
         assertThat(columnDescriptions.size(), is(3));
@@ -253,7 +253,7 @@ class PostgreSQLComDescribeExecutorTest {
         assertThat(columnDescriptions.get(1).getColumnName(), is("col2"));
         assertThat(columnDescriptions.get(1).getColumnLength(), is(2));
         assertThat(columnDescriptions.get(2).getColumnName(), is("expr_sum"));
-        assertThat(columnDescriptions.get(2).getTypeOID(), is(PostgreSQLColumnType.VARCHAR.getValue()));
+        assertThat(columnDescriptions.get(2).getTypeOID(), is(PostgreSQLBinaryColumnType.VARCHAR.getValue()));
         assertThat(columnDescriptions.get(2).getColumnLength(), is(-1));
     }
     
@@ -264,9 +264,9 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getName()).thenReturn(statementId);
         String sql = "INSERT INTO t_order (iD, k, c, PaD) VALUES (1, ?, ?, ?), (?, 2, ?, '')";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
-        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
-            parameterTypes.add(PostgreSQLColumnType.UNSPECIFIED);
+            parameterTypes.add(PostgreSQLBinaryColumnType.UNSPECIFIED);
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
@@ -294,9 +294,9 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getName()).thenReturn(statementId);
         String sql = "INSERT INTO t_order (undefined_column, k, c, pad) VALUES (1, ?, ?, ?), (?, 2, ?, '')";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
-        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
-            parameterTypes.add(PostgreSQLColumnType.UNSPECIFIED);
+            parameterTypes.add(PostgreSQLBinaryColumnType.UNSPECIFIED);
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
@@ -319,7 +319,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singletonList(PostgreSQLColumnType.UNSPECIFIED));
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED));
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(
                 statementId, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(), parameterTypes, Collections.emptyList()));
         Collection<DatabasePacket> actualPackets = executor.execute();
@@ -328,20 +328,20 @@ class PostgreSQLComDescribeExecutorTest {
         PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
         parameterDescription.write(mockPayload);
         verify(mockPayload).writeInt2(1);
-        verify(mockPayload).writeInt4(PostgreSQLColumnType.UNSPECIFIED.getValue());
+        verify(mockPayload).writeInt4(PostgreSQLBinaryColumnType.UNSPECIFIED.getValue());
         assertThat(actualIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideReturningCases")
     void assertDescribePreparedStatementInsertWithReturning(final String testName, final String statementId, final String sql,
-                                                            final List<PostgreSQLColumnType> expectedParamTypes, final List<PostgreSQLColumnDescription> expectedColumns) throws SQLException {
+                                                            final List<PostgreSQLBinaryColumnType> expectedParamTypes, final List<PostgreSQLColumnDescription> expectedColumns) throws SQLException {
         when(packet.getType()).thenReturn('S');
         when(packet.getName()).thenReturn(statementId);
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
-        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
-            parameterTypes.add(PostgreSQLColumnType.UNSPECIFIED);
+            parameterTypes.add(PostgreSQLBinaryColumnType.UNSPECIFIED);
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
@@ -357,7 +357,7 @@ class PostgreSQLComDescribeExecutorTest {
         parameterDescription.write(mockPayload);
         verify(mockPayload).writeInt2(expectedParamTypes.size());
         Map<Integer, Long> expectedTypeCounts = expectedParamTypes.stream()
-                .collect(Collectors.groupingBy(PostgreSQLColumnType::getValue, Collectors.counting()));
+                .collect(Collectors.groupingBy(PostgreSQLBinaryColumnType::getValue, Collectors.counting()));
         for (Entry<Integer, Long> entry : expectedTypeCounts.entrySet()) {
             verify(mockPayload, times(entry.getValue().intValue())).writeInt4(entry.getKey());
         }
@@ -383,7 +383,7 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         prepareJDBCBackendConnection(sql);
-        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLColumnType.UNSPECIFIED));
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLBinaryColumnType.UNSPECIFIED));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
@@ -400,7 +400,7 @@ class PostgreSQLComDescribeExecutorTest {
         PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
         actualParameterDescription.write(mockPayload);
         verify(mockPayload).writeInt2(1);
-        verify(mockPayload).writeInt4(PostgreSQLColumnType.INT4.getValue());
+        verify(mockPayload).writeInt4(PostgreSQLBinaryColumnType.INT4.getValue());
         PostgreSQLRowDescriptionPacket actualRowDescription = (PostgreSQLRowDescriptionPacket) actualPacketsIterator.next();
         List<PostgreSQLColumnDescription> actualColumnDescriptions = getColumnDescriptions(actualRowDescription);
         List<PostgreSQLColumnDescription> expectedColumnDescriptions = Arrays.asList(
@@ -430,7 +430,7 @@ class PostgreSQLComDescribeExecutorTest {
         prepareJDBCBackendConnectionWithNullMetaData(sql);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>();
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>();
         List<Integer> parameterIndexes = Collections.emptyList();
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of(DATABASE_NAME));
@@ -456,7 +456,7 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLColumnType.INT4));
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLBinaryColumnType.INT4));
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         PostgreSQLServerPreparedStatement preparedStatement = mock(PostgreSQLServerPreparedStatement.class);
         when(preparedStatement.describeRows()).thenReturn(Optional.empty(), Optional.of(PostgreSQLNoDataPacket.getInstance()));
@@ -479,7 +479,7 @@ class PostgreSQLComDescribeExecutorTest {
         PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
         parameterDescription.write(mockPayload);
         verify(mockPayload).writeInt2(1);
-        verify(mockPayload).writeInt4(PostgreSQLColumnType.INT4.getValue());
+        verify(mockPayload).writeInt4(PostgreSQLBinaryColumnType.INT4.getValue());
         assertThat(actualIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
     }
     
@@ -493,7 +493,7 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         prepareJDBCBackendConnectionWithParamTypes(sql, new int[]{Types.INTEGER, Types.SMALLINT}, new String[]{"int4", "int2"});
-        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.UNSPECIFIED));
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED));
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -508,8 +508,8 @@ class PostgreSQLComDescribeExecutorTest {
         PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
         parameterDescription.write(mockPayload);
         verify(mockPayload).writeInt2(2);
-        verify(mockPayload).writeInt4(PostgreSQLColumnType.INT4.getValue());
-        verify(mockPayload).writeInt4(PostgreSQLColumnType.INT2.getValue());
+        verify(mockPayload).writeInt4(PostgreSQLBinaryColumnType.INT4.getValue());
+        verify(mockPayload).writeInt4(PostgreSQLBinaryColumnType.INT2.getValue());
     }
     
     private ContextManager mockContextManager() {
@@ -656,15 +656,15 @@ class PostgreSQLComDescribeExecutorTest {
                 Arguments.of("returning complex columns", "S_returning_complex",
                         "INSERT INTO t_order (k, c, pad) VALUES (?, ?, ?) RETURNING"
                                 + " id, id alias_id, 'anonymous', 'OK' literal_string, 1 literal_int, 4294967296 literal_bigint, 1.1 literal_numeric, t_order.*, t_order, t_order alias_t_order",
-                        Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.CHAR, PostgreSQLColumnType.CHAR),
+                        Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.CHAR, PostgreSQLBinaryColumnType.CHAR),
                         getExpectedReturningColumns()),
                 Arguments.of("returning numeric literal", "S_numeric_returning",
                         "INSERT INTO t_order (k) VALUES (?) RETURNING 1.2 numeric_value",
-                        Collections.singletonList(PostgreSQLColumnType.INT4),
+                        Collections.singletonList(PostgreSQLBinaryColumnType.INT4),
                         Collections.singletonList(expectedColumn("numeric_value", Types.NUMERIC, -1, "numeric"))),
                 Arguments.of("returning boolean literal", "S_boolean_returning",
                         "INSERT INTO t_order (k) VALUES (?) RETURNING true bool_value",
-                        Collections.singletonList(PostgreSQLColumnType.INT4),
+                        Collections.singletonList(PostgreSQLBinaryColumnType.INT4),
                         Collections.singletonList(expectedColumn("bool_value", Types.VARCHAR, -1, "varchar"))),
                 Arguments.of("returning without parameters", "S_returning_only",
                         "INSERT INTO t_order VALUES (1) RETURNING id",

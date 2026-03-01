@@ -43,7 +43,8 @@ public final class CharsetSetExecutor {
      */
     public void set(final String variableName, final String toBeAssignedValue) {
         Optional<CharsetVariableProvider> charsetVariableProvider = DatabaseTypedSPILoader.findService(CharsetVariableProvider.class, databaseType);
-        if (charsetVariableProvider.isPresent() && charsetVariableProvider.get().getCharsetVariables().stream().anyMatch(each -> each.equalsIgnoreCase(variableName))) {
+        if (charsetVariableProvider.isPresent() && charsetVariableProvider.get().getCharsetVariables().stream().anyMatch(each -> each.equalsIgnoreCase(variableName))
+                && charsetVariableProvider.get().shouldSet(variableName, toBeAssignedValue)) {
             connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(charsetVariableProvider.get().parseCharset(toBeAssignedValue));
         }
     }

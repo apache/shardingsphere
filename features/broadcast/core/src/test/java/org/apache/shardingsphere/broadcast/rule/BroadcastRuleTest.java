@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.broadcast.rule;
 
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
@@ -31,8 +32,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -68,5 +69,11 @@ class BroadcastRuleTest {
     void assertGetBroadcastTableNames() {
         BroadcastRule rule = new BroadcastRule(new BroadcastRuleConfiguration(Collections.singleton("foo_tbl")), Collections.emptyMap(), Collections.emptyList());
         assertThat(rule.getBroadcastTableNames(Arrays.asList("foo_tbl", "bar_tbl")), is(Collections.singleton("foo_tbl")));
+    }
+    
+    @Test
+    void assertGetOrder() {
+        BroadcastRule rule = new BroadcastRule(new BroadcastRuleConfiguration(Collections.singleton("foo_tbl")), Collections.emptyMap(), Collections.emptyList());
+        assertThat(rule.getOrder(), is(BroadcastOrder.ORDER));
     }
 }

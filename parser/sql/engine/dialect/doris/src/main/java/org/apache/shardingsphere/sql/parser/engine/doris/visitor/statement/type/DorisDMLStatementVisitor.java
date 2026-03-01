@@ -319,8 +319,14 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitIndexHint(final IndexHintContext ctx) {
         Collection<String> indexNames = new LinkedList<>();
+        List<Integer> indexStartIndices = new LinkedList<>();
+        List<Integer> indexStopIndices = new LinkedList<>();
         if (null != ctx.indexNameList()) {
-            ctx.indexNameList().indexName().forEach(each -> indexNames.add(each.getText()));
+            ctx.indexNameList().indexName().forEach(each -> {
+                indexNames.add(each.getText());
+                indexStartIndices.add(each.getStart().getStartIndex());
+                indexStopIndices.add(each.getStop().getStopIndex());
+            });
         }
         String useType;
         if (null != ctx.USE()) {
@@ -330,7 +336,7 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
         } else {
             useType = ctx.FORCE().getText();
         }
-        IndexHintSegment result = new IndexHintSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), indexNames, useType,
+        IndexHintSegment result = new IndexHintSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), indexNames, indexStartIndices, indexStopIndices, useType,
                 null == ctx.INDEX() ? ctx.KEY().getText() : ctx.INDEX().getText(), getOriginalText(ctx));
         if (null != ctx.indexHintClause().FOR()) {
             String hintScope;

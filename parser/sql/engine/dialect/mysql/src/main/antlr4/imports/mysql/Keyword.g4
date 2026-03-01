@@ -167,3 +167,7 @@ PERFORMANCE_SCHEMA
 TOKUDB
     : T O K U D B
     ;
+
+LTRIM
+    : L T R I M
+    ;

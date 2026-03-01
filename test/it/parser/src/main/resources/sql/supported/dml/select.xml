@@ -515,4 +515,26 @@
     <sql-case id="select_limit_parameter" value="SELECT * FROM t4 LIMIT ?;" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_limit_complex_expr" value="SELECT * FROM t4 LIMIT (CASE WHEN true THEN 10 ELSE 20 END);" db-types="PostgreSQL,openGauss" />
     <sql-case id="select_func" value="select public.int4range(400, 500, '[]');" db-types="PostgreSQL" />
+    <sql-case id="select_ltrim_function" value="SELECT LTRIM('  barbar')" db-types="MySQL" />
+    <sql-case id="select_ltrim_as_column_alias" value="SELECT id AS ltrim FROM t" db-types="MySQL" />
+    <sql-case id="select_ltrim_as_qualified_column" value="SELECT t.ltrim FROM t" db-types="MySQL" />
+    <sql-case id="select_make_set_single" value="SELECT MAKE_SET(1,'a','b','c')" db-types="MySQL" />
+    <sql-case id="select_make_set_bits_or" value="SELECT MAKE_SET(1|4,'hello','nice','world')" db-types="MySQL" />
+    <sql-case id="select_make_set_with_null" value="SELECT MAKE_SET(1|4,'hello','nice',NULL,'world')" db-types="MySQL" />
+    <sql-case id="select_make_set_zero" value="SELECT MAKE_SET(0,'a','b','c')" db-types="MySQL" />
+    <sql-case id="select_makedate_function" value="SELECT MAKEDATE(2011,31), MAKEDATE(2011,32)" db-types="MySQL" />
+    <sql-case id="select_maketime_function" value="SELECT MAKETIME(12,15,30)" db-types="MySQL" />
+    <sql-case id="select_source_pos_wait_function" value="SELECT SOURCE_POS_WAIT('mysql-bin.000001', 100), SOURCE_POS_WAIT('bin.002', 200, 5)" db-types="MySQL" />
+    <sql-case id="select_mbrcontains" value="SELECT MBRContains(@g1, @g2)" db-types="MySQL" />
+    <sql-case id="select_mbrcovers_mbrcoveredby" value="SELECT MBRCovers(@g1,@g2), MBRCoveredby(@g1,@g2)" db-types="MySQL" />
+    <sql-case id="select_mbrdisjoint" value="SELECT MBRDisjoint(@g1, @g4)" db-types="MySQL" />
+    <sql-case id="select_mbrequals" value="SELECT MBREquals(@g1, @g1)" db-types="MySQL" />
+    <sql-case id="select_mbrintersects" value="SELECT MBRIntersects(@g1, @g1)" db-types="MySQL" />
+    <sql-case id="select_mbroverlaps" value="SELECT MBROverlaps(@g1, @g2)" db-types="MySQL" />
+    <sql-case id="select_mbrtouches" value="SELECT MBRTouches(@g1, @g2)" db-types="MySQL" />
+    <sql-case id="select_mbrwithin" value="SELECT MBRWithin(@g1, @g2)" db-types="MySQL" />
+    <sql-case id="select_use_index_ignore_index_for_order_by" value="SELECT * FROM t1 USE INDEX (i1) IGNORE INDEX FOR ORDER BY (i2) ORDER BY a;" db-types="MySQL" />
+    <sql-case id="select_use_index_twice" value="SELECT * FROM t1 USE INDEX (i1) USE INDEX (i1,i1);" db-types="MySQL" />
+    <sql-case id="select_use_index_force_index_for_join" value="SELECT * FROM t1 USE INDEX FOR JOIN (i1) FORCE INDEX FOR JOIN (i2);" db-types="MySQL" />
+    <sql-case id="select_group_by_match_against_with_rollup" value="SELECT 1 FROM t GROUP BY a, MATCH (a) AGAINST ('abc') WITH ROLLUP;" db-types="MySQL" />
 </sql-cases>

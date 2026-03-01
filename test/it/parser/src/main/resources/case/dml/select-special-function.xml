@@ -5024,6 +5024,207 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_cosine_distance" db-types="Doris">
+        <projections start-index="7" stop-index="37">
+            <expression-projection start-index="7" stop-index="37" text="COSINE_DISTANCE([1, 2], [2, 3])">
+                <expr>
+                    <function function-name="COSINE_DISTANCE" text="COSINE_DISTANCE([1, 2], [2, 3])" start-index="7" stop-index="37">
+                        <parameter>
+                            <list-expression start-index="23" stop-index="28">
+                                <items>
+                                    <literal-expression value="1" start-index="24" stop-index="24" />
+                                </items>
+                                <items>
+                                    <literal-expression value="2" start-index="27" stop-index="27" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                        <parameter>
+                            <list-expression start-index="31" stop-index="36">
+                                <items>
+                                    <literal-expression value="2" start-index="32" stop-index="32" />
+                                </items>
+                                <items>
+                                    <literal-expression value="3" start-index="35" stop-index="35" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cosine_distance_multiple" db-types="Doris">
+        <projections start-index="7" stop-index="69">
+            <expression-projection start-index="7" stop-index="37" text="COSINE_DISTANCE([1, 2], [2, 3])">
+                <expr>
+                    <function function-name="COSINE_DISTANCE" text="COSINE_DISTANCE([1, 2], [2, 3])" start-index="7" stop-index="37">
+                        <parameter>
+                            <list-expression start-index="23" stop-index="28">
+                                <items>
+                                    <literal-expression value="1" start-index="24" stop-index="24" />
+                                </items>
+                                <items>
+                                    <literal-expression value="2" start-index="27" stop-index="27" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                        <parameter>
+                            <list-expression start-index="31" stop-index="36">
+                                <items>
+                                    <literal-expression value="2" start-index="32" stop-index="32" />
+                                </items>
+                                <items>
+                                    <literal-expression value="3" start-index="35" stop-index="35" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+            <expression-projection start-index="39" stop-index="69" text="COSINE_DISTANCE([3, 6], [4, 7])">
+                <expr>
+                    <function function-name="COSINE_DISTANCE" text="COSINE_DISTANCE([3, 6], [4, 7])" start-index="39" stop-index="69">
+                        <parameter>
+                            <list-expression start-index="55" stop-index="60">
+                                <items>
+                                    <literal-expression value="3" start-index="56" stop-index="56" />
+                                </items>
+                                <items>
+                                    <literal-expression value="6" start-index="59" stop-index="59" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                        <parameter>
+                            <list-expression start-index="63" stop-index="68">
+                                <items>
+                                    <literal-expression value="4" start-index="64" stop-index="64" />
+                                </items>
+                                <items>
+                                    <literal-expression value="7" start-index="67" stop-index="67" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cosine_distance_three_elements" db-types="Doris">
+        <projections start-index="7" stop-index="43">
+            <expression-projection start-index="7" stop-index="43" text="COSINE_DISTANCE([1, 2, 3], [4, 5, 6])">
+                <expr>
+                    <function function-name="COSINE_DISTANCE" text="COSINE_DISTANCE([1, 2, 3], [4, 5, 6])" start-index="7" stop-index="43">
+                        <parameter>
+                            <list-expression start-index="23" stop-index="31">
+                                <items>
+                                    <literal-expression value="1" start-index="24" stop-index="24" />
+                                </items>
+                                <items>
+                                    <literal-expression value="2" start-index="27" stop-index="27" />
+                                </items>
+                                <items>
+                                    <literal-expression value="3" start-index="30" stop-index="30" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                        <parameter>
+                            <list-expression start-index="34" stop-index="42">
+                                <items>
+                                    <literal-expression value="4" start-index="35" stop-index="35" />
+                                </items>
+                                <items>
+                                    <literal-expression value="5" start-index="38" stop-index="38" />
+                                </items>
+                                <items>
+                                    <literal-expression value="6" start-index="41" stop-index="41" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cosine_distance_from_table" db-types="Doris">
+        <projections start-index="7" stop-index="37">
+            <expression-projection start-index="7" stop-index="37" text="COSINE_DISTANCE([1, 2], [2, 3])">
+                <expr>
+                    <function function-name="COSINE_DISTANCE" text="COSINE_DISTANCE([1, 2], [2, 3])" start-index="7" stop-index="37">
+                        <parameter>
+                            <list-expression start-index="23" stop-index="28">
+                                <items>
+                                    <literal-expression value="1" start-index="24" stop-index="24" />
+                                </items>
+                                <items>
+                                    <literal-expression value="2" start-index="27" stop-index="27" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                        <parameter>
+                            <list-expression start-index="31" stop-index="36">
+                                <items>
+                                    <literal-expression value="2" start-index="32" stop-index="32" />
+                                </items>
+                                <items>
+                                    <literal-expression value="3" start-index="35" stop-index="35" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="44" stop-index="50" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_cosine_distance_empty_array" db-types="Doris">
+        <projections start-index="7" stop-index="29">
+            <expression-projection start-index="7" stop-index="29" text="COSINE_DISTANCE([], [])">
+                <expr>
+                    <function function-name="COSINE_DISTANCE" text="COSINE_DISTANCE([], [])" start-index="7" stop-index="29">
+                        <parameter>
+                            <list-expression start-index="23" stop-index="24" />
+                        </parameter>
+                        <parameter>
+                            <list-expression start-index="27" stop-index="28" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+
+    <select sql-case-id="select_cosine_distance_single_element" db-types="Doris">
+        <projections start-index="7" stop-index="31">
+            <expression-projection start-index="7" stop-index="31" text="COSINE_DISTANCE([1], [2])">
+                <expr>
+                    <function function-name="COSINE_DISTANCE" text="COSINE_DISTANCE([1], [2])" start-index="7" stop-index="31">
+                        <parameter>
+                            <list-expression start-index="23" stop-index="25">
+                                <items>
+                                    <literal-expression value="1" start-index="24" stop-index="24" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                        <parameter>
+                            <list-expression start-index="28" stop-index="30">
+                                <items>
+                                    <literal-expression value="2" start-index="29" stop-index="29" />
+                                </items>
+                            </list-expression>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
     
     <select sql-case-id="select_last_insert_id">
         <projections start-index="7" stop-index="22">

@@ -343,12 +343,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        AlterIndexStatement result = new AlterIndexStatement(getDatabaseType());
-        if (null != ctx.indexName()) {
-            result.setIndex((IndexSegment) visit(ctx.indexName()));
-        }
-        result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return new AlterIndexStatement(getDatabaseType(), null == ctx.indexName() ? null : (IndexSegment) visit(ctx.indexName()), null, (SimpleTableSegment) visit(ctx.tableName()));
     }
     
     @Override

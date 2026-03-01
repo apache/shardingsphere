@@ -26,15 +26,19 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropFunctio
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisStopSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateSyncJobStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.doris.type.DorisAlterStoragePolicyStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseSyncJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisStopSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.function.CreateFunctionStatementTestCase;
 
@@ -66,6 +70,10 @@ public final class DorisDDLStatementAssert {
             DorisPauseSyncJobStatementAssert.assertIs(assertContext, (DorisPauseSyncJobStatement) actual, (DorisPauseSyncJobStatementTestCase) expected);
         } else if (actual instanceof DorisCreateSyncJobStatement) {
             DorisCreateSyncJobStatementAssert.assertIs(assertContext, (DorisCreateSyncJobStatement) actual, (DorisCreateSyncJobStatementTestCase) expected);
+        } else if (actual instanceof DorisStopSyncJobStatement) {
+            DorisStopSyncJobStatementAssert.assertIs(assertContext, (DorisStopSyncJobStatement) actual, (DorisStopSyncJobStatementTestCase) expected);
+        } else if (actual instanceof DorisCreateJobStatement) {
+            DorisCreateJobStatementAssert.assertIs(assertContext, (DorisCreateJobStatement) actual, (DorisCreateJobStatementTestCase) expected);
         }
     }
 }

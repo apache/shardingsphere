@@ -35,6 +35,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,49 +46,93 @@ class FirebirdConnectPacketTest {
     private FirebirdPacketPayload payload;
     
     @Test
-    void assertConnectPacket() {
-        ByteBuf userInfo = mock(ByteBuf.class);
-        ByteBuf userBuf = mock(ByteBuf.class);
-        ByteBuf pluginBuf = mock(ByteBuf.class);
-        ByteBuf specBuf1 = mock(ByteBuf.class);
-        ByteBuf specBuf2 = mock(ByteBuf.class);
-        ByteBuf protocolBuf = mock(ByteBuf.class);
-        when(payload.readInt4()).thenReturn(
-                FirebirdCommandPacketType.CONNECT.getValue(),
-                1,
-                FirebirdArchType.ARCH_GENERIC.getCode(),
-                1);
+    void assertConstructor() {
+        FirebirdConnectPacket actual = createPacketWithSpecificData();
+        assertThat(actual.getOpCode(), is(FirebirdCommandPacketType.CONNECT));
+        assertThat(actual.getConnectVersion(), is(1));
+        assertThat(actual.getArchType(), is(FirebirdArchType.ARCH_GENERIC));
+        assertThat(actual.getDatabase(), is("db"));
+        assertThat(actual.getProtocolsCount(), is(1));
+        List<FirebirdProtocol> actualProtocols = actual.getUserProtocols();
+        assertThat(actualProtocols.size(), is(1));
+        assertThat(actualProtocols.get(0).getVersion(), is(FirebirdProtocolVersion.PROTOCOL_VERSION10));
+    }
+    
+    @Test
+    void assertGetUsername() {
+        assertThat(createPacketWithSpecificData().getUsername(), is("user"));
+    }
+    
+    @Test
+    void assertGetPluginName() {
+        assertThat(createPacketWithSpecificData().getPluginName(), is("srp"));
+    }
+    
+    @Test
+    void assertGetPlugin() {
+        assertThat(createPacketWithSpecificData().getPlugin(), is(FirebirdAuthenticationMethod.SRP));
+    }
+    
+    @Test
+    void assertGetAuthData() {
+        assertThat(createPacketWithSpecificData().getAuthData(), is("AB"));
+    }
+    
+    @Test
+    void assertGetHost() {
+        assertThat(createPacketWithoutSpecificData().getHost(), is("host"));
+    }
+    
+    @Test
+    void assertGetLogin() {
+        assertThat(createPacketWithoutSpecificData().getLogin(), is("login"));
+    }
+    
+    @Test
+    void assertWrite() {
+        assertDoesNotThrow(() -> createPacketWithoutSpecificData().write(payload));
+    }
+    
+    private FirebirdConnectPacket createPacketWithSpecificData() {
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.CONNECT.getValue(), 1, FirebirdArchType.ARCH_GENERIC.getCode(), 1);
         when(payload.readString()).thenReturn("db");
-        when(payload.readBuffer()).thenReturn(userInfo);
-        when(payload.getByteBuf()).thenReturn(protocolBuf);
+        ByteBuf userBuf = mock(ByteBuf.class);
+        when(userBuf.toString(StandardCharsets.UTF_8)).thenReturn("user");
+        ByteBuf pluginBuf = mock(ByteBuf.class);
+        when(pluginBuf.toString(StandardCharsets.UTF_8)).thenReturn("srp");
+        ByteBuf specificDataFirstChunk = mock(ByteBuf.class);
+        when(specificDataFirstChunk.readUnsignedByte()).thenReturn((short) 0);
+        when(specificDataFirstChunk.toString(StandardCharsets.US_ASCII)).thenReturn("A");
+        ByteBuf specificDataSecondChunk = mock(ByteBuf.class);
+        when(specificDataSecondChunk.readUnsignedByte()).thenReturn((short) 1);
+        when(specificDataSecondChunk.toString(StandardCharsets.US_ASCII)).thenReturn("B");
+        ByteBuf userInfo = mock(ByteBuf.class);
         when(userInfo.isReadable()).thenReturn(true, true, true, true, false);
-        when(userInfo.readUnsignedByte()).thenReturn(
-                (short) FirebirdUserDataType.CNCT_USER.getCode(), (short) 4,
-                (short) FirebirdUserDataType.CNCT_PLUGIN_NAME.getCode(), (short) 3,
-                (short) FirebirdUserDataType.CNCT_SPECIFIC_DATA.getCode(), (short) 2,
-                (short) FirebirdUserDataType.CNCT_SPECIFIC_DATA.getCode(), (short) 2);
+        when(userInfo.readUnsignedByte()).thenReturn((short) FirebirdUserDataType.CNCT_USER.getCode(), (short) 4, (short) FirebirdUserDataType.CNCT_PLUGIN_NAME.getCode(), (short) 3,
+                (short) FirebirdUserDataType.CNCT_SPECIFIC_DATA.getCode(), (short) 2, (short) FirebirdUserDataType.CNCT_SPECIFIC_DATA.getCode(), (short) 2);
         when(userInfo.readSlice(4)).thenReturn(userBuf);
         when(userInfo.readSlice(3)).thenReturn(pluginBuf);
-        when(userInfo.readSlice(2)).thenReturn(specBuf1, specBuf2);
-        when(userBuf.toString(StandardCharsets.UTF_8)).thenReturn("user");
-        when(pluginBuf.toString(StandardCharsets.UTF_8)).thenReturn("srp");
-        when(specBuf1.readUnsignedByte()).thenReturn((short) 0);
-        when(specBuf1.toString(StandardCharsets.US_ASCII)).thenReturn("A");
-        when(specBuf2.readUnsignedByte()).thenReturn((short) 1);
-        when(specBuf2.toString(StandardCharsets.US_ASCII)).thenReturn("B");
+        when(userInfo.readSlice(2)).thenReturn(specificDataFirstChunk, specificDataSecondChunk);
+        when(payload.readBuffer()).thenReturn(userInfo);
+        ByteBuf protocolBuf = mock(ByteBuf.class);
         when(protocolBuf.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION10.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 1);
-        FirebirdConnectPacket packet = new FirebirdConnectPacket(payload);
-        assertThat(packet.getOpCode(), is(FirebirdCommandPacketType.CONNECT));
-        assertThat(packet.getConnectVersion(), is(1));
-        assertThat(packet.getArchType(), is(FirebirdArchType.ARCH_GENERIC));
-        assertThat(packet.getDatabase(), is("db"));
-        assertThat(packet.getProtocolsCount(), is(1));
-        assertThat(packet.getUsername(), is("user"));
-        assertThat(packet.getPluginName(), is("srp"));
-        assertThat(packet.getPlugin(), is(FirebirdAuthenticationMethod.SRP));
-        assertThat(packet.getAuthData(), is("AB"));
-        List<FirebirdProtocol> protocols = packet.getUserProtocols();
-        assertThat(protocols.size(), is(1));
-        assertThat(protocols.get(0).getVersion(), is(FirebirdProtocolVersion.PROTOCOL_VERSION10));
+        when(payload.getByteBuf()).thenReturn(protocolBuf);
+        return new FirebirdConnectPacket(payload);
+    }
+    
+    private FirebirdConnectPacket createPacketWithoutSpecificData() {
+        when(payload.readInt4()).thenReturn(FirebirdCommandPacketType.CONNECT.getValue(), 1, FirebirdArchType.ARCH_GENERIC.getCode(), 0);
+        when(payload.readString()).thenReturn("db");
+        ByteBuf hostBuf = mock(ByteBuf.class);
+        when(hostBuf.toString(StandardCharsets.UTF_8)).thenReturn("host");
+        ByteBuf loginBuf = mock(ByteBuf.class);
+        when(loginBuf.toString(StandardCharsets.UTF_8)).thenReturn("login");
+        ByteBuf userInfo = mock(ByteBuf.class);
+        when(userInfo.isReadable()).thenReturn(true, true, false);
+        when(userInfo.readUnsignedByte()).thenReturn((short) FirebirdUserDataType.CNCT_HOST.getCode(), (short) 4, (short) FirebirdUserDataType.CNCT_LOGIN.getCode(), (short) 5);
+        when(userInfo.readSlice(4)).thenReturn(hostBuf);
+        when(userInfo.readSlice(5)).thenReturn(loginBuf);
+        when(payload.readBuffer()).thenReturn(userInfo);
+        return new FirebirdConnectPacket(payload);
     }
 }

@@ -128,12 +128,7 @@ public final class FirebirdDateTimeUtils {
         day = 5 * day - 3 - 153 * month;
         day = (day + 5) / 5;
         year = 100 * century + sqlDate;
-        if (month < 10) {
-            month += 3;
-        } else {
-            month -= 9;
-            year += 1;
-        }
+        month += 3;
         return this;
     }
     

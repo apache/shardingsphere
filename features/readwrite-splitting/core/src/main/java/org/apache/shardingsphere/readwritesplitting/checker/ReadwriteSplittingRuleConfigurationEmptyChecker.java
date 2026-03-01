@@ -27,7 +27,7 @@ public final class ReadwriteSplittingRuleConfigurationEmptyChecker implements Da
     
     @Override
     public boolean isEmpty(final ReadwriteSplittingRuleConfiguration ruleConfig) {
-        return ruleConfig.getDataSourceGroups().isEmpty();
+        return ruleConfig.getDataSourceGroups().isEmpty() && ruleConfig.getLoadBalancers().isEmpty();
     }
     
     @Override

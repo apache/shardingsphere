@@ -63,10 +63,7 @@ public final class FirebirdCreateBlobCommandPacket extends FirebirdCommandPacket
      * @return length of packet
      */
     public static int getLength(final FirebirdCommandPacketType commandType, final FirebirdPacketPayload payload) {
-        Preconditions.checkArgument(
-                FirebirdCommandPacketType.CREATE_BLOB == commandType
-                        || FirebirdCommandPacketType.CREATE_BLOB2 == commandType,
-                "Unsupported blob command type: %s", commandType);
+        Preconditions.checkArgument(FirebirdCommandPacketType.CREATE_BLOB == commandType || FirebirdCommandPacketType.CREATE_BLOB2 == commandType, "Unsupported blob command type: %s", commandType);
         // reserved (4)
         int length = 4;
         if (FirebirdCommandPacketType.CREATE_BLOB2 == commandType) {

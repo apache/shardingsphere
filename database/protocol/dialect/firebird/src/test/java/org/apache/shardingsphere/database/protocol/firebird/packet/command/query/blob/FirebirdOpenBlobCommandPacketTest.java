@@ -27,8 +27,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,6 +50,10 @@ class FirebirdOpenBlobCommandPacketTest {
         assertThat(packet.getBlobParameterBuffer().length, is(0));
         assertThat(packet.getTransactionId(), is(5));
         assertThat(packet.getBlobId(), is(7L));
+        packet.write(payload);
+        verify(payload).readInt4();
+        verify(payload).readInt8();
+        verifyNoMoreInteractions(payload);
     }
     
     @Test
@@ -63,7 +70,26 @@ class FirebirdOpenBlobCommandPacketTest {
     }
     
     @Test
+    void assertOpenBlobPacketWithUnsupportedCommandType() {
+        assertThrows(IllegalArgumentException.class, () -> new FirebirdOpenBlobCommandPacket(FirebirdCommandPacketType.CREATE_BLOB, payload));
+        verifyNoInteractions(payload);
+    }
+    
+    @Test
     void assertGetLengthWithoutBpb() {
         assertThat(FirebirdOpenBlobCommandPacket.getLength(FirebirdCommandPacketType.OPEN_BLOB, payload), is(16));
+    }
+    
+    @Test
+    void assertGetLengthWithBpb() {
+        when(payload.getBufferLength(4)).thenReturn(10);
+        assertThat(FirebirdOpenBlobCommandPacket.getLength(FirebirdCommandPacketType.OPEN_BLOB2, payload), is(26));
+        verify(payload).getBufferLength(4);
+    }
+    
+    @Test
+    void assertGetLengthWithUnsupportedCommandType() {
+        assertThrows(IllegalArgumentException.class, () -> FirebirdOpenBlobCommandPacket.getLength(FirebirdCommandPacketType.CREATE_BLOB, payload));
+        verifyNoInteractions(payload);
     }
 }

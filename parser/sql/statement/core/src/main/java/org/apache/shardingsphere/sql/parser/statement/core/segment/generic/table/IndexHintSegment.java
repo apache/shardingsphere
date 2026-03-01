@@ -23,6 +23,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Index hint segment.
@@ -36,6 +37,10 @@ public final class IndexHintSegment implements SQLSegment {
     private final int stopIndex;
     
     private final Collection<String> indexNames;
+    
+    private final List<Integer> indexStartIndices;
+    
+    private final List<Integer> indexStopIndices;
     
     private final String useType;
     

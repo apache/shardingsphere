@@ -52,6 +52,11 @@ distributedbyClause
     : DISTRIBUTED BY HASH (LP_ columnName RP_) BUCKETS NUMBER_
     ;
 
+modifyDistributionClause
+    : DISTRIBUTED BY HASH LP_ columnNames RP_ BUCKETS (NUMBER_ | AUTO)
+    | DISTRIBUTED BY RANDOM BUCKETS (NUMBER_ | AUTO)
+    ;
+
 propertiesClause
     : PROPERTIES LP_ properties RP_
     ;
@@ -125,9 +130,11 @@ createTableOptionsSpaceSeparated
 alterListItem
     : ADD COLUMN? (columnDefinition place? | LP_ tableElementList RP_)  # addColumn
     | ADD tableConstraintDef  # addTableConstraint
+    | ADD ROLLUP rollupItem (COMMA_ rollupItem)*  # addRollup
     | CHANGE COLUMN? columnInternalRef=identifier columnDefinition place?  # changeColumn
-    | MODIFY COLUMN? columnInternalRef=identifier fieldDefinition place?   # modifyColumn
-    | DROP (COLUMN? columnInternalRef=identifier restrict? | FOREIGN KEY columnInternalRef=identifier | PRIMARY KEY | keyOrIndex indexName | CHECK identifier | CONSTRAINT identifier)  # alterTableDrop
+    | MODIFY COLUMN? columnInternalRef=identifier (fieldDefinition place? | COMMENT string_)   # modifyColumn
+    | DROP (COLUMN? columnInternalRef=identifier restrict? | FOREIGN KEY columnInternalRef=identifier | PRIMARY KEY | keyOrIndex indexName | CHECK identifier | CONSTRAINT identifier) propertiesClause?  # alterTableDrop
+    | DROP ROLLUP rollupNameItem (COMMA_ rollupNameItem)*  # dropRollup
     | DISABLE KEYS  # disableKeys
     | ENABLE KEYS   # enableKeys
     | ALTER COLUMN? columnInternalRef=identifier (SET DEFAULT (LP_ expr RP_| literals)| SET visibility | DROP DEFAULT) # alterColumn
@@ -147,6 +154,14 @@ alterListItem
 
 alterOrderList
     : columnRef direction? (COMMA_ columnRef direction?)*
+    ;
+
+rollupItem
+    : rollupName=identifier LP_ columnNames RP_ (FROM fromIndexName=indexName)? propertiesClause?
+    ;
+
+rollupNameItem
+    : rollupName=identifier propertiesClause?
     ;
 
 alterStoragePolicy
@@ -181,11 +196,20 @@ standaloneAlterCommands
     | IMPORT TABLESPACE
     | alterPartition
     | (SECONDARY_LOAD | SECONDARY_UNLOAD)
+    | SET LP_ properties RP_
+    | ENABLE FEATURE string_ (WITH PROPERTIES LP_ properties RP_)?
+    | MODIFY DISTRIBUTION modifyDistributionClause
+    | MODIFY COMMENT string_
+    | MODIFY ENGINE TO identifier PROPERTIES LP_ properties RP_
     ;
 
 alterPartition
     : ADD PARTITION noWriteToBinLog? (partitionDefinitions | PARTITIONS NUMBER_)
+    | ADD PARTITION ifNotExists? partitionName dorisPartitionDesc (propertiesClause | LP_ properties RP_)? distributedbyClause?
+    | ADD PARTITIONS FROM LP_ expr RP_ TO LP_ expr RP_ INTERVAL expr intervalUnit?
     | DROP PARTITION identifierList
+    | MODIFY PARTITION LP_ (ASTERISK_ | identifierList) RP_ SET LP_ properties RP_
+    | MODIFY PARTITION identifier SET LP_ properties RP_
     | REBUILD PARTITION noWriteToBinLog? allOrPartitionNameList
     | OPTIMIZE PARTITION noWriteToBinLog? allOrPartitionNameList noWriteToBinLog?
     | ANALYZE PARTITION noWriteToBinLog? allOrPartitionNameList
@@ -197,6 +221,11 @@ alterPartition
     | EXCHANGE PARTITION identifier WITH TABLE tableName withValidation?
     | DISCARD PARTITION allOrPartitionNameList TABLESPACE
     | IMPORT PARTITION allOrPartitionNameList TABLESPACE
+    ;
+
+dorisPartitionDesc
+    : VALUES LESS THAN LP_ (MAXVALUE | partitionValueList) RP_
+    | VALUES LBT_ LP_ partitionValueList RP_ COMMA_ LP_ partitionValueList RP_ RP_
     ;
 
 constraintClause
@@ -222,7 +251,7 @@ fulltextIndexOption
     ;
 
 dropTable
-    : DROP TEMPORARY? tableOrTables ifExists? tableList restrict?
+    : DROP TEMPORARY? tableOrTables ifExists? tableList (restrict | FORCE)?
     ;
 
 dropIndex
@@ -265,7 +294,7 @@ alterLockOption
     ;
 
 truncateTable
-    : TRUNCATE TABLE? tableName
+    : TRUNCATE TABLE? tableName partitionNames?
     ;
 
 createIndex
@@ -961,6 +990,15 @@ signalInformationItem
     : conditionInformationItemName EQ_ expr
     ;
 
+createJob
+    : CREATE JOB jobName ON SCHEDULE jobScheduleExpression (COMMENT string_)? DO insert
+    ;
+
+jobScheduleExpression
+    : AT timestampValue
+    | EVERY intervalValue (STARTS timestampValue)? (ENDS timestampValue)?
+    ;
+
 resumeJob
     : RESUME JOB WHERE jobName EQ_ stringLiterals
     ;
@@ -971,6 +1009,10 @@ resumeSyncJob
 
 pauseSyncJob
     : PAUSE SYNC JOB (owner DOT_)? identifier
+    ;
+
+stopSyncJob
+    : STOP SYNC JOB (owner DOT_)? identifier
     ;
 
 createSyncJob

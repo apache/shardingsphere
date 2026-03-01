@@ -62,7 +62,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
             + "WHERE TABLE_SCHEMA=? and TABLE_NAME IN (%s) ORDER BY NON_UNIQUE, INDEX_NAME, SEQ_IN_INDEX";
     
     private static final String CONSTRAINT_META_DATA_SQL = "SELECT CONSTRAINT_NAME, TABLE_NAME, REFERENCED_TABLE_NAME FROM information_schema.KEY_COLUMN_USAGE "
-            + "WHERE TABLE_NAME IN (%s) AND REFERENCED_TABLE_SCHEMA IS NOT NULL";
+            + "WHERE TABLE_SCHEMA=? AND TABLE_NAME IN (%s) AND REFERENCED_TABLE_SCHEMA IS NOT NULL";
     
     private static final String VIEW_META_DATA_SQL = "SELECT TABLE_NAME FROM information_schema.VIEWS WHERE TABLE_SCHEMA=? AND TABLE_NAME IN (%s)";
     
@@ -88,8 +88,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getViewMetaDataSQL(tableNames))) {
-            String databaseName = "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tableNames.iterator().next()) : connection.getCatalog();
-            preparedStatement.setString(1, databaseName);
+            preparedStatement.setString(1, getDatabaseName(connection, tableNames));
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     result.add(resultSet.getString(1));
@@ -108,6 +107,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getConstraintMetaDataSQL(tables))) {
+            preparedStatement.setString(1, getDatabaseName(connection, tables));
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String constraintName = resultSet.getString("CONSTRAINT_NAME");
@@ -132,8 +132,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables))) {
-            String databaseName = "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tables.iterator().next()) : connection.getCatalog();
-            preparedStatement.setString(1, databaseName);
+            preparedStatement.setString(1, getDatabaseName(connection, tables));
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String tableName = resultSet.getString("TABLE_NAME");
@@ -171,8 +170,7 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
-            String databaseName = "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tableNames.iterator().next()) : connection.getCatalog();
-            preparedStatement.setString(1, databaseName);
+            preparedStatement.setString(1, getDatabaseName(connection, tableNames));
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String indexName = resultSet.getString("INDEX_NAME");
@@ -204,6 +202,10 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
     
     private String getIndexMetaDataSQL(final Collection<String> tableNames) {
         return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    }
+    
+    private String getDatabaseName(final Connection connection, final Collection<String> tableNames) throws SQLException {
+        return "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tableNames.iterator().next()) : connection.getCatalog();
     }
     
     @Override

@@ -48,4 +48,9 @@ class FirebirdFloatBinaryProtocolValueTest {
         new FirebirdFloatBinaryProtocolValue().write(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8), 1.0F);
         verify(byteBuf).writeFloat(1.0F);
     }
+    
+    @Test
+    void assertGetLength() {
+        assertThat(new FirebirdFloatBinaryProtocolValue().getLength(new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8)), is(4));
+    }
 }

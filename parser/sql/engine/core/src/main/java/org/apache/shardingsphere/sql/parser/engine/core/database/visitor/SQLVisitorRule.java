@@ -289,6 +289,8 @@ public enum SQLVisitorRule {
     
     UNLISTEN("Unlisten", SQLStatementType.DDL),
     
+    CREATE_JOB("CreateJob", SQLStatementType.DDL),
+    
     RESUME_JOB("ResumeJob", SQLStatementType.DDL),
     
     RESUME_SYNC_JOB("ResumeSyncJob", SQLStatementType.DDL),
@@ -296,6 +298,10 @@ public enum SQLVisitorRule {
     PAUSE_SYNC_JOB("PauseSyncJob", SQLStatementType.DDL),
     
     CREATE_SYNC_JOB("CreateSyncJob", SQLStatementType.DDL),
+    
+    STOP_SYNC_JOB("StopSyncJob", SQLStatementType.DDL),
+    
+    SHOW_SYNC_JOB("ShowSyncJob", SQLStatementType.DAL),
     
     ALTER_CATALOG("AlterCatalog", SQLStatementType.DDL),
     
@@ -412,6 +418,10 @@ public enum SQLVisitorRule {
     SHOW_INDEX("ShowIndex", SQLStatementType.DAL),
     
     SHOW_BUILD_INDEX("ShowBuildIndex", SQLStatementType.DAL),
+    
+    SHOW_DATA("ShowData", SQLStatementType.DAL),
+    
+    SHOW_DATA_TYPES("ShowDataTypes", SQLStatementType.DAL),
     
     ALTER_SQL_BLOCK_RULE("AlterSqlBlockRule", SQLStatementType.DAL),
     

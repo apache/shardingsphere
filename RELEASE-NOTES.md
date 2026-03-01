@@ -1,3 +1,16 @@
+## Release 5.5.4
+
+### Bug Fixes
+
+1. SQL Parser: Preserve unary NOT as NotExpression for scalar-subquery table extraction in PostgreSQL - [#38187](https://github.com/apache/shardingsphere/pull/38187)
+1. JDBC: Fix stale generated values leaking into prepared statement executeBatch calls without pending batches - [#38160](https://github.com/apache/shardingsphere/pull/38160)
+
+### Enhancements
+
+1. SQL Parser: Support MySQL Function statement parse - [#38182](https://github.com/apache/shardingsphere/pull/38182) [#38219](https://github.com/apache/shardingsphere/pull/38219)
+2. SQL Parser: Support parsing MySQL SELECT sql - [#38233](https://github.com/apache/shardingsphere/pull/38233)
+3. SQL Parser: Support parsing MySQL CREATE sql - [#38237](https://github.com/apache/shardingsphere/pull/38237)
+
 ## Release 5.5.3
 
 ### CVE
@@ -53,6 +66,7 @@
 1. SQL Parser: Fix error parsing \l command SQL statement when front-end protocol is og - [#37953](https://github.com/apache/shardingsphere/pull/37953)
 1. SQL Parser: Fix SQLParsingException when using reserved word `order` in ORDER BY clause - [#37958](https://github.com/apache/shardingsphere/pull/37958)
 1. SQL Parser: Fix parsing error for SQLServer session `SET QUOTED_IDENTIFIER` and `SET TEXTSIZE` statements - [#38005](https://github.com/apache/shardingsphere/pull/38005)
+1. SQL Parser: Fix can not accept sql type 'TerminalNodeImpl' when parsing /*! MySQL-specific code */ - [#38032](https://github.com/apache/shardingsphere/pull/38032)
 1. SQL Parser: Support '2'::int statement in PostgreSQL and openGauss - [#37962](https://github.com/apache/shardingsphere/pull/37962)
 1. SQL Parser: Support range type constructor functions in PostgreSQL without quotes - [#37994](https://github.com/apache/shardingsphere/pull/37994)
 1. SQL Parser: Support parsing MySQL stored procedure syntax- [#38017](https://github.com/apache/shardingsphere/pull/38017)

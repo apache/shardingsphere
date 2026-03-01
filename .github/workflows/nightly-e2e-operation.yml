@@ -31,6 +31,9 @@ concurrency:
   group: nightly-e2e-operation-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
 
@@ -47,15 +50,12 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: actions/setup-java@v5.1.0
+      - id: setup-build-environment
+        uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
-          java-version: 17
-          cache: 'maven'
-      - uses: docker/setup-docker-action@v4
-        with:
-          version: v28.0.4
-          set-host: true
+          cache-suffix: 'e2e-operation'
+          cache-save-enabled: 'false'
+          enable-docker-setup: 'true'
       - name: Maven Install
         env:
           PREFIX: "test/e2e/operation/"
@@ -64,19 +64,11 @@ jobs:
           FORMATTED_PL=$(echo "$MODULE_LIST" | sed "s|,|,$PREFIX|g" | sed "s|^|$PREFIX|")
           echo "Ready to build: $FORMATTED_PL"
           ./mvnw -B clean install -am -pl "$FORMATTED_PL" -Pe2e.env.docker -DskipTests
-      - name: Package shardingsphere Maven Repository
-        run: |
-          tar -czf /tmp/maven-repo-output.tar.gz -C ~/.m2/repository org/apache/shardingsphere
-      - name: Save E2E Image
-        run: docker save -o /tmp/apache-shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
+      - uses: ./.github/workflows/resources/actions/save-maven-cache
         with:
-          name: build-outputs
-          path: |
-            /tmp/maven-repo-output.tar.gz
-            /tmp/apache-shardingsphere-proxy-test.tar
-          retention-days: 1
+          cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
+          cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
+      - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
 
   e2e-operation-job:
     if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
@@ -106,31 +98,23 @@ jobs:
           - operation: showprocesslist
             image: { type: "e2e.docker.database.mariadb.images", version: "mariadb:11" }
           - operation: showprocesslist
-            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine" }
+            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:11-alpine" }
+          - operation: showprocesslist
+            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:12-alpine" }
+          - operation: showprocesslist
+            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:13-alpine" }
+          - operation: showprocesslist
+            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:14-alpine" }
           - operation: showprocesslist
             image: { type: "e2e.docker.database.opengauss.images", version: "opengauss/opengauss:3.1.0" }
     steps:
       - uses: actions/checkout@v6.0.1
-      - name: Setup JDK ${{ matrix.java-version }}
-        uses: actions/setup-java@v5.1.0
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
-          cache: 'maven'
-      - uses: docker/setup-docker-action@v4
-        with:
-          version: v28.0.4
-          set-host: true
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-outputs
-          path: /tmp/
-      - name: Restore shardingsphere Maven Repository
-        run: |
-          mkdir -p ~/.m2/repository
-          tar -xzf /tmp/maven-repo-output.tar.gz -C ~/.m2/repository
-      - name: Load E2E Image
-        run: docker load -i /tmp/apache-shardingsphere-proxy-test.tar
+          cache-suffix: 'e2e-operation'
+          cache-save-enabled: 'false'
+          enable-docker-setup: 'true'
+      - uses: ./.github/workflows/resources/actions/download-e2e-artifacts
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
         run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${{ matrix.image.type }}=${{ matrix.image.version }}

@@ -726,12 +726,10 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        AlterIndexStatement result = new AlterIndexStatement(getDatabaseType());
-        result.setIndex(createIndexSegment((SimpleTableSegment) visit(ctx.qualifiedName())));
-        if (null != ctx.alterIndexDefinitionClause().renameIndexSpecification()) {
-            result.setRenameIndex((IndexSegment) visit(ctx.alterIndexDefinitionClause().renameIndexSpecification().indexName()));
-        }
-        return result;
+        IndexSegment renameIndex = null == ctx.alterIndexDefinitionClause().renameIndexSpecification()
+                ? null
+                : (IndexSegment) visit(ctx.alterIndexDefinitionClause().renameIndexSpecification().indexName());
+        return new AlterIndexStatement(getDatabaseType(), createIndexSegment((SimpleTableSegment) visit(ctx.qualifiedName())), renameIndex, null);
     }
     
     private IndexSegment createIndexSegment(final SimpleTableSegment tableSegment) {

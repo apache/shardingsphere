@@ -21,9 +21,9 @@ import org.apache.shardingsphere.broadcast.route.engine.BroadcastRouteEngineFact
 import org.apache.shardingsphere.broadcast.route.engine.type.BroadcastRouteEngine;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
+import org.apache.shardingsphere.infra.route.SQLRouter.Type;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -34,27 +34,35 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(BroadcastRouteEngineFactory.class)
 class BroadcastSQLRouterTest {
     
+    private final BroadcastRule rule = mock(BroadcastRule.class);
+    
+    private final BroadcastSQLRouter sqlRouter = (BroadcastSQLRouter) OrderedSPILoader.getServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
+    
     @Test
-    void assertCreateRouteContext() {
+    void assertCreateRouteContextWhenBroadcastTableNamesAreNotEmpty() {
         QueryContext queryContext = mock(QueryContext.class);
-        BroadcastRule rule = mock(BroadcastRule.class);
         when(rule.getBroadcastTableNames(Collections.singleton("t_config"))).thenReturn(Collections.singleton("t_config"));
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         BroadcastRouteEngine routeEngine = mock(BroadcastRouteEngine.class);
         when(BroadcastRouteEngineFactory.newInstance(queryContext, Collections.singleton("t_config"))).thenReturn(routeEngine);
-        getSQLRouter(rule).createRouteContext(queryContext, mock(RuleMetaData.class), database, rule, Collections.singleton("t_config"), new ConfigurationProperties(new Properties()));
-        verify(routeEngine).route(rule);
+        RouteContext expectedRouteContext = mock(RouteContext.class);
+        when(routeEngine.route(rule)).thenReturn(expectedRouteContext);
+        assertThat(sqlRouter.createRouteContext(queryContext, mock(), mock(), rule, Collections.singleton("t_config"), new ConfigurationProperties(new Properties())), is(expectedRouteContext));
+        assertThat(sqlRouter.getType(), is(Type.DATA_NODE));
     }
     
-    private BroadcastSQLRouter getSQLRouter(final BroadcastRule rule) {
-        return (BroadcastSQLRouter) OrderedSPILoader.getServices(SQLRouter.class, Collections.singleton(rule)).get(rule);
+    @Test
+    void assertCreateRouteContextWhenBroadcastTableNamesAreEmpty() {
+        when(rule.getBroadcastTableNames(Collections.singleton("t_config"))).thenReturn(Collections.emptySet());
+        assertTrue(sqlRouter.createRouteContext(mock(), mock(), mock(), rule, Collections.singleton("t_config"), new ConfigurationProperties(new Properties())).getRouteUnits().isEmpty());
     }
 }

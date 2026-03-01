@@ -36,12 +36,22 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.DropIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ModifyPartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.AddRollupDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.DropRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.distribution.ModifyDistributionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.engine.ModifyEngineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.feature.EnableFeatureSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ModifyTableCommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ReplaceTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -79,6 +89,16 @@ public final class AlterTableStatement extends DDLStatement {
     
     private DropPrimaryKeyDefinitionSegment dropPrimaryKeyDefinition;
     
+    private final Collection<PropertiesSegment> setPropertiesDefinitions = new LinkedList<>();
+    
+    private final Collection<EnableFeatureSegment> enableFeatureDefinitions = new LinkedList<>();
+    
+    private final Collection<ModifyTableCommentSegment> modifyTableCommentDefinitions = new LinkedList<>();
+    
+    private final Collection<ModifyEngineSegment> modifyEngineDefinitions = new LinkedList<>();
+    
+    private final Collection<ModifyDistributionSegment> modifyDistributionDefinitions = new LinkedList<>();
+    
     private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
     
     private final Collection<ModifyColumnDefinitionSegment> modifyColumnDefinitions = new LinkedList<>();
@@ -103,9 +123,19 @@ public final class AlterTableStatement extends DDLStatement {
     
     private final Collection<ReplaceColumnDefinitionSegment> replaceColumnDefinitions = new LinkedList<>();
     
+    private final Collection<AddRollupDefinitionSegment> addRollupDefinitions = new LinkedList<>();
+    
+    private final Collection<DropRollupDefinitionSegment> dropRollupDefinitions = new LinkedList<>();
+    
     private final Collection<RenameRollupDefinitionSegment> renameRollupDefinitions = new LinkedList<>();
     
     private final Collection<RenamePartitionDefinitionSegment> renamePartitionDefinitions = new LinkedList<>();
+    
+    private final Collection<AddPartitionDefinitionSegment> addPartitionDefinitions = new LinkedList<>();
+    
+    private final Collection<AddPartitionsSegment> addPartitionsSegments = new LinkedList<>();
+    
+    private final Collection<ModifyPartitionDefinitionSegment> modifyPartitionDefinitions = new LinkedList<>();
     
     private SQLStatementAttributes attributes;
     

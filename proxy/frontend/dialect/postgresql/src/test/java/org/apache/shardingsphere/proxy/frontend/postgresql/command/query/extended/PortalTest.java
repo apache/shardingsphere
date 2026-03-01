@@ -27,7 +27,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLEmptyQueryResponsePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
-import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
@@ -299,11 +299,11 @@ class PortalTest {
         PostgreSQLDataRowPacket dataRowPacket = (PostgreSQLDataRowPacket) actualPackets.get(0);
         List<Object> actualData = new ArrayList<>(dataRowPacket.getData());
         BinaryCell bitBinaryCell = (BinaryCell) actualData.get(0);
-        assertThat(bitBinaryCell.getColumnType(), is(PostgreSQLColumnType.BIT));
+        assertThat(bitBinaryCell.getColumnType(), is(PostgreSQLBinaryColumnType.BIT));
         assertThat(bitBinaryCell.getData(), is("1"));
         assertThat(actualData.get(1), is("f"));
         BinaryCell varcharBinaryCell = (BinaryCell) actualData.get(2);
-        assertThat(varcharBinaryCell.getColumnType(), is(PostgreSQLColumnType.VARCHAR));
+        assertThat(varcharBinaryCell.getColumnType(), is(PostgreSQLBinaryColumnType.VARCHAR));
         assertThat(varcharBinaryCell.getData(), is("foo"));
     }
     

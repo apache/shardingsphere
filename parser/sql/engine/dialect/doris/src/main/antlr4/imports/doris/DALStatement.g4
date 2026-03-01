@@ -135,7 +135,7 @@ showCreateProcedure
     ;
 
 showCreateTable
-    : SHOW CREATE TABLE tableName
+    : SHOW BRIEF? CREATE TABLE tableName
     ;
 
 showCreateRoutineLoad
@@ -285,6 +285,14 @@ showWarnings
 
 showCharset
     : SHOW CHARSET
+    ;
+
+showDataTypes
+    : SHOW DATA TYPES
+    ;
+
+showData
+    : SHOW DATA (FROM tableName)? orderByClause?
     ;
 
 setCharacter
@@ -503,6 +511,10 @@ showQueryStats
 
 showProc
     : SHOW PROC string_
+    ;
+
+showSyncJob
+    : SHOW SYNC JOB (FROM databaseName)?
     ;
 
 binlog
@@ -831,4 +843,7 @@ show
     | showRoutineLoadTask
     | showRoutineLoad
     | showProc
+    | showSyncJob
+    | showDataTypes
+    | showData
     ;

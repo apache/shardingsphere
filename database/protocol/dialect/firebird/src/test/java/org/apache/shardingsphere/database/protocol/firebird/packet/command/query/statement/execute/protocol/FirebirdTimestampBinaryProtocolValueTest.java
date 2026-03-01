@@ -40,7 +40,7 @@ class FirebirdTimestampBinaryProtocolValueTest {
     
     @Test
     void assertRead() {
-        LocalDateTime dateTime = LocalDateTime.of(2024, 1, 1, 12, 0);
+        LocalDateTime dateTime = LocalDateTime.parse("2024-01-01T12:00:00");
         int encodedDate = FirebirdDateTimeUtils.getEncodedDate(dateTime);
         int encodedTime = new FirebirdDateTimeUtils(dateTime).getEncodedTime();
         when(payload.readInt4()).thenReturn(encodedDate, encodedTime);
@@ -48,10 +48,23 @@ class FirebirdTimestampBinaryProtocolValueTest {
     }
     
     @Test
-    void assertWrite() {
+    void assertWriteWithDate() {
         LocalDateTime dateTime = LocalDateTime.of(2024, 1, 1, 12, 0);
         new FirebirdTimestampBinaryProtocolValue().write(payload, Timestamp.valueOf(dateTime));
         verify(payload).writeInt4(FirebirdDateTimeUtils.getEncodedDate(dateTime));
         verify(payload).writeInt4(new FirebirdDateTimeUtils(dateTime).getEncodedTime());
+    }
+    
+    @Test
+    void assertWriteWithLocalDateTime() {
+        LocalDateTime dateTime = LocalDateTime.parse("2024-01-02T13:00:00");
+        new FirebirdTimestampBinaryProtocolValue().write(payload, dateTime);
+        verify(payload).writeInt4(FirebirdDateTimeUtils.getEncodedDate(dateTime));
+        verify(payload).writeInt4(new FirebirdDateTimeUtils(dateTime).getEncodedTime());
+    }
+    
+    @Test
+    void assertGetLength() {
+        assertThat(new FirebirdTimestampBinaryProtocolValue().getLength(payload), is(8));
     }
 }

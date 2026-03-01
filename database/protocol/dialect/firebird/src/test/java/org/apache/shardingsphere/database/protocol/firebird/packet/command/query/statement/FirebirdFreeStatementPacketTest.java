@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement;
 
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -25,7 +26,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,5 +49,14 @@ class FirebirdFreeStatementPacketTest {
     @Test
     void assertGetLength() {
         assertThat(FirebirdFreeStatementPacket.getLength(), is(12));
+    }
+    
+    @Test
+    void assertWrite() {
+        when(payload.readInt4()).thenReturn(5, FirebirdFreeStatementPacket.DROP);
+        FirebirdFreeStatementPacket packet = new FirebirdFreeStatementPacket(payload);
+        FirebirdPacketPayload writePayload = mock(FirebirdPacketPayload.class);
+        packet.write((PacketPayload) writePayload);
+        verifyNoInteractions(writePayload);
     }
 }

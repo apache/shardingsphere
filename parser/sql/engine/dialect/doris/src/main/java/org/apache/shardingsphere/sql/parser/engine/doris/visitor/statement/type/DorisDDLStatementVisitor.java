@@ -24,9 +24,11 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterCatalogContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StandaloneAlterCommandsContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PauseSyncJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StopSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ChannelDescriptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BinlogDescriptionContext;
@@ -65,6 +67,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Compoun
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateEventContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.JobScheduleExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLikeClauseContext;
@@ -122,11 +126,21 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TableNa
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WhileStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AddRollupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropRollupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RollupItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RollupNameItemContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameRollupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenamePartitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReplaceTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterPartitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterStoragePolicyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisPartitionDescContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DistributedbyClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ModifyDistributionClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PartitionValueListContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateEncryptKeyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropFileContext;
@@ -152,27 +166,42 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.distribution.ModifyDistributionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.engine.EngineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.engine.ModifyEngineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.feature.EnableFeatureSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.DropIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ModifyPartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.PartitionValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.IntervalUnitSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.policy.PolicyNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.AddRollupDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.DropRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RollupSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobCommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobScheduleIntervalSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobScheduleSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobScheduleTimestampSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.ChannelDescriptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.BinlogDescriptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CreateTableOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ModifyTableCommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ReplaceTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
@@ -236,6 +265,8 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobSt
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisStopSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLCreateEventStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLDropEventStatement;
@@ -390,6 +421,17 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
+    public ASTNode visitStopSyncJob(final StopSyncJobContext ctx) {
+        DorisStopSyncJobStatement result = new DorisStopSyncJobStatement(getDatabaseType());
+        JobNameSegment jobName = new JobNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.owner()) {
+            jobName.setOwner((OwnerSegment) visit(ctx.owner()));
+        }
+        result.setJobName(jobName);
+        return result;
+    }
+    
+    @Override
     public ASTNode visitCreateSyncJob(final CreateSyncJobContext ctx) {
         DorisCreateSyncJobStatement result = new DorisCreateSyncJobStatement(getDatabaseType());
         JobNameSegment jobName = new JobNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
@@ -432,6 +474,40 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         String key = getPropertyKey(ctx);
         String value = SQLUtils.getExactlyValue(ctx.literals().getText());
         return new PropertySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), key, value);
+    }
+    
+    @Override
+    public ASTNode visitCreateJob(final CreateJobContext ctx) {
+        DorisCreateJobStatement result = new DorisCreateJobStatement(getDatabaseType());
+        result.setJobName(new JobNameSegment(ctx.jobName().start.getStartIndex(), ctx.jobName().stop.getStopIndex(), (IdentifierValue) visit(ctx.jobName().identifier())));
+        result.setSchedule(createJobScheduleSegment(ctx.jobScheduleExpression()));
+        if (null != ctx.COMMENT() && null != ctx.string_()) {
+            result.setComment(new JobCommentSegment(ctx.COMMENT().getSymbol().getStartIndex(), ctx.string_().stop.getStopIndex(), SQLUtils.getExactlyValue(ctx.string_().getText())));
+        }
+        result.setInsertStatement((InsertStatement) visit(ctx.insert()));
+        return result;
+    }
+    
+    private JobScheduleSegment createJobScheduleSegment(final JobScheduleExpressionContext ctx) {
+        boolean everySchedule = null == ctx.AT();
+        JobScheduleSegment result = new JobScheduleSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), everySchedule);
+        if (!everySchedule) {
+            result.setAtTimestamp(
+                    new JobScheduleTimestampSegment(ctx.timestampValue(0).start.getStartIndex(), ctx.timestampValue(0).stop.getStopIndex(), SQLUtils.getExactlyValue(ctx.timestampValue(0).getText())));
+        } else {
+            result.setInterval(new JobScheduleIntervalSegment(ctx.intervalValue().start.getStartIndex(), ctx.intervalValue().stop.getStopIndex(), Long.parseLong(ctx.intervalValue().expr().getText()),
+                    ctx.intervalValue().intervalUnit().getText()));
+            if (null != ctx.STARTS()) {
+                result.setStartsTimestamp(new JobScheduleTimestampSegment(ctx.timestampValue(0).start.getStartIndex(), ctx.timestampValue(0).stop.getStopIndex(),
+                        SQLUtils.getExactlyValue(ctx.timestampValue(0).getText())));
+            }
+            if (null != ctx.ENDS()) {
+                int endsTimestampIndex = null != ctx.STARTS() ? 1 : 0;
+                result.setEndsTimestamp(new JobScheduleTimestampSegment(ctx.timestampValue(endsTimestampIndex).start.getStartIndex(), ctx.timestampValue(endsTimestampIndex).stop.getStopIndex(),
+                        SQLUtils.getExactlyValue(ctx.timestampValue(endsTimestampIndex).getText())));
+            }
+        }
+        return result;
     }
     
     @SuppressWarnings("unchecked")
@@ -537,11 +613,84 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
         AlterTableStatement result = new AlterTableStatement(getDatabaseType());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.standaloneAlterTableAction() && null != ctx.standaloneAlterTableAction().standaloneAlterCommands()) {
+            processStandaloneAlterCommands(result, ctx.standaloneAlterTableAction().standaloneAlterCommands());
+            return result;
+        }
         if (null == ctx.alterTableActions() || null == ctx.alterTableActions().alterCommandList() || null == ctx.alterTableActions().alterCommandList().alterList()) {
             return result;
         }
         for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterTableActions().alterCommandList().alterList())).getValue()) {
             setAlterDefinition(result, each);
+        }
+        return result;
+    }
+    
+    private void processStandaloneAlterCommands(final AlterTableStatement statement, final StandaloneAlterCommandsContext ctx) {
+        if (null != ctx.alterPartition()) {
+            AlterDefinitionSegment alterDefinition = (AlterDefinitionSegment) visit(ctx.alterPartition());
+            if (null != alterDefinition) {
+                setAlterDefinition(statement, alterDefinition);
+            }
+        }
+        if (null != ctx.SET() && null != ctx.properties()) {
+            PropertiesSegment properties = extractPropertiesSegmentFromPropertiesContext(ctx.properties());
+            statement.getSetPropertiesDefinitions().add(properties);
+        }
+        if (null != ctx.ENABLE() && null != ctx.FEATURE() && null != ctx.string_()) {
+            int stopIndex = ctx.string_().getStop().getStopIndex();
+            if (null != ctx.WITH() && null != ctx.PROPERTIES() && null != ctx.properties()) {
+                stopIndex = ctx.RP_().getSymbol().getStopIndex();
+            }
+            EnableFeatureSegment enableFeatureSegment = new EnableFeatureSegment(ctx.ENABLE().getSymbol().getStartIndex(), stopIndex, ctx.string_().getText());
+            if (null != ctx.WITH() && null != ctx.PROPERTIES() && null != ctx.properties()) {
+                enableFeatureSegment.setProperties(extractPropertiesSegmentFromPropertiesContext(ctx.properties()));
+            }
+            statement.getEnableFeatureDefinitions().add(enableFeatureSegment);
+        }
+        if (null != ctx.modifyDistributionClause()) {
+            ModifyDistributionSegment modifyDistributionSegment = (ModifyDistributionSegment) visit(ctx.modifyDistributionClause());
+            statement.getModifyDistributionDefinitions().add(modifyDistributionSegment);
+        }
+        if (null != ctx.MODIFY() && null != ctx.COMMENT() && null != ctx.string_()) {
+            ModifyTableCommentSegment modifyTableCommentSegment =
+                    new ModifyTableCommentSegment(ctx.MODIFY().getSymbol().getStartIndex(), ctx.string_().getStop().getStopIndex(), ctx.string_().getText());
+            statement.getModifyTableCommentDefinitions().add(modifyTableCommentSegment);
+        }
+        if (null != ctx.ENGINE() && null != ctx.identifier()) {
+            ModifyEngineSegment modifyEngineSegment = new ModifyEngineSegment(ctx.ENGINE().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), ctx.identifier().getText());
+            if (null != ctx.properties()) {
+                modifyEngineSegment.setProperties(extractPropertiesSegmentFromPropertiesContext(ctx.properties()));
+            }
+            statement.getModifyEngineDefinitions().add(modifyEngineSegment);
+        }
+    }
+    
+    @Override
+    public ASTNode visitDistributedbyClause(final DistributedbyClauseContext ctx) {
+        ModifyDistributionSegment result = new ModifyDistributionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.columnName()) {
+            result.getColumns().add((ColumnSegment) visit(ctx.columnName()));
+        }
+        if (null != ctx.NUMBER_()) {
+            result.setBuckets(Integer.parseInt(ctx.NUMBER_().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitModifyDistributionClause(final ModifyDistributionClauseContext ctx) {
+        ModifyDistributionSegment result = new ModifyDistributionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.columnNames()) {
+            for (ColumnNameContext each : ctx.columnNames().columnName()) {
+                result.getColumns().add((ColumnSegment) visit(each));
+            }
+        }
+        if (null != ctx.NUMBER_()) {
+            result.setBuckets(Integer.parseInt(ctx.NUMBER_().getText()));
+        }
+        if (null != ctx.AUTO()) {
+            result.setAutoBuckets(true);
         }
         return result;
     }
@@ -571,10 +720,20 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             alterTableStatement.getRenameIndexDefinitions().add((RenameIndexDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameColumnSegment) {
             alterTableStatement.getRenameColumnDefinitions().add((RenameColumnSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof AddRollupDefinitionSegment) {
+            alterTableStatement.getAddRollupDefinitions().add((AddRollupDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof DropRollupDefinitionSegment) {
+            alterTableStatement.getDropRollupDefinitions().add((DropRollupDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameRollupDefinitionSegment) {
             alterTableStatement.getRenameRollupDefinitions().add((RenameRollupDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenamePartitionDefinitionSegment) {
             alterTableStatement.getRenamePartitionDefinitions().add((RenamePartitionDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof AddPartitionDefinitionSegment) {
+            alterTableStatement.getAddPartitionDefinitions().add((AddPartitionDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof AddPartitionsSegment) {
+            alterTableStatement.getAddPartitionsSegments().add((AddPartitionsSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof ModifyPartitionDefinitionSegment) {
+            alterTableStatement.getModifyPartitionDefinitions().add((ModifyPartitionDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof AlgorithmTypeSegment) {
             alterTableStatement.setAlgorithmSegment((AlgorithmTypeSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof LockTableSegment) {
@@ -589,6 +748,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         // TODO parse not null
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(column.getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, false, getText(ctx));
         result.setAutoIncrement(isAutoIncrement);
+        ctx.columnAttribute().stream().filter(each -> null != each.COMMENT() && null != each.string_()).findFirst()
+                .ifPresent(each -> result.setComment(SQLUtils.getExactlyValue(each.string_().getText())));
         return result;
     }
     
@@ -621,7 +782,13 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     private Collection<AlterDefinitionSegment> getAlterDefinitionSegments(final AlterListContext ctx) {
         Collection<AlterDefinitionSegment> result = new LinkedList<>();
         for (AlterListItemContext each : ctx.alterListItem()) {
-            getAlterDefinitionSegment(ctx, each).ifPresent(result::add);
+            if (each instanceof AddRollupContext) {
+                result.addAll(((CollectionValue<AddRollupDefinitionSegment>) visit(each)).getValue());
+            } else if (each instanceof DropRollupContext) {
+                result.addAll(((CollectionValue<DropRollupDefinitionSegment>) visit(each)).getValue());
+            } else {
+                getAlterDefinitionSegment(ctx, each).ifPresent(result::add);
+            }
         }
         return result;
     }
@@ -678,7 +845,12 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         if (null == alterTableDrop.KEY() && null == alterTableDrop.keyOrIndex()) {
             ColumnSegment column = new ColumnSegment(alterTableDrop.columnInternalRef.start.getStartIndex(), alterTableDrop.columnInternalRef.stop.getStopIndex(),
                     (IdentifierValue) visit(alterTableDrop.columnInternalRef));
-            return Optional.of(new DropColumnDefinitionSegment(alterTableDrop.getStart().getStartIndex(), alterTableDrop.getStop().getStopIndex(), Collections.singleton(column)));
+            DropColumnDefinitionSegment dropColumnSegment =
+                    new DropColumnDefinitionSegment(alterTableDrop.getStart().getStartIndex(), alterTableDrop.getStop().getStopIndex(), Collections.singleton(column));
+            if (null != alterTableDrop.propertiesClause()) {
+                dropColumnSegment.setProperties(extractPropertiesSegment(alterTableDrop.propertiesClause()));
+            }
+            return Optional.of(dropColumnSegment);
         }
         if (null != alterTableDrop.keyOrIndex()) {
             return Optional.of(
@@ -778,8 +950,16 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     private ModifyColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ModifyColumnContext ctx) {
         ColumnSegment column = new ColumnSegment(ctx.columnInternalRef.start.getStartIndex(), ctx.columnInternalRef.stop.getStopIndex(), (IdentifierValue) visit(ctx.columnInternalRef));
-        ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), generateColumnDefinitionSegment(column, ctx.fieldDefinition()));
+        ColumnDefinitionSegment columnDefinition;
+        if (null != ctx.fieldDefinition()) {
+            columnDefinition = generateColumnDefinitionSegment(column, ctx.fieldDefinition());
+        } else {
+            columnDefinition = new ColumnDefinitionSegment(ctx.columnInternalRef.start.getStartIndex(), ctx.getStop().getStopIndex(), column, null, false, false, getText(ctx));
+            if (null != ctx.string_()) {
+                columnDefinition.setComment(SQLUtils.getExactlyValue(ctx.string_().getText()));
+            }
+        }
+        ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
         if (null != ctx.place()) {
             result.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
         }
@@ -917,7 +1097,13 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
+        TruncateStatement result = new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
+        if (null != ctx.partitionNames()) {
+            for (IdentifierContext each : ctx.partitionNames().identifier()) {
+                result.getPartitions().add(new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each)));
+            }
+        }
+        return result;
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -1024,6 +1210,39 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
+    public ASTNode visitAddRollup(final AddRollupContext ctx) {
+        CollectionValue<AddRollupDefinitionSegment> result = new CollectionValue<>();
+        for (RollupItemContext each : ctx.rollupItem()) {
+            RollupSegment rollupSegment = new RollupSegment(each.rollupName.getStart().getStartIndex(), each.rollupName.getStop().getStopIndex(), (IdentifierValue) visit(each.rollupName));
+            AddRollupDefinitionSegment addRollupDefinitionSegment = new AddRollupDefinitionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), rollupSegment);
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(each.columnNames());
+            addRollupDefinitionSegment.getColumns().addAll(columns.getValue());
+            if (null != each.fromIndexName) {
+                addRollupDefinitionSegment.setFromIndex((IndexSegment) visit(each.fromIndexName));
+            }
+            if (null != each.propertiesClause()) {
+                addRollupDefinitionSegment.setProperties(extractPropertiesSegment(each.propertiesClause()));
+            }
+            result.getValue().add(addRollupDefinitionSegment);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDropRollup(final DropRollupContext ctx) {
+        CollectionValue<DropRollupDefinitionSegment> result = new CollectionValue<>();
+        for (RollupNameItemContext each : ctx.rollupNameItem()) {
+            RollupSegment rollupSegment = new RollupSegment(each.rollupName.getStart().getStartIndex(), each.rollupName.getStop().getStopIndex(), (IdentifierValue) visit(each.rollupName));
+            DropRollupDefinitionSegment dropRollupDefinitionSegment = new DropRollupDefinitionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), rollupSegment);
+            if (null != each.propertiesClause()) {
+                dropRollupDefinitionSegment.setProperties(extractPropertiesSegment(each.propertiesClause()));
+            }
+            result.getValue().add(dropRollupDefinitionSegment);
+        }
+        return result;
+    }
+    
+    @Override
     public ASTNode visitRenameRollup(final RenameRollupContext ctx) {
         RollupSegment oldRollupSegment = new RollupSegment(ctx.oldRollupName.getStart().getStartIndex(), ctx.oldRollupName.getStop().getStopIndex(),
                 (IdentifierValue) visit(ctx.oldRollupName));
@@ -1042,6 +1261,105 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
+    public ASTNode visitAlterPartition(final AlterPartitionContext ctx) {
+        if (null != ctx.ADD() && null != ctx.PARTITION() && null != ctx.partitionName() && null != ctx.dorisPartitionDesc()) {
+            return visitAddPartitionDoris(ctx);
+        }
+        if (null != ctx.ADD() && null != ctx.PARTITIONS() && null != ctx.FROM() && null != ctx.TO() && null != ctx.INTERVAL()) {
+            return visitAddPartitionsDoris(ctx);
+        }
+        if (null != ctx.MODIFY() && null != ctx.PARTITION()) {
+            return visitModifyPartitionDoris(ctx);
+        }
+        return null;
+    }
+    
+    private AddPartitionDefinitionSegment visitAddPartitionDoris(final AlterPartitionContext ctx) {
+        PartitionSegment partitionSegment =
+                new PartitionSegment(ctx.partitionName().start.getStartIndex(), ctx.partitionName().stop.getStopIndex(), (IdentifierValue) visit(ctx.partitionName().identifier()));
+        AddPartitionDefinitionSegment result = new AddPartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), partitionSegment);
+        if (null != ctx.dorisPartitionDesc()) {
+            result.setPartitionValues((PartitionValuesSegment) visit(ctx.dorisPartitionDesc()));
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        } else if (null != ctx.properties()) {
+            PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.properties().start.getStartIndex(), ctx.properties().stop.getStopIndex());
+            for (PropertyContext each : ctx.properties().property()) {
+                propertiesSegment.getProperties().add(createPropertySegment(each));
+            }
+            result.setProperties(propertiesSegment);
+        }
+        if (null != ctx.distributedbyClause()) {
+            DistributedbyClauseContext distCtx = ctx.distributedbyClause();
+            result.setDistributedColumn((ColumnSegment) visit(distCtx.columnName()));
+            result.setBuckets(Integer.parseInt(distCtx.NUMBER_().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDorisPartitionDesc(final DorisPartitionDescContext ctx) {
+        if (null != ctx.VALUES() && null != ctx.LESS() && null != ctx.THAN()) {
+            PartitionValuesSegment result = new PartitionValuesSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PartitionValuesSegment.PartitionValuesType.VALUES_LESS_THAN);
+            if (null != ctx.MAXVALUE()) {
+                result.setMaxValue(true);
+            } else if (!ctx.partitionValueList().isEmpty()) {
+                PartitionValueListContext valueListCtx = ctx.partitionValueList(0);
+                for (int i = 0; i < valueListCtx.expr().size(); i++) {
+                    result.getValues().add((ExpressionSegment) visit(valueListCtx.expr(i)));
+                }
+            }
+            return result;
+        }
+        if (null != ctx.VALUES() && null != ctx.LBT_()) {
+            PartitionValuesSegment result = new PartitionValuesSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PartitionValuesSegment.PartitionValuesType.VALUES_RANGE);
+            for (PartitionValueListContext each : ctx.partitionValueList()) {
+                for (int i = 0; i < each.expr().size(); i++) {
+                    result.getValues().add((ExpressionSegment) visit(each.expr(i)));
+                }
+            }
+            return result;
+        }
+        return null;
+    }
+    
+    private AddPartitionsSegment visitAddPartitionsDoris(final AlterPartitionContext ctx) {
+        ExpressionSegment fromValue = (ExpressionSegment) visit(ctx.expr(0));
+        ExpressionSegment toValue = (ExpressionSegment) visit(ctx.expr(1));
+        ExpressionSegment intervalValue = (ExpressionSegment) visit(ctx.expr(2));
+        AddPartitionsSegment result = new AddPartitionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), fromValue, toValue, intervalValue);
+        if (null != ctx.intervalUnit()) {
+            int startIndex = ctx.intervalUnit().getStart().getStartIndex();
+            int stopIndex = ctx.intervalUnit().getStop().getStopIndex();
+            IdentifierValue identifier = new IdentifierValue(ctx.intervalUnit().getText());
+            result.setIntervalUnit(new IntervalUnitSegment(startIndex, stopIndex, identifier));
+        }
+        return result;
+    }
+    
+    private ModifyPartitionDefinitionSegment visitModifyPartitionDoris(final AlterPartitionContext ctx) {
+        PropertiesSegment properties = new PropertiesSegment(ctx.properties().start.getStartIndex(), ctx.properties().stop.getStopIndex());
+        for (PropertyContext each : ctx.properties().property()) {
+            properties.getProperties().add(createPropertySegment(each));
+        }
+        if (null != ctx.ASTERISK_()) {
+            return new ModifyPartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), properties, true);
+        }
+        ModifyPartitionDefinitionSegment result = new ModifyPartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), properties, false);
+        if (null != ctx.identifier() && ctx.identifierList() == null) {
+            PartitionSegment partition = new PartitionSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+            result.getPartitions().add(partition);
+        } else if (null != ctx.identifierList()) {
+            for (IdentifierContext each : ctx.identifierList().identifier()) {
+                PartitionSegment partition = new PartitionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), (IdentifierValue) visit(each));
+                result.getPartitions().add(partition);
+            }
+        }
+        return result;
+    }
+    
+    @Override
     public ASTNode visitAlterStoragePolicy(final AlterStoragePolicyContext ctx) {
         IdentifierValue identifier = (IdentifierValue) visit(ctx.identifier());
         PolicyNameSegment policyNameSegment = new PolicyNameSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), identifier);
@@ -1052,6 +1370,17 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     private PropertiesSegment extractPropertiesSegment(final PropertiesClauseContext ctx) {
         PropertiesSegment result = new PropertiesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         for (PropertyContext each : ctx.properties().property()) {
+            String key = getPropertyKey(each);
+            String value = getPropertyValue(each);
+            PropertySegment propertySegment = new PropertySegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), key, value);
+            result.getProperties().add(propertySegment);
+        }
+        return result;
+    }
+    
+    private PropertiesSegment extractPropertiesSegmentFromPropertiesContext(final PropertiesContext ctx) {
+        PropertiesSegment result = new PropertiesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (PropertyContext each : ctx.property()) {
             String key = getPropertyKey(each);
             String value = getPropertyValue(each);
             PropertySegment propertySegment = new PropertySegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), key, value);

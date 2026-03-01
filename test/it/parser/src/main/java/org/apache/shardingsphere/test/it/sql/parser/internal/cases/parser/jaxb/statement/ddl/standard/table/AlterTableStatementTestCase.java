@@ -31,9 +31,19 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameIndexDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenamePartitionDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddRollupDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedDropRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedReplaceTableDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddPartitionDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyPartitionDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedEnableFeatureDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyEngineDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyTableCommentDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyDistributionDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.partition.ExpectedAddPartitions;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedSimpleTable;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperties;
 
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
@@ -79,11 +89,26 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "rename-column")
     private final List<ExpectedRenameColumnDefinition> renameColumns = new LinkedList<>();
     
+    @XmlElement(name = "add-rollup")
+    private final List<ExpectedAddRollupDefinition> addRollups = new LinkedList<>();
+    
+    @XmlElement(name = "drop-rollup")
+    private final List<ExpectedDropRollupDefinition> dropRollups = new LinkedList<>();
+    
     @XmlElement(name = "rename-rollup")
     private final List<ExpectedRenameRollupDefinition> renameRollups = new LinkedList<>();
     
     @XmlElement(name = "rename-partition")
     private final List<ExpectedRenamePartitionDefinition> renamePartitions = new LinkedList<>();
+    
+    @XmlElement(name = "add-partition")
+    private final List<ExpectedAddPartitionDefinition> addPartitions = new LinkedList<>();
+    
+    @XmlElement(name = "add-partitions")
+    private final List<ExpectedAddPartitions> addPartitionsList = new LinkedList<>();
+    
+    @XmlElement(name = "modify-partition")
+    private final List<ExpectedModifyPartitionDefinition> modifyPartitions = new LinkedList<>();
     
     @XmlElement(name = "drop-column")
     private final List<ExpectedColumn> dropColumns = new LinkedList<>();
@@ -93,4 +118,19 @@ public final class AlterTableStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "drop-primary-key")
     private ExpectedDropPrimaryKeyDefinition dropPrimaryKeyDefinition;
+    
+    @XmlElement(name = "set-properties")
+    private final List<ExpectedProperties> setProperties = new LinkedList<>();
+    
+    @XmlElement(name = "enable-feature")
+    private final List<ExpectedEnableFeatureDefinition> enableFeatures = new LinkedList<>();
+    
+    @XmlElement(name = "modify-table-comment")
+    private final List<ExpectedModifyTableCommentDefinition> modifyTableComments = new LinkedList<>();
+    
+    @XmlElement(name = "modify-engine")
+    private final List<ExpectedModifyEngineDefinition> modifyEngines = new LinkedList<>();
+    
+    @XmlElement(name = "modify-distribution")
+    private final List<ExpectedModifyDistributionDefinition> modifyDistributions = new LinkedList<>();
 }
