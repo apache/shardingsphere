@@ -1179,8 +1179,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCancelBuildIndex(final CancelBuildIndexContext ctx) {
-        return new CancelBuildIndexStatement(getDatabaseType(),
-                (SimpleTableSegment) visit(ctx.tableName()), null == ctx.jobIdList() ? null : ctx.jobIdList().jobId().stream().map(RuleContext::getText).collect(Collectors.toList()));
+        return new CancelBuildIndexStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()),
+                null == ctx.jobIdList() ? Collections.emptyList() : ctx.jobIdList().jobId().stream().map(RuleContext::getText).collect(Collectors.toList()));
     }
     
     @Override
