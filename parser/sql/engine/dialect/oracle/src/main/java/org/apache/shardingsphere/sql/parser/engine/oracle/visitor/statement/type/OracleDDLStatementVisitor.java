@@ -868,9 +868,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        AlterIndexStatement result = new AlterIndexStatement(getDatabaseType());
-        result.setIndex((IndexSegment) visit(ctx.indexName()));
-        return result;
+        return new AlterIndexStatement(getDatabaseType(), (IndexSegment) visit(ctx.indexName()), null, null);
     }
     
     @Override
