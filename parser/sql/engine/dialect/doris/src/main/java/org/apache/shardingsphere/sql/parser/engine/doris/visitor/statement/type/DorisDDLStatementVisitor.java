@@ -611,22 +611,21 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        AlterTableStatement.AlterTableStatementBuilder result = AlterTableStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.standaloneAlterTableAction() && null != ctx.standaloneAlterTableAction().standaloneAlterCommands()) {
             processStandaloneAlterCommands(result, ctx.standaloneAlterTableAction().standaloneAlterCommands());
-            return result;
+            return result.build();
         }
         if (null == ctx.alterTableActions() || null == ctx.alterTableActions().alterCommandList() || null == ctx.alterTableActions().alterCommandList().alterList()) {
-            return result;
+            return result.build();
         }
         for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterTableActions().alterCommandList().alterList())).getValue()) {
             setAlterDefinition(result, each);
         }
-        return result;
+        return result.build();
     }
     
-    private void processStandaloneAlterCommands(final AlterTableStatement statement, final StandaloneAlterCommandsContext ctx) {
+    private void processStandaloneAlterCommands(final AlterTableStatement.AlterTableStatementBuilder statement, final StandaloneAlterCommandsContext ctx) {
         if (null != ctx.alterPartition()) {
             AlterDefinitionSegment alterDefinition = (AlterDefinitionSegment) visit(ctx.alterPartition());
             if (null != alterDefinition) {
@@ -635,7 +634,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.SET() && null != ctx.properties()) {
             PropertiesSegment properties = extractPropertiesSegmentFromPropertiesContext(ctx.properties());
-            statement.getSetPropertiesDefinitions().add(properties);
+            statement.setPropertiesDefinition(properties);
         }
         if (null != ctx.ENABLE() && null != ctx.FEATURE() && null != ctx.string_()) {
             int stopIndex = ctx.string_().getStop().getStopIndex();
@@ -646,23 +645,23 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             if (null != ctx.WITH() && null != ctx.PROPERTIES() && null != ctx.properties()) {
                 enableFeatureSegment.setProperties(extractPropertiesSegmentFromPropertiesContext(ctx.properties()));
             }
-            statement.getEnableFeatureDefinitions().add(enableFeatureSegment);
+            statement.enableFeatureDefinition(enableFeatureSegment);
         }
         if (null != ctx.modifyDistributionClause()) {
             ModifyDistributionSegment modifyDistributionSegment = (ModifyDistributionSegment) visit(ctx.modifyDistributionClause());
-            statement.getModifyDistributionDefinitions().add(modifyDistributionSegment);
+            statement.modifyDistributionDefinition(modifyDistributionSegment);
         }
         if (null != ctx.MODIFY() && null != ctx.COMMENT() && null != ctx.string_()) {
             ModifyTableCommentSegment modifyTableCommentSegment =
                     new ModifyTableCommentSegment(ctx.MODIFY().getSymbol().getStartIndex(), ctx.string_().getStop().getStopIndex(), ctx.string_().getText());
-            statement.getModifyTableCommentDefinitions().add(modifyTableCommentSegment);
+            statement.modifyTableCommentDefinition(modifyTableCommentSegment);
         }
         if (null != ctx.ENGINE() && null != ctx.identifier()) {
             ModifyEngineSegment modifyEngineSegment = new ModifyEngineSegment(ctx.ENGINE().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), ctx.identifier().getText());
             if (null != ctx.properties()) {
                 modifyEngineSegment.setProperties(extractPropertiesSegmentFromPropertiesContext(ctx.properties()));
             }
-            statement.getModifyEngineDefinitions().add(modifyEngineSegment);
+            statement.modifyEngineDefinition(modifyEngineSegment);
         }
     }
     
@@ -695,49 +694,49 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         return result;
     }
     
-    private void setAlterDefinition(final AlterTableStatement alterTableStatement, final AlterDefinitionSegment alterDefinitionSegment) {
+    private void setAlterDefinition(final AlterTableStatement.AlterTableStatementBuilder alterTableStatement, final AlterDefinitionSegment alterDefinitionSegment) {
         if (alterDefinitionSegment instanceof AddColumnDefinitionSegment) {
-            alterTableStatement.getAddColumnDefinitions().add((AddColumnDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.addColumnDefinition((AddColumnDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof ModifyColumnDefinitionSegment) {
-            alterTableStatement.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.modifyColumnDefinition((ModifyColumnDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof ChangeColumnDefinitionSegment) {
-            alterTableStatement.getChangeColumnDefinitions().add((ChangeColumnDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.changeColumnDefinition((ChangeColumnDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof DropColumnDefinitionSegment) {
-            alterTableStatement.getDropColumnDefinitions().add((DropColumnDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.dropColumnDefinition((DropColumnDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof AddConstraintDefinitionSegment) {
-            alterTableStatement.getAddConstraintDefinitions().add((AddConstraintDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.addConstraintDefinition((AddConstraintDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof DropConstraintDefinitionSegment) {
-            alterTableStatement.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.dropConstraintDefinition((DropConstraintDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameTableDefinitionSegment) {
-            alterTableStatement.setRenameTable(((RenameTableDefinitionSegment) alterDefinitionSegment).getRenameTable());
+            alterTableStatement.renameTable(((RenameTableDefinitionSegment) alterDefinitionSegment).getRenameTable());
         } else if (alterDefinitionSegment instanceof ReplaceTableDefinitionSegment) {
-            alterTableStatement.setReplaceTable((ReplaceTableDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.replaceTable((ReplaceTableDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof ConvertTableDefinitionSegment) {
-            alterTableStatement.setConvertTableDefinition((ConvertTableDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.convertTableDefinition((ConvertTableDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof DropIndexDefinitionSegment) {
-            alterTableStatement.getDropIndexDefinitions().add((DropIndexDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.dropIndexDefinition((DropIndexDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameIndexDefinitionSegment) {
-            alterTableStatement.getRenameIndexDefinitions().add((RenameIndexDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.renameIndexDefinition((RenameIndexDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameColumnSegment) {
-            alterTableStatement.getRenameColumnDefinitions().add((RenameColumnSegment) alterDefinitionSegment);
+            alterTableStatement.renameColumnDefinition((RenameColumnSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof AddRollupDefinitionSegment) {
-            alterTableStatement.getAddRollupDefinitions().add((AddRollupDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.addRollupDefinition((AddRollupDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof DropRollupDefinitionSegment) {
-            alterTableStatement.getDropRollupDefinitions().add((DropRollupDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.dropRollupDefinition((DropRollupDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameRollupDefinitionSegment) {
-            alterTableStatement.getRenameRollupDefinitions().add((RenameRollupDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.renameRollupDefinition((RenameRollupDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenamePartitionDefinitionSegment) {
-            alterTableStatement.getRenamePartitionDefinitions().add((RenamePartitionDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.renamePartitionDefinition((RenamePartitionDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof AddPartitionDefinitionSegment) {
-            alterTableStatement.getAddPartitionDefinitions().add((AddPartitionDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.addPartitionDefinition((AddPartitionDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof AddPartitionsSegment) {
-            alterTableStatement.getAddPartitionsSegments().add((AddPartitionsSegment) alterDefinitionSegment);
+            alterTableStatement.addPartitionsSegment((AddPartitionsSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof ModifyPartitionDefinitionSegment) {
-            alterTableStatement.getModifyPartitionDefinitions().add((ModifyPartitionDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.modifyPartitionDefinition((ModifyPartitionDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof AlgorithmTypeSegment) {
-            alterTableStatement.setAlgorithmSegment((AlgorithmTypeSegment) alterDefinitionSegment);
+            alterTableStatement.algorithmSegment((AlgorithmTypeSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof LockTableSegment) {
-            alterTableStatement.setLockTableSegment((LockTableSegment) alterDefinitionSegment);
+            alterTableStatement.lockTableSegment((LockTableSegment) alterDefinitionSegment);
         }
     }
     

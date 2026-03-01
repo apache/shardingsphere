@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.Singular;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.AddColumnDefinitionSegment;
@@ -33,6 +34,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.ValidateConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.distribution.ModifyDistributionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.engine.ModifyEngineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.feature.EnableFeatureSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.DropIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
@@ -41,13 +45,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ModifyPartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.AddRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.DropRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.distribution.ModifyDistributionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.engine.ModifyEngineSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.feature.EnableFeatureSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
@@ -70,77 +71,164 @@ import java.util.stream.Collectors;
  * Alter table statement.
  */
 @Getter
-@Setter
 public final class AlterTableStatement extends DDLStatement {
     
-    private SimpleTableSegment table;
+    private final SimpleTableSegment table;
     
-    private SimpleTableSegment renameTable;
+    private final SimpleTableSegment renameTable;
     
-    private ReplaceTableDefinitionSegment replaceTable;
+    private final ReplaceTableDefinitionSegment replaceTable;
     
-    private ConvertTableDefinitionSegment convertTableDefinition;
+    private final ConvertTableDefinitionSegment convertTableDefinition;
     
-    private ModifyCollectionRetrievalSegment modifyCollectionRetrieval;
+    private final ModifyCollectionRetrievalSegment modifyCollectionRetrieval;
     
-    private AlgorithmTypeSegment algorithmSegment;
+    private final AlgorithmTypeSegment algorithmSegment;
     
-    private LockTableSegment lockTableSegment;
+    private final LockTableSegment lockTableSegment;
     
-    private DropPrimaryKeyDefinitionSegment dropPrimaryKeyDefinition;
+    private final DropPrimaryKeyDefinitionSegment dropPrimaryKeyDefinition;
     
-    private final Collection<PropertiesSegment> setPropertiesDefinitions = new LinkedList<>();
+    private final Collection<PropertiesSegment> setPropertiesDefinitions;
     
-    private final Collection<EnableFeatureSegment> enableFeatureDefinitions = new LinkedList<>();
+    private final Collection<EnableFeatureSegment> enableFeatureDefinitions;
     
-    private final Collection<ModifyTableCommentSegment> modifyTableCommentDefinitions = new LinkedList<>();
+    private final Collection<ModifyTableCommentSegment> modifyTableCommentDefinitions;
     
-    private final Collection<ModifyEngineSegment> modifyEngineDefinitions = new LinkedList<>();
+    private final Collection<ModifyEngineSegment> modifyEngineDefinitions;
     
-    private final Collection<ModifyDistributionSegment> modifyDistributionDefinitions = new LinkedList<>();
+    private final Collection<ModifyDistributionSegment> modifyDistributionDefinitions;
     
-    private final Collection<AddColumnDefinitionSegment> addColumnDefinitions = new LinkedList<>();
+    private final Collection<AddColumnDefinitionSegment> addColumnDefinitions;
     
-    private final Collection<ModifyColumnDefinitionSegment> modifyColumnDefinitions = new LinkedList<>();
+    private final Collection<ModifyColumnDefinitionSegment> modifyColumnDefinitions;
     
-    private final Collection<ChangeColumnDefinitionSegment> changeColumnDefinitions = new LinkedList<>();
+    private final Collection<ChangeColumnDefinitionSegment> changeColumnDefinitions;
     
-    private final Collection<DropColumnDefinitionSegment> dropColumnDefinitions = new LinkedList<>();
+    private final Collection<DropColumnDefinitionSegment> dropColumnDefinitions;
     
-    private final Collection<AddConstraintDefinitionSegment> addConstraintDefinitions = new LinkedList<>();
+    private final Collection<AddConstraintDefinitionSegment> addConstraintDefinitions;
     
-    private final Collection<ValidateConstraintDefinitionSegment> validateConstraintDefinitions = new LinkedList<>();
+    private final Collection<ValidateConstraintDefinitionSegment> validateConstraintDefinitions;
     
-    private final Collection<ModifyConstraintDefinitionSegment> modifyConstraintDefinitions = new LinkedList<>();
+    private final Collection<ModifyConstraintDefinitionSegment> modifyConstraintDefinitions;
     
-    private final Collection<DropConstraintDefinitionSegment> dropConstraintDefinitions = new LinkedList<>();
+    private final Collection<DropConstraintDefinitionSegment> dropConstraintDefinitions;
     
-    private final Collection<DropIndexDefinitionSegment> dropIndexDefinitions = new LinkedList<>();
+    private final Collection<DropIndexDefinitionSegment> dropIndexDefinitions;
     
-    private final Collection<RenameColumnSegment> renameColumnDefinitions = new LinkedList<>();
+    private final Collection<RenameColumnSegment> renameColumnDefinitions;
     
-    private final Collection<RenameIndexDefinitionSegment> renameIndexDefinitions = new LinkedList<>();
+    private final Collection<RenameIndexDefinitionSegment> renameIndexDefinitions;
     
-    private final Collection<ReplaceColumnDefinitionSegment> replaceColumnDefinitions = new LinkedList<>();
+    private final Collection<ReplaceColumnDefinitionSegment> replaceColumnDefinitions;
     
-    private final Collection<AddRollupDefinitionSegment> addRollupDefinitions = new LinkedList<>();
+    private final Collection<AddRollupDefinitionSegment> addRollupDefinitions;
     
-    private final Collection<DropRollupDefinitionSegment> dropRollupDefinitions = new LinkedList<>();
+    private final Collection<DropRollupDefinitionSegment> dropRollupDefinitions;
     
-    private final Collection<RenameRollupDefinitionSegment> renameRollupDefinitions = new LinkedList<>();
+    private final Collection<RenameRollupDefinitionSegment> renameRollupDefinitions;
     
-    private final Collection<RenamePartitionDefinitionSegment> renamePartitionDefinitions = new LinkedList<>();
+    private final Collection<RenamePartitionDefinitionSegment> renamePartitionDefinitions;
     
-    private final Collection<AddPartitionDefinitionSegment> addPartitionDefinitions = new LinkedList<>();
+    private final Collection<AddPartitionDefinitionSegment> addPartitionDefinitions;
     
-    private final Collection<AddPartitionsSegment> addPartitionsSegments = new LinkedList<>();
+    private final Collection<AddPartitionsSegment> addPartitionsSegments;
     
-    private final Collection<ModifyPartitionDefinitionSegment> modifyPartitionDefinitions = new LinkedList<>();
+    private final Collection<ModifyPartitionDefinitionSegment> modifyPartitionDefinitions;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public AlterTableStatement(final DatabaseType databaseType) {
+    @Builder
+    private AlterTableStatement(final DatabaseType databaseType, final SimpleTableSegment table, final SimpleTableSegment renameTable, final ReplaceTableDefinitionSegment replaceTable,
+                                final ConvertTableDefinitionSegment convertTableDefinition, final ModifyCollectionRetrievalSegment modifyCollectionRetrieval,
+                                final AlgorithmTypeSegment algorithmSegment, final LockTableSegment lockTableSegment, final DropPrimaryKeyDefinitionSegment dropPrimaryKeyDefinition,
+                                @Singular("setPropertiesDefinition") final Collection<PropertiesSegment> setPropertiesDefinitions,
+                                @Singular("enableFeatureDefinition") final Collection<EnableFeatureSegment> enableFeatureDefinitions,
+                                @Singular("modifyTableCommentDefinition") final Collection<ModifyTableCommentSegment> modifyTableCommentDefinitions,
+                                @Singular("modifyEngineDefinition") final Collection<ModifyEngineSegment> modifyEngineDefinitions,
+                                @Singular("modifyDistributionDefinition") final Collection<ModifyDistributionSegment> modifyDistributionDefinitions,
+                                @Singular("addColumnDefinition") final Collection<AddColumnDefinitionSegment> addColumnDefinitions,
+                                @Singular("modifyColumnDefinition") final Collection<ModifyColumnDefinitionSegment> modifyColumnDefinitions,
+                                @Singular("changeColumnDefinition") final Collection<ChangeColumnDefinitionSegment> changeColumnDefinitions,
+                                @Singular("dropColumnDefinition") final Collection<DropColumnDefinitionSegment> dropColumnDefinitions,
+                                @Singular("addConstraintDefinition") final Collection<AddConstraintDefinitionSegment> addConstraintDefinitions,
+                                @Singular("validateConstraintDefinition") final Collection<ValidateConstraintDefinitionSegment> validateConstraintDefinitions,
+                                @Singular("modifyConstraintDefinition") final Collection<ModifyConstraintDefinitionSegment> modifyConstraintDefinitions,
+                                @Singular("dropConstraintDefinition") final Collection<DropConstraintDefinitionSegment> dropConstraintDefinitions,
+                                @Singular("dropIndexDefinition") final Collection<DropIndexDefinitionSegment> dropIndexDefinitions,
+                                @Singular("renameColumnDefinition") final Collection<RenameColumnSegment> renameColumnDefinitions,
+                                @Singular("renameIndexDefinition") final Collection<RenameIndexDefinitionSegment> renameIndexDefinitions,
+                                @Singular("replaceColumnDefinition") final Collection<ReplaceColumnDefinitionSegment> replaceColumnDefinitions,
+                                @Singular("addRollupDefinition") final Collection<AddRollupDefinitionSegment> addRollupDefinitions,
+                                @Singular("dropRollupDefinition") final Collection<DropRollupDefinitionSegment> dropRollupDefinitions,
+                                @Singular("renameRollupDefinition") final Collection<RenameRollupDefinitionSegment> renameRollupDefinitions,
+                                @Singular("renamePartitionDefinition") final Collection<RenamePartitionDefinitionSegment> renamePartitionDefinitions,
+                                @Singular("addPartitionDefinition") final Collection<AddPartitionDefinitionSegment> addPartitionDefinitions,
+                                @Singular("addPartitionsSegment") final Collection<AddPartitionsSegment> addPartitionsSegments,
+                                @Singular("modifyPartitionDefinition") final Collection<ModifyPartitionDefinitionSegment> modifyPartitionDefinitions) {
         super(databaseType);
+        this.table = table;
+        this.renameTable = renameTable;
+        this.replaceTable = replaceTable;
+        this.convertTableDefinition = convertTableDefinition;
+        this.modifyCollectionRetrieval = modifyCollectionRetrieval;
+        this.algorithmSegment = algorithmSegment;
+        this.lockTableSegment = lockTableSegment;
+        this.dropPrimaryKeyDefinition = dropPrimaryKeyDefinition;
+        this.setPropertiesDefinitions = setPropertiesDefinitions;
+        this.enableFeatureDefinitions = enableFeatureDefinitions;
+        this.modifyTableCommentDefinitions = modifyTableCommentDefinitions;
+        this.modifyEngineDefinitions = modifyEngineDefinitions;
+        this.modifyDistributionDefinitions = modifyDistributionDefinitions;
+        this.addColumnDefinitions = addColumnDefinitions;
+        this.modifyColumnDefinitions = modifyColumnDefinitions;
+        this.changeColumnDefinitions = changeColumnDefinitions;
+        this.dropColumnDefinitions = dropColumnDefinitions;
+        this.addConstraintDefinitions = addConstraintDefinitions;
+        this.validateConstraintDefinitions = validateConstraintDefinitions;
+        this.modifyConstraintDefinitions = modifyConstraintDefinitions;
+        this.dropConstraintDefinitions = dropConstraintDefinitions;
+        this.dropIndexDefinitions = dropIndexDefinitions;
+        this.renameColumnDefinitions = renameColumnDefinitions;
+        this.renameIndexDefinitions = renameIndexDefinitions;
+        this.replaceColumnDefinitions = replaceColumnDefinitions;
+        this.addRollupDefinitions = addRollupDefinitions;
+        this.dropRollupDefinitions = dropRollupDefinitions;
+        this.renameRollupDefinitions = renameRollupDefinitions;
+        this.renamePartitionDefinitions = renamePartitionDefinitions;
+        this.addPartitionDefinitions = addPartitionDefinitions;
+        this.addPartitionsSegments = addPartitionsSegments;
+        this.modifyPartitionDefinitions = modifyPartitionDefinitions;
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(getTables()), new AlterTableConstraintSQLStatementAttribute(), new AlterTableIndexSQLStatementAttribute());
+    }
+    
+    private Collection<SimpleTableSegment> getTables() {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        result.add(table);
+        if (getRenameTable().isPresent()) {
+            result.add(getRenameTable().get());
+        }
+        if (getReplaceTable().isPresent() && null != getReplaceTable().get().getReplaceTable()) {
+            result.add(getReplaceTable().get().getReplaceTable());
+        }
+        for (AddColumnDefinitionSegment each : addColumnDefinitions) {
+            for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
+                result.addAll(columnDefinition.getReferencedTables());
+            }
+        }
+        for (ModifyColumnDefinitionSegment each : modifyColumnDefinitions) {
+            result.addAll(each.getColumnDefinition().getReferencedTables());
+        }
+        for (AddConstraintDefinitionSegment each : addConstraintDefinitions) {
+            each.getConstraintDefinition().getReferencedTable().ifPresent(result::add);
+        }
+        for (ReplaceColumnDefinitionSegment each : replaceColumnDefinitions) {
+            for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
+                result.addAll(columnDefinition.getReferencedTables());
+            }
+        }
+        return result;
     }
     
     /**
@@ -208,35 +296,6 @@ public final class AlterTableStatement extends DDLStatement {
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(getTables()), new AlterTableConstraintSQLStatementAttribute(), new AlterTableIndexSQLStatementAttribute());
-    }
-    
-    private Collection<SimpleTableSegment> getTables() {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        result.add(table);
-        if (getRenameTable().isPresent()) {
-            result.add(getRenameTable().get());
-        }
-        if (getReplaceTable().isPresent() && null != getReplaceTable().get().getReplaceTable()) {
-            result.add(getReplaceTable().get().getReplaceTable());
-        }
-        for (AddColumnDefinitionSegment each : addColumnDefinitions) {
-            for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
-                result.addAll(columnDefinition.getReferencedTables());
-            }
-        }
-        for (ModifyColumnDefinitionSegment each : modifyColumnDefinitions) {
-            result.addAll(each.getColumnDefinition().getReferencedTables());
-        }
-        for (AddConstraintDefinitionSegment each : addConstraintDefinitions) {
-            each.getConstraintDefinition().getReferencedTable().ifPresent(result::add);
-        }
-        for (ReplaceColumnDefinitionSegment each : replaceColumnDefinitions) {
-            for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
-                result.addAll(columnDefinition.getReferencedTables());
-            }
-        }
-        return result;
     }
     
     private class AlterTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {

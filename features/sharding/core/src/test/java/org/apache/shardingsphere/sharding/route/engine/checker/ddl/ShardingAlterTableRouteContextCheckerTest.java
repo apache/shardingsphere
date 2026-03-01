@@ -68,8 +68,8 @@ class ShardingAlterTableRouteContextCheckerTest {
     
     @Test
     void assertCheckWithSameRouteResultShardingTableForPostgreSQL() {
-        AlterTableStatement sqlStatement = new AlterTableStatement(databaseType);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        AlterTableStatement sqlStatement = AlterTableStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))).build();
         sqlStatement.buildAttributes();
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getShardingTable("t_order")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_order"));
@@ -83,8 +83,8 @@ class ShardingAlterTableRouteContextCheckerTest {
     
     @Test
     void assertCheckWithDifferentRouteResultShardingTableForPostgreSQL() {
-        AlterTableStatement sqlStatement = new AlterTableStatement(databaseType);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        AlterTableStatement sqlStatement = AlterTableStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))).build();
         sqlStatement.buildAttributes();
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getShardingTable("t_order")).thenReturn(new ShardingTable(Arrays.asList("ds_0", "ds_1"), "t_order"));

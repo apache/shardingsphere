@@ -334,46 +334,45 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        AlterTableStatement.AlterTableStatementBuilder result = AlterTableStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()));
         if (null == ctx.alterTableActions() || null == ctx.alterTableActions().alterCommandList() || null == ctx.alterTableActions().alterCommandList().alterList()) {
-            return result;
+            return result.build();
         }
         for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterTableActions().alterCommandList().alterList())).getValue()) {
             setAlterDefinition(result, each);
         }
-        return result;
+        return result.build();
     }
     
-    private void setAlterDefinition(final AlterTableStatement alterTableStatement, final AlterDefinitionSegment alterDefinitionSegment) {
+    private void setAlterDefinition(final AlterTableStatement.AlterTableStatementBuilder alterTableStatement, final AlterDefinitionSegment alterDefinitionSegment) {
         if (alterDefinitionSegment instanceof AddColumnDefinitionSegment) {
-            alterTableStatement.getAddColumnDefinitions().add((AddColumnDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.addColumnDefinition((AddColumnDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof ModifyColumnDefinitionSegment) {
-            alterTableStatement.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.modifyColumnDefinition((ModifyColumnDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof ChangeColumnDefinitionSegment) {
-            alterTableStatement.getChangeColumnDefinitions().add((ChangeColumnDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.changeColumnDefinition((ChangeColumnDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof DropColumnDefinitionSegment) {
-            alterTableStatement.getDropColumnDefinitions().add((DropColumnDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.dropColumnDefinition((DropColumnDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof AddConstraintDefinitionSegment) {
-            alterTableStatement.getAddConstraintDefinitions().add((AddConstraintDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.addConstraintDefinition((AddConstraintDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof DropConstraintDefinitionSegment) {
-            alterTableStatement.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.dropConstraintDefinition((DropConstraintDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameTableDefinitionSegment) {
-            alterTableStatement.setRenameTable(((RenameTableDefinitionSegment) alterDefinitionSegment).getRenameTable());
+            alterTableStatement.renameTable(((RenameTableDefinitionSegment) alterDefinitionSegment).getRenameTable());
         } else if (alterDefinitionSegment instanceof ConvertTableDefinitionSegment) {
-            alterTableStatement.setConvertTableDefinition((ConvertTableDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.convertTableDefinition((ConvertTableDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof DropIndexDefinitionSegment) {
-            alterTableStatement.getDropIndexDefinitions().add((DropIndexDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.dropIndexDefinition((DropIndexDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameIndexDefinitionSegment) {
-            alterTableStatement.getRenameIndexDefinitions().add((RenameIndexDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.renameIndexDefinition((RenameIndexDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameColumnSegment) {
-            alterTableStatement.getRenameColumnDefinitions().add((RenameColumnSegment) alterDefinitionSegment);
+            alterTableStatement.renameColumnDefinition((RenameColumnSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof AlgorithmTypeSegment) {
-            alterTableStatement.setAlgorithmSegment((AlgorithmTypeSegment) alterDefinitionSegment);
+            alterTableStatement.algorithmSegment((AlgorithmTypeSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof LockTableSegment) {
-            alterTableStatement.setLockTableSegment((LockTableSegment) alterDefinitionSegment);
+            alterTableStatement.lockTableSegment((LockTableSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof DropPrimaryKeyDefinitionSegment) {
-            alterTableStatement.setDropPrimaryKeyDefinition((DropPrimaryKeyDefinitionSegment) alterDefinitionSegment);
+            alterTableStatement.dropPrimaryKeyDefinition((DropPrimaryKeyDefinitionSegment) alterDefinitionSegment);
         }
     }
     
