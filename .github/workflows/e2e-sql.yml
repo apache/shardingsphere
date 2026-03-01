@@ -120,8 +120,8 @@ jobs:
           echo "need-proxy-image=${{ steps.generate-matrix.outputs.need-proxy-image }}"
           echo "filter-json=${{ steps.generate-matrix.outputs.filter-json }}"
 
-  build-e2e-image:
-    name: Build E2E Image
+  prepare-e2e-artifacts:
+    name: Prepare E2E Artifacts
     if: github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true'
     needs: [ global-environment, detect-and-generate-matrix ]
     runs-on: ubuntu-latest
@@ -157,8 +157,8 @@ jobs:
 
   e2e-sql-smoke:
     name: E2E - SQL (Smoke)
-    needs: [ detect-and-generate-matrix, build-e2e-image, global-environment ]
-    if: always() && github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true' && needs.detect-and-generate-matrix.result == 'success' && (needs.build-e2e-image.result == 'success' || needs.build-e2e-image.result == 'skipped')
+    needs: [ detect-and-generate-matrix, prepare-e2e-artifacts, global-environment ]
+    if: always() && github.repository == 'apache/shardingsphere' && needs.detect-and-generate-matrix.outputs.has-jobs == 'true' && needs.detect-and-generate-matrix.result == 'success' && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
     runs-on: ubuntu-latest
     timeout-minutes: 40
     strategy:
@@ -225,12 +225,12 @@ jobs:
 
   e2e-sql-stage2:
     name: E2E - SQL (Stage 2)
-    needs: [ detect-remaining-matrix, build-e2e-image, global-environment ]
+    needs: [ detect-remaining-matrix, prepare-e2e-artifacts, global-environment ]
     if: >-
       always()
       && github.repository == 'apache/shardingsphere'
       && needs.detect-remaining-matrix.outputs.has-remaining-jobs == 'true'
-      && (needs.build-e2e-image.result == 'success' || needs.build-e2e-image.result == 'skipped')
+      && (needs.prepare-e2e-artifacts.result == 'success' || needs.prepare-e2e-artifacts.result == 'skipped')
     runs-on: ubuntu-latest
     timeout-minutes: 40
     strategy:
