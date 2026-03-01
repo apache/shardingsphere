@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.type
 
 import com.google.common.base.Preconditions;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
@@ -280,6 +281,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * DDL statement visitor for Doris.
@@ -1164,17 +1166,13 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitBuildIndex(final BuildIndexContext ctx) {
-        BuildIndexStatement result = new BuildIndexStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
-        result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
-        if (null != ctx.partitionNames()) {
-            for (IdentifierContext each : ctx.partitionNames().identifier()) {
-                PartitionSegment partitionSegment = new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each));
-                result.getPartitions().add(partitionSegment);
-            }
-        }
-        return result;
+        Collection<PartitionSegment> partitions = null == ctx.partitionNames()
+                ? Collections.emptyList()
+                : ctx.partitionNames().identifier().stream()
+                        .map(each -> new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each))).collect(Collectors.toList());
+        return new BuildIndexStatement(
+                getDatabaseType(), new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName), (SimpleTableSegment) visit(ctx.tableName()), partitions);
     }
     
     @Override
@@ -1191,21 +1189,16 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCancelAlterTable(final CancelAlterTableContext ctx) {
-        CancelAlterTableStatement result = new CancelAlterTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        String alterType = null;
         if (null != ctx.COLUMN()) {
-            result.setAlterType("COLUMN");
+            alterType = "COLUMN";
         } else if (null != ctx.MATERIALIZED()) {
-            result.setAlterType("MATERIALIZED VIEW");
+            alterType = "MATERIALIZED VIEW";
         } else if (null != ctx.ROLLUP()) {
-            result.setAlterType("ROLLUP");
+            alterType = "ROLLUP";
         }
-        if (null != ctx.jobIdList()) {
-            for (JobIdContext each : ctx.jobIdList().jobId()) {
-                result.getJobIds().add(each.getText());
-            }
-        }
-        return result;
+        return new CancelAlterTableStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()),
+                alterType, null == ctx.jobIdList() ? Collections.emptyList() : ctx.jobIdList().jobId().stream().map(RuleContext::getText).collect(Collectors.toList()));
     }
     
     @Override
