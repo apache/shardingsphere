@@ -24,6 +24,8 @@
     <sql-case id="create_table_with_backtick" value="CREATE TABLE ```t_order` (i int)" db-types="MySQL" />
     <sql-case id="create_table_column_with_backtick" value="create table `````t_o``r``d``e``r``` (```i` int)" db-types="MySQL" />
     <sql-case id="create_table_with_like" value="CREATE TABLE t_log LIKE t_old_log" db-types="MySQL,Doris" />
+    <sql-case id="create_table_like_with_rollup" value="CREATE TABLE test1.table2 LIKE test1.table1 WITH ROLLUP (r1,r2)" db-types="Doris" />
+    <sql-case id="create_table_like_with_single_rollup" value="CREATE TABLE t_new LIKE t_old WITH ROLLUP (r1)" db-types="Doris" />
     <sql-case id="create_table" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10))" />
     <sql-case id="create_table_with_engin_charset" value="CREATE TABLE t_log(id int PRIMARY KEY, status varchar(10)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4" db-types="MySQL,Doris" />
     <sql-case id="create_table_with_keyword" value="CREATE TABLE t_log(id int PRIMARY KEY, status boolean)" db-types="PostgreSQL,openGauss" />
