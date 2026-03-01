@@ -176,6 +176,7 @@ identifierKeywordsUnambiguous
     | COALESCE
     | CODE
     | COLLATION
+    | COLOCATE
     | COLUMNS
     | COLUMN_FORMAT
     | COLUMN_NAME
