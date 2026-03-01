@@ -33,16 +33,16 @@ public final class CloseStatement extends DDLStatement {
     
     private final boolean closeAll;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public CloseStatement(final DatabaseType databaseType, final CursorNameSegment cursorName, final boolean closeAll) {
         super(databaseType);
         this.cursorName = cursorName;
         this.closeAll = closeAll;
+        attributes = new SQLStatementAttributes(new CursorSQLStatementAttribute(cursorName));
     }
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new CursorSQLStatementAttribute(cursorName));
     }
 }
