@@ -119,11 +119,11 @@ class EncryptAlterTableTokenGeneratorTest {
     }
     
     private SQLStatement createAddColumnStatement() {
-        AlterTableStatement result = new AlterTableStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))));
         ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
                 33, 67, new ColumnSegment(33, 50, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false, "");
-        result.getAddColumnDefinitions().add(new AddColumnDefinitionSegment(22, 67, Collections.singleton(columnDefinitionSegment)));
+        AlterTableStatement result = AlterTableStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))))
+                .addColumnDefinition(new AddColumnDefinitionSegment(22, 67, Collections.singleton(columnDefinitionSegment))).build();
         result.buildAttributes();
         return result;
     }
@@ -134,11 +134,11 @@ class EncryptAlterTableTokenGeneratorTest {
     }
     
     private SQLStatement createModifyColumnStatement() {
-        AlterTableStatement result = new AlterTableStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))));
         ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
                 36, 70, new ColumnSegment(36, 53, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false, "");
-        result.getModifyColumnDefinitions().add(new ModifyColumnDefinitionSegment(22, 70, columnDefinitionSegment));
+        AlterTableStatement result = AlterTableStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))))
+                .modifyColumnDefinition(new ModifyColumnDefinitionSegment(22, 70, columnDefinitionSegment)).build();
         result.buildAttributes();
         return result;
     }
@@ -149,13 +149,12 @@ class EncryptAlterTableTokenGeneratorTest {
     }
     
     private SQLStatement createChangeColumnStatement() {
-        AlterTableStatement result = new AlterTableStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))));
         ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
                 55, 93, new ColumnSegment(55, 76, new IdentifierValue("certificate_number_new")), new DataTypeSegment(), false, false, "");
         ChangeColumnDefinitionSegment changeColumnDefinitionSegment = new ChangeColumnDefinitionSegment(22, 93, columnDefinitionSegment);
         changeColumnDefinitionSegment.setPreviousColumn(new ColumnSegment(36, 53, new IdentifierValue("certificate_number")));
-        result.getChangeColumnDefinitions().add(changeColumnDefinitionSegment);
+        AlterTableStatement result = AlterTableStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))).changeColumnDefinition(changeColumnDefinitionSegment).build();
         result.buildAttributes();
         return result;
     }
