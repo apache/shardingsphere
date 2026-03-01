@@ -24,7 +24,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropRepositoryStatementTestCase;
-import org.junit.jupiter.api.Assertions;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Drop repository statement assert for Doris.
@@ -41,7 +42,7 @@ public final class DorisDropRepositoryStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DorisDropRepositoryStatement actual, final DorisDropRepositoryStatementTestCase expected) {
         if (null != expected.getRepositoryName()) {
-            Assertions.assertNotNull(actual.getRepositoryName(), assertContext.getText("Actual repository name should exist."));
+            assertNotNull(actual.getRepositoryName(), assertContext.getText("Actual repository name should exist."));
             IdentifierValueAssert.assertIs(assertContext, actual.getRepositoryName().getIdentifier(), expected.getRepositoryName(), "Repository name");
             SQLSegmentAssert.assertIs(assertContext, actual.getRepositoryName(), expected.getRepositoryName());
         }

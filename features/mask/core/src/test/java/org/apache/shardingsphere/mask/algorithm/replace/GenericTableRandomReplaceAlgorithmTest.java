@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -52,9 +51,9 @@ class GenericTableRandomReplaceAlgorithmTest {
     void assertMaskWithEmptyProps() {
         GenericTableRandomReplaceAlgorithm maskAlgorithm = (GenericTableRandomReplaceAlgorithm) TypedSPILoader.getService(MaskAlgorithm.class, "GENERIC_TABLE_RANDOM_REPLACE", new Properties());
         assertNull(maskAlgorithm.mask(null));
-        assertThat(maskAlgorithm.mask("Ab1!").substring(0, 1), anyOf(Arrays.stream("ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")).map(Matchers::is).collect(Collectors.toList())));
-        assertThat(maskAlgorithm.mask("Ab1!").substring(1, 2), anyOf(Arrays.stream("abcdefghijklmnopqrstuvwxyz".split("")).map(Matchers::is).collect(Collectors.toList())));
-        assertThat(maskAlgorithm.mask("Ab1!").substring(2, 3), anyOf(Arrays.stream("0123456789".split("")).map(Matchers::is).collect(Collectors.toList())));
-        assertThat(maskAlgorithm.mask("Ab1!").substring(3, 4), anyOf(Arrays.stream("~!@#$%^&*:<>|".split("")).map(Matchers::is).collect(Collectors.toList())));
+        assertThat(maskAlgorithm.mask("Ab1!").substring(0, 1), anyOf(Arrays.stream("ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")).map(each -> is(each)).collect(Collectors.toList())));
+        assertThat(maskAlgorithm.mask("Ab1!").substring(1, 2), anyOf(Arrays.stream("abcdefghijklmnopqrstuvwxyz".split("")).map(each -> is(each)).collect(Collectors.toList())));
+        assertThat(maskAlgorithm.mask("Ab1!").substring(2, 3), anyOf(Arrays.stream("0123456789".split("")).map(each -> is(each)).collect(Collectors.toList())));
+        assertThat(maskAlgorithm.mask("Ab1!").substring(3, 4), anyOf(Arrays.stream("~!@#$%^&*:<>|".split("")).map(each -> is(each)).collect(Collectors.toList())));
     }
 }
