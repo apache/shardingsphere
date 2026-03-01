@@ -18,6 +18,12 @@
 name: 'Download E2E Artifacts'
 description: 'Download and restore E2E build artifacts including Maven repository and Docker image'
 
+inputs:
+  load-docker-image:
+    description: 'Whether to load the Docker image after download'
+    required: false
+    default: 'true'
+
 runs:
   using: composite
   steps:
@@ -32,6 +38,7 @@ runs:
         mkdir -p ~/.m2/repository
         tar -xzf /tmp/maven-repo-output.tar.gz -C ~/.m2/repository
     - name: Load E2E Image
+      if: inputs.load-docker-image == 'true'
       shell: bash
       run: |
         docker load -i /tmp/apache-shardingsphere-proxy-test.tar
