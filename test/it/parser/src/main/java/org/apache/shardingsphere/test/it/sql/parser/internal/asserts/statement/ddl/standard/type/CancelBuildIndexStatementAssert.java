@@ -24,8 +24,11 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.index.CancelBuildIndexStatementTestCase;
 
-import static org.hamcrest.Matchers.is;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -58,14 +61,13 @@ public final class CancelBuildIndexStatementAssert {
     }
     
     private static void assertJobIds(final SQLCaseAssertContext assertContext, final CancelBuildIndexStatement actual, final CancelBuildIndexStatementTestCase expected) {
-        if (null == expected.getJobIds() || expected.getJobIds().isEmpty()) {
+        if (expected.getJobIds().isEmpty()) {
             assertTrue(actual.getJobIds().isEmpty(), assertContext.getText("Actual job IDs should not exist."));
         } else {
-            assertThat(assertContext.getText("Job IDs size assertion error: "),
-                    actual.getJobIds().size(), is(expected.getJobIds().size()));
+            List<String> actualJobIds = new ArrayList<>(actual.getJobIds());
+            assertThat(assertContext.getText("Job IDs size assertion error: "), actualJobIds.size(), is(expected.getJobIds().size()));
             for (int i = 0; i < expected.getJobIds().size(); i++) {
-                assertThat(assertContext.getText(String.format("Job ID assertion error at index %d: ", i)),
-                        actual.getJobIds().get(i), is(expected.getJobIds().get(i)));
+                assertThat(assertContext.getText(String.format("Job ID assertion error at index %d: ", i)), actualJobIds.get(i), is(expected.getJobIds().get(i)));
             }
         }
     }
