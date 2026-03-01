@@ -23,9 +23,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.al
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.alter.CancelAlterTableStatementTestCase;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Cancel alter table statement assert.
@@ -48,26 +54,27 @@ public final class CancelAlterTableStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CancelAlterTableStatement actual, final CancelAlterTableStatementTestCase expected) {
         if (null == expected.getTable()) {
-            Assertions.assertNull(actual.getTable(), assertContext.getText("Actual table segment should not exist."));
+            assertNull(actual.getTable(), assertContext.getText("Actual table segment should not exist."));
         } else {
-            Assertions.assertNotNull(actual.getTable(), assertContext.getText("Actual table segment should exist."));
+            assertNotNull(actual.getTable(), assertContext.getText("Actual table segment should exist."));
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
         }
     }
     
     private static void assertAlterType(final SQLCaseAssertContext assertContext, final CancelAlterTableStatement actual, final CancelAlterTableStatementTestCase expected) {
-        Assertions.assertNotNull(expected.getAlterType(), assertContext.getText("Expected alter type should exist."));
-        Assertions.assertNotNull(actual.getAlterType(), assertContext.getText("Actual alter type should exist."));
-        MatcherAssert.assertThat(assertContext.getText("Alter type assertion error: "), actual.getAlterType(), Matchers.is(expected.getAlterType()));
+        assertNotNull(expected.getAlterType(), assertContext.getText("Expected alter type should exist."));
+        assertNotNull(actual.getAlterType(), assertContext.getText("Actual alter type should exist."));
+        assertThat(assertContext.getText("Alter type assertion error: "), actual.getAlterType(), is(expected.getAlterType()));
     }
     
     private static void assertJobIds(final SQLCaseAssertContext assertContext, final CancelAlterTableStatement actual, final CancelAlterTableStatementTestCase expected) {
-        if (null == expected.getJobIds() || expected.getJobIds().isEmpty()) {
-            Assertions.assertTrue(actual.getJobIds().isEmpty(), assertContext.getText("Actual job IDs should not exist."));
+        if (expected.getJobIds().isEmpty()) {
+            assertTrue(actual.getJobIds().isEmpty(), assertContext.getText("Actual job IDs should not exist."));
         } else {
-            MatcherAssert.assertThat(assertContext.getText("Job IDs size assertion error: "), actual.getJobIds().size(), Matchers.is(expected.getJobIds().size()));
+            assertThat(assertContext.getText("Job IDs size assertion error: "), actual.getJobIds().size(), is(expected.getJobIds().size()));
+            List<String> actualJobIds = new ArrayList<>(actual.getJobIds());
             for (int i = 0; i < expected.getJobIds().size(); i++) {
-                MatcherAssert.assertThat(assertContext.getText(String.format("Job ID assertion error at index %d: ", i)), actual.getJobIds().get(i), Matchers.is(expected.getJobIds().get(i)));
+                assertThat(assertContext.getText(String.format("Job ID assertion error at index %d: ", i)), actualJobIds.get(i), is(expected.getJobIds().get(i)));
             }
         }
     }

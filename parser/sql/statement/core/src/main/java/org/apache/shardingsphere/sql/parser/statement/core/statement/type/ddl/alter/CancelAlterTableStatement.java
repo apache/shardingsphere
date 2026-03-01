@@ -18,37 +18,38 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.alter;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
 
 /**
  * Cancel alter table statement.
  */
 @Getter
-@Setter
 public final class CancelAlterTableStatement extends DDLStatement {
     
-    private SimpleTableSegment table;
+    private final SimpleTableSegment table;
     
-    private String alterType;
+    private final String alterType;
     
-    private final List<String> jobIds = new LinkedList<>();
+    private final Collection<String> jobIds;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public CancelAlterTableStatement(final DatabaseType databaseType) {
+    public CancelAlterTableStatement(final DatabaseType databaseType, final SimpleTableSegment table, final String alterType, final List<String> jobIds) {
         super(databaseType);
+        this.table = table;
+        this.alterType = alterType;
+        this.jobIds = jobIds;
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table));
     }
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table));
     }
 }
