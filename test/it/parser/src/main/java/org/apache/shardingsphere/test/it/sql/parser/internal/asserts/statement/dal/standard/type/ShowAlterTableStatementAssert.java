@@ -26,9 +26,11 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.lim
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.orderby.OrderByClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.where.WhereClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.ShowAlterTableStatementTestCase;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Show alter table statement assert.
@@ -53,46 +55,46 @@ public final class ShowAlterTableStatementAssert {
     
     private static void assertAlterType(final SQLCaseAssertContext assertContext, final ShowAlterTableStatement actual, final ShowAlterTableStatementTestCase expected) {
         if (null != expected.getAlterType()) {
-            Assertions.assertNotNull(actual.getAlterType().orElse(null), assertContext.getText("Actual alter type should exist."));
-            MatcherAssert.assertThat(assertContext.getText("Alter type assertion error: "), actual.getAlterType().get(), Matchers.is(expected.getAlterType()));
+            assertNotNull(actual.getAlterType().orElse(null), assertContext.getText("Actual alter type should exist."));
+            assertThat(assertContext.getText("Alter type assertion error: "), actual.getAlterType().get(), is(expected.getAlterType()));
         } else {
-            Assertions.assertNull(actual.getAlterType().orElse(null), assertContext.getText("Actual alter type should not exist."));
+            assertNull(actual.getAlterType().orElse(null), assertContext.getText("Actual alter type should not exist."));
         }
     }
     
     private static void assertDatabase(final SQLCaseAssertContext assertContext, final ShowAlterTableStatement actual, final ShowAlterTableStatementTestCase expected) {
         if (null != expected.getDatabase()) {
-            Assertions.assertNotNull(actual.getDatabase().orElse(null), assertContext.getText("Actual database should exist."));
+            assertNotNull(actual.getDatabase().orElse(null), assertContext.getText("Actual database should exist."));
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
         } else {
-            Assertions.assertNull(actual.getDatabase().orElse(null), assertContext.getText("Actual database should not exist."));
+            assertNull(actual.getDatabase().orElse(null), assertContext.getText("Actual database should not exist."));
         }
     }
     
     private static void assertWhere(final SQLCaseAssertContext assertContext, final ShowAlterTableStatement actual, final ShowAlterTableStatementTestCase expected) {
         if (null != expected.getWhere()) {
-            Assertions.assertNotNull(actual.getWhere().orElse(null), assertContext.getText("Actual where segment should exist."));
+            assertNotNull(actual.getWhere().orElse(null), assertContext.getText("Actual where segment should exist."));
             WhereClauseAssert.assertIs(assertContext, actual.getWhere().get(), expected.getWhere());
         } else {
-            Assertions.assertNull(actual.getWhere().orElse(null), assertContext.getText("Actual where segment should not exist."));
+            assertNull(actual.getWhere().orElse(null), assertContext.getText("Actual where segment should not exist."));
         }
     }
     
     private static void assertOrderBy(final SQLCaseAssertContext assertContext, final ShowAlterTableStatement actual, final ShowAlterTableStatementTestCase expected) {
         if (null != expected.getOrderBy()) {
-            Assertions.assertNotNull(actual.getOrderBy().orElse(null), assertContext.getText("Actual order by segment should exist."));
+            assertNotNull(actual.getOrderBy().orElse(null), assertContext.getText("Actual order by segment should exist."));
             OrderByClauseAssert.assertIs(assertContext, actual.getOrderBy().get(), expected.getOrderBy());
         } else {
-            Assertions.assertNull(actual.getOrderBy().orElse(null), assertContext.getText("Actual order by segment should not exist."));
+            assertNull(actual.getOrderBy().orElse(null), assertContext.getText("Actual order by segment should not exist."));
         }
     }
     
     private static void assertLimit(final SQLCaseAssertContext assertContext, final ShowAlterTableStatement actual, final ShowAlterTableStatementTestCase expected) {
         if (null != expected.getLimit()) {
-            Assertions.assertNotNull(actual.getLimit().orElse(null), assertContext.getText("Actual limit segment should exist."));
+            assertNotNull(actual.getLimit().orElse(null), assertContext.getText("Actual limit segment should exist."));
             LimitClauseAssert.assertRowCount(assertContext, actual.getLimit().get().getRowCount().orElse(null), expected.getLimit().getRowCount());
         } else {
-            Assertions.assertNull(actual.getLimit().orElse(null), assertContext.getText("Actual limit segment should not exist."));
+            assertNull(actual.getLimit().orElse(null), assertContext.getText("Actual limit segment should not exist."));
         }
     }
 }

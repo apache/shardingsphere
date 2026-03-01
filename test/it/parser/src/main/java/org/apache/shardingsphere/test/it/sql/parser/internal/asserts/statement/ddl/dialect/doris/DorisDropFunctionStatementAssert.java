@@ -25,11 +25,12 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.type.ExpectedDataTypeSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropFunctionStatementTestCase;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
 
 import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Drop function statement assert for Doris.
@@ -52,16 +53,15 @@ public final class DorisDropFunctionStatementAssert {
     
     private static void assertFunctionName(final SQLCaseAssertContext assertContext, final DorisDropFunctionStatement actual, final DorisDropFunctionStatementTestCase expected) {
         if (null != expected.getFunctionName()) {
-            Assertions.assertTrue(actual.getFunctionName().isPresent(), assertContext.getText("Function name should not be null"));
-            MatcherAssert.assertThat(assertContext.getText("Function name assertion error: "), actual.getFunctionName().get().getIdentifier().getValue(),
-                    Matchers.is(expected.getFunctionName().getName()));
+            assertTrue(actual.getFunctionName().isPresent(), assertContext.getText("Function name should not be null"));
+            assertThat(assertContext.getText("Function name assertion error: "), actual.getFunctionName().get().getIdentifier().getValue(), is(expected.getFunctionName().getName()));
             SQLSegmentAssert.assertIs(assertContext, actual.getFunctionName().get(), expected.getFunctionName());
         }
     }
     
     private static void assertGlobal(final SQLCaseAssertContext assertContext, final DorisDropFunctionStatement actual, final DorisDropFunctionStatementTestCase expected) {
         if (null != expected.getGlobal()) {
-            MatcherAssert.assertThat(assertContext.getText("Global flag assertion error: "), actual.isGlobal(), Matchers.is(expected.getGlobal()));
+            assertThat(assertContext.getText("Global flag assertion error: "), actual.isGlobal(), is(expected.getGlobal()));
         }
     }
     
@@ -69,10 +69,9 @@ public final class DorisDropFunctionStatementAssert {
         if (!expected.getParameterDataTypes().isEmpty()) {
             List<DataTypeSegment> actualParams = actual.getParameterDataTypes();
             List<ExpectedDataTypeSegment> expectedParams = expected.getParameterDataTypes();
-            MatcherAssert.assertThat(assertContext.getText("Parameter count assertion error: "), actualParams.size(), Matchers.is(expectedParams.size()));
+            assertThat(assertContext.getText("Parameter count assertion error: "), actualParams.size(), is(expectedParams.size()));
             for (int i = 0; i < actualParams.size(); i++) {
-                MatcherAssert.assertThat(assertContext.getText(String.format("Parameter %d type assertion error: ", i)), actualParams.get(i).getDataTypeName(),
-                        Matchers.is(expectedParams.get(i).getName()));
+                assertThat(assertContext.getText(String.format("Parameter %d type assertion error: ", i)), actualParams.get(i).getDataTypeName(), is(expectedParams.get(i).getName()));
             }
         }
     }

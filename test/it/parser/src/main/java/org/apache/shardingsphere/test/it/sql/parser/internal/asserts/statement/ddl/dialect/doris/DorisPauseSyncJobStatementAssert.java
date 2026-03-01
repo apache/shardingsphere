@@ -24,7 +24,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseSyncJobStatementTestCase;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
+
+import static org.hamcrest.Matchers.is;
 
 /**
  * Pause sync job statement assert for Doris.
@@ -41,7 +42,7 @@ public final class DorisPauseSyncJobStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DorisPauseSyncJobStatement actual, final DorisPauseSyncJobStatementTestCase expected) {
         if (actual.getJobName().isPresent()) {
-            MatcherAssert.assertThat(assertContext.getText("Job name does not match: "), actual.getJobName().get().getIdentifier().getValue(), Matchers.is(expected.getJobName()));
+            MatcherAssert.assertThat(assertContext.getText("Job name does not match: "), actual.getJobName().get().getIdentifier().getValue(), is(expected.getJobName()));
             if (null != expected.getOwner()) {
                 OwnerAssert.assertIs(assertContext, actual.getJobName().get().getOwner().orElse(null), expected.getOwner());
             }
