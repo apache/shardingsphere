@@ -280,6 +280,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * DDL statement visitor for Doris.
@@ -1164,17 +1165,13 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitBuildIndex(final BuildIndexContext ctx) {
-        BuildIndexStatement result = new BuildIndexStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
-        result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
-        if (null != ctx.partitionNames()) {
-            for (IdentifierContext each : ctx.partitionNames().identifier()) {
-                PartitionSegment partitionSegment = new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each));
-                result.getPartitions().add(partitionSegment);
-            }
-        }
-        return result;
+        Collection<PartitionSegment> partitions = null == ctx.partitionNames()
+                ? Collections.emptyList()
+                : ctx.partitionNames().identifier().stream()
+                .map(each -> new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each))).collect(Collectors.toList());
+        return new BuildIndexStatement(
+                getDatabaseType(), new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName), (SimpleTableSegment) visit(ctx.tableName()), partitions);
     }
     
     @Override
