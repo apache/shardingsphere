@@ -114,6 +114,11 @@
             <property name="query" value="//METHOD_CALL[(./IDENT[@text='assertThat'] or ./DOT/IDENT[@text='assertThat']) and ./ELIST/EXPR[last()]/METHOD_CALL[(./IDENT[@text='is'] or ./DOT/IDENT[@text='is']) and ./ELIST/EXPR/*[self::LITERAL_TRUE or self::LITERAL_FALSE]]]" />
             <message key="matchxpath.match" value="Use assertTrue/assertFalse instead of assertThat(..., is(true/false))." />
         </module>
+        <module name="MatchXpath">
+            <property name="query"
+                      value="//METHOD_DEF[./MODIFIERS/ANNOTATION[(./IDENT[@text='Test'] or ./DOT/IDENT[@text='Test'] or ./IDENT[@text='ParameterizedTest'] or ./DOT/IDENT[@text='ParameterizedTest'])] and not(./IDENT[starts-with(@text, 'assert')])]" />
+            <message key="matchxpath.match" value="Method names for @Test and @ParameterizedTest must start with 'assert'." />
+        </module>
         <module name="IllegalType" />
         <module name="MissingSwitchDefault" />
         <module name="ModifiedControlVariable" />
