@@ -31,6 +31,7 @@ alterStatement
     | alterServer
     | alterCatalog
     | alterStoragePolicy
+    | alterColocateGroup
     ;
 
 createTable
@@ -166,6 +167,10 @@ rollupNameItem
 
 alterStoragePolicy
     : ALTER STORAGE POLICY identifier propertiesClause
+    ;
+
+alterColocateGroup
+    : ALTER COLOCATE GROUP (databaseName DOT_)? identifier SET LP_ properties RP_
     ;
 
 tableConstraintDef

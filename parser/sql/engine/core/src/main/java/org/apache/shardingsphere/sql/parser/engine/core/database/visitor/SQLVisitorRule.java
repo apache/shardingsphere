@@ -305,6 +305,8 @@ public enum SQLVisitorRule {
     
     ALTER_CATALOG("AlterCatalog", SQLStatementType.DDL),
     
+    ALTER_COLOCATE_GROUP("AlterColocateGroup", SQLStatementType.DDL),
+    
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),

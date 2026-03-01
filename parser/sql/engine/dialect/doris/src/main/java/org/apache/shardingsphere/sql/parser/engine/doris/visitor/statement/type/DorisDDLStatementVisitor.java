@@ -135,6 +135,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameR
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenamePartitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReplaceTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterPartitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterColocateGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterStoragePolicyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisPartitionDescContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DistributedbyClauseContext;
@@ -181,6 +182,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.PartitionValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.IntervalUnitSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.colocategroup.ColocateGroupSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.policy.PolicyNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
@@ -259,6 +261,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Up
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterColocateGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropFunctionStatement;
@@ -1357,6 +1360,18 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         PolicyNameSegment policyNameSegment = new PolicyNameSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), identifier);
         PropertiesSegment propertiesSegment = extractPropertiesSegment(ctx.propertiesClause());
         return new DorisAlterStoragePolicyStatement(getDatabaseType(), policyNameSegment, propertiesSegment);
+    }
+    
+    @Override
+    public ASTNode visitAlterColocateGroup(final AlterColocateGroupContext ctx) {
+        IdentifierValue groupIdentifier = (IdentifierValue) visit(ctx.identifier());
+        ColocateGroupSegment groupSegment = new ColocateGroupSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), groupIdentifier);
+        if (null != ctx.databaseName()) {
+            groupSegment
+                    .setOwner(new OwnerSegment(ctx.databaseName().getStart().getStartIndex(), ctx.databaseName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.databaseName().identifier())));
+        }
+        PropertiesSegment propertiesSegment = extractPropertiesSegmentFromPropertiesContext(ctx.properties());
+        return new DorisAlterColocateGroupStatement(getDatabaseType(), groupSegment, propertiesSegment);
     }
     
     private PropertiesSegment extractPropertiesSegment(final PropertiesClauseContext ctx) {

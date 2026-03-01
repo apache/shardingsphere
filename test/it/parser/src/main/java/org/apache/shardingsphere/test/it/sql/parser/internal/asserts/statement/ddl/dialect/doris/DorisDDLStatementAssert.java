@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterColocateGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropFunctionStatement;
@@ -30,8 +31,10 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisStopSyncJob
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateSyncJobStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.doris.type.DorisAlterColocateGroupStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.doris.type.DorisAlterStoragePolicyStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterColocateGroupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropFunctionStatementTestCase;
@@ -74,6 +77,8 @@ public final class DorisDDLStatementAssert {
             DorisStopSyncJobStatementAssert.assertIs(assertContext, (DorisStopSyncJobStatement) actual, (DorisStopSyncJobStatementTestCase) expected);
         } else if (actual instanceof DorisCreateJobStatement) {
             DorisCreateJobStatementAssert.assertIs(assertContext, (DorisCreateJobStatement) actual, (DorisCreateJobStatementTestCase) expected);
+        } else if (actual instanceof DorisAlterColocateGroupStatement) {
+            DorisAlterColocateGroupStatementAssert.assertIs(assertContext, (DorisAlterColocateGroupStatement) actual, (DorisAlterColocateGroupStatementTestCase) expected);
         }
     }
 }
