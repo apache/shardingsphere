@@ -1169,7 +1169,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         Collection<PartitionSegment> partitions = null == ctx.partitionNames()
                 ? Collections.emptyList()
                 : ctx.partitionNames().identifier().stream()
-                .map(each -> new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each))).collect(Collectors.toList());
+                        .map(each -> new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each))).collect(Collectors.toList());
         return new BuildIndexStatement(
                 getDatabaseType(), new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName), (SimpleTableSegment) visit(ctx.tableName()), partitions);
     }
