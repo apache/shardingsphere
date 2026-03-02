@@ -42,24 +42,22 @@ public final class AlterTableStatementBinder implements SQLStatementBinder<Alter
     }
     
     private AlterTableStatement copy(final AlterTableStatement sqlStatement, final SimpleTableSegment boundTable, final SimpleTableSegment boundRenameTable) {
-        AlterTableStatement result = new AlterTableStatement(sqlStatement.getDatabaseType());
-        result.setTable(boundTable);
-        result.setRenameTable(boundRenameTable);
-        // TODO bind column and reference table if kernel need use them
-        sqlStatement.getConvertTableDefinition().ifPresent(result::setConvertTableDefinition);
-        result.getAddColumnDefinitions().addAll(sqlStatement.getAddColumnDefinitions());
-        result.getModifyColumnDefinitions().addAll(sqlStatement.getModifyColumnDefinitions());
-        result.getChangeColumnDefinitions().addAll(sqlStatement.getChangeColumnDefinitions());
-        result.getDropColumnDefinitions().addAll(sqlStatement.getDropColumnDefinitions());
-        result.getAddConstraintDefinitions().addAll(sqlStatement.getAddConstraintDefinitions());
-        result.getValidateConstraintDefinitions().addAll(sqlStatement.getValidateConstraintDefinitions());
-        result.getModifyConstraintDefinitions().addAll(sqlStatement.getModifyConstraintDefinitions());
-        result.getDropConstraintDefinitions().addAll(sqlStatement.getDropConstraintDefinitions());
-        result.getDropIndexDefinitions().addAll(sqlStatement.getDropIndexDefinitions());
-        result.getRenameColumnDefinitions().addAll(sqlStatement.getRenameColumnDefinitions());
-        result.getRenameIndexDefinitions().addAll(sqlStatement.getRenameIndexDefinitions());
-        sqlStatement.getModifyCollectionRetrieval().ifPresent(result::setModifyCollectionRetrieval);
-        sqlStatement.getDropPrimaryKeyDefinition().ifPresent(result::setDropPrimaryKeyDefinition);
+        AlterTableStatement result = AlterTableStatement.builder().databaseType(sqlStatement.getDatabaseType()).table(boundTable).renameTable(boundRenameTable)
+                .replaceTable(sqlStatement.getReplaceTable().orElse(null)).convertTableDefinition(sqlStatement.getConvertTableDefinition().orElse(null))
+                .modifyCollectionRetrieval(sqlStatement.getModifyCollectionRetrieval().orElse(null)).algorithmSegment(sqlStatement.getGetAlgorithmSegment().orElse(null))
+                .lockTableSegment(sqlStatement.getLockTableSegment().orElse(null)).dropPrimaryKeyDefinition(sqlStatement.getDropPrimaryKeyDefinition().orElse(null))
+                .setPropertiesDefinitions(sqlStatement.getSetPropertiesDefinitions()).enableFeatureDefinitions(sqlStatement.getEnableFeatureDefinitions())
+                .modifyTableCommentDefinitions(sqlStatement.getModifyTableCommentDefinitions()).modifyEngineDefinitions(sqlStatement.getModifyEngineDefinitions())
+                .modifyDistributionDefinitions(sqlStatement.getModifyDistributionDefinitions()).addColumnDefinitions(sqlStatement.getAddColumnDefinitions())
+                .modifyColumnDefinitions(sqlStatement.getModifyColumnDefinitions()).changeColumnDefinitions(sqlStatement.getChangeColumnDefinitions())
+                .dropColumnDefinitions(sqlStatement.getDropColumnDefinitions()).addConstraintDefinitions(sqlStatement.getAddConstraintDefinitions())
+                .validateConstraintDefinitions(sqlStatement.getValidateConstraintDefinitions()).modifyConstraintDefinitions(sqlStatement.getModifyConstraintDefinitions())
+                .dropConstraintDefinitions(sqlStatement.getDropConstraintDefinitions()).dropIndexDefinitions(sqlStatement.getDropIndexDefinitions())
+                .renameColumnDefinitions(sqlStatement.getRenameColumnDefinitions()).renameIndexDefinitions(sqlStatement.getRenameIndexDefinitions())
+                .replaceColumnDefinitions(sqlStatement.getReplaceColumnDefinitions()).addRollupDefinitions(sqlStatement.getAddRollupDefinitions())
+                .dropRollupDefinitions(sqlStatement.getDropRollupDefinitions()).renameRollupDefinitions(sqlStatement.getRenameRollupDefinitions())
+                .renamePartitionDefinitions(sqlStatement.getRenamePartitionDefinitions()).addPartitionDefinitions(sqlStatement.getAddPartitionDefinitions())
+                .addPartitionsSegments(sqlStatement.getAddPartitionsSegments()).modifyPartitionDefinitions(sqlStatement.getModifyPartitionDefinitions()).build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

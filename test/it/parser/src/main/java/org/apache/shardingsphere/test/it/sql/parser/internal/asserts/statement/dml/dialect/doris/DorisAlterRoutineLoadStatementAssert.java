@@ -28,7 +28,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisAlterRoutineLoadStatementTestCase;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
-import org.junit.jupiter.api.Assertions;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Alter routine load statement assert for Doris.
@@ -61,7 +62,7 @@ public final class DorisAlterRoutineLoadStatementAssert {
     
     private static void assertJobProperties(final SQLCaseAssertContext assertContext, final DorisAlterRoutineLoadStatement actual, final DorisAlterRoutineLoadStatementTestCase expected) {
         if (actual.getJobProperties().isPresent() && null != expected.getJobProperties() && !expected.getJobProperties().isEmpty()) {
-            Assertions.assertNotNull(actual.getJobProperties().get(), assertContext.getText("Job properties should not be null"));
+            assertNotNull(actual.getJobProperties().get(), assertContext.getText("Job properties should not be null"));
             MatcherAssert.assertThat(assertContext.getText("Job properties size does not match: "), actual.getJobProperties().get().getProperties().size(),
                     CoreMatchers.is(expected.getJobProperties().size()));
             for (int i = 0; i < expected.getJobProperties().size(); i++) {
@@ -78,7 +79,7 @@ public final class DorisAlterRoutineLoadStatementAssert {
     
     private static void assertDataSourceProperties(final SQLCaseAssertContext assertContext, final DorisAlterRoutineLoadStatement actual, final DorisAlterRoutineLoadStatementTestCase expected) {
         if (actual.getDataSourceProperties().isPresent() && null != expected.getDataSourceProperties() && !expected.getDataSourceProperties().isEmpty()) {
-            Assertions.assertNotNull(actual.getDataSourceProperties().get(), assertContext.getText("Data source properties should not be null"));
+            assertNotNull(actual.getDataSourceProperties().get(), assertContext.getText("Data source properties should not be null"));
             MatcherAssert.assertThat(assertContext.getText("Data source properties size does not match: "), actual.getDataSourceProperties().get().getProperties().size(),
                     CoreMatchers.is(expected.getDataSourceProperties().size()));
             for (int i = 0; i < expected.getDataSourceProperties().size(); i++) {

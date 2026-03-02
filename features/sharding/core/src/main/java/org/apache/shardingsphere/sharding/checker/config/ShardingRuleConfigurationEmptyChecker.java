@@ -31,6 +31,7 @@ public final class ShardingRuleConfigurationEmptyChecker implements DatabaseRule
                 && null == ruleConfig.getDefaultDatabaseShardingStrategy() && null == ruleConfig.getDefaultTableShardingStrategy()
                 && null == ruleConfig.getDefaultKeyGenerateStrategy() && null == ruleConfig.getDefaultAuditStrategy()
                 && (null == ruleConfig.getDefaultShardingColumn() || ruleConfig.getDefaultShardingColumn().isEmpty())
+                && ruleConfig.getKeyGenerateStrategies().isEmpty()
                 && ruleConfig.getShardingAlgorithms().isEmpty() && ruleConfig.getKeyGenerators().isEmpty()
                 && ruleConfig.getAuditors().isEmpty() && null == ruleConfig.getShardingCache();
     }

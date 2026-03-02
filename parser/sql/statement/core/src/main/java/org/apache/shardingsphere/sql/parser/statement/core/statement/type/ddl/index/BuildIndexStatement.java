@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -31,30 +30,31 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DD
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 
 /**
  * Build index statement.
  */
 @Getter
-@Setter
 public final class BuildIndexStatement extends DDLStatement {
     
-    private IndexSegment index;
+    private final IndexSegment index;
     
-    private SimpleTableSegment table;
+    private final SimpleTableSegment table;
     
-    private final Collection<PartitionSegment> partitions = new LinkedList<>();
+    private final Collection<PartitionSegment> partitions;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public BuildIndexStatement(final DatabaseType databaseType) {
+    public BuildIndexStatement(final DatabaseType databaseType, final IndexSegment index, final SimpleTableSegment table, final Collection<PartitionSegment> partitions) {
         super(databaseType);
+        this.index = index;
+        this.table = table;
+        this.partitions = partitions;
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table), new BuildIndexIndexSQLStatementAttribute());
     }
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table), new BuildIndexIndexSQLStatementAttribute());
     }
     
     private class BuildIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {

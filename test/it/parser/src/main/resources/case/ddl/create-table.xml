@@ -81,6 +81,21 @@
         <table name="t_log" start-index="13" stop-index="17" />
         <like-table name="t_old_log" start-index="24" stop-index="32" />
     </create-table>
+    <create-table sql-case-id="create_table_like_with_rollup">
+        <table name="table2" start-index="13" stop-index="24">
+            <owner name="test1" start-index="13" stop-index="17" />
+        </table>
+        <like-table name="table1" start-index="31" stop-index="42">
+            <owner name="test1" start-index="31" stop-index="35" />
+        </like-table>
+        <rollup name="r1" start-index="57" stop-index="58" />
+        <rollup name="r2" start-index="60" stop-index="61" />
+    </create-table>
+    <create-table sql-case-id="create_table_like_with_single_rollup">
+        <table name="t_new" start-index="13" stop-index="17" />
+        <like-table name="t_old" start-index="24" stop-index="28" />
+        <rollup name="r1" start-index="43" stop-index="44" />
+    </create-table>
     <create-table sql-case-id="create_table">
         <table name="t_log" start-index="13" stop-index="17" />
         <column-definition type="int" primary-key="true" start-index="19" stop-index="36">

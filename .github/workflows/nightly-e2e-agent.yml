@@ -51,10 +51,7 @@ jobs:
           java-version: 21
           cache-suffix: 'e2e-agent'
           cache-save-enabled: 'false'
-      - uses: docker/setup-docker-action@v4
-        with:
-          version: v28.0.4
-          set-host: true
+          enable-docker-setup: 'true'
       - name: Build Project
         run: ./mvnw -B clean install -DskipTests -Prelease,default-dep
       - name: Build Proxy E2E Image
@@ -122,10 +119,7 @@ jobs:
           java-version: 21
           cache-suffix: 'e2e-agent'
           cache-save-enabled: 'false'
-      - uses: docker/setup-docker-action@v4
-        with:
-          version: v28.0.4
-          set-host: true
+          enable-docker-setup: 'true'
       - name: Download Proxy E2E Image
         if: matrix.adapter == 'proxy'
         uses: actions/download-artifact@v4

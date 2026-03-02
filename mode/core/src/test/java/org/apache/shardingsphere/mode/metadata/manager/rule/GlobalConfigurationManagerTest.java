@@ -47,6 +47,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -104,7 +105,7 @@ class GlobalConfigurationManagerTest {
         ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
         when(GlobalRulesBuilder.buildSingleRules(eq(newConfig), any(), any(ConfigurationProperties.class))).thenReturn(Collections.singleton(builtRule));
         new GlobalConfigurationManager(metaDataContexts, mock(MetaDataPersistFacade.class)).alterGlobalRuleConfiguration(newConfig);
-        org.junit.jupiter.api.Assertions.assertFalse(metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().contains(nonClosableAssignableRule));
+        assertFalse(metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().contains(nonClosableAssignableRule));
         assertTrue(metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().contains(builtRule));
     }
     

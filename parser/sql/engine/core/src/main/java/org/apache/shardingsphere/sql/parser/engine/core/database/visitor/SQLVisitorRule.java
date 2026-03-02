@@ -289,6 +289,8 @@ public enum SQLVisitorRule {
     
     UNLISTEN("Unlisten", SQLStatementType.DDL),
     
+    CREATE_JOB("CreateJob", SQLStatementType.DDL),
+    
     RESUME_JOB("ResumeJob", SQLStatementType.DDL),
     
     RESUME_SYNC_JOB("ResumeSyncJob", SQLStatementType.DDL),
@@ -302,6 +304,8 @@ public enum SQLVisitorRule {
     SHOW_SYNC_JOB("ShowSyncJob", SQLStatementType.DAL),
     
     ALTER_CATALOG("AlterCatalog", SQLStatementType.DDL),
+    
+    ALTER_COLOCATE_GROUP("AlterColocateGroup", SQLStatementType.DDL),
     
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
@@ -546,6 +550,8 @@ public enum SQLVisitorRule {
     DROP_REPOSITORY("DropRepository", SQLStatementType.DAL),
     
     CREATE_REPOSITORY("CreateRepository", SQLStatementType.DAL),
+    
+    BACKUP("Backup", SQLStatementType.DAL),
     
     DORIS_ALTER_SYSTEM("DorisAlterSystem", SQLStatementType.DAL),
     

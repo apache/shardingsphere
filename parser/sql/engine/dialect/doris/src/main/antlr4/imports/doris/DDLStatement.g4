@@ -31,6 +31,7 @@ alterStatement
     | alterServer
     | alterCatalog
     | alterStoragePolicy
+    | alterColocateGroup
     ;
 
 createTable
@@ -166,6 +167,10 @@ rollupNameItem
 
 alterStoragePolicy
     : ALTER STORAGE POLICY identifier propertiesClause
+    ;
+
+alterColocateGroup
+    : ALTER COLOCATE GROUP (databaseName DOT_)? identifier SET LP_ properties RP_
     ;
 
 tableConstraintDef
@@ -684,7 +689,7 @@ visibility
     ;
 
 createLikeClause
-    : LP_? LIKE tableName RP_?
+    : LP_? LIKE tableName RP_? (WITH ROLLUP LP_ identifier (COMMA_ identifier)* RP_)?
     ;
 
 createIndexSpecification
@@ -988,6 +993,15 @@ signalStatement
 
 signalInformationItem
     : conditionInformationItemName EQ_ expr
+    ;
+
+createJob
+    : CREATE JOB jobName ON SCHEDULE jobScheduleExpression (COMMENT string_)? DO insert
+    ;
+
+jobScheduleExpression
+    : AT timestampValue
+    | EVERY intervalValue (STARTS timestampValue)? (ENDS timestampValue)?
     ;
 
 resumeJob

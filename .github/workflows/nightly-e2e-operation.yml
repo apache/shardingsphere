@@ -55,10 +55,7 @@ jobs:
         with:
           cache-suffix: 'e2e-operation'
           cache-save-enabled: 'false'
-      - uses: docker/setup-docker-action@v4
-        with:
-          version: v28.0.4
-          set-host: true
+          enable-docker-setup: 'true'
       - name: Maven Install
         env:
           PREFIX: "test/e2e/operation/"
@@ -117,10 +114,7 @@ jobs:
           java-version: ${{ matrix.java-version }}
           cache-suffix: 'e2e-operation'
           cache-save-enabled: 'false'
-      - uses: docker/setup-docker-action@v4
-        with:
-          version: v28.0.4
-          set-host: true
+          enable-docker-setup: 'true'
       - uses: ./.github/workflows/resources/actions/download-e2e-artifacts
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
         run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${{ matrix.image.type }}=${{ matrix.image.version }}

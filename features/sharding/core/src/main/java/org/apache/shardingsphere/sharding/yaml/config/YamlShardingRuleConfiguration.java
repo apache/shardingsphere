@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sharding.yaml.config.cache.YamlShardingCacheCon
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingBindingTableRuleNodeTupleKeyListNameGenerator;
@@ -68,6 +69,9 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     
     @RuleNodeTupleField(type = Type.DEFAULT_STRATEGY)
     private YamlShardingAuditStrategyConfiguration defaultAuditStrategy;
+    
+    @RuleNodeTupleField(type = Type.OTHER)
+    private Map<String, YamlKeyGenerateStrategyRuleConfiguration> keyGenerateStrategies = new LinkedHashMap<>();
     
     @RuleNodeTupleField(type = Type.ALGORITHM)
     private Map<String, YamlAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();

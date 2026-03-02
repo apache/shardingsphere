@@ -379,32 +379,31 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableNameClause().tableName()));
+        AlterTableStatement.AlterTableStatementBuilder result = AlterTableStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableNameClause().tableName()));
         if (null != ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
                 if (each instanceof AddColumnDefinitionSegment) {
-                    result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) each);
+                    result.addColumnDefinition((AddColumnDefinitionSegment) each);
                 } else if (each instanceof ModifyColumnDefinitionSegment) {
-                    result.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) each);
+                    result.modifyColumnDefinition((ModifyColumnDefinitionSegment) each);
                 } else if (each instanceof DropColumnDefinitionSegment) {
-                    result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) each);
+                    result.dropColumnDefinition((DropColumnDefinitionSegment) each);
                 } else if (each instanceof AddConstraintDefinitionSegment) {
-                    result.getAddConstraintDefinitions().add((AddConstraintDefinitionSegment) each);
+                    result.addConstraintDefinition((AddConstraintDefinitionSegment) each);
                 } else if (each instanceof ValidateConstraintDefinitionSegment) {
-                    result.getValidateConstraintDefinitions().add((ValidateConstraintDefinitionSegment) each);
+                    result.validateConstraintDefinition((ValidateConstraintDefinitionSegment) each);
                 } else if (each instanceof ModifyConstraintDefinitionSegment) {
-                    result.getModifyConstraintDefinitions().add((ModifyConstraintDefinitionSegment) each);
+                    result.modifyConstraintDefinition((ModifyConstraintDefinitionSegment) each);
                 } else if (each instanceof DropConstraintDefinitionSegment) {
-                    result.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) each);
+                    result.dropConstraintDefinition((DropConstraintDefinitionSegment) each);
                 } else if (each instanceof RenameTableDefinitionSegment) {
-                    result.setRenameTable(((RenameTableDefinitionSegment) each).getRenameTable());
+                    result.renameTable(((RenameTableDefinitionSegment) each).getRenameTable());
                 } else if (each instanceof RenameColumnSegment) {
-                    result.getRenameColumnDefinitions().add((RenameColumnSegment) each);
+                    result.renameColumnDefinition((RenameColumnSegment) each);
                 }
             }
         }
-        return result;
+        return result.build();
     }
     
     @Override
@@ -726,12 +725,10 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        AlterIndexStatement result = new AlterIndexStatement(getDatabaseType());
-        result.setIndex(createIndexSegment((SimpleTableSegment) visit(ctx.qualifiedName())));
-        if (null != ctx.alterIndexDefinitionClause().renameIndexSpecification()) {
-            result.setRenameIndex((IndexSegment) visit(ctx.alterIndexDefinitionClause().renameIndexSpecification().indexName()));
-        }
-        return result;
+        IndexSegment renameIndex = null == ctx.alterIndexDefinitionClause().renameIndexSpecification()
+                ? null
+                : (IndexSegment) visit(ctx.alterIndexDefinitionClause().renameIndexSpecification().indexName());
+        return new AlterIndexStatement(getDatabaseType(), createIndexSegment((SimpleTableSegment) visit(ctx.qualifiedName())), renameIndex, null);
     }
     
     private IndexSegment createIndexSegment(final SimpleTableSegment tableSegment) {

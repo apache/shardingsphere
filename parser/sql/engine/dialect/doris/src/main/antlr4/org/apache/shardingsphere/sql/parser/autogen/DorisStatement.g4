@@ -158,6 +158,8 @@ execute
     | dropFile
     | sync
     | unsetVariable
+    | createJob
+    | backup
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

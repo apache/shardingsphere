@@ -168,4 +168,8 @@
     </create-function>
     <create-function sql-case-id="create_function_doris_routine_body" />
     <create-function sql-case-id="create_function_doris_aggregate_intermediate" />
+    <create-function sql-case-id="create_function_gtid_is_disjoint" />
+    <create-function sql-case-id="create_function_gtid_is_disjoint_union" />
+    <create-function sql-case-id="create_function_gtid_intersection" />
+    <create-function sql-case-id="create_function_gtid_intersection_with_uuid" />
 </sql-parser-test-cases>

@@ -125,19 +125,19 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.alterTableCommonClause().tableName()));
+        AlterTableStatement.AlterTableStatementBuilder result = AlterTableStatement.builder().databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.alterTableCommonClause().tableName()));
         if (null != ctx.changeColumn()) {
             ChangeColumnDefinitionSegment changeColumnSegment = (ChangeColumnDefinitionSegment) visit(ctx.changeColumn());
-            result.getChangeColumnDefinitions().add(changeColumnSegment);
+            result.changeColumnDefinition(changeColumnSegment);
         }
         if (null != ctx.addColumns()) {
             AddColumnDefinitionSegment addSeg = (AddColumnDefinitionSegment) visit(ctx.addColumns());
-            result.getAddColumnDefinitions().add(addSeg);
+            result.addColumnDefinition(addSeg);
         }
         if (null != ctx.replaceColumns()) {
             ReplaceColumnDefinitionSegment repSeg = (ReplaceColumnDefinitionSegment) visit(ctx.replaceColumns());
-            result.getReplaceColumnDefinitions().add(repSeg);
+            result.replaceColumnDefinition(repSeg);
         }
         if (null != ctx.COMPACT()) {
             String compactionType = ctx.string_().getText().replace("'", "");
@@ -154,10 +154,10 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
             int numberStopIndex = ctx.alterTableExecuteClause().NUMBER_().getSymbol().getStopIndex();
             LiteralExpressionSegment snapshotId = new LiteralExpressionSegment(numberStartIndex, numberStopIndex,
                     new NumberLiteralValue(ctx.alterTableExecuteClause().NUMBER_().getText()).getValue());
-            result.setExecuteSegment(new ExecuteSegment(ctx.EXECUTE().getSymbol().getStartIndex(), numberStopIndex,
+            result.executeSegment(new ExecuteSegment(ctx.EXECUTE().getSymbol().getStartIndex(), numberStopIndex,
                     ctx.alterTableExecuteClause().CHERRY_PICK().getText(), snapshotId));
         }
-        return result;
+        return result.build();
     }
     
     private boolean isValidCompactionType(final String compactionType) {
@@ -168,9 +168,7 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitMsckStatement(final MsckStatementContext ctx) {
-        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return AlterTableStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName())).build();
     }
     
     @Override
@@ -410,12 +408,9 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        AlterIndexStatement result = new AlterIndexStatement(getDatabaseType());
-        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
-                new IdentifierValue(ctx.indexName().getText()));
-        result.setIndex(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(), indexName));
-        result.setSimpleTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
-        return result;
+        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
+        return new AlterIndexStatement(getDatabaseType(),
+                new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(), indexName), null, (SimpleTableSegment) visit(ctx.tableNameWithDb()));
     }
     
     @Override

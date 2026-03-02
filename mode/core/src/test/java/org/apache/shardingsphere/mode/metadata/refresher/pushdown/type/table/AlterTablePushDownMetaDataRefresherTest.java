@@ -77,9 +77,9 @@ class AlterTablePushDownMetaDataRefresherTest {
     void assertRefreshRenameTable() throws SQLException {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
-        AlterTableStatement sqlStatement = new AlterTableStatement(databaseType);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
-        sqlStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl"))));
+        AlterTableStatement sqlStatement = AlterTableStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))))
+                .renameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")))).build();
         when(TableRefreshUtils.getTableName(sqlStatement.getTable().getTableName().getIdentifier(), databaseType)).thenReturn("foo_tbl");
         when(TableRefreshUtils.isSingleTable(any(), any())).thenReturn(true);
         ShardingSphereTable renamedTable = new ShardingSphereTable("bar_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
@@ -104,8 +104,8 @@ class AlterTablePushDownMetaDataRefresherTest {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
-        AlterTableStatement sqlStatement = new AlterTableStatement(databaseType);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
+        AlterTableStatement sqlStatement = AlterTableStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))).build();
         when(TableRefreshUtils.getTableName(sqlStatement.getTable().getTableName().getIdentifier(), databaseType)).thenReturn("foo_tbl");
         when(TableRefreshUtils.isSingleTable("foo_tbl", database)).thenReturn(false);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
