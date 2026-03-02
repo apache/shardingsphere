@@ -24,7 +24,6 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.FirebirdServerPreparedStatement;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -49,7 +48,7 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
             }
         }
         return Collections.singleton(new FirebirdBatchCompletionStateResponse()
-                .setHandle(FirebirdStatementIdGenerator.getInstance().nextStatementId(packet.getStatementHandle()))
+                .setHandle(batchStatement.getStatementHandle())
                 .setRecordsCount(updatedRecordsCount)
                 .setUpdateCounts(updateCounts));
     }

@@ -86,8 +86,8 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
         } else {
             responseType = ResponseType.UPDATE;
         }
+        FirebirdBlobParameterBinder.BindResult blobBindResult = FirebirdBlobParameterBinder.bindBlobParameters(connectionSession.getConnectionId(), params, packet.getParameterTypes());
         if (responseHeader instanceof UpdateResponseHeader) {
-            FirebirdBlobParameterBinder.BindResult blobBindResult = FirebirdBlobParameterBinder.bindBlobParameters(connectionSession.getConnectionId(), params, packet.getParameterTypes());
             FirebirdBlobParameterBinder.clearBlobUploads(connectionSession.getConnectionId(), blobBindResult.getBlobIds());
         }
         Collection<DatabasePacket> result = new LinkedList<>();
