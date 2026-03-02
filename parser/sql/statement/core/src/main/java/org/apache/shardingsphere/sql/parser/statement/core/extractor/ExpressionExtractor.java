@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Betw
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CaseWhenExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.CollateExpression;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExistsSubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.InExpression;
@@ -300,6 +301,9 @@ public final class ExpressionExtractor {
         }
         if (expression instanceof SubqueryExpressionSegment && containsSubQuery) {
             ColumnExtractor.extractFromSelectStatement(result, ((SubqueryExpressionSegment) expression).getSubquery().getSelect(), true);
+        }
+        if (expression instanceof ExistsSubqueryExpression && containsSubQuery) {
+            ColumnExtractor.extractFromSelectStatement(result, ((ExistsSubqueryExpression) expression).getSubquery().getSelect(), true);
         }
         return result;
     }
