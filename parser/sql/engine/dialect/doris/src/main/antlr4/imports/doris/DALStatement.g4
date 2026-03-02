@@ -790,6 +790,18 @@ refresh
     : REFRESH (LDAP (ALL | (FOR identifier)?)? | CATALOG identifier | DATABASE (identifier DOT_)? identifier | TABLE ((identifier DOT_)? (identifier DOT_)?)? identifier)
     ;
 
+backup
+    : BACKUP GLOBAL? SNAPSHOT (databaseName DOT_)? identifier TO repositoryName backupScope? propertiesClause?
+    ;
+
+backupScope
+    : (ON | EXCLUDE) LP_ backupTableSpec (COMMA_ backupTableSpec)* RP_
+    ;
+
+backupTableSpec
+    : tableName (PARTITION LP_ partitionList RP_)?
+    ;
+
 show
     : showDatabases
     | showTables

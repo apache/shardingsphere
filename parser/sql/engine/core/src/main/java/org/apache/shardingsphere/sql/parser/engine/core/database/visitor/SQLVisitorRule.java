@@ -551,6 +551,8 @@ public enum SQLVisitorRule {
     
     CREATE_REPOSITORY("CreateRepository", SQLStatementType.DAL),
     
+    BACKUP("Backup", SQLStatementType.DAL),
+    
     DORIS_ALTER_SYSTEM("DorisAlterSystem", SQLStatementType.DAL),
     
     CREATE_SQL_BLOCK_RULE("CreateSqlBlockRule", SQLStatementType.DAL),
