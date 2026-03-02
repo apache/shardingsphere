@@ -246,6 +246,11 @@
                     <scope>runtime</scope>
                 </dependency>
                 <dependency>
+                    <groupId>org.mariadb.jdbc</groupId>
+                    <artifactId>mariadb-java-client</artifactId>
+                    <scope>runtime</scope>
+                </dependency>
+                <dependency>
                     <groupId>org.firebirdsql.jdbc</groupId>
                     <artifactId>jaybird</artifactId>
                     <scope>runtime</scope>
