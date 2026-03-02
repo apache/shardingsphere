@@ -72,6 +72,7 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
         List<Object> params = packet.getParameterValues();
         SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
+        final FirebirdBlobParameterBinder.BindResult blobBindResult = FirebirdBlobParameterBinder.bindBlobParameters(connectionSession.getConnectionId(), params, packet.getParameterTypes());
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).bindParameters(params);
         }
@@ -86,7 +87,6 @@ public final class FirebirdExecuteStatementCommandExecutor implements CommandExe
         } else {
             responseType = ResponseType.UPDATE;
         }
-        FirebirdBlobParameterBinder.BindResult blobBindResult = FirebirdBlobParameterBinder.bindBlobParameters(connectionSession.getConnectionId(), params, packet.getParameterTypes());
         if (responseHeader instanceof UpdateResponseHeader) {
             FirebirdBlobParameterBinder.clearBlobUploads(connectionSession.getConnectionId(), blobBindResult.getBlobIds());
         }
