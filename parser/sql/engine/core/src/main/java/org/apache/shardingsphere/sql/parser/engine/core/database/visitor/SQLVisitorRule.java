@@ -553,6 +553,8 @@ public enum SQLVisitorRule {
     
     BACKUP("Backup", SQLStatementType.DAL),
     
+    CANCEL_BACKUP("CancelBackup", SQLStatementType.DAL),
+    
     DORIS_ALTER_SYSTEM("DorisAlterSystem", SQLStatementType.DAL),
     
     CREATE_SQL_BLOCK_RULE("CreateSqlBlockRule", SQLStatementType.DAL),
