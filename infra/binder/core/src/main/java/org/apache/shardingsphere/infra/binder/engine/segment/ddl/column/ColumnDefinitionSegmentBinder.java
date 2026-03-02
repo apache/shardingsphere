@@ -57,7 +57,7 @@ public final class ColumnDefinitionSegmentBinder {
     private static void copy(final ColumnDefinitionSegment result, final ColumnDefinitionSegment segment) {
         result.setAutoIncrement(segment.isAutoIncrement());
         result.setRef(segment.isRef());
-        result.setCharsetName(segment.getCharsetName());
-        result.setCollateName(segment.getCollateName());
+        segment.getCharsetName().ifPresent(result::setCharsetName);
+        segment.getCollateName().ifPresent(result::setCollateName);
     }
 }

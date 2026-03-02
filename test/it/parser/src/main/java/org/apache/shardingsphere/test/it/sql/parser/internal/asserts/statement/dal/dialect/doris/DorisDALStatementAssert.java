@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.UnsetVariableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisBackupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDescFunctionStatement;
@@ -38,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQu
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAlterResourceStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAlterSystemStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisBackupStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisCreateSqlBlockRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisCreateRepositoryStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisDescFunctionStatementAssert;
@@ -54,6 +56,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterResourceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSystemStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisBackupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateRepositoryStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDescFunctionStatementTestCase;
@@ -112,6 +115,8 @@ public final class DorisDALStatementAssert {
             DorisShowDataTypesStatementAssert.assertIs(assertContext, (DorisShowDataTypesStatement) actual, (DorisShowDataTypesStatementTestCase) expected);
         } else if (actual instanceof DorisShowDataStatement) {
             DorisShowDataStatementAssert.assertIs(assertContext, (DorisShowDataStatement) actual, (DorisShowDataStatementTestCase) expected);
+        } else if (actual instanceof DorisBackupStatement) {
+            DorisBackupStatementAssert.assertIs(assertContext, (DorisBackupStatement) actual, (DorisBackupStatementTestCase) expected);
         }
     }
 }
