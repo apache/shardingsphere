@@ -36,7 +36,7 @@ class ShardingConfigurationYamlRuleNodeTupleSwapperEngineIT extends YamlRuleNode
     
     @Override
     protected void assertRuleNodeTuples(final List<RuleNodeTuple> actualTuples, final YamlRuleConfiguration expectedYamlRuleConfig) {
-        assertThat(actualTuples.size(), is(19));
+        assertThat(actualTuples.size(), is(21));
         assertRuleNodeTuple(actualTuples.get(0),
                 "sharding_algorithms/core_standard_fixture", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingAlgorithms().get("core_standard_fixture"));
         assertRuleNodeTuple(actualTuples.get(1),
@@ -58,7 +58,9 @@ class ShardingConfigurationYamlRuleNodeTupleSwapperEngineIT extends YamlRuleNode
         assertRuleNodeTuple(actualTuples.get(15), "binding_tables" + actualTuples.get(15).getPath().substring(actualTuples.get(15).getPath().lastIndexOf("/")),
                 new ArrayList<>(((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getBindingTables()).get(0));
         assertRuleNodeTuple(actualTuples.get(16), "binding_tables/foo", new ArrayList<>(((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getBindingTables()).get(1));
-        assertRuleNodeTuple(actualTuples.get(17), "default_sharding_column", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultShardingColumn());
-        assertRuleNodeTuple(actualTuples.get(18), "sharding_cache", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingCache());
+        assertRuleNodeTuple(actualTuples.get(17), "key_generate_strategies/t_order", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getKeyGenerateStrategies().get("t_order"));
+        assertRuleNodeTuple(actualTuples.get(18), "key_generate_strategies/id_sequence", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getKeyGenerateStrategies().get("id_sequence"));
+        assertRuleNodeTuple(actualTuples.get(19), "default_sharding_column", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getDefaultShardingColumn());
+        assertRuleNodeTuple(actualTuples.get(20), "sharding_cache", ((YamlShardingRuleConfiguration) expectedYamlRuleConfig).getShardingCache());
     }
 }

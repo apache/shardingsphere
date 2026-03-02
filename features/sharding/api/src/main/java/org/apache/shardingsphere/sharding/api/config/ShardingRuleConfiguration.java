@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleC
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategiesConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 
@@ -59,6 +60,8 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     private ShardingAuditStrategyConfiguration defaultAuditStrategy;
     
     private String defaultShardingColumn;
+    
+    private Map<String, KeyGenerateStrategiesConfiguration> keyGenerateStrategies = new LinkedHashMap<>();
     
     private Map<String, AlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
