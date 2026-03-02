@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.yaml.swapper.cache.YamlShardingCacheCo
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingAutoTableRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableReferenceRuleConfigurationConverter;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.YamlShardingTableRuleConfigurationSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateStrategyRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateStrategyConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingAuditStrategyConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingStrategyConfigurationSwapper;
@@ -46,6 +47,8 @@ public final class YamlShardingRuleConfigurationSwapper implements YamlRuleConfi
     
     private final YamlKeyGenerateStrategyConfigurationSwapper keyGenerateStrategySwapper = new YamlKeyGenerateStrategyConfigurationSwapper();
     
+    private final YamlKeyGenerateStrategyRuleConfigurationSwapper keyGenerateStrategyRuleSwapper = new YamlKeyGenerateStrategyRuleConfigurationSwapper();
+    
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     
     private final YamlShardingAuditStrategyConfigurationSwapper auditStrategySwapper = new YamlShardingAuditStrategyConfigurationSwapper();
@@ -61,6 +64,7 @@ public final class YamlShardingRuleConfigurationSwapper implements YamlRuleConfi
         data.getAutoTables().forEach(each -> result.getAutoTables().put(each.getLogicTable(), autoTableSwapper.swapToYamlConfiguration(each)));
         result.getBindingTables().addAll(data.getBindingTableGroups().stream().map(YamlShardingTableReferenceRuleConfigurationConverter::convertToYamlString).collect(Collectors.toList()));
         setYamlStrategies(data, result);
+        setYamlKeyGenerateStrategies(data, result);
         setYamlAlgorithms(data, result);
         result.setDefaultShardingColumn(data.getDefaultShardingColumn());
         if (null != data.getShardingCache()) {
@@ -81,6 +85,12 @@ public final class YamlShardingRuleConfigurationSwapper implements YamlRuleConfi
         }
         if (null != data.getDefaultAuditStrategy()) {
             yamlConfig.setDefaultAuditStrategy(auditStrategySwapper.swapToYamlConfiguration(data.getDefaultAuditStrategy()));
+        }
+    }
+    
+    private void setYamlKeyGenerateStrategies(final ShardingRuleConfiguration data, final YamlShardingRuleConfiguration yamlConfig) {
+        if (null != data.getKeyGenerateStrategies()) {
+            data.getKeyGenerateStrategies().forEach((key, value) -> yamlConfig.getKeyGenerateStrategies().put(key, keyGenerateStrategyRuleSwapper.swapToYamlConfiguration(value)));
         }
     }
     
@@ -111,6 +121,7 @@ public final class YamlShardingRuleConfigurationSwapper implements YamlRuleConfi
         }
         result.getBindingTableGroups().addAll(yamlConfig.getBindingTables().stream().map(YamlShardingTableReferenceRuleConfigurationConverter::convertToObject).collect(Collectors.toList()));
         setStrategies(yamlConfig, result);
+        setKeyGenerateStrategies(yamlConfig, result);
         setAlgorithms(yamlConfig, result);
         result.setDefaultShardingColumn(yamlConfig.getDefaultShardingColumn());
         if (null != yamlConfig.getShardingCache()) {
@@ -131,6 +142,12 @@ public final class YamlShardingRuleConfigurationSwapper implements YamlRuleConfi
         }
         if (null != yamlConfig.getDefaultAuditStrategy()) {
             ruleConfig.setDefaultAuditStrategy(auditStrategySwapper.swapToObject(yamlConfig.getDefaultAuditStrategy()));
+        }
+    }
+    
+    private void setKeyGenerateStrategies(final YamlShardingRuleConfiguration yamlConfig, final ShardingRuleConfiguration ruleConfig) {
+        if (null != yamlConfig.getKeyGenerateStrategies()) {
+            yamlConfig.getKeyGenerateStrategies().forEach((key, value) -> ruleConfig.getKeyGenerateStrategies().put(key, keyGenerateStrategyRuleSwapper.swapToObject(value)));
         }
     }
     

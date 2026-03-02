@@ -27,7 +27,10 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategiesConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.SequenceKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -64,7 +67,16 @@ class ShardingRuleConfigurationCheckerTest {
         ShardingStrategyConfiguration shardingStrategyConfig = createShardingStrategyConfiguration();
         ruleConfig.setTables(Collections.singleton(createShardingTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
         ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
+        ruleConfig.getKeyGenerateStrategies().put("foo_column_strategy", createColumnKeyGenerateStrategyRuleConfiguration("foo_keygen"));
+        ruleConfig.getKeyGenerateStrategies().put("foo_sequence_strategy", createSequenceKeyGenerateStrategyRuleConfiguration("foo_keygen"));
         checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
+    }
+    
+    @Test
+    void assertCheckKeyGenerateStrategiesFailed() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
+        ruleConfig.getKeyGenerateStrategies().put("foo_sequence_strategy", createSequenceKeyGenerateStrategyRuleConfiguration("bar_keygen"));
+        assertThrows(UnregisteredAlgorithmException.class, () -> checker.check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList()));
     }
     
     @Test
@@ -172,6 +184,21 @@ class ShardingRuleConfigurationCheckerTest {
         when(result.getShardingStrategy()).thenReturn(null == shardingStrategyConfig ? mock(ShardingStrategyConfiguration.class) : shardingStrategyConfig);
         when(result.getAuditStrategy()).thenReturn(shardingAuditStrategyConfig);
         when(result.getKeyGenerateStrategy()).thenReturn(keyGenerateStrategyConfig);
+        return result;
+    }
+    
+    private KeyGenerateStrategiesConfiguration createColumnKeyGenerateStrategyRuleConfiguration(final String keyGeneratorName) {
+        ColumnKeyGenerateStrategiesRuleConfiguration result = new ColumnKeyGenerateStrategiesRuleConfiguration();
+        result.setKeyGeneratorName(keyGeneratorName);
+        result.setLogicTable("foo_tbl");
+        result.setKeyGenerateColumn("foo_col");
+        return result;
+    }
+    
+    private KeyGenerateStrategiesConfiguration createSequenceKeyGenerateStrategyRuleConfiguration(final String keyGeneratorName) {
+        SequenceKeyGenerateStrategiesRuleConfiguration result = new SequenceKeyGenerateStrategiesRuleConfiguration();
+        result.setKeyGeneratorName(keyGeneratorName);
+        result.setKeyGenerateSequence("foo_sequence");
         return result;
     }
 }
