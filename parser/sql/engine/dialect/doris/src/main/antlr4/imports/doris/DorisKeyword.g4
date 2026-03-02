@@ -345,6 +345,10 @@ COLLATION
     : C O L L A T I O N
     ;
 
+COLOCATE
+    : C O L O C A T E
+    ;
+
 COLUMN
     : C O L U M N
     ;

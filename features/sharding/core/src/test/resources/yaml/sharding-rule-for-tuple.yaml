@@ -68,6 +68,16 @@ rules:
     auditorNames:
     - sharding_key_required_auditor
     allowHintDisable: true
+  keyGenerateStrategies:
+    t_order:
+      keyGenerateType: column
+      keyGeneratorName: snowflake
+      logicTable: t_order
+      keyGenerateColumn: id
+    id_sequence:
+      keyGenerateType: sequence
+      keyGeneratorName: snowflake
+      keyGenerateSequence: sequence_name
 
   shardingAlgorithms:
     core_standard_fixture:

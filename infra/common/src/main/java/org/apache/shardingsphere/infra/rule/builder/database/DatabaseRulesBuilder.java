@@ -23,12 +23,15 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -96,11 +99,25 @@ public final class DatabaseRulesBuilder {
     
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, DatabaseRuleBuilder> getRuleBuilderMap(final DatabaseConfiguration databaseConfig) {
+        Collection<RuleConfiguration> filteredRuleConfigs = filterEmptyRuleConfigurations(databaseConfig.getRuleConfigurations());
         Map<RuleConfiguration, DatabaseRuleBuilder> result = new LinkedHashMap<>();
-        result.putAll(getDistributedRuleBuilderMap(databaseConfig.getRuleConfigurations()));
-        result.putAll(getEnhancedRuleBuilderMap(databaseConfig.getRuleConfigurations()));
+        result.putAll(getDistributedRuleBuilderMap(filteredRuleConfigs));
+        result.putAll(getEnhancedRuleBuilderMap(filteredRuleConfigs));
         result.putAll(getMissedDefaultRuleBuilderMap(result.values()));
         return result;
+    }
+    
+    private static Collection<RuleConfiguration> filterEmptyRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
+        return ruleConfigs.stream().filter(each -> !isRuleConfigurationEmpty(each)).collect(Collectors.toList());
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static boolean isRuleConfigurationEmpty(final RuleConfiguration ruleConfig) {
+        if (!(ruleConfig instanceof DatabaseRuleConfiguration)) {
+            return false;
+        }
+        return TypedSPILoader.findService(DatabaseRuleConfigurationEmptyChecker.class, ruleConfig.getClass())
+                .map(checker -> checker.isEmpty((DatabaseRuleConfiguration) ruleConfig)).orElse(false);
     }
     
     @SuppressWarnings("rawtypes")

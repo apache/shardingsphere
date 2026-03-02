@@ -21,10 +21,12 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.constant.MaskOrder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
@@ -93,12 +95,19 @@ class MaskRuleTest {
     @Test
     void assertPartialUpdateWithToBeRemovedAlgorithms() {
         maskRule.partialUpdate(createPartialRemovedAlgorithmsMaskRuleConfiguration());
-        assertFalse(maskRule.findMaskTable("foo_tbl").get().findAlgorithm("t_mask_foo_id_md5").isPresent());
+        Optional<MaskTable> table = maskRule.findMaskTable("foo_tbl");
+        assertTrue(table.isPresent());
+        assertFalse(table.get().findAlgorithm("t_mask_foo_id_md5").isPresent());
     }
     
     private MaskRuleConfiguration createPartialRemovedAlgorithmsMaskRuleConfiguration() {
         MaskColumnRuleConfiguration maskColumnRuleConfig = new MaskColumnRuleConfiguration("foo_id", "t_mask_foo_id_md5");
         MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("foo_tbl", Collections.singleton(maskColumnRuleConfig));
         return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.emptyMap());
+    }
+    
+    @Test
+    void assertGetOrder() {
+        assertThat(maskRule.getOrder(), is(MaskOrder.ORDER));
     }
 }

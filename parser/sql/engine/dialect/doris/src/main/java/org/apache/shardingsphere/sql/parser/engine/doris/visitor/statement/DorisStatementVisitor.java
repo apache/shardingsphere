@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AggregationFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AliasContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ArrayExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentValuesContext;
@@ -690,7 +691,19 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
             return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, ctx.VERTICAL_BAR_(0).getText() + ctx.VERTICAL_BAR_(1).getText(), text);
         }
+        if (null != ctx.arrayExpression()) {
+            return visit(ctx.arrayExpression());
+        }
         return visitRemainSimpleExpr(ctx);
+    }
+    
+    @Override
+    public ASTNode visitArrayExpression(final ArrayExpressionContext ctx) {
+        ListExpression result = new ListExpression(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (ExprContext each : ctx.expr()) {
+            result.getItems().add((ExpressionSegment) visit(each));
+        }
+        return result;
     }
     
     @Override

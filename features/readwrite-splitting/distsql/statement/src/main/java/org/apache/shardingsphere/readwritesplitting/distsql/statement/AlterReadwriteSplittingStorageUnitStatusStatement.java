@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UpdatableRALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 /**
  * Set readwrite-splitting status statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class AlterReadwriteSplittingStorageUnitStatusStatement extends UpdatableRALStatement {
     
@@ -39,10 +37,17 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatement extends Upd
     
     private final boolean enable;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
+    
+    public AlterReadwriteSplittingStorageUnitStatusStatement(final FromDatabaseSegment fromDatabase, final String ruleName, final String storageUnitName, final boolean enable) {
+        this.fromDatabase = fromDatabase;
+        this.ruleName = ruleName;
+        this.storageUnitName = storageUnitName;
+        this.enable = enable;
+        attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
+    }
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

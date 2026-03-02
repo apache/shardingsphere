@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -36,20 +35,23 @@ import java.util.Optional;
 /**
  * Alter index statement.
  */
-@Setter
 public final class AlterIndexStatement extends DDLStatement {
     
-    private IndexSegment index;
+    private final IndexSegment index;
     
-    private IndexSegment renameIndex;
+    private final IndexSegment renameIndex;
     
-    private SimpleTableSegment simpleTable;
+    private final SimpleTableSegment simpleTable;
     
     @Getter
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public AlterIndexStatement(final DatabaseType databaseType) {
+    public AlterIndexStatement(final DatabaseType databaseType, final IndexSegment index, final IndexSegment renameIndex, final SimpleTableSegment simpleTable) {
         super(databaseType);
+        this.index = index;
+        this.renameIndex = renameIndex;
+        this.simpleTable = simpleTable;
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(simpleTable), new AlterIndexIndexSQLStatementAttribute());
     }
     
     /**
@@ -81,7 +83,6 @@ public final class AlterIndexStatement extends DDLStatement {
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(simpleTable), new AlterIndexIndexSQLStatementAttribute());
     }
     
     private class AlterIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {
@@ -89,9 +90,7 @@ public final class AlterIndexStatement extends DDLStatement {
         @Override
         public Collection<IndexSegment> getIndexes() {
             Collection<IndexSegment> result = new LinkedList<>();
-            if (getIndex().isPresent()) {
-                result.add(getIndex().get());
-            }
+            getIndex().ifPresent(result::add);
             getRenameIndex().ifPresent(result::add);
             return result;
         }

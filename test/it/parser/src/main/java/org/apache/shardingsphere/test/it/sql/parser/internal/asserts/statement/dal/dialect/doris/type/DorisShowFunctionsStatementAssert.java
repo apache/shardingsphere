@@ -24,9 +24,10 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowFunctionsStatementTestCase;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Show functions statement assert for Doris.
@@ -51,25 +52,25 @@ public final class DorisShowFunctionsStatementAssert {
     
     private static void assertGlobal(final SQLCaseAssertContext assertContext, final DorisShowFunctionsStatement actual, final DorisShowFunctionsStatementTestCase expected) {
         if (null != expected.getGlobal()) {
-            MatcherAssert.assertThat(assertContext.getText("Global flag assertion error: "), actual.isGlobal(), Matchers.is(expected.getGlobal()));
+            assertThat(assertContext.getText("Global flag assertion error: "), actual.isGlobal(), is(expected.getGlobal()));
         }
     }
     
     private static void assertFull(final SQLCaseAssertContext assertContext, final DorisShowFunctionsStatement actual, final DorisShowFunctionsStatementTestCase expected) {
         if (null != expected.getFull()) {
-            MatcherAssert.assertThat(assertContext.getText("Full flag assertion error: "), actual.isFull(), Matchers.is(expected.getFull()));
+            assertThat(assertContext.getText("Full flag assertion error: "), actual.isFull(), is(expected.getFull()));
         }
     }
     
     private static void assertBuiltin(final SQLCaseAssertContext assertContext, final DorisShowFunctionsStatement actual, final DorisShowFunctionsStatementTestCase expected) {
         if (null != expected.getBuiltin()) {
-            MatcherAssert.assertThat(assertContext.getText("Builtin flag assertion error: "), actual.isBuiltin(), Matchers.is(expected.getBuiltin()));
+            assertThat(assertContext.getText("Builtin flag assertion error: "), actual.isBuiltin(), is(expected.getBuiltin()));
         }
     }
     
     private static void assertFromDatabase(final SQLCaseAssertContext assertContext, final DorisShowFunctionsStatement actual, final DorisShowFunctionsStatementTestCase expected) {
         if (null != expected.getFromDatabase()) {
-            Assertions.assertTrue(actual.getFromDatabase().isPresent(), assertContext.getText("Actual from database should exist."));
+            assertTrue(actual.getFromDatabase().isPresent(), assertContext.getText("Actual from database should exist."));
             DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().get().getDatabase(), expected.getFromDatabase().getDatabase());
             SQLSegmentAssert.assertIs(assertContext, actual.getFromDatabase().get(), expected.getFromDatabase());
         }
@@ -77,8 +78,8 @@ public final class DorisShowFunctionsStatementAssert {
     
     private static void assertLike(final SQLCaseAssertContext assertContext, final DorisShowFunctionsStatement actual, final DorisShowFunctionsStatementTestCase expected) {
         if (null != expected.getLike()) {
-            Assertions.assertTrue(actual.getLike().isPresent(), assertContext.getText("Actual like segment should exist."));
-            MatcherAssert.assertThat(assertContext.getText("Like pattern assertion error: "), actual.getLike().get().getPattern(), Matchers.is(expected.getLike().getPattern()));
+            assertTrue(actual.getLike().isPresent(), assertContext.getText("Actual like segment should exist."));
+            assertThat(assertContext.getText("Like pattern assertion error: "), actual.getLike().get().getPattern(), is(expected.getLike().getPattern()));
             SQLSegmentAssert.assertIs(assertContext, actual.getLike().get(), expected.getLike());
         }
     }

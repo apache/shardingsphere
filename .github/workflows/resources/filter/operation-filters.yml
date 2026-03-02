@@ -33,7 +33,6 @@ pipeline:
   - 'test/e2e/fixture/**'
   - 'test/e2e/env/**'
   - 'test/e2e/operation/pipeline/**'
-  - '!**/*.md'
 
 showprocesslist:
   - '.github/workflows/e2e-operation.yml'
@@ -45,7 +44,6 @@ showprocesslist:
   - 'test/e2e/fixture/**'
   - 'test/e2e/env/**'
   - 'test/e2e/operation/showprocesslist/**'
-  - '!**/*.md'
 
 transaction:
   - '.github/workflows/e2e-operation.yml'
@@ -61,4 +59,3 @@ transaction:
   - 'test/e2e/env/**'
   - 'test/e2e/operation/transaction/**'
   - 'features/sharding/**/src/main/**'
-  - '!**/*.md'

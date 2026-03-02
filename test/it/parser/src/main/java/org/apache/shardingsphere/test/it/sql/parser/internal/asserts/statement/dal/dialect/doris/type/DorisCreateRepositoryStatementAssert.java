@@ -26,9 +26,10 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateRepositoryStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.PropertyTestCase;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Create repository statement assert for Doris.
@@ -52,12 +53,12 @@ public final class DorisCreateRepositoryStatementAssert {
     }
     
     private static void assertReadOnlyFlag(final SQLCaseAssertContext assertContext, final DorisCreateRepositoryStatement actual, final DorisCreateRepositoryStatementTestCase expected) {
-        MatcherAssert.assertThat(assertContext.getText("read-only flag does not match: "), actual.isReadOnly(), Matchers.is(expected.isReadOnly()));
+        assertThat(assertContext.getText("read-only flag does not match: "), actual.isReadOnly(), is(expected.isReadOnly()));
     }
     
     private static void assertRepositoryName(final SQLCaseAssertContext assertContext, final DorisCreateRepositoryStatement actual, final DorisCreateRepositoryStatementTestCase expected) {
         if (null != expected.getRepositoryName()) {
-            Assertions.assertNotNull(actual.getRepositoryName(), assertContext.getText("Actual repository name should exist."));
+            assertNotNull(actual.getRepositoryName(), assertContext.getText("Actual repository name should exist."));
             IdentifierValueAssert.assertIs(assertContext, actual.getRepositoryName().getIdentifier(), expected.getRepositoryName(), "Repository name");
             SQLSegmentAssert.assertIs(assertContext, actual.getRepositoryName(), expected.getRepositoryName());
         }
@@ -65,20 +66,20 @@ public final class DorisCreateRepositoryStatementAssert {
     
     private static void assertStorageType(final SQLCaseAssertContext assertContext, final DorisCreateRepositoryStatement actual, final DorisCreateRepositoryStatementTestCase expected) {
         if (null != expected.getStorageType()) {
-            MatcherAssert.assertThat(assertContext.getText("storage type does not match: "), actual.getStorageType(), Matchers.is(expected.getStorageType()));
+            assertThat(assertContext.getText("storage type does not match: "), actual.getStorageType(), is(expected.getStorageType()));
         }
     }
     
     private static void assertLocation(final SQLCaseAssertContext assertContext, final DorisCreateRepositoryStatement actual, final DorisCreateRepositoryStatementTestCase expected) {
         if (null != expected.getLocation()) {
-            MatcherAssert.assertThat(assertContext.getText("location does not match: "), actual.getLocation(), Matchers.is(expected.getLocation()));
+            assertThat(assertContext.getText("location does not match: "), actual.getLocation(), is(expected.getLocation()));
         }
     }
     
     private static void assertProperties(final SQLCaseAssertContext assertContext, final DorisCreateRepositoryStatement actual, final DorisCreateRepositoryStatementTestCase expected) {
-        Assertions.assertNotNull(actual.getProperties(), assertContext.getText("properties should not be null"));
+        assertNotNull(actual.getProperties(), assertContext.getText("properties should not be null"));
         if (!expected.getProperties().isEmpty()) {
-            MatcherAssert.assertThat(assertContext.getText("Properties size does not match: "), actual.getProperties().getProperties().size(), Matchers.is(expected.getProperties().size()));
+            assertThat(assertContext.getText("Properties size does not match: "), actual.getProperties().getProperties().size(), is(expected.getProperties().size()));
             for (int i = 0; i < expected.getProperties().size(); i++) {
                 assertProperty(assertContext, actual.getProperties().getProperties().get(i), expected.getProperties().get(i));
             }
@@ -86,8 +87,8 @@ public final class DorisCreateRepositoryStatementAssert {
     }
     
     private static void assertProperty(final SQLCaseAssertContext assertContext, final PropertySegment actual, final PropertyTestCase expected) {
-        MatcherAssert.assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), Matchers.is(expected.getKey()));
-        MatcherAssert.assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), Matchers.is(expected.getValue()));
+        assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), is(expected.getKey()));
+        assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), is(expected.getValue()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

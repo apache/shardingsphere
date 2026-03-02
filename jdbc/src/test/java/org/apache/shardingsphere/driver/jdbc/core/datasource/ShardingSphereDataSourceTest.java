@@ -84,9 +84,11 @@ class ShardingSphereDataSourceTest {
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         CacheOption cacheOption = new CacheOption(1024, 1024L);
         SQLParserRuleConfiguration sqlParserRuleConfig = new SQLParserRuleConfiguration(cacheOption, cacheOption);
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.setDefaultShardingColumn("user_id");
         try (
                 ShardingSphereDataSource actual = new ShardingSphereDataSource("foo_db",
-                        null, Collections.singletonMap("ds", new MockedDataSource(connection)), Arrays.asList(mock(ShardingRuleConfiguration.class), sqlParserRuleConfig), new Properties())) {
+                        null, Collections.singletonMap("ds", new MockedDataSource(connection)), Arrays.asList(shardingRuleConfig, sqlParserRuleConfig), new Properties())) {
             assertThat(getContextManager(actual).getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getConfigurations().size(), is(2));
         }
     }

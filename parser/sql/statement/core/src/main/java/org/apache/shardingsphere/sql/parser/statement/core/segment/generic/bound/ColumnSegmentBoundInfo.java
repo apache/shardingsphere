@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 /**
@@ -34,6 +36,9 @@ public final class ColumnSegmentBoundInfo {
     private final IdentifierValue originalColumn;
     
     private final TableSourceType tableSourceType;
+    
+    @Setter
+    private OwnerSegment owner;
     
     public ColumnSegmentBoundInfo(final IdentifierValue originalColumn) {
         this(null, null, originalColumn, TableSourceType.PHYSICAL_TABLE);

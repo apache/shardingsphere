@@ -19,7 +19,9 @@ package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.statement.DropDefaultShadowAlgorithmStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -31,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -40,7 +43,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class DropDefaultShadowAlgorithmExecutorTest {
     
-    private final DropDefaultShadowAlgorithmExecutor executor = new DropDefaultShadowAlgorithmExecutor();
+    private final DropDefaultShadowAlgorithmExecutor executor = (DropDefaultShadowAlgorithmExecutor) TypedSPILoader.getService(
+            DatabaseRuleDefinitionExecutor.class, DropDefaultShadowAlgorithmStatement.class);
     
     @Mock
     private ShadowRuleConfiguration currentConfig;
@@ -60,7 +64,7 @@ class DropDefaultShadowAlgorithmExecutorTest {
     
     @Test
     void assertCheckWithIfExists() {
-        executor.checkBeforeUpdate(new DropDefaultShadowAlgorithmStatement(true));
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(new DropDefaultShadowAlgorithmStatement(true)));
     }
     
     @Test
@@ -77,5 +81,10 @@ class DropDefaultShadowAlgorithmExecutorTest {
         ShadowRuleConfiguration toBeDroppedRuleConfig = executor.buildToBeDroppedRuleConfiguration(sqlStatement);
         assertThat(toBeDroppedRuleConfig.getDefaultShadowAlgorithmName(), is("default"));
         assertThat(toBeDroppedRuleConfig.getShadowAlgorithms().size(), is(1));
+    }
+    
+    @Test
+    void assertGetRuleClass() {
+        assertThat(executor.getRuleClass(), is(ShadowRule.class));
     }
 }

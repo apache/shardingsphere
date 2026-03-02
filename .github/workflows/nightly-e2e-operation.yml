@@ -31,6 +31,9 @@ concurrency:
   group: nightly-e2e-operation-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
 
@@ -52,10 +55,7 @@ jobs:
         with:
           cache-suffix: 'e2e-operation'
           cache-save-enabled: 'false'
-      - uses: docker/setup-docker-action@v4
-        with:
-          version: v28.0.4
-          set-host: true
+          enable-docker-setup: 'true'
       - name: Maven Install
         env:
           PREFIX: "test/e2e/operation/"
@@ -98,7 +98,13 @@ jobs:
           - operation: showprocesslist
             image: { type: "e2e.docker.database.mariadb.images", version: "mariadb:11" }
           - operation: showprocesslist
-            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine" }
+            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:11-alpine" }
+          - operation: showprocesslist
+            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:12-alpine" }
+          - operation: showprocesslist
+            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:13-alpine" }
+          - operation: showprocesslist
+            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:14-alpine" }
           - operation: showprocesslist
             image: { type: "e2e.docker.database.opengauss.images", version: "opengauss/opengauss:3.1.0" }
     steps:
@@ -108,10 +114,7 @@ jobs:
           java-version: ${{ matrix.java-version }}
           cache-suffix: 'e2e-operation'
           cache-save-enabled: 'false'
-      - uses: docker/setup-docker-action@v4
-        with:
-          version: v28.0.4
-          set-host: true
+          enable-docker-setup: 'true'
       - uses: ./.github/workflows/resources/actions/download-e2e-artifacts
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
         run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${{ matrix.image.type }}=${{ matrix.image.version }}

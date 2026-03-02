@@ -61,8 +61,7 @@ class AlterIndexPushDownMetaDataRefresherTest {
     
     @Test
     void assertRefreshReturnWhenRenameMissing() {
-        AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType);
-        sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_old"))));
+        AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType, new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_old"))), null, null);
         refresher.refresh(metaDataManagerPersistService, new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()),
                 new RuleMetaData(Collections.emptyList()), Collections.emptyList()), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         verifyNoInteractions(metaDataManagerPersistService);
@@ -70,8 +69,7 @@ class AlterIndexPushDownMetaDataRefresherTest {
     
     @Test
     void assertRefreshReturnWhenIndexMissing() {
-        AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType);
-        sqlStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_new"))));
+        AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType, null, new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_new"))), null);
         refresher.refresh(metaDataManagerPersistService, new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()),
                 new RuleMetaData(Collections.emptyList()), Collections.emptyList()), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         verifyNoInteractions(metaDataManagerPersistService);
@@ -95,11 +93,8 @@ class AlterIndexPushDownMetaDataRefresherTest {
     }
     
     private AlterIndexStatement createAlterStatement() {
-        AlterIndexStatement result = new AlterIndexStatement(databaseType);
         IndexSegment index = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_old")));
         index.setOwner(new OwnerSegment(0, 0, new IdentifierValue("BAR_SCHEMA")));
-        result.setIndex(index);
-        result.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_new"))));
-        return result;
+        return new AlterIndexStatement(databaseType, index, new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_new"))), null);
     }
 }

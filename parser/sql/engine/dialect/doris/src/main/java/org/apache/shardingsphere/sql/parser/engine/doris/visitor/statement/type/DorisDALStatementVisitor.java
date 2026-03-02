@@ -158,7 +158,10 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Qualifi
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RuleNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowBuildIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowAlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BackupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BackupTableSpecContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.BackupTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneActionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CloneInstanceSegment;
@@ -208,6 +211,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisBackupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSwitchStatement;
@@ -1443,6 +1447,34 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitBackup(final BackupContext ctx) {
+        DorisBackupStatement result = new DorisBackupStatement(getDatabaseType());
+        result.setGlobal(null != ctx.GLOBAL());
+        if (null != ctx.databaseName()) {
+            result.setDatabase((DatabaseSegment) visit(ctx.databaseName()));
+        }
+        result.setSnapshotName(((IdentifierValue) visit(ctx.identifier())).getValue());
+        RepositoryNameContext repositoryNameCtx = ctx.repositoryName();
+        IdentifierValue identifierValue = (IdentifierValue) visit(repositoryNameCtx);
+        result.setRepositoryName(new RepositoryNameSegment(repositoryNameCtx.start.getStartIndex(), repositoryNameCtx.stop.getStopIndex(), identifierValue));
+        if (null != ctx.backupScope()) {
+            result.setExcludeMode(null != ctx.backupScope().EXCLUDE());
+            for (BackupTableSpecContext each : ctx.backupScope().backupTableSpec()) {
+                SimpleTableSegment table = (SimpleTableSegment) visit(each.tableName());
+                BackupTableSegment backupTable = new BackupTableSegment(each.start.getStartIndex(), each.stop.getStopIndex(), table);
+                if (null != each.partitionList()) {
+                    backupTable.getPartitions().addAll(((CollectionValue<PartitionSegment>) visit(each.partitionList())).getValue());
+                }
+                result.getTables().add(backupTable);
+            }
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
         return result;
     }
 }

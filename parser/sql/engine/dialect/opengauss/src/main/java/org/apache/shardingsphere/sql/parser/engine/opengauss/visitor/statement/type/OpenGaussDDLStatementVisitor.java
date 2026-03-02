@@ -302,32 +302,31 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableNameClause().tableName()));
+        AlterTableStatement.AlterTableStatementBuilder result = AlterTableStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableNameClause().tableName()));
         if (null != ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
                 if (each instanceof AddColumnDefinitionSegment) {
-                    result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) each);
+                    result.addColumnDefinition((AddColumnDefinitionSegment) each);
                 } else if (each instanceof ModifyColumnDefinitionSegment) {
-                    result.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) each);
+                    result.modifyColumnDefinition((ModifyColumnDefinitionSegment) each);
                 } else if (each instanceof DropColumnDefinitionSegment) {
-                    result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) each);
+                    result.dropColumnDefinition((DropColumnDefinitionSegment) each);
                 } else if (each instanceof AddConstraintDefinitionSegment) {
-                    result.getAddConstraintDefinitions().add((AddConstraintDefinitionSegment) each);
+                    result.addConstraintDefinition((AddConstraintDefinitionSegment) each);
                 } else if (each instanceof ValidateConstraintDefinitionSegment) {
-                    result.getValidateConstraintDefinitions().add((ValidateConstraintDefinitionSegment) each);
+                    result.validateConstraintDefinition((ValidateConstraintDefinitionSegment) each);
                 } else if (each instanceof ModifyConstraintDefinitionSegment) {
-                    result.getModifyConstraintDefinitions().add((ModifyConstraintDefinitionSegment) each);
+                    result.modifyConstraintDefinition((ModifyConstraintDefinitionSegment) each);
                 } else if (each instanceof DropConstraintDefinitionSegment) {
-                    result.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) each);
+                    result.dropConstraintDefinition((DropConstraintDefinitionSegment) each);
                 } else if (each instanceof RenameTableDefinitionSegment) {
-                    result.setRenameTable(((RenameTableDefinitionSegment) each).getRenameTable());
+                    result.renameTable(((RenameTableDefinitionSegment) each).getRenameTable());
                 } else if (each instanceof RenameColumnSegment) {
-                    result.getRenameColumnDefinitions().add((RenameColumnSegment) each);
+                    result.renameColumnDefinition((RenameColumnSegment) each);
                 }
             }
         }
-        return result;
+        return result.build();
     }
     
     @Override
@@ -584,12 +583,10 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitAlterIndex(final AlterIndexContext ctx) {
-        AlterIndexStatement result = new AlterIndexStatement(getDatabaseType());
-        result.setIndex(createIndexSegment((SimpleTableSegment) visit(ctx.qualifiedName())));
-        if (null != ctx.alterIndexDefinitionClause().renameIndexSpecification()) {
-            result.setRenameIndex((IndexSegment) visit(ctx.alterIndexDefinitionClause().renameIndexSpecification().indexName()));
-        }
-        return result;
+        IndexSegment renameIndex = null == ctx.alterIndexDefinitionClause().renameIndexSpecification()
+                ? null
+                : (IndexSegment) visit(ctx.alterIndexDefinitionClause().renameIndexSpecification().indexName());
+        return new AlterIndexStatement(getDatabaseType(), createIndexSegment((SimpleTableSegment) visit(ctx.qualifiedName())), renameIndex, null);
     }
     
     private IndexSegment createIndexSegment(final SimpleTableSegment tableSegment) {
@@ -988,37 +985,45 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
         if (null != ctx.commentClauses().COLUMN()) {
             return commentOnColumn(ctx);
         }
-        return new CommentStatement(getDatabaseType());
+        return CommentStatement.builder().databaseType(getDatabaseType()).build();
     }
     
     @SuppressWarnings("unchecked")
     private CommentStatement commentOnColumn(final CommentContext ctx) {
-        CommentStatement result = new CommentStatement(getDatabaseType());
         Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
+        CommentStatement.CommentStatementBuilder result = CommentStatement.builder().databaseType(getDatabaseType())
+                .comment(new IdentifierValue(ctx.commentClauses().commentText().getText()));
         Optional<NameSegment> columnName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
-        columnName.ifPresent(optional -> result.setColumn(new ColumnSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier())));
-        result.setComment(new IdentifierValue(ctx.commentClauses().commentText().getText()));
-        setTableSegment(result, nameSegmentIterator);
-        return result;
+        columnName.ifPresent(optional -> result.column(new ColumnSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier())));
+        return result.table(createTableSegment(nameSegmentIterator)).build();
     }
     
     @SuppressWarnings("unchecked")
     private CommentStatement commentOnTable(final CommentContext ctx) {
-        CommentStatement result = new CommentStatement(getDatabaseType());
         Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
-        result.setComment(new IdentifierValue(ctx.commentClauses().commentText().getText()));
-        setTableSegment(result, nameSegmentIterator);
-        return result;
+        return CommentStatement.builder().databaseType(getDatabaseType()).comment(new IdentifierValue(ctx.commentClauses().commentText().getText()))
+                .table(createTableSegment(nameSegmentIterator)).build();
     }
     
-    private void setTableSegment(final CommentStatement statement, final Iterator<NameSegment> nameSegmentIterator) {
-        Optional<NameSegment> tableName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
-        tableName.ifPresent(optional -> statement.setTable(new SimpleTableSegment(new TableNameSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier()))));
-        Optional<NameSegment> schemaName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
-        schemaName.ifPresent(optional -> statement.getTable().setOwner(new OwnerSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier())));
-        Optional<NameSegment> databaseName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
-        databaseName.ifPresent(optional -> statement.getTable().getOwner()
-                .ifPresent(owner -> owner.setOwner(new OwnerSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier()))));
+    private SimpleTableSegment createTableSegment(final Iterator<NameSegment> nameSegmentIterator) {
+        if (!nameSegmentIterator.hasNext()) {
+            return null;
+        }
+        NameSegment tableName = nameSegmentIterator.next();
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(tableName.getStartIndex(), tableName.getStopIndex(), tableName.getIdentifier()));
+        OwnerSegment owner = null;
+        if (nameSegmentIterator.hasNext()) {
+            NameSegment schemaName = nameSegmentIterator.next();
+            owner = new OwnerSegment(schemaName.getStartIndex(), schemaName.getStopIndex(), schemaName.getIdentifier());
+            result.setOwner(owner);
+        }
+        if (nameSegmentIterator.hasNext()) {
+            NameSegment databaseName = nameSegmentIterator.next();
+            if (null != owner) {
+                owner.setOwner(new OwnerSegment(databaseName.getStartIndex(), databaseName.getStopIndex(), databaseName.getIdentifier()));
+            }
+        }
+        return result;
     }
     
     @Override

@@ -25,8 +25,10 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDescFunctionStatementTestCase;
 import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Desc function statement assert for Doris.
@@ -47,14 +49,14 @@ public final class DorisDescFunctionStatementAssert {
     
     private static void assertFunctionName(final SQLCaseAssertContext assertContext, final DorisDescFunctionStatement actual, final DorisDescFunctionStatementTestCase expected) {
         if (null != expected.getFunctionName()) {
-            Assertions.assertTrue(actual.getFunctionName().isPresent(), assertContext.getText("Function name should not be null"));
+            assertTrue(actual.getFunctionName().isPresent(), assertContext.getText("Function name should not be null"));
             MatcherAssert.assertThat(assertContext.getText("Function name assertion error: "), actual.getFunctionName().get().getIdentifier().getValue(),
-                    Matchers.is(expected.getFunctionName().getFunctionName()));
+                    is(expected.getFunctionName().getFunctionName()));
             SQLSegmentAssert.assertIs(assertContext, actual.getFunctionName().get(), expected.getFunctionName());
             if (null == expected.getFunctionName().getOwner()) {
-                Assertions.assertFalse(actual.getFunctionName().get().getOwner().isPresent(), assertContext.getText("Actual function owner should not exist."));
+                assertFalse(actual.getFunctionName().get().getOwner().isPresent(), assertContext.getText("Actual function owner should not exist."));
             } else {
-                Assertions.assertTrue(actual.getFunctionName().get().getOwner().isPresent(), assertContext.getText("Actual function owner should exist."));
+                assertTrue(actual.getFunctionName().get().getOwner().isPresent(), assertContext.getText("Actual function owner should exist."));
                 OwnerAssert.assertIs(assertContext, actual.getFunctionName().get().getOwner().get(), expected.getFunctionName().getOwner());
             }
         }

@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RollupSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CreateTableOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -31,6 +32,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.col
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.ColumnDefinitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.ConstraintDefinitionAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.definition.CreateTableOptionDefinitionAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.rollup.RollupAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.SelectStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.table.CreateTableStatementTestCase;
@@ -63,6 +65,7 @@ public final class CreateTableStatementAssert {
         assertCreateTableAsSelectStatement(assertContext, actual, expected);
         assertCreateTableAsSelectStatementColumns(assertContext, actual, expected);
         assertLikeTableStatement(assertContext, actual, expected);
+        assertRollups(assertContext, actual, expected);
         assertCreateTableOptionStatement(assertContext, actual, expected);
     }
     
@@ -115,6 +118,15 @@ public final class CreateTableStatementAssert {
         } else {
             assertTrue(likeTableSegment.isPresent(), "actual like table statement should exist");
             TableAssert.assertIs(assertContext, likeTableSegment.get(), expected.getLikeTable());
+        }
+    }
+    
+    private static void assertRollups(final SQLCaseAssertContext assertContext, final CreateTableStatement actual, final CreateTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Rollups size assertion error: "), actual.getRollups().size(), is(expected.getRollups().size()));
+        int count = 0;
+        for (RollupSegment each : actual.getRollups()) {
+            RollupAssert.assertIs(assertContext, each, expected.getRollups().get(count));
+            count++;
         }
     }
     

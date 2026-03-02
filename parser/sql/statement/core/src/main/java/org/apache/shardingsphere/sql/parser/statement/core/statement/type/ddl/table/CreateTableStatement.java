@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RollupSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CreateTableOptionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
@@ -62,6 +63,8 @@ public final class CreateTableStatement extends DDLStatement {
     private final Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
     
     private final List<ColumnSegment> columns = new LinkedList<>();
+    
+    private final Collection<RollupSegment> rollups = new LinkedList<>();
     
     private SQLStatementAttributes attributes;
     

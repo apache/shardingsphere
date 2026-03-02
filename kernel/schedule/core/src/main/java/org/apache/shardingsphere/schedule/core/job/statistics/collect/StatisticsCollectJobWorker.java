@@ -141,6 +141,9 @@ public final class StatisticsCollectJobWorker {
         if (WORKER_INITIALIZED.compareAndSet(true, false)) {
             Optional.ofNullable(scheduleJobBootstrap).ifPresent(ScheduleJobBootstrap::shutdown);
             scheduleJobBootstrap = null;
+            Optional.ofNullable(registryCenter).ifPresent(CoordinatorRegistryCenter::close);
+            registryCenter = null;
+            contextManager = null;
         }
     }
 }

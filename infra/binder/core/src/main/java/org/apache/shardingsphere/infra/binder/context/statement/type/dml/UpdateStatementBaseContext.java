@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.ExpressionExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.statement.core.extractor.WhereExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
@@ -59,6 +60,7 @@ public final class UpdateStatementBaseContext implements SQLStatementContext {
     private Collection<WhereSegment> createWhereSegments(final UpdateStatement updateStatement) {
         Collection<WhereSegment> result = new LinkedList<>();
         updateStatement.getWhere().ifPresent(result::add);
+        result.addAll(WhereExtractor.extractJoinWhereSegments(updateStatement));
         return result;
     }
     

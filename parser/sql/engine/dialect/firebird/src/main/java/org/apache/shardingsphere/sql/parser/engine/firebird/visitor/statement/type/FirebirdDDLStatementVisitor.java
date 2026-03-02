@@ -185,24 +185,23 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterTable(final AlterTableContext ctx) {
-        AlterTableStatement result = new AlterTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        AlterTableStatement.AlterTableStatementBuilder result = AlterTableStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.alterDefinitionClause()) {
             for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterDefinitionClause())).getValue()) {
                 if (each instanceof AddColumnDefinitionSegment) {
-                    result.getAddColumnDefinitions().add((AddColumnDefinitionSegment) each);
+                    result.addColumnDefinition((AddColumnDefinitionSegment) each);
                 } else if (each instanceof ModifyColumnDefinitionSegment) {
-                    result.getModifyColumnDefinitions().add((ModifyColumnDefinitionSegment) each);
+                    result.modifyColumnDefinition((ModifyColumnDefinitionSegment) each);
                 } else if (each instanceof DropColumnDefinitionSegment) {
-                    result.getDropColumnDefinitions().add((DropColumnDefinitionSegment) each);
+                    result.dropColumnDefinition((DropColumnDefinitionSegment) each);
                 } else if (each instanceof AddConstraintDefinitionSegment) {
-                    result.getAddConstraintDefinitions().add((AddConstraintDefinitionSegment) each);
+                    result.addConstraintDefinition((AddConstraintDefinitionSegment) each);
                 } else if (each instanceof DropConstraintDefinitionSegment) {
-                    result.getDropConstraintDefinitions().add((DropConstraintDefinitionSegment) each);
+                    result.dropConstraintDefinition((DropConstraintDefinitionSegment) each);
                 }
             }
         }
-        return result;
+        return result.build();
     }
     
     @Override
@@ -310,13 +309,13 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitComment(final CommentContext ctx) {
-        CommentStatement result = new CommentStatement(getDatabaseType());
+        CommentStatement.CommentStatementBuilder result = CommentStatement.builder().databaseType(getDatabaseType());
         if (null != ctx.tableName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+            result.table((SimpleTableSegment) visit(ctx.tableName()));
         }
         if (null != ctx.columnName()) {
-            result.setColumn((ColumnSegment) visit(ctx.columnName()));
+            result.column((ColumnSegment) visit(ctx.columnName()));
         }
-        return result;
+        return result.build();
     }
 }

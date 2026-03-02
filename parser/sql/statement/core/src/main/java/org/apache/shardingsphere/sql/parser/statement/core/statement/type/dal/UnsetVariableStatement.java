@@ -32,16 +32,16 @@ public final class UnsetVariableStatement extends DALStatement {
     
     private final String variableName;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public UnsetVariableStatement(final DatabaseType databaseType, final String scope, final String variableName) {
         super(databaseType);
         this.scope = scope;
         this.variableName = variableName;
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

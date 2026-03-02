@@ -19,7 +19,6 @@ package org.apache.shardingsphere.driver.state.circuit.statement;
 
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
 import org.apache.shardingsphere.driver.state.circuit.resultset.CircuitBreakerResultSet;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -297,12 +296,12 @@ class CircuitBreakerPreparedStatementTest {
     
     @Test
     void assertGetResultSetConcurrency() {
-        Assertions.assertEquals(ResultSet.CONCUR_READ_ONLY, new CircuitBreakerPreparedStatement().getResultSetConcurrency());
+        assertThat(new CircuitBreakerPreparedStatement().getResultSetConcurrency(), is(ResultSet.CONCUR_READ_ONLY));
     }
     
     @Test
     void assertGetResultSetType() {
-        Assertions.assertEquals(ResultSet.TYPE_FORWARD_ONLY, new CircuitBreakerPreparedStatement().getResultSetType());
+        assertThat(new CircuitBreakerPreparedStatement().getResultSetType(), is(ResultSet.TYPE_FORWARD_ONLY));
     }
     
     @Test

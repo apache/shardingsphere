@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
@@ -34,21 +34,26 @@ import java.util.Optional;
  * Comment statement.
  */
 @Getter
-@Setter
 public final class CommentStatement extends DDLStatement {
     
-    private SimpleTableSegment table;
+    private final SimpleTableSegment table;
     
-    private ColumnSegment column;
+    private final ColumnSegment column;
     
-    private IdentifierValue comment;
+    private final IdentifierValue comment;
     
-    private IndexTypeSegment indexType;
+    private final IndexTypeSegment indexType;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public CommentStatement(final DatabaseType databaseType) {
+    @Builder
+    private CommentStatement(final DatabaseType databaseType, final SimpleTableSegment table, final ColumnSegment column, final IdentifierValue comment, final IndexTypeSegment indexType) {
         super(databaseType);
+        this.table = table;
+        this.column = column;
+        this.comment = comment;
+        this.indexType = indexType;
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(null == table ? Collections.emptyList() : Collections.singletonList(table)));
     }
     
     /**
@@ -62,6 +67,5 @@ public final class CommentStatement extends DDLStatement {
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(null == table ? Collections.emptyList() : Collections.singletonList(table)));
     }
 }
