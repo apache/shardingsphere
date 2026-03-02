@@ -309,13 +309,13 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitComment(final CommentContext ctx) {
-        CommentStatement result = new CommentStatement(getDatabaseType());
+        CommentStatement.CommentStatementBuilder result = CommentStatement.builder().databaseType(getDatabaseType());
         if (null != ctx.tableName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+            result.table((SimpleTableSegment) visit(ctx.tableName()));
         }
         if (null != ctx.columnName()) {
-            result.setColumn((ColumnSegment) visit(ctx.columnName()));
+            result.column((ColumnSegment) visit(ctx.columnName()));
         }
-        return result;
+        return result.build();
     }
 }

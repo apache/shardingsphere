@@ -1145,43 +1145,49 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         if (null != ctx.commentClauses().objectTypeNameOnAnyName()) {
             return getTableFromComment(ctx);
         }
-        return new CommentStatement(getDatabaseType());
+        return CommentStatement.builder().databaseType(getDatabaseType()).build();
     }
     
     @SuppressWarnings("unchecked")
     private CommentStatement commentOnColumn(final CommentContext ctx) {
-        CommentStatement result = new CommentStatement(getDatabaseType());
         Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
+        CommentStatement.CommentStatementBuilder result = CommentStatement.builder().databaseType(getDatabaseType())
+                .comment(new IdentifierValue(ctx.commentClauses().commentText().getText()));
         Optional<NameSegment> columnName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
-        columnName.ifPresent(optional -> result.setColumn(new ColumnSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier())));
-        result.setComment(new IdentifierValue(ctx.commentClauses().commentText().getText()));
-        setTableSegment(result, nameSegmentIterator);
-        return result;
+        columnName.ifPresent(optional -> result.column(new ColumnSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier())));
+        return result.table(createTableSegment(nameSegmentIterator)).build();
     }
     
     @SuppressWarnings("unchecked")
     private CommentStatement commentOnTable(final CommentContext ctx) {
-        CommentStatement result = new CommentStatement(getDatabaseType());
         Iterator<NameSegment> nameSegmentIterator = ((CollectionValue<NameSegment>) visit(ctx.commentClauses().anyName())).getValue().iterator();
-        result.setComment(new IdentifierValue(ctx.commentClauses().commentText().getText()));
-        setTableSegment(result, nameSegmentIterator);
-        return result;
+        return CommentStatement.builder().databaseType(getDatabaseType()).comment(new IdentifierValue(ctx.commentClauses().commentText().getText()))
+                .table(createTableSegment(nameSegmentIterator)).build();
     }
     
-    private void setTableSegment(final CommentStatement statement, final Iterator<NameSegment> nameSegmentIterator) {
-        Optional<NameSegment> tableName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
-        tableName.ifPresent(optional -> statement.setTable(new SimpleTableSegment(new TableNameSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier()))));
-        Optional<NameSegment> schemaName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
-        schemaName.ifPresent(optional -> statement.getTable().setOwner(new OwnerSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier())));
-        Optional<NameSegment> databaseName = nameSegmentIterator.hasNext() ? Optional.of(nameSegmentIterator.next()) : Optional.empty();
-        databaseName.ifPresent(optional -> statement.getTable().getOwner()
-                .ifPresent(owner -> owner.setOwner(new OwnerSegment(optional.getStartIndex(), optional.getStopIndex(), optional.getIdentifier()))));
+    private SimpleTableSegment createTableSegment(final Iterator<NameSegment> nameSegmentIterator) {
+        if (!nameSegmentIterator.hasNext()) {
+            return null;
+        }
+        NameSegment tableName = nameSegmentIterator.next();
+        SimpleTableSegment result = new SimpleTableSegment(new TableNameSegment(tableName.getStartIndex(), tableName.getStopIndex(), tableName.getIdentifier()));
+        OwnerSegment owner = null;
+        if (nameSegmentIterator.hasNext()) {
+            NameSegment schemaName = nameSegmentIterator.next();
+            owner = new OwnerSegment(schemaName.getStartIndex(), schemaName.getStopIndex(), schemaName.getIdentifier());
+            result.setOwner(owner);
+        }
+        if (nameSegmentIterator.hasNext()) {
+            NameSegment databaseName = nameSegmentIterator.next();
+            if (null != owner) {
+                owner.setOwner(new OwnerSegment(databaseName.getStartIndex(), databaseName.getStopIndex(), databaseName.getIdentifier()));
+            }
+        }
+        return result;
     }
     
     private CommentStatement getTableFromComment(final CommentContext ctx) {
-        CommentStatement result = new CommentStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.commentClauses().tableName()));
-        return result;
+        return CommentStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.commentClauses().tableName())).build();
     }
     
     @Override

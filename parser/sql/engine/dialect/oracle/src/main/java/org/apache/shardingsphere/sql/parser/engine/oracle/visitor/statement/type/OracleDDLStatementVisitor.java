@@ -995,18 +995,17 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitComment(final CommentContext ctx) {
-        CommentStatement result = new CommentStatement(getDatabaseType());
+        CommentStatement.CommentStatementBuilder result = CommentStatement.builder().databaseType(getDatabaseType()).comment(new IdentifierValue(ctx.STRING_().getText()));
         if (null != ctx.tableName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+            result.table((SimpleTableSegment) visit(ctx.tableName()));
         }
         if (null != ctx.columnName()) {
-            result.setColumn((ColumnSegment) visit(ctx.columnName()));
+            result.column((ColumnSegment) visit(ctx.columnName()));
         }
         if (null != ctx.indexTypeName()) {
-            result.setIndexType((IndexTypeSegment) visit(ctx.indexTypeName()));
+            result.indexType((IndexTypeSegment) visit(ctx.indexTypeName()));
         }
-        result.setComment(new IdentifierValue(ctx.STRING_().getText()));
-        return result;
+        return result.build();
     }
     
     @Override

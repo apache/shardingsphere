@@ -46,11 +46,8 @@ public final class CommentStatementBinder implements SQLStatementBinder<CommentS
     }
     
     private CommentStatement copy(final CommentStatement sqlStatement, final SimpleTableSegment table, final ColumnSegment column) {
-        CommentStatement result = new CommentStatement(sqlStatement.getDatabaseType());
-        result.setTable(table);
-        result.setColumn(column);
-        result.setComment(sqlStatement.getComment());
-        result.setIndexType(sqlStatement.getIndexType().orElse(null));
+        CommentStatement result = CommentStatement.builder().databaseType(sqlStatement.getDatabaseType())
+                .table(table).column(column).comment(sqlStatement.getComment()).indexType(sqlStatement.getIndexType().orElse(null)).build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
