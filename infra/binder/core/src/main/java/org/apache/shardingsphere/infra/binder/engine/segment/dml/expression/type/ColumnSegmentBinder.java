@@ -291,10 +291,16 @@ public final class ColumnSegmentBinder {
             if (each instanceof FunctionTableSegmentBinderContext) {
                 return true;
             }
+            if (each instanceof SimpleTableSegmentBinderContext) {
+                return ((SimpleTableSegmentBinderContext) each).isContainsDBLink();
+            }
         }
         for (TableSegmentBinderContext each : outerBinderContexts) {
             if (each instanceof FunctionTableSegmentBinderContext) {
                 return true;
+            }
+            if (each instanceof SimpleTableSegmentBinderContext) {
+                return ((SimpleTableSegmentBinderContext) each).isContainsDBLink();
             }
         }
         return false;
