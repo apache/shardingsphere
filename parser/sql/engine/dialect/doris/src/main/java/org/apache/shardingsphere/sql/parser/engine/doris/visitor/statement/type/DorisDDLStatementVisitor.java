@@ -532,6 +532,9 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.createLikeClause()) {
             result.setLikeTable((SimpleTableSegment) visit(ctx.createLikeClause()));
+            for (IdentifierContext each : ctx.createLikeClause().identifier()) {
+                result.getRollups().add(new RollupSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(each.getText())));
+            }
         }
         if (null != ctx.createTableOptions()) {
             result.setCreateTableOption((CreateTableOptionSegment) visit(ctx.createTableOptions()));

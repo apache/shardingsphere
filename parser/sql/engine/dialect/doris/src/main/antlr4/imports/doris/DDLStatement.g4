@@ -689,7 +689,7 @@ visibility
     ;
 
 createLikeClause
-    : LP_? LIKE tableName RP_?
+    : LP_? LIKE tableName RP_? (WITH ROLLUP LP_ identifier (COMMA_ identifier)* RP_)?
     ;
 
 createIndexSpecification
