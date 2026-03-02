@@ -3573,3 +3573,7 @@ AUTOCOMMIT
 VALIDATE
     : V A L I D A T E
     ;
+
+CHERRY_PICK
+    : C H E R R Y '-' P I C K
+    ;

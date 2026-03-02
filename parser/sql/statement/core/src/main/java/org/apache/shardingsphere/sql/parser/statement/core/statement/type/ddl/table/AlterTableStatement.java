@@ -50,6 +50,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.feature.E
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ExecuteSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ModifyTableCommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ReplaceTableDefinitionSegment;
@@ -88,6 +89,8 @@ public final class AlterTableStatement extends DDLStatement {
     private LockTableSegment lockTableSegment;
     
     private DropPrimaryKeyDefinitionSegment dropPrimaryKeyDefinition;
+    
+    private ExecuteSegment executeSegment;
     
     private final Collection<PropertiesSegment> setPropertiesDefinitions = new LinkedList<>();
     
@@ -204,6 +207,15 @@ public final class AlterTableStatement extends DDLStatement {
      */
     public Optional<DropPrimaryKeyDefinitionSegment> getDropPrimaryKeyDefinition() {
         return Optional.ofNullable(dropPrimaryKeyDefinition);
+    }
+    
+    /**
+     * Get execute segment.
+     *
+     * @return execute segment
+     */
+    public Optional<ExecuteSegment> getExecuteSegment() {
+        return Optional.ofNullable(executeSegment);
     }
     
     @Override

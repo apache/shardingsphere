@@ -3381,4 +3381,8 @@
             </properties>
         </modify-engine>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_execute_cherry_pick">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
 </sql-parser-test-cases>

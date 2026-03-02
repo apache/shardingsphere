@@ -81,7 +81,12 @@ alterTable
     | alterTableCommonClause createTag
     | alterTableCommonClause dropBranch
     | alterTableCommonClause dropTag
+    | alterTableCommonClause EXECUTE alterTableExecuteClause
     ;
+
+    alterTableExecuteClause
+        : CHERRY_PICK NUMBER_
+        ;
 
 createView
     : CREATE VIEW ifNotExists? viewNameWithDb (LP_ columnName commentClause? (COMMA_ columnName commentClause?)* RP_)? commentClause? tblProperties? AS select
