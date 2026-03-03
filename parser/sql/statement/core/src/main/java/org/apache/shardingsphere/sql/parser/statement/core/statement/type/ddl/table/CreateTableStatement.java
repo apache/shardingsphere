@@ -70,9 +70,9 @@ public final class CreateTableStatement extends DDLStatement {
     
     @Builder
     private CreateTableStatement(final DatabaseType databaseType, final SimpleTableSegment table, final SelectStatement selectStatement,
-                                final boolean ifNotExists, final SimpleTableSegment likeTable, final CreateTableOptionSegment createTableOption,
-                                final Collection<ColumnDefinitionSegment> columnDefinitions, final Collection<ConstraintDefinitionSegment> constraintDefinitions,
-                                final List<ColumnSegment> columns, final Collection<RollupSegment> rollups) {
+                                 final boolean ifNotExists, final SimpleTableSegment likeTable, final CreateTableOptionSegment createTableOption,
+                                 final Collection<ColumnDefinitionSegment> columnDefinitions, final Collection<ConstraintDefinitionSegment> constraintDefinitions,
+                                 final List<ColumnSegment> columns, final Collection<RollupSegment> rollups) {
         super(databaseType);
         this.table = table;
         this.selectStatement = selectStatement;
