@@ -36,4 +36,4 @@ runs:
         path: |
           /tmp/maven-repo-output.tar.gz
           /tmp/apache-shardingsphere-proxy-test.tar
-        retention-days: 1
+        retention-days: 3

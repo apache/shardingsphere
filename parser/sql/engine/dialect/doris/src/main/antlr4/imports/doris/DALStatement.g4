@@ -802,6 +802,10 @@ backupTableSpec
     : tableName (PARTITION LP_ partitionList RP_)?
     ;
 
+cancelBackup
+    : CANCEL GLOBAL? BACKUP (FROM databaseName)?
+    ;
+
 show
     : showDatabases
     | showTables

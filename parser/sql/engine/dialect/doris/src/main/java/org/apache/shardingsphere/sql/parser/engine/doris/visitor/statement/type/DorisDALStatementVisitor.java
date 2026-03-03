@@ -160,6 +160,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowBui
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowAlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BackupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BackupTableSpecContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelBackupContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.BackupTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
@@ -212,6 +213,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Te
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisBackupStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCancelBackupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSwitchStatement;
@@ -1474,6 +1476,16 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.propertiesClause()) {
             result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCancelBackup(final CancelBackupContext ctx) {
+        DorisCancelBackupStatement result = new DorisCancelBackupStatement(getDatabaseType());
+        result.setGlobal(null != ctx.GLOBAL());
+        if (null != ctx.databaseName()) {
+            result.setDatabase((DatabaseSegment) visit(ctx.databaseName()));
         }
         return result;
     }
