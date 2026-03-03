@@ -92,6 +92,6 @@ class FirebirdAdminExecutorCreatorTest {
     }
     
     private static SQLStatementContext createOtherStatementContext() {
-        return new DeleteStatementContext(new DeleteStatement(DATABASE_TYPE));
+        return new DeleteStatementContext(DeleteStatement.builder().databaseType(DATABASE_TYPE).build());
     }
 }

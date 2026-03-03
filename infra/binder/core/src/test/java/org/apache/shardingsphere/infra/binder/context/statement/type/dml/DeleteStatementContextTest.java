@@ -45,14 +45,12 @@ class DeleteStatementContextTest {
     
     @Test
     void assertNewInstance() {
-        DeleteStatement deleteStatement = new DeleteStatement(databaseType);
         WhereSegment whereSegment = mock(WhereSegment.class);
         when(whereSegment.getExpr()).thenReturn(mock(ExpressionSegment.class));
-        deleteStatement.setWhere(whereSegment);
         JoinTableSegment tableSegment = new JoinTableSegment();
         tableSegment.setLeft(new SimpleTableSegment(createTableNameSegment("foo_tbl")));
         tableSegment.setRight(new SimpleTableSegment(createTableNameSegment("bar_tbl")));
-        deleteStatement.setTable(tableSegment);
+        DeleteStatement deleteStatement = DeleteStatement.builder().databaseType(databaseType).table(tableSegment).where(whereSegment).build();
         DeleteStatementContext actual = new DeleteStatementContext(deleteStatement);
         assertThat(actual.getTablesContext().getTableNames(), is(new HashSet<>(Arrays.asList("foo_tbl", "bar_tbl"))));
         assertThat(actual.getWhereSegments(), is(Collections.singletonList(whereSegment)));
@@ -60,7 +58,7 @@ class DeleteStatementContextTest {
                 is(Arrays.asList("foo_tbl", "bar_tbl")));
     }
     
-    private static TableNameSegment createTableNameSegment(final String tableName) {
+    private TableNameSegment createTableNameSegment(final String tableName) {
         TableNameSegment result = new TableNameSegment(0, 0, new IdentifierValue(tableName));
         result.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         return result;

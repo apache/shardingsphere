@@ -409,17 +409,18 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(getDatabaseType());
-        result.setTable((TableSegment) visit(ctx.deleteSpecification()));
+        TableSegment tableSegment = (TableSegment) visit(ctx.deleteSpecification());
         if (null != ctx.alias()) {
-            result.getTable().setAlias((AliasSegment) visit(ctx.alias()));
+            tableSegment.setAlias((AliasSegment) visit(ctx.alias()));
         }
+        DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder().databaseType(getDatabaseType()).table(tableSegment);
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
-        result.getVariableNames().addAll(getVariableNames());
-        return result;
+        DeleteStatement deleteStatement = result.build();
+        deleteStatement.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
+        deleteStatement.getVariableNames().addAll(getVariableNames());
+        return deleteStatement;
     }
     
     @Override
