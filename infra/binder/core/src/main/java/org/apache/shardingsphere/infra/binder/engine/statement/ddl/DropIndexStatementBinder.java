@@ -39,12 +39,14 @@ public final class DropIndexStatementBinder implements SQLStatementBinder<DropIn
     }
     
     private DropIndexStatement copy(final DropIndexStatement sqlStatement, final SimpleTableSegment boundTable) {
-        DropIndexStatement result = new DropIndexStatement(sqlStatement.getDatabaseType());
-        result.setSimpleTable(boundTable);
-        result.getIndexes().addAll(sqlStatement.getIndexes());
-        sqlStatement.getAlgorithmType().ifPresent(result::setAlgorithmType);
-        sqlStatement.getLockTable().ifPresent(result::setLockTable);
-        result.setIfExists(sqlStatement.isIfExists());
+        DropIndexStatement result = DropIndexStatement.builder()
+                .databaseType(sqlStatement.getDatabaseType())
+                .indexes(sqlStatement.getIndexes())
+                .ifExists(sqlStatement.isIfExists())
+                .simpleTable(boundTable)
+                .algorithmType(sqlStatement.getAlgorithmType().orElse(null))
+                .lockTable(sqlStatement.getLockTable().orElse(null))
+                .build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

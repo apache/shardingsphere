@@ -70,8 +70,10 @@ class DropIndexPushDownMetaDataRefresherTest {
                 Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
-        DropIndexStatement sqlStatement = new DropIndexStatement(databaseType);
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("missing_idx"))));
+        DropIndexStatement sqlStatement = DropIndexStatement.builder()
+                .databaseType(databaseType)
+                .indexes(Collections.singleton(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("missing_idx")))))
+                .build();
         refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_db", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         verifyNoInteractions(metaDataManagerPersistService);
     }
@@ -81,9 +83,11 @@ class DropIndexPushDownMetaDataRefresherTest {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class));
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
-        DropIndexStatement sqlStatement = new DropIndexStatement(databaseType);
-        sqlStatement.setSimpleTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_foo"))));
+        DropIndexStatement sqlStatement = DropIndexStatement.builder()
+                .databaseType(databaseType)
+                .simpleTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))))
+                .indexes(Collections.singleton(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_foo")))))
+                .build();
         assertThrows(TableNotFoundException.class, () -> refresher.refresh(metaDataManagerPersistService,
                 database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties())));
         verify(metaDataManagerPersistService, never()).alterTables(eq(database), eq("foo_schema"), any());
@@ -97,8 +101,10 @@ class DropIndexPushDownMetaDataRefresherTest {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", databaseType, Collections.singleton(table), Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
-        DropIndexStatement sqlStatement = new DropIndexStatement(databaseType);
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_foo"))));
+        DropIndexStatement sqlStatement = DropIndexStatement.builder()
+                .databaseType(databaseType)
+                .indexes(Collections.singleton(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_foo")))))
+                .build();
         refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_db", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         ArgumentCaptor<Collection<ShardingSphereTable>> alteredTablesCaptor = ArgumentCaptor.forClass(Collection.class);
         verify(metaDataManagerPersistService).alterTables(eq(database), eq("foo_db"), alteredTablesCaptor.capture());
