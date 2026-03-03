@@ -42,4 +42,12 @@ public interface DialectDALStatementBroadcastRouteDecider extends DatabaseTypedS
      * @return broadcast route or not
      */
     boolean isInstanceBroadcastRoute(DALStatement sqlStatement);
+    
+    /**
+     * Whether data source unicast route.
+     *
+     * @param sqlStatement SQL statement
+     * @return unicast route or not
+     */
+    boolean isDataSourceUnicastRoute(DALStatement sqlStatement);
 }
