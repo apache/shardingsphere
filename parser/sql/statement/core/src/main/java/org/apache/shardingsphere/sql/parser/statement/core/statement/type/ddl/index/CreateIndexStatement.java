@@ -69,8 +69,8 @@ public final class CreateIndexStatement extends DDLStatement {
     
     @Builder
     private CreateIndexStatement(final DatabaseType databaseType, final IndexSegment index, final SimpleTableSegment table, final boolean ifNotExists,
-                                final Integer anonymousIndexStartIndex, final AlgorithmTypeSegment algorithmType, final LockTableSegment lockTable,
-                                final Collection<ColumnSegment> columns, final String indexType, final PropertiesSegment properties, final String comment) {
+                                 final Integer anonymousIndexStartIndex, final AlgorithmTypeSegment algorithmType, final LockTableSegment lockTable,
+                                 final Collection<ColumnSegment> columns, final String indexType, final PropertiesSegment properties, final String comment) {
         super(databaseType);
         this.index = index;
         this.table = table;
