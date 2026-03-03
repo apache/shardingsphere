@@ -51,13 +51,15 @@ public final class DeleteStatementBinder implements SQLStatementBinder<DeleteSta
     }
     
     private DeleteStatement copy(final DeleteStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final WhereSegment boundWhere, final OrderBySegment boundOrderBy) {
-        DeleteStatement result = new DeleteStatement(sqlStatement.getDatabaseType());
-        result.setWith(boundWith);
-        result.setTable(boundTable);
-        result.setWhere(boundWhere);
-        result.setOrderBy(boundOrderBy);
-        sqlStatement.getLimit().ifPresent(result::setLimit);
-        sqlStatement.getOutput().ifPresent(result::setOutput);
+        DeleteStatement result = DeleteStatement.builder()
+                .databaseType(sqlStatement.getDatabaseType())
+                .with(boundWith)
+                .table(boundTable)
+                .where(boundWhere)
+                .orderBy(boundOrderBy)
+                .limit(sqlStatement.getLimit().orElse(null))
+                .output(sqlStatement.getOutput().orElse(null))
+                .build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

@@ -418,7 +418,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithDMLStatement() {
-        DeleteStatement sqlStatement = new DeleteStatement(databaseType);
+        DeleteStatement sqlStatement = DeleteStatement.builder().databaseType(databaseType).build();
         sqlStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "DELETE FROM t", "", Collections.emptyList());

@@ -148,13 +148,13 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        DeleteStatement deleteStatement = result.build();
+        deleteStatement.addParameterMarkers(getParameterMarkerSegments());
+        return deleteStatement;
     }
     
     @Override

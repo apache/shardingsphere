@@ -917,14 +917,14 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(databaseType);
         SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
-        result.setTable(tableSegment);
+        DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder().databaseType(databaseType).table(tableSegment);
         if (null != ctx.whereOrCurrentClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
+            result.where((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        DeleteStatement deleteStatement = result.build();
+        deleteStatement.addParameterMarkers(getParameterMarkerSegments());
+        return deleteStatement;
     }
     
     @Override

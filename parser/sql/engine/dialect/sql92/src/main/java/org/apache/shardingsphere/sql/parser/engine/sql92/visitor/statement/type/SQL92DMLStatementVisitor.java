@@ -191,13 +191,13 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(getDatabaseType());
-        result.setTable((TableSegment) visit(ctx.singleTableClause()));
+        DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder().databaseType(getDatabaseType()).table((TableSegment) visit(ctx.singleTableClause()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        DeleteStatement deleteStatement = result.build();
+        deleteStatement.addParameterMarkers(getParameterMarkerSegments());
+        return deleteStatement;
     }
     
     @Override
