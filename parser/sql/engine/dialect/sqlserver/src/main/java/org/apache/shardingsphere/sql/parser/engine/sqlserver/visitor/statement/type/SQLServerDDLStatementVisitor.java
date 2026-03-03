@@ -142,17 +142,22 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTableClause(final CreateTableClauseContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+        Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
         CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) generateCreateDefinitionSegment(ctx.createDefinitionClause().createTableDefinitions());
         for (CreateDefinitionSegment each : createDefinitions.getValue()) {
             if (each instanceof ColumnDefinitionSegment) {
-                result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                columnDefinitions.add((ColumnDefinitionSegment) each);
             } else if (each instanceof ConstraintDefinitionSegment) {
-                result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                constraintDefinitions.add((ConstraintDefinitionSegment) each);
             }
         }
-        return result;
+        return CreateTableStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .columnDefinitions(columnDefinitions)
+                .constraintDefinitions(constraintDefinitions)
+                .build();
     }
     
     private ASTNode generateCreateDefinitionSegment(final CreateTableDefinitionsContext ctx) {

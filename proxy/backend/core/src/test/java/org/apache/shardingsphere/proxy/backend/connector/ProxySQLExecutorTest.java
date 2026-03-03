@@ -409,9 +409,10 @@ class ProxySQLExecutorTest {
     }
     
     private CreateTableStatement createCreateTableStatement(final DatabaseType databaseType) {
-        CreateTableStatement result = new CreateTableStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return result;
+        return CreateTableStatement.builder()
+                .databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
+                .build();
     }
     
     private TruncateStatement createTruncateStatement(final DatabaseType databaseType) {

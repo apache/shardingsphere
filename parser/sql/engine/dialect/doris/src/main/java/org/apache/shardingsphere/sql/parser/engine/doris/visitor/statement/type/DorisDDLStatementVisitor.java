@@ -548,34 +548,47 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setIfNotExists(null != ctx.ifNotExists());
+        Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+        Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
                 if (each instanceof ColumnDefinitionSegment) {
-                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                    columnDefinitions.add((ColumnDefinitionSegment) each);
                 } else if (each instanceof ConstraintDefinitionSegment) {
-                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    constraintDefinitions.add((ConstraintDefinitionSegment) each);
                 }
             }
         }
+        SimpleTableSegment likeTable = null;
+        Collection<RollupSegment> rollups = new LinkedList<>();
         if (null != ctx.createLikeClause()) {
-            result.setLikeTable((SimpleTableSegment) visit(ctx.createLikeClause()));
+            likeTable = (SimpleTableSegment) visit(ctx.createLikeClause());
             for (IdentifierContext each : ctx.createLikeClause().identifier()) {
-                result.getRollups().add(new RollupSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(each.getText())));
+                rollups.add(new RollupSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(each.getText())));
             }
         }
+        CreateTableOptionSegment createTableOption = null;
         if (null != ctx.createTableOptions()) {
-            result.setCreateTableOption((CreateTableOptionSegment) visit(ctx.createTableOptions()));
+            createTableOption = (CreateTableOptionSegment) visit(ctx.createTableOptions());
         }
+        SelectStatement selectStatement = null;
         // DORIS ADDED BEGIN
         if (null != ctx.duplicateAsQueryExpression()) {
-            result.setSelectStatement((SelectStatement) visit(ctx.duplicateAsQueryExpression().select()));
+            selectStatement = (SelectStatement) visit(ctx.duplicateAsQueryExpression().select());
         }
         // DORIS ADDED END
-        return result;
+        return CreateTableStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .ifNotExists(null != ctx.ifNotExists())
+                .likeTable(likeTable)
+                .createTableOption(createTableOption)
+                .selectStatement(selectStatement)
+                .columnDefinitions(columnDefinitions)
+                .constraintDefinitions(constraintDefinitions)
+                .rollups(rollups)
+                .build();
     }
     
     @Override
