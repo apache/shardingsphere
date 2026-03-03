@@ -58,7 +58,7 @@ class DeleteStatementContextTest {
                 is(Arrays.asList("foo_tbl", "bar_tbl")));
     }
     
-    private static TableNameSegment createTableNameSegment(final String tableName) {
+    private TableNameSegment createTableNameSegment(final String tableName) {
         TableNameSegment result = new TableNameSegment(0, 0, new IdentifierValue(tableName));
         result.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
         return result;
