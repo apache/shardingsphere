@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ta
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.xml.XmlTableFunctionSegment;
@@ -54,8 +55,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -186,6 +187,14 @@ public final class TableAssert {
             MergeStatementAssert.assertIs(assertContext, actual.getSubquery().getMerge(), expected.getSubquery().getMergeTestCases());
         }
         assertThat(assertContext.getText("Table alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
+        if (!expected.getColumns().isEmpty()) {
+            assertThat(assertContext.getText("Subquery table columns size assertion error: "), actual.getColumns().size(), is(expected.getColumns().size()));
+            int count = 0;
+            for (ColumnSegment each : actual.getColumns()) {
+                ColumnAssert.assertIs(assertContext, each, expected.getColumns().get(count));
+                count++;
+            }
+        }
     }
     
     /**
