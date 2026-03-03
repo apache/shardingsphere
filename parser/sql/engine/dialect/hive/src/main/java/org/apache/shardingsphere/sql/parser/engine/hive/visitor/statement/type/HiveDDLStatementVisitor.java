@@ -396,7 +396,7 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = new DropIndexStatement(getDatabaseType());
+        DropIndexStatement result = DropIndexStatement.builder().databaseType(getDatabaseType()).build();
         result.setIfExists(null != ctx.ifExists());
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
                 new IdentifierValue(ctx.indexName().getText()));

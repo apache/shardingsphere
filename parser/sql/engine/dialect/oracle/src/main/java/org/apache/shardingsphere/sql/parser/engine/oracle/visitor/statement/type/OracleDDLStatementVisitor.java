@@ -878,7 +878,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = new DropIndexStatement(getDatabaseType());
+        DropIndexStatement result = DropIndexStatement.builder().databaseType(getDatabaseType()).build();
         result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
         return result;
     }
