@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataT
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.CreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,9 +58,8 @@ public final class DorisCreateFunctionStatement extends CreateFunctionStatement 
     
     private final Map<String, String> properties = new LinkedHashMap<>();
     
-    public DorisCreateFunctionStatement(final DatabaseType databaseType,
-                                        final FunctionNameSegment functionName, final RoutineBodySegment routineBody, final List<ExpressionSegment> dynamicSqlStatementExpressions) {
-        super(databaseType, functionName, routineBody, dynamicSqlStatementExpressions);
+    public DorisCreateFunctionStatement(final DatabaseType databaseType, final FunctionNameSegment functionName, final RoutineBodySegment routineBody) {
+        super(databaseType, functionName, routineBody, Collections.emptyList());
     }
     
     /**

@@ -1438,20 +1438,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
         RoutineBodySegment routineBody = null == ctx.routineBody() ? null : (RoutineBodySegment) visit(ctx.routineBody());
-        DorisCreateFunctionStatement result = new DorisCreateFunctionStatement(getDatabaseType(), (FunctionNameSegment) visit(ctx.functionName()), routineBody, Collections.emptyList());
-        if (null != routineBody) {
-            int paramIndex = 0;
-            for (int i = 0; i < ctx.dataType().size(); i++) {
-                DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType(i));
-                if (i == ctx.dataType().size() - 1 && null != ctx.RETURNS()) {
-                    result.setReturnType(dataType);
-                } else if (paramIndex < ctx.identifier().size()) {
-                    IdentifierValue paramName = (IdentifierValue) visit(ctx.identifier(paramIndex));
-                    result.getNamedParameters().put(paramName, dataType);
-                    paramIndex++;
-                }
-            }
-        } else {
+        DorisCreateFunctionStatement result = new DorisCreateFunctionStatement(getDatabaseType(), (FunctionNameSegment) visit(ctx.functionName()), routineBody);
+        if (null == routineBody) {
             if (null != ctx.GLOBAL()) {
                 result.setGlobal(true);
             }
@@ -1490,6 +1478,18 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             }
             if (null != ctx.PROPERTIES()) {
                 fillCreateFunctionProperties(ctx, result);
+            }
+        } else {
+            int paramIndex = 0;
+            for (int i = 0; i < ctx.dataType().size(); i++) {
+                DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType(i));
+                if (i == ctx.dataType().size() - 1 && null != ctx.RETURNS()) {
+                    result.setReturnType(dataType);
+                } else if (paramIndex < ctx.identifier().size()) {
+                    IdentifierValue paramName = (IdentifierValue) visit(ctx.identifier(paramIndex));
+                    result.getNamedParameters().put(paramName, dataType);
+                    paramIndex++;
+                }
             }
         }
         return result;
