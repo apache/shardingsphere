@@ -24,6 +24,9 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterColoca
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseSyncJobStatement;
@@ -38,6 +41,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropFunctionStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseSyncJobStatementTestCase;
@@ -79,6 +85,12 @@ public final class DorisDDLStatementAssert {
             DorisCreateJobStatementAssert.assertIs(assertContext, (DorisCreateJobStatement) actual, (DorisCreateJobStatementTestCase) expected);
         } else if (actual instanceof DorisAlterColocateGroupStatement) {
             DorisAlterColocateGroupStatementAssert.assertIs(assertContext, (DorisAlterColocateGroupStatement) actual, (DorisAlterColocateGroupStatementTestCase) expected);
+        } else if (actual instanceof DorisPauseJobStatement) {
+            DorisPauseJobStatementAssert.assertIs(assertContext, (DorisPauseJobStatement) actual, (DorisPauseJobStatementTestCase) expected);
+        } else if (actual instanceof DorisDropJobStatement) {
+            DorisDropJobStatementAssert.assertIs(assertContext, (DorisDropJobStatement) actual, (DorisDropJobStatementTestCase) expected);
+        } else if (actual instanceof DorisAlterJobStatement) {
+            DorisAlterJobStatementAssert.assertIs(assertContext, (DorisAlterJobStatement) actual, (DorisAlterJobStatementTestCase) expected);
         }
     }
 }
