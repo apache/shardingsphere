@@ -94,9 +94,7 @@ class ExplainStatementConverterTest {
     }
     
     private DeleteStatement createDeleteStatement() {
-        DeleteStatement result = new DeleteStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_delete"))));
-        return result;
+        return DeleteStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_delete")))).build();
     }
     
     private UpdateStatement createUpdateStatement() {

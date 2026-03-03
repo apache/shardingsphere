@@ -52,11 +52,13 @@ class DeleteStatementBinderTest {
     
     @Test
     void assertBind() {
-        DeleteStatement deleteStatement = new DeleteStatement(databaseType);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
-        deleteStatement.setTable(simpleTableSegment);
-        deleteStatement.setWhere(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),
-                new LiteralExpressionSegment(0, 0, 0), "=", "status = 1")));
+        DeleteStatement deleteStatement = DeleteStatement.builder()
+                .databaseType(databaseType)
+                .table(simpleTableSegment)
+                .where(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),
+                        new LiteralExpressionSegment(0, 0, 0), "=", "status = 1")))
+                .build();
         DeleteStatement actual = new DeleteStatementBinder().bind(deleteStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), deleteStatement));
         assertThat(actual, not(deleteStatement));
         assertThat(actual.getTable(), not(deleteStatement.getTable()));

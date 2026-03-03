@@ -1181,19 +1181,21 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(getDatabaseType());
-        result.setTable(null == ctx.multipleTablesClause() ? (TableSegment) visit(ctx.singleTableClause()) : (TableSegment) visit(ctx.multipleTablesClause()));
+        DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder()
+                .databaseType(getDatabaseType())
+                .table(null == ctx.multipleTablesClause() ? (TableSegment) visit(ctx.singleTableClause()) : (TableSegment) visit(ctx.multipleTablesClause()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            result.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+            result.limit((LimitSegment) visit(ctx.limitClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        DeleteStatement deleteStatement = result.build();
+        deleteStatement.addParameterMarkers(getParameterMarkerSegments());
+        return deleteStatement;
     }
     
     @Override

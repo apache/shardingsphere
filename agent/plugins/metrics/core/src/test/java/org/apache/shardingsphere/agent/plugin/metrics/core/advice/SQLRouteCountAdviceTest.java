@@ -73,7 +73,7 @@ class SQLRouteCountAdviceTest {
         return Stream.of(
                 Arguments.of("INSERT", createQueryContext(new InsertStatement(DATABASE_TYPE))),
                 Arguments.of("UPDATE", createQueryContext(new UpdateStatement(DATABASE_TYPE))),
-                Arguments.of("DELETE", createQueryContext(new DeleteStatement(DATABASE_TYPE))),
+                Arguments.of("DELETE", createQueryContext(DeleteStatement.builder().databaseType(DATABASE_TYPE).build())),
                 Arguments.of("SELECT", createQueryContext(new SelectStatement(DATABASE_TYPE))));
     }
     

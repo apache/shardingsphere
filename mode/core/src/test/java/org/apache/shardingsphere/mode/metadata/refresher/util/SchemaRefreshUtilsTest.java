@@ -49,7 +49,7 @@ class SchemaRefreshUtilsTest {
         when(tablesContext.getSchemaName()).thenReturn(Optional.empty());
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new DeleteStatement(TypedSPILoader.getService(DatabaseType.class, "FIXTURE")));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(DeleteStatement.builder().databaseType(TypedSPILoader.getService(DatabaseType.class, "FIXTURE")).build());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("FOO_DB");
         assertThat(SchemaRefreshUtils.getSchemaName(database, sqlStatementContext), is("foo_db"));

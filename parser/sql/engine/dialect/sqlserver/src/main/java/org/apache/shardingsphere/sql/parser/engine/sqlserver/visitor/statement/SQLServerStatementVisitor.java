@@ -1734,26 +1734,24 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(databaseType);
+        DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder().databaseType(databaseType);
         if (null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
+            result.with((WithSegment) visit(ctx.withClause()));
         }
         if (null != ctx.multipleTablesClause()) {
-            result.setTable((TableSegment) visit(ctx.multipleTablesClause()));
+            result.table((TableSegment) visit(ctx.multipleTablesClause()));
         } else {
-            result.setTable((TableSegment) visit(ctx.singleTableClause()));
+            result.table((TableSegment) visit(ctx.singleTableClause()));
         }
         if (null != ctx.outputClause()) {
-            result.setOutput((OutputSegment) visit(ctx.outputClause()));
+            result.output((OutputSegment) visit(ctx.outputClause()));
         }
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
-        if (null != ctx.outputClause()) {
-            result.setOutput((OutputSegment) visit(ctx.outputClause()));
-        }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        DeleteStatement deleteStatement = result.build();
+        deleteStatement.addParameterMarkers(getParameterMarkerSegments());
+        return deleteStatement;
     }
     
     @Override
