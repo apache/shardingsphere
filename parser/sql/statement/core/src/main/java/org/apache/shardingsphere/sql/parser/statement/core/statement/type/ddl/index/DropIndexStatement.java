@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -54,7 +55,8 @@ public final class DropIndexStatement extends DDLStatement {
     
     private SQLStatementAttributes attributes;
     
-    public DropIndexStatement(final DatabaseType databaseType) {
+    @Builder
+    private DropIndexStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
     

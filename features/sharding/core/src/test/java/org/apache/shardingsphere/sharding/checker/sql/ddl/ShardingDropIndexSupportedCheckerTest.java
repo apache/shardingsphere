@@ -55,7 +55,7 @@ class ShardingDropIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWhenIndexExistForPostgreSQL() {
-        DropIndexStatement sqlStatement = new DropIndexStatement(databaseType);
+        DropIndexStatement sqlStatement = DropIndexStatement.builder().databaseType(databaseType).build();
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         sqlStatement.buildAttributes();
@@ -69,7 +69,7 @@ class ShardingDropIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWhenIndexNotExistForPostgreSQL() {
-        DropIndexStatement sqlStatement = new DropIndexStatement(databaseType);
+        DropIndexStatement sqlStatement = DropIndexStatement.builder().databaseType(databaseType).build();
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
         sqlStatement.buildAttributes();
