@@ -148,6 +148,20 @@ class TablelessRouteEngineFactoryTest {
     }
     
     @Test
+    void assertNewInstanceForDataSourceUnicastRoute() {
+        DALStatement sqlStatement = mock(DALStatement.class);
+        when(sqlStatement.getDatabaseType()).thenReturn(databaseType);
+        when(sqlStatement.getAttributes()).thenReturn(new SQLStatementAttributes());
+        DialectDALStatementBroadcastRouteDecider dialectDALStatementBroadcastRouteDecider = mock(DialectDALStatementBroadcastRouteDecider.class);
+        when(dialectDALStatementBroadcastRouteDecider.isDataSourceUnicastRoute(sqlStatement)).thenReturn(true);
+        when(DatabaseTypedSPILoader.findService(DialectDALStatementBroadcastRouteDecider.class, databaseType)).thenReturn(Optional.of(dialectDALStatementBroadcastRouteDecider));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
+        TablelessRouteEngine actual = TablelessRouteEngineFactory.newInstance(queryContext, database);
+        assertThat(actual, isA(TablelessDataSourceUnicastRouteEngine.class));
+    }
+    
+    @Test
     void assertNewInstanceForCloseAllStatement() {
         CursorHeldSQLStatementContext closeStatementContext = mock(CursorHeldSQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(closeStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
