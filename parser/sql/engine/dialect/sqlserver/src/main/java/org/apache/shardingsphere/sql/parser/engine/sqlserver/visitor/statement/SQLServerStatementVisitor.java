@@ -2097,21 +2097,21 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTableAsSelectClause(final CreateTableAsSelectClauseContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(databaseType);
+        SimpleTableSegment table;
+        SelectStatement selectStatement;
+        List<ColumnSegment> columns = new LinkedList<>();
         if (null != ctx.createTableAsSelect()) {
-            result.setTable((SimpleTableSegment) visit(ctx.createTableAsSelect().tableName()));
-            result.setSelectStatement((SelectStatement) visit(ctx.createTableAsSelect().select()));
+            table = (SimpleTableSegment) visit(ctx.createTableAsSelect().tableName());
+            selectStatement = (SelectStatement) visit(ctx.createTableAsSelect().select());
             if (null != ctx.createTableAsSelect().columnNames()) {
                 CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(ctx.createTableAsSelect().columnNames());
-                for (ColumnSegment each : columnSegments.getValue()) {
-                    result.getColumns().add(each);
-                }
+                columns.addAll(columnSegments.getValue());
             }
         } else {
-            result.setTable((SimpleTableSegment) visit(ctx.createRemoteTableAsSelect().tableName()));
-            result.setSelectStatement((SelectStatement) visit(ctx.createRemoteTableAsSelect().select()));
+            table = (SimpleTableSegment) visit(ctx.createRemoteTableAsSelect().tableName());
+            selectStatement = (SelectStatement) visit(ctx.createRemoteTableAsSelect().select());
         }
-        return result;
+        return CreateTableStatement.builder().databaseType(databaseType).table(table).selectStatement(selectStatement).columns(columns).build();
     }
     
     @Override

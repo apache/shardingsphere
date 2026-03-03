@@ -95,7 +95,7 @@ class SingleRouteEngineTest {
     
     @Test
     void assertRouteWithoutSingleRule() throws SQLException {
-        CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
+        CreateTableStatement sqlStatement = CreateTableStatement.builder().databaseType(databaseType).build();
         SingleRouteEngine engine = new SingleRouteEngine(Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item")), sqlStatement, mock());
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
@@ -112,7 +112,7 @@ class SingleRouteEngineTest {
     
     @Test
     void assertRouteWithDefaultSingleRule() throws SQLException {
-        CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
+        CreateTableStatement sqlStatement = CreateTableStatement.builder().databaseType(databaseType).build();
         SingleRouteEngine engine = new SingleRouteEngine(Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item")), sqlStatement, mock());
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();

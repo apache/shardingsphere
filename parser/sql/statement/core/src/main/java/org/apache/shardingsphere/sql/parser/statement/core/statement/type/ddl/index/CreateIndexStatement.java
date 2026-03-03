@@ -35,7 +35,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -78,7 +77,7 @@ public final class CreateIndexStatement extends DDLStatement {
         this.anonymousIndexStartIndex = anonymousIndexStartIndex;
         this.algorithmType = algorithmType;
         this.lockTable = lockTable;
-        this.columns = null == columns ? new LinkedList<>() : new LinkedList<>(columns);
+        this.columns = null == columns ? Collections.emptyList() : columns;
         this.indexType = indexType;
         this.properties = properties;
         this.comment = comment;

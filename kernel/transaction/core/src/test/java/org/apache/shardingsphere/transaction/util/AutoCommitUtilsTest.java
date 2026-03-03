@@ -36,7 +36,7 @@ class AutoCommitUtilsTest {
     
     @Test
     void assertIsNeedStartTransactionWithDDL() {
-        assertTrue(AutoCommitUtils.isNeedStartTransaction(new CreateTableStatement(databaseType)));
+        assertTrue(AutoCommitUtils.isNeedStartTransaction(CreateTableStatement.builder().databaseType(databaseType).build()));
     }
     
     @Test

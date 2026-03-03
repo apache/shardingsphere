@@ -269,20 +269,25 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setIfNotExists(null != ctx.ifNotExists());
+        Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+        Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
                 if (each instanceof ColumnDefinitionSegment) {
-                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                    columnDefinitions.add((ColumnDefinitionSegment) each);
                 } else if (each instanceof ConstraintDefinitionSegment) {
-                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    constraintDefinitions.add((ConstraintDefinitionSegment) each);
                 }
             }
         }
-        return result;
+        return CreateTableStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .ifNotExists(null != ctx.ifNotExists())
+                .columnDefinitions(columnDefinitions)
+                .constraintDefinitions(constraintDefinitions)
+                .build();
     }
     
     @Override

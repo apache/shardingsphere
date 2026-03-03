@@ -271,26 +271,27 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setIfNotExists(null != ctx.ifNotExists());
+        Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+        Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
                 if (each instanceof ColumnDefinitionSegment) {
-                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                    columnDefinitions.add((ColumnDefinitionSegment) each);
                 } else if (each instanceof ConstraintDefinitionSegment) {
-                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    constraintDefinitions.add((ConstraintDefinitionSegment) each);
                 }
             }
         }
-        if (null != ctx.createLikeClause()) {
-            result.setLikeTable((SimpleTableSegment) visit(ctx.createLikeClause()));
-        }
-        if (null != ctx.createTableOptions()) {
-            result.setCreateTableOption((CreateTableOptionSegment) visit(ctx.createTableOptions()));
-        }
-        return result;
+        return CreateTableStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .ifNotExists(null != ctx.ifNotExists())
+                .likeTable(null == ctx.createLikeClause() ? null : (SimpleTableSegment) visit(ctx.createLikeClause()))
+                .createTableOption(null == ctx.createTableOptions() ? null : (CreateTableOptionSegment) visit(ctx.createTableOptions()))
+                .columnDefinitions(columnDefinitions)
+                .constraintDefinitions(constraintDefinitions)
+                .build();
     }
     
     @Override

@@ -82,7 +82,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tr
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * DDL statement visitor for Firebird.
@@ -96,19 +98,24 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+        Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
                 if (each instanceof ColumnDefinitionSegment) {
-                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                    columnDefinitions.add((ColumnDefinitionSegment) each);
                 } else if (each instanceof ConstraintDefinitionSegment) {
-                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    constraintDefinitions.add((ConstraintDefinitionSegment) each);
                 }
             }
         }
-        return result;
+        return CreateTableStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .columnDefinitions(columnDefinitions)
+                .constraintDefinitions(constraintDefinitions)
+                .build();
     }
     
     @Override
