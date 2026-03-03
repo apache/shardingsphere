@@ -19,8 +19,8 @@
 <rewrite-assertions yaml-rule="scenario/mix/config/query-with-cipher.yaml">
     <rewrite-assertion id="select_not_nested_subquery_in_table_alias" db-types="MySQL">
         <input sql="SELECT count(*) as cnt FROM (SELECT ab.password FROM t_account ab) X" />
-        <output sql="SELECT count(*) as cnt FROM (SELECT ab.cipher_password AS password_C, ab.assisted_query_password AS password_A FROM t_account_0 ab) X" />
-        <output sql="SELECT count(*) as cnt FROM (SELECT ab.cipher_password AS password_C, ab.assisted_query_password AS password_A FROM t_account_1 ab) X" />
+        <output sql="SELECT count(*) as cnt FROM (SELECT ab.`cipher_password` AS password_C, ab.assisted_query_password AS password_A FROM t_account_0 ab) X" />
+        <output sql="SELECT count(*) as cnt FROM (SELECT ab.`cipher_password` AS password_C, ab.assisted_query_password AS password_A FROM t_account_1 ab) X" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_not_nested_subquery_in_table_segment_with_shorthand_project_alias" db-types="MySQL">
@@ -37,7 +37,7 @@
     
     <rewrite-assertion id="select_not_nested_subquery_in_table_segment_alias" db-types="MySQL">
         <input sql="SELECT o.password FROM (SELECT a.password FROM t_account a) o" />
-        <output sql="SELECT o.password_C AS password FROM (SELECT a.cipher_password AS password_C, a.assisted_query_password AS password_A FROM t_account_0 a) o" />
-        <output sql="SELECT o.password_C AS password FROM (SELECT a.cipher_password AS password_C, a.assisted_query_password AS password_A FROM t_account_1 a) o" />
+        <output sql="SELECT o.password_C AS password FROM (SELECT a.`cipher_password` AS password_C, a.assisted_query_password AS password_A FROM t_account_0 a) o" />
+        <output sql="SELECT o.password_C AS password FROM (SELECT a.`cipher_password` AS password_C, a.assisted_query_password AS password_A FROM t_account_1 a) o" />
     </rewrite-assertion>
 </rewrite-assertions>
