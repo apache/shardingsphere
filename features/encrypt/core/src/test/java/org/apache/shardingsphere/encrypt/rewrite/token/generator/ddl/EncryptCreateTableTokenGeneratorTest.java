@@ -41,6 +41,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import static org.hamcrest.Matchers.is;
@@ -108,10 +109,11 @@ class EncryptCreateTableTokenGeneratorTest {
     }
     
     private CreateTableStatement createCreateTableStatement() {
-        CreateTableStatement result = new CreateTableStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))));
-        result.getColumnDefinitions().add(new ColumnDefinitionSegment(25, 78, new ColumnSegment(25, 42, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false, ""));
-        result.buildAttributes();
-        return result;
+        return CreateTableStatement.builder()
+                .databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))))
+                .columnDefinitions(Collections.singleton(
+                        new ColumnDefinitionSegment(25, 78, new ColumnSegment(25, 42, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false, "")))
+                .build();
     }
 }

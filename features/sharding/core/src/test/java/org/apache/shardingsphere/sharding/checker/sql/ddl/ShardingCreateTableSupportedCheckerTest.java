@@ -48,9 +48,10 @@ class ShardingCreateTableSupportedCheckerTest {
     
     @Test
     void assertCheck() {
-        CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("foo_tbl"))));
-        sqlStatement.buildAttributes();
+        CreateTableStatement sqlStatement = CreateTableStatement.builder()
+                .databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("foo_tbl"))))
+                .build();
         assertThrows(TableExistsException.class, () -> assertCheck(sqlStatement));
     }
     
@@ -64,10 +65,11 @@ class ShardingCreateTableSupportedCheckerTest {
     
     @Test
     void assertCheckIfNotExists() {
-        CreateTableStatement sqlStatement = new CreateTableStatement(databaseType);
-        sqlStatement.setIfNotExists(true);
-        sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("foo_tbl"))));
-        sqlStatement.buildAttributes();
+        CreateTableStatement sqlStatement = CreateTableStatement.builder()
+                .databaseType(databaseType)
+                .ifNotExists(true)
+                .table(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("foo_tbl"))))
+                .build();
         assertCheckIfNotExists(sqlStatement);
     }
     

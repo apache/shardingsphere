@@ -134,7 +134,7 @@ class SingleSQLRouterTest {
     
     @Test
     void assertCreateRouteContextWithDistributedTable() {
-        QueryContext queryContext = mockQueryContext(new CreateTableStatement(databaseType));
+        QueryContext queryContext = mockQueryContext(CreateTableStatement.builder().databaseType(databaseType).build());
         ShardingSphereDatabase database = mockDatabaseWithDistributedTables(Collections.singleton("foo_tbl"));
         SingleRule rule = mock(SingleRule.class);
         when(rule.getQualifiedTables(queryContext.getSqlStatementContext(), database)).thenReturn(Collections.singletonList(new QualifiedTable("foo_db", "foo_tbl")));
@@ -205,7 +205,7 @@ class SingleSQLRouterTest {
     
     @Test
     void assertDecorateRouteContextWithDistributedTable() {
-        QueryContext queryContext = mockQueryContext(new CreateTableStatement(databaseType));
+        QueryContext queryContext = mockQueryContext(CreateTableStatement.builder().databaseType(databaseType).build());
         ShardingSphereDatabase database = mockDatabaseWithDistributedTables(Collections.singleton("foo_tbl"));
         SingleRule rule = mock(SingleRule.class);
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
@@ -292,16 +292,14 @@ class SingleSQLRouterTest {
     }
     
     private QueryContext createQueryContext() {
-        CreateTableStatement createTableStatement = new CreateTableStatement(databaseType);
         TableNameSegment tableNameSegment = new TableNameSegment(1, 2, new IdentifierValue("foo_tbl"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        createTableStatement.setTable(new SimpleTableSegment(tableNameSegment));
-        createTableStatement.buildAttributes();
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class);
         when(metaData.containsDatabase("foo_db")).thenReturn(true);
         when(metaData.getDatabase("foo_db")).thenReturn(mock(ShardingSphereDatabase.class));
-        return new QueryContext(new CommonSQLStatementContext(createTableStatement), "CREATE TABLE", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
+        return new QueryContext(new CommonSQLStatementContext(CreateTableStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(tableNameSegment)).build()),
+                "CREATE TABLE", Collections.emptyList(), new HintValueContext(), connectionContext, metaData);
     }
 }

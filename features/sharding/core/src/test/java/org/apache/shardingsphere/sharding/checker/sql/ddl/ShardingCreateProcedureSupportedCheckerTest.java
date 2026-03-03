@@ -111,8 +111,10 @@ class ShardingCreateProcedureSupportedCheckerTest {
     
     @Test
     void assertCheckWithTableExists() {
-        CreateTableStatement createTableStatement = new CreateTableStatement(databaseType);
-        createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
+        CreateTableStatement createTableStatement = CreateTableStatement.builder()
+                .databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))))
+                .build();
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(createTableStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
