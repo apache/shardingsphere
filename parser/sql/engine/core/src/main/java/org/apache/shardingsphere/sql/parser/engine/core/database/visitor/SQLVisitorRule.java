@@ -303,6 +303,12 @@ public enum SQLVisitorRule {
     
     SHOW_SYNC_JOB("ShowSyncJob", SQLStatementType.DAL),
     
+    ALTER_JOB("AlterJob", SQLStatementType.DDL),
+    
+    DROP_JOB("DropJob", SQLStatementType.DDL),
+    
+    PAUSE_JOB("PauseJob", SQLStatementType.DDL),
+    
     ALTER_CATALOG("AlterCatalog", SQLStatementType.DDL),
     
     ALTER_COLOCATE_GROUP("AlterColocateGroup", SQLStatementType.DDL),
