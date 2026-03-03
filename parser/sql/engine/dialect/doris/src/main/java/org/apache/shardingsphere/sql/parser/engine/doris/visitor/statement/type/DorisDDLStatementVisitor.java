@@ -1146,31 +1146,32 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setIfNotExists(null != ctx.ifNotExists());
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
-        result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
-        result.getColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
-        if (null != ctx.dorisIndexTypeClause()) {
-            result.setIndexType(ctx.dorisIndexTypeClause().getStop().getText());
-        }
-        if (null != ctx.propertiesClause()) {
-            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
-        }
-        if (null != ctx.commentClause() && null != ctx.commentClause().literals()) {
-            String commentText = SQLUtils.getExactlyValue(ctx.commentClause().literals().getText());
-            result.setComment(commentText);
-            CommentSegment commentSegment = new CommentSegment(commentText, ctx.commentClause().literals().getStart().getStartIndex(), ctx.commentClause().literals().getStop().getStopIndex());
-            result.getComments().add(commentSegment);
-        }
+        String comment = null == ctx.commentClause() || null == ctx.commentClause().literals() ? null : SQLUtils.getExactlyValue(ctx.commentClause().literals().getText());
+        AlgorithmTypeSegment algorithmType = null;
+        LockTableSegment lockTable = null;
         if (null != ctx.algorithmOptionAndLockOption()) {
             if (null != ctx.algorithmOptionAndLockOption().alterAlgorithmOption()) {
-                result.setAlgorithmType((AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption()));
+                algorithmType = (AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption());
             }
             if (null != ctx.algorithmOptionAndLockOption().alterLockOption()) {
-                result.setLockTable((LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption()));
+                lockTable = (LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption());
             }
+        }
+        CreateIndexStatement result = CreateIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .ifNotExists(null != ctx.ifNotExists())
+                .index(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName))
+                .columns(((CollectionValue) visit(ctx.keyListWithExpression())).getValue())
+                .indexType(null == ctx.dorisIndexTypeClause() ? null : ctx.dorisIndexTypeClause().getStop().getText())
+                .properties(null == ctx.propertiesClause() ? null : extractPropertiesSegment(ctx.propertiesClause()))
+                .comment(comment)
+                .algorithmType(algorithmType)
+                .lockTable(lockTable)
+                .build();
+        if (null != ctx.commentClause() && null != ctx.commentClause().literals()) {
+            result.getComments().add(new CommentSegment(comment, ctx.commentClause().literals().getStart().getStartIndex(), ctx.commentClause().literals().getStop().getStopIndex()));
         }
         return result;
     }

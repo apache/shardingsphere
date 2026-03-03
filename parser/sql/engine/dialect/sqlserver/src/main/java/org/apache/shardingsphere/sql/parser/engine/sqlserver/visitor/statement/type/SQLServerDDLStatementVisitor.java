@@ -328,11 +328,12 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setIndex((IndexSegment) visit(ctx.indexName()));
-        result.getColumns().addAll(((CollectionValue) visit(ctx.columnNamesWithSort())).getValue());
-        return result;
+        return CreateIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .index((IndexSegment) visit(ctx.indexName()))
+                .columns(((CollectionValue) visit(ctx.columnNamesWithSort())).getValue())
+                .build();
     }
     
     @Override
