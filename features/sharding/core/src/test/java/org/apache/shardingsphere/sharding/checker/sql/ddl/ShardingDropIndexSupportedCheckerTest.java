@@ -35,6 +35,7 @@ import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -55,9 +56,11 @@ class ShardingDropIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWhenIndexExistForPostgreSQL() {
-        DropIndexStatement sqlStatement = DropIndexStatement.builder().databaseType(databaseType).build();
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
+        DropIndexStatement sqlStatement = DropIndexStatement.builder()
+                .databaseType(databaseType)
+                .indexes(Arrays.asList(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))),
+                        new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new")))))
+                .build();
         sqlStatement.buildAttributes();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
@@ -69,9 +72,11 @@ class ShardingDropIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWhenIndexNotExistForPostgreSQL() {
-        DropIndexStatement sqlStatement = DropIndexStatement.builder().databaseType(databaseType).build();
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
+        DropIndexStatement sqlStatement = DropIndexStatement.builder()
+                .databaseType(databaseType)
+                .indexes(Arrays.asList(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))),
+                        new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new")))))
+                .build();
         sqlStatement.buildAttributes();
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema("public").getAllTables()).thenReturn(Collections.singleton(table));
