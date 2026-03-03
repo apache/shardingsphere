@@ -706,23 +706,29 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
-        result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
-        result.getColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
+        IndexSegment index = new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName);
         if (null != ctx.createIndexSpecification() && null != ctx.createIndexSpecification().UNIQUE()) {
-            result.getIndex().setUniqueKey(true);
+            index.setUniqueKey(true);
         }
+        AlgorithmTypeSegment algorithmType = null;
+        LockTableSegment lockTable = null;
         if (null != ctx.algorithmOptionAndLockOption()) {
             if (null != ctx.algorithmOptionAndLockOption().alterAlgorithmOption()) {
-                result.setAlgorithmType((AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption()));
+                algorithmType = (AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption());
             }
             if (null != ctx.algorithmOptionAndLockOption().alterLockOption()) {
-                result.setLockTable((LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption()));
+                lockTable = (LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption());
             }
         }
-        return result;
+        return CreateIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .index(index)
+                .columns(((CollectionValue) visit(ctx.keyListWithExpression())).getValue())
+                .algorithmType(algorithmType)
+                .lockTable(lockTable)
+                .build();
     }
     
     @Override

@@ -829,16 +829,17 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
+        SimpleTableSegment table = null;
+        Collection<ColumnSegment> columns = Collections.emptyList();
         if (null != ctx.createIndexDefinitionClause().tableIndexClause()) {
-            result.setTable((SimpleTableSegment) visit(ctx.createIndexDefinitionClause().tableIndexClause().tableName()));
-            result.getColumns().addAll(((CollectionValue) visit(ctx.createIndexDefinitionClause().tableIndexClause().indexExpressions())).getValue());
+            table = (SimpleTableSegment) visit(ctx.createIndexDefinitionClause().tableIndexClause().tableName());
+            columns = ((CollectionValue) visit(ctx.createIndexDefinitionClause().tableIndexClause().indexExpressions())).getValue();
         }
-        result.setIndex((IndexSegment) visit(ctx.indexName()));
+        IndexSegment index = (IndexSegment) visit(ctx.indexName());
         if (null != ctx.createIndexSpecification() && null != ctx.createIndexSpecification().UNIQUE()) {
-            result.getIndex().setUniqueKey(true);
+            index.setUniqueKey(true);
         }
-        return result;
+        return CreateIndexStatement.builder().databaseType(getDatabaseType()).table(table).columns(columns).index(index).build();
     }
     
     @Override

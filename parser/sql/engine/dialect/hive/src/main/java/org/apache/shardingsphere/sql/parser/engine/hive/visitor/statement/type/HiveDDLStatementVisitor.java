@@ -94,7 +94,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * DDL statement visitor for Hive.
@@ -371,17 +373,20 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
-        result.setIndex(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
-                new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
-                        new IdentifierValue(ctx.indexName().getText()))));
-        result.setTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
+        Collection<ColumnSegment> columns = new LinkedList<>();
         if (null != ctx.columnNamesCommonClause()) {
             for (ColumnNameContext each : ctx.columnNamesCommonClause().columnNames().columnName()) {
-                result.getColumns().add(new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(each.getText())));
+                columns.add(new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(each.getText())));
             }
         }
-        return result;
+        return CreateIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .index(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
+                        new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
+                                new IdentifierValue(ctx.indexName().getText()))))
+                .table((SimpleTableSegment) visit(ctx.tableNameWithDb()))
+                .columns(columns)
+                .build();
     }
     
     @Override

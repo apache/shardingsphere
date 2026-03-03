@@ -532,16 +532,24 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
-        result.setIfNotExists(null != ctx.ifNotExists());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue());
+        SimpleTableSegment table = (SimpleTableSegment) visit(ctx.tableName());
+        Collection<ColumnSegment> columns = ((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue();
         if (null == ctx.indexName()) {
-            result.setAnonymousIndexStartIndex(ctx.ON().getSymbol().getStartIndex() - 1);
-        } else {
-            result.setIndex((IndexSegment) visit(ctx.indexName()));
+            return CreateIndexStatement.builder()
+                    .databaseType(getDatabaseType())
+                    .ifNotExists(null != ctx.ifNotExists())
+                    .table(table)
+                    .columns(columns)
+                    .anonymousIndexStartIndex(ctx.ON().getSymbol().getStartIndex() - 1)
+                    .build();
         }
-        return result;
+        return CreateIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .ifNotExists(null != ctx.ifNotExists())
+                .table(table)
+                .columns(columns)
+                .index((IndexSegment) visit(ctx.indexName()))
+                .build();
     }
     
     @Override
