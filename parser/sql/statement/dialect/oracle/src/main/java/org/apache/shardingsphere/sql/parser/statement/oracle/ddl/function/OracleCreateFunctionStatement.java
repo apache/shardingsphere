@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.statement.oracle.ddl.function;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.ProcedureCallNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.procedure.SQLStatementSegment;
@@ -39,8 +38,8 @@ public final class OracleCreateFunctionStatement extends CreateFunctionStatement
     private final List<ProcedureCallNameSegment> procedureCallNames;
     
     public OracleCreateFunctionStatement(final DatabaseType databaseType, final List<SQLStatementSegment> sqlStatements, final List<ProcedureCallNameSegment> procedureCallNames,
-                                         final FunctionNameSegment functionName, final RoutineBodySegment routineBody, final List<ExpressionSegment> dynamicSqlStatementExpressions) {
-        super(databaseType, functionName, routineBody, dynamicSqlStatementExpressions);
+                                         final FunctionNameSegment functionName, final List<ExpressionSegment> dynamicSqlStatementExpressions) {
+        super(databaseType, functionName, null, dynamicSqlStatementExpressions);
         this.sqlStatements = sqlStatements;
         this.procedureCallNames = procedureCallNames;
     }

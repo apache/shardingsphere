@@ -1008,6 +1008,18 @@ resumeJob
     : RESUME JOB WHERE jobName EQ_ stringLiterals
     ;
 
+pauseJob
+    : PAUSE JOB WHERE jobName EQ_ stringLiterals
+    ;
+
+dropJob
+    : DROP JOB WHERE jobName EQ_ stringLiterals
+    ;
+
+alterJob
+    : ALTER JOB jobName propertiesClause? (DO insert)?
+    ;
+
 resumeSyncJob
     : RESUME SYNC JOB (owner DOT_)? identifier
     ;

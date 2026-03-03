@@ -118,6 +118,9 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoopSta
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ModifyColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ModifyDistributionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PartitionValueListContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PauseJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PauseSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PlaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PrepareContext;
@@ -267,6 +270,9 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateJobSt
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisStopSyncJobStatement;
@@ -400,6 +406,31 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitResumeJob(final ResumeJobContext ctx) {
         String jobName = SQLUtils.getExactlyValue(ctx.stringLiterals().getText());
         return new DorisResumeJobStatement(getDatabaseType(), jobName);
+    }
+    
+    @Override
+    public ASTNode visitAlterJob(final AlterJobContext ctx) {
+        DorisAlterJobStatement result = new DorisAlterJobStatement(getDatabaseType());
+        result.setJobName(new JobNameSegment(ctx.jobName().start.getStartIndex(), ctx.jobName().stop.getStopIndex(), (IdentifierValue) visit(ctx.jobName().identifier())));
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        if (null != ctx.insert()) {
+            result.setInsertStatement((InsertStatement) visit(ctx.insert()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitPauseJob(final PauseJobContext ctx) {
+        String jobName = SQLUtils.getExactlyValue(ctx.stringLiterals().getText());
+        return new DorisPauseJobStatement(getDatabaseType(), jobName);
+    }
+    
+    @Override
+    public ASTNode visitDropJob(final DropJobContext ctx) {
+        String jobName = SQLUtils.getExactlyValue(ctx.stringLiterals().getText());
+        return new DorisDropJobStatement(getDatabaseType(), jobName);
     }
     
     @Override
@@ -1438,20 +1469,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
         RoutineBodySegment routineBody = null == ctx.routineBody() ? null : (RoutineBodySegment) visit(ctx.routineBody());
-        DorisCreateFunctionStatement result = new DorisCreateFunctionStatement(getDatabaseType(), (FunctionNameSegment) visit(ctx.functionName()), routineBody, Collections.emptyList());
-        if (null != routineBody) {
-            int paramIndex = 0;
-            for (int i = 0; i < ctx.dataType().size(); i++) {
-                DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType(i));
-                if (i == ctx.dataType().size() - 1 && null != ctx.RETURNS()) {
-                    result.setReturnType(dataType);
-                } else if (paramIndex < ctx.identifier().size()) {
-                    IdentifierValue paramName = (IdentifierValue) visit(ctx.identifier(paramIndex));
-                    result.getNamedParameters().put(paramName, dataType);
-                    paramIndex++;
-                }
-            }
-        } else {
+        DorisCreateFunctionStatement result = new DorisCreateFunctionStatement(getDatabaseType(), (FunctionNameSegment) visit(ctx.functionName()), routineBody);
+        if (null == routineBody) {
             if (null != ctx.GLOBAL()) {
                 result.setGlobal(true);
             }
@@ -1490,6 +1509,18 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             }
             if (null != ctx.PROPERTIES()) {
                 fillCreateFunctionProperties(ctx, result);
+            }
+        } else {
+            int paramIndex = 0;
+            for (int i = 0; i < ctx.dataType().size(); i++) {
+                DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType(i));
+                if (i == ctx.dataType().size() - 1 && null != ctx.RETURNS()) {
+                    result.setReturnType(dataType);
+                } else if (paramIndex < ctx.identifier().size()) {
+                    IdentifierValue paramName = (IdentifierValue) visit(ctx.identifier(paramIndex));
+                    result.getNamedParameters().put(paramName, dataType);
+                    paramIndex++;
+                }
             }
         }
         return result;

@@ -30,6 +30,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterColocateGroupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropFunctionStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseSyncJobStatementTestCase;
@@ -554,6 +557,15 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "resume-job")
     private final List<DorisResumeJobStatementTestCase> resumeJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "pause-job")
+    private final List<DorisPauseJobStatementTestCase> pauseJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-job")
+    private final List<DorisDropJobStatementTestCase> dropJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-job")
+    private final List<DorisAlterJobStatementTestCase> alterJobTestCases = new LinkedList<>();
     
     @XmlElement(name = "resume-sync-job")
     private final List<DorisResumeSyncJobStatementTestCase> resumeSyncJobTestCases = new LinkedList<>();

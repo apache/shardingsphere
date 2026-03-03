@@ -141,6 +141,9 @@ execute
     | startReplica
     | createMaterializedView
     | resumeJob
+    | pauseJob
+    | dropJob
+    | alterJob
     | resumeSyncJob
     | pauseSyncJob
     | stopSyncJob
