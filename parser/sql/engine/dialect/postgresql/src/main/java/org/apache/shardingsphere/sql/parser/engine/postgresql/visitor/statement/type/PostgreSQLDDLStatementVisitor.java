@@ -792,7 +792,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        return new CreateFunctionStatement(getDatabaseType());
+        return new CreateFunctionStatement(getDatabaseType(), null, null, Collections.emptyList());
     }
     
     @Override
