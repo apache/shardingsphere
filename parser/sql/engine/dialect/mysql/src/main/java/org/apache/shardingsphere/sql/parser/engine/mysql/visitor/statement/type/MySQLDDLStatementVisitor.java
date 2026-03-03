@@ -792,10 +792,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        CreateFunctionStatement result = new CreateFunctionStatement(getDatabaseType());
-        result.setFunctionName((FunctionNameSegment) visit(ctx.functionName()));
-        result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
-        return result;
+        return new CreateFunctionStatement(getDatabaseType(), (FunctionNameSegment) visit(ctx.functionName()), (RoutineBodySegment) visit(ctx.routineBody()), Collections.emptyList());
     }
     
     @SuppressWarnings("unchecked")

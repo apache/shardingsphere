@@ -1437,9 +1437,9 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        DorisCreateFunctionStatement result = new DorisCreateFunctionStatement(getDatabaseType());
-        result.setFunctionName((FunctionNameSegment) visit(ctx.functionName()));
-        if (null != ctx.routineBody()) {
+        RoutineBodySegment routineBody = null == ctx.routineBody() ? null : (RoutineBodySegment) visit(ctx.routineBody());
+        DorisCreateFunctionStatement result = new DorisCreateFunctionStatement(getDatabaseType(), (FunctionNameSegment) visit(ctx.functionName()), routineBody, Collections.emptyList());
+        if (null != routineBody) {
             int paramIndex = 0;
             for (int i = 0; i < ctx.dataType().size(); i++) {
                 DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType(i));
@@ -1451,7 +1451,6 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
                     paramIndex++;
                 }
             }
-            result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
         } else {
             if (null != ctx.GLOBAL()) {
                 result.setGlobal(true);

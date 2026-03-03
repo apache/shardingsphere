@@ -1075,10 +1075,8 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         getSqlStatementsInPlsql().sort(Comparator.comparingInt(SQLStatementSegment::getStartIndex));
         getProcedureCallNames().sort(Comparator.comparingInt(ProcedureCallNameSegment::getStartIndex));
         getDynamicSqlStatementExpressions().sort(Comparator.comparingInt(ExpressionSegment::getStartIndex));
-        OracleCreateFunctionStatement result = new OracleCreateFunctionStatement(getDatabaseType(), getSqlStatementsInPlsql(), getProcedureCallNames());
-        result.setFunctionName(visitFunctionName(ctx.plsqlFunctionSource()));
-        result.getDynamicSqlStatementExpressions().addAll(getDynamicSqlStatementExpressions());
-        return result;
+        return new OracleCreateFunctionStatement(
+                getDatabaseType(), getSqlStatementsInPlsql(), getProcedureCallNames(), visitFunctionName(ctx.plsqlFunctionSource()), null, getDynamicSqlStatementExpressions());
     }
     
     private FunctionNameSegment visitFunctionName(final PlsqlFunctionSourceContext ctx) {

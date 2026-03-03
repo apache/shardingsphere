@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sql.parser.statement.doris.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.CreateFunctionStatement;
@@ -55,8 +57,9 @@ public final class DorisCreateFunctionStatement extends CreateFunctionStatement 
     
     private final Map<String, String> properties = new LinkedHashMap<>();
     
-    public DorisCreateFunctionStatement(final DatabaseType databaseType) {
-        super(databaseType);
+    public DorisCreateFunctionStatement(final DatabaseType databaseType,
+                                        final FunctionNameSegment functionName, final RoutineBodySegment routineBody, final List<ExpressionSegment> dynamicSqlStatementExpressions) {
+        super(databaseType, functionName, routineBody, dynamicSqlStatementExpressions);
     }
     
     /**
