@@ -69,9 +69,11 @@ class ShardingDropIndexRouteContextCheckerTest {
     
     @Test
     void assertCheckWithSameRouteResultShardingTableIndexForPostgreSQL() {
-        DropIndexStatement sqlStatement = DropIndexStatement.builder().databaseType(databaseType).build();
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
+        DropIndexStatement sqlStatement = DropIndexStatement.builder()
+                .databaseType(databaseType)
+                .indexes(Arrays.asList(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))),
+                        new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new")))))
+                .build();
         sqlStatement.buildAttributes();
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("t_order");
@@ -90,9 +92,11 @@ class ShardingDropIndexRouteContextCheckerTest {
     
     @Test
     void assertCheckWithDifferentRouteResultShardingTableIndexForPostgreSQL() {
-        DropIndexStatement sqlStatement = DropIndexStatement.builder().databaseType(databaseType).build();
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
-        sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
+        DropIndexStatement sqlStatement = DropIndexStatement.builder()
+                .databaseType(databaseType)
+                .indexes(Arrays.asList(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))),
+                        new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new")))))
+                .build();
         sqlStatement.buildAttributes();
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("t_order");

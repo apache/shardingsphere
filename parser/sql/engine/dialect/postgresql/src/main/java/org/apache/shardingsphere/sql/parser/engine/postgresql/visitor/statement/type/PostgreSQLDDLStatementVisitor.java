@@ -754,10 +754,11 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = DropIndexStatement.builder().databaseType(getDatabaseType()).build();
-        result.setIfExists(null != ctx.ifExists());
-        result.getIndexes().addAll(createIndexSegments(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue()));
-        return result;
+        return DropIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .ifExists(null != ctx.ifExists())
+                .indexes(createIndexSegments(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue()))
+                .build();
     }
     
     private Collection<IndexSegment> createIndexSegments(final Collection<SimpleTableSegment> tableSegments) {

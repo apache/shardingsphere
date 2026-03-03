@@ -734,19 +734,24 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = DropIndexStatement.builder().databaseType(getDatabaseType()).build();
-        result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
-        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
-        result.getIndexes().add(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
+        AlgorithmTypeSegment algorithmType = null;
+        LockTableSegment lockTable = null;
         if (null != ctx.algorithmOptionAndLockOption()) {
             if (null != ctx.algorithmOptionAndLockOption().alterAlgorithmOption()) {
-                result.setAlgorithmType((AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption()));
+                algorithmType = (AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption());
             }
             if (null != ctx.algorithmOptionAndLockOption().alterLockOption()) {
-                result.setLockTable((LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption()));
+                lockTable = (LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption());
             }
         }
-        return result;
+        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
+        return DropIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .indexes(Collections.singleton(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName)))
+                .simpleTable((SimpleTableSegment) visit(ctx.tableName()))
+                .algorithmType(algorithmType)
+                .lockTable(lockTable)
+                .build();
     }
     
     @Override
