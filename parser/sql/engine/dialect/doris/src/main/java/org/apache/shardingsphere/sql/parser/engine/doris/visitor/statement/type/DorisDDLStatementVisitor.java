@@ -73,6 +73,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateF
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateStreamingJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLikeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLogfileGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateMaterializedViewContext;
@@ -135,6 +136,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameR
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RepeatStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReplaceTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelTaskContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RollupItemContext;
@@ -267,9 +269,11 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterColoca
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateStreamingJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCancelTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseJobStatement;
@@ -521,6 +525,37 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         }
         result.setInsertStatement((InsertStatement) visit(ctx.insert()));
         return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateStreamingJob(final CreateStreamingJobContext ctx) {
+        DorisCreateStreamingJobStatement result = new DorisCreateStreamingJobStatement(getDatabaseType());
+        result.setJobName(new JobNameSegment(ctx.jobName().start.getStartIndex(), ctx.jobName().stop.getStopIndex(), (IdentifierValue) visit(ctx.jobName().identifier())));
+        if (null != ctx.COMMENT() && null != ctx.string_()) {
+            result.setComment(new JobCommentSegment(ctx.COMMENT().getSymbol().getStartIndex(), ctx.string_().stop.getStopIndex(), SQLUtils.getExactlyValue(ctx.string_().getText())));
+        }
+        if (null != ctx.jobProps) {
+            result.setJobProperties(extractPropertiesSegmentFromPropertiesContext(ctx.jobProps));
+        }
+        if (null != ctx.streamingSourceType()) {
+            result.setSourceType(ctx.streamingSourceType().getText().toUpperCase());
+            result.setSourceProperties(extractPropertiesSegmentFromPropertiesContext(ctx.sourceProps));
+            result.setTargetDatabase(ctx.databaseName().getText());
+            if (null != ctx.targetProps) {
+                result.setTargetProperties(extractPropertiesSegmentFromPropertiesContext(ctx.targetProps));
+            }
+        }
+        if (null != ctx.insert()) {
+            result.setInsertStatement((InsertStatement) visit(ctx.insert()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCancelTask(final CancelTaskContext ctx) {
+        String jobName = SQLUtils.getExactlyValue(ctx.stringLiterals().getText());
+        long taskId = Long.parseLong(ctx.numberLiterals().getText());
+        return new DorisCancelTaskStatement(getDatabaseType(), jobName, taskId);
     }
     
     private JobScheduleSegment createJobScheduleSegment(final JobScheduleExpressionContext ctx) {

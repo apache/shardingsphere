@@ -162,6 +162,8 @@ execute
     | sync
     | unsetVariable
     | createJob
+    | createStreamingJob
+    | cancelTask
     | backup
     | cancelBackup
     // TODO consider refactor following sytax to SEMI_? EOF

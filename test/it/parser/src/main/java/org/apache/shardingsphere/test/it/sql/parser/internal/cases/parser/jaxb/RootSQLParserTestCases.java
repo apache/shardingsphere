@@ -38,6 +38,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisStopSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCancelTaskStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateStreamingJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropSqlBlockRuleStatementTestCase;
@@ -584,6 +586,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "create-job")
     private final List<DorisCreateJobStatementTestCase> createJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-streaming-job")
+    private final List<DorisCreateStreamingJobStatementTestCase> createStreamingJobTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-catalog")
     private final List<AlterCatalogStatementTestCase> alterCatalogTestCases = new LinkedList<>();
@@ -1298,6 +1303,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "cancel-backup")
     private final List<DorisCancelBackupStatementTestCase> cancelBackupTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "cancel-task")
+    private final List<DorisCancelTaskStatementTestCase> cancelTaskTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-shadow-algorithm")
     private final List<DropShadowAlgorithmStatementTestCase> dropShadowAlgorithmTestCases = new LinkedList<>();

@@ -291,6 +291,10 @@ public enum SQLVisitorRule {
     
     CREATE_JOB("CreateJob", SQLStatementType.DDL),
     
+    CREATE_STREAMING_JOB("CreateStreamingJob", SQLStatementType.DDL),
+    
+    CANCEL_TASK("CancelTask", SQLStatementType.DDL),
+    
     RESUME_JOB("ResumeJob", SQLStatementType.DDL),
     
     RESUME_SYNC_JOB("ResumeSyncJob", SQLStatementType.DDL),
