@@ -2019,6 +2019,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.subquery()) {
@@ -2027,6 +2028,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             SubqueryTableSegment result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
             if (null != ctx.alias()) {
                 result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            if (null != ctx.columnNames()) {
+                result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
             }
             return result;
         }

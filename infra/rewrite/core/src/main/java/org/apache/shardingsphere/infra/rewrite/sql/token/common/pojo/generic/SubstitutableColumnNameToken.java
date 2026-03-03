@@ -101,6 +101,9 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         } else {
             builder.append(quoteCharacter.wrap(projection.getColumnLabel()));
         }
+        if (projection.getAlias().isPresent()) {
+            builder.append(" AS ").append(getValueWithQuoteCharacters(projection.getAlias().get()));
+        }
         return builder.toString();
     }
     
@@ -113,9 +116,6 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         }
         builder.append(getValueWithQuoteCharacters(columnProjection.getName()));
         columnProjection.getRightParentheses().ifPresent(optional -> builder.append(")"));
-        if (columnProjection.getAlias().isPresent()) {
-            builder.append(" AS ").append(getValueWithQuoteCharacters(columnProjection.getAlias().get()));
-        }
     }
     
     private String getValueWithQuoteCharacters(final IdentifierValue identifierValue) {

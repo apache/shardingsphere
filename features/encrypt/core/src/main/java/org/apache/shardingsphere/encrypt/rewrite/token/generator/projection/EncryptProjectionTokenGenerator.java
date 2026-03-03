@@ -118,9 +118,10 @@ public final class EncryptProjectionTokenGenerator {
                 generateExpressionSQLTokens(betweenExpression.getAndExpr(), selectStatementContext, processedSubqueryStartIndexes, result, "BETWEEN");
             }
         }
+        String subqueryOperator = selectStatementContext.isContainsCombine() ? "COMBINE" : "";
         for (Entry<Integer, SelectStatementContext> entry : selectStatementContext.getSubqueryContexts().entrySet()) {
             if (!processedSubqueryStartIndexes.contains(entry.getKey())) {
-                result.addAll(generateSQLTokens(entry.getValue(), operator));
+                result.addAll(generateSQLTokens(entry.getValue(), subqueryOperator));
             }
         }
         return result;
@@ -283,10 +284,14 @@ public final class EncryptProjectionTokenGenerator {
         IdentifierValue cipherColumnName = TableSourceType.TEMPORARY_TABLE == columnProjection.getColumnBoundInfo().getTableSourceType()
                 ? new IdentifierValue(EncryptDerivedColumnSuffix.CIPHER.getDerivedColumnName(columnProjection.getName().getValue(), databaseType),
                         columnProjection.getName().getQuoteCharacter())
-                : new IdentifierValue(encryptColumn.getCipher().getName(), columnProjection.getName().getQuoteCharacter());
+                : new IdentifierValue(encryptColumn.getCipher().getName(), dialectDatabaseMetaData.getQuoteCharacter());
         IdentifierValue columnAlias = columnProjection.getAlias().orElse(columnProjection.getName());
         IdentifierValue cipherColumnAlias = getEncryptColumnAliasInTableSegmentSubquery(columnProjection, columnAlias, EncryptDerivedColumnSuffix.CIPHER);
-        result.add(new ColumnProjection(columnProjection.getOwner().orElse(null), cipherColumnName, cipherColumnAlias, databaseType));
+        ParenthesesSegment leftParentheses = columnProjection.getLeftParentheses().orElse(null);
+        ParenthesesSegment rightParentheses = columnProjection.getRightParentheses().orElse(null);
+        ColumnProjection projection = new ColumnProjection(columnProjection.getOwner().orElse(null), cipherColumnName, cipherColumnAlias, databaseType, leftParentheses, rightParentheses,
+                columnProjection.getColumnBoundInfo());
+        result.add(projection);
         encryptColumn.getAssistedQuery().ifPresent(optional -> addAssistedQueryColumn(columnProjection, optional, columnAlias, result));
         encryptColumn.getLikeQuery().ifPresent(optional -> addLikeQueryColumn(columnProjection, optional, columnAlias, result));
         return result;

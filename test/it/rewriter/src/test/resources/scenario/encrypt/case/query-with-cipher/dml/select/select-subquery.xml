@@ -24,17 +24,17 @@
 
     <rewrite-assertion id="select_not_nested_subquery_in_table_segment" db-types="MySQL">
         <input sql="SELECT u.amount, u.password, o.certificate_number FROM (SELECT certificate_number FROM t_account) o, t_account u WHERE o.certificate_number=u.certificate_number AND u.password=?" parameters="1" />
-        <output sql="SELECT u.`cipher_amount` AS amount, u.`cipher_password` AS password, o.certificate_number_C AS certificate_number FROM (SELECT cipher_certificate_number AS certificate_number_C, assisted_query_certificate_number AS certificate_number_A, like_query_certificate_number AS certificate_number_L FROM t_account) o, t_account u WHERE o.certificate_number_A=u.`assisted_query_certificate_number` AND u.`assisted_query_password`=?" parameters="assisted_query_1" />
+        <output sql="SELECT u.`cipher_amount` AS amount, u.`cipher_password` AS password, o.certificate_number_C AS certificate_number FROM (SELECT `cipher_certificate_number` AS certificate_number_C, assisted_query_certificate_number AS certificate_number_A, like_query_certificate_number AS certificate_number_L FROM t_account) o, t_account u WHERE o.certificate_number_A=u.`assisted_query_certificate_number` AND u.`assisted_query_password`=?" parameters="assisted_query_1" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_not_nested_subquery_in_table_segment_refed" db-types="MySQL">
         <input sql="SELECT u.amount, u.password, o.certificate_number FROM (SELECT certificate_number FROM t_account_bak) o, t_account u WHERE o.certificate_number=u.certificate_number AND u.password=?" parameters="1" />
-        <output sql="SELECT u.`cipher_amount` AS amount, u.`cipher_password` AS password, o.certificate_number_C AS certificate_number FROM (SELECT cipher_certificate_number AS certificate_number_C, assisted_query_certificate_number AS certificate_number_A, like_query_certificate_number AS certificate_number_L FROM t_account_bak) o, t_account u WHERE o.certificate_number_A=u.`assisted_query_certificate_number` AND u.`assisted_query_password`=?" parameters="assisted_query_1" />
+        <output sql="SELECT u.`cipher_amount` AS amount, u.`cipher_password` AS password, o.certificate_number_C AS certificate_number FROM (SELECT `cipher_certificate_number` AS certificate_number_C, assisted_query_certificate_number AS certificate_number_A, like_query_certificate_number AS certificate_number_L FROM t_account_bak) o, t_account u WHERE o.certificate_number_A=u.`assisted_query_certificate_number` AND u.`assisted_query_password`=?" parameters="assisted_query_1" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_not_nested_subquery_in_table_segment_alias" db-types="MySQL">
         <input sql="SELECT o.certificate_number FROM (SELECT a.certificate_number FROM t_account a) o" />
-        <output sql="SELECT o.certificate_number_C AS certificate_number FROM (SELECT a.cipher_certificate_number AS certificate_number_C, a.assisted_query_certificate_number AS certificate_number_A, a.like_query_certificate_number AS certificate_number_L FROM t_account a) o" />
+        <output sql="SELECT o.certificate_number_C AS certificate_number FROM (SELECT a.`cipher_certificate_number` AS certificate_number_C, a.assisted_query_certificate_number AS certificate_number_A, a.like_query_certificate_number AS certificate_number_L FROM t_account a) o" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_not_nested_subquery_in_table_segment_with_shorthand_project_alias" db-types="MySQL">
@@ -64,7 +64,7 @@
 
     <rewrite-assertion id="select_not_nested_subquery_in_table_with_alias" db-types="MySQL">
         <input sql="SELECT count(*) as cnt FROM (SELECT ab.certificate_number FROM t_account ab) X" />
-        <output sql="SELECT count(*) as cnt FROM (SELECT ab.cipher_certificate_number AS certificate_number_C, ab.assisted_query_certificate_number AS certificate_number_A, ab.like_query_certificate_number AS certificate_number_L FROM t_account ab) X" />
+        <output sql="SELECT count(*) as cnt FROM (SELECT ab.`cipher_certificate_number` AS certificate_number_C, ab.assisted_query_certificate_number AS certificate_number_A, ab.like_query_certificate_number AS certificate_number_L FROM t_account ab) X" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_not_nested_subquery_in_predicate_left_and_right_equal_condition" db-types="MySQL">
@@ -94,7 +94,7 @@
 
     <rewrite-assertion id="select_not_nested_subquery_in_tablesegment_from_alias" db-types="MySQL">
         <input sql="SELECT b.certificate_number, b.amount FROM (SELECT a.certificate_number as certificate_number, a.amount FROM t_account a WHERE a.amount = 1373) b" />
-        <output sql="SELECT b.certificate_number_C AS certificate_number, b.amount_C AS amount FROM (SELECT a.cipher_certificate_number AS certificate_number_C, a.assisted_query_certificate_number AS certificate_number_A, a.like_query_certificate_number AS certificate_number_L, a.cipher_amount AS amount_C FROM t_account a WHERE a.`cipher_amount` = 'encrypt_1373') b" />
+        <output sql="SELECT b.certificate_number_C AS certificate_number, b.amount_C AS amount FROM (SELECT a.`cipher_certificate_number` AS certificate_number_C, a.assisted_query_certificate_number AS certificate_number_A, a.like_query_certificate_number AS certificate_number_L, a.`cipher_amount` AS amount_C FROM t_account a WHERE a.`cipher_amount` = 'encrypt_1373') b" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_exists_sub_query" db-types="MySQL">
@@ -104,11 +104,11 @@
 
     <rewrite-assertion id="select_sub_query_with_group_by" db-types="MySQL">
         <input sql="SELECT COUNT(1) AS cnt FROM (SELECT a.amount FROM t_account a GROUP BY a.amount DESC ) AS tmp" />
-        <output sql="SELECT COUNT(1) AS cnt FROM (SELECT a.cipher_amount AS amount_C FROM t_account a GROUP BY a.`cipher_amount` DESC ) AS tmp" />
+        <output sql="SELECT COUNT(1) AS cnt FROM (SELECT a.`cipher_amount` AS amount_C FROM t_account a GROUP BY a.`cipher_amount` DESC ) AS tmp" />
     </rewrite-assertion>
 
     <rewrite-assertion id="select_concat_in_subquery" db-types="MySQL">
         <input sql="SELECT COUNT(*) FROM (SELECT * FROM (SELECT password FROM t_account WHERE password like concat('%', 'zhangsan', '%')) t) TOTAL" />
-        <output sql="SELECT COUNT(*) FROM (SELECT t.password_C, t.password_A, t.password_L FROM (SELECT cipher_password AS password_C, assisted_query_password AS password_A, like_query_password AS password_L FROM t_account WHERE `like_query_password` like concat('like_query_%', 'like_query_zhangsan', 'like_query_%')) t) TOTAL" />
+        <output sql="SELECT COUNT(*) FROM (SELECT t.password_C, t.password_A, t.password_L FROM (SELECT `cipher_password` AS password_C, assisted_query_password AS password_A, like_query_password AS password_L FROM t_account WHERE `like_query_password` like concat('like_query_%', 'like_query_zhangsan', 'like_query_%')) t) TOTAL" />
     </rewrite-assertion>
 </rewrite-assertions>
