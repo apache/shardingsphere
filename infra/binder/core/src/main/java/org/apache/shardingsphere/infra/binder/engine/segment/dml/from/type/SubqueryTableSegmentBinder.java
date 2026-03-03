@@ -22,22 +22,33 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.ColumnSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.syntax.DifferenceInColumnCountOfSelectListAndColumnNameListException;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.PivotSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Subquery table segment binder.
@@ -73,9 +84,68 @@ public final class SubqueryTableSegmentBinder {
         segment.getAliasSegment().ifPresent(result::setAlias);
         Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
                 boundSubSelect.getProjections().getProjections(), subqueryTableName, binderContext.getSqlStatement().getDatabaseType(), TableSourceType.TEMPORARY_TABLE);
+        Collection<ColumnSegment> boundSubqueryColumns = bindSubqueryColumns(segment.getColumns(), new ArrayList<>(subqueryProjections));
+        result.getColumns().addAll(boundSubqueryColumns);
+        if (!boundSubqueryColumns.isEmpty()) {
+            subqueryProjections = createBoundSubqueryColumnProjections(boundSubqueryColumns, subqueryTableName);
+        }
         SimpleTableSegmentBinderContext tableBinderContext = new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE);
         tableBinderContext.setFromWithSegment(fromWithSegment);
         tableBinderContexts.put(CaseInsensitiveString.of(subqueryTableName.getValue()), tableBinderContext);
+        return result;
+    }
+    
+    private static Collection<ProjectionSegment> createBoundSubqueryColumnProjections(final Collection<ColumnSegment> columns, final IdentifierValue subqueryTableName) {
+        Collection<ProjectionSegment> result = new LinkedList<>();
+        for (ColumnSegment each : columns) {
+            ColumnSegment projectionColumn = copy(each);
+            if (!"".equals(subqueryTableName.getValue())) {
+                projectionColumn.setOwner(new OwnerSegment(0, 0, subqueryTableName));
+            }
+            result.add(new ColumnProjectionSegment(projectionColumn));
+        }
+        return result;
+    }
+    
+    private static Collection<ColumnSegment> bindSubqueryColumns(final Collection<ColumnSegment> columns, final List<ProjectionSegment> projectionSegments) {
+        if (columns.isEmpty()) {
+            return Collections.emptyList();
+        }
+        ShardingSpherePreconditions.checkState(columns.size() == projectionSegments.size(), DifferenceInColumnCountOfSelectListAndColumnNameListException::new);
+        int index = 0;
+        Collection<ColumnSegment> result = new LinkedList<>();
+        for (ColumnSegment each : columns) {
+            ColumnSegment boundColumnSegment = copy(each);
+            ProjectionSegment projectionSegment = projectionSegments.get(index);
+            if (projectionSegment instanceof ColumnProjectionSegment) {
+                ColumnSegment projectionColumn = ((ColumnProjectionSegment) projectionSegment).getColumn();
+                boundColumnSegment.setColumnBoundInfo(ColumnSegmentBinder.createColumnSegmentBoundInfo(each, projectionColumn, TableSourceType.TEMPORARY_TABLE));
+            }
+            result.add(boundColumnSegment);
+            index++;
+        }
+        return result;
+    }
+    
+    private static ColumnSegment copy(final ColumnSegment segment) {
+        ColumnSegment result = new ColumnSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
+        result.setNestedObjectAttributes(segment.getNestedObjectAttributes());
+        result.setColumnBoundInfo(copyColumnSegmentBoundInfo(segment.getColumnBoundInfo()));
+        result.setOtherUsingColumnBoundInfo(copyColumnSegmentBoundInfo(segment.getOtherUsingColumnBoundInfo()));
+        segment.getOwner().ifPresent(result::setOwner);
+        result.setVariable(segment.isVariable());
+        segment.getLeftParentheses().ifPresent(result::setLeftParentheses);
+        segment.getRightParentheses().ifPresent(result::setRightParentheses);
+        return result;
+    }
+    
+    private static ColumnSegmentBoundInfo copyColumnSegmentBoundInfo(final ColumnSegmentBoundInfo columnBoundInfo) {
+        if (null == columnBoundInfo) {
+            return null;
+        }
+        TableSegmentBoundInfo tableBoundInfo = new TableSegmentBoundInfo(columnBoundInfo.getOriginalDatabase(), columnBoundInfo.getOriginalSchema());
+        ColumnSegmentBoundInfo result = new ColumnSegmentBoundInfo(tableBoundInfo, columnBoundInfo.getOriginalTable(), columnBoundInfo.getOriginalColumn(), columnBoundInfo.getTableSourceType());
+        result.setOwner(columnBoundInfo.getOwner());
         return result;
     }
 }

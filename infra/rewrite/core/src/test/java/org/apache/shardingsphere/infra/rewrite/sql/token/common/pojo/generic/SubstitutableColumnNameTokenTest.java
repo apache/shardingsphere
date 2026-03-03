@@ -69,6 +69,6 @@ class SubstitutableColumnNameTokenTest {
                 new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), new IdentifierValue("id", QuoteCharacter.BACK_QUOTE), databaseType),
                 new SubqueryProjection(new SubqueryProjectionSegment(null, "(SELECT name FROM t_order)"),
                         new ColumnProjection(null, "name", null, databaseType), new IdentifierValue("name"), databaseType));
-        assertThat(new SubstitutableColumnNameToken(0, 1, projections, databaseType).toString(mock(RouteUnit.class)), is("temp.id AS id, name"));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projections, databaseType).toString(mock(RouteUnit.class)), is("temp.id AS id, name AS name"));
     }
 }
