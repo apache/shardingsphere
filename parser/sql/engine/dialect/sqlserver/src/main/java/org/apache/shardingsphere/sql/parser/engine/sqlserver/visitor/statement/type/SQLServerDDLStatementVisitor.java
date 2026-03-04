@@ -319,10 +319,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement(getDatabaseType());
-        result.setContainsCascade(null != ctx.ifExists());
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
-        return result;
+        return new DropTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue(), null != ctx.ifExists(), false);
     }
     
     @Override

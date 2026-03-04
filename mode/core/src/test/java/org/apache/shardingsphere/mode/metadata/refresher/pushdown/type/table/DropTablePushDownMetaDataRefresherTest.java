@@ -54,9 +54,9 @@ class DropTablePushDownMetaDataRefresherTest {
     void assertRefresh() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
-        DropTableStatement sqlStatement = new DropTableStatement(databaseType);
-        sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
-        sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl"))));
+        DropTableStatement sqlStatement = new DropTableStatement(databaseType, Arrays.asList(
+                new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))), new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")))),
+                false, false);
         refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         verify(metaDataManagerPersistService).dropTables(database, "foo_schema", Arrays.asList("foo_tbl", "bar_tbl"));
     }
