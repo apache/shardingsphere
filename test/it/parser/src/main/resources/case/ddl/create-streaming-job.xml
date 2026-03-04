@@ -75,4 +75,14 @@
         <source-property key="include_tables" value="t1" start-index="184" stop-index="206" />
         <source-property key="offset" value="initial" start-index="209" stop-index="228" />
     </create-streaming-job>
+
+    <create-streaming-job sql-case-id="create_streaming_job_with_quoted_target_db" source-type="MYSQL" target-database="target_db">
+        <job-name name="my_job" start-index="11" stop-index="16" />
+        <source-property key="jdbc_url" value="jdbc:mysql://127.0.0.1:3306" start-index="43" stop-index="84" />
+        <source-property key="user" value="root" start-index="87" stop-index="101" />
+        <source-property key="password" value="123456" start-index="104" stop-index="124" />
+        <source-property key="database" value="test" start-index="127" stop-index="145" />
+        <source-property key="include_tables" value="t1" start-index="148" stop-index="170" />
+        <source-property key="offset" value="initial" start-index="173" stop-index="192" />
+    </create-streaming-job>
 </sql-parser-test-cases>

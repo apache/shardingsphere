@@ -540,7 +540,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.streamingSourceType()) {
             result.setSourceType(ctx.streamingSourceType().getText().toUpperCase());
             result.setSourceProperties(extractPropertiesSegmentFromPropertiesContext(ctx.sourceProps));
-            result.setTargetDatabase(ctx.databaseName().getText());
+            result.setTargetDatabase(new IdentifierValue(ctx.databaseName().getText()).getValue());
             if (null != ctx.targetProps) {
                 result.setTargetProperties(extractPropertiesSegmentFromPropertiesContext(ctx.targetProps));
             }
