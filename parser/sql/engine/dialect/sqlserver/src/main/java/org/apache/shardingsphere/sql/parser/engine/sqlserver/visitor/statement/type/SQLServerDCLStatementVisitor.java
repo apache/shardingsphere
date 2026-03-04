@@ -69,7 +69,9 @@ import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.login.SQLSer
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.user.SQLServerDenyUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl.user.SQLServerSetUserStatement;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -84,19 +86,20 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        SQLServerGrantStatement result = new SQLServerGrantStatement(getDatabaseType());
+        Collection<SimpleTableSegment> tables = new LinkedList<>();
+        Collection<ColumnSegment> columns = new LinkedList<>();
         if (null != ctx.grantClassPrivilegesClause()) {
-            findTableSegment(ctx.grantClassPrivilegesClause().onClassClause(), ctx.grantClassPrivilegesClause().classPrivileges()).ifPresent(optional -> result.getTables().add(optional));
+            findTableSegment(ctx.grantClassPrivilegesClause().onClassClause(), ctx.grantClassPrivilegesClause().classPrivileges()).ifPresent(tables::add);
             if (null != ctx.grantClassPrivilegesClause().classPrivileges().columnNames()) {
                 for (ColumnNamesContext each : ctx.grantClassPrivilegesClause().classPrivileges().columnNames()) {
-                    result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(each)).getValue());
+                    columns.addAll(((CollectionValue<ColumnSegment>) visit(each)).getValue());
                 }
             }
         }
         if (null != ctx.grantClassTypePrivilegesClause()) {
-            findTableSegment(ctx.grantClassTypePrivilegesClause().onClassTypeClause()).ifPresent(optional -> result.getTables().add(optional));
+            findTableSegment(ctx.grantClassTypePrivilegesClause().onClassTypeClause()).ifPresent(tables::add);
         }
-        return result;
+        return new SQLServerGrantStatement(getDatabaseType(), tables, columns);
     }
     
     @SuppressWarnings("unchecked")
