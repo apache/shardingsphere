@@ -12,6 +12,7 @@
 1. SQL Parser: Support parsing MySQL CREATE sql - [#38237](https://github.com/apache/shardingsphere/pull/38237)
 1. SQL Parser: Support mysql subquery table projection alias visit to sql statement - [#38320](https://github.com/apache/shardingsphere/pull/38320)
 1. JDBC: Support setMaxRows and getMaxRows method in jdbc when not execute sql - [#38337](https://github.com/apache/shardingsphere/pull/38337)
+1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
 
 ## Release 5.5.3
 
