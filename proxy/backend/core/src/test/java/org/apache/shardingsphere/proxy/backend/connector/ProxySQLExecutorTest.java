@@ -420,9 +420,7 @@ class ProxySQLExecutorTest {
     }
     
     private InsertStatement createInsertStatement(final DatabaseType databaseType) {
-        InsertStatement result = new InsertStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))).build();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

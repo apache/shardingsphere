@@ -194,8 +194,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
     }
     
     private InsertStatementContext mockInsertStatementContext() {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
-        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t"))));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t")))).build();
         InsertStatementContext result = mock(InsertStatementContext.class);
         when(result.getSqlStatement()).thenReturn(insertStatement);
         return result;

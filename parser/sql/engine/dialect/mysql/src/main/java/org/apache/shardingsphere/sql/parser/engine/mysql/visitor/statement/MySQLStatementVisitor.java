@@ -1486,16 +1486,14 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
-        InsertStatement result = (InsertStatement) visit(ctx.insertBody());
-        if (null != ctx.onDuplicateKeyClause()) {
-            result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
-        }
-        result.setIgnore(null != ctx.insertSpecification().IGNORE());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        InsertStatement insertBodyStatement = (InsertStatement) visit(ctx.insertBody());
+        InsertStatement result = createInsertStatementBuilder(insertBodyStatement).table((SimpleTableSegment) visit(ctx.tableName()))
+                .onDuplicateKeyColumns(
+                        null == ctx.onDuplicateKeyClause() ? insertBodyStatement.getOnDuplicateKeyColumns().orElse(null) : (OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()))
+                .ignore(null != ctx.insertSpecification().IGNORE())
+                .returning(null == ctx.returningClause() ? insertBodyStatement.getReturning().orElse(null) : (ReturningSegment) visit(ctx.returningClause())).build();
+        copyInsertStatementMetadata(insertBodyStatement, result);
         result.addParameterMarkers(getParameterMarkerSegments());
-        if (null != ctx.returningClause()) {
-            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
-        }
         return result;
     }
     
@@ -1506,36 +1504,35 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result = (InsertStatement) visit(ctx.insertValuesClause());
         } else if (null != ctx.insertSelectClause()) {
             result = (InsertStatement) visit(ctx.insertSelectClause());
-            if (null != ctx.valueReference()) {
-                result.setValueReference((ValueReferenceSegment) visit(ctx.valueReference()));
-            }
         } else {
-            result = new InsertStatement(databaseType);
-            result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
-            if (null != ctx.valueReference()) {
-                result.setValueReference((ValueReferenceSegment) visit(ctx.valueReference()));
-            }
-            if (null == ctx.valueReference() && null != ctx.setAssignmentsClause().setRowAlias()) {
-                result.setValueReference(createValueReferenceFromSetRowAlias(ctx.setAssignmentsClause().setRowAlias()));
-            }
+            result = InsertStatement.builder().databaseType(databaseType).setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause())).build();
+        }
+        if (null != ctx.valueReference()) {
+            InsertStatement actual = createInsertStatementBuilder(result).valueReference((ValueReferenceSegment) visit(ctx.valueReference())).build();
+            copyInsertStatementMetadata(result, actual);
+            result = actual;
+        }
+        if (null == ctx.valueReference() && null != ctx.setAssignmentsClause() && null != ctx.setAssignmentsClause().setRowAlias()) {
+            InsertStatement actual = createInsertStatementBuilder(result).valueReference(createValueReferenceFromSetRowAlias(ctx.setAssignmentsClause().setRowAlias())).build();
+            copyInsertStatementMetadata(result, actual);
+            result = actual;
         }
         return result;
     }
     
     @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
-        result.setInsertSelect(createInsertSelectSegment(ctx));
+        InsertColumnsSegment insertColumns;
         if (null != ctx.LP_() && !ctx.LP_().isEmpty()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().get(0).getSymbol().getStartIndex(), ctx.RP_().get(0).getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().get(0).getSymbol().getStartIndex(), ctx.RP_().get(0).getSymbol().getStopIndex(), createInsertColumns(ctx.fields()));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().get(0).getSymbol().getStartIndex(), ctx.RP_().get(0).getSymbol().getStopIndex(), Collections.emptyList()));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().get(0).getSymbol().getStartIndex(), ctx.RP_().get(0).getSymbol().getStopIndex(), Collections.emptyList());
             }
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).insertSelect(createInsertSelectSegment(ctx)).build();
     }
     
     private ValueReferenceSegment createValueReferenceFromSetRowAlias(final SetRowAliasContext ctx) {
@@ -1560,24 +1557,23 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertColumnsSegment insertColumns;
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields()));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList()));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList());
             }
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
+        ValueReferenceSegment valueReference = null;
         if (null != ctx.valueReference()) {
-            ValueReferenceSegment valueRef = (ValueReferenceSegment) visit(ctx.valueReference());
-            result.setValueReference(valueRef);
+            valueReference = (ValueReferenceSegment) visit(ctx.valueReference());
         }
         Collection<InsertValuesSegment> insertValuesSegments =
                 null == ctx.rowConstructorList() ? createInsertValuesSegments(ctx.assignmentValues()) : createRowConstructorList(ctx.rowConstructorList());
-        result.getValues().addAll(insertValuesSegments);
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).valueReference(valueReference).values(insertValuesSegments).build();
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
@@ -1636,32 +1632,28 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         } else if (null != ctx.replaceSelectClause()) {
             result = (InsertStatement) visit(ctx.replaceSelectClause());
         } else {
-            result = new InsertStatement(databaseType);
-            result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+            result = InsertStatement.builder().databaseType(databaseType).setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause())).build();
         }
-        result.setReplace(true);
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.addParameterMarkers(getParameterMarkerSegments());
-        if (null != ctx.returningClause()) {
-            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
-        }
-        return result;
+        InsertStatement actual = createInsertStatementBuilder(result).replace(true).table((SimpleTableSegment) visit(ctx.tableName()))
+                .returning(null == ctx.returningClause() ? result.getReturning().orElse(null) : (ReturningSegment) visit(ctx.returningClause())).build();
+        copyInsertStatementMetadata(result, actual);
+        actual.addParameterMarkers(getParameterMarkerSegments());
+        return actual;
     }
     
     @Override
     public ASTNode visitReplaceSelectClause(final ReplaceSelectClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertColumnsSegment insertColumns;
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields()));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList()));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList());
             }
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        result.setInsertSelect(createReplaceSelectSegment(ctx));
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).insertSelect(createReplaceSelectSegment(ctx)).build();
     }
     
     private SubquerySegment createReplaceSelectSegment(final ReplaceSelectClauseContext ctx) {
@@ -1671,18 +1663,36 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitReplaceValuesClause(final ReplaceValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertColumnsSegment insertColumns;
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields()));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList()));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList());
             }
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
+    }
+    
+    private InsertStatement.InsertStatementBuilder createInsertStatementBuilder(final InsertStatement insertStatement) {
+        return InsertStatement.builder().databaseType(databaseType).table(insertStatement.getTable().orElse(null))
+                .insertColumns(insertStatement.getInsertColumns().orElse(null)).insertSelect(insertStatement.getInsertSelect().orElse(null))
+                .setAssignment(insertStatement.getSetAssignment().orElse(null)).onDuplicateKeyColumns(insertStatement.getOnDuplicateKeyColumns().orElse(null))
+                .valueReference(insertStatement.getValueReference().orElse(null)).returning(insertStatement.getReturning().orElse(null))
+                .output(insertStatement.getOutput().orElse(null)).with(insertStatement.getWith().orElse(null))
+                .multiTableInsertType(insertStatement.getMultiTableInsertType().orElse(null)).multiTableInsertInto(insertStatement.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(insertStatement.getMultiTableConditionalInto().orElse(null)).where(insertStatement.getWhere().orElse(null))
+                .exec(insertStatement.getExec().orElse(null)).withTableHint(insertStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(insertStatement.getRowSetFunction().orElse(null)).ignore(insertStatement.isIgnore()).replace(insertStatement.isReplace())
+                .values(new LinkedList<>(insertStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertStatement.getDerivedInsertColumns()));
+    }
+    
+    private void copyInsertStatementMetadata(final InsertStatement source, final InsertStatement target) {
+        target.addParameterMarkers(source.getParameterMarkers());
+        target.getVariableNames().addAll(source.getVariableNames());
+        target.getComments().addAll(source.getComments());
     }
     
     private List<ColumnSegment> createInsertColumns(final FieldsContext fields) {
