@@ -26,17 +26,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 /**
  * Show tblproperties statement for Hive.
  */
+@Getter
 public final class HiveShowTblpropertiesStatement extends DALStatement {
     
-    @Getter
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public HiveShowTblpropertiesStatement(final DatabaseType databaseType) {
         super(databaseType);
+        attributes = new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute());
     }
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute());
     }
 }
