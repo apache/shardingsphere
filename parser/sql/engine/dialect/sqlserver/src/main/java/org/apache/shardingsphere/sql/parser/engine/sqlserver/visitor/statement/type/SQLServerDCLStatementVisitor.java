@@ -191,19 +191,26 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDeny(final DenyContext ctx) {
-        SQLServerDenyUserStatement result = new SQLServerDenyUserStatement(getDatabaseType());
+        SimpleTableSegment table = null;
+        Collection<ColumnSegment> columns = new LinkedList<>();
         if (null != ctx.denyClassPrivilegesClause()) {
-            findTableSegment(ctx.denyClassPrivilegesClause().onClassClause(), ctx.denyClassPrivilegesClause().classPrivileges()).ifPresent(result::setTable);
+            Optional<SimpleTableSegment> tableSegment = findTableSegment(ctx.denyClassPrivilegesClause().onClassClause(), ctx.denyClassPrivilegesClause().classPrivileges());
+            if (tableSegment.isPresent()) {
+                table = tableSegment.get();
+            }
             if (null != ctx.denyClassPrivilegesClause().classPrivileges().columnNames()) {
                 for (ColumnNamesContext each : ctx.denyClassPrivilegesClause().classPrivileges().columnNames()) {
-                    result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(each)).getValue());
+                    columns.addAll(((CollectionValue<ColumnSegment>) visit(each)).getValue());
                 }
             }
         }
         if (null != ctx.denyClassTypePrivilegesClause()) {
-            findTableSegment(ctx.denyClassTypePrivilegesClause().onClassTypeClause()).ifPresent(result::setTable);
+            Optional<SimpleTableSegment> tableSegment = findTableSegment(ctx.denyClassTypePrivilegesClause().onClassTypeClause());
+            if (tableSegment.isPresent()) {
+                table = tableSegment.get();
+            }
         }
-        return result;
+        return new SQLServerDenyUserStatement(getDatabaseType(), table, columns);
     }
     
     private Optional<SimpleTableSegment> findTableSegment(final OnClassClauseContext onClassClauseCtx, final ClassPrivilegesContext classPrivilegesCtx) {
