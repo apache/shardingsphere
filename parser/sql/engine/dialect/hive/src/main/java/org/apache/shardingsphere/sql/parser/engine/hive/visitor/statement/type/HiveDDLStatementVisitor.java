@@ -337,10 +337,7 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DropViewStatement result = new DropViewStatement(getDatabaseType());
-        result.setIfExists(null != ctx.ifExists());
-        result.getViews().add((SimpleTableSegment) visit(ctx.viewNameWithDb()));
-        return result;
+        return new DropViewStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.viewNameWithDb())), null != ctx.ifExists());
     }
     
     @Override

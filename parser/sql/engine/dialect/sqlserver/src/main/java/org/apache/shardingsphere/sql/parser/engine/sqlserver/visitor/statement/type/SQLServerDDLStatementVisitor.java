@@ -70,7 +70,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TruncateTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.SQLServerStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.CreateDefinitionSegment;
@@ -124,6 +123,7 @@ import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.service.SQLS
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * DDL statement visitor for SQLServer.
@@ -488,12 +488,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DropViewStatement result = new DropViewStatement(getDatabaseType());
-        result.setIfExists(null != ctx.ifExists());
-        for (ViewNameContext each : ctx.viewName()) {
-            result.getViews().add((SimpleTableSegment) visit(each));
-        }
-        return result;
+        return new DropViewStatement(getDatabaseType(), ctx.viewName().stream().map(each -> (SimpleTableSegment) visit(each)).collect(Collectors.toList()), null != ctx.ifExists());
     }
     
     @Override

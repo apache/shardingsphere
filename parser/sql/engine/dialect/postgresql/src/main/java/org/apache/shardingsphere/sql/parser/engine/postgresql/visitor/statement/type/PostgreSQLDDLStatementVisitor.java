@@ -823,10 +823,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DropViewStatement result = new DropViewStatement(getDatabaseType());
-        result.setIfExists(null != ctx.ifExists());
-        result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue());
-        return result;
+        return new DropViewStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue(), null != ctx.ifExists());
     }
     
     @Override

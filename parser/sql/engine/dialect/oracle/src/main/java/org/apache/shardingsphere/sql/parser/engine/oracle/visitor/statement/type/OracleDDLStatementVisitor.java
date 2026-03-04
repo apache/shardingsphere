@@ -799,9 +799,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DropViewStatement result = new DropViewStatement(getDatabaseType());
-        result.getViews().add((SimpleTableSegment) visit(ctx.viewName()));
-        return result;
+        return new DropViewStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.viewName())), false);
     }
     
     @Override
