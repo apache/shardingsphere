@@ -80,10 +80,9 @@ class ShardingResultMergerEngineTest {
     
     @Test
     void assertNewInstanceWithOtherStatement() {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
-        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        insertStatement.setInsertColumns(insertColumnsSegment);
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl")))).insertColumns(insertColumnsSegment).build();
         InsertStatementContext sqlStatementContext = createInsertStatementContext(insertStatement);
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
         assertThat(new ShardingResultMergerEngine().newInstance("foo_db", databaseType, null, props, sqlStatementContext), isA(TransparentResultMerger.class));

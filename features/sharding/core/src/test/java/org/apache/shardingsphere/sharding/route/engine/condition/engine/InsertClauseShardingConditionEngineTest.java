@@ -99,9 +99,8 @@ class InsertClauseShardingConditionEngineTest {
     }
     
     private InsertStatement createInsertStatement() {
-        InsertStatement result = new InsertStatement(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
-        return result;
+        return InsertStatement.builder().databaseType(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"))
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))).build();
     }
     
     private InsertValueContext createInsertValueContext() {

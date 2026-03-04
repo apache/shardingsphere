@@ -120,19 +120,15 @@ public final class EncryptGeneratorFixtureBuilder {
     }
     
     private static InsertStatement createInsertStatement() {
-        InsertStatement result = new InsertStatement(DATABASE_TYPE);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(
                 new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")),
                 new ColumnSegment(0, 0, new IdentifierValue("status")), new ColumnSegment(0, 0, new IdentifierValue("pwd"))));
-        result.setInsertColumns(insertColumnsSegment);
-        result.getValues().add(new InsertValuesSegment(0, 0, createValueExpressions()));
-        return result;
+        return InsertStatement.builder().databaseType(DATABASE_TYPE).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))))
+                .insertColumns(insertColumnsSegment).values(Collections.singletonList(new InsertValuesSegment(0, 0, createValueExpressions()))).build();
     }
     
     private static InsertStatement createInsertSelectStatement(final boolean containsInsertColumns) {
-        InsertStatement result = new InsertStatement(DATABASE_TYPE);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
+        InsertColumnsSegment insertColumnsSegment;
         ColumnSegment userIdColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
         userIdColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")), new IdentifierValue("t_user"),
                 new IdentifierValue("user_id"), TableSourceType.PHYSICAL_TABLE));
@@ -140,11 +136,12 @@ public final class EncryptGeneratorFixtureBuilder {
         userNameColumn.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")),
                 new IdentifierValue("t_user"), new IdentifierValue("user_name"), TableSourceType.PHYSICAL_TABLE));
         List<ColumnSegment> insertColumns = Arrays.asList(userIdColumn, userNameColumn);
+        List<ColumnSegment> derivedInsertColumns = new ArrayList<>();
         if (containsInsertColumns) {
-            result.setInsertColumns(new InsertColumnsSegment(0, 0, insertColumns));
+            insertColumnsSegment = new InsertColumnsSegment(0, 0, insertColumns);
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.emptyList()));
-            result.getDerivedInsertColumns().addAll(insertColumns);
+            insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.emptyList());
+            derivedInsertColumns.addAll(insertColumns);
         }
         SelectStatement selectStatement = new SelectStatement(DATABASE_TYPE);
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
@@ -155,8 +152,8 @@ public final class EncryptGeneratorFixtureBuilder {
                 new IdentifierValue("status"), TableSourceType.PHYSICAL_TABLE));
         projections.getProjections().add(new ColumnProjectionSegment(statusColumn));
         selectStatement.setProjections(projections);
-        result.setInsertSelect(new SubquerySegment(0, 0, selectStatement, ""));
-        return result;
+        return InsertStatement.builder().databaseType(DATABASE_TYPE).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))))
+                .insertColumns(insertColumnsSegment).derivedInsertColumns(derivedInsertColumns).insertSelect(new SubquerySegment(0, 0, selectStatement, "")).build();
     }
     
     /**

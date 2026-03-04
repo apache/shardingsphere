@@ -126,28 +126,38 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        InsertStatement result = (InsertStatement) visit(ctx.insertValuesClause());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        InsertStatement insertValuesStatement = (InsertStatement) visit(ctx.insertValuesClause());
+        InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()))
+                .insertColumns(insertValuesStatement.getInsertColumns().orElse(null)).insertSelect(insertValuesStatement.getInsertSelect().orElse(null))
+                .setAssignment(insertValuesStatement.getSetAssignment().orElse(null)).onDuplicateKeyColumns(insertValuesStatement.getOnDuplicateKeyColumns().orElse(null))
+                .valueReference(insertValuesStatement.getValueReference().orElse(null))
+                .returning(null == ctx.returningClause() ? insertValuesStatement.getReturning().orElse(null) : (ReturningSegment) visit(ctx.returningClause()))
+                .output(insertValuesStatement.getOutput().orElse(null)).with(insertValuesStatement.getWith().orElse(null))
+                .multiTableInsertType(insertValuesStatement.getMultiTableInsertType().orElse(null))
+                .multiTableInsertInto(insertValuesStatement.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(insertValuesStatement.getMultiTableConditionalInto().orElse(null)).where(insertValuesStatement.getWhere().orElse(null))
+                .exec(insertValuesStatement.getExec().orElse(null)).withTableHint(insertValuesStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(insertValuesStatement.getRowSetFunction().orElse(null)).ignore(insertValuesStatement.isIgnore()).replace(insertValuesStatement.isReplace())
+                .values(new LinkedList<>(insertValuesStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertValuesStatement.getDerivedInsertColumns())).build();
+        result.addParameterMarkers(insertValuesStatement.getParameterMarkers());
+        result.getVariableNames().addAll(insertValuesStatement.getVariableNames());
+        result.getComments().addAll(insertValuesStatement.getComments());
         result.addParameterMarkers(getParameterMarkerSegments());
-        if (null != ctx.returningClause()) {
-            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
-        }
         return result;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(getDatabaseType());
+        InsertColumnsSegment insertColumns;
         if (null != ctx.columnNames()) {
             ColumnNamesContext columnNames = ctx.columnNames();
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
-            result.setInsertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue()));
+            insertColumns = new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
-        return result;
+        return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {

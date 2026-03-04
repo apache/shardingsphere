@@ -110,8 +110,13 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        InsertStatement result = (InsertStatement) visit(ctx.insertValuesClause());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        InsertStatement insertStatement = (InsertStatement) visit(ctx.insertValuesClause());
+        InsertStatement result = InsertStatement.builder()
+                .databaseType(insertStatement.getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .insertColumns(insertStatement.getInsertColumns().orElse(null))
+                .values(insertStatement.getValues())
+                .build();
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
@@ -119,16 +124,16 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(getDatabaseType());
+        InsertStatement.InsertStatementBuilder result = InsertStatement.builder().databaseType(getDatabaseType());
         if (null != ctx.columnNames()) {
             ColumnNamesContext columnNames = ctx.columnNames();
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
-            result.setInsertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue()));
+            result.insertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue()));
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            result.insertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
-        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
-        return result;
+        result.values(createInsertValuesSegments(ctx.assignmentValues()));
+        return result.build();
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {

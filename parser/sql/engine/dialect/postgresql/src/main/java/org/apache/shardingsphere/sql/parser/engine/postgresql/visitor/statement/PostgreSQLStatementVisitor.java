@@ -709,16 +709,22 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
         // TODO :deal with insert select
-        InsertStatement result = (InsertStatement) visit(ctx.insertRest());
-        result.setTable((SimpleTableSegment) visit(ctx.insertTarget()));
+        InsertStatement insertStatement = (InsertStatement) visit(ctx.insertRest());
+        InsertStatement.InsertStatementBuilder result = InsertStatement.builder()
+                .databaseType(insertStatement.getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.insertTarget()))
+                .insertColumns(insertStatement.getInsertColumns().orElse(null))
+                .insertSelect(insertStatement.getInsertSelect().orElse(null))
+                .values(insertStatement.getValues());
         if (null != ctx.optOnConflict()) {
-            result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.optOnConflict()));
+            result.onDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.optOnConflict()));
         }
         if (null != ctx.returningClause()) {
-            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
+            result.returning((ReturningSegment) visit(ctx.returningClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        InsertStatement actual = result.build();
+        actual.addParameterMarkers(getParameterMarkerSegments());
+        return actual;
     }
     
     @Override
@@ -775,23 +781,23 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertRest(final InsertRestContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertStatement.InsertStatementBuilder result = InsertStatement.builder().databaseType(databaseType);
         ValuesClauseContext valuesClause = ctx.select().selectNoParens().selectClauseN().simpleSelect().valuesClause();
         if (null == valuesClause) {
             SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
-            result.setInsertSelect(new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select())));
+            result.insertSelect(new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select())));
         } else {
-            result.getValues().addAll(createInsertValuesSegments(valuesClause));
+            result.values(createInsertValuesSegments(valuesClause));
         }
         if (null == ctx.insertColumnList()) {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            result.insertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         } else {
             InsertColumnListContext insertColumns = ctx.insertColumnList();
             CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(insertColumns);
             InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(insertColumns.start.getStartIndex() - 1, insertColumns.stop.getStopIndex() + 1, columns.getValue());
-            result.setInsertColumns(insertColumnsSegment);
+            result.insertColumns(insertColumnsSegment);
         }
-        return result;
+        return result.build();
     }
     
     @SuppressWarnings("unchecked")

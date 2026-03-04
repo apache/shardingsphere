@@ -223,7 +223,7 @@ class PostgreSQLComQueryExecutorTest {
         return Stream.of(
                 Arguments.of("commit statement", new CommitStatement(DATABASE_TYPE), PostgreSQLCommandCompletePacket.class, "COMMIT", true),
                 Arguments.of("rollback statement", new RollbackStatement(DATABASE_TYPE), PostgreSQLCommandCompletePacket.class, "ROLLBACK", true),
-                Arguments.of("recognized command", new InsertStatement(DATABASE_TYPE), PostgreSQLCommandCompletePacket.class, "INSERT", false),
+                Arguments.of("recognized command", InsertStatement.builder().databaseType(DATABASE_TYPE).build(), PostgreSQLCommandCompletePacket.class, "INSERT", false),
                 Arguments.of("empty statement", new EmptyStatement(DATABASE_TYPE), PostgreSQLEmptyQueryResponsePacket.class, null, false),
                 Arguments.of("unrecognized statement", new SQLStatement(DATABASE_TYPE), PostgreSQLCommandCompletePacket.class, "", false));
     }
