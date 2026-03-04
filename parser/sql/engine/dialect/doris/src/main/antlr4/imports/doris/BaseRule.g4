@@ -350,6 +350,7 @@ identifierKeywordsUnambiguous
     | MULTIPOINT
     | MULTIPOLYGON
     | MUTEX
+    | MYSQL
     | Doris_ERRNO
     | NAMES
     | NAME
@@ -401,6 +402,7 @@ identifierKeywordsUnambiguous
     | POINT
     | POLYGON
     | PORT
+    | POSTGRES
     | PRECEDING
     | PRESERVE
     | PREV
@@ -495,6 +497,7 @@ identifierKeywordsUnambiguous
     | STATUS
     | STORAGE
     | STREAM
+    | STREAMING
     | STRING
     // DORIS ADDED BEGIN
     | STRRIGHT

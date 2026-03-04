@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterColoca
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCancelTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseJobStatement;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeSyncJ
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisStopSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateStreamingJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateSyncJobStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ddl.dialect.doris.type.DorisAlterColocateGroupStatementAssert;
@@ -41,6 +43,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropFunctionStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCancelTaskStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseJobStatementTestCase;
@@ -48,6 +51,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisStopSyncJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateStreamingJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.function.CreateFunctionStatementTestCase;
 
@@ -91,6 +95,10 @@ public final class DorisDDLStatementAssert {
             DorisDropJobStatementAssert.assertIs(assertContext, (DorisDropJobStatement) actual, (DorisDropJobStatementTestCase) expected);
         } else if (actual instanceof DorisAlterJobStatement) {
             DorisAlterJobStatementAssert.assertIs(assertContext, (DorisAlterJobStatement) actual, (DorisAlterJobStatementTestCase) expected);
+        } else if (actual instanceof DorisCreateStreamingJobStatement) {
+            DorisCreateStreamingJobStatementAssert.assertIs(assertContext, (DorisCreateStreamingJobStatement) actual, (DorisCreateStreamingJobStatementTestCase) expected);
+        } else if (actual instanceof DorisCancelTaskStatement) {
+            DorisCancelTaskStatementAssert.assertIs(assertContext, (DorisCancelTaskStatement) actual, (DorisCancelTaskStatementTestCase) expected);
         }
     }
 }

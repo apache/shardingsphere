@@ -999,6 +999,16 @@ createJob
     : CREATE JOB jobName ON SCHEDULE jobScheduleExpression (COMMENT string_)? DO insert
     ;
 
+createStreamingJob
+    : CREATE JOB jobName ON STREAMING (PROPERTIES LP_ jobProps=properties RP_)? (COMMENT string_)?
+      (DO insert | FROM streamingSourceType LP_ sourceProps=properties RP_ TO DATABASE databaseName (PROPERTIES? LP_ targetProps=properties RP_)?)
+    ;
+
+streamingSourceType
+    : MYSQL
+    | POSTGRES
+    ;
+
 jobScheduleExpression
     : AT timestampValue
     | EVERY intervalValue (STARTS timestampValue)? (ENDS timestampValue)?
@@ -1018,6 +1028,10 @@ dropJob
 
 alterJob
     : ALTER JOB jobName propertiesClause? (DO insert)?
+    ;
+
+cancelTask
+    : CANCEL TASK WHERE jobName EQ_ stringLiterals AND identifier EQ_ numberLiterals
     ;
 
 resumeSyncJob
