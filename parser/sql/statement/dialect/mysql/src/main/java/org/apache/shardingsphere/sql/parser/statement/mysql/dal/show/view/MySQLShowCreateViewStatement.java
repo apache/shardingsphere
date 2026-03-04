@@ -38,7 +38,12 @@ public final class MySQLShowCreateViewStatement extends DALStatement {
     public MySQLShowCreateViewStatement(final DatabaseType databaseType, final SimpleTableSegment viewName) {
         super(databaseType);
         this.viewName = viewName;
-        attributes = new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new ViewInResultSetSQLStatementAttribute(2, viewName.getTableName().getIdentifier().getValue()));
+        if (null == viewName) {
+            attributes = new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute());
+        } else {
+            attributes = new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(),
+                    new ViewInResultSetSQLStatementAttribute(2, viewName.getTableName().getIdentifier().getValue()));
+        }
     }
     
     @Override
