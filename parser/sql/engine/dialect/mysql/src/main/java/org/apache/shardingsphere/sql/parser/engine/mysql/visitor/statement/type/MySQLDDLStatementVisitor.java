@@ -1118,7 +1118,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitPrepare(final PrepareContext ctx) {
-        return new PrepareStatement(getDatabaseType());
+        return PrepareStatement.builder().databaseType(getDatabaseType()).build();
     }
     
     @Override
