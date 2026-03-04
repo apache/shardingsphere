@@ -52,6 +52,8 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     private int fetchDirection;
     
+    private int maxRows;
+    
     private boolean closeOnCompletion;
     
     private boolean closed;
@@ -123,12 +125,13 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     // TODO Confirm MaxRows for multiple databases is need special handle. eg: 10 statements maybe MaxRows / 10
     @Override
     public final int getMaxRows() throws SQLException {
-        return getRoutedStatements().isEmpty() ? -1 : getRoutedStatements().iterator().next().getMaxRows();
+        return getRoutedStatements().isEmpty() ? maxRows : getRoutedStatements().iterator().next().getMaxRows();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setMaxRows(final int max) throws SQLException {
+        maxRows = max;
         getMethodInvocationRecorder().record("setMaxRows", statement -> statement.setMaxRows(max));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setMaxRows(max));
     }
