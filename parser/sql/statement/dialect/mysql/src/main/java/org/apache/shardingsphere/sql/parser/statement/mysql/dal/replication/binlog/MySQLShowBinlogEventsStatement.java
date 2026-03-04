@@ -34,16 +34,16 @@ public final class MySQLShowBinlogEventsStatement extends DALStatement {
     
     private final LimitSegment limit;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowBinlogEventsStatement(final DatabaseType databaseType, final String logName, final LimitSegment limit) {
         super(databaseType);
         this.logName = logName;
         this.limit = limit;
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

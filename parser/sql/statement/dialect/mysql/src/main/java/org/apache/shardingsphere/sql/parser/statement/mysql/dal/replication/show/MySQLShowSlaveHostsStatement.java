@@ -26,17 +26,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 /**
  * Show slave hosts statement for MySQL.
  */
+@Getter
 public final class MySQLShowSlaveHostsStatement extends DALStatement {
     
-    @Getter
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowSlaveHostsStatement(final DatabaseType databaseType) {
         super(databaseType);
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }
