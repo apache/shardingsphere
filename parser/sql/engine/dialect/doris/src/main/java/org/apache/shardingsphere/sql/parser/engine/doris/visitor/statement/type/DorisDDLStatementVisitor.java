@@ -1851,7 +1851,7 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitPrepare(final PrepareContext ctx) {
-        return new PrepareStatement(getDatabaseType());
+        return PrepareStatement.builder().databaseType(getDatabaseType()).build();
     }
     
     @Override

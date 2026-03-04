@@ -769,20 +769,13 @@ public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitPrepare(final PrepareContext ctx) {
-        PrepareStatement result = new PrepareStatement(getDatabaseType());
-        if (null != ctx.preparableStmt().select()) {
-            result.setSelect((SelectStatement) visit(ctx.preparableStmt().select()));
-        }
-        if (null != ctx.preparableStmt().insert()) {
-            result.setInsert((InsertStatement) visit(ctx.preparableStmt().insert()));
-        }
-        if (null != ctx.preparableStmt().update()) {
-            result.setUpdate((UpdateStatement) visit(ctx.preparableStmt().update()));
-        }
-        if (null != ctx.preparableStmt().delete()) {
-            result.setDelete((DeleteStatement) visit(ctx.preparableStmt().delete()));
-        }
-        return result;
+        return PrepareStatement.builder()
+                .databaseType(getDatabaseType())
+                .select(null == ctx.preparableStmt().select() ? null : (SelectStatement) visit(ctx.preparableStmt().select()))
+                .insert(null == ctx.preparableStmt().insert() ? null : (InsertStatement) visit(ctx.preparableStmt().insert()))
+                .update(null == ctx.preparableStmt().update() ? null : (UpdateStatement) visit(ctx.preparableStmt().update()))
+                .delete(null == ctx.preparableStmt().delete() ? null : (DeleteStatement) visit(ctx.preparableStmt().delete()))
+                .build();
     }
     
     @Override
