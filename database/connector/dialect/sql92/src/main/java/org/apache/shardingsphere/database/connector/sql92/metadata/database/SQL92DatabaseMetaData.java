@@ -21,6 +21,8 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
+import org.apache.shardingsphere.database.connector.sql92.metadata.database.option.SQL92FunctionOption;
 
 /**
  * Database meta data of SQL92.
@@ -40,6 +42,11 @@ public final class SQL92DatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public NullsOrderType getDefaultNullsOrderType() {
         return NullsOrderType.LOW;
+    }
+    
+    @Override
+    public DialectFunctionOption getFunctionOption() {
+        return new SQL92FunctionOption();
     }
     
     @Override
