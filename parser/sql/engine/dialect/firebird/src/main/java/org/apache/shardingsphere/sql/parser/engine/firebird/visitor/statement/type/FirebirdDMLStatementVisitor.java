@@ -579,11 +579,12 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        MergeStatement result = new MergeStatement(getDatabaseType());
-        result.setTarget((TableSegment) visit(ctx.intoClause()));
-        result.setSource((TableSegment) visit(ctx.usingClause()));
-        // add mergeWhenNotMatched and mergeWhenMatched part
-        // add RETURNING part
-        return result;
+        return MergeStatement.builder()
+                .databaseType(getDatabaseType())
+                .target((TableSegment) visit(ctx.intoClause()))
+                .source((TableSegment) visit(ctx.usingClause()))
+                // add mergeWhenNotMatched and mergeWhenMatched part
+                // add RETURNING part
+                .build();
     }
 }

@@ -2223,39 +2223,40 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        MergeStatement result = new MergeStatement(databaseType);
-        result.setTarget((TableSegment) visit(ctx.mergeIntoClause().tableReferences()));
+        MergeStatement.MergeStatementBuilder result = MergeStatement.builder().databaseType(databaseType).target((TableSegment) visit(ctx.mergeIntoClause().tableReferences()));
         if (null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
+            result.with((WithSegment) visit(ctx.withClause()));
         }
         if (null != ctx.withMergeHint()) {
-            result.setWithTableHint((WithTableHintSegment) visit(ctx.withMergeHint().withTableHint()));
+            result.withTableHint((WithTableHintSegment) visit(ctx.withMergeHint().withTableHint()));
             if (null != ctx.withMergeHint().indexName()) {
                 Collection<IndexSegment> indexSegments = new LinkedList<>();
                 for (IndexNameContext each : ctx.withMergeHint().indexName()) {
                     indexSegments.add((IndexSegment) visit(each));
                 }
-                result.setIndexes(indexSegments);
+                result.indexes(indexSegments);
             }
         }
         if (null != ctx.mergeUsingClause()) {
-            result.setSource((TableSegment) visit(ctx.mergeUsingClause().tableReferences()));
+            result.source((TableSegment) visit(ctx.mergeUsingClause().tableReferences()));
             ExpressionWithParamsSegment onExpression = new ExpressionWithParamsSegment(ctx.mergeUsingClause().expr().start.getStartIndex(), ctx.mergeUsingClause().expr().stop.getStopIndex(),
                     (ExpressionSegment) visit(ctx.mergeUsingClause().expr()));
-            result.setExpression(onExpression);
+            result.expression(onExpression);
         }
         if (null != ctx.mergeWhenClause()) {
+            Collection<MergeWhenAndThenSegment> whenAndThens = new LinkedList<>();
             for (MergeWhenClauseContext each : ctx.mergeWhenClause()) {
-                result.getWhenAndThens().add((MergeWhenAndThenSegment) visit(each));
+                whenAndThens.add((MergeWhenAndThenSegment) visit(each));
             }
+            result.whenAndThens(whenAndThens);
         }
         if (null != ctx.outputClause()) {
-            result.setOutput((OutputSegment) visit(ctx.outputClause()));
+            result.output((OutputSegment) visit(ctx.outputClause()));
         }
         if (null != ctx.optionHint()) {
-            result.setOptionHint((OptionHintSegment) visit(ctx.optionHint()));
+            result.optionHint((OptionHintSegment) visit(ctx.optionHint()));
         }
-        return result;
+        return result.build();
     }
     
     @Override
