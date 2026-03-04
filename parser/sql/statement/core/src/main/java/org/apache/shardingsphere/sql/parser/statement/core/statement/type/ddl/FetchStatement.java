@@ -36,12 +36,13 @@ public final class FetchStatement extends DDLStatement {
     
     private final DirectionSegment direction;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public FetchStatement(final DatabaseType databaseType, final CursorNameSegment cursorName, final DirectionSegment direction) {
         super(databaseType);
         this.cursorName = cursorName;
         this.direction = direction;
+        attributes = new SQLStatementAttributes(new CursorSQLStatementAttribute(cursorName));
     }
     
     /**
@@ -55,6 +56,5 @@ public final class FetchStatement extends DDLStatement {
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new CursorSQLStatementAttribute(cursorName));
     }
 }
