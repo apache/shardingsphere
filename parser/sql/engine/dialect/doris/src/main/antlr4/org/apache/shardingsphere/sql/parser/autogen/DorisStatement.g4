@@ -149,6 +149,9 @@ execute
     | stopSyncJob
     | createSyncJob
     | dorisAlterSystem
+    | adminSetReplicaStatus
+    | adminSetReplicaVersion
+    | adminCopyTablet
     | createSqlBlockRule
     | alterSqlBlockRule
     | dropSqlBlockRule
