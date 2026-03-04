@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
@@ -67,21 +68,28 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
     
     private InsertStatement copy(final InsertStatement sqlStatement, final WithSegment boundWith, final SimpleTableSegment boundTable,
                                  final InsertColumnsSegment boundInsertColumns, final SetAssignmentSegment boundSetAssignment, final SubquerySegment boundInsertSelect) {
-        InsertStatement result = new InsertStatement(sqlStatement.getDatabaseType());
-        result.setWith(boundWith);
-        result.setTable(boundTable);
-        result.setInsertColumns(boundInsertColumns);
-        result.setSetAssignment(boundSetAssignment);
-        result.setInsertSelect(boundInsertSelect);
-        result.getValues().addAll(sqlStatement.getValues());
-        result.setIgnore(sqlStatement.isIgnore());
-        result.setReplace(sqlStatement.isReplace());
-        sqlStatement.getOnDuplicateKeyColumns().ifPresent(result::setOnDuplicateKeyColumns);
-        sqlStatement.getOutput().ifPresent(result::setOutput);
-        sqlStatement.getMultiTableInsertType().ifPresent(result::setMultiTableInsertType);
-        sqlStatement.getMultiTableInsertInto().ifPresent(result::setMultiTableInsertInto);
-        sqlStatement.getMultiTableConditionalInto().ifPresent(result::setMultiTableConditionalInto);
-        sqlStatement.getReturning().ifPresent(result::setReturning);
+        InsertStatement result = InsertStatement.builder()
+                .databaseType(sqlStatement.getDatabaseType())
+                .table(boundTable)
+                .insertColumns(boundInsertColumns)
+                .insertSelect(boundInsertSelect)
+                .setAssignment(boundSetAssignment)
+                .onDuplicateKeyColumns(sqlStatement.getOnDuplicateKeyColumns().orElse(null))
+                .valueReference(sqlStatement.getValueReference().orElse(null))
+                .returning(sqlStatement.getReturning().orElse(null))
+                .output(sqlStatement.getOutput().orElse(null))
+                .with(boundWith)
+                .multiTableInsertType(sqlStatement.getMultiTableInsertType().orElse(null))
+                .multiTableInsertInto(sqlStatement.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(sqlStatement.getMultiTableConditionalInto().orElse(null))
+                .where(sqlStatement.getWhere().orElse(null))
+                .exec(sqlStatement.getExec().orElse(null))
+                .withTableHint(sqlStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(sqlStatement.getRowSetFunction().orElse(null))
+                .ignore(sqlStatement.isIgnore())
+                .replace(sqlStatement.isReplace())
+                .values(new LinkedList<>(sqlStatement.getValues()))
+                .build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

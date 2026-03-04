@@ -164,7 +164,7 @@ class OpenGaussComQueryExecutorTest {
     
     @Test
     void assertExecuteUpdateReturnsCommandCompleteForDML() throws SQLException {
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new InsertStatement(databaseType)));
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(InsertStatement.builder().databaseType(databaseType).build()));
         Collection<DatabasePacket> actualPackets = queryExecutor.execute();
         assertThat(new LinkedList<>(actualPackets).getFirst(), is(isA(PostgreSQLCommandCompletePacket.class)));
         assertThat(queryExecutor.getResponseType(), is(ResponseType.UPDATE));

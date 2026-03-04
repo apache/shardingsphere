@@ -106,10 +106,8 @@ class ExplainStatementConverterTest {
     }
     
     private InsertStatement createInsertStatement() {
-        InsertStatement result = new InsertStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_insert"))));
-        result.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))));
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_insert"))))
+                .values(Collections.singletonList(new InsertValuesSegment(0, 0, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))))).build();
     }
     
     private ProjectionsSegment createProjectionsSegment() {

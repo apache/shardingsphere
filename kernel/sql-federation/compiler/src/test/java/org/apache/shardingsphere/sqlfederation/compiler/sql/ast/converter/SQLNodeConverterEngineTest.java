@@ -75,7 +75,7 @@ class SQLNodeConverterEngineTest {
         try (
                 MockedConstruction<InsertStatementConverter> ignored = mockConstruction(InsertStatementConverter.class,
                         (mock, context) -> when(mock.convert(any(InsertStatement.class))).thenReturn(insertSqlNode))) {
-            InsertStatement insertStatement = new InsertStatement(databaseType);
+            InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
             SqlNode actual = SQLNodeConverterEngine.convert(insertStatement);
             assertThat(actual, is(insertSqlNode));
         }

@@ -1549,37 +1549,45 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
-        InsertStatement result;
+        InsertStatement insertStatement;
         if (null != ctx.insertValuesClause()) {
-            result = (InsertStatement) visit(ctx.insertValuesClause());
+            insertStatement = (InsertStatement) visit(ctx.insertValuesClause());
         } else if (null != ctx.insertSelectClause()) {
-            result = (InsertStatement) visit(ctx.insertSelectClause());
+            insertStatement = (InsertStatement) visit(ctx.insertSelectClause());
         } else {
-            result = new InsertStatement(databaseType);
-            result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+            insertStatement = InsertStatement.builder().databaseType(databaseType).setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause())).build();
         }
-        if (null != ctx.onDuplicateKeyClause()) {
-            result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
-        }
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        InsertStatement result = InsertStatement.builder().databaseType(databaseType).table((SimpleTableSegment) visit(ctx.tableName()))
+                .insertColumns(insertStatement.getInsertColumns().orElse(null)).insertSelect(insertStatement.getInsertSelect().orElse(null))
+                .setAssignment(insertStatement.getSetAssignment().orElse(null))
+                .onDuplicateKeyColumns(null == ctx.onDuplicateKeyClause() ? insertStatement.getOnDuplicateKeyColumns().orElse(null) : (OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()))
+                .valueReference(insertStatement.getValueReference().orElse(null)).returning(insertStatement.getReturning().orElse(null))
+                .output(insertStatement.getOutput().orElse(null)).with(insertStatement.getWith().orElse(null))
+                .multiTableInsertType(insertStatement.getMultiTableInsertType().orElse(null)).multiTableInsertInto(insertStatement.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(insertStatement.getMultiTableConditionalInto().orElse(null)).where(insertStatement.getWhere().orElse(null))
+                .exec(insertStatement.getExec().orElse(null)).withTableHint(insertStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(insertStatement.getRowSetFunction().orElse(null)).ignore(insertStatement.isIgnore()).replace(insertStatement.isReplace())
+                .values(new LinkedList<>(insertStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertStatement.getDerivedInsertColumns())).build();
+        result.addParameterMarkers(insertStatement.getParameterMarkers());
+        result.getVariableNames().addAll(insertStatement.getVariableNames());
+        result.getComments().addAll(insertStatement.getComments());
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
-        result.setInsertSelect(createInsertSelectSegment(ctx));
+        InsertColumnsSegment insertColumns;
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields()));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList()));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList());
             }
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).insertSelect(createInsertSelectSegment(ctx)).build();
     }
     
     private SubquerySegment createInsertSelectSegment(final InsertSelectClauseContext ctx) {
@@ -1590,18 +1598,17 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertColumnsSegment insertColumns;
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields()));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList()));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList());
             }
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
@@ -1630,28 +1637,38 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         } else if (null != ctx.replaceSelectClause()) {
             result = (InsertStatement) visit(ctx.replaceSelectClause());
         } else {
-            result = new InsertStatement(databaseType);
-            result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+            result = InsertStatement.builder().databaseType(databaseType).setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause())).build();
         }
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        InsertStatement actual = InsertStatement.builder().databaseType(databaseType).table((SimpleTableSegment) visit(ctx.tableName()))
+                .insertColumns(result.getInsertColumns().orElse(null)).insertSelect(result.getInsertSelect().orElse(null))
+                .setAssignment(result.getSetAssignment().orElse(null)).onDuplicateKeyColumns(result.getOnDuplicateKeyColumns().orElse(null))
+                .valueReference(result.getValueReference().orElse(null)).returning(result.getReturning().orElse(null))
+                .output(result.getOutput().orElse(null)).with(result.getWith().orElse(null))
+                .multiTableInsertType(result.getMultiTableInsertType().orElse(null)).multiTableInsertInto(result.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(result.getMultiTableConditionalInto().orElse(null)).where(result.getWhere().orElse(null))
+                .exec(result.getExec().orElse(null)).withTableHint(result.getWithTableHint().orElse(null))
+                .rowSetFunction(result.getRowSetFunction().orElse(null)).ignore(result.isIgnore()).replace(result.isReplace())
+                .values(new LinkedList<>(result.getValues())).derivedInsertColumns(new LinkedList<>(result.getDerivedInsertColumns())).build();
+        actual.addParameterMarkers(result.getParameterMarkers());
+        actual.getVariableNames().addAll(result.getVariableNames());
+        actual.getComments().addAll(result.getComments());
+        actual.addParameterMarkers(getParameterMarkerSegments());
+        return actual;
     }
     
     @Override
     public ASTNode visitReplaceSelectClause(final ReplaceSelectClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertColumnsSegment insertColumns;
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields()));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList()));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList());
             }
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        result.setInsertSelect(createReplaceSelectSegment(ctx));
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).insertSelect(createReplaceSelectSegment(ctx)).build();
     }
     
     private SubquerySegment createReplaceSelectSegment(final ReplaceSelectClauseContext ctx) {
@@ -1661,18 +1678,17 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitReplaceValuesClause(final ReplaceValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertColumnsSegment insertColumns;
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields()));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList()));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList());
             }
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
     }
     
     private List<ColumnSegment> createInsertColumns(final FieldsContext fields) {

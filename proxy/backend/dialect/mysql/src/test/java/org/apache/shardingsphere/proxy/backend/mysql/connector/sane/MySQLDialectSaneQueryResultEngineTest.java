@@ -106,7 +106,7 @@ class MySQLDialectSaneQueryResultEngineTest {
     
     @Test
     void assertGetSaneQueryResultForOtherStatements() {
-        assertThat(new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(new InsertStatement(databaseType), new SQLException("")), is(Optional.empty()));
+        assertThat(new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(InsertStatement.builder().databaseType(databaseType).build(), new SQLException("")), is(Optional.empty()));
     }
     
     @Test

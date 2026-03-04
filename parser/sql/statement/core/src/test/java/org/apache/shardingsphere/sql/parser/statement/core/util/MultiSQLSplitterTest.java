@@ -49,7 +49,7 @@ class MultiSQLSplitterTest {
         return Stream.of(
                 Arguments.of("nonDmlSample", new UpdateStatement(DATABASE_TYPE), Arrays.asList("select * from t_order;", "select * from t_order_item;"), false),
                 Arguments.of("singleStatementFalse", new UpdateStatement(DATABASE_TYPE), Collections.singletonList("update t_order set status='OK' where id=1"), false),
-                Arguments.of("insertWithBlockComment", new InsertStatement(DATABASE_TYPE),
+                Arguments.of("insertWithBlockComment", InsertStatement.builder().databaseType(DATABASE_TYPE).build(),
                         Arrays.asList("   /*comment*/ INSERT INTO t_order VALUES (1);", "/*remark*/ insert into t_order values (2)"), true),
                 Arguments.of("updateWithDashComment", new UpdateStatement(DATABASE_TYPE),
                         Arrays.asList("-- comment before\r\nupdate t_order set status='PAID' where id=1;", "-- \t\nupdate t_order set status='FAIL' where id=2;"), true),
@@ -60,7 +60,8 @@ class MultiSQLSplitterTest {
                 Arguments.of("hashCommentWithCROnly", DeleteStatement.builder().databaseType(DATABASE_TYPE).build(),
                         Arrays.asList("# comment\rdelete from t_order where id=1;", "# comment\rdelete from t_order where id=2;"), true),
                 Arguments.of("updateTypeMismatch", new UpdateStatement(DATABASE_TYPE), Arrays.asList("update t_order set status='PAID' where id=1;", "select * from t_order"), false),
-                Arguments.of("unterminatedBlockComment", new InsertStatement(DATABASE_TYPE), Arrays.asList("/* incomplete comment", "insert into t_order values (1);"), false),
+                Arguments.of("unterminatedBlockComment", InsertStatement.builder().databaseType(DATABASE_TYPE).build(), Arrays.asList("/* incomplete comment", "insert into t_order values (1);"),
+                        false),
                 Arguments.of("dashCommentOnlySegment", new UpdateStatement(DATABASE_TYPE), Arrays.asList("--", "update t_order set status='DONE' where id=1;"), false),
                 Arguments.of("whitespaceOnlySegment", new UpdateStatement(DATABASE_TYPE), Arrays.asList("   \t ", "update t_order set status='DONE' where id=1;"), false));
     }

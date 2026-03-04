@@ -236,7 +236,7 @@ class StandardDatabaseProxyConnectorTest {
     void assertExecuteWithImplicitCommitTransaction() throws SQLException {
         when(databaseConnectionManager.getConnectionSession().isAutoCommit()).thenReturn(true);
         when(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext().getTransactionType()).thenReturn(Optional.of("XA"));
-        SQLStatementContext sqlStatementContext = createSQLStatementContext(new InsertStatement(databaseType));
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(InsertStatement.builder().databaseType(databaseType).build());
         DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
         ProxySQLExecutor proxySQLExecutor = mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS);
         setField(engine, "proxySQLExecutor", proxySQLExecutor);
@@ -265,7 +265,7 @@ class StandardDatabaseProxyConnectorTest {
     void assertExecuteWithImplicitCommitTransactionAndException() throws SQLException {
         when(databaseConnectionManager.getConnectionSession().isAutoCommit()).thenReturn(true);
         when(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext().getTransactionType()).thenReturn(Optional.of("XA"));
-        SQLStatementContext sqlStatementContext = createSQLStatementContext(new InsertStatement(databaseType));
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(InsertStatement.builder().databaseType(databaseType).build());
         ProxySQLExecutor proxySQLExecutor = mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS);
         DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
         setField(engine, "proxySQLExecutor", proxySQLExecutor);
@@ -292,7 +292,7 @@ class StandardDatabaseProxyConnectorTest {
     @Test
     void assertExecuteWithUpdateResultAndAccumulate() throws SQLException {
         InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        InsertStatement insertStatement = new InsertStatement(databaseType);
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
         insertStatement.buildAttributes();
         when(sqlStatementContext.getSqlStatement()).thenReturn(insertStatement);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
@@ -617,7 +617,7 @@ class StandardDatabaseProxyConnectorTest {
     
     @Test
     void assertExecuteWithUpdateResultAndNoAccumulate() throws SQLException {
-        SQLStatementContext sqlStatementContext = createSQLStatementContext(new InsertStatement(databaseType));
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(InsertStatement.builder().databaseType(databaseType).build());
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_order"));
         ShardingSphereDatabase database = mockDatabase();
         when(database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)).thenReturn(Collections.singleton(mock(DataNodeRuleAttribute.class)));
@@ -644,19 +644,19 @@ class StandardDatabaseProxyConnectorTest {
     
     @Test
     void assertExecuteWithoutImplicitCommitWhenSingleExecutionUnit() throws SQLException {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
         assertThat(executeWithImplicitCommitCondition(insertStatement, "XA", false, 1), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteWithoutImplicitCommitWhenLocalTransaction() throws SQLException {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
         assertThat(executeWithImplicitCommitCondition(insertStatement, "LOCAL", false, 2), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteWithoutImplicitCommitWhenAlreadyInTransaction() throws SQLException {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
         assertThat(executeWithImplicitCommitCondition(insertStatement, "XA", true, 2), isA(UpdateResponseHeader.class));
     }
     
