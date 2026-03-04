@@ -87,10 +87,7 @@ class BroadcastUnicastRouteEngineTest {
     
     @Test
     void assertRouteToFirstDataSourceWithDropViewStatementContext() {
-        DropViewStatement dropViewStatement = new DropViewStatement(databaseType);
-        dropViewStatement.buildAttributes();
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(dropViewStatement);
-        assertRoute(sqlStatementContext, is("ds_0"));
+        assertRoute(new CommonSQLStatementContext(new DropViewStatement(databaseType, Collections.emptyList(), false)), is("ds_0"));
     }
     
     @Test

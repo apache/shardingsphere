@@ -34,6 +34,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -77,7 +78,7 @@ class FederationMetaDataRefreshEngineTest {
     
     @Test
     void assertIsNeedRefreshWhenDropViewStatement() {
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new DropViewStatement(databaseType));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new DropViewStatement(databaseType, Collections.emptyList(), false));
         assertTrue(new FederationMetaDataRefreshEngine(sqlStatementContext).isNeedRefresh());
     }
     
