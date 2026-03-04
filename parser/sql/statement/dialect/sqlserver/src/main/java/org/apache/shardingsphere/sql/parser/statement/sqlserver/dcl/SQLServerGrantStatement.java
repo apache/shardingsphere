@@ -20,10 +20,10 @@ package org.apache.shardingsphere.sql.parser.statement.sqlserver.dcl;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Grant statement for SQLServer.
@@ -31,9 +31,10 @@ import java.util.List;
 @Getter
 public final class SQLServerGrantStatement extends GrantStatement {
     
-    private final List<ColumnSegment> columns = new LinkedList<>();
+    private final Collection<ColumnSegment> columns;
     
-    public SQLServerGrantStatement(final DatabaseType databaseType) {
-        super(databaseType);
+    public SQLServerGrantStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables, final Collection<ColumnSegment> columns) {
+        super(databaseType, tables);
+        this.columns = columns;
     }
 }

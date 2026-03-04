@@ -27,6 +27,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 
+import java.util.Collections;
+
 /**
  * DCL statement visitor for SQL92.
  */
@@ -38,11 +40,8 @@ public final class SQL92DCLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement(getDatabaseType());
-        if (null != ctx.privilegeClause()) {
-            result.getTables().add((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName()));
-        }
-        return result;
+        return new GrantStatement(getDatabaseType(),
+                null == ctx.privilegeClause() ? Collections.emptyList() : Collections.singleton((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName())));
     }
     
     @Override

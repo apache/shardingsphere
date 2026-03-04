@@ -55,11 +55,7 @@ public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisito
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement(getDatabaseType());
-        if (containsTableSegment(ctx.privilegeClause())) {
-            result.getTables().addAll(getTableSegments(ctx.privilegeClause()));
-        }
-        return result;
+        return new GrantStatement(getDatabaseType(), containsTableSegment(ctx.privilegeClause()) ? getTableSegments(ctx.privilegeClause()) : Collections.emptyList());
     }
     
     @Override
