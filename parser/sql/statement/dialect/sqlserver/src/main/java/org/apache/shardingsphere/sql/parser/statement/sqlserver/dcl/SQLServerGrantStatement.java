@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,6 +35,6 @@ public final class SQLServerGrantStatement extends GrantStatement {
     private final List<ColumnSegment> columns = new LinkedList<>();
     
     public SQLServerGrantStatement(final DatabaseType databaseType) {
-        super(databaseType);
+        super(databaseType, Collections.emptyList());
     }
 }

@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementCopyU
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Grant statement binder.
@@ -43,19 +43,14 @@ public final class GrantStatementBinder implements SQLStatementBinder<GrantState
             return sqlStatement;
         }
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        Collection<SimpleTableSegment> boundTables = new ArrayList<>();
-        for (SimpleTableSegment each : tables) {
-            boundTables.add(SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts));
-        }
-        return copyGrantStatement(sqlStatement, boundTables);
+        return copyGrantStatement(sqlStatement, tables.stream().map(each -> SimpleTableSegmentBinder.bind(each, binderContext, tableBinderContexts)).collect(Collectors.toList()));
     }
     
     private GrantStatement copyGrantStatement(final GrantStatement sqlStatement, final Collection<SimpleTableSegment> tables) {
         if (tables.equals(sqlStatement.getTables())) {
             return sqlStatement;
         }
-        GrantStatement result = new GrantStatement(sqlStatement.getDatabaseType());
-        result.getTables().addAll(tables);
+        GrantStatement result = new GrantStatement(sqlStatement.getDatabaseType(), tables);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
