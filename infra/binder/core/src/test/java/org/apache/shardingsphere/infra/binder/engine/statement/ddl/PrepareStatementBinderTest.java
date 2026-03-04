@@ -73,7 +73,7 @@ class PrepareStatementBinderTest {
         when(table.getAllColumns()).thenReturn(Collections.emptyList());
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
-        final PrepareStatement prepareStatement = PrepareStatement.builder().databaseType(databaseType).select(createSelectStatement()).build();
+        PrepareStatement prepareStatement = PrepareStatement.builder().databaseType(databaseType).select(createSelectStatement()).build();
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db_1", hintValueContext, prepareStatement);
         PrepareStatement actual = new PrepareStatementBinder().bind(prepareStatement, binderContext);
         assertThat(actual.getDatabaseType(), is(databaseType));
@@ -87,7 +87,7 @@ class PrepareStatementBinderTest {
     void assertBindWithoutInnerStatements() {
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
-        final PrepareStatement prepareStatement = PrepareStatement.builder().databaseType(databaseType).build();
+        PrepareStatement prepareStatement = PrepareStatement.builder().databaseType(databaseType).build();
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db_1", hintValueContext, prepareStatement);
         PrepareStatement actual = new PrepareStatementBinder().bind(prepareStatement, binderContext);
         assertThat(actual.getDatabaseType(), is(databaseType));
