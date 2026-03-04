@@ -32,18 +32,18 @@ public final class ExplainStatement extends DALStatement {
     
     private final SQLStatement explainableSQLStatement;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public ExplainStatement(final DatabaseType databaseType, final SQLStatement explainableSQLStatement) {
         super(databaseType);
         this.explainableSQLStatement = explainableSQLStatement;
-    }
-    
-    @Override
-    public void buildAttributes() {
         TableExtractor extractor = new TableExtractor();
         // TODO extract table from declare, execute, createMaterializedView, refreshMaterializedView
         extractor.extractTablesFromSQLStatement(explainableSQLStatement);
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(extractor.getRewriteTables()));
+    }
+    
+    @Override
+    public void buildAttributes() {
     }
 }
