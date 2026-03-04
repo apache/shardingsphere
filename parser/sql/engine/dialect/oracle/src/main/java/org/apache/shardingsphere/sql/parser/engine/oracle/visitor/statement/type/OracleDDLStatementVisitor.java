@@ -735,9 +735,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement(getDatabaseType());
-        result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return new DropTableStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())), false, false);
     }
     
     @Override
