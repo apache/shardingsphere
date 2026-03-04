@@ -36,16 +36,16 @@ public final class MySQLFlushStatement extends FlushStatement {
     
     private final boolean flushTable;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLFlushStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables, final boolean flushTable) {
         super(databaseType);
         this.tables = tables;
         this.flushTable = flushTable;
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }
 }

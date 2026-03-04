@@ -30,16 +30,17 @@ import java.util.Optional;
 /**
  * Show databases statement for MySQL.
  */
+@Getter
 public final class MySQLShowDatabasesStatement extends DALStatement {
     
     private final ShowFilterSegment filter;
     
-    @Getter
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowDatabasesStatement(final DatabaseType databaseType, final ShowFilterSegment filter) {
         super(databaseType);
         this.filter = filter;
+        attributes = new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute(), new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
     
     /**
@@ -53,6 +54,5 @@ public final class MySQLShowDatabasesStatement extends DALStatement {
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute(), new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }
