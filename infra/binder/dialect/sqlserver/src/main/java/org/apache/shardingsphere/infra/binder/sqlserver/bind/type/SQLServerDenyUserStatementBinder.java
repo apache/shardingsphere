@@ -49,9 +49,7 @@ public final class SQLServerDenyUserStatementBinder implements SQLStatementBinde
     }
     
     private SQLServerDenyUserStatement copy(final SQLServerDenyUserStatement sqlStatement, final SimpleTableSegment boundTable, final Collection<ColumnSegment> boundColumns) {
-        SQLServerDenyUserStatement result = new SQLServerDenyUserStatement(sqlStatement.getDatabaseType());
-        result.setTable(boundTable);
-        sqlStatement.getColumns().addAll(boundColumns);
+        SQLServerDenyUserStatement result = new SQLServerDenyUserStatement(sqlStatement.getDatabaseType(), boundTable, boundColumns);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
