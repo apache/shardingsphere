@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Grant
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.GrantStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -46,6 +47,6 @@ public final class MySQLGrantStatement extends GrantStatement {
     private GrantLevelSegment level;
     
     public MySQLGrantStatement(final DatabaseType databaseType) {
-        super(databaseType);
+        super(databaseType, Collections.emptyList());
     }
 }

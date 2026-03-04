@@ -39,6 +39,7 @@ import java.util.Collections;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -69,9 +70,7 @@ class GrantStatementBinderTest {
         when(table.getAllColumns()).thenReturn(Collections.emptyList());
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
-        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("test_table")));
-        GrantStatement original = new GrantStatement(databaseType);
-        original.getTables().add(tableSegment);
+        GrantStatement original = new GrantStatement(databaseType, Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("test_table")))));
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, original);
         GrantStatement actual = new GrantStatementBinder().bind(original, binderContext);
         Collection<SimpleTableSegment> actualTables = actual.getTables();
@@ -81,12 +80,11 @@ class GrantStatementBinderTest {
     
     @Test
     void assertBindWithEmptyTables() {
-        GrantStatement original = new GrantStatement(databaseType);
+        GrantStatement original = new GrantStatement(databaseType, Collections.emptyList());
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db", hintValueContext, original);
         GrantStatement actual = new GrantStatementBinder().bind(original, binderContext);
-        Collection<SimpleTableSegment> actualTables = actual.getTables();
-        assertThat(actualTables.size(), is(0));
+        assertTrue(actual.getTables().isEmpty());
     }
 }
