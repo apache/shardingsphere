@@ -34,6 +34,7 @@ Attributes:
 | *Name*         | *DataType* | *Description*  |
 |----------------|------------|----------------|
 | sharding-count | int        | Sharding count |
+| normalize-numeric-int-range (?) | boolean | Whether to normalize `Long` and `BigInteger` values in integer range to integer semantics for consistent routing across numeric types | false |
 
 #### Volume Based Range Sharding Algorithm
 

@@ -37,15 +37,20 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     
     private static final String SHARDING_COUNT_KEY = "sharding-count";
     
+    private static final String NORMALIZE_NUMERIC_INT_RANGE_KEY = "normalize-numeric-int-range";
+    
     private static final BigInteger INTEGER_MIN_VALUE = BigInteger.valueOf(Integer.MIN_VALUE);
     
     private static final BigInteger INTEGER_MAX_VALUE = BigInteger.valueOf(Integer.MAX_VALUE);
     
     private int shardingCount;
     
+    private boolean normalizeNumericIntRange;
+    
     @Override
     public void init(final Properties props) {
         shardingCount = getShardingCount(props);
+        normalizeNumericIntRange = isNormalizeNumericIntRange(props);
     }
     
     private int getShardingCount(final Properties props) {
@@ -53,6 +58,10 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
         int result = Integer.parseInt(String.valueOf(props.getProperty(SHARDING_COUNT_KEY)));
         ShardingSpherePreconditions.checkState(result > 0, () -> new AlgorithmInitializationException(this, "Sharding count must be a positive integer."));
         return result;
+    }
+    
+    private boolean isNormalizeNumericIntRange(final Properties props) {
+        return Boolean.parseBoolean(String.valueOf(props.getProperty(NORMALIZE_NUMERIC_INT_RANGE_KEY, Boolean.FALSE.toString())));
     }
     
     @Override
@@ -68,11 +77,13 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     }
     
     private long hashShardingValue(final Object shardingValue) {
-        if (shardingValue instanceof Long && isIntegerRange((Long) shardingValue)) {
-            return Math.abs((long) ((Long) shardingValue).intValue());
-        }
-        if (shardingValue instanceof BigInteger && isIntegerRange((BigInteger) shardingValue)) {
-            return Math.abs((long) ((BigInteger) shardingValue).intValue());
+        if (normalizeNumericIntRange) {
+            if (shardingValue instanceof Long && isIntegerRange((Long) shardingValue)) {
+                return Math.abs((long) ((Long) shardingValue).intValue());
+            }
+            if (shardingValue instanceof BigInteger && isIntegerRange((BigInteger) shardingValue)) {
+                return Math.abs((long) ((BigInteger) shardingValue).intValue());
+            }
         }
         return Math.abs((long) shardingValue.hashCode());
     }
