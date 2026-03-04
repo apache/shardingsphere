@@ -24,9 +24,11 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -42,6 +44,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 import static org.hamcrest.Matchers.is;
@@ -141,6 +144,28 @@ class InsertStatementBinderTest {
         assertThat(actual.getTable().get().getTableName(), not(insertStatement.getTable().get().getTableName()));
         assertInsertColumns(actual.getDerivedInsertColumns());
         assertInsertSelect(actual);
+    }
+    
+    @Test
+    void assertBindInsertWithOnDuplicateKeyColumns() {
+        InsertStatement insertStatement = new InsertStatement(databaseType);
+        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
+        insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("order_id")),
+                new ColumnSegment(0, 0, new IdentifierValue("user_id")), new ColumnSegment(0, 0, new IdentifierValue("status")))));
+        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
+                new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK"))));
+        Collection<ColumnAssignmentSegment> columns = Collections.singletonList(
+                new ColumnAssignmentSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("status"))),
+                        new LiteralExpressionSegment(0, 0, "UPDATED")));
+        insertStatement.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, columns));
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), insertStatement));
+        assertThat(actual, not(insertStatement));
+        assertTrue(actual.getOnDuplicateKeyColumns().isPresent());
+        assertTrue(insertStatement.getOnDuplicateKeyColumns().isPresent());
+        assertThat(actual.getOnDuplicateKeyColumns().get(), not(insertStatement.getOnDuplicateKeyColumns().get()));
+        ColumnAssignmentSegment actualAssignment = actual.getOnDuplicateKeyColumns().get().getColumns().iterator().next();
+        assertThat(actualAssignment.getColumns().iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actualAssignment.getColumns().iterator().next().getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
     }
     
     private static void assertInsertSelect(final InsertStatement actual) {
