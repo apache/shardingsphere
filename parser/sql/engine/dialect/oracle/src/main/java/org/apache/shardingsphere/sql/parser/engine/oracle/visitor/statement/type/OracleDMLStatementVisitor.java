@@ -1348,25 +1348,25 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        MergeStatement result = new MergeStatement(getDatabaseType());
-        result.setTarget((TableSegment) visit(ctx.intoClause()));
-        result.setSource((TableSegment) visit(ctx.usingClause()));
+        TableSegment target = (TableSegment) visit(ctx.intoClause());
+        TableSegment source = (TableSegment) visit(ctx.usingClause());
         ExpressionWithParamsSegment onExpression = new ExpressionWithParamsSegment(ctx.usingClause().expr().start.getStartIndex(), ctx.usingClause().expr().stop.getStopIndex(),
                 (ExpressionSegment) visit(ctx.usingClause().expr()));
         onExpression.getParameterMarkerSegments().addAll(popAllStatementParameterMarkerSegments());
-        result.setExpression(onExpression);
+        UpdateStatement update = null;
+        InsertStatement insert = null;
         if (null != ctx.mergeUpdateClause() && null != ctx.mergeInsertClause() && ctx.mergeUpdateClause().start.getStartIndex() > ctx.mergeInsertClause().start.getStartIndex()) {
-            result.setInsert((InsertStatement) visitMergeInsertClause(ctx.mergeInsertClause()));
-            result.setUpdate((UpdateStatement) visitMergeUpdateClause(ctx.mergeUpdateClause()));
-            result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
-            return result;
+            insert = (InsertStatement) visitMergeInsertClause(ctx.mergeInsertClause());
+            update = (UpdateStatement) visitMergeUpdateClause(ctx.mergeUpdateClause());
+        } else {
+            if (null != ctx.mergeUpdateClause()) {
+                update = (UpdateStatement) visitMergeUpdateClause(ctx.mergeUpdateClause());
+            }
+            if (null != ctx.mergeInsertClause()) {
+                insert = (InsertStatement) visitMergeInsertClause(ctx.mergeInsertClause());
+            }
         }
-        if (null != ctx.mergeUpdateClause()) {
-            result.setUpdate((UpdateStatement) visitMergeUpdateClause(ctx.mergeUpdateClause()));
-        }
-        if (null != ctx.mergeInsertClause()) {
-            result.setInsert((InsertStatement) visitMergeInsertClause(ctx.mergeInsertClause()));
-        }
+        MergeStatement result = MergeStatement.builder().databaseType(getDatabaseType()).target(target).source(source).expression(onExpression).update(update).insert(insert).build();
         result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         return result;
     }

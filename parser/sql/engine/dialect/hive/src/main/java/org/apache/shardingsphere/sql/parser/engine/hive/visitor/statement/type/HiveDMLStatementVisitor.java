@@ -1208,12 +1208,10 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        MergeStatement result = new MergeStatement(getDatabaseType());
         TableSegment target = (TableSegment) visit(ctx.tableName(0));
         if (null != ctx.tableNameAs(0)) {
             target.setAlias((AliasSegment) visit(ctx.tableNameAs(0).alias()));
         }
-        result.setTarget(target);
         TableSegment source;
         if (null != ctx.tableName(1)) {
             source = (TableSegment) visit(ctx.tableName(1));
@@ -1225,9 +1223,8 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         if (null != ctx.tableNameAs(1)) {
             source.setAlias((AliasSegment) visit(ctx.tableNameAs(1).alias()));
         }
-        result.setSource(source);
         ExpressionWithParamsSegment onExpression = new ExpressionWithParamsSegment(ctx.expr().start.getStartIndex(), ctx.expr().stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
-        result.setExpression(onExpression);
+        Collection<MergeWhenAndThenSegment> whenAndThens = new LinkedList<>();
         for (MergeWhenClauseContext each : ctx.mergeWhenClause()) {
             int start = each.getStart().getStartIndex();
             int stop = each.getStop().getStopIndex();
@@ -1245,8 +1242,9 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
                 InsertStatement ins = InsertStatement.builder().databaseType(getDatabaseType()).values(values).build();
                 seg.setInsert(ins);
             }
-            result.getWhenAndThens().add(seg);
+            whenAndThens.add(seg);
         }
+        MergeStatement result = MergeStatement.builder().databaseType(getDatabaseType()).target(target).source(source).expression(onExpression).whenAndThens(whenAndThens).build();
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
