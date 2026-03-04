@@ -693,10 +693,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement(getDatabaseType());
-        result.setIfExists(null != ctx.ifExists());
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
-        return result;
+        return new DropTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue(), null != ctx.ifExists(), false);
     }
     
     @Override

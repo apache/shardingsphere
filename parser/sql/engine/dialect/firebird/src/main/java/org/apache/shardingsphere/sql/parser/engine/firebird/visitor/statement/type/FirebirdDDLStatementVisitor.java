@@ -259,9 +259,7 @@ public final class FirebirdDDLStatementVisitor extends FirebirdStatementVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement(getDatabaseType());
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
-        return result;
+        return new DropTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue(), false, false);
     }
     
     @Override
