@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -53,6 +54,20 @@ class HashModShardingAlgorithmTest {
     void assertPreciseDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_type", DATA_NODE_INFO, "a")), is("t_order_1"));
+    }
+    
+    @Test
+    void assertPreciseDoShardingWithSameNegativeNumberValue() {
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -1)), is("t_order_1"));
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -1L)), is("t_order_1"));
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, BigInteger.valueOf(-1L))), is("t_order_1"));
+    }
+    
+    @Test
+    void assertPreciseDoShardingWithLongValueOutOfIntegerRange() {
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Long.MAX_VALUE)), is("t_order_0"));
     }
     
     @Test

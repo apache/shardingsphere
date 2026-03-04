@@ -82,8 +82,7 @@ class ShardingSphereDriverTest {
                 statement.execute("DROP TABLE IF EXISTS t_order");
                 statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT)");
             }
-            // TODO Replace 1 to -1 after HASH_MOD algorithm improved
-            int value = 1;
+            int value = -1;
             try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (order_id, user_id) VALUES (?, ?)")) {
                 preparedStatement.setObject(1, value);
                 preparedStatement.setObject(2, 101);

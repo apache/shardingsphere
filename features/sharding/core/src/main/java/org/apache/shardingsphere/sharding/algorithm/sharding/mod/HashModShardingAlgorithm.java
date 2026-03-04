@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Properties;
 
@@ -35,6 +36,10 @@ import java.util.Properties;
 public final class HashModShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, ShardingAutoTableAlgorithm {
     
     private static final String SHARDING_COUNT_KEY = "sharding-count";
+    
+    private static final BigInteger INTEGER_MIN_VALUE = BigInteger.valueOf(Integer.MIN_VALUE);
+    
+    private static final BigInteger INTEGER_MAX_VALUE = BigInteger.valueOf(Integer.MAX_VALUE);
     
     private int shardingCount;
     
@@ -63,7 +68,21 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     }
     
     private long hashShardingValue(final Object shardingValue) {
+        if (shardingValue instanceof Long && isIntegerRange((Long) shardingValue)) {
+            return Math.abs((long) ((Long) shardingValue).intValue());
+        }
+        if (shardingValue instanceof BigInteger && isIntegerRange((BigInteger) shardingValue)) {
+            return Math.abs((long) ((BigInteger) shardingValue).intValue());
+        }
         return Math.abs((long) shardingValue.hashCode());
+    }
+    
+    private boolean isIntegerRange(final long shardingValue) {
+        return shardingValue >= Integer.MIN_VALUE && shardingValue <= Integer.MAX_VALUE;
+    }
+    
+    private boolean isIntegerRange(final BigInteger shardingValue) {
+        return shardingValue.compareTo(INTEGER_MIN_VALUE) >= 0 && shardingValue.compareTo(INTEGER_MAX_VALUE) <= 0;
     }
     
     @Override
