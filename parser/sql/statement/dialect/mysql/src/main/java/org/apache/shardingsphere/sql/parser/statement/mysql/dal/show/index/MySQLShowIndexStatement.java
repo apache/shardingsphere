@@ -38,12 +38,13 @@ public final class MySQLShowIndexStatement extends DALStatement {
     
     private final FromDatabaseSegment fromDatabase;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowIndexStatement(final DatabaseType databaseType, final SimpleTableSegment table, final FromDatabaseSegment fromDatabase) {
         super(databaseType);
         this.table = table;
         this.fromDatabase = fromDatabase;
+        attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase), new TableSQLStatementAttribute(table));
     }
     
     /**
@@ -57,6 +58,5 @@ public final class MySQLShowIndexStatement extends DALStatement {
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase), new TableSQLStatementAttribute(table));
     }
 }
