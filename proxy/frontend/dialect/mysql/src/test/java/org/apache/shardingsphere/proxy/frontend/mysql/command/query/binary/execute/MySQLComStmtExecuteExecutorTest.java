@@ -143,9 +143,7 @@ class MySQLComStmtExecuteExecutorTest {
     }
     
     private SelectStatement prepareSelectStatement() {
-        SelectStatement result = new SelectStatement(databaseType);
-        result.setProjections(new ProjectionsSegment(0, 0));
-        return result;
+        return SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
     }
     
     private UpdateStatement prepareUpdateStatement() {

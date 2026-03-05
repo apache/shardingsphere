@@ -102,7 +102,8 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class, RETURNS_DEEP_STUBS);
         when(resourceMetaData.getStorageUnits().get(DATA_SOURCE_NAME).getStorageType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "SQL92"));
         when(resourceMetaData.getStorageUnits().get(DATA_SOURCE_NAME).getConnectionProperties()).thenReturn(mock(ConnectionProperties.class));
-        JDBCExecutorCallback jdbcExecutorCallback = new JDBCExecutorCallbackFixture(TypedSPILoader.getService(DatabaseType.class, "SQL92"), resourceMetaData, new SelectStatement(databaseType), true);
+        JDBCExecutorCallback jdbcExecutorCallback = new JDBCExecutorCallbackFixture(
+                TypedSPILoader.getService(DatabaseType.class, "SQL92"), resourceMetaData, SelectStatement.builder().databaseType(databaseType).build(), true);
         Plugins.getMemberAccessor().set(JDBCExecutorCallback.class.getDeclaredField("resourceMetaData"), jdbcExecutorCallback, resourceMetaData);
         targetObject = (TargetAdviceObject) jdbcExecutorCallback;
     }

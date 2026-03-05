@@ -60,9 +60,8 @@ class ShardingCreateFunctionSupportedCheckerTest {
     
     @Test
     void assertCheckCreateFunction() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
         SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl")));
-        selectStatement.setFrom(fromTable);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).from(fromTable).build();
         CreateTableStatement createTableStatement = mock(CreateTableStatement.class);
         when(createTableStatement.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
@@ -84,9 +83,8 @@ class ShardingCreateFunctionSupportedCheckerTest {
     
     @Test
     void assertCheckCreateFunctionWithShardingTable() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
         SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
-        selectStatement.setFrom(fromTable);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).from(fromTable).build();
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(selectStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
@@ -102,9 +100,8 @@ class ShardingCreateFunctionSupportedCheckerTest {
     
     @Test
     void assertCheckCreateFunctionWithNoSuchTable() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
         SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")));
-        selectStatement.setFrom(fromTable);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).from(fromTable).build();
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(selectStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);

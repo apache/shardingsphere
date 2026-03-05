@@ -98,11 +98,8 @@ class PrepareStatementBinderTest {
     }
     
     private SelectStatement createSelectStatement() {
-        SelectStatement result = new SelectStatement(databaseType);
-        result.setProjections(createProjectionsSegment());
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 15, new IdentifierValue("t_order")));
-        result.setFrom(tableSegment);
-        return result;
+        return SelectStatement.builder().databaseType(databaseType).projections(createProjectionsSegment()).from(tableSegment).build();
     }
     
     private ProjectionsSegment createProjectionsSegment() {

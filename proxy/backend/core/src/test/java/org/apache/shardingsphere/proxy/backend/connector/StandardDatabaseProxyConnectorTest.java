@@ -415,7 +415,7 @@ class StandardDatabaseProxyConnectorTest {
     @Test
     void assertConstructWithSelectStatementContextWithoutDerivedProjections() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        SelectStatement selectStatement = new SelectStatement(databaseType);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
         selectStatement.buildAttributes();
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
@@ -425,7 +425,7 @@ class StandardDatabaseProxyConnectorTest {
     
     @Test
     void assertExecuteWithFederation() throws SQLException {
-        SQLStatementContext sqlStatementContext = createSQLStatementContext(new SelectStatement(databaseType));
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(SelectStatement.builder().databaseType(databaseType).build());
         QueryContext queryContext = createQueryContext(sqlStatementContext, mockDatabase());
         ProxySQLExecutor proxySQLExecutor = mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS);
         SQLFederationEngine sqlFederationEngine = mock(SQLFederationEngine.class);
@@ -450,7 +450,7 @@ class StandardDatabaseProxyConnectorTest {
     
     @Test
     void assertExecuteWithFederationAndNotNullDatabase() throws SQLException {
-        SQLStatementContext sqlStatementContext = createSQLStatementContext(new SelectStatement(databaseType));
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(SelectStatement.builder().databaseType(databaseType).build());
         QueryContext queryContext = createQueryContext(sqlStatementContext, mockDatabase());
         ProxySQLExecutor proxySQLExecutor = mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS);
         SQLFederationEngine sqlFederationEngine = mock(SQLFederationEngine.class);
@@ -539,7 +539,7 @@ class StandardDatabaseProxyConnectorTest {
     @Test
     void assertExecuteWithDerivedQueryResult() throws SQLException {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        SelectStatement selectStatement = new SelectStatement(databaseType);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
         selectStatement.buildAttributes();
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
@@ -662,7 +662,7 @@ class StandardDatabaseProxyConnectorTest {
     
     @Test
     void assertExecuteWithoutImplicitCommitWhenSelectStatement() throws SQLException {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
         assertThat(executeWithImplicitCommitCondition(selectStatement, "XA", false, 2), isA(UpdateResponseHeader.class));
     }
     

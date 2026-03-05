@@ -124,7 +124,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(new ShardingSphereMetaData(Collections.emptyList(),
                 new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties())));
-        when(selectContext.getSqlStatement()).thenReturn(new SelectStatement(DATABASE_TYPE));
+        when(selectContext.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(DATABASE_TYPE).build());
         registry.addPreparedStatement(1, new FirebirdServerPreparedStatement("SELECT * FROM tbl", selectContext, new HintValueContext()));
         when(updateContext.getSqlStatement()).thenReturn(new UpdateStatement(DATABASE_TYPE));
         registry.addPreparedStatement(2, new FirebirdServerPreparedStatement("UPDATE tbl SET col=1", updateContext, new HintValueContext()));

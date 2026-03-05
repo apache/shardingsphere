@@ -1204,40 +1204,47 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
-        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
+        WithSegment withSegment = null;
         if (null != ctx.selectWithClause() && null != ctx.selectWithClause().cteClauseSet()) {
             Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
-            WithSegment withSegment = new WithSegment(ctx.selectWithClause().start.getStartIndex(), ctx.selectWithClause().stop.getStopIndex(), commonTableExpressionSegments);
-            result.setWith(withSegment);
+            withSegment = new WithSegment(ctx.selectWithClause().start.getStartIndex(), ctx.selectWithClause().stop.getStopIndex(), commonTableExpressionSegments);
         }
         if (null != ctx.duplicateSpecification()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx));
+            projections.setDistinctRow(isDistinct(ctx));
         }
+        TableSegment into = null;
         if (null != ctx.intoClause()) {
-            result.setInto((TableSegment) visit(ctx.intoClause()));
+            into = (TableSegment) visit(ctx.intoClause());
         }
+        TableSegment from = null;
         if (null != ctx.fromClause()) {
-            TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
-            result.setFrom(tableSource);
+            from = (TableSegment) visit(ctx.fromClause().tableReferences());
         }
+        WithTableHintSegment withTableHint = null;
         if (null != ctx.withTableHint()) {
-            result.setWithTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
+            withTableHint = (WithTableHintSegment) visit(ctx.withTableHint());
         }
+        WhereSegment where = null;
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            where = (WhereSegment) visit(ctx.whereClause());
         }
+        GroupBySegment groupBy = null;
         if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+            groupBy = (GroupBySegment) visit(ctx.groupByClause());
         }
+        HavingSegment having = null;
         if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+            having = (HavingSegment) visit(ctx.havingClause());
         }
+        OrderBySegment orderBy = null;
+        LimitSegment limit = null;
         if (null != ctx.orderByClause()) {
-            result.setOrderBy(getOrderBySegment(ctx.orderByClause()));
-            result.setLimit(getLimitSegment(ctx.orderByClause()));
+            orderBy = getOrderBySegment(ctx.orderByClause());
+            limit = getLimitSegment(ctx.orderByClause());
         }
-        return result;
+        return SelectStatement.builder().databaseType(databaseType).projections(projections).with(withSegment).into(into).from(from).withTableHint(withTableHint)
+                .where(where).groupBy(groupBy).having(having).orderBy(orderBy).limit(limit).build();
     }
     
     @SuppressWarnings("unchecked")

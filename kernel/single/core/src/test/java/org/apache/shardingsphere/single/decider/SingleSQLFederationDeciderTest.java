@@ -69,7 +69,7 @@ class SingleSQLFederationDeciderTest {
     void assertDecideWhenSingleTablesContainView() {
         Collection<QualifiedTable> qualifiedTables = Collections.singletonList(new QualifiedTable("foo_db", "foo_tbl"));
         SingleRule rule = createSingleRule(qualifiedTables, true);
-        SelectStatementContext selectStatementContext = createSelectStatementContext(new SelectStatement(DATABASE_TYPE));
+        SelectStatementContext selectStatementContext = createSelectStatementContext(SelectStatement.builder().databaseType(DATABASE_TYPE).build());
         Collection<DataNode> includedDataNodes = new HashSet<>();
         assertTrue(decider.decide(selectStatementContext, Collections.emptyList(), mock(RuleMetaData.class), createDatabase(true), rule, includedDataNodes));
         assertTrue(includedDataNodes.isEmpty());
@@ -80,7 +80,7 @@ class SingleSQLFederationDeciderTest {
     void assertDecideWithComputeNodeResult(final String name, final boolean allTablesInSameComputeNode, final boolean hasOrderDataNode, final boolean expectedDecideResult,
                                            final int expectedIncludedDataNodeSize) {
         Collection<QualifiedTable> qualifiedTables = Collections.singletonList(new QualifiedTable("foo_db", "foo_tbl"));
-        SelectStatementContext selectStatementContext = createSelectStatementContext(new SelectStatement(DATABASE_TYPE));
+        SelectStatementContext selectStatementContext = createSelectStatementContext(SelectStatement.builder().databaseType(DATABASE_TYPE).build());
         SingleRule rule = createSingleRule(qualifiedTables, hasOrderDataNode);
         when(rule.isAllTablesInSameComputeNode(any(), any())).thenReturn(allTablesInSameComputeNode);
         Collection<DataNode> includedDataNodes = new HashSet<>();
@@ -103,7 +103,7 @@ class SingleSQLFederationDeciderTest {
     @Test
     void assertDecideWhenExplainStatementContext() {
         ExplainStatementContext explainStatementContext = mock(ExplainStatementContext.class);
-        SelectStatementContext explainableSQLStatementContext = createSelectStatementContext(new SelectStatement(DATABASE_TYPE));
+        SelectStatementContext explainableSQLStatementContext = createSelectStatementContext(SelectStatement.builder().databaseType(DATABASE_TYPE).build());
         when(explainStatementContext.getExplainableSQLStatementContext()).thenReturn(explainableSQLStatementContext);
         Collection<DataNode> includedDataNodes = new HashSet<>();
         SingleRule rule = createSingleRule(Collections.emptyList(), true);
@@ -114,7 +114,7 @@ class SingleSQLFederationDeciderTest {
     @Test
     void assertDecideWhenSQLStatementContextNotSupported() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new SelectStatement(DATABASE_TYPE));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(DATABASE_TYPE).build());
         UnsupportedSQLOperationException actual = assertThrows(UnsupportedSQLOperationException.class,
                 () -> decider.decide(sqlStatementContext, Collections.emptyList(), mock(RuleMetaData.class), createDatabase(false), mock(SingleRule.class), new HashSet<>()));
         assertThat(actual.getMessage(), is("Unsupported SQL operation: unsupported SQL statement SelectStatement in sql federation."));
@@ -152,7 +152,7 @@ class SingleSQLFederationDeciderTest {
     
     private static Stream<Arguments> assertDecideWithIncludedDataNodesAndJoinTypeArguments() {
         return Stream.of(
-                Arguments.of("select statement without from segment", new SelectStatement(DATABASE_TYPE), false, 2),
+                Arguments.of("select statement without from segment", SelectStatement.builder().databaseType(DATABASE_TYPE).build(), false, 2),
                 Arguments.of("select statement with non join from segment", createSelectStatementWithNonJoinFrom(), false, 2),
                 Arguments.of("select statement with inner join", createSelectStatementWithJoinType(JoinType.INNER.name()), false, 2),
                 Arguments.of("select statement with comma join", createSelectStatementWithJoinType(JoinType.COMMA.name()), false, 2),
@@ -160,16 +160,12 @@ class SingleSQLFederationDeciderTest {
     }
     
     private static SelectStatement createSelectStatementWithNonJoinFrom() {
-        SelectStatement result = new SelectStatement(DATABASE_TYPE);
-        result.setFrom(mock(TableSegment.class));
-        return result;
+        return SelectStatement.builder().databaseType(DATABASE_TYPE).from(mock(TableSegment.class)).build();
     }
     
     private static SelectStatement createSelectStatementWithJoinType(final String joinType) {
-        SelectStatement result = new SelectStatement(DATABASE_TYPE);
         JoinTableSegment joinTableSegment = new JoinTableSegment();
         joinTableSegment.setJoinType(joinType);
-        result.setFrom(joinTableSegment);
-        return result;
+        return SelectStatement.builder().databaseType(DATABASE_TYPE).from(joinTableSegment).build();
     }
 }
