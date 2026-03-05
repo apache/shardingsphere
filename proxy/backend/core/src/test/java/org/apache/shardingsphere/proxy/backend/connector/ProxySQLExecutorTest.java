@@ -416,7 +416,7 @@ class ProxySQLExecutorTest {
     }
     
     private TruncateStatement createTruncateStatement(final DatabaseType databaseType) {
-        return new TruncateStatement(databaseType, Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
+        return new TruncateStatement(databaseType, Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))), Collections.emptyList());
     }
     
     private InsertStatement createInsertStatement(final DatabaseType databaseType) {
