@@ -485,11 +485,15 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         SelectStatement result = (SelectStatement) visit(ctx.selectSubquery());
+        if (null != ctx.forUpdateClause()) {
+            SelectStatement previous = result;
+            result = createSelectStatementBuilder(previous).lock((LockSegment) visit(ctx.forUpdateClause())).build();
+            result.addParameterMarkers(previous.getParameterMarkers());
+            result.getVariableNames().addAll(previous.getVariableNames());
+            result.getComments().addAll(previous.getComments());
+        }
         result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         result.getVariableNames().addAll(getVariableNames());
-        if (null != ctx.forUpdateClause()) {
-            result = createSelectStatementBuilder(result).lock((LockSegment) visit(ctx.forUpdateClause())).build();
-        }
         return result;
     }
     
