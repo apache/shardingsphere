@@ -160,16 +160,12 @@ class SingleSQLFederationDeciderTest {
     }
     
     private static SelectStatement createSelectStatementWithNonJoinFrom() {
-        SelectStatement result = new SelectStatement(DATABASE_TYPE);
-        result.setFrom(mock(TableSegment.class));
-        return result;
+        return SelectStatement.builder().databaseType(DATABASE_TYPE).from(mock(TableSegment.class)).build();
     }
     
     private static SelectStatement createSelectStatementWithJoinType(final String joinType) {
-        SelectStatement result = new SelectStatement(DATABASE_TYPE);
         JoinTableSegment joinTableSegment = new JoinTableSegment();
         joinTableSegment.setJoinType(joinType);
-        result.setFrom(joinTableSegment);
-        return result;
+        return SelectStatement.builder().databaseType(DATABASE_TYPE).from(joinTableSegment).build();
     }
 }

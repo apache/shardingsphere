@@ -57,8 +57,10 @@ class ShardingCreateProcedureSupportedCheckerTest {
     
     @Test
     void assertCheck() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl"))));
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_tbl"))))
+                .build();
         CreateTableStatement createTableStatement = mock(CreateTableStatement.class);
         when(createTableStatement.getTable()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
@@ -80,8 +82,10 @@ class ShardingCreateProcedureSupportedCheckerTest {
     
     @Test
     void assertCheckWithShardingTable() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))))
+                .build();
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(selectStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
@@ -96,8 +100,10 @@ class ShardingCreateProcedureSupportedCheckerTest {
     
     @Test
     void assertCheckWithNoSuchTable() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))))
+                .build();
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(selectStatement);
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);

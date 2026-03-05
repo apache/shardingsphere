@@ -87,10 +87,11 @@ class ExplainStatementConverterTest {
     }
     
     private SelectStatement createSelectStatement() {
-        SelectStatement result = new SelectStatement(databaseType);
-        result.setProjections(createProjectionsSegment());
-        result.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_select"))));
-        return result;
+        return SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(createProjectionsSegment())
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_select"))))
+                .build();
     }
     
     private DeleteStatement createDeleteStatement() {

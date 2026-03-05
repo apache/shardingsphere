@@ -649,8 +649,7 @@ class ShardingRuleTest {
         BinaryOperationExpression condition = createBinaryOperationExpression(leftDatabaseJoin, rightDatabaseJoin, EQUAL);
         JoinTableSegment joinTable = mock(JoinTableSegment.class);
         when(joinTable.getCondition()).thenReturn(condition);
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setFrom(joinTable);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).from(joinTable).build();
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
@@ -669,8 +668,7 @@ class ShardingRuleTest {
         BinaryOperationExpression condition = createBinaryOperationExpression(leftDatabaseJoin, rightDatabaseJoin, EQUAL);
         JoinTableSegment joinTable = mock(JoinTableSegment.class);
         when(joinTable.getCondition()).thenReturn(condition);
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setFrom(joinTable);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).from(joinTable).build();
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);
@@ -703,8 +701,7 @@ class ShardingRuleTest {
         JoinTableSegment joinTable = mock(JoinTableSegment.class);
         BinaryOperationExpression condition = createBinaryOperationExpression(databaseJoin, tableJoin, AND);
         when(joinTable.getCondition()).thenReturn(condition);
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setFrom(joinTable);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).from(joinTable).build();
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.isContainsJoinQuery()).thenReturn(true);

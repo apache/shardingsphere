@@ -98,13 +98,12 @@ class InsertStatementBinderTest {
     
     @Test
     void assertBindInsertSelectWithColumns() {
-        SelectStatement subSelectStatement = new SelectStatement(databaseType);
-        subSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))));
-        subSelectStatement.setProjections(projections);
+        SelectStatement subSelectStatement = SelectStatement.builder().databaseType(databaseType)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))).projections(projections).build();
         InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
                 .insertColumns(new InsertColumnsSegment(0, 0, Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("order_id")),
@@ -125,13 +124,12 @@ class InsertStatementBinderTest {
     
     @Test
     void assertBindInsertSelectWithoutColumns() {
-        SelectStatement subSelectStatement = new SelectStatement(databaseType);
-        subSelectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id"))));
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status"))));
-        subSelectStatement.setProjections(projections);
+        SelectStatement subSelectStatement = SelectStatement.builder().databaseType(databaseType)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))).projections(projections).build();
         InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
                 .insertSelect(new SubquerySegment(0, 0, subSelectStatement, ""))

@@ -241,7 +241,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         SelectStatement result = (SelectStatement) visit(ctx.queryExpression());
         if (null != ctx.lockClauseList()) {
-            result.setLock((LockSegment) visit(ctx.lockClauseList()));
+            result = createSelectStatementBuilder(result).lock((LockSegment) visit(ctx.lockClauseList())).build();
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
@@ -266,13 +266,14 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         } else {
             result = (SelectStatement) visit(ctx.queryExpressionParens());
         }
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = createSelectStatementBuilder(result);
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            selectStatementBuilder.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+            selectStatementBuilder.limit((LimitSegment) visit(ctx.limitClause()));
         }
-        return result;
+        return selectStatementBuilder.build();
     }
     
     @Override
@@ -282,7 +283,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         SelectStatement result = (SelectStatement) visit(ctx.queryExpression());
         if (null != ctx.lockClauseList()) {
-            result.setLock((LockSegment) visit(ctx.lockClauseList()));
+            result = createSelectStatementBuilder(result).lock((LockSegment) visit(ctx.lockClauseList())).build();
         }
         return result;
     }
@@ -293,22 +294,16 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
             return visit(ctx.queryPrimary());
         }
         if (null != ctx.queryExpressionBody()) {
-            SelectStatement result = new SelectStatement(getDatabaseType());
             SubquerySegment left = new SubquerySegment(ctx.queryExpressionBody().start.getStartIndex(), ctx.queryExpressionBody().stop.getStopIndex(),
                     (SelectStatement) visit(ctx.queryExpressionBody()), getOriginalText(ctx.queryExpressionBody()));
-            result.setProjections(left.getSelect().getProjections());
-            left.getSelect().getFrom().ifPresent(result::setFrom);
-            result.setCombine(createCombineSegment(ctx.combineClause(), left));
-            return result;
+            return SelectStatement.builder().databaseType(getDatabaseType()).projections(left.getSelect().getProjections())
+                    .from(left.getSelect().getFrom().orElse(null)).combine(createCombineSegment(ctx.combineClause(), left)).build();
         }
         if (null != ctx.queryExpressionParens()) {
-            SelectStatement result = new SelectStatement(getDatabaseType());
             SubquerySegment left = new SubquerySegment(ctx.queryExpressionParens().start.getStartIndex(), ctx.queryExpressionParens().stop.getStopIndex(),
                     (SelectStatement) visit(ctx.queryExpressionParens()), getOriginalText(ctx.queryExpressionParens()));
-            result.setProjections(left.getSelect().getProjections());
-            left.getSelect().getFrom().ifPresent(result::setFrom);
-            result.setCombine(createCombineSegment(ctx.combineClause(), left));
-            return result;
+            return SelectStatement.builder().databaseType(getDatabaseType()).projections(left.getSelect().getProjections())
+                    .from(left.getSelect().getFrom().orElse(null)).combine(createCombineSegment(ctx.combineClause(), left)).build();
         }
         return visit(ctx.queryExpressionParens());
     }
@@ -327,47 +322,46 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitQuerySpecification(final QuerySpecificationContext ctx) {
-        SelectStatement result = new SelectStatement(getDatabaseType());
-        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
         if (null != ctx.selectSpecification()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx));
+            projections.setDistinctRow(isDistinct(ctx));
         }
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = SelectStatement.builder().databaseType(getDatabaseType()).projections(projections);
         if (null != ctx.fromClause()) {
             if (null != ctx.fromClause().tableReferences()) {
                 TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
-                result.setFrom(tableSource);
+                selectStatementBuilder.from(tableSource);
             }
             if (null != ctx.fromClause().DUAL()) {
                 TableSegment tableSource = new SimpleTableSegment(new TableNameSegment(ctx.fromClause().DUAL().getSymbol().getStartIndex(),
                         ctx.fromClause().DUAL().getSymbol().getStopIndex(), new IdentifierValue(ctx.fromClause().DUAL().getText())));
-                result.setFrom(tableSource);
+                selectStatementBuilder.from(tableSource);
             }
         }
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            selectStatementBuilder.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+            selectStatementBuilder.groupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
         if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+            selectStatementBuilder.having((HavingSegment) visit(ctx.havingClause()));
         }
         if (null != ctx.windowClause()) {
-            result.setWindow((WindowSegment) visit(ctx.windowClause()));
+            selectStatementBuilder.window((WindowSegment) visit(ctx.windowClause()));
         }
-        return result;
+        return selectStatementBuilder.build();
     }
     
     @Override
     public ASTNode visitTableValueConstructor(final TableValueConstructorContext ctx) {
-        SelectStatement result = new SelectStatement(getDatabaseType());
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
         ValuesExpression valuesExpression = new ValuesExpression(startIndex, stopIndex);
         valuesExpression.getRowConstructorList().addAll(createRowConstructorList(ctx.rowConstructorList()));
-        result.setProjections(new ProjectionsSegment(startIndex, stopIndex));
-        result.getProjections().getProjections().add(new ExpressionProjectionSegment(startIndex, stopIndex, getOriginalText(ctx), valuesExpression));
-        return result;
+        ProjectionsSegment projections = new ProjectionsSegment(startIndex, stopIndex);
+        projections.getProjections().add(new ExpressionProjectionSegment(startIndex, stopIndex, getOriginalText(ctx), valuesExpression));
+        return SelectStatement.builder().databaseType(getDatabaseType()).projections(projections).build();
     }
     
     private Collection<InsertValuesSegment> createRowConstructorList(final RowConstructorListContext ctx) {
@@ -380,14 +374,11 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitTableStatement(final TableStatementContext ctx) {
-        SelectStatement result = new SelectStatement(getDatabaseType());
         if (null != ctx.TABLE()) {
-            result.setFrom(new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
-                    new IdentifierValue(ctx.tableName().getText()))));
-        } else {
-            result.setFrom((SimpleTableSegment) visit(ctx.tableName()));
+            return SelectStatement.builder().databaseType(getDatabaseType()).from(new SimpleTableSegment(
+                    new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().getText())))).build();
         }
-        return result;
+        return SelectStatement.builder().databaseType(getDatabaseType()).from((SimpleTableSegment) visit(ctx.tableName())).build();
     }
     
     @Override
@@ -972,7 +963,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     private void setFromForSelect(final SubquerySegment subquery, final TableSegment sourceTable) {
         Optional.ofNullable(subquery.getSelect())
-                .ifPresent(selectStmt -> selectStmt.setFrom(sourceTable));
+                .ifPresent(selectStmt -> subquery.setSelect(createSelectStatementBuilder(selectStmt).from(sourceTable).build()));
     }
     
     private InsertStatement createHiveInsertStatement(final TableNameContext tableName, final SelectContext select, final int startIndex) {
@@ -1282,7 +1273,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         if (null != ctx.queryExpression()) {
             result = (SelectStatement) visit(ctx.queryExpression());
             if (null != ctx.lockClauseList()) {
-                result.setLock((LockSegment) visit(ctx.lockClauseList()));
+                result = createSelectStatementBuilder(result).lock((LockSegment) visit(ctx.lockClauseList())).build();
             }
         } else if (null != ctx.selectWithInto()) {
             result = (SelectStatement) visit(ctx.selectWithInto());
@@ -1649,5 +1640,17 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
         return new MySQLLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+    }
+    
+    private SelectStatement.SelectStatementBuilder createSelectStatementBuilder(final SelectStatement selectStatement) {
+        return SelectStatement.builder().databaseType(selectStatement.getDatabaseType()).projections(selectStatement.getProjections())
+                .from(selectStatement.getFrom().orElse(null)).where(selectStatement.getWhere().orElse(null))
+                .hierarchicalQuery(selectStatement.getHierarchicalQuery().orElse(null)).groupBy(selectStatement.getGroupBy().orElse(null))
+                .having(selectStatement.getHaving().orElse(null)).orderBy(selectStatement.getOrderBy().orElse(null))
+                .combine(selectStatement.getCombine().orElse(null)).with(selectStatement.getWith().orElse(null))
+                .subqueryType(selectStatement.getSubqueryType().orElse(null)).limit(selectStatement.getLimit().orElse(null))
+                .lock(selectStatement.getLock().orElse(null)).window(selectStatement.getWindow().orElse(null))
+                .into(selectStatement.getInto().orElse(null)).model(selectStatement.getModel().orElse(null))
+                .outfile(selectStatement.getOutfile().orElse(null)).withTableHint(selectStatement.getWithTableHint().orElse(null));
     }
 }

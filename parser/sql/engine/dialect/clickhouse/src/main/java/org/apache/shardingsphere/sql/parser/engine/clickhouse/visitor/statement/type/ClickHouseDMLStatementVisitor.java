@@ -195,28 +195,27 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SelectStatement result = new SelectStatement(getDatabaseType());
-        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
         if (!ctx.selectSpecification().isEmpty()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
+            projections.setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
         }
+        SelectStatement.SelectStatementBuilder result = SelectStatement.builder().databaseType(getDatabaseType()).projections(projections);
         if (null != ctx.fromClause()) {
-            TableSegment tableSegment = (TableSegment) visit(ctx.fromClause());
-            result.setFrom(tableSegment);
+            result.from((TableSegment) visit(ctx.fromClause()));
         }
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+            result.groupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            result.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+            result.having((HavingSegment) visit(ctx.havingClause()));
         }
-        return result;
+        return result.build();
     }
     
     @Override

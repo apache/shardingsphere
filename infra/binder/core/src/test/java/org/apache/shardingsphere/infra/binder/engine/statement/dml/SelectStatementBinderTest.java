@@ -58,9 +58,7 @@ class SelectStatementBinderTest {
     
     @Test
     void assertBind() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
-        selectStatement.setProjections(projections);
         ColumnProjectionSegment orderIdProjection = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("order_id")));
         ColumnProjectionSegment userIdProjection = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id")));
         ColumnProjectionSegment statusProjection = new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("status")));
@@ -68,8 +66,7 @@ class SelectStatementBinderTest {
         projections.getProjections().add(userIdProjection);
         projections.getProjections().add(statusProjection);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
-        selectStatement.setFrom(simpleTableSegment);
-        selectStatement.setWhere(createWhereSegment());
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections).from(simpleTableSegment).where(createWhereSegment()).build();
         SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(), "foo_db", new HintValueContext(), selectStatement));
         assertThat(actual, not(selectStatement));
         assertTrue(actual.getFrom().isPresent());

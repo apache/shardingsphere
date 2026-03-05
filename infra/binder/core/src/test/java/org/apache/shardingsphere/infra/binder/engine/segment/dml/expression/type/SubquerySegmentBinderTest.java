@@ -64,14 +64,12 @@ class SubquerySegmentBinderTest {
     
     @Test
     void assertBind() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
         ColumnSegment columnSegment = new ColumnSegment(58, 65, new IdentifierValue("order_id"));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(58, 65);
         projectionsSegment.getProjections().add(new ColumnProjectionSegment(columnSegment));
-        selectStatement.setProjections(projectionsSegment);
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(72, 78, new IdentifierValue("t_order"))));
         ExpressionSegment whereExpressionSegment = new ColumnSegment(86, 91, new IdentifierValue("status"));
-        selectStatement.setWhere(new WhereSegment(80, 102, whereExpressionSegment));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment)
+                .from(new SimpleTableSegment(new TableNameSegment(72, 78, new IdentifierValue("t_order")))).where(new WhereSegment(80, 102, whereExpressionSegment)).build();
         SubquerySegment subquerySegment = new SubquerySegment(39, 103, selectStatement, "order_id = (SELECT order_id FROM t_order WHERE status = 'SUBMIT')");
         SQLStatementBinderContext sqlStatementBinderContext = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), selectStatement);
         ColumnSegment boundNameColumn = new ColumnSegment(7, 13, new IdentifierValue("user_id"));

@@ -51,8 +51,7 @@ class InsertStatementConverterTest {
     
     @Test
     void assertConvertWithInsertSelect() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(createProjectionsSegment());
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(createProjectionsSegment()).build();
         InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_insert_select"))))
                 .insertSelect(new SubquerySegment(0, 0, selectStatement, "select")).build();
