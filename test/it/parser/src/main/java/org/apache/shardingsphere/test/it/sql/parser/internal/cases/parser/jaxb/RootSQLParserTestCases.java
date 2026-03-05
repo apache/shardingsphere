@@ -21,6 +21,9 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCopyTabletStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaStatusStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaVersionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateRepositoryStatementTestCase;
@@ -745,6 +748,15 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "doris-alter-system")
     private final List<DorisAlterSystemStatementTestCase> dorisAlterSystemTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "admin-set-replica-status")
+    private final List<DorisAdminSetReplicaStatusStatementTestCase> adminSetReplicaStatusTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "admin-set-replica-version")
+    private final List<DorisAdminSetReplicaVersionStatementTestCase> adminSetReplicaVersionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "admin-copy-tablet")
+    private final List<DorisAdminCopyTabletStatementTestCase> adminCopyTabletTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sql-block-rule")
     private final List<DorisCreateSqlBlockRuleStatementTestCase> createSqlBlockRuleTestCases = new LinkedList<>();

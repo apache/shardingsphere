@@ -2914,6 +2914,10 @@ TABLE_NAME
     : T A B L E UL_ N A M E
     ;
 
+TABLET
+    : T A B L E T
+    ;
+
 TASK
     : T A S K
     ;
@@ -3172,6 +3176,10 @@ VCPU
 
 VERBOSE
     : V E R B O S E
+    ;
+
+VERSION
+    : V E R S I O N
     ;
 
 VIEW

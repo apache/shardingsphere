@@ -140,6 +140,9 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginP
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyKeyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaStatusContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaVersionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCopyTabletContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
@@ -210,6 +213,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Da
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NullLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaVersionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCopyTabletStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisBackupStatement;
@@ -1222,6 +1228,30 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
             return null != ctx.ADD() ? "ADD OBSERVER" : "DROP OBSERVER";
         }
         return "";
+    }
+    
+    @Override
+    public ASTNode visitAdminSetReplicaStatus(final AdminSetReplicaStatusContext ctx) {
+        DorisAdminSetReplicaStatusStatement result = new DorisAdminSetReplicaStatusStatement(getDatabaseType());
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAdminSetReplicaVersion(final AdminSetReplicaVersionContext ctx) {
+        DorisAdminSetReplicaVersionStatement result = new DorisAdminSetReplicaVersionStatement(getDatabaseType());
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAdminCopyTablet(final AdminCopyTabletContext ctx) {
+        long tabletId = Long.parseLong(ctx.NUMBER_().getText());
+        DorisAdminCopyTabletStatement result = new DorisAdminCopyTabletStatement(getDatabaseType(), tabletId);
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
     }
     
     @Override
