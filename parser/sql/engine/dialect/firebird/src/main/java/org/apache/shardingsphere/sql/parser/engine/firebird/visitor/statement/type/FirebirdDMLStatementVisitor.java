@@ -252,7 +252,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
         result.addParameterMarkers(getParameterMarkerSegments());
         if (null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
+            result = createSelectStatementBuilder(result).with((WithSegment) visit(ctx.withClause())).build();
         }
         return result;
     }
@@ -265,31 +265,31 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SelectStatement result = new SelectStatement(getDatabaseType());
-        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = SelectStatement.builder().databaseType(getDatabaseType()).projections(projections);
         if (null != ctx.firstSkipClause()) {
-            result.setLimit((LimitSegment) visit(ctx.firstSkipClause()));
+            selectStatementBuilder.limit((LimitSegment) visit(ctx.firstSkipClause()));
         }
         if (!ctx.selectSpecification().isEmpty()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
+            projections.setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
         }
         if (null != ctx.fromClause()) {
             TableSegment tableSegment = (TableSegment) visit(ctx.fromClause());
-            result.setFrom(tableSegment);
+            selectStatementBuilder.from(tableSegment);
         }
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            selectStatementBuilder.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+            selectStatementBuilder.groupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            selectStatementBuilder.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+            selectStatementBuilder.having((HavingSegment) visit(ctx.havingClause()));
         }
-        return result;
+        return selectStatementBuilder.build();
     }
     
     @Override
@@ -572,7 +572,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     public ASTNode visitSubquery(final SubqueryContext ctx) {
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
         if (null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
+            result = createSelectStatementBuilder(result).with((WithSegment) visit(ctx.withClause())).build();
         }
         return result;
     }
@@ -586,5 +586,17 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
                 // add mergeWhenNotMatched and mergeWhenMatched part
                 // add RETURNING part
                 .build();
+    }
+    
+    private SelectStatement.SelectStatementBuilder createSelectStatementBuilder(final SelectStatement selectStatement) {
+        return SelectStatement.builder().databaseType(selectStatement.getDatabaseType()).projections(selectStatement.getProjections())
+                .from(selectStatement.getFrom().orElse(null)).where(selectStatement.getWhere().orElse(null))
+                .hierarchicalQuery(selectStatement.getHierarchicalQuery().orElse(null)).groupBy(selectStatement.getGroupBy().orElse(null))
+                .having(selectStatement.getHaving().orElse(null)).orderBy(selectStatement.getOrderBy().orElse(null))
+                .combine(selectStatement.getCombine().orElse(null)).with(selectStatement.getWith().orElse(null))
+                .subqueryType(selectStatement.getSubqueryType().orElse(null)).limit(selectStatement.getLimit().orElse(null))
+                .lock(selectStatement.getLock().orElse(null)).window(selectStatement.getWindow().orElse(null))
+                .into(selectStatement.getInto().orElse(null)).model(selectStatement.getModel().orElse(null))
+                .outfile(selectStatement.getOutfile().orElse(null)).withTableHint(selectStatement.getWithTableHint().orElse(null));
     }
 }

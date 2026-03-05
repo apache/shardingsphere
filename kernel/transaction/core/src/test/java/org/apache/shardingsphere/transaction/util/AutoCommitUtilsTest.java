@@ -46,14 +46,13 @@ class AutoCommitUtilsTest {
     
     @Test
     void assertIsNeedStartTransactionWithSelectWithoutFromClause() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
         assertFalse(AutoCommitUtils.isNeedStartTransaction(selectStatement));
     }
     
     @Test
     void assertIsNeedStartTransactionWithSelectWithFromClause() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setFrom(mock(SimpleTableSegment.class));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).from(mock(SimpleTableSegment.class)).build();
         assertTrue(AutoCommitUtils.isNeedStartTransaction(selectStatement));
     }
     

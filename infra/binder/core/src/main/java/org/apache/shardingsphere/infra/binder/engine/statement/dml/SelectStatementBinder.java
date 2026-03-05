@@ -95,20 +95,10 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
     private SelectStatement copy(final SelectStatement sqlStatement, final WithSegment boundWith, final TableSegment boundFrom, final ProjectionsSegment boundProjections,
                                  final WhereSegment boundWhere, final CombineSegment boundCombine, final LockSegment boundLock,
                                  final GroupBySegment boundGroupBy, final OrderBySegment boundOrderBy, final HavingSegment boundHaving) {
-        SelectStatement result = new SelectStatement(sqlStatement.getDatabaseType());
-        result.setWith(boundWith);
-        result.setFrom(boundFrom);
-        result.setProjections(boundProjections);
-        result.setWhere(boundWhere);
-        result.setCombine(boundCombine);
-        result.setLock(boundLock);
-        result.setGroupBy(boundGroupBy);
-        result.setOrderBy(boundOrderBy);
-        result.setHaving(boundHaving);
-        sqlStatement.getLimit().ifPresent(result::setLimit);
-        sqlStatement.getWindow().ifPresent(result::setWindow);
-        sqlStatement.getModel().ifPresent(result::setModel);
-        sqlStatement.getSubqueryType().ifPresent(result::setSubqueryType);
+        SelectStatement result = SelectStatement.builder().databaseType(sqlStatement.getDatabaseType()).with(boundWith).from(boundFrom).projections(boundProjections)
+                .where(boundWhere).combine(boundCombine).lock(boundLock).groupBy(boundGroupBy).orderBy(boundOrderBy).having(boundHaving)
+                .limit(sqlStatement.getLimit().orElse(null)).window(sqlStatement.getWindow().orElse(null)).model(sqlStatement.getModel().orElse(null))
+                .subqueryType(sqlStatement.getSubqueryType().orElse(null)).build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

@@ -53,8 +53,7 @@ class MySQLSelectAdminExecutorFactoryTest {
     
     @Test
     void assertCreateWithoutFromUsesFactory() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);
         DatabaseAdminExecutor expected = mock(DatabaseAdminExecutor.class);
@@ -66,9 +65,11 @@ class MySQLSelectAdminExecutorFactoryTest {
     
     @Test
     void assertCreateSystemSchemaExecutor() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatement.setFrom(mock(TableSegment.class));
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(new ProjectionsSegment(0, 0))
+                .from(mock(TableSegment.class))
+                .build();
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);
         DatabaseAdminExecutor expected = mock(DatabaseAdminExecutor.class);
@@ -81,9 +82,11 @@ class MySQLSelectAdminExecutorFactoryTest {
     
     @Test
     void assertSkipWhenSystemSchemaComplete() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatement.setFrom(mock(TableSegment.class));
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(new ProjectionsSegment(0, 0))
+                .from(mock(TableSegment.class))
+                .build();
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
@@ -95,9 +98,11 @@ class MySQLSelectAdminExecutorFactoryTest {
     
     @Test
     void assertSkipWhenNonSystemSchema() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatement.setFrom(mock(TableSegment.class));
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(new ProjectionsSegment(0, 0))
+                .from(mock(TableSegment.class))
+                .build();
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);
         assertFalse(MySQLSelectAdminExecutorFactory.newInstance(selectStatementContext, "", Collections.emptyList(), "test_db", mock()).isPresent());

@@ -44,19 +44,18 @@ class GroupByContextEngineTest {
     
     @Test
     void assertCreateGroupByContextWithoutGroupBy() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
         GroupByContext actualGroupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
         assertTrue(actualGroupByContext.getItems().isEmpty());
     }
     
     @Test
     void assertCreateGroupByContextWithGroupBy() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
         OrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(new ColumnSegment(0, 1, new IdentifierValue("column1")), OrderDirection.ASC, NullsOrderType.LAST);
         OrderByItemSegment indexOrderByItemSegment1 = new IndexOrderByItemSegment(1, 2, 2, OrderDirection.ASC, NullsOrderType.LAST);
         OrderByItemSegment indexOrderByItemSegment2 = new IndexOrderByItemSegment(2, 3, 3, OrderDirection.ASC, NullsOrderType.LAST);
         GroupBySegment groupBySegment = new GroupBySegment(0, 10, Arrays.asList(columnOrderByItemSegment, indexOrderByItemSegment1, indexOrderByItemSegment2));
-        selectStatement.setGroupBy(groupBySegment);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).groupBy(groupBySegment).build();
         GroupByContext actualGroupByContext = new GroupByContextEngine().createGroupByContext(selectStatement);
         OrderByItem expectedOrderByItem1 = new OrderByItem(columnOrderByItemSegment);
         OrderByItem expectedOrderByItem2 = new OrderByItem(indexOrderByItemSegment1);

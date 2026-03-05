@@ -48,7 +48,7 @@ class ExistsSubqueryExpressionConverterTest {
         try (
                 MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
                         (mock, context) -> when(mock.convert(any(SelectStatement.class))).thenReturn(expected))) {
-            ExistsSubqueryExpression expression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, new SelectStatement(databaseType), "text"));
+            ExistsSubqueryExpression expression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "text"));
             SqlBasicCall actual = (SqlBasicCall) ExistsSubqueryExpressionConverter.convert(expression);
             assertThat(actual.getOperator(), is(SqlStdOperatorTable.EXISTS));
             assertThat(actual.getOperandList(), is(Collections.singletonList(expected)));
@@ -61,7 +61,7 @@ class ExistsSubqueryExpressionConverterTest {
         try (
                 MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
                         (mock, context) -> when(mock.convert(any(SelectStatement.class))).thenReturn(expected))) {
-            ExistsSubqueryExpression expression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, new SelectStatement(databaseType), "text"));
+            ExistsSubqueryExpression expression = new ExistsSubqueryExpression(0, 0, new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "text"));
             expression.setNot(true);
             SqlBasicCall actual = (SqlBasicCall) ExistsSubqueryExpressionConverter.convert(expression);
             assertThat(actual.getOperator(), is(SqlStdOperatorTable.NOT));

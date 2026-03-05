@@ -136,8 +136,7 @@ class ShardingInsertSupportedCheckerTest {
     
     private InsertStatement createInsertSelectStatement() {
         InsertStatement result = createInsertStatement();
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
         when(result.getInsertSelect()).thenReturn(Optional.of(new SubquerySegment(0, 0, selectStatement, "")));
         return result;
     }

@@ -48,6 +48,7 @@ import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -55,7 +56,7 @@ class SubqueryExtractorTest {
     
     @Test
     void assertExtractSubquerySegmentsInWhere() {
-        SelectStatement subquerySelectStatement = mock(SelectStatement.class);
+        SelectStatement subquerySelectStatement = mockSelectStatement();
         when(subquerySelectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(73, 99, new IdentifierValue("t_order")))));
         ProjectionsSegment subqueryProjections = new ProjectionsSegment(59, 66);
         when(subquerySelectStatement.getProjections()).thenReturn(subqueryProjections);
@@ -64,7 +65,7 @@ class SubqueryExtractorTest {
         LiteralExpressionSegment subqueryWhereRight = new LiteralExpressionSegment(96, 99, "OK");
         WhereSegment subqueryWhereSegment = new WhereSegment(81, 99, new BinaryOperationExpression(87, 99, subqueryWhereLeft, subqueryWhereRight, "=", "status = 'OK'"));
         when(subquerySelectStatement.getWhere()).thenReturn(Optional.of(subqueryWhereSegment));
-        SelectStatement selectStatement = mock(SelectStatement.class);
+        SelectStatement selectStatement = mockSelectStatement();
         when(selectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(21, 32, new IdentifierValue("t_order_item")))));
         when(selectStatement.getProjections()).thenReturn(new ProjectionsSegment(7, 14));
         selectStatement.getProjections().getProjections().add(new ColumnProjectionSegment(new ColumnSegment(7, 14, new IdentifierValue("order_id"))));
@@ -82,11 +83,11 @@ class SubqueryExtractorTest {
     void assertExtractSubquerySegmentsInProjection() {
         ColumnSegment left = new ColumnSegment(41, 48, new IdentifierValue("order_id"));
         ColumnSegment right = new ColumnSegment(52, 62, new IdentifierValue("order_id"));
-        SelectStatement subquerySelectStatement = mock(SelectStatement.class);
+        SelectStatement subquerySelectStatement = mockSelectStatement();
         when(subquerySelectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(35, 62, new BinaryOperationExpression(41, 62, left, right, "=", "order_id = oi.order_id"))));
         SubquerySegment subquerySegment = new SubquerySegment(7, 63, subquerySelectStatement, "");
         SubqueryProjectionSegment subqueryProjectionSegment = new SubqueryProjectionSegment(subquerySegment, "(SELECT status FROM t_order WHERE order_id = oi.order_id)");
-        SelectStatement selectStatement = mock(SelectStatement.class);
+        SelectStatement selectStatement = mockSelectStatement();
         ProjectionsSegment projections = new ProjectionsSegment(7, 79);
         when(selectStatement.getProjections()).thenReturn(projections);
         projections.getProjections().add(subqueryProjectionSegment);
@@ -98,7 +99,7 @@ class SubqueryExtractorTest {
     
     @Test
     void assertExtractSubquerySegmentsInFrom1() {
-        SelectStatement subquery = mock(SelectStatement.class);
+        SelectStatement subquery = mockSelectStatement();
         ColumnSegment left = new ColumnSegment(59, 66, new IdentifierValue("order_id"));
         LiteralExpressionSegment right = new LiteralExpressionSegment(70, 70, 1);
         when(subquery.getWhere()).thenReturn(Optional.of(new WhereSegment(53, 70, new BinaryOperationExpression(59, 70, left, right, "=", "order_id = 1"))));
@@ -106,7 +107,7 @@ class SubqueryExtractorTest {
         ProjectionsSegment subqueryProjections = new ProjectionsSegment(31, 38);
         when(subquery.getProjections()).thenReturn(subqueryProjections);
         subqueryProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(31, 38, new IdentifierValue("order_id"))));
-        SelectStatement selectStatement = mock(SelectStatement.class);
+        SelectStatement selectStatement = mockSelectStatement();
         ProjectionsSegment projections = new ProjectionsSegment(7, 16);
         when(selectStatement.getProjections()).thenReturn(projections);
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(7, 16, new IdentifierValue("order_id"))));
@@ -120,7 +121,7 @@ class SubqueryExtractorTest {
     
     @Test
     void assertExtractSubquerySegmentsInFrom2() {
-        SelectStatement subqueryLeftSelectStatement = mock(SelectStatement.class);
+        SelectStatement subqueryLeftSelectStatement = mockSelectStatement();
         when(subqueryLeftSelectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(65, 71, new IdentifierValue("t_order")))));
         ColumnSegment leftColumnSegment = new ColumnSegment(79, 84, new IdentifierValue("status"));
         LiteralExpressionSegment leftLiteralExpressionSegment = new LiteralExpressionSegment(88, 91, "OK");
@@ -130,7 +131,7 @@ class SubqueryExtractorTest {
         when(subqueryLeftSelectStatement.getProjections()).thenReturn(subqueryLeftProjections);
         subqueryLeftProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(34, 41, new IdentifierValue("order_id"))));
         subqueryLeftProjections.getProjections().add(new AggregationProjectionSegment(44, 51, AggregationType.COUNT, "COUNT(*)"));
-        SelectStatement subqueryRightSelectStatement = mock(SelectStatement.class);
+        SelectStatement subqueryRightSelectStatement = mockSelectStatement();
         when(subqueryRightSelectStatement.getFrom()).thenReturn(Optional.of(new SimpleTableSegment(new TableNameSegment(143, 154, new IdentifierValue("t_order_item")))));
         ColumnSegment rightColumnSegment = new ColumnSegment(162, 167, new IdentifierValue("status"));
         LiteralExpressionSegment rightLiteralExpressionSegment = new LiteralExpressionSegment(171, 174, "OK");
@@ -140,7 +141,7 @@ class SubqueryExtractorTest {
         when(subqueryRightSelectStatement.getProjections()).thenReturn(subqueryRightProjections);
         subqueryRightProjections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(112, 119, new IdentifierValue("order_id"))));
         subqueryRightProjections.getProjections().add(new AggregationProjectionSegment(122, 129, AggregationType.COUNT, "COUNT(*)"));
-        SelectStatement selectStatement = mock(SelectStatement.class);
+        SelectStatement selectStatement = mockSelectStatement();
         ProjectionsSegment projections = new ProjectionsSegment(7, 19);
         when(selectStatement.getProjections()).thenReturn(projections);
         projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(7, 11, new IdentifierValue("cnt"))));
@@ -167,7 +168,7 @@ class SubqueryExtractorTest {
     
     @Test
     void assertExtractSubquerySegmentsWithMultiNestedSubquery() {
-        SelectStatement selectStatement = mock(SelectStatement.class);
+        SelectStatement selectStatement = mockSelectStatement();
         SubquerySegment subquerySelect = createSubquerySegment();
         when(selectStatement.getFrom()).thenReturn(Optional.of(new SubqueryTableSegment(0, 0, subquerySelect)));
         assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, true).size(), is(2));
@@ -176,8 +177,8 @@ class SubqueryExtractorTest {
     
     @Test
     void assertExtractSubquerySegmentsWithCombineSegment() {
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        SubquerySegment left = new SubquerySegment(0, 0, mock(SelectStatement.class), "");
+        SelectStatement selectStatement = mockSelectStatement();
+        SubquerySegment left = new SubquerySegment(0, 0, mockSelectStatement(), "");
         SubquerySegment right = createSubquerySegment();
         when(selectStatement.getCombine()).thenReturn(Optional.of(new CombineSegment(0, 0, left, CombineType.UNION, right)));
         assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, true).size(), is(3));
@@ -185,23 +186,30 @@ class SubqueryExtractorTest {
     }
     
     private SubquerySegment createSubquerySegment() {
-        SelectStatement selectStatement = mock(SelectStatement.class);
+        SelectStatement selectStatement = mockSelectStatement();
         ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
-        when(selectStatement.getWhere()).thenReturn(
-                Optional.of(new WhereSegment(0, 0, new InExpression(0, 0, left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, mock(SelectStatement.class), "")), false))));
+        SelectStatement nestedSelectStatement = mockSelectStatement();
+        SubquerySegment nestedSubquery = new SubquerySegment(0, 0, nestedSelectStatement, "");
+        when(selectStatement.getWhere()).thenReturn(Optional.of(new WhereSegment(0, 0, new InExpression(0, 0, left, new SubqueryExpressionSegment(nestedSubquery), false))));
         return new SubquerySegment(0, 0, selectStatement, "");
     }
     
     @Test
     void assertExtractSubquerySegmentsFromProjectionFunctionParams() {
-        SelectStatement selectStatement = mock(SelectStatement.class);
+        SelectStatement selectStatement = mockSelectStatement();
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         when(selectStatement.getProjections()).thenReturn(projections);
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "", "");
-        functionSegment.getParameters().add(new SubqueryExpressionSegment(new SubquerySegment(0, 0, mock(SelectStatement.class), "")));
+        functionSegment.getParameters().add(new SubqueryExpressionSegment(new SubquerySegment(0, 0, mockSelectStatement(), "")));
         ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 0, "", functionSegment);
         projections.getProjections().add(expressionProjectionSegment);
         assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, true).size(), is(1));
         assertThat(SubqueryExtractor.extractSubquerySegments(selectStatement, false).size(), is(1));
+    }
+    
+    private SelectStatement mockSelectStatement() {
+        SelectStatement result = mock(SelectStatement.class);
+        when(result.withSubqueryType(any())).thenReturn(result);
+        return result;
     }
 }

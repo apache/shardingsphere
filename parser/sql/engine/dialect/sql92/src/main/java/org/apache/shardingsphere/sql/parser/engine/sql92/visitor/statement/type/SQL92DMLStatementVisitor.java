@@ -230,28 +230,31 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SelectStatement result = new SelectStatement(getDatabaseType());
-        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
         if (!ctx.selectSpecification().isEmpty()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
+            projections.setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
         }
+        TableSegment from = null;
         if (null != ctx.fromClause()) {
-            TableSegment tableSegment = (TableSegment) visit(ctx.fromClause());
-            result.setFrom(tableSegment);
+            from = (TableSegment) visit(ctx.fromClause());
         }
+        WhereSegment where = null;
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            where = (WhereSegment) visit(ctx.whereClause());
         }
+        GroupBySegment groupBy = null;
         if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+            groupBy = (GroupBySegment) visit(ctx.groupByClause());
         }
+        OrderBySegment orderBy = null;
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            orderBy = (OrderBySegment) visit(ctx.orderByClause());
         }
+        HavingSegment having = null;
         if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+            having = (HavingSegment) visit(ctx.havingClause());
         }
-        return result;
+        return SelectStatement.builder().databaseType(getDatabaseType()).projections(projections).from(from).where(where).groupBy(groupBy).orderBy(orderBy).having(having).build();
     }
     
     @Override

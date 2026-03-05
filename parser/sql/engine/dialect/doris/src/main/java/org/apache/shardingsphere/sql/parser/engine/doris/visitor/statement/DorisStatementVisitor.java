@@ -641,7 +641,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             if (null == ctx.EXISTS()) {
                 return new SubqueryExpressionSegment(subquerySegment);
             }
-            subquerySegment.getSelect().setSubqueryType(SubqueryType.EXISTS);
+            subquerySegment.setSelect(subquerySegment.getSelect().withSubqueryType(SubqueryType.EXISTS));
             return new ExistsSubqueryExpression(startIndex, stopIndex, subquerySegment);
         }
         if (null != ctx.parameterMarker()) {
@@ -736,7 +736,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         }
         SelectStatement result = (SelectStatement) visit(ctx.queryExpression());
         if (null != ctx.lockClauseList()) {
-            result.setLock((LockSegment) visit(ctx.lockClauseList()));
+            result = createSelectStatementBuilder(result).lock((LockSegment) visit(ctx.lockClauseList())).build();
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
@@ -761,16 +761,17 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         } else {
             result = (SelectStatement) visit(ctx.queryExpressionParens());
         }
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = createSelectStatementBuilder(result);
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            selectStatementBuilder.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+            selectStatementBuilder.limit((LimitSegment) visit(ctx.limitClause()));
         }
-        if (null != result && null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
+        if (null != ctx.withClause()) {
+            selectStatementBuilder.with((WithSegment) visit(ctx.withClause()));
         }
-        return result;
+        return selectStatementBuilder.build();
     }
     
     @Override
@@ -779,18 +780,19 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             return visit(ctx.selectWithInto());
         }
         SelectStatement result = (SelectStatement) visit(ctx.queryExpression());
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = createSelectStatementBuilder(result);
         if (null != ctx.selectIntoExpression()) {
             ASTNode intoSegment = visit(ctx.selectIntoExpression());
             if (intoSegment instanceof OutfileSegment) {
-                result.setOutfile((OutfileSegment) intoSegment);
+                selectStatementBuilder.outfile((OutfileSegment) intoSegment);
             } else if (intoSegment instanceof TableSegment) {
-                result.setInto((TableSegment) intoSegment);
+                selectStatementBuilder.into((TableSegment) intoSegment);
             }
         }
         if (null != ctx.lockClauseList()) {
-            result.setLock((LockSegment) visit(ctx.lockClauseList()));
+            selectStatementBuilder.lock((LockSegment) visit(ctx.lockClauseList()));
         }
-        return result;
+        return selectStatementBuilder.build();
     }
     
     @Override
@@ -893,13 +895,10 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
             return visit(ctx.queryPrimary());
         }
         if (null != ctx.queryExpressionBody() && ctx.queryExpressionBody().size() > 1) {
-            SelectStatement result = new SelectStatement(databaseType);
             SubquerySegment left = new SubquerySegment(ctx.queryExpressionBody(0).start.getStartIndex(), ctx.queryExpressionBody(0).stop.getStopIndex(),
                     (SelectStatement) visit(ctx.queryExpressionBody(0)), getOriginalText(ctx.queryExpressionBody(0)));
-            result.setProjections(left.getSelect().getProjections());
-            left.getSelect().getFrom().ifPresent(result::setFrom);
-            result.setCombine(createCombineSegment(ctx, left));
-            return result;
+            return SelectStatement.builder().databaseType(databaseType).projections(left.getSelect().getProjections()).from(left.getSelect().getFrom().orElse(null))
+                    .combine(createCombineSegment(ctx, left)).build();
         }
         return visit(ctx.queryExpressionParens());
     }
@@ -920,55 +919,53 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitQuerySpecification(final QuerySpecificationContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
-        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
         if (null != ctx.selectSpecification()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx));
+            projections.setDistinctRow(isDistinct(ctx));
         }
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = SelectStatement.builder().databaseType(databaseType).projections(projections);
         if (null != ctx.fromClause()) {
             if (null != ctx.fromClause().tableReferences()) {
-                TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
-                result.setFrom(tableSource);
+                selectStatementBuilder.from((TableSegment) visit(ctx.fromClause().tableReferences()));
             }
             if (null != ctx.fromClause().DUAL()) {
                 TableSegment tableSource = new SimpleTableSegment(new TableNameSegment(ctx.fromClause().DUAL().getSymbol().getStartIndex(),
                         ctx.fromClause().DUAL().getSymbol().getStopIndex(), new IdentifierValue(ctx.fromClause().DUAL().getText())));
-                result.setFrom(tableSource);
+                selectStatementBuilder.from(tableSource);
             }
         }
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            selectStatementBuilder.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+            selectStatementBuilder.groupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
         if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+            selectStatementBuilder.having((HavingSegment) visit(ctx.havingClause()));
         }
         if (null != ctx.windowClause()) {
-            result.setWindow((WindowSegment) visit(ctx.windowClause()));
+            selectStatementBuilder.window((WindowSegment) visit(ctx.windowClause()));
         }
         if (null != ctx.selectIntoExpression()) {
             ASTNode intoSegment = visit(ctx.selectIntoExpression());
             if (intoSegment instanceof OutfileSegment) {
-                result.setOutfile((OutfileSegment) intoSegment);
+                selectStatementBuilder.outfile((OutfileSegment) intoSegment);
             } else if (intoSegment instanceof TableSegment) {
-                result.setInto((TableSegment) intoSegment);
+                selectStatementBuilder.into((TableSegment) intoSegment);
             }
         }
-        return result;
+        return selectStatementBuilder.build();
     }
     
     @Override
     public ASTNode visitTableValueConstructor(final TableValueConstructorContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
         ValuesExpression valuesExpression = new ValuesExpression(startIndex, stopIndex);
         valuesExpression.getRowConstructorList().addAll(createRowConstructorList(ctx.rowConstructorList()));
-        result.setProjections(new ProjectionsSegment(startIndex, stopIndex));
-        result.getProjections().getProjections().add(new ExpressionProjectionSegment(startIndex, stopIndex, getOriginalText(ctx), valuesExpression));
-        return result;
+        ProjectionsSegment projections = new ProjectionsSegment(startIndex, stopIndex);
+        projections.getProjections().add(new ExpressionProjectionSegment(startIndex, stopIndex, getOriginalText(ctx), valuesExpression));
+        return SelectStatement.builder().databaseType(databaseType).projections(projections).build();
     }
     
     private Collection<InsertValuesSegment> createRowConstructorList(final RowConstructorListContext ctx) {
@@ -981,11 +978,10 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitTableStatement(final TableStatementContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
-        result.setProjections(new ProjectionsSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex()));
-        result.getProjections().getProjections().add(new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex()));
-        result.setFrom(new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().getText()))));
-        return result;
+        ProjectionsSegment projections = new ProjectionsSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex());
+        projections.getProjections().add(new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex()));
+        return SelectStatement.builder().databaseType(databaseType).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().getText())))).build();
     }
     
     @Override
@@ -1818,7 +1814,7 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         if (null != ctx.queryExpression()) {
             result = (SelectStatement) visit(ctx.queryExpression());
             if (null != ctx.lockClauseList()) {
-                result.setLock((LockSegment) visit(ctx.lockClauseList()));
+                result = createSelectStatementBuilder(result).lock((LockSegment) visit(ctx.lockClauseList())).build();
             }
         } else if (null != ctx.selectWithInto()) {
             result = (SelectStatement) visit(ctx.selectWithInto());
@@ -2185,6 +2181,18 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     @Override
     public ASTNode visitEngineRef(final EngineRefContext ctx) {
         return new EngineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), SQLUtils.getExactlyValue(ctx.textOrIdentifier().getText()));
+    }
+    
+    private SelectStatement.SelectStatementBuilder createSelectStatementBuilder(final SelectStatement selectStatement) {
+        return SelectStatement.builder().databaseType(selectStatement.getDatabaseType()).projections(selectStatement.getProjections())
+                .from(selectStatement.getFrom().orElse(null)).where(selectStatement.getWhere().orElse(null))
+                .hierarchicalQuery(selectStatement.getHierarchicalQuery().orElse(null)).groupBy(selectStatement.getGroupBy().orElse(null))
+                .having(selectStatement.getHaving().orElse(null)).orderBy(selectStatement.getOrderBy().orElse(null))
+                .combine(selectStatement.getCombine().orElse(null)).with(selectStatement.getWith().orElse(null))
+                .subqueryType(selectStatement.getSubqueryType().orElse(null)).limit(selectStatement.getLimit().orElse(null))
+                .lock(selectStatement.getLock().orElse(null)).window(selectStatement.getWindow().orElse(null))
+                .into(selectStatement.getInto().orElse(null)).model(selectStatement.getModel().orElse(null))
+                .outfile(selectStatement.getOutfile().orElse(null)).withTableHint(selectStatement.getWithTableHint().orElse(null));
     }
     
     protected String getOriginalText(final ParserRuleContext ctx) {

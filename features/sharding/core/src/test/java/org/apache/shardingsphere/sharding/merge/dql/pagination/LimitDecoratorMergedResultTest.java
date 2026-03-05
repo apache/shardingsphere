@@ -50,9 +50,11 @@ class LimitDecoratorMergedResultTest {
     void assertNextForSkipAll() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, Long.MAX_VALUE), null));
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(new ProjectionsSegment(0, 0))
+                .limit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, Long.MAX_VALUE), null))
+                .build();
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
@@ -65,9 +67,11 @@ class LimitDecoratorMergedResultTest {
     void assertNextWithoutRowCount() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 2L), null));
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(new ProjectionsSegment(0, 0))
+                .limit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 2L), null))
+                .build();
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);
@@ -83,9 +87,11 @@ class LimitDecoratorMergedResultTest {
     void assertNextWithRowCount() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("foo_db");
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatement.setLimit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 2L), new NumberLiteralLimitValueSegment(0, 0, 2L)));
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(new ProjectionsSegment(0, 0))
+                .limit(new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 2L), new NumberLiteralLimitValueSegment(0, 0, 2L)))
+                .build();
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 selectStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db", Collections.emptyList());
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(databaseType);

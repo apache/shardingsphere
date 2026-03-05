@@ -53,9 +53,8 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWithLimitSegment() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setLimit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L),
-                new NumberLiteralLimitValueSegment(11, 20, 200L)));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType)
+                .limit(new LimitSegment(0, 10, new NumberLiteralLimitValueSegment(0, 10, 100L), new NumberLiteralLimitValueSegment(11, 20, 200L))).build();
         PaginationContext paginationContext = new PaginationContextEngine(
                 new DialectPaginationOption(false, "", false)).createPaginationContext(selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertTrue(paginationContext.getOffsetSegment().isPresent());
@@ -66,12 +65,10 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWithTopSegment() {
-        SelectStatement subquerySelectStatement = new SelectStatement(databaseType);
-        subquerySelectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SelectStatement subquerySelectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
         RowNumberValueSegment topValueSegment = new NumberLiteralRowNumberValueSegment(0, 0, 100L, false);
         subquerySelectStatement.getProjections().getProjections().add(new TopProjectionSegment(0, 10, topValueSegment, ""));
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
         selectStatement.getProjections().getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, subquerySelectStatement, ""), ""));
         PaginationContext paginationContext = new PaginationContextEngine(
                 new DialectPaginationOption(false, "", true)).createPaginationContext(selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
@@ -82,8 +79,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWithoutTopSegment() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
         PaginationContext paginationContext = new PaginationContextEngine(
                 new DialectPaginationOption(false, "", true)).createPaginationContext(selectStatement, mock(ProjectionsContext.class), Collections.emptyList(), Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
@@ -92,12 +88,10 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWithWhereAndRowNumberSegment() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
         BinaryOperationExpression binaryOperationExpr = new BinaryOperationExpression(
                 0, 5, new ColumnSegment(0, 5, new IdentifierValue("ROW_NUMBER")), new LiteralExpressionSegment(5, 10, 100), "<", "");
         WhereSegment where = new WhereSegment(0, 10, binaryOperationExpr);
-        selectStatement.setWhere(where);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).where(where).build();
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         PaginationContext paginationContext = new PaginationContextEngine(
                 new DialectPaginationOption(true, "ROW_NUMBER", false)).createPaginationContext(selectStatement, projectionsContext, Collections.emptyList(), Collections.singletonList(where));
@@ -108,12 +102,10 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWithWhereAndWithoutRowNumberSegment() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
         BinaryOperationExpression binaryOperationExpr = new BinaryOperationExpression(
                 0, 5, new ColumnSegment(0, 5, new IdentifierValue("ROW_NUMBER")), new LiteralExpressionSegment(5, 10, 100), "<", "");
         WhereSegment where = new WhereSegment(0, 10, binaryOperationExpr);
-        selectStatement.setWhere(where);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).where(where).build();
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         PaginationContext paginationContext = new PaginationContextEngine(
                 new DialectPaginationOption(false, "", false)).createPaginationContext(selectStatement, projectionsContext, Collections.emptyList(), Collections.singletonList(where));
@@ -123,8 +115,7 @@ class PaginationContextEngineTest {
     
     @Test
     void assertCreatePaginationContextWithEmpty() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         PaginationContext paginationContext = new PaginationContextEngine(
                 new DialectPaginationOption(false, "", false)).createPaginationContext(selectStatement, projectionsContext, Collections.emptyList(), Collections.emptyList());

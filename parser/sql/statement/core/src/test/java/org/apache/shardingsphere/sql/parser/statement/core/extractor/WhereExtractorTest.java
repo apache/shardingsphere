@@ -38,6 +38,7 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -64,14 +65,14 @@ class WhereExtractorTest {
     
     @Test
     void assertExtractSubqueryWhereSegmentsFromSubqueryTableSegment() {
-        SelectStatement subQuerySelectStatement = mock(SelectStatement.class);
+        SelectStatement subQuerySelectStatement = mockSelectStatement();
         ColumnSegment left = new ColumnSegment(41, 48, new IdentifierValue("order_id"));
         ColumnSegment right = new ColumnSegment(52, 62, new IdentifierValue("order_id"));
         WhereSegment where = new WhereSegment(35, 62, new BinaryOperationExpression(41, 62, left, right, "=", "order_id = oi.order_id"));
         when(subQuerySelectStatement.getWhere()).thenReturn(Optional.of(where));
         ProjectionsSegment projections = new ProjectionsSegment(7, 79);
         projections.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(7, 63, subQuerySelectStatement, ""), "(SELECT status FROM t_order WHERE order_id = oi.order_id)"));
-        SelectStatement selectStatement = mock(SelectStatement.class);
+        SelectStatement selectStatement = mockSelectStatement();
         when(selectStatement.getProjections()).thenReturn(projections);
         Collection<WhereSegment> subqueryWhereSegments = WhereExtractor.extractSubqueryWhereSegments(selectStatement);
         WhereSegment actual = subqueryWhereSegments.iterator().next();
@@ -82,13 +83,19 @@ class WhereExtractorTest {
     @Test
     void assertGetWhereSegmentsFromSubQueryJoin() {
         JoinTableSegment joinTableSegment = createJoinTableSegment();
-        SelectStatement subQuerySelectStatement = mock(SelectStatement.class);
+        SelectStatement subQuerySelectStatement = mockSelectStatement();
         when(subQuerySelectStatement.getFrom()).thenReturn(Optional.of(joinTableSegment));
-        SelectStatement selectStatement = mock(SelectStatement.class);
+        SelectStatement selectStatement = mockSelectStatement();
         when(selectStatement.getFrom()).thenReturn(Optional.of(new SubqueryTableSegment(0, 0, new SubquerySegment(20, 84, subQuerySelectStatement, ""))));
         Collection<WhereSegment> subqueryWhereSegments = WhereExtractor.extractSubqueryWhereSegments(selectStatement);
         WhereSegment actual = subqueryWhereSegments.iterator().next();
         assertThat(actual.getExpr(), is(joinTableSegment.getCondition()));
+    }
+    
+    private SelectStatement mockSelectStatement() {
+        SelectStatement result = mock(SelectStatement.class);
+        when(result.withSubqueryType(any())).thenReturn(result);
+        return result;
     }
     
     private JoinTableSegment createJoinTableSegment() {

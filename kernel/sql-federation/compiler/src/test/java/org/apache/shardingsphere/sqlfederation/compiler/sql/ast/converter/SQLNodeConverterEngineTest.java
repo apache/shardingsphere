@@ -57,7 +57,7 @@ class SQLNodeConverterEngineTest {
         try (
                 MockedConstruction<SelectStatementConverter> ignored = mockConstruction(SelectStatementConverter.class,
                         (mock, context) -> when(mock.convert(any(SelectStatement.class))).thenReturn(selectSqlNode))) {
-            assertThat(SQLNodeConverterEngine.convert(new SelectStatement(databaseType)), is(selectSqlNode));
+            assertThat(SQLNodeConverterEngine.convert(SelectStatement.builder().databaseType(databaseType).build()), is(selectSqlNode));
         }
         SqlNode deleteSqlNode = mock(SqlNode.class);
         try (

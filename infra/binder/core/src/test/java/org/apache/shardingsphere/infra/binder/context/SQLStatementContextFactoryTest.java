@@ -61,9 +61,7 @@ class SQLStatementContextFactoryTest {
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSelectStatement() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setLimit(new LimitSegment(0, 10, null, null));
-        selectStatement.setProjections(projectionsSegment);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).limit(new LimitSegment(0, 10, null, null)).projections(projectionsSegment).build();
         selectStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(selectStatement);
         assertThat(sqlStatementContext, isA(SelectStatementContext.class));
@@ -88,8 +86,7 @@ class SQLStatementContextFactoryTest {
     
     @Test
     void assertNewInstanceForCursorStatement() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
         selectStatement.buildAttributes();
         CursorStatement cursorStatement = new CursorStatement(databaseType, null, selectStatement);
         cursorStatement.buildAttributes();

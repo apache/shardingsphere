@@ -446,30 +446,30 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public SelectStatement visitSelectIntoStatement(final SelectIntoStatementContext ctx) {
-        SelectStatement result = new SelectStatement(getDatabaseType());
-        result.setProjections((ProjectionsSegment) visit(ctx.selectList()));
+        SelectStatement.SelectStatementBuilder result = SelectStatement.builder().databaseType(getDatabaseType()).projections((ProjectionsSegment) visit(ctx.selectList()));
         // TODO Visit selectIntoClause, bulkCollectIntoClause
-        result.setFrom((TableSegment) visit(ctx.fromClauseList()));
+        result.from((TableSegment) visit(ctx.fromClauseList()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.hierarchicalQueryClause()) {
-            result.setHierarchicalQuery((HierarchicalQuerySegment) visit(ctx.hierarchicalQueryClause()));
+            result.hierarchicalQuery((HierarchicalQuerySegment) visit(ctx.hierarchicalQueryClause()));
         }
         if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+            result.groupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
         if (null != ctx.modelClause()) {
-            result.setModel((ModelSegment) visit(ctx.modelClause()));
+            result.model((ModelSegment) visit(ctx.modelClause()));
         }
         // TODO Visit windowClause
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            result.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         // TODO Visit rowLimitingClause
-        result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
-        result.getVariableNames().addAll(getVariableNames());
-        return result;
+        SelectStatement selectStatement = result.build();
+        selectStatement.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
+        selectStatement.getVariableNames().addAll(getVariableNames());
+        return selectStatement;
     }
     
     @Override
@@ -485,11 +485,15 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         SelectStatement result = (SelectStatement) visit(ctx.selectSubquery());
+        if (null != ctx.forUpdateClause()) {
+            SelectStatement previous = result;
+            result = createSelectStatementBuilder(previous).lock((LockSegment) visit(ctx.forUpdateClause())).build();
+            result.addParameterMarkers(previous.getParameterMarkers());
+            result.getVariableNames().addAll(previous.getVariableNames());
+            result.getComments().addAll(previous.getComments());
+        }
         result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         result.getVariableNames().addAll(getVariableNames());
-        if (null != ctx.forUpdateClause()) {
-            result.setLock((LockSegment) visit(ctx.forUpdateClause()));
-        }
         return result;
     }
     
@@ -607,24 +611,20 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     public ASTNode visitSelectSubquery(final SelectSubqueryContext ctx) {
         SelectStatement result;
         if (null != ctx.combineType()) {
-            result = new SelectStatement(getDatabaseType());
             SelectStatement left = (SelectStatement) visit(ctx.selectSubquery(0));
-            result.setProjections(left.getProjections());
-            left.getFrom().ifPresent(result::setFrom);
-            left.getWith().ifPresent(result::setWith);
-            createSelectCombineClause(ctx, result, left);
+            result = createSelectCombineClause(ctx, left);
         } else {
             result = null == ctx.queryBlock() ? (SelectStatement) visit(ctx.parenthesisSelectSubquery()) : (SelectStatement) visit(ctx.queryBlock());
         }
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            result = createSelectStatementBuilder(result).orderBy((OrderBySegment) visit(ctx.orderByClause())).build();
         }
         result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
         result.getVariableNames().addAll(getVariableNames());
         return result;
     }
     
-    private void createSelectCombineClause(final SelectSubqueryContext ctx, final SelectStatement result, final SelectStatement left) {
+    private SelectStatement createSelectCombineClause(final SelectSubqueryContext ctx, final SelectStatement left) {
         CombineType combineType;
         if (null != ctx.combineType().UNION() && null != ctx.combineType().ALL()) {
             combineType = CombineType.UNION_ALL;
@@ -636,10 +636,13 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             combineType = CombineType.MINUS;
         }
         SelectStatement right = (SelectStatement) visit(ctx.selectSubquery(1));
-        result.setCombine(new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), createSubquerySegment(ctx.selectSubquery(0), left), combineType,
-                createSubquerySegment(ctx.selectSubquery(1), right)));
+        SelectStatement result = SelectStatement.builder().databaseType(getDatabaseType()).projections(left.getProjections()).from(left.getFrom().orElse(null)).with(left.getWith().orElse(null))
+                .combine(new CombineSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), createSubquerySegment(ctx.selectSubquery(0), left), combineType,
+                        createSubquerySegment(ctx.selectSubquery(1), right)))
+                .build();
         result.addParameterMarkers(left.getParameterMarkers());
         result.addParameterMarkers(right.getParameterMarkers());
+        return result;
     }
     
     private SubquerySegment createSubquerySegment(final SelectSubqueryContext ctx, final SelectStatement selectStatement) {
@@ -648,34 +651,45 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitQueryBlock(final QueryBlockContext ctx) {
-        SelectStatement result = new SelectStatement(getDatabaseType());
-        result.setProjections((ProjectionsSegment) visit(ctx.selectList()));
-        if (null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
-        }
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.selectList());
         if (null != ctx.duplicateSpecification()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx));
+            projections.setDistinctRow(isDistinct(ctx));
+        }
+        SelectStatement.SelectStatementBuilder result = SelectStatement.builder().databaseType(getDatabaseType()).projections(projections);
+        if (null != ctx.withClause()) {
+            result.with((WithSegment) visit(ctx.withClause()));
         }
         if (null != ctx.selectFromClause()) {
-            TableSegment tableSegment = (TableSegment) visit(ctx.selectFromClause());
-            result.setFrom(tableSegment);
+            result.from((TableSegment) visit(ctx.selectFromClause()));
         }
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.hierarchicalQueryClause()) {
-            result.setHierarchicalQuery((HierarchicalQuerySegment) visit(ctx.hierarchicalQueryClause()));
+            result.hierarchicalQuery((HierarchicalQuerySegment) visit(ctx.hierarchicalQueryClause()));
         }
         if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+            result.groupBy((GroupBySegment) visit(ctx.groupByClause()));
             if (null != ctx.groupByClause().havingClause()) {
-                result.setHaving((HavingSegment) visit(ctx.groupByClause().havingClause()));
+                result.having((HavingSegment) visit(ctx.groupByClause().havingClause()));
             }
         }
         if (null != ctx.modelClause()) {
-            result.setModel((ModelSegment) visit(ctx.modelClause()));
+            result.model((ModelSegment) visit(ctx.modelClause()));
         }
-        return result;
+        return result.build();
+    }
+    
+    private SelectStatement.SelectStatementBuilder createSelectStatementBuilder(final SelectStatement selectStatement) {
+        return SelectStatement.builder().databaseType(selectStatement.getDatabaseType()).projections(selectStatement.getProjections())
+                .from(selectStatement.getFrom().orElse(null)).where(selectStatement.getWhere().orElse(null))
+                .hierarchicalQuery(selectStatement.getHierarchicalQuery().orElse(null)).groupBy(selectStatement.getGroupBy().orElse(null))
+                .having(selectStatement.getHaving().orElse(null)).orderBy(selectStatement.getOrderBy().orElse(null))
+                .combine(selectStatement.getCombine().orElse(null)).with(selectStatement.getWith().orElse(null))
+                .subqueryType(selectStatement.getSubqueryType().orElse(null)).limit(selectStatement.getLimit().orElse(null))
+                .lock(selectStatement.getLock().orElse(null)).window(selectStatement.getWindow().orElse(null))
+                .into(selectStatement.getInto().orElse(null)).model(selectStatement.getModel().orElse(null))
+                .outfile(selectStatement.getOutfile().orElse(null)).withTableHint(selectStatement.getWithTableHint().orElse(null));
     }
     
     @Override

@@ -439,7 +439,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectWithParens().getStart().getStartIndex(),
                 ctx.selectWithParens().getStop().getStopIndex(), (SelectStatement) visit(ctx.selectWithParens()), getOriginalText(ctx.selectWithParens()));
         if (null != ctx.EXISTS()) {
-            subquerySegment.getSelect().setSubqueryType(SubqueryType.EXISTS);
+            subquerySegment.setSelect(subquerySegment.getSelect().withSubqueryType(SubqueryType.EXISTS));
             return new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
         }
         return new SubqueryExpressionSegment(subquerySegment);
@@ -930,23 +930,20 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     @Override
     public ASTNode visitSelectNoParens(final SelectNoParensContext ctx) {
         SelectStatement result = (SelectStatement) visit(ctx.selectClauseN());
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = createSelectStatementBuilder(result);
         if (null != ctx.sortClause()) {
-            OrderBySegment orderBySegment = (OrderBySegment) visit(ctx.sortClause());
-            result.setOrderBy(orderBySegment);
+            selectStatementBuilder.orderBy((OrderBySegment) visit(ctx.sortClause()));
         }
         if (null != ctx.selectLimit()) {
-            LimitSegment limitSegment = (LimitSegment) visit(ctx.selectLimit());
-            result.setLimit(limitSegment);
+            selectStatementBuilder.limit((LimitSegment) visit(ctx.selectLimit()));
         }
         if (null != ctx.forLockingClause()) {
-            LockSegment lockSegment = (LockSegment) visit(ctx.forLockingClause());
-            result.setLock(lockSegment);
+            selectStatementBuilder.lock((LockSegment) visit(ctx.forLockingClause()));
         }
         if (null != ctx.withClause()) {
-            WithSegment withSegment = (WithSegment) visit(ctx.withClause());
-            result.setWith(withSegment);
+            selectStatementBuilder.with((WithSegment) visit(ctx.withClause()));
         }
-        return result;
+        return selectStatementBuilder.build();
     }
     
     @Override
@@ -989,14 +986,10 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
             return visit(ctx.simpleSelect());
         }
         if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
-            SelectStatement result = new SelectStatement(databaseType);
             SelectStatement left = (SelectStatement) visit(ctx.selectClauseN(0));
-            result.setProjections(left.getProjections());
-            left.getFrom().ifPresent(result::setFrom);
             CombineSegment combineSegment = new CombineSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
                     createSubquerySegment(ctx.selectClauseN(0), left), getCombineType(ctx), createSubquerySegment(ctx.selectClauseN(1), (SelectStatement) visit(ctx.selectClauseN(1))));
-            result.setCombine(combineSegment);
-            return result;
+            return SelectStatement.builder().databaseType(databaseType).projections(left.getProjections()).from(left.getFrom().orElse(null)).combine(combineSegment).build();
         }
         return visit(ctx.selectWithParens());
     }
@@ -1018,36 +1011,35 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitSimpleSelect(final SimpleSelectContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = SelectStatement.builder().databaseType(databaseType);
         if (null == ctx.targetList()) {
-            result.setProjections(new ProjectionsSegment(-1, -1));
+            selectStatementBuilder.projections(new ProjectionsSegment(-1, -1));
         } else {
             ProjectionsSegment projects = (ProjectionsSegment) visit(ctx.targetList());
             if (null != ctx.distinctClause()) {
                 projects.setDistinctRow(true);
             }
-            result.setProjections(projects);
+            selectStatementBuilder.projections(projects);
         }
         if (null != ctx.intoClause()) {
-            result.setInto((TableSegment) visit(ctx.intoClause()));
+            selectStatementBuilder.into((TableSegment) visit(ctx.intoClause()));
         }
         if (null != ctx.fromClause()) {
-            TableSegment tableSegment = (TableSegment) visit(ctx.fromClause());
-            result.setFrom(tableSegment);
+            selectStatementBuilder.from((TableSegment) visit(ctx.fromClause()));
         }
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            selectStatementBuilder.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.groupClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupClause()));
+            selectStatementBuilder.groupBy((GroupBySegment) visit(ctx.groupClause()));
         }
         if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+            selectStatementBuilder.having((HavingSegment) visit(ctx.havingClause()));
         }
         if (null != ctx.windowClause()) {
-            result.setWindow((WindowSegment) visit(ctx.windowClause()));
+            selectStatementBuilder.window((WindowSegment) visit(ctx.windowClause()));
         }
-        return result;
+        return selectStatementBuilder.build();
     }
     
     @Override
@@ -1438,6 +1430,18 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         }
         LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
+    }
+    
+    private SelectStatement.SelectStatementBuilder createSelectStatementBuilder(final SelectStatement selectStatement) {
+        return SelectStatement.builder().databaseType(selectStatement.getDatabaseType()).projections(selectStatement.getProjections())
+                .from(selectStatement.getFrom().orElse(null)).where(selectStatement.getWhere().orElse(null))
+                .hierarchicalQuery(selectStatement.getHierarchicalQuery().orElse(null)).groupBy(selectStatement.getGroupBy().orElse(null))
+                .having(selectStatement.getHaving().orElse(null)).orderBy(selectStatement.getOrderBy().orElse(null))
+                .combine(selectStatement.getCombine().orElse(null)).with(selectStatement.getWith().orElse(null))
+                .subqueryType(selectStatement.getSubqueryType().orElse(null)).limit(selectStatement.getLimit().orElse(null))
+                .lock(selectStatement.getLock().orElse(null)).window(selectStatement.getWindow().orElse(null))
+                .into(selectStatement.getInto().orElse(null)).model(selectStatement.getModel().orElse(null))
+                .outfile(selectStatement.getOutfile().orElse(null)).withTableHint(selectStatement.getWithTableHint().orElse(null));
     }
     
     @Override

@@ -62,7 +62,7 @@ class KernelProcessorTest {
     
     @Test
     void assertGenerateExecutionContext() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
         selectStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(selectStatement);
         ConnectionContext connectionContext = mock(ConnectionContext.class);
