@@ -201,9 +201,11 @@ class PostgreSQLBatchedStatementsExecutorTest {
     }
     
     private UpdateStatementContext mockUpdateStatementContext() {
-        UpdateStatement updateStatement = new UpdateStatement(databaseType);
-        updateStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t"))));
-        updateStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t"))))
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
         return new UpdateStatementContext(updateStatement);
     }
     

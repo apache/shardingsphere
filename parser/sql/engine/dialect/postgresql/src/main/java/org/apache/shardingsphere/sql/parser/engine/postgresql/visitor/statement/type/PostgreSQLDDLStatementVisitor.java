@@ -644,7 +644,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNamesClause())).getValue());
+        return new TruncateStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNamesClause())).getValue(), Collections.emptyList());
     }
     
     @Override

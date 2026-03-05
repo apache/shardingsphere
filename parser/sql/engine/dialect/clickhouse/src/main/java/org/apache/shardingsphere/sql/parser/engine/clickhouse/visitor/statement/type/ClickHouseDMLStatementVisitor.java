@@ -122,14 +122,16 @@ public final class ClickHouseDMLStatementVisitor extends ClickHouseStatementVisi
     
     @Override
     public ASTNode visitUpdate(final ClickHouseStatementParser.UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement(getDatabaseType());
-        result.setTable((TableSegment) visit(ctx.tableReferences()));
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((TableSegment) visit(ctx.tableReferences()))
+                .setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        UpdateStatement updateStatement = result.build();
+        updateStatement.addParameterMarkers(getParameterMarkerSegments());
+        return updateStatement;
     }
     
     @Override

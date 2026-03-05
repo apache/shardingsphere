@@ -69,7 +69,7 @@ class ProxySQLComQueryParserTest {
     void assertParseWithMissingDatabaseUseDefaultType() {
         when(connectionSession.getUsedDatabaseName()).thenReturn("missing_db");
         SQLParserEngine parserEngine = mock(SQLParserEngine.class);
-        SQLStatement expected = new UpdateStatement(databaseType);
+        SQLStatement expected = UpdateStatement.builder().databaseType(databaseType).build();
         SQLParserRule parserRule = mockParserRule(parserEngine);
         mockProxyContext(parserRule, false, null);
         when(parserEngine.parse(anyString(), eq(false))).thenReturn(expected);
@@ -81,7 +81,7 @@ class ProxySQLComQueryParserTest {
         DatabaseType protocolType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         when(connectionSession.getUsedDatabaseName()).thenReturn("logic_db");
         SQLParserEngine parserEngine = mock(SQLParserEngine.class);
-        SQLStatement expected = new UpdateStatement(protocolType);
+        SQLStatement expected = UpdateStatement.builder().databaseType(protocolType).build();
         SQLParserRule parserRule = mockParserRule(parserEngine);
         mockProxyContext(parserRule, true, protocolType);
         when(parserEngine.parse(anyString(), eq(false))).thenReturn(expected);

@@ -82,12 +82,13 @@ class ProcessEngineTest {
     }
     
     private UpdateStatement getSQLStatement() {
-        UpdateStatement result = new UpdateStatement(databaseType);
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        result.setTable(new SimpleTableSegment(tableNameSegment));
-        result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
-        return result;
+        return UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(new SimpleTableSegment(tableNameSegment))
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
     }
     
     @Test
