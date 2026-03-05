@@ -18,5 +18,5 @@
 
 <sql-cases>
     <sql-case id="admin_copy_tablet_with_properties" value="ADMIN COPY TABLET 10010 PROPERTIES(&quot;backend_id&quot; = &quot;10003&quot;, &quot;version&quot; = &quot;10&quot;)" db-types="Doris" />
-    <sql-case id="admin_copy_tablet_without_properties" value="ADMIN COPY TABLET 10010" db-types="Doris" />
+    <sql-case id="admin_copy_tablet_without_properties" value="ADMIN COPY TABLET 10010;" db-types="Doris" />
 </sql-cases>
