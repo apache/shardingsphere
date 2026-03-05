@@ -111,10 +111,6 @@ public final class SelectStatement extends DMLStatement {
         attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with), new AllowNotUseDatabaseSQLStatementAttribute(null == from));
     }
     
-    public SelectStatement(final DatabaseType databaseType) {
-        this(databaseType, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    }
-    
     /**
      * Get from.
      *

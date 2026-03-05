@@ -87,7 +87,7 @@ class FirebirdAdminExecutorCreatorTest {
     
     private static SQLStatementContext createSelectStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class);
-        when(result.getSqlStatement()).thenReturn(new SelectStatement(DATABASE_TYPE));
+        when(result.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(DATABASE_TYPE).build());
         return result;
     }
     

@@ -142,7 +142,7 @@ class PortalTest {
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(databaseType).build());
         when(sqlStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         Portal portal = createPortal(sqlStatementContext, Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
         PostgreSQLPacket portalDescription = portal.describe();
@@ -172,7 +172,7 @@ class PortalTest {
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
+        when(selectStatementContext.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(databaseType).build());
         when(selectStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         Portal portal = createPortal(selectStatementContext, Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
         assertThat(portal.describe(), isA(PostgreSQLRowDescriptionPacket.class));
@@ -266,7 +266,7 @@ class PortalTest {
         when(responseHeader.getQueryHeaders()).thenReturn(Arrays.asList(bitHeader, varcharHeader));
         when(proxyBackendHandler.execute()).thenReturn(responseHeader);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(databaseType).build());
         when(sqlStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         PostgreSQLPacket description = createPortal(sqlStatementContext, Collections.emptyList()).describe();
         assertThat(description, isA(PostgreSQLRowDescriptionPacket.class));
@@ -291,7 +291,7 @@ class PortalTest {
         QueryResponseCell varcharCell = new QueryResponseCell(Types.VARCHAR, "foo");
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Arrays.asList(bitCell, boolCell, varcharCell)));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(databaseType).build());
         when(sqlStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         List<PostgreSQLValueFormat> resultFormats = Arrays.asList(PostgreSQLValueFormat.BINARY, PostgreSQLValueFormat.TEXT);
         List<DatabasePacket> actualPackets = createPortal(sqlStatementContext, resultFormats).execute(0);

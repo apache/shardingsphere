@@ -100,7 +100,7 @@ class MySQLCommandPacketFactoryTest {
         when(payload.getByteBuf().getIntLE(anyInt())).thenReturn(1);
         ServerPreparedStatementRegistry serverPreparedStatementRegistry = new ServerPreparedStatementRegistry();
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(serverPreparedStatementRegistry);
-        SelectStatement sqlStatement = new SelectStatement(databaseType);
+        SelectStatement sqlStatement = SelectStatement.builder().databaseType(databaseType).build();
         sqlStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         serverPreparedStatementRegistry.addPreparedStatement(1, new MySQLServerPreparedStatement("SELECT 1", sqlStatementContext, new HintValueContext(), Collections.emptyList()));

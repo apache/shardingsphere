@@ -154,7 +154,7 @@ class InsertStatementContextTest {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(1, 0, 1);
         segments.add(parameterMarkerExpressionSegment);
         segments.add(parameterMarkerExpressionSegment);
-        SelectStatement selectStatement = new SelectStatement(databaseType);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
         selectStatement.addParameterMarkers(segments);
         assertThat(selectStatement.getParameterCount(), is(1));
         assertThat(selectStatement.getParameterMarkers().size(), is(1));

@@ -85,7 +85,7 @@ class BinaryOperationExpressionConverterTest {
     @Test
     void assertConvertQuantifySubqueryFallsBackToOriginalOperator() {
         LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 1);
-        QuantifySubqueryExpression right = new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, new SelectStatement(databaseType), "sub"), "ALL");
+        QuantifySubqueryExpression right = new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "sub"), "ALL");
         SqlNode leftNode = mock(SqlNode.class);
         SqlNode rightNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
@@ -117,7 +117,7 @@ class BinaryOperationExpressionConverterTest {
     @MethodSource("provideQuantifyOperators")
     void assertConvertQuantifySubquery(final String operator, final String quantifyOperator, final SqlOperator expectedOperator) {
         LiteralExpressionSegment left = new LiteralExpressionSegment(0, 0, 1);
-        QuantifySubqueryExpression right = new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, new SelectStatement(databaseType), "sub"), quantifyOperator);
+        QuantifySubqueryExpression right = new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "sub"), quantifyOperator);
         SqlNode leftNode = mock(SqlNode.class);
         SqlNode rightNode = mock(SqlNode.class);
         when(ExpressionConverter.convert(left)).thenReturn(Optional.of(leftNode));
