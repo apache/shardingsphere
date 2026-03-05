@@ -35,15 +35,15 @@ public final class MySQLOptimizeTableStatement extends DALStatement {
     
     private final Collection<SimpleTableSegment> tables;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLOptimizeTableStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables) {
         super(databaseType);
         this.tables = tables;
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables), new TableBroadcastRouteSQLStatementAttribute());
     }
     
     @Override
     public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables), new TableBroadcastRouteSQLStatementAttribute());
     }
 }

@@ -197,7 +197,7 @@ class PortalTest {
         when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(proxyBackendHandler.next()).thenReturn(false);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getSqlStatement()).thenReturn(new InsertStatement(databaseType));
+        when(insertStatementContext.getSqlStatement()).thenReturn(InsertStatement.builder().databaseType(databaseType).build());
         when(insertStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
                 "", insertStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList());

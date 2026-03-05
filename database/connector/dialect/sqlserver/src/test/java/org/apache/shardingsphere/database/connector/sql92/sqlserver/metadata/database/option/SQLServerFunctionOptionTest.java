@@ -36,6 +36,9 @@ class SQLServerFunctionOptionTest {
     void assertGetUnparenthesizedFunctionNames() {
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRENT_TIMESTAMP"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("CURRENT_USER"));
+        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("ROWNUM"));
+        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("ROWNUM_"));
+        assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("ROW_NUMBER"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("SESSION_USER"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("SYSTEM_USER"));
         assertTrue(functionOption.getUnparenthesizedFunctionNames().contains("USER"));

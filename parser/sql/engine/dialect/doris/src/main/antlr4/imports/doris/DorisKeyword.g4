@@ -1689,6 +1689,10 @@ MUTEX
     : M U T E X
     ;
 
+MYSQL
+    : M Y S Q L
+    ;
+
 Doris_ERRNO
     : M Y S Q L UL_ E R R N O
     ;
@@ -2004,6 +2008,10 @@ POLYGON
 
 PORT
     : P O R T
+    ;
+
+POSTGRES
+    : P O S T G R E S
     ;
 
 PRECEDES
@@ -2718,6 +2726,10 @@ STRAIGHT_JOIN
 
 STREAM
     : S T R E A M
+    ;
+
+STREAMING
+    : S T R E A M I N G
     ;
 
 STRING

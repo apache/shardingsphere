@@ -51,8 +51,7 @@ class MergeStatementConverterTest {
     
     @Test
     void assertConvertWithUpdate() {
-        MergeStatement mergeStatement = createMergeStatement(createSimpleTableSegment("target_table"), createSimpleTableSegment("source_table"));
-        mergeStatement.setUpdate(createUpdateStatement());
+        MergeStatement mergeStatement = createMergeStatement(createSimpleTableSegment("target_table"), createSimpleTableSegment("source_table"), createUpdateStatement());
         SqlMerge actual = (SqlMerge) new MergeStatementConverter().convert(mergeStatement);
         assertThat(actual.getCondition(), isA(SqlNode.class));
         assertThat(actual.getUpdateCall(), isA(SqlUpdate.class));
@@ -67,21 +66,21 @@ class MergeStatementConverterTest {
     
     @Test
     void assertConvertUpdateWithEmptyTable() {
-        MergeStatement mergeStatement = createMergeStatement(createSimpleTableSegment("target_table"), createSimpleTableSegment("source_table"));
         UpdateStatement updateStatement = createUpdateStatement();
         updateStatement.setTable(createSimpleTableSegment("DUAL"));
-        mergeStatement.setUpdate(updateStatement);
+        MergeStatement mergeStatement = createMergeStatement(createSimpleTableSegment("target_table"), createSimpleTableSegment("source_table"), updateStatement);
         SqlMerge actual = (SqlMerge) new MergeStatementConverter().convert(mergeStatement);
         assertNotNull(actual.getUpdateCall());
         assertThat(actual.getUpdateCall().getTargetTable(), is(SqlNodeList.EMPTY));
     }
     
     private MergeStatement createMergeStatement(final SimpleTableSegment target, final SimpleTableSegment source) {
-        MergeStatement result = new MergeStatement(databaseType);
-        result.setTarget(target);
-        result.setSource(source);
-        result.setExpression(new ExpressionWithParamsSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0)));
-        return result;
+        return createMergeStatement(target, source, null);
+    }
+    
+    private MergeStatement createMergeStatement(final SimpleTableSegment target, final SimpleTableSegment source, final UpdateStatement updateStatement) {
+        return MergeStatement.builder().databaseType(databaseType).target(target).source(source)
+                .expression(new ExpressionWithParamsSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0))).update(updateStatement).build();
     }
     
     private UpdateStatement createUpdateStatement() {

@@ -69,21 +69,19 @@ class GeneratedKeyContextEngineTest {
     
     @Test
     void assertCreateGenerateKeyContextWithoutGenerateKeyColumnConfiguration() {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
-        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl1"))));
-        insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl1"))))
+                .insertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id"))))).build();
         assertFalse(new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(Collections.emptyMap(),
                 Collections.emptyList(), Collections.singletonList(1)).isPresent());
     }
     
     @Test
     void assertCreateGenerateKeyContextWhenCreateWithGenerateKeyColumnConfiguration() {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
-        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
-        insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
         List<ExpressionSegment> expressionSegments = Collections.singletonList(new LiteralExpressionSegment(0, 0, 1));
         InsertValueContext insertValueContext = new InsertValueContext(expressionSegments, Collections.emptyList(), 0);
-        insertStatement.getValues().add(new InsertValuesSegment(0, 0, expressionSegments));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))))
+                .insertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))))
+                .values(Collections.singletonList(new InsertValuesSegment(0, 0, expressionSegments))).build();
         Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(insertStatement, schema)
                 .createGenerateKeyContext(new CaseInsensitiveMap<>(Collections.singletonMap("id", 0)), Collections.singletonList(insertValueContext), Collections.singletonList(1));
         assertTrue(actual.isPresent());
@@ -92,13 +90,13 @@ class GeneratedKeyContextEngineTest {
     
     @Test
     void assertCreateGenerateKeyContextWhenFind() {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
-        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
-        insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))));
-        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new ParameterMarkerExpressionSegment(1, 2, 0))));
-        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(1, 2, 100))));
-        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(1, 2, "value"))));
-        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new CommonExpressionSegment(1, 2, "ignored value"))));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))))
+                .insertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id")))))
+                .values(Arrays.asList(new InsertValuesSegment(0, 0, Collections.singletonList(new ParameterMarkerExpressionSegment(1, 2, 0))),
+                        new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(1, 2, 100))),
+                        new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(1, 2, "value"))),
+                        new InsertValuesSegment(0, 0, Collections.singletonList(new CommonExpressionSegment(1, 2, "ignored value")))))
+                .build();
         List<InsertValueContext> insertValueContexts = insertStatement.getValues().stream()
                 .map(each -> new InsertValueContext(each.getValues(), Collections.emptyList(), 0)).collect(Collectors.toList());
         Optional<GeneratedKeyContext> actual = new GeneratedKeyContextEngine(insertStatement, schema)

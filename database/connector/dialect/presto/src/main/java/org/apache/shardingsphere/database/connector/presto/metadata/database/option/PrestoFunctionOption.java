@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.database.connector.presto.metadata.database.option;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 
 /**
  * Function option of Presto.
  */
 public final class PrestoFunctionOption implements DialectFunctionOption {
     
-    private static final Collection<String> UNPARENTHESIZED_FUNCTION_NAMES = new HashSet<>(Arrays.asList(
+    private static final Collection<String> UNPARENTHESIZED_FUNCTION_NAMES = new CaseInsensitiveSet<>(Arrays.asList(
             "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "LOCALTIME", "LOCALTIMESTAMP"));
     
     @Override

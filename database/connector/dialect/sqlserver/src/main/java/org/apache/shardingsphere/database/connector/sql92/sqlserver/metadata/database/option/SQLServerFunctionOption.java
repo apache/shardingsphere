@@ -17,19 +17,20 @@
 
 package org.apache.shardingsphere.database.connector.sql92.sqlserver.metadata.database.option;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 
 /**
  * Function option of SQLServer.
  */
 public final class SQLServerFunctionOption implements DialectFunctionOption {
     
-    private static final Collection<String> UNPARENTHESIZED_FUNCTION_NAMES = new HashSet<>(Arrays.asList(
-            "CURRENT_TIMESTAMP", "CURRENT_USER", "SESSION_USER", "SYSTEM_USER", "USER"));
+    // TODO remove ROWNUM, ROWNUM_ and ROW_NUMBER @duanzhengqiang
+    private static final Collection<String> UNPARENTHESIZED_FUNCTION_NAMES = new CaseInsensitiveSet<>(Arrays.asList(
+            "CURRENT_TIMESTAMP", "CURRENT_USER", "ROWNUM", "ROWNUM_", "ROW_NUMBER", "SESSION_USER", "SYSTEM_USER", "USER"));
     
     @Override
     public String getIfNullFunctionName() {

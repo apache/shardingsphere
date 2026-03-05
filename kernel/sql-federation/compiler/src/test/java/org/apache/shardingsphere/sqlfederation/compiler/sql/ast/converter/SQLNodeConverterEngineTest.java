@@ -75,7 +75,7 @@ class SQLNodeConverterEngineTest {
         try (
                 MockedConstruction<InsertStatementConverter> ignored = mockConstruction(InsertStatementConverter.class,
                         (mock, context) -> when(mock.convert(any(InsertStatement.class))).thenReturn(insertSqlNode))) {
-            InsertStatement insertStatement = new InsertStatement(databaseType);
+            InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
             SqlNode actual = SQLNodeConverterEngine.convert(insertStatement);
             assertThat(actual, is(insertSqlNode));
         }
@@ -83,7 +83,7 @@ class SQLNodeConverterEngineTest {
         try (
                 MockedConstruction<MergeStatementConverter> ignored = mockConstruction(MergeStatementConverter.class,
                         (mock, context) -> when(mock.convert(any(MergeStatement.class))).thenReturn(mergeSqlNode))) {
-            assertThat(SQLNodeConverterEngine.convert(new MergeStatement(databaseType)), is(mergeSqlNode));
+            assertThat(SQLNodeConverterEngine.convert(MergeStatement.builder().databaseType(databaseType).build()), is(mergeSqlNode));
         }
     }
     
