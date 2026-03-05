@@ -550,6 +550,7 @@ identifierKeywordsUnambiguous
     | VARIABLES
     | VCPU
     | VERBOSE
+    | VERSION
     | VIEW
     | VISIBLE
     | WAIT

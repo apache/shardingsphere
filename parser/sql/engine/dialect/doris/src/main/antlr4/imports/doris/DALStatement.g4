@@ -429,6 +429,18 @@ dorisAlterSystemAction
     | DROP OBSERVER string_
     ;
 
+adminSetReplicaStatus
+    : ADMIN SET REPLICA STATUS propertiesClause
+    ;
+
+adminSetReplicaVersion
+    : ADMIN SET REPLICA VERSION propertiesClause
+    ;
+
+adminCopyTablet
+    : ADMIN COPY TABLET NUMBER_ propertiesClause?
+    ;
+
 createSqlBlockRule
     : CREATE SQL_BLOCK_RULE ruleName propertiesClause
     ;

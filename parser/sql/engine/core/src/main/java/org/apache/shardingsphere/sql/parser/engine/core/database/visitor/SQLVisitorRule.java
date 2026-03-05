@@ -567,6 +567,12 @@ public enum SQLVisitorRule {
     
     DORIS_ALTER_SYSTEM("DorisAlterSystem", SQLStatementType.DAL),
     
+    ADMIN_SET_REPLICA_STATUS("AdminSetReplicaStatus", SQLStatementType.DAL),
+    
+    ADMIN_SET_REPLICA_VERSION("AdminSetReplicaVersion", SQLStatementType.DAL),
+    
+    ADMIN_COPY_TABLET("AdminCopyTablet", SQLStatementType.DAL),
+    
     CREATE_SQL_BLOCK_RULE("CreateSqlBlockRule", SQLStatementType.DAL),
     
     DELIMITER("Delimiter", SQLStatementType.DAL),
