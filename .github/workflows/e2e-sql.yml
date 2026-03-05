@@ -66,6 +66,8 @@ jobs:
       filter-json: ${{ steps.generate-matrix.outputs.filter-json }}
     steps:
       - uses: actions/checkout@v6.0.1
+        with:
+          ref: ${{ github.ref }}
       - id: filter
         uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
         with:
@@ -128,6 +130,8 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v6.0.1
+        with:
+          ref: ${{ github.ref }}
       - id: setup-build-environment
         uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
@@ -154,6 +158,8 @@ jobs:
       matrix: ${{ fromJSON(needs.detect-and-generate-matrix.outputs.smoke-matrix) }}
     steps:
       - uses: actions/checkout@v6.0.1
+        with:
+          ref: ${{ github.ref }}
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'
@@ -179,6 +185,8 @@ jobs:
       has-remaining-jobs: ${{ steps.generate.outputs.has-remaining-jobs }}
     steps:
       - uses: actions/checkout@v6.0.1
+        with:
+          ref: ${{ github.ref }}
       - name: Detect Remaining Matrix
         id: generate
         env:
@@ -211,6 +219,8 @@ jobs:
       matrix: ${{ fromJSON(needs.detect-remaining-matrix.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v6.0.1
+        with:
+          ref: ${{ github.ref }}
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'
