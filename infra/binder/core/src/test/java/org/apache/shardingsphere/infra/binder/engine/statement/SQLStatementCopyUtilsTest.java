@@ -45,8 +45,8 @@ class SQLStatementCopyUtilsTest {
     
     @BeforeEach
     void setUp() {
-        originalStatement = new UpdateStatement(databaseType);
-        targetStatement = new UpdateStatement(databaseType);
+        originalStatement = UpdateStatement.builder().databaseType(databaseType).build();
+        targetStatement = UpdateStatement.builder().databaseType(databaseType).build();
     }
     
     @Test

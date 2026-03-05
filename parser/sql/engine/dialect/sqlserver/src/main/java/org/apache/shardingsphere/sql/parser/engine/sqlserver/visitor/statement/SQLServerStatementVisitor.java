@@ -1698,29 +1698,30 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement(databaseType);
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder().databaseType(databaseType);
         if (null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
+            result.with((WithSegment) visit(ctx.withClause()));
         }
-        result.setTable((TableSegment) visit(ctx.tableReferences()));
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+        result.table((TableSegment) visit(ctx.tableReferences()));
+        result.setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.fromClause()) {
-            result.setFrom((TableSegment) visit(ctx.fromClause()));
+            result.from((TableSegment) visit(ctx.fromClause()));
         }
         if (null != ctx.withTableHint()) {
-            result.setWithTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
+            result.withTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
         }
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.optionHint()) {
-            result.setOptionHint((OptionHintSegment) visit(ctx.optionHint()));
+            result.optionHint((OptionHintSegment) visit(ctx.optionHint()));
         }
         if (null != ctx.outputClause()) {
-            result.setOutput((OutputSegment) visit(ctx.outputClause()));
+            result.output((OutputSegment) visit(ctx.outputClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        UpdateStatement updateStatement = result.build();
+        updateStatement.addParameterMarkers(getParameterMarkerSegments());
+        return updateStatement;
     }
     
     @Override
@@ -2300,8 +2301,6 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitMergeUpdateClause(final MergeUpdateClauseContext ctx) {
-        UpdateStatement result = new UpdateStatement(databaseType);
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
-        return result;
+        return UpdateStatement.builder().databaseType(databaseType).setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause())).build();
     }
 }

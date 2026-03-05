@@ -52,11 +52,13 @@ class UpdateStatementBinderTest {
     
     @Test
     void assertBind() {
-        UpdateStatement updateStatement = new UpdateStatement(databaseType);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
-        updateStatement.setTable(simpleTableSegment);
-        updateStatement.setWhere(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),
-                new LiteralExpressionSegment(0, 0, 0), "=", "status = 1")));
+        UpdateStatement updateStatement = UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(simpleTableSegment)
+                .where(new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("status")),
+                        new LiteralExpressionSegment(0, 0, 0), "=", "status = 1")))
+                .build();
         UpdateStatement actual = new UpdateStatementBinder().bind(updateStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), updateStatement));
         assertThat(actual, not(updateStatement));
         assertThat(actual.getTable(), not(updateStatement.getTable()));

@@ -57,14 +57,16 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
     
     private UpdateStatement copy(final UpdateStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final TableSegment boundFrom,
                                  final SetAssignmentSegment boundSetAssignment, final WhereSegment boundWhere, final OrderBySegment boundOrderBy) {
-        UpdateStatement result = new UpdateStatement(sqlStatement.getDatabaseType());
-        result.setWith(boundWith);
-        result.setTable(boundTable);
-        result.setFrom(boundFrom);
-        result.setSetAssignment(boundSetAssignment);
-        result.setWhere(boundWhere);
-        result.setOrderBy(boundOrderBy);
-        sqlStatement.getLimit().ifPresent(result::setLimit);
+        UpdateStatement result = UpdateStatement.builder()
+                .databaseType(sqlStatement.getDatabaseType())
+                .with(boundWith)
+                .table(boundTable)
+                .from(boundFrom)
+                .setAssignment(boundSetAssignment)
+                .where(boundWhere)
+                .orderBy(boundOrderBy)
+                .limit(sqlStatement.getLimit().orElse(null))
+                .build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

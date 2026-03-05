@@ -208,18 +208,21 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement(getDatabaseType());
-        result.setTable((TableSegment) visit(ctx.updateSpecification()));
+        TableSegment tableSegment = (TableSegment) visit(ctx.updateSpecification());
         if (null != ctx.alias()) {
-            result.getTable().setAlias((AliasSegment) visit(ctx.alias()));
+            tableSegment.setAlias((AliasSegment) visit(ctx.alias()));
         }
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.updateSetClause()));
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder()
+                .databaseType(getDatabaseType())
+                .table(tableSegment)
+                .setAssignment((SetAssignmentSegment) visit(ctx.updateSetClause()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
-        result.getVariableNames().addAll(getVariableNames());
-        return result;
+        UpdateStatement updateStatement = result.build();
+        updateStatement.addParameterMarkers(ctx.getParent() instanceof ExecuteContext ? getGlobalParameterMarkerSegments() : popAllStatementParameterMarkerSegments());
+        updateStatement.getVariableNames().addAll(getVariableNames());
+        return updateStatement;
     }
     
     @Override
@@ -1478,16 +1481,18 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitMergeUpdateClause(final MergeUpdateClauseContext ctx) {
-        UpdateStatement result = new UpdateStatement(getDatabaseType());
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.mergeSetAssignmentsClause()));
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder()
+                .databaseType(getDatabaseType())
+                .setAssignment((SetAssignmentSegment) visit(ctx.mergeSetAssignmentsClause()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.deleteWhereClause()) {
-            result.setDeleteWhere((WhereSegment) visit(ctx.deleteWhereClause()));
+            result.deleteWhere((WhereSegment) visit(ctx.deleteWhereClause()));
         }
-        result.addParameterMarkers(popAllStatementParameterMarkerSegments());
-        return result;
+        UpdateStatement updateStatement = result.build();
+        updateStatement.addParameterMarkers(popAllStatementParameterMarkerSegments());
+        return updateStatement;
     }
     
     @Override
