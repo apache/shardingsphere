@@ -147,11 +147,12 @@ class MySQLComStmtExecuteExecutorTest {
     }
     
     private UpdateStatement prepareUpdateStatement() {
-        UpdateStatement result = new UpdateStatement(databaseType);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         ColumnAssignmentSegment columnAssignmentSegment = new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new ParameterMarkerExpressionSegment(0, 0, 0));
-        result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(columnAssignmentSegment)));
-        return result;
+        return UpdateStatement.builder()
+                .databaseType(databaseType)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singletonList(columnAssignmentSegment)))
+                .build();
     }
     
     @Test
@@ -184,7 +185,7 @@ class MySQLComStmtExecuteExecutorTest {
         when(packet.getStatementId()).thenReturn(2);
         when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST);
         MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(databaseType)));
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(databaseType).build()));
         when(ProxyBackendHandlerFactory.newInstance(eq(databaseType), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
         Iterator<DatabasePacket> actual = executor.execute().iterator();
         assertThat(executor.getResponseType(), is(ResponseType.UPDATE));

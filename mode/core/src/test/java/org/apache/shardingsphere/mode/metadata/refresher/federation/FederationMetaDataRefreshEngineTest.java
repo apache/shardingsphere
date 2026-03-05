@@ -60,7 +60,7 @@ class FederationMetaDataRefreshEngineTest {
     
     @Test
     void assertIsNeedRefreshWhenStatementNotSupported() {
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new UpdateStatement(databaseType));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(UpdateStatement.builder().databaseType(databaseType).build());
         assertFalse(new FederationMetaDataRefreshEngine(sqlStatementContext).isNeedRefresh());
     }
     
@@ -106,7 +106,7 @@ class FederationMetaDataRefreshEngineTest {
     
     @Test
     void assertRefreshWhenRefresherNotFound() {
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new UpdateStatement(databaseType));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(UpdateStatement.builder().databaseType(databaseType).build());
         FederationMetaDataRefreshEngine engine = new FederationMetaDataRefreshEngine(sqlStatementContext);
         engine.refresh(metaDataManagerPersistService, database);
     }

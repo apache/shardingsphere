@@ -882,18 +882,20 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement(databaseType);
         SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
-        result.setTable(tableSegment);
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setClauseList()));
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(tableSegment)
+                .setAssignment((SetAssignmentSegment) visit(ctx.setClauseList()));
         if (null != ctx.whereOrCurrentClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
+            result.where((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
         if (null != ctx.fromClause()) {
-            result.setFrom((TableSegment) visit(ctx.fromClause()));
+            result.from((TableSegment) visit(ctx.fromClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        UpdateStatement updateStatement = result.build();
+        updateStatement.addParameterMarkers(getParameterMarkerSegments());
+        return updateStatement;
     }
     
     @Override

@@ -55,9 +55,8 @@ class UpdateStatementConverterTest {
     
     @Test
     void assertConvertWithLimitAndAlias() {
-        UpdateStatement updateStatement = createUpdateStatement(true);
         LimitSegment limit = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1L), new ParameterMarkerLimitValueSegment(0, 0, 0));
-        updateStatement.setLimit(limit);
+        UpdateStatement updateStatement = createUpdateStatement(true, null, limit);
         SqlOrderBy actual = (SqlOrderBy) new UpdateStatementConverter().convert(updateStatement);
         assertThat(actual.offset, isA(SqlNode.class));
         assertThat(actual.fetch, isA(SqlDynamicParam.class));
@@ -67,8 +66,7 @@ class UpdateStatementConverterTest {
     
     @Test
     void assertConvertWithoutLimitButWithOrderBy() {
-        UpdateStatement updateStatement = createUpdateStatement(false);
-        updateStatement.setOrderBy(createOrderBySegment());
+        UpdateStatement updateStatement = createUpdateStatement(false, createOrderBySegment(), null);
         SqlOrderBy actual = (SqlOrderBy) new UpdateStatementConverter().convert(updateStatement);
         assertNull(actual.offset);
         SqlUpdate sqlUpdate = (SqlUpdate) actual.query;
@@ -77,25 +75,27 @@ class UpdateStatementConverterTest {
     
     @Test
     void assertConvertWithLimitWithoutOffsetAndRowCount() {
-        UpdateStatement updateStatement = createUpdateStatement(true);
         LimitSegment limit = new LimitSegment(0, 0, null, null);
-        updateStatement.setLimit(limit);
+        UpdateStatement updateStatement = createUpdateStatement(true, null, limit);
         SqlOrderBy actual = (SqlOrderBy) new UpdateStatementConverter().convert(updateStatement);
         assertNull(actual.offset);
         assertNull(actual.fetch);
     }
     
-    private UpdateStatement createUpdateStatement(final boolean withAlias) {
-        UpdateStatement result = new UpdateStatement(databaseType);
+    private UpdateStatement createUpdateStatement(final boolean withAlias, final OrderBySegment orderBy, final LimitSegment limit) {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_update")));
         if (withAlias) {
             tableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("u")));
         }
-        result.setTable(tableSegment);
         SetAssignmentSegment setAssignment = createSetAssignmentSegment();
-        result.setSetAssignment(setAssignment);
-        result.setWhere(new WhereSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0)));
-        return result;
+        return UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(tableSegment)
+                .setAssignment(setAssignment)
+                .where(new WhereSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0)))
+                .orderBy(orderBy)
+                .limit(limit)
+                .build();
     }
     
     private SetAssignmentSegment createSetAssignmentSegment() {

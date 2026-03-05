@@ -99,11 +99,12 @@ class ExplainStatementConverterTest {
     }
     
     private UpdateStatement createUpdateStatement() {
-        UpdateStatement result = new UpdateStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_update"))));
-        result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singleton(new ColumnAssignmentSegment(0, 0,
-                Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))), new ParameterMarkerExpressionSegment(0, 0, 0)))));
-        return result;
+        return UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_update"))))
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singleton(new ColumnAssignmentSegment(0, 0,
+                        Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))), new ParameterMarkerExpressionSegment(0, 0, 0)))))
+                .build();
     }
     
     private InsertStatement createInsertStatement() {

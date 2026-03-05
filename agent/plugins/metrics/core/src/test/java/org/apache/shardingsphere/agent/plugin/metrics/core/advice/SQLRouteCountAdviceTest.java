@@ -72,7 +72,7 @@ class SQLRouteCountAdviceTest {
     private static Stream<Arguments> routeContexts() {
         return Stream.of(
                 Arguments.of("INSERT", createQueryContext(InsertStatement.builder().databaseType(DATABASE_TYPE).build())),
-                Arguments.of("UPDATE", createQueryContext(new UpdateStatement(DATABASE_TYPE))),
+                Arguments.of("UPDATE", createQueryContext(UpdateStatement.builder().databaseType(DATABASE_TYPE).build())),
                 Arguments.of("DELETE", createQueryContext(DeleteStatement.builder().databaseType(DATABASE_TYPE).build())),
                 Arguments.of("SELECT", createQueryContext(SelectStatement.builder().databaseType(DATABASE_TYPE).build())));
     }
