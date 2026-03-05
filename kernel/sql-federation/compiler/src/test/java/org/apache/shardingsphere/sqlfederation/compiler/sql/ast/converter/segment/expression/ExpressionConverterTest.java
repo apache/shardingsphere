@@ -183,7 +183,8 @@ class ExpressionConverterTest {
         IntervalExpression intervalExpression = new IntervalExpression(0, 0, literalSegment, IntervalUnit.DAY, "interval");
         when(IntervalExpressionConverter.convert(intervalExpression)).thenReturn(expectedIntervalNode);
         SqlNode expectedQuantifyNode = mock(SqlNode.class);
-        QuantifySubqueryExpression quantifySubqueryExpression = new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "sub"), "ALL");
+        QuantifySubqueryExpression quantifySubqueryExpression = new QuantifySubqueryExpression(
+                0, 0, new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "sub"), "ALL");
         when(QuantifySubqueryExpressionConverter.convert(quantifySubqueryExpression)).thenReturn(expectedQuantifyNode);
         Map<ExpressionSegment, SqlNode> expectations = new LinkedHashMap<>(23, 1F);
         expectations.put(literalSegment, expectedLiteralNode);
