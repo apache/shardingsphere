@@ -22,10 +22,12 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.altertable.DialectAlterTableOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.pagination.DialectPaginationOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.database.connector.sql92.sqlserver.metadata.database.option.SQLServerFunctionOption;
 
 import java.sql.Connection;
 import java.util.Collections;
@@ -65,6 +67,11 @@ public final class SQLServerDatabaseMetaData implements DialectDatabaseMetaData 
     @Override
     public DialectPaginationOption getPaginationOption() {
         return new DialectPaginationOption(true, "ROW_NUMBER", true);
+    }
+    
+    @Override
+    public DialectFunctionOption getFunctionOption() {
+        return new SQLServerFunctionOption();
     }
     
     @Override

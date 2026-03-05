@@ -24,11 +24,13 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.column.DialectColumnOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.connection.DialectConnectionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.join.DialectJoinOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
 import org.apache.shardingsphere.database.connector.mysql.metadata.database.option.MySQLDataTypeOption;
+import org.apache.shardingsphere.database.connector.mysql.metadata.database.option.MySQLFunctionOption;
 
 import java.sql.Connection;
 import java.util.Arrays;
@@ -88,6 +90,11 @@ public final class MySQLDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectProtocolVersionOption getProtocolVersionOption() {
         return new DialectProtocolVersionOption("5.7.22");
+    }
+    
+    @Override
+    public DialectFunctionOption getFunctionOption() {
+        return new MySQLFunctionOption();
     }
     
     @Override

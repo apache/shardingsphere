@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.firebird.metadata.database.option.FirebirdFunctionOption;
 import org.apache.shardingsphere.database.connector.firebird.metadata.database.option.FirebirdSchemaOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
@@ -83,5 +84,10 @@ class FirebirdDatabaseMetaDataTest {
     @Test
     void assertGetProtocolVersionOption() {
         assertThat(dialectDatabaseMetaData.getProtocolVersionOption().getDefaultVersion(), is("18"));
+    }
+    
+    @Test
+    void assertGetFunctionOption() {
+        assertThat(dialectDatabaseMetaData.getFunctionOption(), isA(FirebirdFunctionOption.class));
     }
 }
