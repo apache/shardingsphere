@@ -25,6 +25,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.presto.metadata.database.option.PrestoFunctionOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -63,5 +64,10 @@ class PrestoDatabaseMetaDataTest {
         assertTrue(actual.getDefaultSchema().isPresent());
         assertThat(actual.getDefaultSchema().get(), is("default"));
         assertFalse(actual.getDefaultSystemSchema().isPresent());
+    }
+    
+    @Test
+    void assertGetFunctionOption() {
+        assertThat(dialectDatabaseMetaData.getFunctionOption(), isA(PrestoFunctionOption.class));
     }
 }

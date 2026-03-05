@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype.DialectDataTypeOption;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.index.DialectIndexOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.table.DialectDriverQuerySystemCatalogOption;
@@ -30,6 +31,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussDataTypeOption;
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussDriverQuerySystemCatalogOption;
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussSchemaOption;
+import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLFunctionOption;
 
 import java.sql.Connection;
 import java.util.Collections;
@@ -73,6 +75,11 @@ public final class OpenGaussDatabaseMetaData implements DialectDatabaseMetaData 
     @Override
     public DialectIndexOption getIndexOption() {
         return new DialectIndexOption(true);
+    }
+    
+    @Override
+    public DialectFunctionOption getFunctionOption() {
+        return new PostgreSQLFunctionOption();
     }
     
     @Override

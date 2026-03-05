@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
@@ -26,6 +25,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.groovy.util.Maps;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.FunctionTableSegmentBinderContext;
@@ -48,7 +48,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -61,9 +60,6 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ColumnSegmentBinder {
-    
-    private static final Collection<String> EXCLUDE_BIND_COLUMNS = new CaseInsensitiveSet<>(Arrays.asList(
-            "ROWNUM", "ROW_NUMBER", "ROWNUM_", "ROWID", "SYSDATE", "SYSTIMESTAMP", "CURRENT_TIMESTAMP", "LOCALTIMESTAMP", "UID", "USER", "NEXTVAL", "LEVEL", "DAY"));
     
     private static final Map<SegmentType, String> SEGMENT_TYPE_MESSAGES = Maps.of(SegmentType.PROJECTION, "field list", SegmentType.JOIN_ON, "on clause", SegmentType.JOIN_USING, "from clause",
             SegmentType.PREDICATE, "where clause", SegmentType.HAVING, "having clause", SegmentType.ORDER_BY, "order clause", SegmentType.GROUP_BY, "group statement", SegmentType.INSERT_COLUMNS,
@@ -84,7 +80,7 @@ public final class ColumnSegmentBinder {
     public static ColumnSegment bind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        if (EXCLUDE_BIND_COLUMNS.contains(segment.getIdentifier().getValue())) {
+        if (isUnparenthesizedFunction(segment, binderContext)) {
             return segment;
         }
         ColumnSegment result = copy(segment);
@@ -104,6 +100,11 @@ public final class ColumnSegmentBinder {
         segment.getLeftParentheses().ifPresent(result::setLeftParentheses);
         segment.getRightParentheses().ifPresent(result::setRightParentheses);
         return result;
+    }
+    
+    private static boolean isUnparenthesizedFunction(final ColumnSegment segment, final SQLStatementBinderContext binderContext) {
+        return new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType())
+                .getDialectDatabaseMetaData().getFunctionOption().getUnparenthesizedFunctionNames().contains(segment.getIdentifier().getValue());
     }
     
     private static OwnerSegment bindOwnerTableContext(final OwnerSegment owner, final ColumnSegment inputColumnSegment) {

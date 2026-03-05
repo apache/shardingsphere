@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoa
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussDataTypeOption;
 import org.apache.shardingsphere.database.connector.opengauss.metadata.database.option.OpenGaussSchemaOption;
+import org.apache.shardingsphere.database.connector.postgresql.metadata.database.option.PostgreSQLFunctionOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -116,5 +117,10 @@ class OpenGaussDatabaseMetaDataTest {
     @Test
     void assertIsCaseSensitive() {
         assertTrue(dialectDatabaseMetaData.isCaseSensitive());
+    }
+    
+    @Test
+    void assertGetFunctionOption() {
+        assertThat(dialectDatabaseMetaData.getFunctionOption(), isA(PostgreSQLFunctionOption.class));
     }
 }

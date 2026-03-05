@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.h2.metadata.database.option.H2FunctionOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +32,7 @@ import java.sql.Connection;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -66,5 +68,10 @@ class H2DatabaseMetaDataTest {
         assertFalse(actual.isAllowCommitAndRollbackOnlyWhenTransactionFailed());
         assertThat(actual.getXaDriverClassNames().size(), is(1));
         assertTrue(actual.getXaDriverClassNames().contains("org.h2.jdbcx.JdbcDataSource"));
+    }
+    
+    @Test
+    void assertGetFunctionOption() {
+        assertThat(dialectDatabaseMetaData.getFunctionOption(), isA(H2FunctionOption.class));
     }
 }
