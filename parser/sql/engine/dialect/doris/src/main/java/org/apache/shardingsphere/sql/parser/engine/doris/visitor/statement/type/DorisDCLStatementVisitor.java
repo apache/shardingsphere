@@ -113,6 +113,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.user.MySQLCreate
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.user.MySQLRenameUserStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dcl.user.MySQLSetPasswordStatement;
 
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -420,7 +421,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitRevokeFrom(final RevokeFromContext ctx) {
-        MySQLRevokeStatement result = new MySQLRevokeStatement(getDatabaseType());
+        MySQLRevokeStatement result = new MySQLRevokeStatement(getDatabaseType(), Collections.emptyList());
         if (null != ctx.roleOrPrivileges()) {
             fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         } else if (null != ctx.ALL()) {
@@ -434,7 +435,7 @@ public final class DorisDCLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitRevokeOnFrom(final RevokeOnFromContext ctx) {
-        MySQLRevokeStatement result = new MySQLRevokeStatement(getDatabaseType());
+        MySQLRevokeStatement result = new MySQLRevokeStatement(getDatabaseType(), Collections.emptyList());
         if (null != ctx.roleOrPrivileges()) {
             fillRoleOrPrivileges(result, ctx.roleOrPrivileges());
         } else if (null != ctx.ALL()) {
