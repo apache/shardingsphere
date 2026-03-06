@@ -721,6 +721,10 @@ ENCRYPTKEY
     : E N C R Y P T K E Y
     ;
 
+ENCRYPTKEYS
+    : E N C R Y P T K E Y S
+    ;
+
 END
     : E N D
     ;

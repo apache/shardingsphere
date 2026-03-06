@@ -17,15 +17,24 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
+import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.encryptkey.EncryptKeyNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 /**
  * Drop encrypt key statement.
  */
+@Getter
 public final class DropEncryptKeyStatement extends DDLStatement {
     
-    public DropEncryptKeyStatement(final DatabaseType databaseType) {
+    private final boolean ifExists;
+    
+    private final EncryptKeyNameSegment keyName;
+    
+    public DropEncryptKeyStatement(final DatabaseType databaseType, final boolean ifExists, final EncryptKeyNameSegment keyName) {
         super(databaseType);
+        this.ifExists = ifExists;
+        this.keyName = keyName;
     }
 }

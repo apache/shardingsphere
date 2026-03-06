@@ -446,7 +446,7 @@ createEncryptKey
     ;
 
 dropEncryptKey
-    : DROP ENCRYPTKEY identifier
+    : DROP ENCRYPTKEY ifExists? encryptKeyName
     ;
 
 createView
