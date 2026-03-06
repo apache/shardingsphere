@@ -105,17 +105,24 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        SQLServerRevokeStatement result = new SQLServerRevokeStatement(getDatabaseType());
+        SQLServerRevokeStatement result = new SQLServerRevokeStatement(getDatabaseType(), getTableSegments(ctx));
         if (null != ctx.revokeClassPrivilegesClause()) {
-            findTableSegment(ctx.revokeClassPrivilegesClause().onClassClause(), ctx.revokeClassPrivilegesClause().classPrivileges()).ifPresent(optional -> result.getTables().add(optional));
             if (null != ctx.revokeClassPrivilegesClause().classPrivileges().columnNames()) {
                 for (ColumnNamesContext each : ctx.revokeClassPrivilegesClause().classPrivileges().columnNames()) {
                     result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(each)).getValue());
                 }
             }
         }
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> getTableSegments(final RevokeContext ctx) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        if (null != ctx.revokeClassPrivilegesClause()) {
+            findTableSegment(ctx.revokeClassPrivilegesClause().onClassClause(), ctx.revokeClassPrivilegesClause().classPrivileges()).ifPresent(result::add);
+        }
         if (null != ctx.revokeClassTypePrivilegesClause()) {
-            findTableSegment(ctx.revokeClassTypePrivilegesClause().onClassTypeClause()).ifPresent(optional -> result.getTables().add(optional));
+            findTableSegment(ctx.revokeClassTypePrivilegesClause().onClassTypeClause()).ifPresent(result::add);
         }
         return result;
     }

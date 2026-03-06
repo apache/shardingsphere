@@ -50,11 +50,8 @@ public final class FirebirdDCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        RevokeStatement result = new RevokeStatement(getDatabaseType());
-        if (null != ctx.privilegeClause()) {
-            result.getTables().add((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName()));
-        }
-        return result;
+        return new RevokeStatement(getDatabaseType(),
+                null == ctx.privilegeClause() ? Collections.emptyList() : Collections.singleton((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName())));
     }
     
     @Override
