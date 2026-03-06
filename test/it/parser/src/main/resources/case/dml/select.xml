@@ -14420,4 +14420,22 @@
             </expression-projection>
         </projections>
     </select>
+
+    <select sql-case-id="select_for_system_time_as_of_hive">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="table_a" start-index="14" stop-index="20" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_for_system_version_as_of_hive">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from>
+            <simple-table name="table_a" start-index="14" stop-index="20" />
+        </from>
+    </select>
 </sql-parser-test-cases>
