@@ -42,8 +42,4 @@ public final class ExplainStatement extends DALStatement {
         extractor.extractTablesFromSQLStatement(explainableSQLStatement);
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(extractor.getRewriteTables()));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

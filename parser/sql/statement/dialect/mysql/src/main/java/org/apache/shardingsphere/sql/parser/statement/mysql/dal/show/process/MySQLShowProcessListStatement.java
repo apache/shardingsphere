@@ -38,8 +38,4 @@ public final class MySQLShowProcessListStatement extends DALStatement {
         this.full = full;
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

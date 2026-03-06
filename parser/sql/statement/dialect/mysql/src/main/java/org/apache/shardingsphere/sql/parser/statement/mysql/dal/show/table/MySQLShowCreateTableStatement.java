@@ -41,8 +41,4 @@ public final class MySQLShowCreateTableStatement extends DALStatement {
         this.table = table;
         attributes = new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new TableInResultSetSQLStatementAttribute(2), new TableSQLStatementAttribute(table));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

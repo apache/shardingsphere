@@ -62,8 +62,4 @@ public final class MySQLDescribeStatement extends DALStatement {
     public Optional<ColumnSegment> getColumnWildcard() {
         return Optional.ofNullable(columnWildcard);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

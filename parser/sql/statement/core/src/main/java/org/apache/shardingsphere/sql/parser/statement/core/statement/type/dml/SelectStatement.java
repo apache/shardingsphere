@@ -199,7 +199,7 @@ public final class SelectStatement extends DMLStatement {
      * @return select statement
      */
     public SelectStatement withSubqueryType(final SubqueryType subqueryType) {
-        return SelectStatement.builder().databaseType(getDatabaseType()).projections(projections).from(from).where(where).hierarchicalQuery(hierarchicalQuery)
+        return builder().databaseType(getDatabaseType()).projections(projections).from(from).where(where).hierarchicalQuery(hierarchicalQuery)
                 .groupBy(groupBy).having(having).orderBy(orderBy).combine(combine).with(with).subqueryType(subqueryType).limit(limit).lock(lock).window(window)
                 .into(into).model(model).outfile(outfile).withTableHint(withTableHint).build();
     }
@@ -265,9 +265,5 @@ public final class SelectStatement extends DMLStatement {
      */
     public Optional<WithTableHintSegment> getWithTableHint() {
         return Optional.ofNullable(withTableHint);
-    }
-    
-    @Override
-    public void buildAttributes() {
     }
 }

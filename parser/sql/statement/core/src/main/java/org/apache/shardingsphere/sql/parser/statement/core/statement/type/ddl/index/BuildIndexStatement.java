@@ -53,10 +53,6 @@ public final class BuildIndexStatement extends DDLStatement {
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table), new BuildIndexIndexSQLStatementAttribute());
     }
     
-    @Override
-    public void buildAttributes() {
-    }
-    
     private class BuildIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {
         
         @Override

@@ -42,8 +42,4 @@ public final class MySQLOptimizeTableStatement extends DALStatement {
         this.tables = tables;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables), new TableBroadcastRouteSQLStatementAttribute());
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

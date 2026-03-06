@@ -40,8 +40,4 @@ public final class SetStatement extends DALStatement {
         this.variableAssigns = variableAssigns;
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

@@ -41,8 +41,4 @@ public final class MySQLKillStatement extends DALStatement {
         this.scope = scope;
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

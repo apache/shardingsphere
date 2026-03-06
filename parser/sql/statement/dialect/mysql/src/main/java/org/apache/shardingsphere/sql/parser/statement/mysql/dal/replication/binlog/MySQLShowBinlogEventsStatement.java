@@ -42,8 +42,4 @@ public final class MySQLShowBinlogEventsStatement extends DALStatement {
         this.limit = limit;
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

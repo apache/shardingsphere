@@ -138,8 +138,4 @@ public final class MergeStatement extends DMLStatement {
     public Optional<OptionHintSegment> getOptionHint() {
         return Optional.ofNullable(optionHint);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

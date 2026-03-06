@@ -295,6 +295,14 @@ showData
     : SHOW DATA (FROM tableName)? orderByClause?
     ;
 
+showFile
+    : SHOW FILE fromDatabase?
+    ;
+
+showEncryptKeys
+    : SHOW ENCRYPTKEYS fromDatabase? showLike?
+    ;
+
 setCharacter
     : SET (CHARACTER SET | CHARSET) (charsetName | DEFAULT)
     ;
@@ -874,4 +882,6 @@ show
     | showSyncJob
     | showDataTypes
     | showData
+    | showFile
+    | showEncryptKeys
     ;

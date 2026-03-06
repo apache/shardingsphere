@@ -100,8 +100,4 @@ public final class PrepareStatement extends DDLStatement {
     public Optional<DeleteStatement> getDelete() {
         return Optional.ofNullable(delete);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

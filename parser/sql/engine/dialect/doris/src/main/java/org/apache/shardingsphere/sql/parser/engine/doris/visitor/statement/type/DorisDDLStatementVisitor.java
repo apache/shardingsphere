@@ -174,6 +174,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constrain
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.distribution.ModifyDistributionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.encryptkey.EncryptKeyNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.engine.EngineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.engine.ModifyEngineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.feature.EnableFeatureSegment;
@@ -1874,6 +1875,11 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDropEncryptKey(final DropEncryptKeyContext ctx) {
-        return new DropEncryptKeyStatement(getDatabaseType());
+        EncryptKeyNameSegment keyName =
+                new EncryptKeyNameSegment(ctx.encryptKeyName().start.getStartIndex(), ctx.encryptKeyName().stop.getStopIndex(), (IdentifierValue) visit(ctx.encryptKeyName().identifier()));
+        if (null != ctx.encryptKeyName().owner()) {
+            keyName.setOwner((OwnerSegment) visit(ctx.encryptKeyName().owner()));
+        }
+        return new DropEncryptKeyStatement(getDatabaseType(), null != ctx.ifExists(), keyName);
     }
 }

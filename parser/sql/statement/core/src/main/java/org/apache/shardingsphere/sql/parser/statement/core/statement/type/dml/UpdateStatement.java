@@ -185,8 +185,4 @@ public final class UpdateStatement extends DMLStatement {
     public Optional<WithTableHintSegment> getWithTableHint() {
         return Optional.ofNullable(withTableHint);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

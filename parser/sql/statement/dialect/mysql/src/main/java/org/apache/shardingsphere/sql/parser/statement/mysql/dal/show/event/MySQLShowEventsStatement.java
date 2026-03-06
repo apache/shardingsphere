@@ -43,8 +43,4 @@ public final class MySQLShowEventsStatement extends DALStatement {
         this.filter = filter;
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

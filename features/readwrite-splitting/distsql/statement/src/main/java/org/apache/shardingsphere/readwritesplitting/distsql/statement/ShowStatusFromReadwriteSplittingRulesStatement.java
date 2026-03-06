@@ -48,8 +48,4 @@ public final class ShowStatusFromReadwriteSplittingRulesStatement extends Resour
     public Optional<String> getRuleName() {
         return Optional.ofNullable(ruleName);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

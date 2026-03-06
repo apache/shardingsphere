@@ -152,6 +152,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowPro
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataTypesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowEncryptKeysContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSqlBlockRuleContext;
@@ -232,6 +234,8 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowProcSta
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowDataTypesStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowEncryptKeysStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowFileStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadStatement;
@@ -1477,6 +1481,28 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.orderByClause()) {
             result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowFile(final ShowFileContext ctx) {
+        DorisShowFileStatement result = new DorisShowFileStatement(getDatabaseType());
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase(((FromDatabaseSegment) visit(ctx.fromDatabase())).getDatabase());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowEncryptKeys(final ShowEncryptKeysContext ctx) {
+        DorisShowEncryptKeysStatement result = new DorisShowEncryptKeysStatement(getDatabaseType());
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
+        }
+        if (null != ctx.showLike()) {
+            result.setLikeSegment((ShowLikeSegment) visit(ctx.showLike()));
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
