@@ -50,8 +50,4 @@ public final class ShowStorageUnitsStatement extends ResourceQueryStatement {
     public Optional<String> getLikePattern() {
         return Optional.ofNullable(likePattern);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

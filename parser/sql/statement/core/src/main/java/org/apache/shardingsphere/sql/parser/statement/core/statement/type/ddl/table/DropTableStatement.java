@@ -47,8 +47,4 @@ public final class DropTableStatement extends DDLStatement {
         this.containsCascade = containsCascade;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

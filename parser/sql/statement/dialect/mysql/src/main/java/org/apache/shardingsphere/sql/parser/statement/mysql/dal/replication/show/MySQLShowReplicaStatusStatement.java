@@ -38,8 +38,4 @@ public final class MySQLShowReplicaStatusStatement extends DALStatement {
         this.channel = channel;
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

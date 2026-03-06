@@ -111,10 +111,6 @@ public final class CreateIndexStatement extends DDLStatement {
         return Optional.ofNullable(lockTable);
     }
     
-    @Override
-    public void buildAttributes() {
-    }
-    
     private class CreateIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {
         
         private static final String UNDERLINE = "_";

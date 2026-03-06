@@ -50,8 +50,4 @@ public abstract class ShowTablesStatement extends ResourceQueryStatement {
     public Optional<String> getLikePattern() {
         return Optional.ofNullable(likePattern);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

@@ -38,8 +38,4 @@ public final class MySQLShowCreateEventStatement extends DALStatement {
         this.eventName = eventName;
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

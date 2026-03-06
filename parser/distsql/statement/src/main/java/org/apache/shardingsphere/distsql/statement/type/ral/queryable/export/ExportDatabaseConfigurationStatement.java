@@ -49,8 +49,4 @@ public final class ExportDatabaseConfigurationStatement extends QueryableRALStat
     public Optional<String> getFilePath() {
         return Optional.ofNullable(filePath);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

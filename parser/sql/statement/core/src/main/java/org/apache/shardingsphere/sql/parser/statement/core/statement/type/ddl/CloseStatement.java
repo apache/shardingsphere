@@ -41,8 +41,4 @@ public final class CloseStatement extends DDLStatement {
         this.closeAll = closeAll;
         attributes = new SQLStatementAttributes(new CursorSQLStatementAttribute(cursorName));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

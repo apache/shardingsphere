@@ -38,8 +38,4 @@ public final class MySQLShowCreateDatabaseStatement extends DALStatement {
         this.databaseName = databaseName;
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

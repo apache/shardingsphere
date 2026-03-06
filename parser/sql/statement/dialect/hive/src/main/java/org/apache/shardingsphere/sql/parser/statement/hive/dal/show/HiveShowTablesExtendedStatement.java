@@ -35,8 +35,4 @@ public final class HiveShowTablesExtendedStatement extends DALStatement {
         super(databaseType);
         attributes = new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute());
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

@@ -294,10 +294,6 @@ public final class AlterTableStatement extends DDLStatement {
         return Optional.ofNullable(dropPrimaryKeyDefinition);
     }
     
-    @Override
-    public void buildAttributes() {
-    }
-    
     private class AlterTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {
         
         @Override

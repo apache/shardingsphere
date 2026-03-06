@@ -39,8 +39,4 @@ public final class MySQLShowErrorsStatement extends DALStatement {
         this.limit = limit;
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

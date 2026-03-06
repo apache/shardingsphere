@@ -40,8 +40,4 @@ public class GrantStatement extends DCLStatement {
         this.tables = tables;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

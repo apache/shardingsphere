@@ -37,8 +37,4 @@ public abstract class ShowDatabaseRulesStatement extends RuleQueryStatement {
         this.fromDatabase = fromDatabase;
         attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

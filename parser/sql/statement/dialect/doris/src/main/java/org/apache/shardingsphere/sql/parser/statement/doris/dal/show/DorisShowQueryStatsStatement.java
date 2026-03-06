@@ -86,8 +86,4 @@ public final class DorisShowQueryStatsStatement extends DALStatement {
     public Optional<SimpleTableSegment> getTable() {
         return null == fromTable ? Optional.empty() : Optional.ofNullable(fromTable.getTable());
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

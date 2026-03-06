@@ -40,8 +40,4 @@ public final class MySQLLoadDataStatement extends DMLStatement {
         this.table = table;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table), new UnsupportedDistributeSQLStatementAttribute());
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

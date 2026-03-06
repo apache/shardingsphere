@@ -40,8 +40,4 @@ public final class UnsetVariableStatement extends DALStatement {
         this.variableName = variableName;
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

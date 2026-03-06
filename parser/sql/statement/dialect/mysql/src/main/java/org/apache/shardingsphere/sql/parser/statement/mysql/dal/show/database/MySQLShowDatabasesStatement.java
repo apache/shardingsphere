@@ -51,8 +51,4 @@ public final class MySQLShowDatabasesStatement extends DALStatement {
     public Optional<ShowFilterSegment> getFilter() {
         return Optional.ofNullable(filter);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

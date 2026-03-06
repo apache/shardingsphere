@@ -64,8 +64,4 @@ public final class CommentStatement extends DDLStatement {
     public Optional<IndexTypeSegment> getIndexType() {
         return Optional.ofNullable(indexType);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

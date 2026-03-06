@@ -44,8 +44,4 @@ public final class TruncateStatement extends DDLStatement {
         this.partitions = partitions;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

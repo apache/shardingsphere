@@ -44,8 +44,4 @@ public final class MySQLFlushStatement extends FlushStatement {
         this.flushTable = flushTable;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

@@ -38,8 +38,4 @@ public final class MySQLShowEngineStatement extends DALStatement {
         this.engineName = engineName;
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

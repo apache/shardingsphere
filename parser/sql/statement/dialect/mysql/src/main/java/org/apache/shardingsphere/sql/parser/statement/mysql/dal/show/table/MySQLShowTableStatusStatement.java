@@ -70,8 +70,4 @@ public final class MySQLShowTableStatusStatement extends DALStatement {
     public Optional<ShowFilterSegment> getFilter() {
         return Optional.ofNullable(filter);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

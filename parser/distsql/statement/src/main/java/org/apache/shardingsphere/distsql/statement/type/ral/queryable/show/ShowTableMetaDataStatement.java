@@ -42,8 +42,4 @@ public final class ShowTableMetaDataStatement extends QueryableRALStatement {
         this.fromDatabase = fromDatabase;
         attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }
