@@ -56,16 +56,14 @@ class ShardingDropIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWhenIndexExistForPostgreSQL() {
-        DropIndexStatement sqlStatement = DropIndexStatement.builder()
-                .databaseType(databaseType)
-                .indexes(Arrays.asList(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))),
-                        new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new")))))
-                .build();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(true);
+        DropIndexStatement sqlStatement = DropIndexStatement.builder().databaseType(databaseType)
+                .indexes(Arrays.asList(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))),
+                        new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))))).build();
         assertDoesNotThrow(() -> new ShardingDropIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
     

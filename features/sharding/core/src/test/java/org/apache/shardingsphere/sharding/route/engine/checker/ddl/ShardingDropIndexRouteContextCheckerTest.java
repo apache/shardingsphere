@@ -69,11 +69,6 @@ class ShardingDropIndexRouteContextCheckerTest {
     
     @Test
     void assertCheckWithSameRouteResultShardingTableIndexForPostgreSQL() {
-        DropIndexStatement sqlStatement = DropIndexStatement.builder()
-                .databaseType(databaseType)
-                .indexes(Arrays.asList(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))),
-                        new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new")))))
-                .build();
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("t_order");
         when(database.getSchema("public").getAllTables()).thenReturn(Collections.singleton(table));
@@ -85,17 +80,15 @@ class ShardingDropIndexRouteContextCheckerTest {
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         routeUnits.add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        DropIndexStatement sqlStatement = DropIndexStatement.builder().databaseType(databaseType)
+                .indexes(Arrays.asList(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))),
+                        new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))))).build();
         when(queryContext.getSqlStatementContext()).thenReturn(new CommonSQLStatementContext(sqlStatement));
         assertDoesNotThrow(() -> new ShardingDropIndexRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
     void assertCheckWithDifferentRouteResultShardingTableIndexForPostgreSQL() {
-        DropIndexStatement sqlStatement = DropIndexStatement.builder()
-                .databaseType(databaseType)
-                .indexes(Arrays.asList(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))),
-                        new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new")))))
-                .build();
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("t_order");
         when(database.getSchema("public").getAllTables()).thenReturn(Collections.singleton(table));
@@ -106,6 +99,9 @@ class ShardingDropIndexRouteContextCheckerTest {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.singletonList(new RouteMapper("t_order", "t_order_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
+        DropIndexStatement sqlStatement = DropIndexStatement.builder().databaseType(databaseType)
+                .indexes(Arrays.asList(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))),
+                        new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))))).build();
         when(queryContext.getSqlStatementContext()).thenReturn(new CommonSQLStatementContext(sqlStatement));
         assertThrows(ShardingDDLRouteException.class, () -> new ShardingDropIndexRouteContextChecker().check(shardingRule, queryContext, database, mock(ConfigurationProperties.class), routeContext));
     }
