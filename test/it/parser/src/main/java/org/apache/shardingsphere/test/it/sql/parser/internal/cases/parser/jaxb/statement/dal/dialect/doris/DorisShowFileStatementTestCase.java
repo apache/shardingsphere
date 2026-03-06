@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.encryptkey.ExpectedEncryptKeyName;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.database.ExpectedDatabase;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Drop encrypt key statement test case.
+ * Show file statement test case for Doris.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class DropEncryptKeyStatementTestCase extends SQLParserTestCase {
+public final class DorisShowFileStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "if-exists")
-    private boolean ifExists;
-    
-    @XmlElement(name = "key-name")
-    private ExpectedEncryptKeyName keyName;
+    @XmlElement(name = "database")
+    private ExpectedDatabase fromDatabase;
 }

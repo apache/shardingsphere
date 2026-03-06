@@ -220,6 +220,7 @@ identifierKeywordsUnambiguous
     | DYNAMIC
     | ENABLE
     | ENCRYPTION
+    | ENCRYPTKEYS
     | ENDS
     | ENFORCED
     | ENGINES

@@ -15,26 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.encryptkey.ExpectedEncryptKeyName;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.from.ExpectedFromDatabase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.like.ExpectedLikeClause;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Drop encrypt key statement test case.
+ * Show encrypt keys statement test case for Doris.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class DropEncryptKeyStatementTestCase extends SQLParserTestCase {
+public final class DorisShowEncryptKeysStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "if-exists")
-    private boolean ifExists;
+    @XmlElement(name = "database")
+    private ExpectedFromDatabase fromDatabase;
     
-    @XmlElement(name = "key-name")
-    private ExpectedEncryptKeyName keyName;
+    @XmlElement(name = "like")
+    private ExpectedLikeClause like;
 }

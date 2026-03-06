@@ -15,26 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
+package org.apache.shardingsphere.sql.parser.statement.doris.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.encryptkey.ExpectedEncryptKeyName;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
+import java.util.Optional;
 
 /**
- * Drop encrypt key statement test case.
+ * Show file statement for Doris.
  */
 @Getter
 @Setter
-public final class DropEncryptKeyStatementTestCase extends SQLParserTestCase {
+public final class DorisShowFileStatement extends DALStatement {
     
-    @XmlAttribute(name = "if-exists")
-    private boolean ifExists;
+    private DatabaseSegment fromDatabase;
     
-    @XmlElement(name = "key-name")
-    private ExpectedEncryptKeyName keyName;
+    public DorisShowFileStatement(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
+    /**
+     * Get from database segment.
+     *
+     * @return from database segment
+     */
+    public Optional<DatabaseSegment> getFromDatabase() {
+        return Optional.ofNullable(fromDatabase);
+    }
 }

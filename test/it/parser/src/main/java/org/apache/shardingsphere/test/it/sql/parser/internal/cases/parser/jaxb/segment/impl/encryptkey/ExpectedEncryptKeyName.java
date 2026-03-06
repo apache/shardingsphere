@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.encryptkey;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.encryptkey.ExpectedEncryptKeyName;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedOwner;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Drop encrypt key statement test case.
+ * Expected encrypt key name.
  */
 @Getter
 @Setter
-public final class DropEncryptKeyStatementTestCase extends SQLParserTestCase {
+public final class ExpectedEncryptKeyName extends AbstractExpectedSQLSegment {
     
-    @XmlAttribute(name = "if-exists")
-    private boolean ifExists;
+    @XmlAttribute
+    private String name;
     
-    @XmlElement(name = "key-name")
-    private ExpectedEncryptKeyName keyName;
+    @XmlElement
+    private ExpectedOwner owner;
 }
