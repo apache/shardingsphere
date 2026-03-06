@@ -157,16 +157,18 @@ class AlterShadowRuleExecutorTest {
         return Stream.of(
                 Arguments.of("duplicate rule name", new AlterShadowRuleStatement(
                         Arrays.asList(new ShadowRuleSegment("rule_name", null, null, null),
-                                new ShadowRuleSegment("rule_name", null, null, null))), Collections.emptyList(), DuplicateRuleException.class),
+                                new ShadowRuleSegment("rule_name", null, null, null))),
+                        Collections.emptyList(), DuplicateRuleException.class),
                 Arguments.of("rule not found", new AlterShadowRuleStatement(
                         Collections.singleton(new ShadowRuleSegment("missing_rule", null, null, null))), Collections.emptyList(), MissingRequiredRuleException.class),
                 Arguments.of("storage unit not found", new AlterShadowRuleStatement(
                         Collections.singleton(new ShadowRuleSegment("initRuleName1", "missing_storage_unit", null, null))), Collections.singletonList("missing_storage_unit"),
                         MissingRequiredStorageUnitsException.class),
                 Arguments.of("duplicate algorithm name", new AlterShadowRuleStatement(
-                        Arrays.asList(new ShadowRuleSegment("initRuleName1", "ds_0", null, 
-                                Collections.singletonMap("t_order", Collections.singleton(duplicatedAlgorithmSegment))), new ShadowRuleSegment("initRuleName2", "ds_1", null,
-                                Collections.singletonMap("t_order_1", Collections.singleton(duplicatedAlgorithmSegment))))),
+                        Arrays.asList(new ShadowRuleSegment("initRuleName1", "ds_0", null,
+                                Collections.singletonMap("t_order", Collections.singleton(duplicatedAlgorithmSegment))),
+                                new ShadowRuleSegment("initRuleName2", "ds_1", null,
+                                        Collections.singletonMap("t_order_1", Collections.singleton(duplicatedAlgorithmSegment))))),
                         Collections.emptyList(), InUsedAlgorithmException.class),
                 Arguments.of("invalid algorithm type", new AlterShadowRuleStatement(
                         Collections.singleton(new ShadowRuleSegment("initRuleName1", "ds_0", null, Collections.singletonMap("t_order", Collections.singleton(invalidTypeSegment))))),

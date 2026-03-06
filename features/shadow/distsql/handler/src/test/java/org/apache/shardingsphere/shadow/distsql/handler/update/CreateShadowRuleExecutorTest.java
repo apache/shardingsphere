@@ -134,24 +134,24 @@ class CreateShadowRuleExecutorTest {
         ShadowAlgorithmSegment duplicatedAlgorithmSegment = createShadowAlgorithmSegment("duplicated_algorithm", "SQL_HINT");
         return Stream.of(
                 Arguments.of("duplicate rule name", new CreateShadowRuleStatement(false,
-                                Arrays.asList(new ShadowRuleSegment("rule_name", null, null, null), new ShadowRuleSegment("rule_name", null, null, null))),
+                        Arrays.asList(new ShadowRuleSegment("rule_name", null, null, null), new ShadowRuleSegment("rule_name", null, null, null))),
                         createRule(createCurrentRuleConfiguration()), Collections.emptyList(), Collections.emptyList(), DuplicateRuleException.class),
                 Arguments.of("duplicate current rule", new CreateShadowRuleStatement(false,
-                                Collections.singleton(createShadowRuleSegment("initRuleName", "ds_0", "algorithm_name", "SQL_HINT", "t_order"))),
+                        Collections.singleton(createShadowRuleSegment("initRuleName", "ds_0", "algorithm_name", "SQL_HINT", "t_order"))),
                         createRule(createCurrentRuleConfiguration()), Collections.emptyList(), Collections.emptyList(), DuplicateRuleException.class),
-                Arguments.of("duplicate logic datasource", new CreateShadowRuleStatement(false, 
-                                Collections.singleton(createShadowRuleSegment("duplicate_ds", "ds_0", "algorithm_name", "SQL_HINT", "t_order"))),
+                Arguments.of("duplicate logic datasource", new CreateShadowRuleStatement(false,
+                        Collections.singleton(createShadowRuleSegment("duplicate_ds", "ds_0", "algorithm_name", "SQL_HINT", "t_order"))),
                         createRule(createCurrentRuleConfiguration()), Collections.emptyList(), Collections.singleton(duplicatedLogicDataSourceAttribute), InvalidRuleConfigurationException.class),
                 Arguments.of("missing storage unit", new CreateShadowRuleStatement(false,
-                                Collections.singleton(createShadowRuleSegment("rule_name", "missing_ds", "algorithm_name", "SQL_HINT", "t_order"))),
+                        Collections.singleton(createShadowRuleSegment("rule_name", "missing_ds", "algorithm_name", "SQL_HINT", "t_order"))),
                         createRule(createCurrentRuleConfiguration()), Collections.singleton("missing_ds"), Collections.emptyList(), MissingRequiredStorageUnitsException.class),
                 Arguments.of("duplicate algorithm", new CreateShadowRuleStatement(false,
-                                Arrays.asList(
-                                        new ShadowRuleSegment("rule_name_0", "ds_0", null, Collections.singletonMap("t_order", Collections.singleton(duplicatedAlgorithmSegment))),
-                                        new ShadowRuleSegment("rule_name_1", "ds_1", null, Collections.singletonMap("t_order_1", Collections.singleton(duplicatedAlgorithmSegment))))),
+                        Arrays.asList(
+                                new ShadowRuleSegment("rule_name_0", "ds_0", null, Collections.singletonMap("t_order", Collections.singleton(duplicatedAlgorithmSegment))),
+                                new ShadowRuleSegment("rule_name_1", "ds_1", null, Collections.singletonMap("t_order_1", Collections.singleton(duplicatedAlgorithmSegment))))),
                         createRule(createCurrentRuleConfiguration()), Collections.emptyList(), Collections.emptyList(), DuplicateRuleException.class),
                 Arguments.of("invalid algorithm type", new CreateShadowRuleStatement(false,
-                                Collections.singleton(createShadowRuleSegment("rule_name", "ds_0", "algorithm_name", "INVALID_TYPE", "t_order"))), 
+                        Collections.singleton(createShadowRuleSegment("rule_name", "ds_0", "algorithm_name", "INVALID_TYPE", "t_order"))),
                         createRule(createCurrentRuleConfiguration()), Collections.emptyList(), Collections.emptyList(), ServiceProviderNotFoundException.class));
     }
     
