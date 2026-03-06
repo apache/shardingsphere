@@ -63,7 +63,8 @@ class ShardingDropIndexSupportedCheckerTest {
         when(table.containsIndex("t_order_index_new")).thenReturn(true);
         DropIndexStatement sqlStatement = DropIndexStatement.builder().databaseType(databaseType)
                 .indexes(Arrays.asList(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))),
-                        new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))))).build();
+                        new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new")))))
+                .build();
         assertDoesNotThrow(() -> new ShardingDropIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
     
