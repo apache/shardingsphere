@@ -100,5 +100,5 @@ class QuoteCharacterTest {
                 Arguments.of("parentheses text", "(test)", "test"),
                 Arguments.of("unrecognized wrapper text", "{test}", "{test}"),
                 Arguments.of("unmatched back quote text", "`test'", "`test'"));
-    } 
+    }
 }
