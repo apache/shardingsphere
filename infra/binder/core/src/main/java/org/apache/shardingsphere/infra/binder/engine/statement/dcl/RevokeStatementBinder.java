@@ -54,10 +54,8 @@ public final class RevokeStatementBinder implements SQLStatementBinder<RevokeSta
         try {
             result = sqlStatement.getClass().getDeclaredConstructor(sqlStatement.getDatabaseType().getClass()).newInstance(sqlStatement.getDatabaseType());
         } catch (final ReflectiveOperationException ex) {
-            result = new RevokeStatement(sqlStatement.getDatabaseType());
+            result = new RevokeStatement(sqlStatement.getDatabaseType(), tables);
         }
-        result.getTables().clear();
-        result.getTables().addAll(tables);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
