@@ -137,7 +137,7 @@ jobs:
       - name: Build E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/sql -Pe2e.env.docker -DskipTests -Dspotless.apply.skip=true
       - name: Create Source Snapshot
-        run: git archive --format=tar.gz --output=/tmp/e2e-sql-source-snapshot.tar.gz HEAD
+        run: git archive --format=tar.gz --output=/tmp/e2e-sql-source-snapshot.tar.gz HEAD -- . ':(exclude)docs'
       - name: Upload Source Snapshot
         uses: actions/upload-artifact@v4
         with:
