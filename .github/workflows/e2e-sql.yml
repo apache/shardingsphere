@@ -67,7 +67,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ github.event_name == 'pull_request' && github.ref || github.sha }}
       - id: filter
         uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
         with:
@@ -131,7 +131,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ github.event_name == 'pull_request' && github.ref || github.sha }}
       - id: setup-build-environment
         uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
@@ -159,7 +159,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ github.event_name == 'pull_request' && github.ref || github.sha }}
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'
@@ -186,7 +186,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ github.event_name == 'pull_request' && github.ref || github.sha }}
       - name: Detect Remaining Matrix
         id: generate
         env:
@@ -220,7 +220,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.1
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ github.event_name == 'pull_request' && github.ref || github.sha }}
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'
