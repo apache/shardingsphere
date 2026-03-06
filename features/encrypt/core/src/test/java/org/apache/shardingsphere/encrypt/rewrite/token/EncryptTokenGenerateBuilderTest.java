@@ -63,7 +63,6 @@ class EncryptTokenGenerateBuilderTest {
         when(selectStatementContext.getGroupByContext().getItems()).thenReturn(Collections.emptyList());
         when(selectStatementContext.getWhereSegments()).thenReturn(Collections.emptyList());
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
-        selectStatement.buildAttributes();
         when(selectStatementContext.getSqlStatement()).thenReturn(selectStatement);
         SQLRewriteContext sqlRewriteContext = mock(SQLRewriteContext.class, RETURNS_DEEP_STUBS);
         EncryptCondition encryptCondition = mock(EncryptCondition.class);

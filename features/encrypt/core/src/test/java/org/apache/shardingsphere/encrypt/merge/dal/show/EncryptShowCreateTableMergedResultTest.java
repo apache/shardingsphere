@@ -187,7 +187,6 @@ class EncryptShowCreateTableMergedResultTest {
     
     private EncryptShowCreateTableMergedResult createMergedResult(final MergedResult mergedResult, final String tableName, final EncryptRule rule) {
         MySQLShowCreateTableStatement sqlStatement = new MySQLShowCreateTableStatement(databaseType, new SimpleTableSegment(new TableNameSegment(1, 4, new IdentifierValue(tableName))));
-        sqlStatement.buildAttributes();
         CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         RuleMetaData globalRuleMetaData = mock(RuleMetaData.class);
         when(globalRuleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(128, 1024L), new CacheOption(2000, 65535L))));

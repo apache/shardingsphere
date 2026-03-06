@@ -76,13 +76,12 @@ class DropReadwriteSplittingRuleExecutorTest {
     void assertCheckBeforeUpdateWithoutToBeDroppedRule() {
         when(database.getName()).thenReturn("test_db");
         setRule(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
-        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement()));
+        assertThrows(MissingRequiredRuleException.class, () -> executor.checkBeforeUpdate(new DropReadwriteSplittingRuleStatement(false, Collections.singleton("readwrite_ds"))));
     }
     
     @Test
     void assertCheckBeforeUpdateWithIfExists() {
         DropReadwriteSplittingRuleStatement sqlStatement = new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds"));
-        sqlStatement.buildAttributes();
         assertDoesNotThrow(() -> executor.checkBeforeUpdate(sqlStatement));
     }
     
@@ -95,7 +94,7 @@ class DropReadwriteSplittingRuleExecutorTest {
         when(mapperRule.getAttributes()).thenReturn(new RuleAttributes(dataSourceMapperRuleAttribute));
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(mapperRule));
         setRule(createCurrentRuleConfiguration());
-        assertThrows(InUsedRuleException.class, () -> executor.checkBeforeUpdate(createSQLStatement()));
+        assertThrows(InUsedRuleException.class, () -> executor.checkBeforeUpdate(new DropReadwriteSplittingRuleStatement(false, Collections.singleton("readwrite_ds"))));
     }
     
     @Test
@@ -116,13 +115,7 @@ class DropReadwriteSplittingRuleExecutorTest {
         when(singleRule.getAttributes()).thenReturn(new RuleAttributes());
         when(database.getRuleMetaData().getRules()).thenReturn(Arrays.asList(readwriteRule, mapperRule, plainRule, dataNodeRule, singleRule));
         setRule(createCurrentRuleConfiguration());
-        assertDoesNotThrow(() -> executor.checkBeforeUpdate(createSQLStatement()));
-    }
-    
-    private DropReadwriteSplittingRuleStatement createSQLStatement() {
-        DropReadwriteSplittingRuleStatement result = new DropReadwriteSplittingRuleStatement(false, Collections.singleton("readwrite_ds"));
-        result.buildAttributes();
-        return result;
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(new DropReadwriteSplittingRuleStatement(false, Collections.singleton("readwrite_ds"))));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -130,7 +123,7 @@ class DropReadwriteSplittingRuleExecutorTest {
     void assertBuildToBeDroppedRuleConfiguration(final String name,
                                                  final ReadwriteSplittingRuleConfiguration currentRuleConfig, final int expectedDataSourceGroupCount, final int expectedLoadBalancerCount) {
         setRule(currentRuleConfig);
-        ReadwriteSplittingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(createSQLStatement());
+        ReadwriteSplittingRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(new DropReadwriteSplittingRuleStatement(false, Collections.singleton("readwrite_ds")));
         assertThat(actual.getDataSourceGroups().size(), is(expectedDataSourceGroupCount));
         assertThat(actual.getLoadBalancers().size(), is(expectedLoadBalancerCount));
     }
@@ -140,9 +133,7 @@ class DropReadwriteSplittingRuleExecutorTest {
     void assertHasAnyOneToBeDropped(final String name, final Collection<String> toBeDroppedNames, final boolean expected) {
         setRule(createCurrentRuleConfiguration());
         DropReadwriteSplittingRuleStatement sqlStatement = new DropReadwriteSplittingRuleStatement(false, toBeDroppedNames);
-        sqlStatement.buildAttributes();
-        boolean actual = executor.hasAnyOneToBeDropped(sqlStatement);
-        assertThat(actual, is(expected));
+        assertThat(executor.hasAnyOneToBeDropped(sqlStatement), is(expected));
     }
     
     private void setRule(final ReadwriteSplittingRuleConfiguration ruleConfig) {

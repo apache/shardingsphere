@@ -159,9 +159,7 @@ class DropShadowRuleExecutorTest {
     }
     
     private static DropShadowRuleStatement createStatement(final boolean ifExists, final String... ruleNames) {
-        DropShadowRuleStatement result = new DropShadowRuleStatement(ifExists, Arrays.asList(ruleNames));
-        result.buildAttributes();
-        return result;
+        return new DropShadowRuleStatement(ifExists, Arrays.asList(ruleNames));
     }
     
     private static ShadowRule createRule(final ShadowRuleConfiguration ruleConfig) {

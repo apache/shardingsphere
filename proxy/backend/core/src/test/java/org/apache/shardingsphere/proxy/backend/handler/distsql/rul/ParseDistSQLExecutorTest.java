@@ -67,7 +67,6 @@ class ParseDistSQLExecutorTest {
         String sql = "SELECT * FROM t_order";
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ParseStatement parseStatement = new ParseStatement(sql);
-        parseStatement.buildAttributes();
         DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(parseStatement, mock(), connectionSession, contextManager);
         handler.execute();
         handler.next();
@@ -81,7 +80,6 @@ class ParseDistSQLExecutorTest {
         String sql = "SELECT * FROM t_order";
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         ParseStatement parseStatement = new ParseStatement(sql);
-        parseStatement.buildAttributes();
         DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(parseStatement, mock(), connectionSession, contextManager);
         handler.execute();
         handler.next();
@@ -94,7 +92,6 @@ class ParseDistSQLExecutorTest {
         String sql = "wrong sql";
         when(connectionSession.getProtocolType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ParseStatement parseStatement = new ParseStatement(sql);
-        parseStatement.buildAttributes();
         DistSQLQueryProxyBackendHandler handler = new DistSQLQueryProxyBackendHandler(parseStatement, mock(), connectionSession, contextManager);
         assertThrows(DialectSQLParsingException.class, handler::execute);
     }

@@ -53,8 +53,6 @@ public final class SQLStatementParserExecutor {
      * @return SQL statement
      */
     public SQLStatement parse(final String sql) {
-        SQLStatement result = visitorEngine.visit(parserEngine.parse(sql, false));
-        result.buildAttributes();
-        return result;
+        return visitorEngine.visit(parserEngine.parse(sql, false));
     }
 }

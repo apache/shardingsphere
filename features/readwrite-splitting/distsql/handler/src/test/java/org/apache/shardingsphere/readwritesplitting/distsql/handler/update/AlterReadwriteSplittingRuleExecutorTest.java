@@ -102,9 +102,7 @@ class AlterReadwriteSplittingRuleExecutorTest {
     
     private AlterReadwriteSplittingRuleStatement createSQLStatement(final Collection<String> readDataSources, final Properties props) {
         ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("readwrite_ds", "write_ds", readDataSources, new AlgorithmSegment("RANDOM", props));
-        AlterReadwriteSplittingRuleStatement result = new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment));
-        result.buildAttributes();
-        return result;
+        return new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment));
     }
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {

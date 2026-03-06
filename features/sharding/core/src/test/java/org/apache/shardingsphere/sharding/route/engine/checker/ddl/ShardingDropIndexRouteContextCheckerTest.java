@@ -74,7 +74,6 @@ class ShardingDropIndexRouteContextCheckerTest {
                 .indexes(Arrays.asList(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))),
                         new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new")))))
                 .build();
-        sqlStatement.buildAttributes();
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("t_order");
         when(database.getSchema("public").getAllTables()).thenReturn(Collections.singleton(table));
@@ -97,7 +96,6 @@ class ShardingDropIndexRouteContextCheckerTest {
                 .indexes(Arrays.asList(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))),
                         new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new")))))
                 .build();
-        sqlStatement.buildAttributes();
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("t_order");
         when(database.getSchema("public").getAllTables()).thenReturn(Collections.singleton(table));
