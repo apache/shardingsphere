@@ -16,10 +16,16 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <sql-case id="drop_encryptkey" value="DROP ENCRYPTKEY key_name" db-types="Doris" />
-    <sql-case id="drop_encryptkey_my_key" value="DROP ENCRYPTKEY my_key" db-types="Doris" />
-    <sql-case id="drop_encryptkey_if_exists" value="DROP ENCRYPTKEY IF EXISTS my_key" db-types="Doris" />
-    <sql-case id="drop_encryptkey_if_exists_with_database" value="DROP ENCRYPTKEY IF EXISTS testdb.my_key" db-types="Doris" />
-    <sql-case id="drop_encryptkey_with_database" value="DROP ENCRYPTKEY testdb.my_key" db-types="Doris" />
-</sql-cases>
+<sql-parser-test-cases>
+    <show-file sql-case-id="show_file_from_database">
+        <database name="example_db" start-index="15" stop-index="24" />
+    </show-file>
+
+    <show-file sql-case-id="show_file_in_database">
+        <database name="example_db" start-index="13" stop-index="22" />
+    </show-file>
+
+    <show-file sql-case-id="show_file_from_quoted_database">
+        <database name="example_db" start-index="15" stop-index="26" start-delimiter="`" end-delimiter="`" />
+    </show-file>
+</sql-parser-test-cases>

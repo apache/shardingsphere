@@ -223,6 +223,10 @@ public enum SQLVisitorRule {
     
     DROP_FILE("DropFile", SQLStatementType.DDL),
     
+    SHOW_FILE("ShowFile", SQLStatementType.DAL),
+    
+    SHOW_ENCRYPT_KEYS("ShowEncryptKeys", SQLStatementType.DAL),
+    
     CREATE_SEQUENCE("CreateSequence", SQLStatementType.DDL),
     
     ALTER_SEQUENCE("AlterSequence", SQLStatementType.DDL),

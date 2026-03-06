@@ -51,6 +51,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowProcStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowDataTypesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowDataStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowEncryptKeysStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowFileStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadTaskStatementTestCase;
@@ -583,6 +585,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "show-sync-job")
     private final List<DorisShowSyncJobStatementTestCase> dorisShowSyncJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-file")
+    private final List<DorisShowFileStatementTestCase> dorisShowFileTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-encryptkeys")
+    private final List<DorisShowEncryptKeysStatementTestCase> dorisShowEncryptKeysTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sync-job")
     private final List<DorisCreateSyncJobStatementTestCase> createSyncJobTestCases = new LinkedList<>();
