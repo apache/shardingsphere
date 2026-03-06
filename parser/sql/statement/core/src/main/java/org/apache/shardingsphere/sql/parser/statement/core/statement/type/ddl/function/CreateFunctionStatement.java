@@ -71,8 +71,4 @@ public class CreateFunctionStatement extends DDLStatement {
     public Optional<RoutineBodySegment> getRoutineBody() {
         return Optional.ofNullable(routineBody);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

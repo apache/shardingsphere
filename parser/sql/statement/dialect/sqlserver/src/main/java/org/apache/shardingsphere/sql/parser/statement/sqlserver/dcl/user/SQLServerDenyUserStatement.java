@@ -45,8 +45,4 @@ public final class SQLServerDenyUserStatement extends DCLStatement {
         this.columns = columns;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

@@ -53,8 +53,4 @@ public final class MoveStatement extends DDLStatement {
     public Optional<DirectionSegment> getDirection() {
         return Optional.ofNullable(direction);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

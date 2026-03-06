@@ -52,8 +52,4 @@ public final class RenameTableStatement extends DDLStatement {
         }
         return result;
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

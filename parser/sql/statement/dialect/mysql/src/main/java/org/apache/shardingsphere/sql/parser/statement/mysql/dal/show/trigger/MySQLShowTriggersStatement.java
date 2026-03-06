@@ -43,8 +43,4 @@ public final class MySQLShowTriggersStatement extends DALStatement {
         this.filter = filter;
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true, null == fromDatabase ? null : fromDatabase.getDatabase().getIdentifier().getValue()));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

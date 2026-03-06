@@ -44,8 +44,4 @@ public final class DropViewStatement extends DDLStatement {
         this.ifExists = ifExists;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(views));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

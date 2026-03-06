@@ -121,8 +121,4 @@ public final class DeleteStatement extends DMLStatement {
     public Optional<OutputSegment> getOutput() {
         return Optional.ofNullable(output);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

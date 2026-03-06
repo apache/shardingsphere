@@ -45,8 +45,4 @@ public final class MySQLShowCreateViewStatement extends DALStatement {
                     new ViewInResultSetSQLStatementAttribute(2, viewName.getTableName().getIdentifier().getValue()));
         }
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

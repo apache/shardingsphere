@@ -278,8 +278,4 @@ public final class InsertStatement extends DMLStatement {
     public Optional<FunctionSegment> getRowSetFunction() {
         return Optional.ofNullable(rowSetFunction);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

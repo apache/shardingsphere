@@ -41,8 +41,4 @@ public final class MySQLResetStatement extends DALStatement {
         this.options = options;
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

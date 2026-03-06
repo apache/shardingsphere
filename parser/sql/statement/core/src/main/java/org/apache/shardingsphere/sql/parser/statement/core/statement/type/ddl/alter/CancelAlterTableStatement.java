@@ -48,8 +48,4 @@ public final class CancelAlterTableStatement extends DDLStatement {
         this.jobIds = jobIds;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

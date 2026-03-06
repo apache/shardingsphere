@@ -35,8 +35,4 @@ public final class MySQLShowProfilesStatement extends DALStatement {
         super(databaseType);
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

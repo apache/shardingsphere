@@ -113,10 +113,6 @@ public final class CreateTableStatement extends DDLStatement {
         return Optional.ofNullable(createTableOption);
     }
     
-    @Override
-    public void buildAttributes() {
-    }
-    
     private Collection<SimpleTableSegment> getTables() {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         if (null != table) {

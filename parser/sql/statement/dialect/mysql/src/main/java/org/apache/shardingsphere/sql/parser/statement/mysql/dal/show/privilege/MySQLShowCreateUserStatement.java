@@ -38,8 +38,4 @@ public final class MySQLShowCreateUserStatement extends DALStatement {
         this.name = name;
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

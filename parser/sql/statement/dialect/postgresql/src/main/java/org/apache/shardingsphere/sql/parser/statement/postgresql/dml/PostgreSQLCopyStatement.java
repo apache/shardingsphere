@@ -72,8 +72,4 @@ public final class PostgreSQLCopyStatement extends DMLStatement {
     public Optional<PrepareStatementQuerySegment> getPrepareStatementQuery() {
         return Optional.ofNullable(prepareStatementQuery);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

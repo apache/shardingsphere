@@ -91,10 +91,6 @@ public final class DropIndexStatement extends DDLStatement {
         return Optional.ofNullable(lockTable);
     }
     
-    @Override
-    public void buildAttributes() {
-    }
-    
     private class DropIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {
         
         @Override

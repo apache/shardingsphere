@@ -42,8 +42,4 @@ public final class CursorStatement extends DDLStatement {
         this.select = select;
         attributes = new SQLStatementAttributes(new CursorSQLStatementAttribute(cursorName));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

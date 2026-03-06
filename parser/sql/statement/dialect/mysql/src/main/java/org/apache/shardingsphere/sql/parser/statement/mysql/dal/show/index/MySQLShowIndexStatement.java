@@ -55,8 +55,4 @@ public final class MySQLShowIndexStatement extends DALStatement {
     public Optional<FromDatabaseSegment> getFromDatabase() {
         return Optional.ofNullable(fromDatabase);
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }
