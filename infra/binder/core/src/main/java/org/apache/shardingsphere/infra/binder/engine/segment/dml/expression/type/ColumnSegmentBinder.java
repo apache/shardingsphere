@@ -158,23 +158,27 @@ public final class ColumnSegmentBinder {
                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
                                                           final SQLStatementBinderContext binderContext) {
         ColumnSegmentInfo result = getInputInfoFromTableBinderContexts(tableBinderContexts, segment, parentSegmentType);
-        if (!result.getInputColumnSegment().isPresent()) {
+        if (isNotFoundInputColumn(result, segment)) {
             ColumnSegment inputColumnSegment = findInputColumnSegmentFromOuterTable(segment, outerTableBinderContexts).orElse(null);
             result = new ColumnSegmentInfo(inputColumnSegment, null == inputColumnSegment ? TableSourceType.TEMPORARY_TABLE : inputColumnSegment.getColumnBoundInfo().getTableSourceType());
         }
-        if (!result.getInputColumnSegment().isPresent()) {
+        if (isNotFoundInputColumn(result, segment)) {
             ColumnSegment inputColumnSegment = findInputColumnSegmentFromExternalTables(segment, binderContext.getExternalTableBinderContexts()).orElse(null);
             result = new ColumnSegmentInfo(inputColumnSegment, null == inputColumnSegment ? TableSourceType.TEMPORARY_TABLE : inputColumnSegment.getColumnBoundInfo().getTableSourceType());
         }
-        if (!result.getInputColumnSegment().isPresent()) {
+        if (isNotFoundInputColumn(result, segment)) {
             result = new ColumnSegmentInfo(findInputColumnSegmentByVariables(segment, binderContext.getSqlStatement().getVariableNames()).orElse(null), TableSourceType.TEMPORARY_TABLE);
         }
-        if (!result.getInputColumnSegment().isPresent()) {
+        if (isNotFoundInputColumn(result, segment)) {
             result = new ColumnSegmentInfo(findInputColumnSegmentByPivotColumns(segment, binderContext.getPivotColumnNames()).orElse(null), TableSourceType.TEMPORARY_TABLE);
         }
         ShardingSpherePreconditions.checkState(result.getInputColumnSegment().isPresent() || isSkipColumnBind(tableBinderContexts, outerTableBinderContexts.values()),
                 () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         return result;
+    }
+    
+    private static boolean isNotFoundInputColumn(final ColumnSegmentInfo segmentInfo, final ColumnSegment segment) {
+        return !segmentInfo.getInputColumnSegment().isPresent() && !segment.getOwner().isPresent();
     }
     
     private static ColumnSegmentInfo getInputInfoFromTableBinderContexts(final Collection<TableSegmentBinderContext> tableBinderContexts,
