@@ -311,7 +311,7 @@ loadDataProperties
     ;
 
 loadDataProperty
-    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_? literals
+    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_ literals
     ;
 
 loadXmlStatement

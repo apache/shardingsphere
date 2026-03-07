@@ -34,6 +34,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -144,12 +145,14 @@ public final class DorisLoadDataStatementAssert {
     }
     
     private static void assertProperties(final SQLCaseAssertContext assertContext, final DorisLoadDataStatement actual, final DorisLoadDataStatementTestCase expected) {
-        if (actual.getProperties().isPresent() && !expected.getProperties().isEmpty()) {
-            assertNotNull(actual.getProperties().get(), assertContext.getText("Properties should not be null"));
+        if (!expected.getProperties().isEmpty()) {
+            assertNotNull(actual.getProperties().orElse(null), assertContext.getText("Actual properties should exist."));
             MatcherAssert.assertThat(assertContext.getText("Properties size does not match: "), actual.getProperties().get().getProperties().size(), CoreMatchers.is(expected.getProperties().size()));
             for (int i = 0; i < expected.getProperties().size(); i++) {
                 assertProperty(assertContext, actual.getProperties().get().getProperties().get(i), expected.getProperties().get(i));
             }
+        } else if (actual.getProperties().isPresent() && !actual.getProperties().get().getProperties().isEmpty()) {
+            assertFalse(expected.getProperties().isEmpty(), assertContext.getText("Expected properties should exist when actual has properties."));
         }
     }
     
