@@ -192,7 +192,7 @@ importStatement
     ;
 
 loadStatement
-    : loadDataStatement | loadXmlStatement
+    : dorisLoadDataStatement | loadXmlStatement
     ;
 
 createRoutineLoad
@@ -279,18 +279,39 @@ stopRoutineLoad
     : STOP ROUTINE LOAD FOR (owner DOT_)? jobName
     ;
 
-loadDataStatement
-    : LOAD DATA
-      (LOW_PRIORITY | CONCURRENT)? LOCAL? 
-      INFILE string_
-      (REPLACE | IGNORE)?
-      INTO TABLE tableName partitionNames?
-      (CHARACTER SET identifier)?
-      (COLUMNS selectFieldsInto+ )?
-      ( LINES selectLinesInto+ )?
-      ( IGNORE numberLiterals (LINES | ROWS) )?
+dorisLoadDataStatement
+    : LOAD DATA LOCAL? INFILE loadDataFileName=string_ INTO TABLE tableName
+      partitionNames?
+      loadDataColumnTerminator?
+      loadDataLineTerminator?
+      loadDataIgnoreLines?
       fieldOrVarSpec?
-      (setAssignmentsClause)?
+      loadDataSetClause?
+      loadDataProperties?
+    ;
+
+loadDataColumnTerminator
+    : COLUMNS TERMINATED BY string_
+    ;
+
+loadDataLineTerminator
+    : LINES TERMINATED BY string_
+    ;
+
+loadDataIgnoreLines
+    : IGNORE numberLiterals (LINES | ROWS)
+    ;
+
+loadDataSetClause
+    : SET LP_ assignment (COMMA_ assignment)* RP_
+    ;
+
+loadDataProperties
+    : PROPERTIES LP_ loadDataProperty (COMMA_ loadDataProperty)* RP_
+    ;
+
+loadDataProperty
+    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_? literals
     ;
 
 loadXmlStatement

@@ -61,6 +61,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.catalog.AlterCatalogStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisAlterRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisCreateRoutineLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisLoadDataStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisPauseRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisResumeRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.tcl.HiveAbortStatementTestCase;
@@ -1077,6 +1078,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "load-data")
     private final List<MySQLLoadDataStatementTestCase> loadDataTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-load-data")
+    private final List<DorisLoadDataStatementTestCase> dorisLoadDataTestCases = new LinkedList<>();
     
     @XmlElement(name = "load-xml")
     private final List<MySQLLoadXMLStatementTestCase> loadXmlTestCases = new LinkedList<>();
