@@ -83,7 +83,7 @@ class AlterMaskRuleExecutorTest {
     
     @Test
     void assertBuildToBeAlteredRuleConfiguration() {
-        AlterMaskRuleStatement sqlStatement = createAlterStatement(Collections.singleton(createRuleSegment("t_order", "order_id", "MD5")));
+        AlterMaskRuleStatement sqlStatement = new AlterMaskRuleStatement(Collections.singleton(createRuleSegment("t_order", "order_id", "MD5")));
         MaskRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         assertThat(actual.getTables().size(), is(1));
         MaskTableRuleConfiguration actualTable = actual.getTables().iterator().next();
@@ -116,18 +116,13 @@ class AlterMaskRuleExecutorTest {
     
     private static Stream<Arguments> checkBeforeUpdateArguments() {
         return Stream.of(
-                Arguments.of("all tables exist", createAlterStatement(Collections.singleton(createRuleSegment("t_order", "order_id", "MD5"))),
+                Arguments.of("all tables exist", new AlterMaskRuleStatement(Collections.singleton(createRuleSegment("t_order", "order_id", "MD5"))),
                         createCurrentRuleConfiguration(Collections.singleton("t_order")), null),
-                Arguments.of("single missing table", createAlterStatement(Collections.singleton(createRuleSegment("t_missing", "order_id", "MD5"))),
+                Arguments.of("single missing table", new AlterMaskRuleStatement(Collections.singleton(createRuleSegment("t_missing", "order_id", "MD5"))),
                         createCurrentRuleConfiguration(Collections.singleton("t_order")), MissingRequiredRuleException.class),
-                Arguments.of("one table exists and one missing", createAlterStatement(Arrays.asList(createRuleSegment("t_order", "order_id", "MD5"),
-                        createRuleSegment("t_missing", "user_id", "AES"))), createCurrentRuleConfiguration(Collections.singleton("t_order")), MissingRequiredRuleException.class));
-    }
-    
-    private static AlterMaskRuleStatement createAlterStatement(final Collection<MaskRuleSegment> rules) {
-        AlterMaskRuleStatement result = new AlterMaskRuleStatement(rules);
-        result.buildAttributes();
-        return result;
+                Arguments.of("one table exists and one missing",
+                        new AlterMaskRuleStatement(Arrays.asList(createRuleSegment("t_order", "order_id", "MD5"), createRuleSegment("t_missing", "user_id", "AES"))),
+                        createCurrentRuleConfiguration(Collections.singleton("t_order")), MissingRequiredRuleException.class));
     }
     
     private static MaskRuleSegment createRuleSegment(final String tableName, final String columnName, final String algorithmType) {

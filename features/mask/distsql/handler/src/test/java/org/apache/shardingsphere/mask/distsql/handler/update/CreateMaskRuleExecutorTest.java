@@ -89,9 +89,7 @@ class CreateMaskRuleExecutorTest {
         Collection<MaskRuleSegment> rules = new LinkedList<>();
         rules.add(tMaskRuleSegment);
         rules.add(tOrderRuleSegment);
-        CreateMaskRuleStatement result = new CreateMaskRuleStatement(ifNotExists, rules);
-        result.buildAttributes();
-        return result;
+        return new CreateMaskRuleStatement(ifNotExists, rules);
     }
     
     private CreateMaskRuleStatement createDuplicatedSQLStatement(final boolean ifNotExists, final String algorithmType) {
@@ -102,9 +100,7 @@ class CreateMaskRuleExecutorTest {
         Collection<MaskRuleSegment> rules = new LinkedList<>();
         rules.add(tMaskRuleSegment);
         rules.add(tOrderRuleSegment);
-        CreateMaskRuleStatement result = new CreateMaskRuleStatement(ifNotExists, rules);
-        result.buildAttributes();
-        return result;
+        return new CreateMaskRuleStatement(ifNotExists, rules);
     }
     
     private MaskRuleConfiguration getCurrentRuleConfiguration() {

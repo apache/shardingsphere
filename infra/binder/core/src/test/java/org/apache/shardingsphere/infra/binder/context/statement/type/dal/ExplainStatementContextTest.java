@@ -60,7 +60,6 @@ class ExplainStatementContextTest {
     @Test
     void assertNewInstance() {
         ExplainStatement explainStatement = new ExplainStatement(databaseType, explainableSQLStatement);
-        explainStatement.buildAttributes();
         ExplainStatementContext actual = new ExplainStatementContext(metaData, explainStatement, "foo_db");
         assertThat(actual.getSqlStatement(), is(explainStatement));
         assertThat(actual.getTablesContext().getSimpleTables(), is(Collections.emptyList()));
