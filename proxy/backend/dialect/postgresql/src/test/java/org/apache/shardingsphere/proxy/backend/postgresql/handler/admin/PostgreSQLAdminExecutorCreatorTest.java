@@ -119,7 +119,6 @@ class PostgreSQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithSetStatement() {
         SetStatement sqlStatement = new SetStatement(databaseType, Collections.emptyList());
-        sqlStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "SET client_encoding = utf8", "", Collections.emptyList());
         assertTrue(actual.isPresent());
@@ -129,7 +128,6 @@ class PostgreSQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithResetStatement() {
         PostgreSQLResetParameterStatement sqlStatement = new PostgreSQLResetParameterStatement(databaseType, "client_encoding");
-        sqlStatement.buildAttributes();
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext(sqlStatement), "RESET client_encoding", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(PostgreSQLResetVariableAdminExecutor.class));
@@ -138,7 +136,6 @@ class PostgreSQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithShowSQLStatement() {
         ShowStatement sqlStatement = new ShowStatement(databaseType, "client_encoding");
-        sqlStatement.buildAttributes();
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext(sqlStatement), "SHOW client_encoding", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(PostgreSQLShowVariableExecutor.class));

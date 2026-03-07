@@ -48,7 +48,6 @@ class CreateBroadcastTableRuleExecutorTest {
     @Test
     void assertExecuteUpdateWithEmptyStorageUnits() {
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("t_address"));
-        sqlStatement.buildAttributes();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.emptyMap());
         assertThrows(EmptyStorageUnitException.class, () -> new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(database, mock(BroadcastRule.class)), null).executeUpdate());
@@ -57,7 +56,6 @@ class CreateBroadcastTableRuleExecutorTest {
     @Test
     void assertExecuteUpdateWithDuplicateBroadcastTables() {
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("foo_tbl"));
-        sqlStatement.buildAttributes();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         BroadcastRule rule = mock(BroadcastRule.class);
         when(rule.getTables()).thenReturn(Collections.singleton("foo_tbl"));
@@ -67,7 +65,6 @@ class CreateBroadcastTableRuleExecutorTest {
     @Test
     void assertExecuteUpdateWithIfNotExists() throws SQLException {
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(true, new ArrayList<>(Arrays.asList("foo_tbl", "bar_tbl")));
-        sqlStatement.buildAttributes();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         BroadcastRule rule = mock(BroadcastRule.class);
         when(rule.getTables()).thenReturn(Collections.singleton("foo_tbl"));
@@ -81,7 +78,6 @@ class CreateBroadcastTableRuleExecutorTest {
     @Test
     void assertExecuteUpdateWithoutIfNotExists() throws SQLException {
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, Collections.singleton("bar_tbl"));
-        sqlStatement.buildAttributes();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         BroadcastRule rule = mock(BroadcastRule.class);
         when(rule.getTables()).thenReturn(Collections.singleton("foo_tbl"));
@@ -95,7 +91,6 @@ class CreateBroadcastTableRuleExecutorTest {
     @Test
     void assertExecuteUpdateWithoutExistedRule() throws SQLException {
         CreateBroadcastTableRuleStatement sqlStatement = new CreateBroadcastTableRuleStatement(false, new ArrayList<>(Arrays.asList("foo_tbl", "bar_tbl")));
-        sqlStatement.buildAttributes();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ContextManager contextManager = mockContextManager(database, null);
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();

@@ -78,7 +78,6 @@ class SQLRouteCountAdviceTest {
     }
     
     private static QueryContext createQueryContext(final SQLStatement sqlStatement) {
-        sqlStatement.buildAttributes();
         return new QueryContext(new CommonSQLStatementContext(sqlStatement), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
     }
     

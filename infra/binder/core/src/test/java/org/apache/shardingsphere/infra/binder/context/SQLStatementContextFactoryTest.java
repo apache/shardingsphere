@@ -62,7 +62,6 @@ class SQLStatementContextFactoryTest {
     void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSelectStatement() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).limit(new LimitSegment(0, 10, null, null)).projections(projectionsSegment).build();
-        selectStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(selectStatement);
         assertThat(sqlStatementContext, isA(SelectStatementContext.class));
     }
@@ -71,7 +70,6 @@ class SQLStatementContextFactoryTest {
     void assertSQLStatementContextCreatedWhenSQLStatementInstance() {
         InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl")))).build();
-        insertStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(insertStatement);
         assertThat(sqlStatementContext, isA(InsertStatementContext.class));
     }
@@ -79,7 +77,6 @@ class SQLStatementContextFactoryTest {
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
         AlterDatabaseStatement alterDatabaseStatement = new AlterDatabaseStatement(databaseType);
-        alterDatabaseStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(alterDatabaseStatement);
         assertThat(sqlStatementContext, isA(CommonSQLStatementContext.class));
     }
@@ -87,9 +84,7 @@ class SQLStatementContextFactoryTest {
     @Test
     void assertNewInstanceForCursorStatement() {
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
-        selectStatement.buildAttributes();
         CursorStatement cursorStatement = new CursorStatement(databaseType, null, selectStatement);
-        cursorStatement.buildAttributes();
         SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(cursorStatement);
         assertThat(actual, isA(CursorStatementContext.class));
     }
@@ -97,7 +92,6 @@ class SQLStatementContextFactoryTest {
     @Test
     void assertNewInstanceForCloseStatement() {
         CloseStatement closeStatement = new CloseStatement(databaseType, null, false);
-        closeStatement.buildAttributes();
         SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(closeStatement);
         assertThat(actual, isA(CursorHeldSQLStatementContext.class));
     }
@@ -105,7 +99,6 @@ class SQLStatementContextFactoryTest {
     @Test
     void assertNewInstanceForMoveStatement() {
         MoveStatement moveStatement = new MoveStatement(databaseType, null, null);
-        moveStatement.buildAttributes();
         SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(moveStatement);
         assertThat(actual, isA(CursorHeldSQLStatementContext.class));
     }
@@ -113,9 +106,7 @@ class SQLStatementContextFactoryTest {
     @Test
     void assertNewInstanceForFetchStatement() {
         FetchStatement fetchStatement = new FetchStatement(databaseType, null, null);
-        fetchStatement.buildAttributes();
-        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(fetchStatement);
-        assertThat(actual, isA(CursorHeldSQLStatementContext.class));
+        assertThat(new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(fetchStatement), isA(CursorHeldSQLStatementContext.class));
     }
     
     private ShardingSphereMetaData mockMetaData() {

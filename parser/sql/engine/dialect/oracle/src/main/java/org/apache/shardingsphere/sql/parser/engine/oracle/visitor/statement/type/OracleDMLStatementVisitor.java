@@ -374,7 +374,6 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         for (MultiTableElementContext each : ctx) {
             InsertStatement insertStatement = (InsertStatement) visit(each);
             addParameterMarkerSegments(addedSegments, insertStatement);
-            insertStatement.buildAttributes();
             result.add(insertStatement);
         }
         return result;

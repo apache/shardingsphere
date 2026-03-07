@@ -68,21 +68,11 @@ class FirebirdAdminExecutorCreatorTest {
     private static Stream<Arguments> createArguments() {
         return Stream.of(
                 Arguments.of("select statement returns empty", createSelectStatementContext(), "SELECT 1", null),
-                Arguments.of("set statement returns set executor", createSetStatementContext(), "SET NAMES utf8", FirebirdSetVariableAdminExecutor.class),
-                Arguments.of("show statement returns show executor", createShowStatementContext(), "SHOW server_version", FirebirdShowVariableExecutor.class),
-                Arguments.of("delete statement returns empty", createOtherStatementContext(), "DELETE FROM t WHERE id = 1", null));
-    }
-    
-    private static SQLStatementContext createSetStatementContext() {
-        SetStatement sqlStatement = new SetStatement(DATABASE_TYPE, Collections.emptyList());
-        sqlStatement.buildAttributes();
-        return new CommonSQLStatementContext(sqlStatement);
-    }
-    
-    private static SQLStatementContext createShowStatementContext() {
-        ShowStatement sqlStatement = new ShowStatement(DATABASE_TYPE, "server_version");
-        sqlStatement.buildAttributes();
-        return new CommonSQLStatementContext(sqlStatement);
+                Arguments.of("set statement returns set executor",
+                        new CommonSQLStatementContext(new SetStatement(DATABASE_TYPE, Collections.emptyList())), "SET NAMES utf8", FirebirdSetVariableAdminExecutor.class),
+                Arguments.of("show statement returns show executor",
+                        new CommonSQLStatementContext(new ShowStatement(DATABASE_TYPE, "server_version")), "SHOW server_version", FirebirdShowVariableExecutor.class),
+                Arguments.of("delete statement returns empty", new DeleteStatementContext(DeleteStatement.builder().databaseType(DATABASE_TYPE).build()), "DELETE FROM t WHERE id = 1", null));
     }
     
     private static SQLStatementContext createSelectStatementContext() {
@@ -91,7 +81,4 @@ class FirebirdAdminExecutorCreatorTest {
         return result;
     }
     
-    private static SQLStatementContext createOtherStatementContext() {
-        return new DeleteStatementContext(DeleteStatement.builder().databaseType(DATABASE_TYPE).build());
-    }
 }

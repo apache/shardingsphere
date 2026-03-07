@@ -69,10 +69,4 @@ public class SQLStatement implements ASTNode {
             uniqueParameterIndexes.add(each.getParameterIndex());
         }
     }
-    
-    /**
-     * Build SQL statement attributes.
-     */
-    public void buildAttributes() {
-    }
 }

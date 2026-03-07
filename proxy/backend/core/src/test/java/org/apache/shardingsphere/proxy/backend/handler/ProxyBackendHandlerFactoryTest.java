@@ -311,13 +311,9 @@ class ProxyBackendHandlerFactoryTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("newInstanceWithDistSQLInTransactionArguments")
-    void assertNewInstanceWithDistSQLInTransaction(final String caseName, final String sql, final boolean buildAttributes,
-                                                   final Optional<Class<? extends ProxyBackendHandler>> expectedHandlerType) throws SQLException {
+    void assertNewInstanceWithDistSQLInTransaction(final String caseName, final String sql, final Optional<Class<? extends ProxyBackendHandler>> expectedHandlerType) throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(sql, databaseType, connectionSession);
-        if (buildAttributes) {
-            sqlStatement.buildAttributes();
-        }
         if (expectedHandlerType.isPresent()) {
             ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, sqlStatement, connectionSession, new HintValueContext());
             assertThat(caseName, actual, isA(expectedHandlerType.get()));
@@ -369,10 +365,9 @@ class ProxyBackendHandlerFactoryTest {
     private static Stream<Arguments> newInstanceWithDistSQLInTransactionArguments() {
         return Stream.of(
                 Arguments.of("non-query DistSQL in transaction", "CREATE SHARDING TABLE RULE t_order (STORAGE_UNITS(ms_group_0,ms_group_1),"
-                        + " SHARDING_COLUMN=order_id, TYPE(NAME='hash_mod', PROPERTIES('sharding-count'='4')));", false,
-                        Optional.<Class<? extends ProxyBackendHandler>>empty()),
-                Arguments.of("queryable RAL in transaction", "SHOW DIST VARIABLES", false, Optional.of(DistSQLQueryProxyBackendHandler.class)),
-                Arguments.of("RQL in transaction", "SHOW DEFAULT SINGLE TABLE STORAGE UNIT", false, Optional.of(DistSQLQueryProxyBackendHandler.class)),
-                Arguments.of("RUL in transaction", "PREVIEW INSERT INTO account VALUES(1, 1, 1)", true, Optional.of(DistSQLQueryProxyBackendHandler.class)));
+                        + " SHARDING_COLUMN=order_id, TYPE(NAME='hash_mod', PROPERTIES('sharding-count'='4')));", Optional.empty()),
+                Arguments.of("queryable RAL in transaction", "SHOW DIST VARIABLES", Optional.of(DistSQLQueryProxyBackendHandler.class)),
+                Arguments.of("RQL in transaction", "SHOW DEFAULT SINGLE TABLE STORAGE UNIT", Optional.of(DistSQLQueryProxyBackendHandler.class)),
+                Arguments.of("RUL in transaction", "PREVIEW INSERT INTO account VALUES(1, 1, 1)", Optional.of(DistSQLQueryProxyBackendHandler.class)));
     }
 }
