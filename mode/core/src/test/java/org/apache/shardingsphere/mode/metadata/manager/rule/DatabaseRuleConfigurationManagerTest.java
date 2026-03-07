@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.metadata.manager.rule;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.DatabaseRuleConfigurationEmptyChecker;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -72,10 +71,8 @@ class DatabaseRuleConfigurationManagerTest {
         ShardingSphereRule nonClosableRule = mock(ShardingSphereRule.class);
         when(nonClosableRule.getConfiguration()).thenReturn(mock(RuleConfiguration.class, withSettings().extraInterfaces(Cloneable.class)));
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(Arrays.asList(closableRule, nonClosableRule)));
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
         ShardingSphereRule rebuiltRule = mock(ShardingSphereRule.class);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
@@ -93,10 +90,8 @@ class DatabaseRuleConfigurationManagerTest {
         DatabaseRuleConfiguration ruleConfig = mockDatabaseRuleConfiguration(false);
         ShardingSphereRule partialRule = mock(ShardingSphereRule.class, withSettings().extraInterfaces(PartialRuleUpdateSupported.class));
         when(partialRule.getConfiguration()).thenReturn(ruleConfig);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(partialRule)));
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(partialRule)));
         new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
         verify((PartialRuleUpdateSupported) partialRule).updateConfiguration(ruleConfig);
         verify(metaDataContexts, never()).update(any(MetaDataContexts.class));
@@ -107,11 +102,9 @@ class DatabaseRuleConfigurationManagerTest {
         DatabaseRuleConfiguration ruleConfig = mockDatabaseRuleConfiguration(true);
         ShardingSphereRule partialRule = mock(ShardingSphereRule.class, withSettings().extraInterfaces(PartialRuleUpdateSupported.class));
         when(partialRule.getConfiguration()).thenReturn(ruleConfig);
-        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(Collections.singleton(partialRule)));
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(partialRule));
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
@@ -129,11 +122,9 @@ class DatabaseRuleConfigurationManagerTest {
         when(partialRule.getConfiguration()).thenReturn(ruleConfig);
         PartialRuleUpdateSupported updater = (PartialRuleUpdateSupported) partialRule;
         when(updater.partialUpdate(ruleConfig)).thenReturn(true);
-        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(Collections.singleton(partialRule)));
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(partialRule));
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
@@ -149,10 +140,8 @@ class DatabaseRuleConfigurationManagerTest {
         ShardingSphereRule otherRule = mock(ShardingSphereRule.class);
         when(otherRule.getConfiguration()).thenReturn(mock(RuleConfiguration.class, withSettings().extraInterfaces(Cloneable.class)));
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(otherRule));
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
         ShardingSphereRule rebuiltRule = mock(ShardingSphereRule.class);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
@@ -169,10 +158,8 @@ class DatabaseRuleConfigurationManagerTest {
         ShardingSphereRule existingRule = mock(ShardingSphereRule.class);
         when(existingRule.getConfiguration()).thenReturn(ruleConfig);
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(existingRule));
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
         ShardingSphereRule rebuiltRule = mock(ShardingSphereRule.class);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
@@ -189,13 +176,11 @@ class DatabaseRuleConfigurationManagerTest {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getConfiguration()).thenReturn(ruleConfig);
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(rule));
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
-                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenThrow(new SQLException("failed")))) {
+                        (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenThrow(SQLException.class))) {
             assertThrows(SQLException.class, () -> new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig));
         }
     }
@@ -208,11 +193,9 @@ class DatabaseRuleConfigurationManagerTest {
         PartialRuleUpdateSupported updater = (PartialRuleUpdateSupported) closableRule;
         when(updater.partialUpdate(ruleConfig)).thenReturn(true);
         doThrow(Exception.class).when((AutoCloseable) closableRule).close();
-        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(Collections.singleton(closableRule)));
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(closableRule));
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {

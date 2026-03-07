@@ -224,7 +224,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getName()).thenReturn(statementId);
         String sql = "INSERT INTO public.t_small (col1, col2) VALUES (?, ?) RETURNING *, col1 + col2 expr_sum";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
-        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED));
+        List<PostgreSQLBinaryColumnType> parameterTypes = Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ShardingSphereTable table = new ShardingSphereTable("t_small",
@@ -456,7 +456,7 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLBinaryColumnType.INT4));
+        List<PostgreSQLBinaryColumnType> parameterTypes = Collections.singletonList(PostgreSQLBinaryColumnType.INT4);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         PostgreSQLServerPreparedStatement preparedStatement = mock(PostgreSQLServerPreparedStatement.class);
         when(preparedStatement.describeRows()).thenReturn(Optional.empty(), Optional.of(PostgreSQLNoDataPacket.getInstance()));
@@ -493,7 +493,7 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         prepareJDBCBackendConnectionWithParamTypes(sql, new int[]{Types.INTEGER, Types.SMALLINT}, new String[]{"int4", "int2"});
-        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED));
+        List<PostgreSQLBinaryColumnType> parameterTypes = Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

@@ -49,7 +49,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -136,7 +135,7 @@ class AlterShadowRuleExecutorTest {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         ruleConfig.getShadowAlgorithms().put("used_algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties()));
         ruleConfig.getShadowAlgorithms().put("unused_algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties()));
-        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("initRuleName1")), new ArrayList<>(Collections.singleton("used_algorithm"))));
+        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(Collections.singleton("initRuleName1"), Collections.singleton("used_algorithm")));
         ruleConfig.setDefaultShadowAlgorithmName("used_algorithm");
         executor.setRule(createRule(ruleConfig));
         ShadowRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(new ShadowRuleConfiguration());
