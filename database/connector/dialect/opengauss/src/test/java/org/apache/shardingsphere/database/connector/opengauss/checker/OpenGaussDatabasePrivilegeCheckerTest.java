@@ -80,7 +80,7 @@ class OpenGaussDatabasePrivilegeCheckerTest {
     
     @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
     private DataSource mockPipelineDataSource(final String username, final boolean hasUser,
-                                                     final String isSuperRole, final String isReplicationRole, final String isSystemAdminRole) throws SQLException {
+                                              final String isSuperRole, final String isReplicationRole, final String isSystemAdminRole) throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         when(result.getConnection().getMetaData().getUserName()).thenReturn(username);
         PreparedStatement preparedStatement = result.getConnection().prepareStatement("SELECT * FROM pg_roles WHERE rolname = ?");
