@@ -115,9 +115,8 @@ class CreateEncryptRuleExecutorTest {
                 new EncryptColumnItemSegment("user_cipher", new AlgorithmSegment("AES", PropertiesBuilder.build(new Property("aes-key-value", "abc"), new Property("digest-algorithm-name", "SHA-1")))),
                 new EncryptColumnItemSegment("assisted_column", null),
                 new EncryptColumnItemSegment("like_column", null));
-        Collection<EncryptRuleSegment> rules = new LinkedList<>();
-        rules.add(new EncryptRuleSegment("t_user", Collections.singleton(encryptColumnSegment)));
-        return new CreateEncryptRuleStatement(ifNotExists, rules);
+        EncryptRuleSegment encryptRuleSegment = new EncryptRuleSegment("t_user", Collections.singleton(encryptColumnSegment));
+        return new CreateEncryptRuleStatement(ifNotExists, new LinkedList<>(Collections.singleton(encryptRuleSegment)));
     }
     
     private CreateEncryptRuleStatement createSQLStatement(final boolean ifNotExists, final String encryptorName) {
@@ -129,12 +128,9 @@ class CreateEncryptRuleExecutorTest {
                 new EncryptColumnItemSegment("order_cipher", new AlgorithmSegment(encryptorName, new Properties())),
                 new EncryptColumnItemSegment("assisted_column", new AlgorithmSegment(encryptorName, new Properties())),
                 new EncryptColumnItemSegment("like_column", new AlgorithmSegment(encryptorName, new Properties())));
-        EncryptRuleSegment tUserRuleSegment = new EncryptRuleSegment("t_user", Collections.singleton(tUserColumnSegment));
-        EncryptRuleSegment tOrderRuleSegment = new EncryptRuleSegment("t_order", Collections.singleton(tOrderColumnSegment));
-        Collection<EncryptRuleSegment> rules = new LinkedList<>();
-        rules.add(tUserRuleSegment);
-        rules.add(tOrderRuleSegment);
-        return new CreateEncryptRuleStatement(ifNotExists, rules);
+        EncryptRuleSegment userRuleSegment = new EncryptRuleSegment("t_user", Collections.singleton(tUserColumnSegment));
+        EncryptRuleSegment orderRuleSegment = new EncryptRuleSegment("t_order", Collections.singleton(tOrderColumnSegment));
+        return new CreateEncryptRuleStatement(ifNotExists, Arrays.asList(userRuleSegment, orderRuleSegment));
     }
     
     private CreateEncryptRuleStatement createConflictColumnNameSQLStatement() {
