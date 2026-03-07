@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,7 +35,7 @@ class YamlProxyServerConfigurationTest {
     @Test
     void assertSetRulesIgnoresNull() {
         YamlProxyServerConfiguration actual = new YamlProxyServerConfiguration();
-        Collection<YamlRuleConfiguration> expectedRules = new LinkedList<>(Collections.singleton(mock(YamlRuleConfiguration.class)));
+        Collection<YamlRuleConfiguration> expectedRules = Collections.singleton(mock(YamlRuleConfiguration.class));
         actual.setRules(expectedRules);
         actual.setRules(null);
         assertThat(actual.getRules(), sameInstance(expectedRules));

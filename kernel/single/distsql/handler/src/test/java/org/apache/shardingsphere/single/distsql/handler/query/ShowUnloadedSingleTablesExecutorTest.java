@@ -165,17 +165,17 @@ class ShowUnloadedSingleTablesExecutorTest {
     
     private static Stream<Arguments> getRowsArguments() {
         Map<String, Collection<DataNode>> allLoadedActualDataNodes = new HashMap<>(
-                Collections.singletonMap("t_order", new LinkedList<>(Collections.singleton(new DataNode("ds_0", (String) null, "t_order")))));
+                Collections.singletonMap("t_order", Collections.singleton(new DataNode("ds_0", (String) null, "t_order"))));
         Map<String, Collection<DataNode>> allLoadedRuleDataNodes = new HashMap<>(
-                Collections.singletonMap("t_order", new LinkedList<>(Collections.singleton(new DataNode("ds_0", (String) null, "t_order")))));
+                Collections.singletonMap("t_order", Collections.singleton(new DataNode("ds_0", (String) null, "t_order"))));
         Map<String, Collection<DataNode>> partiallyLoadedActualDataNodes = new HashMap<>(
                 Collections.singletonMap("t_order", new LinkedList<>(Arrays.asList(new DataNode("ds_0", "public", "t_order"), new DataNode("ds_1", "public", "t_order")))));
         Map<String, Collection<DataNode>> partiallyLoadedRuleDataNodes = new HashMap<>(
-                Collections.singletonMap("t_order", new LinkedList<>(Collections.singleton(new DataNode("ds_0", "public", "t_order")))));
+                Collections.singletonMap("t_order", Collections.singleton(new DataNode("ds_0", "public", "t_order"))));
         Map<String, Collection<DataNode>> unmatchedActualDataNodes = new HashMap<>(
-                Collections.singletonMap("t_order_item", new LinkedList<>(Collections.singleton(new DataNode("ds_2", (String) null, "t_order_item")))));
+                Collections.singletonMap("t_order_item", Collections.singleton(new DataNode("ds_2", (String) null, "t_order_item"))));
         Map<String, Collection<DataNode>> unmatchedRuleDataNodes = new HashMap<>(
-                Collections.singletonMap("t_order", new LinkedList<>(Collections.singleton(new DataNode("ds_0", (String) null, "t_order")))));
+                Collections.singletonMap("t_order", Collections.singleton(new DataNode("ds_0", (String) null, "t_order"))));
         return Stream.of(
                 Arguments.of("all loaded tables are excluded", false, allLoadedActualDataNodes, allLoadedRuleDataNodes, Collections.<List<String>>emptyList()),
                 Arguments.of("partially loaded table keeps remaining nodes",

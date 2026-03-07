@@ -64,7 +64,7 @@ class SingleTableChangedProcessorTest {
     @Test
     void assertChangeRuleItemConfiguration() {
         SingleRuleConfiguration currentRuleConfig = new SingleRuleConfiguration(new LinkedList<>(Collections.singleton("foo_tbl")), null);
-        SingleRuleConfiguration toBeChangedItemConfig = new SingleRuleConfiguration(new LinkedList<>(Collections.singleton("bar_tbl")), null);
+        SingleRuleConfiguration toBeChangedItemConfig = new SingleRuleConfiguration(Collections.singleton("bar_tbl"), null);
         processor.changeRuleItemConfiguration(null, currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getTables(), is(Collections.singletonList("bar_tbl")));
     }

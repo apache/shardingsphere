@@ -73,7 +73,7 @@ class BroadcastRuleChangedProcessorTest {
     @Test
     void assertChangeRuleItemConfiguration() {
         BroadcastRuleConfiguration currentRuleConfig = new BroadcastRuleConfiguration(new LinkedList<>(Collections.singleton("foo_tbl")));
-        BroadcastRuleConfiguration toBeChangedItemConfig = new BroadcastRuleConfiguration(new LinkedList<>(Collections.singleton("bar_tbl")));
+        BroadcastRuleConfiguration toBeChangedItemConfig = new BroadcastRuleConfiguration(Collections.singleton("bar_tbl"));
         processor.changeRuleItemConfiguration("unused", currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getTables(), is(Collections.singletonList("bar_tbl")));
     }
