@@ -456,7 +456,7 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLBinaryColumnType.INT4));
+        List<PostgreSQLBinaryColumnType> parameterTypes = Collections.singletonList(PostgreSQLBinaryColumnType.INT4);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         PostgreSQLServerPreparedStatement preparedStatement = mock(PostgreSQLServerPreparedStatement.class);
         when(preparedStatement.describeRows()).thenReturn(Optional.empty(), Optional.of(PostgreSQLNoDataPacket.getInstance()));
