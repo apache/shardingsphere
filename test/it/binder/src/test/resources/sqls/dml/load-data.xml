@@ -17,5 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="load_data_into_table_with_schema_name" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE foo_db_1.t_order" db-types="MySQL,Doris" />
+    <sql-case id="load_data_into_table_with_schema_name" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE foo_db_1.t_order" db-types="MySQL" />
+    <sql-case id="doris_load_data_into_table_with_schema_name" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE foo_db_1.t_order" db-types="Doris" />
 </sql-cases>

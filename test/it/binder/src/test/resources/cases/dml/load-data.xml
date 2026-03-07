@@ -26,4 +26,9 @@
             </table-bound>
         </table>
     </load-data>
+    <doris-load-data sql-case-id="doris_load_data_into_table_with_schema_name" local="false">
+        <table name="t_order" start-index="45" stop-index="60">
+            <owner name="foo_db_1" start-index="45" stop-index="52"/>
+        </table>
+    </doris-load-data>
 </sql-parser-test-cases>
