@@ -41,6 +41,15 @@ public final class MySQLLoadDataStatementBinder implements SQLStatementBinder<My
     
     private MySQLLoadDataStatement copy(final MySQLLoadDataStatement sqlStatement, final SimpleTableSegment boundTableSegment) {
         MySQLLoadDataStatement result = new MySQLLoadDataStatement(sqlStatement.getDatabaseType(), boundTableSegment);
+        result.setLocal(sqlStatement.isLocal());
+        result.setFileName(sqlStatement.getFileName());
+        result.getPartitions().addAll(sqlStatement.getPartitions());
+        sqlStatement.getColumnSeparator().ifPresent(result::setColumnSeparator);
+        sqlStatement.getLineDelimiter().ifPresent(result::setLineDelimiter);
+        sqlStatement.getIgnoreLines().ifPresent(result::setIgnoreLines);
+        result.getColumnList().addAll(sqlStatement.getColumnList());
+        sqlStatement.getSetAssignments().ifPresent(result::setSetAssignments);
+        sqlStatement.getProperties().ifPresent(result::setProperties);
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

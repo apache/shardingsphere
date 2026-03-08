@@ -26,4 +26,30 @@
             </table-bound>
         </table>
     </load-data>
+    <load-data sql-case-id="doris_load_data_into_table_with_schema_name">
+        <table name="t_order" start-index="45" stop-index="60">
+            <owner name="foo_db_1" start-index="45" stop-index="52"/>
+            <table-bound>
+                <original-database name="foo_db_1"/>
+                <original-schema name="foo_db_1"/>
+            </table-bound>
+        </table>
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_fields_binder" local="true">
+        <file-name value="testData" start-index="23" stop-index="32" />
+        <table name="t_order" start-index="45" stop-index="60">
+            <owner name="foo_db_1" start-index="45" stop-index="52"/>
+            <table-bound>
+                <original-database name="foo_db_1"/>
+                <original-schema name="foo_db_1"/>
+            </table-bound>
+        </table>
+        <partition name="p1" start-index="73" stop-index="74" />
+        <column-separator value="," start-index="99" stop-index="101" />
+        <line-delimiter value="\n" start-index="123" stop-index="126" />
+        <ignore-lines number="2" unit="ROWS" start-index="128" stop-index="140" />
+        <column name="k1" start-index="143" stop-index="144" />
+        <column name="k2" start-index="147" stop-index="148" />
+        <property key="timeout" value="100" start-index="163" stop-index="177" />
+    </load-data>
 </sql-parser-test-cases>
