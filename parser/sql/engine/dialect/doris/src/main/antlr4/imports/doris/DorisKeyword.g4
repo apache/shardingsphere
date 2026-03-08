@@ -321,6 +321,10 @@ CLIENT
     : C L I E N T
     ;
 
+CLEAN
+    : C L E A N
+    ;
+
 CLONE
     : C L O N E
     ;
@@ -2996,6 +3000,10 @@ TO
 
 TRAILING
     : T R A I L I N G
+    ;
+
+TRASH
+    : T R A S H
     ;
 
 TRANSACTION

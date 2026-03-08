@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCleanTrashStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCopyTabletStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaVersionStatementTestCase;
@@ -50,6 +51,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisStopRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowProcStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowDataTypesStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowTrashStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowDataStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowEncryptKeysStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowFileStatementTestCase;
@@ -756,6 +758,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "doris-alter-system")
     private final List<DorisAlterSystemStatementTestCase> dorisAlterSystemTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "admin-clean-trash")
+    private final List<DorisAdminCleanTrashStatementTestCase> adminCleanTrashTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-trash")
+    private final List<DorisShowTrashStatementTestCase> showTrashTestCases = new LinkedList<>();
     
     @XmlElement(name = "admin-set-replica-status")
     private final List<DorisAdminSetReplicaStatusStatementTestCase> adminSetReplicaStatusTestCases = new LinkedList<>();

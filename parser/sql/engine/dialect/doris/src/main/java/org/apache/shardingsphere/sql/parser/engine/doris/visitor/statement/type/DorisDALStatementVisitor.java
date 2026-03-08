@@ -139,6 +139,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginP
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyKeyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCleanTrashContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaVersionContext;
@@ -152,6 +153,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowPro
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataTypesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowTrashContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowEncryptKeysContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterSqlBlockRuleContext;
@@ -215,6 +217,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Da
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NullLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCleanTrashStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaVersionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCopyTabletStatement;
@@ -234,6 +237,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowProcSta
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowDataTypesStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowTrashStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowEncryptKeysStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowFileStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBlockRuleStatement;
@@ -1213,6 +1217,15 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
+    public ASTNode visitAdminCleanTrash(final AdminCleanTrashContext ctx) {
+        DorisAdminCleanTrashStatement result = new DorisAdminCleanTrashStatement(getDatabaseType());
+        if (null != ctx.string_()) {
+            ctx.string_().forEach(each -> result.getBackends().add(SQLUtils.getExactlyValue(each.getText())));
+        }
+        return result;
+    }
+    
+    @Override
     public ASTNode visitDorisAlterSystem(final DorisAlterSystemContext ctx) {
         return visit(ctx.dorisAlterSystemAction());
     }
@@ -1491,6 +1504,15 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         DorisShowFileStatement result = new DorisShowFileStatement(getDatabaseType());
         if (null != ctx.fromDatabase()) {
             result.setFromDatabase(((FromDatabaseSegment) visit(ctx.fromDatabase())).getDatabase());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowTrash(final ShowTrashContext ctx) {
+        DorisShowTrashStatement result = new DorisShowTrashStatement(getDatabaseType());
+        if (null != ctx.string_()) {
+            ctx.string_().forEach(each -> result.getBackends().add(SQLUtils.getExactlyValue(each.getText())));
         }
         return result;
     }
