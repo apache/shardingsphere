@@ -69,10 +69,7 @@ class FirebirdBlobBinaryProtocolValueTest {
     
     @Test
     void assertRead() {
-        ByteBuf byteBuf = Unpooled.buffer();
-        byteBuf.writeInt(3);
-        byteBuf.writeBytes(new byte[]{65, 66, 67});
-        byteBuf.writeByte(0);
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(new byte[]{0, 0, 0, 3, 65, 66, 67, 0});
         FirebirdPacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
         assertThat(new FirebirdBlobBinaryProtocolValue().read(payload), is("ABC"));
     }
@@ -171,7 +168,7 @@ class FirebirdBlobBinaryProtocolValueTest {
     
     @Test
     void assertGetLength() {
-        ByteBuf byteBuf = Unpooled.buffer();
+        ByteBuf byteBuf = Unpooled.wrappedBuffer(new byte[0]);
         FirebirdPacketPayload payload = new FirebirdPacketPayload(byteBuf, StandardCharsets.UTF_8);
         assertThat(new FirebirdBlobBinaryProtocolValue().getLength(payload), is(8));
     }
