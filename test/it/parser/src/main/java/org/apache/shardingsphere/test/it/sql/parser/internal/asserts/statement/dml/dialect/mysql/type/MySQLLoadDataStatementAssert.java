@@ -65,9 +65,7 @@ public final class MySQLLoadDataStatementAssert {
     }
     
     private static void assertLocal(final SQLCaseAssertContext assertContext, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {
-        if (null != expected.getLocal()) {
-            MatcherAssert.assertThat(assertContext.getText("LOCAL flag does not match: "), actual.isLocal(), CoreMatchers.is(expected.getLocal()));
-        }
+        MatcherAssert.assertThat(assertContext.getText("LOCAL flag does not match: "), actual.isLocal(), CoreMatchers.is(null != expected.getLocal() && expected.getLocal()));
     }
     
     private static void assertFileName(final SQLCaseAssertContext assertContext, final MySQLLoadDataStatement actual, final MySQLLoadDataStatementTestCase expected) {

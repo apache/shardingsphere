@@ -82,7 +82,7 @@
     <load-data sql-case-id="load_data_hive_local_overwrite_partition_with_inputformat_serde">
         <table name="parquet_partitioned_table" start-index="225" stop-index="249" />
     </load-data>
-    <load-data sql-case-id="doris_load_data_into_table_from_server_file" local="false">
+    <load-data sql-case-id="doris_load_data_into_table_from_server_file">
         <file-name value="/temp/test.txt" start-index="17" stop-index="32" />
         <table name="t_order" start-index="45" stop-index="51" />
     </load-data>
@@ -90,7 +90,7 @@
         <file-name value="/temp/test.txt" start-index="23" stop-index="38" />
         <table name="t_order" start-index="51" stop-index="57" />
     </load-data>
-    <load-data sql-case-id="doris_load_data_into_table_with_schema_name" local="false">
+    <load-data sql-case-id="doris_load_data_into_table_with_schema_name">
         <file-name value="/temp/test.txt" start-index="17" stop-index="32" />
         <table name="t_order" start-index="45" stop-index="63">
             <owner name="sharding_db" start-index="45" stop-index="55" />
