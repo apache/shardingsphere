@@ -55,7 +55,7 @@ public final class OracleConnectionPropertiesParser implements ConnectionPropert
     }
     
     private ConnectionProperties getStandardConnectionProperties(final String username, final Matcher matcher) {
-        return new ConnectionProperties(matcher.group(2), Strings.isNullOrEmpty(matcher.group(3)) ? DEFAULT_PORT : Integer.parseInt(matcher.group(3)), matcher.group(4), username, new Properties());
+        return new ConnectionProperties(matcher.group(2), Integer.parseInt(matcher.group(3)), matcher.group(4), username, new Properties());
     }
     
     @Override
