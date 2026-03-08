@@ -36,8 +36,14 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ImportS
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IdentifierContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IndexHintContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.JobPropertyContext;
-import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadDataStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AssignmentContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadDataPropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadDataIgnoreLinesContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadDataSetClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisLoadDataStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadPropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.String_Context;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UserVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadXmlStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowClauseContext;
@@ -46,10 +52,15 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowI
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowingClauseContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.ColNameOrUserVarSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.IgnoreLinesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.LiteralValueSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnMappingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
@@ -72,9 +83,9 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisCreateRouti
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisPauseRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisResumeRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisStopRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLHandlerStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLImportStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 
 import java.util.Collection;
@@ -115,12 +126,59 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitLoadStatement(final LoadStatementContext ctx) {
-        return null == ctx.loadDataStatement() ? visit(ctx.loadXmlStatement()) : visit(ctx.loadDataStatement());
+        return null == ctx.dorisLoadDataStatement() ? visit(ctx.loadXmlStatement()) : visit(ctx.dorisLoadDataStatement());
     }
     
     @Override
-    public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
-        return new MySQLLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+    public ASTNode visitDorisLoadDataStatement(final DorisLoadDataStatementContext ctx) {
+        String_Context fileCtx = ctx.loadDataFileName;
+        LiteralValueSegment fileNameSeg = new LiteralValueSegment(fileCtx.start.getStartIndex(), fileCtx.stop.getStopIndex(), SQLUtils.getExactlyValue(fileCtx.getText()));
+        boolean local = null != ctx.LOCAL();
+        MySQLLoadDataStatement result = new MySQLLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+        result.setLocal(local);
+        result.setFileName(fileNameSeg);
+        if (null != ctx.partitionNames()) {
+            for (IdentifierContext each : ctx.partitionNames().identifier()) {
+                result.getPartitions().add(new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each)));
+            }
+        }
+        if (null != ctx.loadDataColumnTerminator()) {
+            String_Context s = ctx.loadDataColumnTerminator().string_();
+            result.setColumnSeparator(new LiteralValueSegment(s.start.getStartIndex(), s.stop.getStopIndex(), SQLUtils.getExactlyValue(s.getText())));
+        }
+        if (null != ctx.loadDataLineTerminator()) {
+            String_Context s = ctx.loadDataLineTerminator().string_();
+            result.setLineDelimiter(new LiteralValueSegment(s.start.getStartIndex(), s.stop.getStopIndex(), SQLUtils.getExactlyValue(s.getText())));
+        }
+        if (null != ctx.loadDataIgnoreLines()) {
+            LoadDataIgnoreLinesContext ignoreCtx = ctx.loadDataIgnoreLines();
+            long number = Long.parseLong(ignoreCtx.numberLiterals().getText().replaceAll("^[+]", ""));
+            String unit = null != ignoreCtx.LINES() ? "LINES" : "ROWS";
+            result.setIgnoreLines(new IgnoreLinesSegment(ignoreCtx.start.getStartIndex(), ignoreCtx.stop.getStopIndex(), number, unit));
+        }
+        if (null != ctx.fieldOrVarSpec() && null != ctx.fieldOrVarSpec().userVariable()) {
+            for (UserVariableContext uv : ctx.fieldOrVarSpec().userVariable()) {
+                result.getColumnList().add(new ColNameOrUserVarSegment(uv.start.getStartIndex(), uv.stop.getStopIndex(), new IdentifierValue(SQLUtils.getExactlyValue(uv.getText()))));
+            }
+        }
+        if (null != ctx.loadDataSetClause()) {
+            LoadDataSetClauseContext setCtx = ctx.loadDataSetClause();
+            Collection<ColumnAssignmentSegment> assignments = new LinkedList<>();
+            for (AssignmentContext each : setCtx.assignment()) {
+                assignments.add((ColumnAssignmentSegment) visit(each));
+            }
+            result.setSetAssignments(new SetAssignmentSegment(setCtx.start.getStartIndex(), setCtx.stop.getStopIndex(), assignments));
+        }
+        if (null != ctx.loadDataProperties()) {
+            PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.loadDataProperties().start.getStartIndex(), ctx.loadDataProperties().stop.getStopIndex());
+            for (LoadDataPropertyContext each : ctx.loadDataProperties().loadDataProperty()) {
+                String key = getPropertyKey(each.identifier(), each.SINGLE_QUOTED_TEXT(), each.DOUBLE_QUOTED_TEXT());
+                String value = SQLUtils.getExactlyValue(each.literals().getText());
+                propertiesSegment.getProperties().add(new PropertySegment(each.start.getStartIndex(), each.stop.getStopIndex(), key, value));
+            }
+            result.setProperties(propertiesSegment);
+        }
+        return result;
     }
     
     @Override

@@ -17,9 +17,20 @@
   -->
 
 <sql-cases>
-    <sql-case id="load_data_into_table_from_server_file" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE t_order" db-types="MySQL,Doris" />
-    <sql-case id="load_data_into_table_from_local_file" value="LOAD DATA LOCAL INFILE '/temp/test.txt' INTO TABLE t_order" db-types="MySQL,Doris" />
-    <sql-case id="load_data_into_table_with_schema_name" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE sharding_db.t_order" db-types="MySQL,Doris" />
+    <sql-case id="load_data_into_table_from_server_file" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE t_order" db-types="MySQL" />
+    <sql-case id="load_data_into_table_from_local_file" value="LOAD DATA LOCAL INFILE '/temp/test.txt' INTO TABLE t_order" db-types="MySQL" />
+    <sql-case id="load_data_into_table_with_schema_name" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE sharding_db.t_order" db-types="MySQL" />
+    <sql-case id="doris_load_data_into_table_from_server_file" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE t_order" db-types="Doris" />
+    <sql-case id="doris_load_data_into_table_from_local_file" value="LOAD DATA LOCAL INFILE '/temp/test.txt' INTO TABLE t_order" db-types="Doris" />
+    <sql-case id="doris_load_data_into_table_with_schema_name" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE sharding_db.t_order" db-types="Doris" />
+    <sql-case id="doris_load_data_with_properties" value="LOAD DATA LOCAL INFILE 'testData' INTO TABLE testDb.testTbl PROPERTIES (&quot;timeout&quot;=&quot;100&quot;)" db-types="Doris" />
+    <sql-case id="doris_load_data_with_column_list_and_properties" value="LOAD DATA LOCAL INFILE 'testData' INTO TABLE testDb.testTbl (k2, k1, v1) PROPERTIES (&quot;max_filter_ratio&quot;=&quot;0.2&quot;)" db-types="Doris" />
+    <sql-case id="doris_load_data_with_partition_and_properties" value="LOAD DATA LOCAL INFILE 'testData' INTO TABLE testDb.testTbl PARTITION (p1, p2) PROPERTIES (&quot;max_filter_ratio&quot;=&quot;0.2&quot;)" db-types="Doris" />
+    <sql-case id="doris_load_data_with_multiple_properties" value="LOAD DATA LOCAL INFILE 'testData' INTO TABLE testDb.testTbl PROPERTIES (&quot;strict_mode&quot;=&quot;true&quot;, &quot;timezone&quot;=&quot;Africa/Abidjan&quot;)" db-types="Doris" />
+    <sql-case id="doris_load_data_with_columns_and_lines" value="LOAD DATA LOCAL INFILE 'testData' INTO TABLE testDb.testTbl COLUMNS TERMINATED BY '0304' LINES TERMINATED BY '0102'" db-types="Doris" />
+    <sql-case id="doris_load_data_with_partition_and_ignore_lines" value="LOAD DATA LOCAL INFILE 'testData' INTO TABLE testDb.testTbl PARTITION (p1, p2) IGNORE 1 LINES" db-types="Doris" />
+    <sql-case id="doris_load_data_with_set_clause" value="LOAD DATA LOCAL INFILE 'testData' INTO TABLE testDb.testTbl (k1, k2, v1) SET (v2 = k1 + k2, v3 = DEFAULT)" db-types="Doris" />
+    <sql-case id="doris_load_data_all_clauses" value="LOAD DATA LOCAL INFILE 'testData' INTO TABLE testDb.testTbl PARTITION (p1) COLUMNS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 2 ROWS (k1, k2) SET (v1 = DEFAULT, v2 = k1 + k2) PROPERTIES (&quot;timeout&quot;=&quot;100&quot;)" db-types="Doris" />
     <sql-case id="load_data_into_table_with_lines_starting" value="LOAD DATA INFILE '/tmp/test.txt' INTO TABLE t_order FIELDS TERMINATED BY ','  LINES STARTING BY 'xxx'" db-types="MySQL" />
     <sql-case id="load_data_into_table_with_ignore_lines" value="LOAD DATA INFILE '/tmp/test.txt' INTO TABLE t_order IGNORE 1 LINES" db-types="MySQL" />
     <sql-case id="load_data_into_table_with_at_01" value="LOAD DATA INFILE 'file.txt' INTO TABLE t1 (column1, @var1) SET column2 = @var1/100;" db-types="MySQL"/>

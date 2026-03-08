@@ -17,5 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="load_data_into_table_with_schema_name" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE foo_db_1.t_order" db-types="MySQL,Doris" />
+    <sql-case id="load_data_into_table_with_schema_name" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE foo_db_1.t_order" db-types="MySQL" />
+    <sql-case id="doris_load_data_into_table_with_schema_name" value="LOAD DATA INFILE '/temp/test.txt' INTO TABLE foo_db_1.t_order" db-types="Doris" />
+    <sql-case id="doris_load_data_with_fields_binder" value="LOAD DATA LOCAL INFILE 'testData' INTO TABLE foo_db_1.t_order PARTITION (p1) COLUMNS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 2 ROWS (k1, k2) PROPERTIES (&quot;timeout&quot;=&quot;100&quot;)" db-types="Doris" />
 </sql-cases>
