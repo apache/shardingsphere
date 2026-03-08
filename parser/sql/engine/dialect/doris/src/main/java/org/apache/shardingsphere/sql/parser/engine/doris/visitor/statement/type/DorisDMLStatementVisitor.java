@@ -80,10 +80,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisAlterRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisCreateRoutineLoadStatement;
-import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisLoadDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisPauseRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisResumeRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisStopRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLHandlerStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLImportStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
@@ -134,7 +134,9 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
         String_Context fileCtx = ctx.loadDataFileName;
         LiteralValueSegment fileNameSeg = new LiteralValueSegment(fileCtx.start.getStartIndex(), fileCtx.stop.getStopIndex(), SQLUtils.getExactlyValue(fileCtx.getText()));
         boolean local = null != ctx.LOCAL();
-        DorisLoadDataStatement result = new DorisLoadDataStatement(getDatabaseType(), local, fileNameSeg, (SimpleTableSegment) visit(ctx.tableName()));
+        MySQLLoadDataStatement result = new MySQLLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+        result.setLocal(local);
+        result.setFileName(fileNameSeg);
         if (null != ctx.partitionNames()) {
             for (IdentifierContext each : ctx.partitionNames().identifier()) {
                 result.getPartitions().add(new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each)));

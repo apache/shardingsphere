@@ -82,28 +82,28 @@
     <load-data sql-case-id="load_data_hive_local_overwrite_partition_with_inputformat_serde">
         <table name="parquet_partitioned_table" start-index="225" stop-index="249" />
     </load-data>
-    <doris-load-data sql-case-id="doris_load_data_into_table_from_server_file" local="false">
+    <load-data sql-case-id="doris_load_data_into_table_from_server_file" local="false">
         <file-name value="/temp/test.txt" start-index="17" stop-index="32" />
         <table name="t_order" start-index="45" stop-index="51" />
-    </doris-load-data>
-    <doris-load-data sql-case-id="doris_load_data_into_table_from_local_file" local="true">
+    </load-data>
+    <load-data sql-case-id="doris_load_data_into_table_from_local_file" local="true">
         <file-name value="/temp/test.txt" start-index="23" stop-index="38" />
         <table name="t_order" start-index="51" stop-index="57" />
-    </doris-load-data>
-    <doris-load-data sql-case-id="doris_load_data_into_table_with_schema_name" local="false">
+    </load-data>
+    <load-data sql-case-id="doris_load_data_into_table_with_schema_name" local="false">
         <file-name value="/temp/test.txt" start-index="17" stop-index="32" />
         <table name="t_order" start-index="45" stop-index="63">
             <owner name="sharding_db" start-index="45" stop-index="55" />
         </table>
-    </doris-load-data>
-    <doris-load-data sql-case-id="doris_load_data_with_properties" local="true">
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_properties" local="true">
         <file-name value="testData" start-index="23" stop-index="32" />
         <table name="testTbl" start-index="45" stop-index="58">
             <owner name="testDb" start-index="45" stop-index="50" />
         </table>
         <property key="timeout" value="100" start-index="72" stop-index="86" />
-    </doris-load-data>
-    <doris-load-data sql-case-id="doris_load_data_with_column_list_and_properties" local="true">
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_column_list_and_properties" local="true">
         <file-name value="testData" start-index="23" stop-index="32" />
         <table name="testTbl" start-index="45" stop-index="58">
             <owner name="testDb" start-index="45" stop-index="50" />
@@ -112,8 +112,8 @@
         <column name="k1" start-index="65" stop-index="66" />
         <column name="v1" start-index="69" stop-index="70" />
         <property key="max_filter_ratio" value="0.2" start-index="85" stop-index="108" />
-    </doris-load-data>
-    <doris-load-data sql-case-id="doris_load_data_with_partition_and_properties" local="true">
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_partition_and_properties" local="true">
         <file-name value="testData" start-index="23" stop-index="32" />
         <table name="testTbl" start-index="45" stop-index="58">
             <owner name="testDb" start-index="45" stop-index="50" />
@@ -121,24 +121,24 @@
         <partition name="p1" start-index="71" stop-index="72" />
         <partition name="p2" start-index="75" stop-index="76" />
         <property key="max_filter_ratio" value="0.2" start-index="91" stop-index="114" />
-    </doris-load-data>
-    <doris-load-data sql-case-id="doris_load_data_with_multiple_properties" local="true">
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_multiple_properties" local="true">
         <file-name value="testData" start-index="23" stop-index="32" />
         <table name="testTbl" start-index="45" stop-index="58">
             <owner name="testDb" start-index="45" stop-index="50" />
         </table>
         <property key="strict_mode" value="true" start-index="72" stop-index="91" />
         <property key="timezone" value="Africa/Abidjan" start-index="94" stop-index="120" />
-    </doris-load-data>
-    <doris-load-data sql-case-id="doris_load_data_with_columns_and_lines" local="true">
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_columns_and_lines" local="true">
         <file-name value="testData" start-index="23" stop-index="32" />
         <table name="testTbl" start-index="45" stop-index="58">
             <owner name="testDb" start-index="45" stop-index="50" />
         </table>
         <column-separator value="0304" start-index="82" stop-index="87" />
         <line-delimiter value="0102" start-index="109" stop-index="114" />
-    </doris-load-data>
-    <doris-load-data sql-case-id="doris_load_data_with_partition_and_ignore_lines" local="true">
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_partition_and_ignore_lines" local="true">
         <file-name value="testData" start-index="23" stop-index="32" />
         <table name="testTbl" start-index="45" stop-index="58">
             <owner name="testDb" start-index="45" stop-index="50" />
@@ -146,8 +146,8 @@
         <partition name="p1" start-index="71" stop-index="72" />
         <partition name="p2" start-index="75" stop-index="76" />
         <ignore-lines number="1" unit="LINES" start-index="79" stop-index="92" />
-    </doris-load-data>
-    <doris-load-data sql-case-id="doris_load_data_with_set_clause" local="true">
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_set_clause" local="true">
         <file-name value="testData" start-index="23" stop-index="32" />
         <table name="testTbl" start-index="45" stop-index="58">
             <owner name="testDb" start-index="45" stop-index="50" />
@@ -177,8 +177,8 @@
                 </assignment-value>
             </assignment>
         </set-assignments>
-    </doris-load-data>
-    <doris-load-data sql-case-id="doris_load_data_all_clauses" local="true">
+    </load-data>
+    <load-data sql-case-id="doris_load_data_all_clauses" local="true">
         <file-name value="testData" start-index="23" stop-index="32" />
         <table name="testTbl" start-index="45" stop-index="58">
             <owner name="testDb" start-index="45" stop-index="50" />
@@ -212,5 +212,5 @@
             </assignment>
         </set-assignments>
         <property key="timeout" value="100" start-index="194" stop-index="208" />
-    </doris-load-data>
+    </load-data>
 </sql-parser-test-cases>
