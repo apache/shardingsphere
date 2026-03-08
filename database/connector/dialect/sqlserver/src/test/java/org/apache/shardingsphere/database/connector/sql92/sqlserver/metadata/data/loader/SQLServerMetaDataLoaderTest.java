@@ -94,9 +94,9 @@ class SQLServerMetaDataLoaderTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadArguments")
     void assertLoad(final String name, final String tableMetaDataSQL, final int majorVersion, final boolean includeCompositeIndex,
-                    final boolean expectedSecondColumnVisible, final Collection<String> expectedIndexColumns) throws SQLException {
+                    final String secondColumnCollationName, final boolean expectedSecondColumnVisible, final Collection<String> expectedIndexColumns) throws SQLException {
         DataSource dataSource = mockDataSource();
-        ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet();
+        ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet(secondColumnCollationName);
         when(dataSource.getConnection().prepareStatement(tableMetaDataSQL).executeQuery()).thenReturn(tableMetaDataResultSet);
         ResultSet indexMetaDataResultSet = includeCompositeIndex ? mockCompositeIndexMetaDataResultSet() : mockSimpleIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(LOAD_INDEX_META_DATA).executeQuery()).thenReturn(indexMetaDataResultSet);
@@ -107,6 +107,7 @@ class SQLServerMetaDataLoaderTest {
         assertTableMetaData(actual, expectedSecondColumnVisible, expectedIndexColumns);
     }
     
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
     private DataSource mockDataSource() throws SQLException {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet typeInfoResultSet = mockTypeInfoResultSet();
@@ -122,7 +123,7 @@ class SQLServerMetaDataLoaderTest {
         return result;
     }
     
-    private ResultSet mockTableMetaDataResultSet() throws SQLException {
+    private ResultSet mockTableMetaDataResultSet(final String secondColumnCollationName) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
@@ -131,7 +132,7 @@ class SQLServerMetaDataLoaderTest {
         when(result.getString("IS_PRIMARY_KEY")).thenReturn("1", "");
         when(result.getString("IS_IDENTITY")).thenReturn("1", "");
         when(result.getString("IS_HIDDEN")).thenReturn("0", "1");
-        when(result.getString("COLLATION_NAME")).thenReturn("SQL_Latin1_General_CP1_CS_AS", (String) null);
+        when(result.getString("COLLATION_NAME")).thenReturn("SQL_Latin1_General_CP1_CS_AS", secondColumnCollationName);
         when(result.getString("IS_NULLABLE")).thenReturn("0", "1");
         return result;
     }
@@ -192,8 +193,9 @@ class SQLServerMetaDataLoaderTest {
     
     private static Stream<Arguments> loadArguments() {
         return Stream.of(
-                Arguments.of("load with hidden column on high version", LOAD_COLUMN_META_DATA_WITH_TABLES_HIGH_VERSION, 15, false, false, Collections.singletonList("id")),
-                Arguments.of("load with hidden column ignored on low version", LOAD_COLUMN_META_DATA_WITH_TABLES_LOW_VERSION, 14, false, true, Collections.singletonList("id")),
-                Arguments.of("load with composite index", LOAD_COLUMN_META_DATA_WITH_TABLES_HIGH_VERSION, 15, true, false, Arrays.asList("id", "name")));
+                Arguments.of("load with hidden column on high version", LOAD_COLUMN_META_DATA_WITH_TABLES_HIGH_VERSION, 15, false, null, false, Collections.singletonList("id")),
+                Arguments.of("load with hidden column ignored on low version", LOAD_COLUMN_META_DATA_WITH_TABLES_LOW_VERSION, 14, false, null, true, Collections.singletonList("id")),
+                Arguments.of("load with case-insensitive collation", LOAD_COLUMN_META_DATA_WITH_TABLES_LOW_VERSION, 14, false, "SQL_Latin1_General_CP1_CI_AS", true, Collections.singletonList("id")),
+                Arguments.of("load with composite index", LOAD_COLUMN_META_DATA_WITH_TABLES_HIGH_VERSION, 15, true, null, false, Arrays.asList("id", "name")));
     }
 }
