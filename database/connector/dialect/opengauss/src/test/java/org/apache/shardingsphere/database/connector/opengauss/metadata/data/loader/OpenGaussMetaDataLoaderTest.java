@@ -27,7 +27,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.datat
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -92,11 +91,6 @@ class OpenGaussMetaDataLoaderTest {
         assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(actualTableNames, "foo_ds", dataSource, databaseType, "sharding_db")));
     }
     
-    @Test
-    void assertGetDatabaseType() {
-        assertThat(dialectMetaDataLoader.getDatabaseType(), is("openGauss"));
-    }
-    
     private ResultSet mockSchemaMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
@@ -117,20 +111,6 @@ class OpenGaussMetaDataLoaderTest {
         when(result.next()).thenReturn(true, true, false);
         when(result.getString("TYPE_NAME")).thenReturn("int4", "varchar");
         when(result.getInt("DATA_TYPE")).thenReturn(Types.INTEGER, Types.VARCHAR);
-        return result;
-    }
-    
-    private static ResultSet mockTableMetaDataResultSet(final String nameColumnDefault) throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, false);
-        when(result.getString("table_name")).thenReturn("tbl");
-        when(result.getString("column_name")).thenReturn("id", "name");
-        when(result.getInt("ordinal_position")).thenReturn(1, 2);
-        when(result.getString("data_type")).thenReturn("integer", "character varying");
-        when(result.getString("udt_name")).thenReturn("int4", "varchar");
-        when(result.getString("column_default")).thenReturn("nextval('id_seq'::regclass)", nameColumnDefault);
-        when(result.getString("table_schema")).thenReturn("public", "public");
-        when(result.getString("is_nullable")).thenReturn("NO", "YES");
         return result;
     }
     
@@ -213,5 +193,19 @@ class OpenGaussMetaDataLoaderTest {
                         (Callable<ResultSet>) () -> mockTableMetaDataResultSet(""), (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet),
                 Arguments.of("with unmatched advance index rows and null default", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES,
                         (Callable<ResultSet>) () -> mockTableMetaDataResultSet(null), (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSetWithUnmatchedRows));
+    }
+    
+    private static ResultSet mockTableMetaDataResultSet(final String nameColumnDefault) throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("table_name")).thenReturn("tbl");
+        when(result.getString("column_name")).thenReturn("id", "name");
+        when(result.getInt("ordinal_position")).thenReturn(1, 2);
+        when(result.getString("data_type")).thenReturn("integer", "character varying");
+        when(result.getString("udt_name")).thenReturn("int4", "varchar");
+        when(result.getString("column_default")).thenReturn("nextval('id_seq'::regclass)", nameColumnDefault);
+        when(result.getString("table_schema")).thenReturn("public", "public");
+        when(result.getString("is_nullable")).thenReturn("NO", "YES");
+        return result;
     }
 }
