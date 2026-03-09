@@ -20,22 +20,11 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
-import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Collections;
 
 /**
  * Parameter type resolver for PostgreSQL prepared statements.
@@ -54,7 +43,7 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         if (!hasUnspecifiedParameterTypes(preparedStatement)) {
             return;
         }
-        try (PreparedStatement actualPreparedStatement = createActualPreparedStatement(connectionSession, preparedStatement)) {
+        try (PreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementMetadataLoader.load(connectionSession, preparedStatement)) {
             resolveParameterTypes(preparedStatement, actualPreparedStatement);
         }
     }
@@ -81,18 +70,5 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
     private static boolean hasUnspecifiedParameterTypes(final PostgreSQLServerPreparedStatement preparedStatement) {
         return 0 != preparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount()
                 && preparedStatement.getParameterTypes().stream().anyMatch(each -> PostgreSQLBinaryColumnType.UNSPECIFIED == each);
-    }
-    
-    private static PreparedStatement createActualPreparedStatement(final ConnectionSession connectionSession, final PostgreSQLServerPreparedStatement preparedStatement) throws SQLException {
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connectionSession.getCurrentDatabaseName(), preparedStatement.getHintValueContext())
-                .bind(preparedStatement.getSqlStatementContext().getSqlStatement());
-        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), Collections.emptyList(), preparedStatement.getHintValueContext(),
-                connectionSession.getConnectionContext(), metaData);
-        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps());
-        ExecutionUnit executionUnit = executionContext.getExecutionUnits().iterator().next();
-        ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
-        return databaseConnectionManager.getConnections(connectionSession.getUsedDatabaseName(), executionUnit.getDataSourceName(), 0, 1, ConnectionMode.CONNECTION_STRICTLY)
-                .iterator().next().prepareStatement(executionUnit.getSqlUnit().getSql());
     }
 }
