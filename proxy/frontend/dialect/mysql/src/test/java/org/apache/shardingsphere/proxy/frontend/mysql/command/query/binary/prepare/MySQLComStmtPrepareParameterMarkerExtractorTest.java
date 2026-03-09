@@ -19,17 +19,15 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.core.exception.syntax.column.ColumnNotFoundException;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -81,6 +79,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class MySQLComStmtPrepareParameterMarkerExtractorTest {
     
@@ -116,30 +115,33 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
     @Test
     void assertResolveColumnsForParameterMarkersWithNoSpecialStatementContext() {
         SQLStatement sqlStatement = new SQLStatement(databaseType);
-        sqlStatement.addParameterMarkers(Collections.singleton(createParameterMarkerExpressionSegment(0)));
+        sqlStatement.addParameterMarkers(Collections.singleton(new ParameterMarkerExpressionSegment(0, 0, 0)));
         assertThat(MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(new CommonSQLStatementContext(sqlStatement), schema), is(Collections.singletonList(null)));
     }
     
     @Test
     void assertResolveColumnsForParameterMarkersWithInsertWithoutTable() {
-        InsertStatementContext sqlStatementContext = createInsertStatementContext(null, Collections.singletonList(createColumnSegment("id")),
-                Collections.singletonList(createParameterMarkerExpressionSegment(0)), Collections.emptyList());
+        InsertStatementContext sqlStatementContext = createInsertStatementContext(null, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id"))),
+                Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)), Collections.emptyList());
         assertThat(MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, schema), is(Collections.singletonList(null)));
     }
     
     @Test
     void assertResolveColumnsForParameterMarkersWithMissingTable() {
-        InsertStatementContext sqlStatementContext = createInsertStatementContext(createSimpleTableSegment("unknown_user"), Collections.singletonList(createColumnSegment("id")),
-                Collections.singletonList(createParameterMarkerExpressionSegment(0)), Collections.emptyList());
+        InsertStatementContext sqlStatementContext = createInsertStatementContext(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("unknown_user"))),
+                Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id"))),
+                Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)), Collections.emptyList());
         List<ShardingSphereColumn> actualColumns = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, schema);
         assertThat(actualColumns, is(Collections.singletonList(null)));
     }
     
     @Test
     void assertResolveColumnsForParameterMarkersWithOnDuplicateKeyUpdate() {
-        ColumnAssignmentSegment columnAssignmentSegment = createColumnAssignmentSegment(createColumnSegment("name"), createParameterMarkerExpressionSegment(1));
-        InsertStatementContext sqlStatementContext = createInsertStatementContext(createSimpleTableSegment("user"), Collections.singletonList(createColumnSegment("id")),
-                Collections.singletonList(createParameterMarkerExpressionSegment(0)), Collections.singletonList(columnAssignmentSegment));
+        final ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
+        ColumnAssignmentSegment columnAssignmentSegment = new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new ParameterMarkerExpressionSegment(0, 0, 1));
+        InsertStatementContext sqlStatementContext = createInsertStatementContext(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))),
+                Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("id"))),
+                Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)), Collections.singletonList(columnAssignmentSegment));
         List<ShardingSphereColumn> actualColumns = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, schema);
         List<ShardingSphereColumn> expectedColumns = createExpectedColumns(schema, Arrays.asList("id", "name"));
         assertThat(actualColumns, is(expectedColumns));
@@ -147,9 +149,9 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
     
     @Test
     void assertResolveColumnsForParameterMarkersWithExtraInsertValue() {
-        List<ExpressionSegment> values = Arrays.asList(createParameterMarkerExpressionSegment(0), createParameterMarkerExpressionSegment(1), createParameterMarkerExpressionSegment(2));
-        InsertStatementContext sqlStatementContext = createInsertStatementContext(createSimpleTableSegment("user"),
-                Arrays.asList(createColumnSegment("id"), createColumnSegment("name")), values, Collections.emptyList());
+        List<ExpressionSegment> values = Arrays.asList(new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 2));
+        InsertStatementContext sqlStatementContext = createInsertStatementContext(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))),
+                Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name"))), values, Collections.emptyList());
         List<ShardingSphereColumn> actualColumns = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, schema);
         List<ShardingSphereColumn> expectedColumns = createExpectedColumns(schema, Arrays.asList("id", "name", null));
         assertThat(actualColumns, is(expectedColumns));
@@ -157,18 +159,19 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
     
     @Test
     void assertResolveColumnsForParameterMarkersWithMissingInsertColumn() {
-        InsertStatementContext sqlStatementContext = createInsertStatementContext(createSimpleTableSegment("user"), Collections.singletonList(createColumnSegment("missing_column")),
-                Collections.singletonList(createParameterMarkerExpressionSegment(0)), Collections.emptyList());
+        InsertStatementContext sqlStatementContext = createInsertStatementContext(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))),
+                Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("missing_column"))),
+                Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)), Collections.emptyList());
         assertThrows(ColumnNotFoundException.class, () -> MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, schema));
     }
     
     @Test
     void assertResolveColumnsForParameterMarkersWithOwnerFallback() {
-        ColumnSegment columnSegment = createColumnSegment("name");
-        columnSegment.setOwner(createOwnerSegment("user"));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
+        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("user")));
         columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(null, null, null, TableSourceType.PHYSICAL_TABLE));
-        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(createSimpleTableSegment("user"),
-                Collections.singletonList(createColumnAssignmentSegment(columnSegment, createParameterMarkerExpressionSegment(0))), null);
+        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))),
+                Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new ParameterMarkerExpressionSegment(0, 0, 0))), null);
         List<ShardingSphereColumn> actualColumns = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, schema);
         List<ShardingSphereColumn> expectedColumns = createExpectedColumns(schema, Collections.singletonList("name"));
         assertThat(actualColumns, is(expectedColumns));
@@ -176,10 +179,10 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
     
     @Test
     void assertResolveColumnsForParameterMarkersWithSingleTableFallback() {
-        ColumnSegment columnSegment = createColumnSegment("age");
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("age"));
         columnSegment.setColumnBoundInfo(null);
-        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(createSimpleTableSegment("user"),
-                Collections.singletonList(createColumnAssignmentSegment(columnSegment, createParameterMarkerExpressionSegment(0))), null);
+        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))),
+                Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new ParameterMarkerExpressionSegment(0, 0, 0))), null);
         List<ShardingSphereColumn> actualColumns = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, schema);
         List<ShardingSphereColumn> expectedColumns = createExpectedColumns(schema, Collections.singletonList("age"));
         assertThat(actualColumns, is(expectedColumns));
@@ -187,39 +190,39 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
     
     @Test
     void assertResolveColumnsForParameterMarkersWithMultipleTablesWithoutFallback() {
-        ColumnSegment columnSegment = createColumnSegment("name");
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
         columnSegment.setColumnBoundInfo(null);
-        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(createJoinTableSegment("user", "account"), Collections.emptyList(),
-                new BinaryOperationExpression(0, 0, columnSegment, createParameterMarkerExpressionSegment(0), "=", "name = ?"));
+        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(createJoinTableSegment(), Collections.emptyList(),
+                new BinaryOperationExpression(0, 0, columnSegment, new ParameterMarkerExpressionSegment(0, 0, 0), "=", "name = ?"));
         List<ShardingSphereColumn> actualColumns = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, schema);
         assertThat(actualColumns, is(Collections.singletonList(null)));
     }
     
     @Test
     void assertResolveColumnsForParameterMarkersWithResolvedMissingColumn() {
-        ColumnSegment columnSegment = createColumnSegment("missing_column");
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("missing_column"));
         columnSegment.setColumnBoundInfo(null);
-        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(createSimpleTableSegment("user"),
-                Collections.singletonList(createColumnAssignmentSegment(columnSegment, createParameterMarkerExpressionSegment(0))), null);
+        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))),
+                Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new ParameterMarkerExpressionSegment(0, 0, 0))), null);
         List<ShardingSphereColumn> actualColumns = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, schema);
         assertThat(actualColumns, is(Collections.singletonList(null)));
     }
     
     @Test
     void assertResolveColumnsForParameterMarkersWithResolvedMissingTable() {
-        ColumnSegment columnSegment = createColumnSegment("name");
-        columnSegment.setOwner(createOwnerSegment("unknown_user"));
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
+        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("unknown_user")));
         columnSegment.setColumnBoundInfo(new ColumnSegmentBoundInfo(null, null, null, TableSourceType.PHYSICAL_TABLE));
-        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(createSimpleTableSegment("user"),
-                Collections.singletonList(createColumnAssignmentSegment(columnSegment, createParameterMarkerExpressionSegment(0))), null);
+        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))),
+                Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new ParameterMarkerExpressionSegment(0, 0, 0))), null);
         List<ShardingSphereColumn> actualColumns = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, schema);
         assertThat(actualColumns, is(Collections.singletonList(null)));
     }
     
     @Test
     void assertResolveColumnsForParameterMarkersWithInExpressionWithoutColumn() {
-        ListExpression listExpression = createListExpression(createParameterMarkerExpressionSegment(0), createParameterMarkerExpressionSegment(1));
-        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(createSimpleTableSegment("user"), Collections.emptyList(),
+        ListExpression listExpression = createListExpression(new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1));
+        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))), Collections.emptyList(),
                 new InExpression(0, 0, new LiteralExpressionSegment(0, 0, 1), listExpression, false));
         List<ShardingSphereColumn> actualColumns = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, schema);
         assertThat(actualColumns, is(Arrays.asList(null, null)));
@@ -227,18 +230,19 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
     
     @Test
     void assertResolveColumnsForParameterMarkersWithBetweenExpressionWithoutColumn() {
-        BetweenExpression betweenExpression = new BetweenExpression(0, 0, new LiteralExpressionSegment(0, 0, 1),
-                createParameterMarkerExpressionSegment(0), createParameterMarkerExpressionSegment(1), false);
-        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(createSimpleTableSegment("user"), Collections.emptyList(), betweenExpression);
+        BetweenExpression betweenExpression =
+                new BetweenExpression(0, 0, new LiteralExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 0), new ParameterMarkerExpressionSegment(0, 0, 1), false);
+        UpdateStatementContext sqlStatementContext =
+                createUpdateStatementContext(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))), Collections.emptyList(), betweenExpression);
         List<ShardingSphereColumn> actualColumns = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, schema);
         assertThat(actualColumns, is(Arrays.asList(null, null)));
     }
     
     @Test
     void assertResolveColumnsForParameterMarkersWithOutOfRangeParameterIndex() {
-        ColumnSegment columnSegment = createColumnSegment("name");
-        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(createSimpleTableSegment("user"),
-                Collections.singletonList(createColumnAssignmentSegment(columnSegment, createParameterMarkerExpressionSegment(1))), null);
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("name"));
+        UpdateStatementContext sqlStatementContext = createUpdateStatementContext(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))),
+                Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), new ParameterMarkerExpressionSegment(0, 0, 1))), null);
         List<ShardingSphereColumn> actualColumns = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, schema);
         assertThat(actualColumns, is(Collections.singletonList(null)));
     }
@@ -305,35 +309,15 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
     }
     
     private ShardingSphereMetaData createMetaData() {
-        return new ShardingSphereMetaData(Collections.singleton(createDatabase()), new ResourceMetaData(Collections.emptyMap()),
-                new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+        return new ShardingSphereMetaData(Collections.singleton(
+                new ShardingSphereDatabase("foo_db", databaseType, mock(), mock(), Collections.singleton(schema))), mock(), mock(), new ConfigurationProperties(new Properties()));
     }
     
-    private ShardingSphereDatabase createDatabase() {
-        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
-    }
-    
-    private SimpleTableSegment createSimpleTableSegment(final String tableName) {
-        return new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
-    }
-    
-    private JoinTableSegment createJoinTableSegment(final String leftTableName, final String rightTableName) {
+    private JoinTableSegment createJoinTableSegment() {
         JoinTableSegment result = new JoinTableSegment();
-        result.setLeft(createSimpleTableSegment(leftTableName));
-        result.setRight(createSimpleTableSegment(rightTableName));
+        result.setLeft(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
+        result.setRight(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("account"))));
         return result;
-    }
-    
-    private ColumnSegment createColumnSegment(final String columnName) {
-        return new ColumnSegment(0, 0, new IdentifierValue(columnName));
-    }
-    
-    private ColumnAssignmentSegment createColumnAssignmentSegment(final ColumnSegment columnSegment, final ExpressionSegment value) {
-        return new ColumnAssignmentSegment(0, 0, Collections.singletonList(columnSegment), value);
-    }
-    
-    private ParameterMarkerExpressionSegment createParameterMarkerExpressionSegment(final int parameterIndex) {
-        return new ParameterMarkerExpressionSegment(0, 0, parameterIndex);
     }
     
     private Collection<ParameterMarkerSegment> createParameterMarkerSegments(final Collection<ExpressionSegment> expressions) {
@@ -373,10 +357,6 @@ class MySQLComStmtPrepareParameterMarkerExtractorTest {
             result.addAll(createParameterMarkerSegments(((ListExpression) expression).getItems()));
         }
         return result;
-    }
-    
-    private OwnerSegment createOwnerSegment(final String ownerName) {
-        return new OwnerSegment(0, 0, new IdentifierValue(ownerName));
     }
     
     private ListExpression createListExpression(final ExpressionSegment... expressions) {
