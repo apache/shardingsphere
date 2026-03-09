@@ -36,10 +36,10 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 /**
- * Metadata loader for PostgreSQL prepared statements.
+ * Metadata factory for PostgreSQL prepared statements.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PostgreSQLPreparedStatementMetadataLoader {
+public final class PostgreSQLPreparedStatementMetadataFactory {
     
     /**
      * Load actual prepared statement for metadata access.

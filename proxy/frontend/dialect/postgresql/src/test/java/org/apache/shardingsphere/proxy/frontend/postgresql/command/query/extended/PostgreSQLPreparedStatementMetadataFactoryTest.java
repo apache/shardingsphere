@@ -66,7 +66,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-class PostgreSQLPreparedStatementMetadataLoaderTest {
+class PostgreSQLPreparedStatementMetadataFactoryTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
@@ -78,7 +78,7 @@ class PostgreSQLPreparedStatementMetadataLoaderTest {
     @Test
     void assertLoad() throws SQLException {
         PreparedStatement expected = prepareJDBCBackendConnection(null);
-        assertThat(PostgreSQLPreparedStatementMetadataLoader.load(connectionSession, createPreparedStatement()), is(expected));
+        assertThat(PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, createPreparedStatement()), is(expected));
     }
     
     @Test
@@ -86,7 +86,7 @@ class PostgreSQLPreparedStatementMetadataLoaderTest {
         PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement();
         SQLException expected = new SQLException("expected");
         prepareJDBCBackendConnection(expected);
-        assertThat(assertThrows(SQLException.class, () -> PostgreSQLPreparedStatementMetadataLoader.load(connectionSession, preparedStatement)), is(expected));
+        assertThat(assertThrows(SQLException.class, () -> PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement)), is(expected));
     }
     
     private PostgreSQLServerPreparedStatement createPreparedStatement() {
@@ -98,7 +98,8 @@ class PostgreSQLPreparedStatementMetadataLoaderTest {
         when(connectionSession.getConnectionContext()).thenReturn(mock(ConnectionContext.class));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        return new PostgreSQLServerPreparedStatement("SELECT id FROM foo_tbl WHERE id=?", sqlStatementContext, new HintValueContext(), Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED), Collections.singletonList(0));
+        return new PostgreSQLServerPreparedStatement("SELECT id FROM foo_tbl WHERE id=?", sqlStatementContext, new HintValueContext(),
+                Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED), Collections.singletonList(0));
     }
     
     private ContextManager mockContextManager() {

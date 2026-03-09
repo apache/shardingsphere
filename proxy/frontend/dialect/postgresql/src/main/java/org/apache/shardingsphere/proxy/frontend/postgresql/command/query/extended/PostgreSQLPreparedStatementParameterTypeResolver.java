@@ -43,7 +43,7 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         if (!hasUnspecifiedParameterTypes(preparedStatement)) {
             return;
         }
-        try (PreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementMetadataLoader.load(connectionSession, preparedStatement)) {
+        try (PreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement)) {
             resolveParameterTypes(preparedStatement, actualPreparedStatement);
         }
     }
