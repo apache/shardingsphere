@@ -18,6 +18,14 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -31,24 +39,82 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 class MySQLComStmtPrepareParameterMarkerExtractorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     @Test
-    void assertFindColumnsOfParameterMarkersForInsertStatement() {
-        String sql = "INSERT INTO user (id, name, age) VALUES (1, ?, ?), (?, 'bar', ?)";
-        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType, new CacheOption(0, 0L), new CacheOption(0, 0L)).parse(sql, false);
+    void assertResolveColumnsForParameterMarkersForInsertStatement() {
         ShardingSphereSchema schema = createSchema();
-        List<ShardingSphereColumn> actual = MySQLComStmtPrepareParameterMarkerExtractor.findColumnsOfParameterMarkers(sqlStatement, schema);
+        List<ShardingSphereColumn> actual = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(
+                createSqlStatementContext("INSERT INTO user (id, name, age) VALUES (1, ?, ?), (?, 'bar', ?)"), schema);
         assertThat(actual.get(0), is(schema.getTable("user").getColumn("name")));
         assertThat(actual.get(1), is(schema.getTable("user").getColumn("age")));
         assertThat(actual.get(2), is(schema.getTable("user").getColumn("id")));
         assertThat(actual.get(3), is(schema.getTable("user").getColumn("age")));
+    }
+    
+    @Test
+    void assertResolveColumnsForParameterMarkersForSelectStatement() {
+        ShardingSphereSchema schema = createSchema();
+        List<ShardingSphereColumn> actual = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(
+                createSqlStatementContext("SELECT age FROM user WHERE id = ? AND name = ?"), schema);
+        assertThat(actual.get(0), is(schema.getTable("user").getColumn("id")));
+        assertThat(actual.get(1), is(schema.getTable("user").getColumn("name")));
+    }
+    
+    @Test
+    void assertResolveColumnsForParameterMarkersForSelectInExpression() {
+        ShardingSphereSchema schema = createSchema();
+        List<ShardingSphereColumn> actual = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(
+                createSqlStatementContext("SELECT age FROM user WHERE name IN (?, ?)"), schema);
+        assertThat(actual.get(0), is(schema.getTable("user").getColumn("name")));
+        assertThat(actual.get(1), is(schema.getTable("user").getColumn("name")));
+    }
+    
+    @Test
+    void assertResolveColumnsForParameterMarkersForSelectBetweenExpression() {
+        ShardingSphereSchema schema = createSchema();
+        List<ShardingSphereColumn> actual = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(
+                createSqlStatementContext("SELECT name FROM user WHERE age BETWEEN ? AND ?"), schema);
+        assertThat(actual.get(0), is(schema.getTable("user").getColumn("age")));
+        assertThat(actual.get(1), is(schema.getTable("user").getColumn("age")));
+    }
+    
+    @Test
+    void assertResolveColumnsForParameterMarkersForUpdateStatement() {
+        ShardingSphereSchema schema = createSchema();
+        List<ShardingSphereColumn> actual = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(
+                createSqlStatementContext("UPDATE user SET name = ?, age = ? WHERE id = ?"), schema);
+        assertThat(actual.get(0), is(schema.getTable("user").getColumn("name")));
+        assertThat(actual.get(1), is(schema.getTable("user").getColumn("age")));
+        assertThat(actual.get(2), is(schema.getTable("user").getColumn("id")));
+    }
+    
+    @Test
+    void assertResolveColumnsForParameterMarkersForDeleteStatement() {
+        ShardingSphereSchema schema = createSchema();
+        List<ShardingSphereColumn> actual = MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(createSqlStatementContext("DELETE FROM user WHERE name = ?"), schema);
+        assertThat(actual.get(0), is(schema.getTable("user").getColumn("name")));
+    }
+    
+    private SQLStatementContext createSqlStatementContext(final String sql) {
+        SQLStatement sqlStatement = new ShardingSphereSQLParserEngine(databaseType, new CacheOption(0, 0L), new CacheOption(0, 0L)).parse(sql, false);
+        return new SQLBindEngine(createMetaData(), "foo_db", new HintValueContext()).bind(sqlStatement);
+    }
+    
+    private ShardingSphereMetaData createMetaData() {
+        return new ShardingSphereMetaData(Collections.singleton(createDatabase()), new ResourceMetaData(Collections.emptyMap()),
+                new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+    }
+    
+    private ShardingSphereDatabase createDatabase() {
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(createSchema()));
     }
     
     private ShardingSphereSchema createSchema() {
