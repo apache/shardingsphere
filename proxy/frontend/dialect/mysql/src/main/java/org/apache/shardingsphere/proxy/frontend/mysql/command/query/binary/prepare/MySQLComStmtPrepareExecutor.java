@@ -126,7 +126,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     private Collection<MySQLPacket> createParameterColumnDefinition41Packets(final SQLStatementContext sqlStatementContext, final int characterSet,
                                                                              final MySQLServerPreparedStatement serverPreparedStatement) {
         List<ShardingSphereColumn> columnsOfParameterMarkers =
-                MySQLComStmtPrepareParameterMarkerExtractor.findColumnsOfParameterMarkers(sqlStatementContext.getSqlStatement(), getSchema(sqlStatementContext));
+                MySQLComStmtPrepareParameterMarkerExtractor.resolveColumnsForParameterMarkers(sqlStatementContext, getSchema(sqlStatementContext));
         Map<ShardingSphereColumn, MySQLColumnDefinition41Packet> columnPacketCache = new HashMap<>();
         MySQLColumnDefinition41Packet defaultColumnPacket = null;
         Collection<ParameterMarkerSegment> parameterMarkerSegments = sqlStatementContext.getSqlStatement().getParameterMarkers();
