@@ -166,6 +166,35 @@ class PostgreSQLComDescribeExecutorTest {
         assertThat(actualIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
     }
     
+    @Test
+    void assertDescribePreparedStatementWithExistingRowDescriptionAndUnspecifiedParameterType() throws SQLException {
+        when(packet.getType()).thenReturn('S');
+        String statementId = "S_existing_row_description";
+        when(packet.getName()).thenReturn(statementId);
+        String sql = "SELECT id FROM t_order WHERE id = ?";
+        SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
+        SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        ConnectionContext connectionContext = mock(ConnectionContext.class);
+        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of(DATABASE_NAME));
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
+        prepareJDBCBackendConnectionWithParamTypes(sql, new int[]{Types.INTEGER}, new String[]{"int4"});
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(),
+                new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0));
+        preparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, preparedStatement);
+        Collection<DatabasePacket> actual = executor.execute();
+        Iterator<DatabasePacket> actualIterator = actual.iterator();
+        PostgreSQLParameterDescriptionPacket parameterDescription = (PostgreSQLParameterDescriptionPacket) actualIterator.next();
+        PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
+        parameterDescription.write(mockPayload);
+        verify(mockPayload).writeInt2(1);
+        verify(mockPayload).writeInt4(PostgreSQLBinaryColumnType.INT4.getValue());
+        assertThat(actualIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideInsertMetaDataCases")
     void assertDescribePreparedStatementInsertByMetaData(final String testName, final String statementId, final String sql,
