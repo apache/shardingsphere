@@ -296,7 +296,7 @@ showData
     ;
 
 showTrash
-    : SHOW TRASH (ON LP_ string_ (COMMA_ string_)* RP_)?
+    : SHOW TRASH (ON (LP_ string_ (COMMA_ string_)* RP_ | string_ (COMMA_ string_)*))?
     ;
 
 showFile

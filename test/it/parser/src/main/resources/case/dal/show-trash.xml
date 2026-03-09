@@ -27,4 +27,13 @@
     <show-trash sql-case-id="show_trash_on_single_backend">
         <backend>192.168.0.1:9050</backend>
     </show-trash>
+
+    <show-trash sql-case-id="show_trash_on_single_backend_without_paren">
+        <backend>192.168.0.1:9050</backend>
+    </show-trash>
+
+    <show-trash sql-case-id="show_trash_on_backends_without_paren">
+        <backend>192.168.0.1:9050</backend>
+        <backend>192.168.0.2:9050</backend>
+    </show-trash>
 </sql-parser-test-cases>
