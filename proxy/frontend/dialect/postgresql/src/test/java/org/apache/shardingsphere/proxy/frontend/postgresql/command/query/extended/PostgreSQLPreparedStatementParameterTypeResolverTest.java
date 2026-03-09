@@ -71,26 +71,24 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class PostgreSQLPreparedStatementParameterTypeResolverTest {
     
-    private static final String DATABASE_NAME = "postgres";
+    private static final String SQL = "SELECT id FROM foo_tbl WHERE id=?";
     
-    private static final String SQL = "SELECT id FROM t_order WHERE id = ?";
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
-    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-    
-    private static final ShardingSphereSQLParserEngine SQL_PARSER_ENGINE = new ShardingSphereSQLParserEngine(DATABASE_TYPE, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
+    private final ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
     
     @Mock
     private ConnectionSession connectionSession;
     
     @Test
     void assertResolveParameterTypesWithConnectionSession() throws SQLException {
-        SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(SQL, false);
+        SQLStatement sqlStatement = sqlParserEngine.parse(SQL, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         final PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
                 SQL, sqlStatementContext, new HintValueContext(), new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0));
-        when(connectionSession.getCurrentDatabaseName()).thenReturn(DATABASE_NAME);
-        when(connectionSession.getUsedDatabaseName()).thenReturn(DATABASE_NAME);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("postgres");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
         when(connectionSession.getConnectionContext()).thenReturn(mock(ConnectionContext.class));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -101,11 +99,11 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
     
     @Test
     void assertResolveParameterTypesWithPreparedStatement() throws SQLException {
-        SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse("SELECT id FROM t_order WHERE id = ? AND k = ?", false);
+        SQLStatement sqlStatement = sqlParserEngine.parse("SELECT id FROM foo_tbl WHERE id=? AND k=?", false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        final PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("SELECT id FROM t_order WHERE id = ? AND k = ?", sqlStatementContext,
-                new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.INT4), Arrays.asList(0, 1));
+        final PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("SELECT id FROM foo_tbl WHERE id=? AND k=?",
+                sqlStatementContext, new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.UNSPECIFIED, PostgreSQLBinaryColumnType.INT4), Arrays.asList(0, 1));
         ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
         when(parameterMetaData.getParameterType(1)).thenReturn(Types.SMALLINT);
         when(parameterMetaData.getParameterTypeName(1)).thenReturn("int2");
@@ -117,7 +115,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
     
     @Test
     void assertResolveParameterTypesWithConnectionSessionWithoutUnspecified() throws SQLException {
-        SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(SQL, false);
+        SQLStatement sqlStatement = sqlParserEngine.parse(SQL, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
@@ -128,7 +126,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
     
     @Test
     void assertResolveParameterTypesWithPreparedStatementWithoutUnspecified() throws SQLException {
-        SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(SQL, false);
+        SQLStatement sqlStatement = sqlParserEngine.parse(SQL, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
@@ -143,21 +141,21 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getProtocolType()).thenReturn(DATABASE_TYPE);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase("postgres")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres").getProtocolType()).thenReturn(databaseType);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
-        when(storageUnit.getStorageType()).thenReturn(DATABASE_TYPE);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
+        when(storageUnit.getStorageType()).thenReturn(databaseType);
+        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres").getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).containsSchema("public")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public")).thenReturn(schema);
-        ShardingSphereTable table = new ShardingSphereTable("t_order", Arrays.asList(
+        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres").containsSchema("public")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres").getSchema("public")).thenReturn(schema);
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("k", Types.INTEGER, true, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        when(schema.containsTable("t_order")).thenReturn(true);
-        when(schema.getTable("t_order")).thenReturn(table);
-        ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
-        when(result.getDatabase(DATABASE_NAME)).thenReturn(database);
+        when(schema.containsTable("foo_tbl")).thenReturn(true);
+        when(schema.getTable("foo_tbl")).thenReturn(table);
+        ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase("postgres");
+        when(result.getDatabase("postgres")).thenReturn(database);
         return result;
     }
     
