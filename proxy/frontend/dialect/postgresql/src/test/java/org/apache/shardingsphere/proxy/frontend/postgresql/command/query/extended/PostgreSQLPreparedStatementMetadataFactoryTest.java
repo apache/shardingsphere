@@ -21,6 +21,8 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -45,6 +47,7 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedConstruction;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -62,6 +65,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -78,23 +82,39 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
     @Test
     void assertLoad() throws SQLException {
         PreparedStatement expected = prepareJDBCBackendConnection(null);
-        assertThat(PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, createPreparedStatement()), is(expected));
+        assertThat(PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, createPreparedStatement(true)), is(expected));
     }
     
     @Test
     void assertLoadWithSQLException() throws SQLException {
-        PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement();
+        PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement(true);
         SQLException expected = new SQLException("expected");
         prepareJDBCBackendConnection(expected);
         assertThat(assertThrows(SQLException.class, () -> PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement)), is(expected));
     }
     
-    private PostgreSQLServerPreparedStatement createPreparedStatement() {
+    @Test
+    void assertLoadWithEmptyExecutionUnits() {
+        PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement(false);
+        ExecutionContext executionContext = mock(ExecutionContext.class);
+        when(executionContext.getExecutionUnits()).thenReturn(Collections.emptyList());
+        try (
+                MockedConstruction<KernelProcessor> mockedConstruction = mockConstruction(KernelProcessor.class,
+                        (mock, context) -> when(mock.generateExecutionContext(any(), any(), any())).thenReturn(executionContext))) {
+            SQLException actual = assertThrows(SQLException.class, () -> PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement));
+            assertThat(actual.getMessage(), is("Can not resolve PostgreSQL prepared statement metadata because no execution unit was generated."));
+            assertThat(mockedConstruction.constructed().size(), is(1));
+        }
+    }
+    
+    private PostgreSQLServerPreparedStatement createPreparedStatement(final boolean withUsedDatabaseName) {
         SQLStatement sqlStatement = sqlParserEngine.parse("SELECT id FROM foo_tbl WHERE id=?", false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         when(connectionSession.getCurrentDatabaseName()).thenReturn("postgres");
-        when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
+        if (withUsedDatabaseName) {
+            when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
+        }
         when(connectionSession.getConnectionContext()).thenReturn(mock(ConnectionContext.class));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

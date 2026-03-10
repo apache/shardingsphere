@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -56,6 +57,8 @@ public final class PostgreSQLPreparedStatementMetadataFactory {
         QueryContext queryContext = new QueryContext(
                 sqlStatementContext, preparedStatement.getSql(), Collections.emptyList(), preparedStatement.getHintValueContext(), connectionSession.getConnectionContext(), metaData);
         ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps());
+        ShardingSpherePreconditions.checkNotEmpty(executionContext.getExecutionUnits(),
+                () -> new SQLException("Can not resolve PostgreSQL prepared statement metadata because no execution unit was generated."));
         ExecutionUnit executionUnit = executionContext.getExecutionUnits().iterator().next();
         ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
         return databaseConnectionManager.getConnections(connectionSession.getUsedDatabaseName(), executionUnit.getDataSourceName(), 0, 1, ConnectionMode.CONNECTION_STRICTLY)
