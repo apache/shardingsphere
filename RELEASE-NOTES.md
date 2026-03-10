@@ -8,15 +8,16 @@
 1. JDBC: Fix stale generated values leaking into prepared statement executeBatch calls without pending batches - [#38160](https://github.com/apache/shardingsphere/pull/38160)
 1. Proxy: Resolve MySQL prepared statement parameter columns for where clause - [#38382](https://github.com/apache/shardingsphere/pull/38382)
 1. Proxy: Resolve PostgreSQL prepared statement parameter types before bind - [#38384](https://github.com/apache/shardingsphere/pull/38384)
+1. Proxy: Resolve openGauss batch bind parameter types before reading values - [#38390](https://github.com/apache/shardingsphere/pull/38390)
 
 ### Enhancements
 
 1. SQL Parser: Support MySQL Function statement parse - [#38182](https://github.com/apache/shardingsphere/pull/38182) [#38219](https://github.com/apache/shardingsphere/pull/38219)
-1. SQL Parser: Support parsing MySQL SELECT sql - [#38233](https://github.com/apache/shardingsphere/pull/38233)
-1. SQL Parser: Support parsing MySQL CREATE sql - [#38237](https://github.com/apache/shardingsphere/pull/38237)
-1. SQL Parser: Support mysql subquery table projection alias visit to sql statement - [#38320](https://github.com/apache/shardingsphere/pull/38320)
+1. SQL Parser: Support parsing MySQL SELECT SQL - [#38233](https://github.com/apache/shardingsphere/pull/38233)
+1. SQL Parser: Support parsing MySQL CREATE SQL - [#38237](https://github.com/apache/shardingsphere/pull/38237)
+1. SQL Parser: Support mysql subquery table projection alias visit to SQL statement - [#38320](https://github.com/apache/shardingsphere/pull/38320)
 1. SQL Binder: Support select order by index bind metadata - [#38386](https://github.com/apache/shardingsphere/pull/38386)
-1. JDBC: Support setMaxRows and getMaxRows method in jdbc when not execute sql - [#38337](https://github.com/apache/shardingsphere/pull/38337)
+1. JDBC: Support setMaxRows and getMaxRows method in jdbc when not execute SQL - [#38337](https://github.com/apache/shardingsphere/pull/38337)
 1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
 
 ## Release 5.5.3
