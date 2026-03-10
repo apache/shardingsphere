@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,6 +59,8 @@ class OracleSchemaOptionTest {
     
     @Test
     void assertGetDefaultSystemSchema() {
-        assertFalse(new OracleSchemaOption().getDefaultSystemSchema().isPresent());
+        Optional<String> actual = new OracleSchemaOption().getDefaultSystemSchema();
+        assertThat(actual.isPresent(), is(true));
+        assertThat(actual.get(), is("SYS"));
     }
 }

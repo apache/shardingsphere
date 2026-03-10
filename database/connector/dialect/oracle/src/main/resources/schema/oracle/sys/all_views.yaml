@@ -1,0 +1,80 @@
+name: all_views
+columns:
+  OWNER:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: OWNER
+    primaryKey: false
+  VIEW_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: VIEW_NAME
+    primaryKey: false
+  TEXT_LENGTH:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: TEXT_LENGTH
+    primaryKey: false
+  TEXT:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: TEXT
+    primaryKey: false
+  TYPE_TEXT_LENGTH:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: TYPE_TEXT_LENGTH
+    primaryKey: false
+  TYPE_TEXT:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TYPE_TEXT
+    primaryKey: false
+  OID_TEXT_LENGTH:
+    caseSensitive: false
+    dataType: 2
+    generated: false
+    name: OID_TEXT_LENGTH
+    primaryKey: false
+  OID_TEXT:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: OID_TEXT
+    primaryKey: false
+  VIEW_TYPE_OWNER:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: VIEW_TYPE_OWNER
+    primaryKey: false
+  VIEW_TYPE:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: VIEW_TYPE
+    primaryKey: false
+  SUPERVIEW_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SUPERVIEW_NAME
+    primaryKey: false
+  EDITIONING_VIEW:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EDITIONING_VIEW
+    primaryKey: false
+  READ_ONLY:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: READ_ONLY
+    primaryKey: false

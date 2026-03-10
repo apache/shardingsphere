@@ -1,0 +1,32 @@
+name: all_synonyms
+columns:
+  OWNER:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: OWNER
+    primaryKey: false
+  SYNONYM_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SYNONYM_NAME
+    primaryKey: false
+  TABLE_OWNER:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TABLE_OWNER
+    primaryKey: false
+  TABLE_NAME:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TABLE_NAME
+    primaryKey: false
+  DB_LINK:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DB_LINK
+    primaryKey: false
