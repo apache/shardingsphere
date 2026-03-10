@@ -50,6 +50,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutor implemen
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = getPreparedStatement();
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement);
         PostgreSQLBatchedStatementsExecutor executor = new PostgreSQLBatchedStatementsExecutor(connectionSession, preparedStatement, readParameterSets(preparedStatement.getParameterTypes()));
         Collection<DatabasePacket> result = new ArrayList<>(packets.size());
         int totalInserted = executor.executeBatch();
