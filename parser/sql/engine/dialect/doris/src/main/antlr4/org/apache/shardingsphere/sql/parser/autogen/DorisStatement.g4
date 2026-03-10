@@ -152,6 +152,7 @@ execute
     | adminSetReplicaStatus
     | adminSetReplicaVersion
     | adminCopyTablet
+    | adminCleanTrash
     | createSqlBlockRule
     | alterSqlBlockRule
     | dropSqlBlockRule

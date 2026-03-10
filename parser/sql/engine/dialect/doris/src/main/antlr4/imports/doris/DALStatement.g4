@@ -295,6 +295,10 @@ showData
     : SHOW DATA (FROM tableName)? orderByClause?
     ;
 
+showTrash
+    : SHOW TRASH (ON (LP_ string_ (COMMA_ string_)* RP_ | string_))?
+    ;
+
 showFile
     : SHOW FILE fromDatabase?
     ;
@@ -424,6 +428,10 @@ propertyKey
 
 propertyValue
     : literals | identifier
+    ;
+
+adminCleanTrash
+    : ADMIN CLEAN TRASH (ON LP_ string_ (COMMA_ string_)* RP_)?
     ;
 
 dorisAlterSystem
@@ -884,4 +892,5 @@ show
     | showData
     | showFile
     | showEncryptKeys
+    | showTrash
     ;

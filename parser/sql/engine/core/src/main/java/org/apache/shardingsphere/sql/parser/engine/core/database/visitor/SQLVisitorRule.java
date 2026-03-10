@@ -439,6 +439,8 @@ public enum SQLVisitorRule {
     
     SHOW_DATA_TYPES("ShowDataTypes", SQLStatementType.DAL),
     
+    SHOW_TRASH("ShowTrash", SQLStatementType.DAL),
+    
     ALTER_SQL_BLOCK_RULE("AlterSqlBlockRule", SQLStatementType.DAL),
     
     DROP_SQL_BLOCK_RULE("DropSqlBlockRule", SQLStatementType.DAL),
@@ -576,6 +578,8 @@ public enum SQLVisitorRule {
     ADMIN_SET_REPLICA_VERSION("AdminSetReplicaVersion", SQLStatementType.DAL),
     
     ADMIN_COPY_TABLET("AdminCopyTablet", SQLStatementType.DAL),
+    
+    ADMIN_CLEAN_TRASH("AdminCleanTrash", SQLStatementType.DAL),
     
     CREATE_SQL_BLOCK_RULE("CreateSqlBlockRule", SQLStatementType.DAL),
     
