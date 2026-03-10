@@ -18,8 +18,12 @@
 package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+
+import java.util.Optional;
 
 /**
  * Order by item segment for index.
@@ -29,8 +33,20 @@ public final class IndexOrderByItemSegment extends OrderByItemSegment {
     
     private final int columnIndex;
     
+    @Setter
+    private ColumnSegment boundColumn;
+    
     public IndexOrderByItemSegment(final int startIndex, final int stopIndex, final int columnIndex, final OrderDirection orderDirection, final NullsOrderType nullsOrderType) {
         super(startIndex, stopIndex, orderDirection, nullsOrderType);
         this.columnIndex = columnIndex;
+    }
+    
+    /**
+     * Get bound column.
+     *
+     * @return bound column
+     */
+    public Optional<ColumnSegment> getBoundColumn() {
+        return Optional.ofNullable(boundColumn);
     }
 }

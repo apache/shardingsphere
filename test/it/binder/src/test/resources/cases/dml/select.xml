@@ -669,7 +669,67 @@
             </simple-table>
         </from>
     </select>
-
+    
+    <select sql-case-id="select_with_order_by_index_bound">
+        <projections start-index="7" stop-index="31">
+            <column-projection name="user_id" start-index="7" stop-index="13">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_user" />
+                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column-projection>
+            <column-projection name="user_name" start-index="16" stop-index="24">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_user" />
+                    <original-column name="user_name" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column-projection>
+            <column-projection name="email" start-index="27" stop-index="31">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_user" />
+                    <original-column name="email" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column-projection>
+        </projections>
+        <from start-index="33" stop-index="43">
+            <simple-table name="t_user" start-index="38" stop-index="43">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                </table-bound>
+            </simple-table>
+        </from>
+        <order-by>
+            <index-item index="2" order-direction="ASC" start-index="54" stop-index="54">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_user" />
+                    <original-column name="user_name" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </index-item>
+            <index-item index="1" order-direction="DESC" start-index="61" stop-index="61">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_user" />
+                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </index-item>
+        </order-by>
+    </select>
+    
     <select sql-case-id="select_with_multiple_ctes_left_join_and_order_by">
         <with start-index="0" stop-index="142">
             <common-table-expression name="user_orders" start-index="5" stop-index="88">
