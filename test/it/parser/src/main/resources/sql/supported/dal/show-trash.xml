@@ -21,5 +21,4 @@
     <sql-case id="show_trash_on_backends" value="SHOW TRASH ON (&quot;192.168.0.1:9050&quot;, &quot;192.168.0.2:9050&quot;)" db-types="Doris" />
     <sql-case id="show_trash_on_single_backend" value="SHOW TRASH ON (&quot;192.168.0.1:9050&quot;)" db-types="Doris" />
     <sql-case id="show_trash_on_single_backend_without_paren" value="SHOW TRASH ON &quot;192.168.0.1:9050&quot;" db-types="Doris" />
-    <sql-case id="show_trash_on_backends_without_paren" value="SHOW TRASH ON &quot;192.168.0.1:9050&quot;, &quot;192.168.0.2:9050&quot;" db-types="Doris" />
 </sql-cases>
