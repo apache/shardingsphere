@@ -59,6 +59,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.sql.Connection;
+import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -72,9 +73,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -97,7 +100,8 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
     @Test
     void assertExecute() throws SQLException {
         ConnectionSession connectionSession = mockConnectionSession();
-        PostgreSQLAggregatedBatchedStatementsCommandExecutor executor = new PostgreSQLAggregatedBatchedStatementsCommandExecutor(connectionSession, createPackets());
+        List<PostgreSQLCommandPacket> packets = createPackets();
+        PostgreSQLAggregatedBatchedStatementsCommandExecutor executor = new PostgreSQLAggregatedBatchedStatementsCommandExecutor(connectionSession, packets);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         List<DatabasePacket> actualPackets = new ArrayList<>(executor.execute());
@@ -106,6 +110,7 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
             assertThat(actualPackets.get(i * 3), is(PostgreSQLBindCompletePacket.getInstance()));
             assertThat(actualPackets.get(i * 3 + 1), is(PostgreSQLNoDataPacket.getInstance()));
             assertThat(actualPackets.get(i * 3 + 2), isA(PostgreSQLCommandCompletePacket.class));
+            verify((PostgreSQLComBindPacket) packets.get(i * 3)).readParameters(Collections.singletonList(PostgreSQLBinaryColumnType.INT4));
         }
     }
     
@@ -120,14 +125,20 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         when(result.getConnectionContext()).thenReturn(connectionContext);
         when(result.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         result.getServerPreparedStatementRegistry().addPreparedStatement(STATEMENT_ID,
-                new PostgreSQLServerPreparedStatement(SQL, sqlStatementContext, new HintValueContext(), Collections.singletonList(PostgreSQLBinaryColumnType.INT4), Collections.singletonList(0)));
+                new PostgreSQLServerPreparedStatement(SQL, sqlStatementContext, new HintValueContext(),
+                        new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0)));
         when(result.getConnectionId()).thenReturn(CONNECTION_ID);
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:postgresql://127.0.0.1/db");
         when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
+        when(parameterMetaData.getParameterType(1)).thenReturn(Types.INTEGER);
+        when(parameterMetaData.getParameterTypeName(1)).thenReturn("int4");
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        when(preparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
         when(preparedStatement.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         JDBCBackendStatement backendStatement = mock(JDBCBackendStatement.class);
         when(backendStatement.createStorageResource(any(ExecutionUnit.class), any(Connection.class), anyInt(), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class)))
                 .thenReturn(preparedStatement);
