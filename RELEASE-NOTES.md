@@ -17,6 +17,7 @@
 1. SQL Binder: Support select order by index bind metadata - [#38386](https://github.com/apache/shardingsphere/pull/38386)
 1. JDBC: Support setMaxRows and getMaxRows method in jdbc when not execute sql - [#38337](https://github.com/apache/shardingsphere/pull/38337)
 1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
+1. Metadata: Support Oracle dictionary views by adding SYS default system schema and YAML definitions - [#38388](https://github.com/apache/shardingsphere/pull/38388)
 
 ## Release 5.5.3
 
