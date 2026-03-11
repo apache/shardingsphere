@@ -57,6 +57,7 @@
         
         <module>test</module>
         
+        <module>bom</module>
         <module>distribution</module>
     </modules>
     
