@@ -25,6 +25,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Parameter type resolver for PostgreSQL prepared statements.
@@ -43,8 +44,12 @@ public final class PostgreSQLPreparedStatementParameterTypeResolver {
         if (!hasUnspecifiedParameterTypes(preparedStatement)) {
             return;
         }
-        try (PreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement)) {
-            resolveParameterTypes(preparedStatement, actualPreparedStatement);
+        Optional<PreparedStatement> actualPreparedStatement = PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement);
+        if (!actualPreparedStatement.isPresent()) {
+            return;
+        }
+        try (PreparedStatement preparedStatementForMetadata = actualPreparedStatement.get()) {
+            resolveParameterTypes(preparedStatement, preparedStatementForMetadata);
         }
     }
     

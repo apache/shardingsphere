@@ -20,10 +20,12 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -32,14 +34,15 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -53,6 +56,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -82,12 +86,15 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
     @Test
     void assertLoad() throws SQLException {
         PreparedStatement expected = prepareJDBCBackendConnection(null);
-        assertThat(PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, createPreparedStatement(true)), is(expected));
+        assertThat(
+                PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, createPreparedStatement("SELECT id FROM foo_tbl WHERE id=?", true))
+                        .orElseThrow(AssertionError::new),
+                is(expected));
     }
     
     @Test
     void assertLoadWithSQLException() throws SQLException {
-        PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement(true);
+        PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement("SELECT id FROM foo_tbl WHERE id=?", true);
         SQLException expected = new SQLException("expected");
         prepareJDBCBackendConnection(expected);
         assertThat(assertThrows(SQLException.class, () -> PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement)), is(expected));
@@ -95,7 +102,7 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
     
     @Test
     void assertLoadWithEmptyExecutionUnits() {
-        PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement(false);
+        PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement("SELECT id FROM foo_tbl WHERE id=?", false);
         ExecutionContext executionContext = mock(ExecutionContext.class);
         when(executionContext.getExecutionUnits()).thenReturn(Collections.emptyList());
         try (
@@ -107,22 +114,88 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
         }
     }
     
-    private PostgreSQLServerPreparedStatement createPreparedStatement(final boolean withUsedDatabaseName) {
-        SQLStatement sqlStatement = sqlParserEngine.parse("SELECT id FROM foo_tbl WHERE id=?", false);
-        SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+    @Test
+    void assertLoadWithWherePlaceholderParameters() throws SQLException {
+        PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement("SELECT id FROM foo_tbl WHERE name=?", true);
+        PreparedStatement expected = prepareJDBCBackendConnection(null);
+        ExecutionContext executionContext = mock(ExecutionContext.class);
+        ExecutionUnit executionUnit = mock(ExecutionUnit.class, RETURNS_DEEP_STUBS);
+        when(executionUnit.getDataSourceName()).thenReturn("ds_0");
+        when(executionUnit.getSqlUnit().getSql()).thenReturn("SELECT id FROM foo_tbl WHERE name=?");
+        when(executionContext.getExecutionUnits()).thenReturn(Collections.singleton(executionUnit));
+        try (
+                MockedConstruction<KernelProcessor> mockedConstruction = mockConstruction(KernelProcessor.class, (mock, context) -> when(mock.generateExecutionContext(any(), any(), any()))
+                        .thenAnswer(invocation -> {
+                            QueryContext actualQueryContext = invocation.getArgument(0);
+                            assertThat(actualQueryContext.getParameters().size(), is(1));
+                            assertThat(actualQueryContext.getParameters().get(0), is(""));
+                            return executionContext;
+                        }))) {
+            assertThat(PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement).get(), is(expected));
+            assertThat(mockedConstruction.constructed().size(), is(1));
+        }
+    }
+    
+    @Test
+    void assertLoadWithInsertPlaceholderParameters() throws SQLException {
+        PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement("INSERT INTO foo_tbl (id) VALUES (?)", true);
+        PreparedStatement expected = prepareJDBCBackendConnection(null);
+        ExecutionContext executionContext = mock(ExecutionContext.class);
+        ExecutionUnit executionUnit = mock(ExecutionUnit.class, RETURNS_DEEP_STUBS);
+        when(executionUnit.getDataSourceName()).thenReturn("ds_0");
+        when(executionUnit.getSqlUnit().getSql()).thenReturn("INSERT INTO foo_tbl (id) VALUES (?)");
+        when(executionContext.getExecutionUnits()).thenReturn(Collections.singleton(executionUnit));
+        try (
+                MockedConstruction<KernelProcessor> mockedConstruction = mockConstruction(KernelProcessor.class, (mock, context) -> when(mock.generateExecutionContext(any(), any(), any()))
+                        .thenAnswer(invocation -> {
+                            QueryContext actualQueryContext = invocation.getArgument(0);
+                            assertThat(actualQueryContext.getParameters().size(), is(1));
+                            assertThat(actualQueryContext.getParameters().get(0), is(0));
+                            return executionContext;
+                        }))) {
+            assertThat(PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement).orElseThrow(AssertionError::new), is(expected));
+            assertThat(mockedConstruction.constructed().size(), is(1));
+        }
+    }
+    
+    @Test
+    void assertLoadWithBigIntPlaceholderParameters() throws SQLException {
+        PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement("INSERT INTO t_shadow (order_id) VALUES (?)", true);
+        PreparedStatement expected = prepareJDBCBackendConnection(null);
+        ExecutionContext executionContext = mock(ExecutionContext.class);
+        ExecutionUnit executionUnit = mock(ExecutionUnit.class, RETURNS_DEEP_STUBS);
+        when(executionUnit.getDataSourceName()).thenReturn("ds_0");
+        when(executionUnit.getSqlUnit().getSql()).thenReturn("INSERT INTO t_shadow_0 (order_id) VALUES (?)");
+        when(executionContext.getExecutionUnits()).thenReturn(Collections.singleton(executionUnit));
+        try (
+                MockedConstruction<KernelProcessor> mockedConstruction = mockConstruction(KernelProcessor.class, (mock, context) -> when(mock.generateExecutionContext(any(), any(), any()))
+                        .thenAnswer(invocation -> {
+                            QueryContext actualQueryContext = invocation.getArgument(0);
+                            assertThat(actualQueryContext.getParameters().size(), is(1));
+                            assertThat(actualQueryContext.getParameters().get(0).getClass(), is(Integer.class));
+                            return executionContext;
+                        }))) {
+            assertThat(PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement).get(), is(expected));
+            assertThat(mockedConstruction.constructed().size(), is(1));
+        }
+    }
+    
+    private PostgreSQLServerPreparedStatement createPreparedStatement(final String sql, final boolean withUsedDatabaseName) {
+        SQLStatement sqlStatement = sqlParserEngine.parse(sql, false);
+        SQLStatementContext sqlStatementContext = sql.startsWith("INSERT") ? mock(InsertStatementContext.class) : mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         when(connectionSession.getCurrentDatabaseName()).thenReturn("postgres");
         if (withUsedDatabaseName) {
             when(connectionSession.getUsedDatabaseName()).thenReturn("postgres");
         }
         when(connectionSession.getConnectionContext()).thenReturn(mock(ConnectionContext.class));
-        ContextManager contextManager = mockContextManager();
+        ContextManager contextManager = mockContextManager(sql.contains("t_shadow"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        return new PostgreSQLServerPreparedStatement("SELECT id FROM foo_tbl WHERE id=?", sqlStatementContext, new HintValueContext(),
+        return new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(),
                 Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED), Collections.singletonList(0));
     }
     
-    private ContextManager mockContextManager() {
+    private ContextManager mockContextManager(final boolean withShadowTable) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
@@ -135,10 +208,19 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(result.getMetaDataContexts().getMetaData().getDatabase("postgres").containsSchema("public")).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase("postgres").getSchema("public")).thenReturn(schema);
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singletonList(
-                new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        when(schema.containsTable("foo_tbl")).thenReturn(true);
-        when(schema.getTable("foo_tbl")).thenReturn(table);
+        if (withShadowTable) {
+            ShardingSphereTable shadowTable = new ShardingSphereTable("t_shadow", Arrays.asList(
+                    new ShardingSphereColumn("order_id", Types.BIGINT, true, false, false, true, false, false),
+                    new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
+            when(schema.containsTable("t_shadow")).thenReturn(true);
+            when(schema.getTable("t_shadow")).thenReturn(shadowTable);
+        } else {
+            ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(
+                    new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
+                    new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
+            when(schema.containsTable("foo_tbl")).thenReturn(true);
+            when(schema.getTable("foo_tbl")).thenReturn(table);
+        }
         ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase("postgres");
         when(result.getDatabase("postgres")).thenReturn(database);
         return result;
