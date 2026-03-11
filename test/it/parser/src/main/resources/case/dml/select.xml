@@ -11320,7 +11320,7 @@
                 <owner name="Sales" start-index="90" stop-index="94" />
             </simple-table>
         </from>
-        <group-by>
+        <group-by with-rollup="true">
             <column-item name="SalesQuota" order-direction="ASC" start-index="117" stop-index="126" />
         </group-by>
     </select>

@@ -47,6 +47,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -124,7 +125,7 @@ class SelectStatementBinderTest {
         SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections)
                 .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).window(windowSegment).build();
         SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(),
-                "foo_db", new HintValueContext(), selectStatement, Collections.emptyList()));
+                "foo_db", new HintValueContext(), selectStatement));
         assertTrue(actual.getWindow().isPresent());
         assertThat(actual.getWindow().get(), not(windowSegment));
         WindowItemSegment actualWindowItem = actual.getWindow().get().getItemSegments().iterator().next();

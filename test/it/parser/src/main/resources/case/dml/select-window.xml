@@ -143,7 +143,7 @@
     <select sql-case-id="select_window_frame_mysql">
         <projections start-index="7" stop-index="86">
             <aggregation-projection type="SUM" expression="SUM(v) OVER (PARTITION BY k ORDER BY v ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)" start-index="7" stop-index="86">
-                <window-item start-index="19" stop-index="86">
+                <window-item start-index="14" stop-index="86">
                     <order-by start-index="35" stop-index="44">
                         <column-item name="v" order-direction="ASC" start-index="44" stop-index="44" />
                     </order-by>
@@ -322,8 +322,8 @@
 
     <select sql-case-id="select_window_sum_partition_order_by_mysql">
         <projections start-index="7" stop-index="129">
-            <aggregation-projection type="SUM" expression="SUM(order_id) OVER (PARTITION BY user_id ORDER BY order_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)" start-index="7" stop-index="129" alias="running_sum">
-                <window-item start-index="26" stop-index="114">
+            <aggregation-projection type="SUM" expression="SUM(order_id) OVER (PARTITION BY user_id ORDER BY order_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)" start-index="7" stop-index="114" alias="running_sum">
+                <window-item start-index="21" stop-index="114">
                     <order-by start-index="48" stop-index="64">
                         <column-item name="order_id" order-direction="ASC" start-index="57" stop-index="64" />
                     </order-by>
@@ -337,8 +337,8 @@
 
     <select sql-case-id="select_window_count_partition_mysql">
         <projections start-index="7" stop-index="61">
-            <aggregation-projection type="COUNT" expression="COUNT(*) OVER (PARTITION BY user_id)" start-index="7" stop-index="61" alias="partition_count">
-                <window-item start-index="21" stop-index="42" />
+            <aggregation-projection type="COUNT" expression="COUNT(*) OVER (PARTITION BY user_id)" start-index="7" stop-index="42" alias="partition_count">
+                <window-item start-index="16" stop-index="42" />
             </aggregation-projection>
         </projections>
         <from>
@@ -348,8 +348,8 @@
 
     <select sql-case-id="select_window_avg_partition_mysql">
         <projections start-index="7" stop-index="63">
-            <aggregation-projection type="AVG" expression="AVG(order_id) OVER (PARTITION BY user_id)" start-index="7" stop-index="63" alias="avg_order_id">
-                <window-item start-index="26" stop-index="47" />
+            <aggregation-projection type="AVG" expression="AVG(order_id) OVER (PARTITION BY user_id)" start-index="7" stop-index="47" alias="avg_order_id">
+                <window-item start-index="21" stop-index="47" />
             </aggregation-projection>
         </projections>
         <from>
@@ -359,8 +359,8 @@
 
     <select sql-case-id="select_window_min_partition_mysql">
         <projections start-index="7" stop-index="63">
-            <aggregation-projection type="MIN" expression="MIN(order_id) OVER (PARTITION BY user_id)" start-index="7" stop-index="63" alias="min_order_id">
-                <window-item start-index="26" stop-index="47" />
+            <aggregation-projection type="MIN" expression="MIN(order_id) OVER (PARTITION BY user_id)" start-index="7" stop-index="47" alias="min_order_id">
+                <window-item start-index="21" stop-index="47" />
             </aggregation-projection>
         </projections>
         <from>
@@ -370,8 +370,8 @@
 
     <select sql-case-id="select_window_max_partition_mysql">
         <projections start-index="7" stop-index="63">
-            <aggregation-projection type="MAX" expression="MAX(order_id) OVER (PARTITION BY user_id)" start-index="7" stop-index="63" alias="max_order_id">
-                <window-item start-index="26" stop-index="47" />
+            <aggregation-projection type="MAX" expression="MAX(order_id) OVER (PARTITION BY user_id)" start-index="7" stop-index="47" alias="max_order_id">
+                <window-item start-index="21" stop-index="47" />
             </aggregation-projection>
         </projections>
         <from>
