@@ -852,9 +852,24 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
     public ASTNode visitAnalyticFunction(final AnalyticFunctionContext ctx) {
         String functionName = null == ctx.analyticFunctionName() ? ctx.specifiedAnalyticFunctionName.getText() : ctx.analyticFunctionName().getText();
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), functionName, getOriginalText(ctx));
-        result.getParameters().addAll(getExpressions(ctx.expr()));
+        Collection<ExpressionSegment> parameters = getAnalyticFunctionParameters(ctx);
+        result.getParameters().addAll(parameters);
         for (DataTypeContext each : ctx.dataType()) {
             result.getParameters().add((DataTypeSegment) visit(each));
+        }
+        return result;
+    }
+    
+    private Collection<ExpressionSegment> getAnalyticFunctionParameters(final AnalyticFunctionContext ctx) {
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        List<ExprContext> exprContexts = ctx.expr();
+        if (!exprContexts.isEmpty()) {
+            result.add((ExpressionSegment) visit(exprContexts.get(0)));
+        }
+        if (null != ctx.leadLagInfo()) {
+            for (ExprContext each : ctx.leadLagInfo().expr()) {
+                result.add((ExpressionSegment) visit(each));
+            }
         }
         return result;
     }

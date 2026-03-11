@@ -36,4 +36,10 @@ public final class GroupBySegment implements SQLSegment {
     private final int stopIndex;
     
     private final Collection<OrderByItemSegment> groupByItems;
+    
+    private final boolean withRollup;
+    
+    public GroupBySegment(final int startIndex, final int stopIndex, final Collection<OrderByItemSegment> groupByItems) {
+        this(startIndex, stopIndex, groupByItems, false);
+    }
 }

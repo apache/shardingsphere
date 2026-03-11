@@ -33,6 +33,7 @@ import java.util.Iterator;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WindowClauseAssert {
@@ -50,11 +51,25 @@ public final class WindowClauseAssert {
         Iterator<ExpectedWindowItem> expectedWindowItemIterator = expected.getWindowItems().iterator();
         Iterator<WindowItemSegment> windowItemIterator = actual.getItemSegments().iterator();
         while (expectedWindowItemIterator.hasNext()) {
-            ExpectedOrderByClause expectedOrderByClause = expectedWindowItemIterator.next().getOrderByClause();
-            OrderBySegment orderBySegment = windowItemIterator.next().getOrderBySegment();
-            if (null != expectedOrderByClause) {
-                OrderByClauseAssert.assertIs(assertContext, orderBySegment, expectedOrderByClause);
-            }
+            assertIs(assertContext, windowItemIterator.next(), expectedWindowItemIterator.next());
         }
+    }
+    
+    /**
+     * Assert actual window item segment is correct with expected window item.
+     *
+     * @param assertContext assert context
+     * @param actual actual window item
+     * @param expected expected window item
+     */
+    public static void assertIs(final SQLCaseAssertContext assertContext, final WindowItemSegment actual, final ExpectedWindowItem expected) {
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
+        ExpectedOrderByClause expectedOrderByClause = expected.getOrderByClause();
+        OrderBySegment actualOrderBySegment = actual.getOrderBySegment();
+        if (null == expectedOrderByClause) {
+            assertNull(actualOrderBySegment, assertContext.getText("Actual window item order by should not exist."));
+            return;
+        }
+        OrderByClauseAssert.assertIs(assertContext, actualOrderBySegment, expectedOrderByClause);
     }
 }
