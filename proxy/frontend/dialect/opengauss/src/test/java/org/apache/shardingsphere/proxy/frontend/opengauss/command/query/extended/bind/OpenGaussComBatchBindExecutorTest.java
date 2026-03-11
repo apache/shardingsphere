@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.command.query.extende
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.opengauss.packet.command.bind.OpenGaussComBatchBindPacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
@@ -54,11 +55,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.sql.Connection;
+import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -67,9 +71,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -84,9 +91,7 @@ class OpenGaussComBatchBindExecutorTest {
     void assertExecute() throws SQLException {
         String statement = "S_1";
         String sql = "INSERT INTO bmsql (id) VALUES (?)";
-        SQLStatement sqlStatement = parserEngine.parse(sql, false);
-        SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(sql);
         ConnectionSession connectionSession = mockConnectionSession();
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(
                 sql, sqlStatementContext, new HintValueContext(), Collections.emptyList(), Collections.emptyList());
@@ -97,6 +102,23 @@ class OpenGaussComBatchBindExecutorTest {
         assertThat(actualPacketsIterator.next(), is(PostgreSQLBindCompletePacket.getInstance()));
         assertThat(actualPacketsIterator.next(), isA(PostgreSQLCommandCompletePacket.class));
         assertFalse(actualPacketsIterator.hasNext());
+    }
+    
+    @Test
+    void assertExecuteWithUnspecifiedParameterTypes() throws SQLException {
+        String statement = "S_1";
+        String sql = "INSERT INTO bmsql (id) VALUES (?)";
+        SQLStatementContext sqlStatementContext = mockSQLStatementContext(sql);
+        ConnectionSession connectionSession = mockConnectionSessionWithParameterMetaData();
+        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED));
+        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(
+                sql, sqlStatementContext, new HintValueContext(), parameterTypes, Collections.singletonList(0));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statement, serverPreparedStatement);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        OpenGaussComBatchBindPacket packet = mockComBatchBindPacket();
+        new OpenGaussComBatchBindExecutor(packet, connectionSession).execute();
+        verify(packet).readParameterSets(Collections.singletonList(PostgreSQLBinaryColumnType.INT4));
     }
     
     private ConnectionSession mockConnectionSession() throws SQLException {
@@ -119,6 +141,18 @@ class OpenGaussComBatchBindExecutorTest {
         return result;
     }
     
+    private ConnectionSession mockConnectionSessionWithParameterMetaData() throws SQLException {
+        ConnectionSession result = mockConnectionSession();
+        Connection connection = result.getDatabaseConnectionManager().getConnections("foo_db", null, 0, 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next();
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        ParameterMetaData parameterMetaData = mock(ParameterMetaData.class);
+        when(parameterMetaData.getParameterType(1)).thenReturn(Types.INTEGER);
+        when(parameterMetaData.getParameterTypeName(1)).thenReturn("int4");
+        when(preparedStatement.getParameterMetaData()).thenReturn(parameterMetaData);
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        return result;
+    }
+    
     private ConnectionContext mockConnectionContext() {
         ConnectionContext result = mock(ConnectionContext.class);
         when(result.getTransactionContext()).thenReturn(mock(TransactionConnectionContext.class));
@@ -134,7 +168,7 @@ class OpenGaussComBatchBindExecutorTest {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
+        lenient().when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE)).thenReturn(0);
         when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY)).thenReturn(1);
         when(result.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_UNION_SIZE_PER_DATASOURCE)).thenReturn(Integer.MAX_VALUE);
@@ -143,6 +177,13 @@ class OpenGaussComBatchBindExecutorTest {
         ShardingSphereDatabase database = mockDatabase();
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        return result;
+    }
+    
+    private SQLStatementContext mockSQLStatementContext(final String sql) {
+        SQLStatement sqlStatement = parserEngine.parse(sql, false);
+        SQLStatementContext result = mock(InsertStatementContext.class);
+        when(result.getSqlStatement()).thenReturn(sqlStatement);
         return result;
     }
     
