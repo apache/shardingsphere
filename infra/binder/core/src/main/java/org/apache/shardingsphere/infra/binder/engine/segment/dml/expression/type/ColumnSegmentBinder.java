@@ -195,9 +195,6 @@ public final class ColumnSegmentBinder {
                         () -> new AmbiguousColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
             }
             inputColumnSegment = getColumnSegment(projectionSegment.get());
-            // SPEX ADDED: BEGIN
-            // NOTE: MIXED_TABLE 用于表示 JOIN 之后的字段，其中可能会包含部分物理表字段，以及派生的临时表字段，同层级查询的 ORDER BY, GROUP BY, HAVING 会引用 JOIN 之后的字段
-            // SPEX ADDED: END
             tableSourceType = TableSourceType.MIXED_TABLE == each.getTableSourceType() ? getTableSourceTypeFromInputColumn(inputColumnSegment) : each.getTableSourceType();
             if (each instanceof SimpleTableSegmentBinderContext && ((SimpleTableSegmentBinderContext) each).isFromWithSegment()) {
                 break;
@@ -214,7 +211,6 @@ public final class ColumnSegmentBinder {
         if (projectionSegment instanceof ColumnProjectionSegment) {
             return ((ColumnProjectionSegment) projectionSegment).getColumn();
         }
-        // SPEX ADDED: BEGIN
         if (projectionSegment instanceof ExpressionProjectionSegment
                 && ((ExpressionProjectionSegment) projectionSegment).getExpr() instanceof FunctionSegment) {
             Optional<ColumnSegment> columnSegment = getFirstColumnParameter(((FunctionSegment) ((ExpressionProjectionSegment) projectionSegment).getExpr()).getParameters());
@@ -225,7 +221,6 @@ public final class ColumnSegmentBinder {
         if (projectionSegment instanceof SubqueryProjectionSegment && 1 == ((SubqueryProjectionSegment) projectionSegment).getSubquery().getSelect().getProjections().getProjections().size()) {
             return getColumnSegment(((SubqueryProjectionSegment) projectionSegment).getSubquery().getSelect().getProjections().getProjections().iterator().next());
         }
-        // SPEX ADDED: END
         return new ColumnSegment(0, 0, new IdentifierValue(projectionSegment.getColumnLabel()));
     }
     

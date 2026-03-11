@@ -1365,7 +1365,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
                 items.add((OrderByItemSegment) visit(each));
             }
         }
-        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items, null != ctx.ROLLUP());
     }
     
     private Collection<OrderByItemSegment> generateOrderByItemsFromGroupByItem(final GroupByItemContext ctx) {
