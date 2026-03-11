@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Assignm
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadDataPropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadDataIgnoreLinesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadDataSetClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LeadLagInfoContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisLoadDataStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadPropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.String_Context;
@@ -66,6 +67,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.Co
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
@@ -78,6 +81,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Ca
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NumberLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisAlterRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisCreateRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisPauseRoutineLoadStatement;
@@ -450,13 +454,13 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitWindowFunction(final WindowFunctionContext ctx) {
-        super.visitWindowFunction(ctx);
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.funcName.getText(), getOriginalText(ctx));
         if (null != ctx.NTILE()) {
             result.getParameters().add((ExpressionSegment) visit(ctx.simpleExpr()));
         }
         if (null != ctx.LEAD() || null != ctx.LAG() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE()) {
             result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+            appendLeadLagParameters(result.getParameters(), ctx.leadLagInfo());
         }
         if (null != ctx.NTH_VALUE()) {
             result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
@@ -464,6 +468,25 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
         }
         result.setWindow((WindowItemSegment) visit(ctx.windowingClause()));
         return result;
+    }
+    
+    private void appendLeadLagParameters(final Collection<ExpressionSegment> parameters, final LeadLagInfoContext ctx) {
+        if (null == ctx) {
+            return;
+        }
+        if (null != ctx.NUMBER_()) {
+            parameters.add(
+                    new LiteralExpressionSegment(ctx.NUMBER_().getSymbol().getStartIndex(), ctx.NUMBER_().getSymbol().getStopIndex(), new NumberLiteralValue(ctx.NUMBER_().getText()).getValue()));
+        } else {
+            int startIndex = ctx.QUESTION_().getSymbol().getStartIndex();
+            int stopIndex = ctx.QUESTION_().getSymbol().getStopIndex();
+            ParameterMarkerExpressionSegment parameterMarker = new ParameterMarkerExpressionSegment(startIndex, stopIndex, getParameterMarkerSegments().size());
+            getParameterMarkerSegments().add(parameterMarker);
+            parameters.add(parameterMarker);
+        }
+        if (null != ctx.expr()) {
+            parameters.add((ExpressionSegment) visit(ctx.expr()));
+        }
     }
     
     @Override

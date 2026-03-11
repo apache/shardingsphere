@@ -1309,7 +1309,7 @@ public final class PrestoDMLStatementVisitor extends PrestoStatementVisitor impl
         for (OrderByItemContext each : ctx.orderByItem()) {
             items.add((OrderByItemSegment) visit(each));
         }
-        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items, null != ctx.ROLLUP());
     }
     
     @Override
