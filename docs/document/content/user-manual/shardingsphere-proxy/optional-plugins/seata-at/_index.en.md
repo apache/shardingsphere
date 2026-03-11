@@ -29,6 +29,9 @@ The following discussion takes ShardingSphere Proxy using Seata Client 2.5.0 as 
 4. Create ShardingSphere Proxy containing Seata Client and Seata integration module
 5. Add Seata configuration to ShardingSphere Proxy
 
+If the official binary release package or Docker Image is used, copy the jars in `opt-lib/seata-at` to `ext-lib` first,
+then add the third-party dependencies required by Seata Client.
+
 ## Configuration example
 
 ### Confirm the JAR and dependency list of Seata Client
@@ -123,7 +126,7 @@ services:
          context: .
          dockerfile_inline: |
             FROM apache/shardingsphere-proxy:latest
-            RUN wget https://repo1.maven.org/maven2/org/apache/shardingsphere/shardingsphere-transaction-base-seata-at/5.5.2/shardingsphere-transaction-base-seata-at-5.5.2.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN cp /opt/shardingsphere-proxy/opt-lib/seata-at/*.jar /opt/shardingsphere-proxy/ext-lib/
             RUN wget https://repo1.maven.org/maven2/org/apache/seata/seata-all/2.5.0/seata-all-2.5.0.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-context/5.3.39/spring-context-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-expression/5.3.39/spring-expression-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
