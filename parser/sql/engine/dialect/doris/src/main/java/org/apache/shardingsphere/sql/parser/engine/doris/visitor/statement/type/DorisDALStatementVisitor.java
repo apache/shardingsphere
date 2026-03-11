@@ -81,6 +81,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCre
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateProcedureContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateRoutineLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateTriggerContext;
@@ -165,6 +166,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Qualifi
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RuleNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowBuildIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowAlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowLoadContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowStreamLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BackupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BackupTableSpecContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelBackupContext;
@@ -186,6 +189,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.JobNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.LoadNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.RuleNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
@@ -243,7 +247,10 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowFileSta
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowCreateLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowCreateRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowStreamLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSyncStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.RepositoryNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowBuildIndexStatement;
@@ -1335,6 +1342,50 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
             result.setJobName((JobNameSegment) visit(ctx.qualifiedJobName()));
         }
         result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowCreateLoad(final ShowCreateLoadContext ctx) {
+        DorisShowCreateLoadStatement result = new DorisShowCreateLoadStatement(getDatabaseType());
+        IdentifierValue identifierValue = (IdentifierValue) visit(ctx.identifier());
+        result.setLoadName(new LoadNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), identifierValue));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowLoad(final ShowLoadContext ctx) {
+        DorisShowLoadStatement result = new DorisShowLoadStatement(getDatabaseType());
+        if (null != ctx.databaseName()) {
+            result.setDatabase((DatabaseSegment) visit(ctx.databaseName()));
+        }
+        if (null != ctx.showWhereClause()) {
+            result.setWhere((WhereSegment) visit(ctx.showWhereClause()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowStreamLoad(final ShowStreamLoadContext ctx) {
+        DorisShowStreamLoadStatement result = new DorisShowStreamLoadStatement(getDatabaseType());
+        if (null != ctx.databaseName()) {
+            result.setDatabase((DatabaseSegment) visit(ctx.databaseName()));
+        }
+        if (null != ctx.showWhereClause()) {
+            result.setWhere((WhereSegment) visit(ctx.showWhereClause()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        }
         return result;
     }
     
