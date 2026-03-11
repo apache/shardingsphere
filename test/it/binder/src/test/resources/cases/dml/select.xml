@@ -1172,4 +1172,16 @@
             </expr>
         </where>
     </select>
+    <select sql-case-id="select_oracle_all_tables_unqualified">
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <from start-index="14" stop-index="23">
+            <simple-table name="ALL_TABLES" start-index="14" stop-index="23">
+                <table-bound>
+                    <original-schema name="SYS" />
+                </table-bound>
+            </simple-table>
+        </from>
+    </select>
 </sql-parser-test-cases>
