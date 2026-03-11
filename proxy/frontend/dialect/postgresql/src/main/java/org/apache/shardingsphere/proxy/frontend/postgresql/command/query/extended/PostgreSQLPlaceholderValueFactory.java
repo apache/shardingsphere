@@ -44,13 +44,7 @@ public final class PostgreSQLPlaceholderValueFactory {
         return null == column ? create(parameterType) : create(column.getDataType());
     }
     
-    /**
-     * Create placeholder value from PostgreSQL binary column type.
-     *
-     * @param parameterType PostgreSQL binary column type
-     * @return placeholder value
-     */
-    public static Object create(final PostgreSQLBinaryColumnType parameterType) {
+    private static Object create(final PostgreSQLBinaryColumnType parameterType) {
         switch (parameterType) {
             case INT2:
             case INT4:
@@ -79,13 +73,7 @@ public final class PostgreSQLPlaceholderValueFactory {
         }
     }
     
-    /**
-     * Create placeholder value from JDBC type.
-     *
-     * @param jdbcType JDBC type
-     * @return placeholder value
-     */
-    public static Object create(final int jdbcType) {
+    private static Object create(final int jdbcType) {
         switch (jdbcType) {
             case Types.TINYINT:
             case Types.SMALLINT:

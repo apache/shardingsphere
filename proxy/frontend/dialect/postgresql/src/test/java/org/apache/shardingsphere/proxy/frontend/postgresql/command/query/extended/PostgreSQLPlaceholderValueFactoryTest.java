@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.sql.Types;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,12 +36,14 @@ class PostgreSQLPlaceholderValueFactoryTest {
     }
     
     @Test
-    void assertCreateWithBinaryColumnType() {
-        assertThat(PostgreSQLPlaceholderValueFactory.create(PostgreSQLBinaryColumnType.NUMERIC), is(BigDecimal.ZERO));
+    void assertCreateWithNumericColumn() {
+        ShardingSphereColumn column = new ShardingSphereColumn("amount", Types.NUMERIC, false, false, false, true, false, false);
+        assertThat(PostgreSQLPlaceholderValueFactory.create(column, PostgreSQLBinaryColumnType.INT4), is(java.math.BigDecimal.ZERO));
     }
     
     @Test
-    void assertCreateWithJdbcType() {
-        assertThat(PostgreSQLPlaceholderValueFactory.create(Types.TIMESTAMP), isA(java.sql.Timestamp.class));
+    void assertCreateWithTimestampColumn() {
+        ShardingSphereColumn column = new ShardingSphereColumn("created_at", Types.TIMESTAMP, false, false, false, true, false, false);
+        assertThat(PostgreSQLPlaceholderValueFactory.create(column, PostgreSQLBinaryColumnType.INT4), isA(java.sql.Timestamp.class));
     }
 }
