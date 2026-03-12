@@ -158,7 +158,7 @@
     <sql-case id="show_schemas_with_like_sql_wildcard" value="SHOW SCHEMAS LIKE 'emplo_ees';" db-types="Hive" />
     <sql-case id="show_databases_with_like_exact_match" value="SHOW DATABASES LIKE 'employees';" db-types="Hive" />
     <sql-case id="show_databases_doris" value="SHOW DATABASES" db-types="Doris" />
-    <sql-case id="show_databases_doris_from_catalog" value="SHOW DATABASES FROM hms_catalog" db-types="Doris" />
+    <sql-case id="show_databases_doris_from_catalog" value="SHOW DATABASES FROM hms_catalog;" db-types="Doris" />
     <sql-case id="show_databases_doris_with_like" value="SHOW DATABASES LIKE 'infor%'" db-types="Doris" />
     <sql-case id="show_connectors" value="SHOW CONNECTORS;" db-types="Hive" />
     <sql-case id="show_tables_basic" value="SHOW TABLES;" db-types="Hive" />
