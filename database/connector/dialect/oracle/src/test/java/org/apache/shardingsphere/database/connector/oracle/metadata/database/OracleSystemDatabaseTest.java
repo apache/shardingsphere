@@ -17,21 +17,19 @@
 
 package org.apache.shardingsphere.database.connector.oracle.metadata.database;
 
-import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OracleSystemDatabaseTest {
     
     @Test
     void assertGetSystemSchemas() {
-        DialectSystemDatabase actual = TypedSPILoader.getService(DialectSystemDatabase.class, "Oracle");
+        OracleSystemDatabase actual = new OracleSystemDatabase();
         assertThat(actual.getDatabaseType(), is("Oracle"));
         Collection<String> systemSchemas = actual.getSystemSchemas();
         assertTrue(systemSchemas.contains("SYS"));
