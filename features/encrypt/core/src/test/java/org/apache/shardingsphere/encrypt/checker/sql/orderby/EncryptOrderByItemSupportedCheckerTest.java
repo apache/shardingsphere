@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.checker.sql.orderby;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
+import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryptQueryAlgorithmException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
@@ -95,12 +95,14 @@ class EncryptOrderByItemSupportedCheckerTest {
     
     @Test
     void assertCheckFailed() {
-        assertThrows(UnsupportedEncryptSQLException.class, () -> new EncryptOrderByItemSupportedChecker().check(mockEncryptRule(), mock(), mock(), mockSelectStatementContext("foo_tbl")));
+        assertThrows(MissingMatchedEncryptQueryAlgorithmException.class, () -> new EncryptOrderByItemSupportedChecker()
+                .check(mockEncryptRule(), mock(), mock(), mockSelectStatementContext("foo_tbl")));
     }
     
     @Test
     void assertCheckSuccess() {
-        assertDoesNotThrow(() -> new EncryptOrderByItemSupportedChecker().check(mockEncryptRule(), mock(), mock(), mockSelectStatementContext("bar_tbl")));
+        assertDoesNotThrow(() -> new EncryptOrderByItemSupportedChecker()
+                .check(mockEncryptRule(), mock(), mock(), mockSelectStatementContext("bar_tbl")));
     }
     
     private EncryptRule mockEncryptRule() {

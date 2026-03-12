@@ -64,3 +64,12 @@ document/public/
 .codex/sessions/
 .codex/tmp/
 .codex/prompts/
+.codex/shell_snapshots/
+.codex/*.sqlite
+.codex/*.sqlite-shm
+.codex/*.sqlite-wal
+.codex/history.jsonl
+.codex/auth.json
+.codex/models_cache.json
+.codex/version.json
+.codex/.personality_migration
