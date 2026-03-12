@@ -3251,7 +3251,23 @@
             <property key="colocate_with" value="t1" start-index="37" stop-index="58" />
         </set-properties>
     </alter-table>
-    
+
+    <alter-table sql-case-id="alter_table_drop_column_simple_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <drop-column name="col1" start-index="44" stop-index="47" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_column_from_rollup_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <drop-column name="col1" start-index="44" stop-index="47">
+            <rollup-index name="rollup_1" start-index="54" stop-index="61" />
+        </drop-column>
+    </alter-table>
+
     <alter-table sql-case-id="alter_table_drop_column_with_properties_doris">
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />

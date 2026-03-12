@@ -337,6 +337,12 @@ public final class AlterTableStatementAssert {
             for (ColumnSegment column : each.getColumns()) {
                 ExpectedColumn expectedColumn = expected.getDropColumns().get(count);
                 ColumnAssert.assertIs(assertContext, column, expectedColumn);
+                if (null != expectedColumn.getRollupIndex()) {
+                    assertTrue(each.getRollupIndex().isPresent(), assertContext.getText("Drop column rollup index should exist"));
+                    IndexAssert.assertIs(assertContext, each.getRollupIndex().get(), expectedColumn.getRollupIndex());
+                } else {
+                    assertFalse(each.getRollupIndex().isPresent(), assertContext.getText("Drop column rollup index should not exist"));
+                }
                 if (null != expectedColumn.getProperties()) {
                     assertTrue(each.getProperties().isPresent(), assertContext.getText("Drop column properties should exist"));
                     assertProperties(assertContext, each.getProperties().get(), expectedColumn.getProperties());

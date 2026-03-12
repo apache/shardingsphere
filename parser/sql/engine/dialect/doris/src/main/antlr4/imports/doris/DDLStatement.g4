@@ -134,7 +134,7 @@ alterListItem
     | ADD ROLLUP rollupItem (COMMA_ rollupItem)*  # addRollup
     | CHANGE COLUMN? columnInternalRef=identifier columnDefinition place?  # changeColumn
     | MODIFY COLUMN? columnInternalRef=identifier (fieldDefinition place? (FROM fromRollup=identifier)? propertiesClause? | COMMENT string_)   # modifyColumn
-    | DROP (COLUMN? columnInternalRef=identifier restrict? | FOREIGN KEY columnInternalRef=identifier | PRIMARY KEY | keyOrIndex indexName | CHECK identifier | CONSTRAINT identifier) propertiesClause?  # alterTableDrop
+    | DROP (COLUMN? columnInternalRef=identifier (restrict | FROM fromRollup=identifier)? | FOREIGN KEY columnInternalRef=identifier | PRIMARY KEY | keyOrIndex indexName | CHECK identifier | CONSTRAINT identifier) propertiesClause?  # alterTableDrop
     | DROP ROLLUP rollupNameItem (COMMA_ rollupNameItem)*  # dropRollup
     | DISABLE KEYS  # disableKeys
     | ENABLE KEYS   # enableKeys

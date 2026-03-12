@@ -431,6 +431,8 @@
     <sql-case id="alter_table_add_partitions_from_to_interval_day_doris" value="ALTER TABLE example_db.my_table ADD PARTITIONS FROM (&quot;2023-01-01&quot;) TO (&quot;2025-01-01&quot;) INTERVAL 1 DAY" db-types="Doris" />
     <sql-case id="alter_table_set_bloom_filter_columns_doris" value="ALTER TABLE example_db.my_table SET (&quot;bloom_filter_columns&quot;=&quot;k1,k2,k3&quot;)" db-types="Doris" />
     <sql-case id="alter_table_set_colocate_with_doris" value="ALTER TABLE example_db.my_table SET (&quot;colocate_with&quot; = &quot;t1&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_drop_column_simple_doris" value="ALTER TABLE example_db.my_table DROP COLUMN col1" db-types="Doris" />
+    <sql-case id="alter_table_drop_column_from_rollup_doris" value="ALTER TABLE example_db.my_table DROP COLUMN col1 FROM rollup_1" db-types="Doris" />
     <sql-case id="alter_table_drop_column_with_properties_doris" value="ALTER TABLE example_db.my_table DROP COLUMN col2 PROPERTIES (&quot;bloom_filter_columns&quot;=&quot;k1,k2,k3&quot;)" db-types="Doris" />
     <sql-case id="alter_table_enable_feature_batch_delete_doris" value="ALTER TABLE example_db.my_table ENABLE FEATURE &quot;BATCH_DELETE&quot;" db-types="Doris" />
     <sql-case id="alter_table_enable_feature_sequence_load_doris" value="ALTER TABLE example_db.my_table ENABLE FEATURE &quot;SEQUENCE_LOAD&quot; WITH PROPERTIES (&quot;function_column.sequence_type&quot; = &quot;Date&quot;)" db-types="Doris" />

@@ -928,8 +928,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     private Optional<AlterDefinitionSegment> getDropItemDefinitionSegment(final AlterListContext alterListContext, final AlterTableDropContext alterTableDrop) {
         if (null != alterTableDrop.CHECK() || null != alterTableDrop.CONSTRAINT()) {
-            ConstraintSegment constraint = new ConstraintSegment(alterTableDrop.identifier().getStart().getStartIndex(), alterTableDrop.identifier().getStop().getStopIndex(),
-                    (IdentifierValue) visit(alterTableDrop.identifier()));
+            ConstraintSegment constraint = new ConstraintSegment(alterTableDrop.identifier(0).getStart().getStartIndex(), alterTableDrop.identifier(0).getStop().getStopIndex(),
+                    (IdentifierValue) visit(alterTableDrop.identifier(0)));
             return Optional.of(new DropConstraintDefinitionSegment(alterListContext.getStart().getStartIndex(), alterListContext.getStop().getStopIndex(), constraint));
         }
         if (null == alterTableDrop.KEY() && null == alterTableDrop.keyOrIndex()) {
@@ -937,6 +937,12 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
                     (IdentifierValue) visit(alterTableDrop.columnInternalRef));
             DropColumnDefinitionSegment dropColumnSegment =
                     new DropColumnDefinitionSegment(alterTableDrop.getStart().getStartIndex(), alterTableDrop.getStop().getStopIndex(), Collections.singleton(column));
+            if (null != alterTableDrop.fromRollup) {
+                int startIndex = alterTableDrop.fromRollup.getStart().getStartIndex();
+                int stopIndex = alterTableDrop.fromRollup.getStop().getStopIndex();
+                IdentifierValue identifierValue = (IdentifierValue) visit(alterTableDrop.fromRollup);
+                dropColumnSegment.setRollupIndex(new IndexSegment(startIndex, stopIndex, new IndexNameSegment(startIndex, stopIndex, identifierValue)));
+            }
             if (null != alterTableDrop.propertiesClause()) {
                 dropColumnSegment.setProperties(extractPropertiesSegment(alterTableDrop.propertiesClause()));
             }
