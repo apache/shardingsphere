@@ -116,7 +116,7 @@
         <bouncycastle.version>1.79</bouncycastle.version>
         
         <curator.version>5.7.0</curator.version>
-        <zookeeper.version>3.9.4</zookeeper.version>
+        <zookeeper.version>3.9.5</zookeeper.version>
         <audience-annotations.version>0.12.0</audience-annotations.version>
         <jetcd.version>0.7.7</jetcd.version>
         <vertx.version>4.5.1</vertx.version>
