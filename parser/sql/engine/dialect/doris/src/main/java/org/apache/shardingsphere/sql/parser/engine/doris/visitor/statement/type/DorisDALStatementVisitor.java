@@ -735,7 +735,9 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
-        MySQLShowDatabasesStatement result = new MySQLShowDatabasesStatement(getDatabaseType(), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
+        ShowFilterSegment filter = null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter());
+        String catalogName = null == ctx.catalogName() ? null : ((IdentifierValue) visit(ctx.catalogName())).getValue();
+        MySQLShowDatabasesStatement result = new MySQLShowDatabasesStatement(getDatabaseType(), filter, catalogName);
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }

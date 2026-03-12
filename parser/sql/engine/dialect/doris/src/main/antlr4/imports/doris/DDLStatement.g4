@@ -311,7 +311,7 @@ dorisIndexTypeClause
     ;
 
 createDatabase
-    : CREATE (DATABASE | SCHEMA) ifNotExists? databaseName createDatabaseSpecification_*
+    : CREATE (DATABASE | SCHEMA) ifNotExists? databaseName createDatabaseSpecification_* propertiesClause?
     ;
 
 alterDatabase
@@ -333,7 +333,7 @@ alterDatabaseSpecification_
     ;
 
 dropDatabase
-    : DROP (DATABASE | SCHEMA) ifExists? databaseName
+    : DROP (DATABASE | SCHEMA) ifExists? databaseName FORCE?
     ;
 
 alterCatalog
