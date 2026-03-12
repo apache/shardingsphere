@@ -21,52 +21,39 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.position.ColumnPositionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Add column definition segment.
+ * Order by column definition segment for Doris ALTER TABLE ORDER BY.
  */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class AddColumnDefinitionSegment implements AlterDefinitionSegment {
+public final class OrderByColumnDefinitionSegment implements AlterDefinitionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final Collection<ColumnDefinitionSegment> columnDefinitions;
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
     
-    private ColumnPositionSegment columnPosition;
-    
-    private String aggType;
-    
-    private IndexSegment rollupIndex;
+    private IndexSegment fromIndex;
     
     private PropertiesSegment properties;
     
     /**
-     * Get column position.
+     * Get from index.
      *
-     * @return column position
+     * @return from index
      */
-    public Optional<ColumnPositionSegment> getColumnPosition() {
-        return Optional.ofNullable(columnPosition);
-    }
-    
-    /**
-     * Get rollup index.
-     *
-     * @return rollup index
-     */
-    public Optional<IndexSegment> getRollupIndex() {
-        return Optional.ofNullable(rollupIndex);
+    public Optional<IndexSegment> getFromIndex() {
+        return Optional.ofNullable(fromIndex);
     }
     
     /**

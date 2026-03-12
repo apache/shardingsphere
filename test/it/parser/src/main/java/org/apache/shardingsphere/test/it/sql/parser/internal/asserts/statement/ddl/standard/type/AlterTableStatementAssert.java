@@ -43,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.Dr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ModifyTableCommentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.DropPrimaryKeyDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.OrderByColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ReplaceTableDefinitionSegment;
@@ -77,6 +78,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenamePartitionDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedAddRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedDropRollupDefinition;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedOrderByColumnDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedRenameRollupDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedEnableFeatureDefinition;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedModifyEngineDefinition;
@@ -127,6 +129,7 @@ public final class AlterTableStatementAssert {
         assertAddRollupDefinitions(assertContext, actual, expected);
         assertDropRollupDefinitions(assertContext, actual, expected);
         assertRenameRollupDefinitions(assertContext, actual, expected);
+        assertOrderByColumnDefinitions(assertContext, actual, expected);
         assertRenamePartitionDefinitions(assertContext, actual, expected);
         assertAddPartitionDefinitions(assertContext, actual, expected);
         assertModifyPartitionDefinitions(assertContext, actual, expected);
@@ -216,6 +219,24 @@ public final class AlterTableStatementAssert {
             } else {
                 assertNull(expectedAddColumnDefinition.getColumnPosition(), assertContext.getText("Column position should not exist."));
             }
+            if (null != expectedAddColumnDefinition.getAggType()) {
+                assertNotNull(each.getAggType(), assertContext.getText("Agg type should exist."));
+                assertThat(assertContext.getText("Agg type assertion error: "), each.getAggType(), is(expectedAddColumnDefinition.getAggType()));
+            } else {
+                assertNull(each.getAggType(), assertContext.getText("Agg type should not exist."));
+            }
+            if (null != expectedAddColumnDefinition.getRollupIndex()) {
+                assertTrue(each.getRollupIndex().isPresent(), assertContext.getText("Rollup index should exist"));
+                IndexAssert.assertIs(assertContext, each.getRollupIndex().get(), expectedAddColumnDefinition.getRollupIndex());
+            } else {
+                assertFalse(each.getRollupIndex().isPresent(), assertContext.getText("Rollup index should not exist"));
+            }
+            if (null != expectedAddColumnDefinition.getProperties()) {
+                assertTrue(each.getProperties().isPresent(), assertContext.getText("Add column properties should exist"));
+                assertProperties(assertContext, each.getProperties().get(), expectedAddColumnDefinition.getProperties());
+            } else {
+                assertFalse(each.getProperties().isPresent(), assertContext.getText("Add column properties should not exist"));
+            }
             count++;
         }
     }
@@ -263,6 +284,24 @@ public final class AlterTableStatementAssert {
                 ColumnPositionAssert.assertIs(assertContext, each.getColumnPosition().get(), expectedModifyColumnDefinition.getColumnPosition());
             } else {
                 assertNull(expectedModifyColumnDefinition.getColumnPosition(), assertContext.getText("Column position should not exist."));
+            }
+            if (null != expectedModifyColumnDefinition.getAggType()) {
+                assertNotNull(each.getAggType(), assertContext.getText("Modify column agg type should exist."));
+                assertThat(assertContext.getText("Modify column agg type assertion error: "), each.getAggType(), is(expectedModifyColumnDefinition.getAggType()));
+            } else {
+                assertNull(each.getAggType(), assertContext.getText("Modify column agg type should not exist."));
+            }
+            if (null != expectedModifyColumnDefinition.getRollupIndex()) {
+                assertTrue(each.getRollupIndex().isPresent(), assertContext.getText("Modify column rollup index should exist"));
+                IndexAssert.assertIs(assertContext, each.getRollupIndex().get(), expectedModifyColumnDefinition.getRollupIndex());
+            } else {
+                assertFalse(each.getRollupIndex().isPresent(), assertContext.getText("Modify column rollup index should not exist"));
+            }
+            if (null != expectedModifyColumnDefinition.getProperties()) {
+                assertTrue(each.getProperties().isPresent(), assertContext.getText("Modify column properties should exist"));
+                assertProperties(assertContext, each.getProperties().get(), expectedModifyColumnDefinition.getProperties());
+            } else {
+                assertFalse(each.getProperties().isPresent(), assertContext.getText("Modify column properties should not exist"));
             }
             count++;
         }
@@ -383,6 +422,34 @@ public final class AlterTableStatementAssert {
             RollupAssert.assertIs(assertContext, each.getRollupSegment(), expectedRenameRollupDefinition.getOldRollup());
             RollupAssert.assertIs(assertContext, each.getRenameRollupSegment(), expectedRenameRollupDefinition.getNewRollup());
             SQLSegmentAssert.assertIs(assertContext, each, expectedRenameRollupDefinition);
+            count++;
+        }
+    }
+    
+    private static void assertOrderByColumnDefinitions(final SQLCaseAssertContext assertContext, final AlterTableStatement actual, final AlterTableStatementTestCase expected) {
+        assertThat(assertContext.getText("Order by column definitions size assertion error: "), actual.getOrderByColumnDefinitions().size(), is(expected.getOrderByColumns().size()));
+        int count = 0;
+        for (OrderByColumnDefinitionSegment each : actual.getOrderByColumnDefinitions()) {
+            ExpectedOrderByColumnDefinition expectedOrderByColumn = expected.getOrderByColumns().get(count);
+            assertThat(assertContext.getText("Order by column definitions columns size assertion error: "), each.getColumns().size(), is(expectedOrderByColumn.getColumns().size()));
+            int columnCount = 0;
+            for (ColumnSegment columnSegment : each.getColumns()) {
+                ColumnAssert.assertIs(assertContext, columnSegment, expectedOrderByColumn.getColumns().get(columnCount));
+                columnCount++;
+            }
+            if (null != expectedOrderByColumn.getFromIndex()) {
+                assertTrue(each.getFromIndex().isPresent(), assertContext.getText("Order by from index should exist"));
+                IndexAssert.assertIs(assertContext, each.getFromIndex().get(), expectedOrderByColumn.getFromIndex());
+            } else {
+                assertFalse(each.getFromIndex().isPresent(), assertContext.getText("Order by from index should not exist"));
+            }
+            if (null != expectedOrderByColumn.getProperties()) {
+                assertTrue(each.getProperties().isPresent(), assertContext.getText("Order by properties should exist"));
+                assertProperties(assertContext, each.getProperties().get(), expectedOrderByColumn.getProperties());
+            } else {
+                assertFalse(each.getProperties().isPresent(), assertContext.getText("Order by properties should not exist"));
+            }
+            SQLSegmentAssert.assertIs(assertContext, each, expectedOrderByColumn);
             count++;
         }
     }

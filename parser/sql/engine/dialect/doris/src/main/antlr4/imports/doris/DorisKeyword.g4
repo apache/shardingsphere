@@ -185,6 +185,10 @@ BIT
     : B I T
     ;
 
+BITMAP_UNION
+    : B I T M A P UL_ U N I O N
+    ;
+
 BLOB
     : B L O B
     ;
@@ -1053,6 +1057,10 @@ HELP
 
 HIGH_PRIORITY
     : H I G H UL_ P R I O R I T Y
+    ;
+
+HLL_UNION
+    : H L L UL_ U N I O N
     ;
 
 HISTOGRAM
@@ -2104,6 +2112,10 @@ POLICY
     : P O L I C Y
     ;
 
+QUANTILE_UNION
+    : Q U A N T I L E UL_ U N I O N
+    ;
+
 QUARTER
     : Q U A R T E R
     ;
@@ -2258,6 +2270,10 @@ REPLICATE_DO_DB
 
 REPLICATE_DO_TABLE
     : R E P L I C A T E UL_ D O UL_ T A B L E
+    ;
+
+REPLACE_IF_NOT_NULL
+    : R E P L A C E UL_ I F UL_ N O T UL_ N U L L
     ;
 
 REPLICATE_IGNORE_DB

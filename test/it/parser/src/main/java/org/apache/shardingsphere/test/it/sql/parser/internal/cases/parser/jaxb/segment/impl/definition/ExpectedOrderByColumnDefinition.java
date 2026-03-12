@@ -20,30 +20,26 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperties;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedIndex;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Expected modify column definition.
+ * Expected order by column definition for Doris ALTER TABLE ORDER BY.
  */
 @Getter
 @Setter
-public final class ExpectedModifyColumnDefinition extends AbstractExpectedSQLSegment {
+public final class ExpectedOrderByColumnDefinition extends AbstractExpectedSQLSegment {
     
-    @XmlElement(name = "column-definition")
-    private ExpectedColumnDefinition columnDefinition;
+    @XmlElement(name = "column")
+    private final List<ExpectedColumn> columns = new LinkedList<>();
     
-    @XmlElement(name = "column-position")
-    private ExpectedColumnPosition columnPosition;
-    
-    @XmlAttribute(name = "agg-type")
-    private String aggType;
-    
-    @XmlElement(name = "rollup-index")
-    private ExpectedIndex rollupIndex;
+    @XmlElement(name = "from-index")
+    private ExpectedIndex fromIndex;
     
     @XmlElement(name = "properties")
     private ExpectedProperties properties;
