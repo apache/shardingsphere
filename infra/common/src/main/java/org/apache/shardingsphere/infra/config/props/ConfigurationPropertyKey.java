@@ -141,6 +141,11 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED("persist-schemas-to-repository-enabled", String.valueOf(Boolean.TRUE), boolean.class, true),
     
     /**
+     * Metadata identifier case sensitivity.
+     */
+    METADATA_IDENTIFIER_CASE_SENSITIVITY("metadata-identifier-case-sensitivity", MetadataIdentifierCaseSensitivity.AUTO.name(), MetadataIdentifierCaseSensitivity.class, true),
+    
+    /**
      * Maximum size of Groovy inline expression parsing cache.
      */
     GROOVY_INLINE_EXPRESSION_PARSING_CACHE_MAX_SIZE("groovy-inline-expression-parsing-cache-max-size", "1000", long.class, false);
