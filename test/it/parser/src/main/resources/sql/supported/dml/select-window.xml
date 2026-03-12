@@ -25,4 +25,14 @@
     <sql-case id="select_window_frame_doris" value="SELECT SUM(v) OVER (PARTITION BY k ORDER BY v ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) FROM t_order" db-types="Doris" />
     <sql-case id="select_window_frame_mysql" value="SELECT SUM(v) OVER (PARTITION BY k ORDER BY v ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING) FROM t_order" db-types="MySQL" />
     <sql-case id="select_window_ntile_doris" value="SELECT NTILE(4) OVER (ORDER BY id) FROM t_order" db-types="Doris" />
+    <sql-case id="select_window_order_by_mysql" value="SELECT ROW_NUMBER() OVER (ORDER BY order_id) AS rn FROM t_order" db-types="MySQL" />
+    <sql-case id="select_window_partition_order_by_mysql" value="SELECT ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY order_id) AS rn FROM t_order" db-types="MySQL" />
+    <sql-case id="select_window_expression_partition_order_by_mysql" value="SELECT ROW_NUMBER() OVER (PARTITION BY LENGTH(email) ORDER BY user_id) AS rn FROM t_order" db-types="MySQL" />
+    <sql-case id="select_window_lead_placeholder_mysql" value="SELECT order_id, user_id, LEAD(order_id, ?, ?) OVER (PARTITION BY user_id ORDER BY order_id) AS next_order_default FROM t_order WHERE user_id BETWEEN ? AND ? ORDER BY user_id, order_id" db-types="MySQL" case-types="PLACEHOLDER" />
+    <sql-case id="select_named_window_expression_order_by_mysql" value="SELECT user_id, user_name, ROW_NUMBER() OVER w AS rn FROM t_user WINDOW w AS (ORDER BY LENGTH(user_name), user_id)" db-types="MySQL" />
+    <sql-case id="select_window_sum_partition_order_by_mysql" value="SELECT SUM(order_id) OVER (PARTITION BY user_id ORDER BY order_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_sum FROM t_order" db-types="MySQL" />
+    <sql-case id="select_window_count_partition_mysql" value="SELECT COUNT(*) OVER (PARTITION BY user_id) AS partition_count FROM t_order" db-types="MySQL" />
+    <sql-case id="select_window_avg_partition_mysql" value="SELECT AVG(order_id) OVER (PARTITION BY user_id) AS avg_order_id FROM t_order" db-types="MySQL" />
+    <sql-case id="select_window_min_partition_mysql" value="SELECT MIN(order_id) OVER (PARTITION BY user_id) AS min_order_id FROM t_order" db-types="MySQL" />
+    <sql-case id="select_window_max_partition_mysql" value="SELECT MAX(order_id) OVER (PARTITION BY user_id) AS max_order_id FROM t_order" db-types="MySQL" />
 </sql-cases>

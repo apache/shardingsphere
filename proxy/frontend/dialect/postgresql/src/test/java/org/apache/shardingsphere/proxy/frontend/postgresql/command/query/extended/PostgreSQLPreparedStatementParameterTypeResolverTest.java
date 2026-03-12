@@ -54,6 +54,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -72,6 +73,8 @@ import static org.mockito.Mockito.when;
 class PostgreSQLPreparedStatementParameterTypeResolverTest {
     
     private static final String SQL = "SELECT id FROM foo_tbl WHERE id=?";
+    
+    private static final List<Object> PARAMETERS = Collections.singletonList(1);
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
@@ -93,7 +96,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         prepareJDBCBackendConnectionWithParamTypes();
-        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement);
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement, PARAMETERS);
         assertThat(preparedStatement.getParameterTypes(), is(Collections.singletonList(PostgreSQLBinaryColumnType.INT4)));
     }
     
@@ -120,7 +123,7 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
                 SQL, sqlStatementContext, new HintValueContext(), Collections.singletonList(PostgreSQLBinaryColumnType.INT4), Collections.singletonList(0));
-        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement);
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement, PARAMETERS);
         verifyNoInteractions(connectionSession);
     }
     

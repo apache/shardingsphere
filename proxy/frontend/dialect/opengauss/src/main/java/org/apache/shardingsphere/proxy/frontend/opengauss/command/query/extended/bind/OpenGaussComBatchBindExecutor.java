@@ -26,12 +26,15 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.PostgreSQLCommand;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLBatchedStatementsExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatementParameterTypeResolver;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Command batch bind executor for openGauss.
@@ -47,7 +50,10 @@ public final class OpenGaussComBatchBindExecutor implements CommandExecutor {
     public Collection<DatabasePacket> execute() throws SQLException {
         connectionSession.getDatabaseConnectionManager().handleAutoCommit();
         PostgreSQLServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
-        int updateCount = new PostgreSQLBatchedStatementsExecutor(connectionSession, preparedStatement, packet.readParameterSets(preparedStatement.getParameterTypes())).executeBatch();
+        List<List<Object>> parameterSets = packet.readParameterSets(preparedStatement.getParameterTypes());
+        List<Object> sampleParameters = parameterSets.isEmpty() ? Collections.emptyList() : parameterSets.iterator().next();
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement, sampleParameters);
+        int updateCount = new PostgreSQLBatchedStatementsExecutor(connectionSession, preparedStatement, parameterSets).executeBatch();
         return Arrays.asList(PostgreSQLBindCompletePacket.getInstance(), createCommandComplete(preparedStatement.getSqlStatementContext().getSqlStatement(), updateCount));
     }
     

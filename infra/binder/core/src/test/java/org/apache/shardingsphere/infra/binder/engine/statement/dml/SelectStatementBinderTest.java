@@ -29,11 +29,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Bina
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.OrderDirection;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
@@ -41,6 +47,7 @@ import org.junit.jupiter.api.Test;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -97,6 +104,44 @@ class SelectStatementBinderTest {
                 .getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
     }
     
+    @Test
+    void assertBindWindow() {
+        ProjectionsSegment projections = new ProjectionsSegment(0, 0);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id"))));
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(0, 0, new IdentifierValue("user_name"))));
+        ColumnSegment partitionColumnSegment = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
+        FunctionSegment lengthFunction = new FunctionSegment(0, 0, "LENGTH", "LENGTH(user_name)");
+        lengthFunction.getParameters().add(new ColumnSegment(0, 0, new IdentifierValue("user_name")));
+        ExpressionOrderByItemSegment expressionOrderByItemSegment =
+                new ExpressionOrderByItemSegment(0, 0, "LENGTH(user_name)", OrderDirection.ASC, null, lengthFunction);
+        ColumnOrderByItemSegment columnOrderByItemSegment =
+                new ColumnOrderByItemSegment(new ColumnSegment(0, 0, new IdentifierValue("user_id")), OrderDirection.ASC, null);
+        WindowItemSegment windowItemSegment = new WindowItemSegment(0, 0);
+        windowItemSegment.setWindowName(new IdentifierValue("w"));
+        windowItemSegment.setPartitionListSegments(Collections.singleton(partitionColumnSegment));
+        windowItemSegment.setOrderBySegment(new OrderBySegment(0, 0, Arrays.asList(expressionOrderByItemSegment, columnOrderByItemSegment)));
+        WindowSegment windowSegment = new WindowSegment(0, 0);
+        windowSegment.getItemSegments().add(windowItemSegment);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user")))).window(windowSegment).build();
+        SelectStatement actual = new SelectStatementBinder().bind(selectStatement, new SQLStatementBinderContext(mockMetaData(),
+                "foo_db", new HintValueContext(), selectStatement));
+        assertTrue(actual.getWindow().isPresent());
+        assertThat(actual.getWindow().get(), not(windowSegment));
+        WindowItemSegment actualWindowItem = actual.getWindow().get().getItemSegments().iterator().next();
+        assertThat(actualWindowItem, not(windowItemSegment));
+        ColumnSegment actualPartitionColumn = (ColumnSegment) actualWindowItem.getPartitionListSegments().iterator().next();
+        assertThat(actualPartitionColumn.getColumnBoundInfo().getOriginalColumn().getValue(), is("user_id"));
+        assertThat(actualPartitionColumn.getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+        ExpressionOrderByItemSegment actualExpressionOrderByItem = (ExpressionOrderByItemSegment) actualWindowItem.getOrderBySegment().getOrderByItems().iterator().next();
+        FunctionSegment actualLengthFunction = (FunctionSegment) actualExpressionOrderByItem.getExpr();
+        ColumnSegment actualLengthParameter = (ColumnSegment) actualLengthFunction.getParameters().iterator().next();
+        assertThat(actualLengthParameter.getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+        ColumnOrderByItemSegment actualColumnOrderByItem = (ColumnOrderByItemSegment) new ArrayList<>(actualWindowItem.getOrderBySegment().getOrderByItems()).get(1);
+        assertThat(actualColumnOrderByItem.getColumn().getColumnBoundInfo().getOriginalColumn().getValue(), is("user_id"));
+        assertThat(actualColumnOrderByItem.getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_user"));
+    }
+    
     private WhereSegment createWhereSegment() {
         FunctionSegment functionSegment = new FunctionSegment(0, 0, "nvl", "nvl(status, 0)");
         functionSegment.getParameters().add(new ColumnSegment(0, 0, new IdentifierValue("status")));
@@ -110,11 +155,15 @@ class SelectStatementBinderTest {
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)));
+        when(schema.getTable("t_user").getAllColumns()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("user_id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("user_name", Types.VARCHAR, false, false, false, true, false, false)));
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getDatabase("foo_db").getSchema("foo_db")).thenReturn(schema);
         when(result.containsDatabase("foo_db")).thenReturn(true);
         when(result.getDatabase("foo_db").containsSchema("foo_db")).thenReturn(true);
         when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("t_order")).thenReturn(true);
+        when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("t_user")).thenReturn(true);
         return result;
     }
 }

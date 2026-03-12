@@ -330,7 +330,6 @@ public final class EncryptProjectionTokenGenerator {
         ParenthesesSegment leftParentheses = columnProjection.getLeftParentheses().orElse(null);
         ParenthesesSegment rightParentheses = columnProjection.getRightParentheses().orElse(null);
         IdentifierValue owner = columnProjection.getOwner().orElse(null);
-        // SPEX CHANGED: BEGIN
         Optional<String> derivedColumnName = getDerivedColumnName(encryptColumn, columnProjection);
         String columnProjectionName = derivedColumnName.orElseGet(() -> columnProjection.getName().getValue());
         if (!derivedColumnName.isPresent()) {

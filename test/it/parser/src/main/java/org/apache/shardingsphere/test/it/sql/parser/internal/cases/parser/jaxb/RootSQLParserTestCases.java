@@ -47,6 +47,9 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropSqlBlockRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowCreateLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowStreamLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowCreateRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisStopRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowProcStatementTestCase;
@@ -584,6 +587,15 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "stop-sync-job")
     private final List<DorisStopSyncJobStatementTestCase> stopSyncJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-load")
+    private final List<DorisShowLoadStatementTestCase> dorisShowLoadTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-stream-load")
+    private final List<DorisShowStreamLoadStatementTestCase> dorisShowStreamLoadTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-create-load")
+    private final List<DorisShowCreateLoadStatementTestCase> dorisShowCreateLoadTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sync-job")
     private final List<DorisShowSyncJobStatementTestCase> dorisShowSyncJobTestCases = new LinkedList<>();

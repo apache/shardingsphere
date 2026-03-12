@@ -473,6 +473,18 @@ showSqlBlockRule
     : SHOW SQL_BLOCK_RULE (FOR ruleName)?
     ;
 
+showLoad
+    : SHOW LOAD (FROM databaseName)? showWhereClause? orderByClause? limitClause?
+    ;
+
+showStreamLoad
+    : SHOW STREAM LOAD (FROM databaseName)? showWhereClause? orderByClause? limitClause?
+    ;
+
+showCreateLoad
+    : SHOW CREATE LOAD FOR identifier
+    ;
+
 showRoutineLoadTask
     : SHOW ROUTINE LOAD TASK showWhereClause
     ;
@@ -852,6 +864,9 @@ show
     | showCreateFunction
     | showCreateProcedure
     | showCreateRoutineLoad
+    | showLoad
+    | showStreamLoad
+    | showCreateLoad
     | showCreateTrigger
     | showCreateUser
     | showCreateView
