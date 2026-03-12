@@ -54,6 +54,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -72,6 +73,8 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class PostgreSQLPreparedStatementMetadataFactoryTest {
     
+    private static final List<Object> PARAMETERS = Collections.singletonList(1);
+    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
     private final ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(databaseType, new CacheOption(2000, 65535L), new CacheOption(128, 1024L));
@@ -82,7 +85,7 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
     @Test
     void assertLoad() throws SQLException {
         PreparedStatement expected = prepareJDBCBackendConnection(null);
-        assertThat(PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, createPreparedStatement(true)), is(expected));
+        assertThat(PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, createPreparedStatement(true), PARAMETERS), is(expected));
     }
     
     @Test
@@ -90,7 +93,7 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
         PostgreSQLServerPreparedStatement preparedStatement = createPreparedStatement(true);
         SQLException expected = new SQLException("expected");
         prepareJDBCBackendConnection(expected);
-        assertThat(assertThrows(SQLException.class, () -> PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement)), is(expected));
+        assertThat(assertThrows(SQLException.class, () -> PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement, PARAMETERS)), is(expected));
     }
     
     @Test
@@ -101,7 +104,7 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
         try (
                 MockedConstruction<KernelProcessor> mockedConstruction = mockConstruction(KernelProcessor.class,
                         (mock, context) -> when(mock.generateExecutionContext(any(), any(), any())).thenReturn(executionContext))) {
-            SQLException actual = assertThrows(SQLException.class, () -> PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement));
+            SQLException actual = assertThrows(SQLException.class, () -> PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement, PARAMETERS));
             assertThat(actual.getMessage(), is("Can not resolve PostgreSQL prepared statement metadata because no execution unit was generated."));
             assertThat(mockedConstruction.constructed().size(), is(1));
         }
