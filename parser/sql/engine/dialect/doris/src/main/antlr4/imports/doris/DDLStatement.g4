@@ -605,7 +605,7 @@ fieldDefinition
     ;
 
 dorisColumnAggType
-    : SUM | MIN | MAX | REPLACE | HLL_UNION | BITMAP_UNION | REPLACE_IF_NOT_NULL | QUANTILE_UNION
+    : SUM | MIN | MAX | REPLACE | HLL_UNION | BITMAP_UNION | REPLACE_IF_NOT_NULL
     ;
 
 columnAttribute

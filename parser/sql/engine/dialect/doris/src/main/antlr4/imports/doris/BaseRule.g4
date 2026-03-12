@@ -416,7 +416,6 @@ identifierKeywordsUnambiguous
     | PROFILES
     | PROFILE
     | POLICY
-    | QUANTILE_UNION
     | QUARTER
     | QUERY
     | QUICK

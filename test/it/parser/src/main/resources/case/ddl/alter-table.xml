@@ -3448,10 +3448,10 @@
         </table>
         <add-column agg-type="SUM">
             <column-definition type="INT" start-index="43" stop-index="69">
-                <column name="new_col" start-index="43" stop-index="49" />
+                <column name="new_col" />
             </column-definition>
             <column-position start-index="71" stop-index="83">
-                <column name="value_1" start-index="77" stop-index="83" />
+                <column name="value_1" />
             </column-position>
         </add-column>
     </alter-table>
@@ -3462,10 +3462,10 @@
         </table>
         <add-column agg-type="SUM">
             <column-definition type="INT" start-index="43" stop-index="69">
-                <column name="new_col" start-index="43" stop-index="49" />
+                <column name="new_col" />
             </column-definition>
             <column-position start-index="71" stop-index="83">
-                <column name="value_1" start-index="77" stop-index="83" />
+                <column name="value_1" />
             </column-position>
             <rollup-index name="rollup_1" start-index="88" stop-index="95" />
         </add-column>
@@ -3477,10 +3477,10 @@
         </table>
         <add-column agg-type="SUM">
             <column-definition type="INT" start-index="43" stop-index="69">
-                <column name="new_col" start-index="43" stop-index="49" />
+                <column name="new_col" />
             </column-definition>
             <column-position start-index="71" stop-index="83">
-                <column name="value_1" start-index="77" stop-index="83" />
+                <column name="value_1" />
             </column-position>
             <rollup-index name="rollup_1" start-index="88" stop-index="95" />
             <properties start-index="97" stop-index="125">
@@ -3495,10 +3495,10 @@
         </table>
         <add-column>
             <column-definition type="INT" primary-key="true" start-index="43" stop-index="69">
-                <column name="new_col" start-index="43" stop-index="49" />
+                <column name="new_col" />
             </column-definition>
             <column-position start-index="71" stop-index="83">
-                <column name="value_1" start-index="77" stop-index="83" />
+                <column name="value_1" />
             </column-position>
         </add-column>
     </alter-table>
@@ -3509,7 +3509,7 @@
         </table>
         <add-column agg-type="SUM">
             <column-definition type="INT" start-index="43" stop-index="69">
-                <column name="new_col" start-index="43" stop-index="49" />
+                <column name="new_col" />
             </column-definition>
             <column-position start-index="71" stop-index="75" />
         </add-column>
@@ -3521,7 +3521,7 @@
         </table>
         <add-column agg-type="SUM">
             <column-definition type="INT" start-index="43" stop-index="69">
-                <column name="new_col" start-index="43" stop-index="49" />
+                <column name="new_col" />
             </column-definition>
             <column-position start-index="71" stop-index="75" />
             <rollup-index name="rollup_1" start-index="80" stop-index="87" />
@@ -3594,7 +3594,7 @@
                 <column name="val1" />
             </column-definition>
             <column-position start-index="85" stop-index="92">
-                <column name="k1" start-index="91" stop-index="92" />
+                <column name="k1" />
             </column-position>
         </modify-column>
     </alter-table>
@@ -3632,7 +3632,7 @@
                 <column name="val1" />
             </column-definition>
             <column-position start-index="85" stop-index="92">
-                <column name="k1" start-index="91" stop-index="92" />
+                <column name="k1" />
             </column-position>
             <rollup-index name="rollup_1" start-index="99" stop-index="106" />
             <properties start-index="108" stop-index="136">

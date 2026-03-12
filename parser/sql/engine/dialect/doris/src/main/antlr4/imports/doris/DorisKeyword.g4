@@ -2112,10 +2112,6 @@ POLICY
     : P O L I C Y
     ;
 
-QUANTILE_UNION
-    : Q U A N T I L E UL_ U N I O N
-    ;
-
 QUARTER
     : Q U A R T E R
     ;
