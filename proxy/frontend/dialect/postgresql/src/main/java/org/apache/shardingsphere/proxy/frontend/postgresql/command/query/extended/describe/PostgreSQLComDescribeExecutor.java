@@ -224,7 +224,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     }
     
     private void tryDescribePreparedStatementByJDBC(final PostgreSQLServerPreparedStatement logicPreparedStatement) throws SQLException {
-        try (PreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, logicPreparedStatement)) {
+        try (PreparedStatement actualPreparedStatement = PostgreSQLPreparedStatementMetadataFactory.load(connectionSession, logicPreparedStatement, Collections.emptyList())) {
             PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(logicPreparedStatement, actualPreparedStatement);
             populateColumnTypes(logicPreparedStatement, actualPreparedStatement);
         }
