@@ -29,6 +29,9 @@ ShardingSphere Proxy 或 GraalVM Native Image 形态的 ShardingSphere Proxy Nat
 4. 创建包含 Seata Client 和 Seata 集成模块的 ShardingSphere Proxy
 5. 为 ShardingSphere Proxy 添加 Seata 配置
 
+如果使用官方二进制发布包或 Docker Image，请先将 `opt-lib/seata-at` 目录中的 JAR 复制到 `ext-lib`，
+再补充 Seata Client 的第三方依赖。
+
 ## 配置示例
 
 ### 确认 Seata Client 的 JAR 和依赖列表
@@ -120,7 +123,7 @@ services:
          context: .
          dockerfile_inline: |
             FROM apache/shardingsphere-proxy:latest
-            RUN wget https://repo1.maven.org/maven2/org/apache/shardingsphere/shardingsphere-transaction-base-seata-at/5.5.2/shardingsphere-transaction-base-seata-at-5.5.2.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN cp /opt/shardingsphere-proxy/opt-lib/seata-at/*.jar /opt/shardingsphere-proxy/ext-lib/
             RUN wget https://repo1.maven.org/maven2/org/apache/seata/seata-all/2.5.0/seata-all-2.5.0.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-context/5.3.39/spring-context-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-expression/5.3.39/spring-expression-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
