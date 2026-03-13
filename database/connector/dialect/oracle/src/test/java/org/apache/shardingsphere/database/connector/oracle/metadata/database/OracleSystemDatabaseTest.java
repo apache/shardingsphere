@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.database.connector.oracle.metadata.database;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -29,7 +33,8 @@ class OracleSystemDatabaseTest {
     
     @Test
     void assertGetSystemSchemas() {
-        OracleSystemDatabase actual = new OracleSystemDatabase();
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+        DialectSystemDatabase actual = DatabaseTypedSPILoader.getService(DialectSystemDatabase.class, databaseType);
         assertThat(actual.getDatabaseType(), is("Oracle"));
         Collection<String> systemSchemas = actual.getSystemSchemas();
         assertTrue(systemSchemas.contains("SYS"));
