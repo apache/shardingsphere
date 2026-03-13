@@ -763,14 +763,14 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result = (SelectStatement) visit(ctx.queryExpressionParens());
         }
         SelectStatement.SelectStatementBuilder selectStatementBuilder = createSelectStatementBuilder(result);
+        if (null != ctx.withClause()) {
+            selectStatementBuilder.with((WithSegment) visit(ctx.withClause()));
+        }
         if (null != ctx.orderByClause()) {
             selectStatementBuilder.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.limitClause()) {
             selectStatementBuilder.limit((LimitSegment) visit(ctx.limitClause()));
-        }
-        if (null != ctx.withClause()) {
-            selectStatementBuilder.with((WithSegment) visit(ctx.withClause()));
         }
         return selectStatementBuilder.build();
     }
