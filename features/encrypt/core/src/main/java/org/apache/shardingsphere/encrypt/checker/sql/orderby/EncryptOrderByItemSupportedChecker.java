@@ -39,18 +39,25 @@ import java.util.Optional;
  * Order by item supported checker for encrypt.
  */
 @HighFrequencyInvocation
-public final class EncryptOrderByItemSupportedChecker implements SupportedSQLChecker<SelectStatementContext, EncryptRule> {
+public final class EncryptOrderByItemSupportedChecker implements SupportedSQLChecker<SQLStatementContext, EncryptRule> {
     
     @Override
     public boolean isCheck(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && containsOrderByItem((SelectStatementContext) sqlStatementContext);
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            return containsOrderByItem((SelectStatementContext) sqlStatementContext);
+        }
+        return false;
     }
     
     private boolean containsOrderByItem(final SelectStatementContext sqlStatementContext) {
         if (!sqlStatementContext.getOrderByContext().getItems().isEmpty() && !sqlStatementContext.getOrderByContext().isGenerated()) {
             return true;
         }
-        for (SelectStatementContext each : sqlStatementContext.getSubqueryContexts().values()) {
+        return containsSubqueryOrderByItem(sqlStatementContext.getSubqueryContexts().values());
+    }
+    
+    private boolean containsSubqueryOrderByItem(final Collection<SelectStatementContext> subqueryContexts) {
+        for (SelectStatementContext each : subqueryContexts) {
             if (containsOrderByItem(each)) {
                 return true;
             }
@@ -59,21 +66,31 @@ public final class EncryptOrderByItemSupportedChecker implements SupportedSQLChe
     }
     
     @Override
-    public void check(final EncryptRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SelectStatementContext sqlStatementContext) {
-        for (OrderByItem each : getOrderByItems(sqlStatementContext)) {
-            if (each.getSegment() instanceof ColumnOrderByItemSegment) {
-                checkColumnOrderByItem(rule, ((ColumnOrderByItemSegment) each.getSegment()).getColumn());
-            }
+    public void check(final EncryptRule rule, final ShardingSphereDatabase database, final ShardingSphereSchema currentSchema, final SQLStatementContext sqlStatementContext) {
+        for (ColumnSegment each : getOrderByColumns(sqlStatementContext)) {
+            checkColumnOrderByItem(rule, each);
         }
     }
     
-    private Collection<OrderByItem> getOrderByItems(final SelectStatementContext sqlStatementContext) {
-        Collection<OrderByItem> result = new LinkedList<>();
+    private Collection<ColumnSegment> getOrderByColumns(final SQLStatementContext sqlStatementContext) {
+        Collection<ColumnSegment> result = new LinkedList<>();
+        if (sqlStatementContext instanceof SelectStatementContext) {
+            result.addAll(getSelectOrderByColumns((SelectStatementContext) sqlStatementContext));
+        }
+        return result;
+    }
+    
+    private Collection<ColumnSegment> getSelectOrderByColumns(final SelectStatementContext sqlStatementContext) {
+        Collection<ColumnSegment> result = new LinkedList<>();
         if (!sqlStatementContext.getOrderByContext().isGenerated()) {
-            result.addAll(sqlStatementContext.getOrderByContext().getItems());
+            for (OrderByItem each : sqlStatementContext.getOrderByContext().getItems()) {
+                if (each.getSegment() instanceof ColumnOrderByItemSegment) {
+                    result.add(((ColumnOrderByItemSegment) each.getSegment()).getColumn());
+                }
+            }
         }
         for (SelectStatementContext each : sqlStatementContext.getSubqueryContexts().values()) {
-            result.addAll(getOrderByItems(each));
+            result.addAll(getSelectOrderByColumns(each));
         }
         return result;
     }
