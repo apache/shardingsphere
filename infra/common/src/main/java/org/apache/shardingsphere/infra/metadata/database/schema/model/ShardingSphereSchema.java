@@ -17,21 +17,27 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierIndex;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ShardingSphere schema.
  */
-@RequiredArgsConstructor
 public final class ShardingSphereSchema {
     
     @Getter
@@ -40,14 +46,54 @@ public final class ShardingSphereSchema {
     @Getter
     private final DatabaseType protocolType;
     
-    private final Map<ShardingSphereIdentifier, ShardingSphereTable> tables = new ConcurrentHashMap<>();
+    @Getter(AccessLevel.NONE)
+    private final Map<String, ShardingSphereTable> tables = new ConcurrentHashMap<>();
     
-    private final Map<ShardingSphereIdentifier, ShardingSphereView> views = new ConcurrentHashMap<>();
+    @Getter(AccessLevel.NONE)
+    private final Map<String, ShardingSphereView> views = new ConcurrentHashMap<>();
     
+    @Getter(AccessLevel.NONE)
+    private DatabaseIdentifierContext identifierContext;
+    
+    @Getter(AccessLevel.NONE)
+    private IdentifierIndex<ShardingSphereTable> tableIndex;
+    
+    @Getter(AccessLevel.NONE)
+    private IdentifierIndex<ShardingSphereView> viewIndex;
+    
+    /**
+     * Construct schema with the temporary default identifier context.
+     *
+     * <p>TODO(haoran): Replace this fallback with explicit identifier context injection after all schema creation paths migrate.</p>
+     *
+     * @param name schema name
+     * @param protocolType protocol type
+     */
+    public ShardingSphereSchema(final String name, final DatabaseType protocolType) {
+        this.name = name;
+        this.protocolType = protocolType;
+        identifierContext = DatabaseIdentifierContextFactory.createDefault();
+        tableIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.TABLE);
+        viewIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.VIEW);
+        rebuildIdentifierIndexes();
+    }
+    
+    /**
+     * Construct schema with tables and views by using the temporary default identifier context.
+     *
+     * <p>TODO(haoran): Replace this fallback with explicit identifier context injection after all schema creation paths migrate.</p>
+     *
+     * @param name schema name
+     * @param protocolType protocol type
+     * @param tables tables
+     * @param views views
+     */
     public ShardingSphereSchema(final String name, final DatabaseType protocolType, final Collection<ShardingSphereTable> tables, final Collection<ShardingSphereView> views) {
         this(name, protocolType);
-        tables.forEach(each -> this.tables.put(new ShardingSphereIdentifier(each.getName()), each));
-        views.forEach(each -> this.views.put(new ShardingSphereIdentifier(each.getName()), each));
+        tables.forEach(each -> this.tables.put(each.getName(), each));
+        views.forEach(each -> this.views.put(each.getName(), each));
+        this.tables.values().forEach(this::attachTableIdentifierContext);
+        rebuildIdentifierIndexes();
     }
     
     /**
@@ -60,13 +106,36 @@ public final class ShardingSphereSchema {
     }
     
     /**
+     * Find table.
+     *
+     * @param tableName table name
+     * @return table
+     */
+    private Optional<ShardingSphereTable> findTable(final IdentifierValue tableName) {
+        if (null == tableName || null == tableName.getValue()) {
+            return Optional.empty();
+        }
+        return tableIndex.find(tableName);
+    }
+    
+    /**
      * Judge whether contains table.
      *
      * @param tableName table name
      * @return contains table or not
      */
     public boolean containsTable(final String tableName) {
-        return tables.containsKey(new ShardingSphereIdentifier(tableName));
+        return null != tableName && containsTable(new IdentifierValue(tableName, QuoteCharacter.NONE));
+    }
+    
+    /**
+     * Judge whether contains table.
+     *
+     * @param tableName table name
+     * @return contains table or not
+     */
+    private boolean containsTable(final IdentifierValue tableName) {
+        return findTable(tableName).isPresent();
     }
     
     /**
@@ -76,7 +145,17 @@ public final class ShardingSphereSchema {
      * @return table
      */
     public ShardingSphereTable getTable(final String tableName) {
-        return tables.get(new ShardingSphereIdentifier(tableName));
+        return null == tableName ? null : getTable(new IdentifierValue(tableName, QuoteCharacter.NONE));
+    }
+    
+    /**
+     * Get table.
+     *
+     * @param tableName table name
+     * @return table
+     */
+    private ShardingSphereTable getTable(final IdentifierValue tableName) {
+        return findTable(tableName).orElse(null);
     }
     
     /**
@@ -85,7 +164,9 @@ public final class ShardingSphereSchema {
      * @param table table
      */
     public void putTable(final ShardingSphereTable table) {
-        tables.put(new ShardingSphereIdentifier(table.getName()), table);
+        attachTableIdentifierContext(table);
+        tables.put(table.getName(), table);
+        rebuildTableIndex();
     }
     
     /**
@@ -94,7 +175,15 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      */
     public void removeTable(final String tableName) {
-        tables.remove(new ShardingSphereIdentifier(tableName));
+        if (null == tableName) {
+            return;
+        }
+        ShardingSphereTable table = getTable(tableName);
+        if (null == table) {
+            return;
+        }
+        tables.remove(table.getName());
+        rebuildTableIndex();
     }
     
     /**
@@ -107,13 +196,36 @@ public final class ShardingSphereSchema {
     }
     
     /**
+     * Find view.
+     *
+     * @param viewName view name
+     * @return view
+     */
+    private Optional<ShardingSphereView> findView(final IdentifierValue viewName) {
+        if (null == viewName || null == viewName.getValue()) {
+            return Optional.empty();
+        }
+        return viewIndex.find(viewName);
+    }
+    
+    /**
      * Judge whether contains view.
      *
      * @param viewName view name
      * @return contains view or not
      */
     public boolean containsView(final String viewName) {
-        return views.containsKey(new ShardingSphereIdentifier(viewName));
+        return null != viewName && containsView(new IdentifierValue(viewName, QuoteCharacter.NONE));
+    }
+    
+    /**
+     * Judge whether contains view.
+     *
+     * @param viewName view name
+     * @return contains view or not
+     */
+    private boolean containsView(final IdentifierValue viewName) {
+        return findView(viewName).isPresent();
     }
     
     /**
@@ -123,7 +235,17 @@ public final class ShardingSphereSchema {
      * @return view
      */
     public ShardingSphereView getView(final String viewName) {
-        return views.get(new ShardingSphereIdentifier(viewName));
+        return null == viewName ? null : getView(new IdentifierValue(viewName, QuoteCharacter.NONE));
+    }
+    
+    /**
+     * Get view.
+     *
+     * @param viewName view name
+     * @return view
+     */
+    private ShardingSphereView getView(final IdentifierValue viewName) {
+        return findView(viewName).orElse(null);
     }
     
     /**
@@ -132,7 +254,8 @@ public final class ShardingSphereSchema {
      * @param view view
      */
     public void putView(final ShardingSphereView view) {
-        views.put(new ShardingSphereIdentifier(view.getName()), view);
+        views.put(view.getName(), view);
+        rebuildViewIndex();
     }
     
     /**
@@ -141,7 +264,28 @@ public final class ShardingSphereSchema {
      * @param viewName view name
      */
     public void removeView(final String viewName) {
-        views.remove(new ShardingSphereIdentifier(viewName));
+        if (null == viewName) {
+            return;
+        }
+        ShardingSphereView view = getView(viewName);
+        if (null == view) {
+            return;
+        }
+        views.remove(view.getName());
+        rebuildViewIndex();
+    }
+    
+    /**
+     * Attach shared database identifier context.
+     *
+     * @param identifierContext database identifier context
+     */
+    public void attachIdentifierContext(final DatabaseIdentifierContext identifierContext) {
+        this.identifierContext = identifierContext;
+        tableIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.TABLE);
+        viewIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.VIEW);
+        tables.values().forEach(this::attachTableIdentifierContext);
+        rebuildIdentifierIndexes();
     }
     
     /**
@@ -182,5 +326,22 @@ public final class ShardingSphereSchema {
      */
     public boolean isEmpty() {
         return tables.isEmpty() && views.isEmpty();
+    }
+    
+    private void rebuildIdentifierIndexes() {
+        rebuildTableIndex();
+        rebuildViewIndex();
+    }
+    
+    private void rebuildTableIndex() {
+        tableIndex.rebuild(new LinkedHashMap<>(tables));
+    }
+    
+    private void rebuildViewIndex() {
+        viewIndex.rebuild(new LinkedHashMap<>(views));
+    }
+    
+    private void attachTableIdentifierContext(final ShardingSphereTable table) {
+        table.attachIdentifierContext(identifierContext);
     }
 }

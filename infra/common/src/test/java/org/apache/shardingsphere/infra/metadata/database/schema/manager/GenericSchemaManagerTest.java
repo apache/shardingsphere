@@ -19,32 +19,34 @@ package org.apache.shardingsphere.infra.metadata.database.schema.manager;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.TableType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class GenericSchemaManagerTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
     @Test
     void assertGetToBeAlteredSchemasWithTablesAdded() {
-        ShardingSphereDatabase reloadDatabase = mock(ShardingSphereDatabase.class);
-        when(reloadDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class),
-                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList())));
-        ShardingSphereSchema currentSchemas = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereDatabase currentDatabase = mock(ShardingSphereDatabase.class);
-        when(currentDatabase.getAllSchemas()).thenReturn(Collections.singleton(currentSchemas));
-        when(currentDatabase.containsSchema("foo_schema")).thenReturn(true);
-        when(currentDatabase.getSchema("foo_schema")).thenReturn(currentSchemas);
+        ShardingSphereSchema reloadSchema = new ShardingSphereSchema("foo_schema", databaseType,
+                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
+        ShardingSphereDatabase reloadDatabase = createDatabase(Collections.singleton(reloadSchema));
+        ShardingSphereSchema currentSchemas = new ShardingSphereSchema("foo_schema", databaseType, Collections.emptyList(), Collections.emptyList());
+        ShardingSphereDatabase currentDatabase = createDatabase(Collections.singleton(currentSchemas));
         Collection<ShardingSphereSchema> actual = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getAllTables().size(), is(1));
@@ -53,12 +55,11 @@ class GenericSchemaManagerTest {
     
     @Test
     void assertGetToBeAlteredSchemasWithTablesDropped() {
-        ShardingSphereDatabase reloadDatabase = mock(ShardingSphereDatabase.class);
-        when(reloadDatabase.containsSchema("foo_schema")).thenReturn(true);
-        when(reloadDatabase.getSchema("foo_schema")).thenReturn(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class), Collections.emptyList(), Collections.emptyList()));
-        ShardingSphereDatabase currentDatabase = mock(ShardingSphereDatabase.class);
-        when(currentDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class),
-                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList())));
+        ShardingSphereSchema reloadSchema = new ShardingSphereSchema("foo_schema", databaseType, Collections.emptyList(), Collections.emptyList());
+        ShardingSphereDatabase reloadDatabase = createDatabase(Collections.singleton(reloadSchema));
+        ShardingSphereSchema currentSchema = new ShardingSphereSchema("foo_schema", databaseType,
+                Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
+        ShardingSphereDatabase currentDatabase = createDatabase(Collections.singleton(currentSchema));
         Collection<ShardingSphereSchema> actual = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getAllTables().size(), is(1));
@@ -67,18 +68,18 @@ class GenericSchemaManagerTest {
     
     @Test
     void assertGetToBeAddedTables() {
-        ShardingSphereSchema reloadSchema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class),
+        ShardingSphereSchema reloadSchema = new ShardingSphereSchema("foo_schema", databaseType,
                 Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList());
         Collection<ShardingSphereTable> actual = GenericSchemaManager.getToBeAddedTables(
-                reloadSchema, new ShardingSphereSchema("foo_schema", mock(DatabaseType.class), Collections.emptyList(), Collections.emptyList()));
+                reloadSchema, new ShardingSphereSchema("foo_schema", databaseType, Collections.emptyList(), Collections.emptyList()));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next().getName(), is("foo_tbl"));
     }
     
     @Test
     void assertGetToBeDroppedTables() {
-        ShardingSphereSchema reloadSchema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema currentSchema = new ShardingSphereSchema("foo_schema", mock(DatabaseType.class),
+        ShardingSphereSchema reloadSchema = new ShardingSphereSchema("foo_schema", databaseType, Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema currentSchema = new ShardingSphereSchema("foo_schema", databaseType,
                 Collections.singleton(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE)), Collections.emptyList());
         Collection<ShardingSphereTable> actual = GenericSchemaManager.getToBeDroppedTables(reloadSchema, currentSchema);
         assertThat(actual.size(), is(1));
@@ -87,9 +88,14 @@ class GenericSchemaManagerTest {
     
     @Test
     void assertGetToBeDroppedSchemaNames() {
-        ShardingSphereDatabase currentDatabase = mock(ShardingSphereDatabase.class);
-        when(currentDatabase.getAllSchemas()).thenReturn(Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
-        Collection<String> actual = GenericSchemaManager.getToBeDroppedSchemaNames(mock(ShardingSphereDatabase.class), currentDatabase);
+        ShardingSphereSchema currentSchema = new ShardingSphereSchema("foo_schema", databaseType);
+        ShardingSphereDatabase currentDatabase = createDatabase(Collections.singleton(currentSchema));
+        Collection<String> actual = GenericSchemaManager.getToBeDroppedSchemaNames(createDatabase(Collections.emptyList()), currentDatabase);
         assertThat(actual, is(Collections.singleton("foo_schema")));
+    }
+    
+    private ShardingSphereDatabase createDatabase(final Collection<ShardingSphereSchema> schemas) {
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
+                new RuleMetaData(Collections.emptyList()), schemas, new ConfigurationProperties(new Properties()));
     }
 }
