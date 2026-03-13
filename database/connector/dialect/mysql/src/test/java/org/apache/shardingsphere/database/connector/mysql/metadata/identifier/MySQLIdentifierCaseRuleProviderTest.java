@@ -21,7 +21,6 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProvider;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProviderContext;
-import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
@@ -33,141 +32,87 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
-import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MySQLIdentifierCaseRuleProviderTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    private static final String QUERY_LOWER_CASE_TABLE_NAMES = "SELECT @@lower_case_table_names";
     
-    private final IdentifierCaseRuleProvider provider = DatabaseTypedSPILoader.getService(IdentifierCaseRuleProvider.class, databaseType);
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+    
+    private final IdentifierCaseRuleProvider provider = DatabaseTypedSPILoader.getService(IdentifierCaseRuleProvider.class, DATABASE_TYPE);
     
     @Test
-    void assertGetDatabaseType() {
-        assertThat(provider, isA(MySQLIdentifierCaseRuleProvider.class));
-        assertThat(provider.getDatabaseType(), is("MySQL"));
+    void assertProvideWithNullContext() {
+        NullPointerException actual = assertThrows(NullPointerException.class, () -> provider.provide(null));
+        assertThat(actual.getMessage(), is("context cannot be null."));
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("provideInsensitiveArguments")
-    void assertProvideWithInsensitiveMode(final String name, final int lowerCaseTableNames) throws SQLException {
-        IdentifierCaseRule actual =
-                provider.provide(new IdentifierCaseRuleProviderContext(databaseType, createDataSource(lowerCaseTableNames))).orElseThrow(AssertionError::new).getRule(IdentifierScope.TABLE);
-        assertThat(actual.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
-        assertThat(actual.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
-        assertTrue(actual.matches("Foo", "foo", QuoteCharacter.NONE));
+    @MethodSource("provideArguments")
+    void assertProvide(final String name, final IdentifierCaseRuleProviderContext context, final LookupMode expectedQuotedLookupMode,
+                       final LookupMode expectedUnquotedLookupMode, final Boolean expectedMatch) {
+        IdentifierCaseRule actual = provider.provide(context).map(ruleSet -> ruleSet.getRule(IdentifierScope.TABLE)).orElse(null);
+        assertLookupMode(actual, QuoteCharacter.BACK_QUOTE, expectedQuotedLookupMode);
+        assertLookupMode(actual, QuoteCharacter.NONE, expectedUnquotedLookupMode);
+        assertMatch(actual, expectedMatch);
     }
     
-    @Test
-    void assertProvideWithoutDataSource() {
-        assertFalse(provider.provide(new IdentifierCaseRuleProviderContext(databaseType, null)).isPresent());
-    }
-    
-    @Test
-    void assertProvideWithSensitiveMode() throws SQLException {
-        Optional<IdentifierCaseRuleSet> actual = provider.provide(new IdentifierCaseRuleProviderContext(databaseType, createDataSource(0)));
-        assertFalse(actual.isPresent());
-    }
-    
-    @Test
-    void assertProvideWithSQLException() throws SQLException {
-        Optional<IdentifierCaseRuleSet> actual = provider.provide(new IdentifierCaseRuleProviderContext(databaseType, createFailingDataSource()));
-        assertFalse(actual.isPresent());
-    }
-    
-    private DataSource createDataSource(final int lowerCaseTableNames) {
-        return (DataSource) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{DataSource.class}, (proxy, method, args) -> {
-            if ("getConnection".equals(method.getName())) {
-                return createConnection(lowerCaseTableNames);
-            }
-            return getDefaultValue(method.getReturnType());
-        });
-    }
-    
-    private DataSource createFailingDataSource() {
-        return (DataSource) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{DataSource.class}, (proxy, method, args) -> {
-            if ("getConnection".equals(method.getName())) {
-                throw new SQLException("mocked getConnection failure");
-            }
-            return getDefaultValue(method.getReturnType());
-        });
-    }
-    
-    private Connection createConnection(final int lowerCaseTableNames) {
-        return (Connection) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{Connection.class}, (proxy, method, args) -> {
-            if ("prepareStatement".equals(method.getName())) {
-                return createPreparedStatement(lowerCaseTableNames);
-            }
-            return getDefaultValue(method.getReturnType());
-        });
-    }
-    
-    private PreparedStatement createPreparedStatement(final int lowerCaseTableNames) {
-        return (PreparedStatement) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{PreparedStatement.class}, (proxy, method, args) -> {
-            if ("executeQuery".equals(method.getName())) {
-                return createResultSet(lowerCaseTableNames);
-            }
-            return getDefaultValue(method.getReturnType());
-        });
-    }
-    
-    private ResultSet createResultSet(final int lowerCaseTableNames) {
-        AtomicBoolean next = new AtomicBoolean(true);
-        return (ResultSet) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{ResultSet.class}, (proxy, method, args) -> {
-            if ("next".equals(method.getName())) {
-                return next.getAndSet(false);
-            }
-            if ("getInt".equals(method.getName())) {
-                return lowerCaseTableNames;
-            }
-            return getDefaultValue(method.getReturnType());
-        });
-    }
-    
-    private Object getDefaultValue(final Class<?> returnType) {
-        if (Void.TYPE == returnType) {
-            return null;
+    private void assertMatch(final IdentifierCaseRule actual, final Boolean expected) {
+        if (null == expected) {
+            assertNull(actual);
+        } else {
+            assertThat(actual.matches("foo", "FOO", QuoteCharacter.NONE), is(expected));
         }
-        if (Boolean.TYPE == returnType) {
-            return false;
-        }
-        if (Integer.TYPE == returnType) {
-            return 0;
-        }
-        if (Long.TYPE == returnType) {
-            return 0L;
-        }
-        if (Double.TYPE == returnType) {
-            return 0D;
-        }
-        if (Float.TYPE == returnType) {
-            return 0F;
-        }
-        if (Short.TYPE == returnType) {
-            return (short) 0;
-        }
-        if (Byte.TYPE == returnType) {
-            return (byte) 0;
-        }
-        if (Character.TYPE == returnType) {
-            return (char) 0;
-        }
-        return null;
     }
     
-    private static Stream<Arguments> provideInsensitiveArguments() {
-        return Stream.of(Arguments.of("lower_case_table_names=1", 1), Arguments.of("lower_case_table_names=2", 2));
+    private void assertLookupMode(final IdentifierCaseRule actual, final QuoteCharacter quoteCharacter, final LookupMode expected) {
+        if (null == expected) {
+            assertNull(actual);
+        } else {
+            assertThat(actual.getLookupMode(quoteCharacter), is(expected));
+        }
+    }
+    
+    private static Stream<Arguments> provideArguments() throws SQLException {
+        return Stream.of(
+                Arguments.of("null_data_source", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, null), null, null, null),
+                Arguments.of("lower_case_table_names_0", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockDataSource(true, 0)), null, null, null),
+                Arguments.of("lower_case_table_names_1", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockDataSource(true, 1)),
+                        LookupMode.NORMALIZED, LookupMode.NORMALIZED, Boolean.TRUE),
+                Arguments.of("lower_case_table_names_2", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockDataSource(true, 2)),
+                        LookupMode.NORMALIZED, LookupMode.NORMALIZED, Boolean.TRUE),
+                Arguments.of("no_result_row", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockDataSource(false, 0)), null, null, null),
+                Arguments.of("sql_exception", new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockFailingDataSource()), null, null, null));
+    }
+    
+    private static DataSource mockDataSource(final boolean hasResultSetRow, final int lowerCaseTableNames) throws SQLException {
+        DataSource result = mock(DataSource.class);
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(result.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement(QUERY_LOWER_CASE_TABLE_NAMES)).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(hasResultSetRow);
+        when(resultSet.getInt(1)).thenReturn(lowerCaseTableNames);
+        return result;
+    }
+    
+    private static DataSource mockFailingDataSource() throws SQLException {
+        DataSource result = mock(DataSource.class);
+        when(result.getConnection()).thenThrow(new SQLException("expected"));
+        return result;
     }
 }
