@@ -29,10 +29,8 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataNodeTest {
     
@@ -93,14 +91,8 @@ class DataNodeTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("equalsArguments")
-    void assertEquals(final String name, final DataNode dataNode, final DataNode other) {
-        assertTrue(dataNode.equals(other));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("notEqualsArguments")
-    void assertNotEquals(final String name, final DataNode dataNode, final Object object) {
-        assertFalse(dataNode.equals(object));
+    void assertEquals(final String name, final DataNode dataNode, final Object other, final boolean expectedMatched) {
+        assertThat(dataNode.equals(other), is(expectedMatched));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -149,20 +141,16 @@ class DataNodeTest {
                 Arguments.of("postgresql_lowercases_table", "test_db", POSTGRESQL_DATABASE_TYPE, "ds.schema.TABLE", "ds", "schema", "table"));
     }
     
-    private static Stream<Arguments> notEqualsArguments() {
-        return Stream.of(
-                Arguments.of("different_data_source", new DataNode("ds_0.tbl_0"), new DataNode("ds_1.tbl_0")),
-                Arguments.of("different_table", new DataNode("ds_0.tbl_0"), new DataNode("ds_0.tbl_1")),
-                Arguments.of("different_schema", new DataNode("ds", "schema1", "tbl"), new DataNode("ds", "schema2", "tbl")),
-                Arguments.of("different_type", new DataNode("ds_0.tbl_0"), "ds.tbl"),
-                Arguments.of("null_object", new DataNode("ds_0.tbl_0"), null));
-    }
-    
     private static Stream<Arguments> equalsArguments() {
         final DataNode self = new DataNode("ds_0.tbl_0");
         return Stream.of(
-                Arguments.of("self", self, self),
-                Arguments.of("ignore_case", new DataNode("ds_0.tbl_0"), new DataNode("DS_0.TBL_0")));
+                Arguments.of("self", self, self, true),
+                Arguments.of("null_object", new DataNode("ds_0.tbl_0"), null, false),
+                Arguments.of("different_type", new DataNode("ds_0.tbl_0"), "ds.tbl", false),
+                Arguments.of("ignore_case", new DataNode("ds_0.tbl_0"), new DataNode("DS_0.TBL_0"), true),
+                Arguments.of("different_data_source", new DataNode("ds_0.tbl_0"), new DataNode("ds_1.tbl_0"), false),
+                Arguments.of("different_table", new DataNode("ds_0.tbl_0"), new DataNode("ds_0.tbl_1"), false),
+                Arguments.of("different_schema", new DataNode("ds", "schema1", "tbl"), new DataNode("ds", "schema2", "tbl"), false));
     }
     
     private static Stream<Arguments> formatArguments() {
