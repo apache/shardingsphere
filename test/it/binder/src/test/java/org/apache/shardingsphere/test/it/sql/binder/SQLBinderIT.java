@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.test.it.sql.binder;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
@@ -60,6 +62,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -99,6 +102,12 @@ public abstract class SQLBinderIT {
         String defaultSchemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
         Collection<ShardingSphereTable> tables = "foo_db_1".equalsIgnoreCase(databaseName) ? mockFooDB1Tables() : mockFooDB2Tables();
         result.add(new ShardingSphereSchema(defaultSchemaName, databaseType, tables, Collections.emptyList()));
+        Optional<DialectSystemDatabase> dialectSystemDatabase = DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseType);
+        if (dialectSystemDatabase.isPresent()) {
+            for (String each : dialectSystemDatabase.get().getSystemSchemas()) {
+                result.add(new ShardingSphereSchema(each, databaseType, Collections.emptyList(), Collections.emptyList()));
+            }
+        }
         return result;
     }
     
