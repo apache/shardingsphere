@@ -128,7 +128,8 @@ class DatabaseTypeEngineTest {
                 Arguments.of("configured_h2_trunk_mysql", createDatabaseConfiguration(Collections.emptyMap()), createConfiguredProperties("H2"),
                         TypedSPILoader.getService(DatabaseType.class, "MySQL")),
                 Arguments.of("storage_unit_postgresql",
-                        createDatabaseConfiguration(Collections.singletonMap("foo_ds", createDataSource(createConnectionWithUrl("jdbc:postgresql://localhost:5432/test")))), new ConfigurationProperties(new Properties()),
+                        createDatabaseConfiguration(Collections.singletonMap("foo_ds", createDataSource(createConnectionWithUrl("jdbc:postgresql://localhost:5432/test")))),
+                        new ConfigurationProperties(new Properties()),
                         TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")),
                 Arguments.of("empty_storage_units_default_mysql", createDatabaseConfiguration(Collections.emptyMap()), new ConfigurationProperties(new Properties()),
                         TypedSPILoader.getService(DatabaseType.class, "MySQL")));
