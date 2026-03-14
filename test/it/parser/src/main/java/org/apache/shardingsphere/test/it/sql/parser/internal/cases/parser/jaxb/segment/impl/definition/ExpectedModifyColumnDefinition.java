@@ -23,7 +23,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperties;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedIndex;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -38,9 +37,6 @@ public final class ExpectedModifyColumnDefinition extends AbstractExpectedSQLSeg
     
     @XmlElement(name = "column-position")
     private ExpectedColumnPosition columnPosition;
-    
-    @XmlAttribute(name = "agg-type")
-    private String aggType;
     
     @XmlElement(name = "rollup-index")
     private ExpectedIndex rollupIndex;

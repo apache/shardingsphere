@@ -44,8 +44,6 @@ public final class ModifyColumnDefinitionSegment implements AlterDefinitionSegme
     
     private ColumnPositionSegment columnPosition;
     
-    private String aggType;
-    
     private IndexSegment rollupIndex;
     
     private PropertiesSegment properties;

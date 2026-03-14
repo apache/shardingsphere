@@ -219,12 +219,6 @@ public final class AlterTableStatementAssert {
             } else {
                 assertNull(expectedAddColumnDefinition.getColumnPosition(), assertContext.getText("Column position should not exist."));
             }
-            if (null != expectedAddColumnDefinition.getAggType()) {
-                assertNotNull(each.getAggType(), assertContext.getText("Agg type should exist."));
-                assertThat(assertContext.getText("Agg type assertion error: "), each.getAggType(), is(expectedAddColumnDefinition.getAggType()));
-            } else {
-                assertNull(each.getAggType(), assertContext.getText("Agg type should not exist."));
-            }
             if (null != expectedAddColumnDefinition.getRollupIndex()) {
                 assertTrue(each.getRollupIndex().isPresent(), assertContext.getText("Rollup index should exist"));
                 IndexAssert.assertIs(assertContext, each.getRollupIndex().get(), expectedAddColumnDefinition.getRollupIndex());
@@ -284,12 +278,6 @@ public final class AlterTableStatementAssert {
                 ColumnPositionAssert.assertIs(assertContext, each.getColumnPosition().get(), expectedModifyColumnDefinition.getColumnPosition());
             } else {
                 assertNull(expectedModifyColumnDefinition.getColumnPosition(), assertContext.getText("Column position should not exist."));
-            }
-            if (null != expectedModifyColumnDefinition.getAggType()) {
-                assertNotNull(each.getAggType(), assertContext.getText("Modify column agg type should exist."));
-                assertThat(assertContext.getText("Modify column agg type assertion error: "), each.getAggType(), is(expectedModifyColumnDefinition.getAggType()));
-            } else {
-                assertNull(each.getAggType(), assertContext.getText("Modify column agg type should not exist."));
             }
             if (null != expectedModifyColumnDefinition.getRollupIndex()) {
                 assertTrue(each.getRollupIndex().isPresent(), assertContext.getText("Modify column rollup index should exist"));

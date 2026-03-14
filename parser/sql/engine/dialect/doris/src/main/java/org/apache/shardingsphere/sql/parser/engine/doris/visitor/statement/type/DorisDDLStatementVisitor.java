@@ -832,9 +832,12 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         DataTypeSegment dataTypeSegment = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = ctx.columnAttribute().stream().anyMatch(each -> null != each.KEY() && null == each.UNIQUE());
         boolean isAutoIncrement = ctx.columnAttribute().stream().anyMatch(each -> null != each.AUTO_INCREMENT());
-        // TODO parse not null
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(column.getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, false, getText(ctx));
+        boolean isNotNull = ctx.columnAttribute().stream().anyMatch(each -> null != each.NOT() && null != each.NULL());
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(column.getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, isNotNull, getText(ctx));
         result.setAutoIncrement(isAutoIncrement);
+        if (null != ctx.dorisColumnAggType()) {
+            result.setAggType(ctx.dorisColumnAggType().getText());
+        }
         ctx.columnAttribute().stream().filter(each -> null != each.COMMENT() && null != each.string_()).findFirst()
                 .ifPresent(each -> result.setComment(SQLUtils.getExactlyValue(each.string_().getText())));
         return result;
@@ -1056,9 +1059,6 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             }
         }
         ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
-        if (null != ctx.fieldDefinition() && null != ctx.fieldDefinition().dorisColumnAggType()) {
-            result.setAggType(ctx.fieldDefinition().dorisColumnAggType().getText());
-        }
         if (null != ctx.place()) {
             result.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
         }
@@ -1098,16 +1098,6 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             }
         }
         AddColumnDefinitionSegment result = new AddColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinitions);
-        if (null != ctx.columnDefinition() && null != ctx.columnDefinition().fieldDefinition().dorisColumnAggType()) {
-            result.setAggType(ctx.columnDefinition().fieldDefinition().dorisColumnAggType().getText());
-        } else if (null != ctx.tableElementList()) {
-            for (TableElementContext each : ctx.tableElementList().tableElement()) {
-                if (null != each.columnDefinition() && null != each.columnDefinition().fieldDefinition().dorisColumnAggType()) {
-                    result.setAggType(each.columnDefinition().fieldDefinition().dorisColumnAggType().getText());
-                    break;
-                }
-            }
-        }
         if (null != ctx.place()) {
             Preconditions.checkState(1 == columnDefinitions.size());
             result.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
@@ -1159,6 +1149,9 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, isNotNull, getText(ctx));
         result.getReferencedTables().addAll(getReferencedTables(ctx));
         result.setAutoIncrement(isAutoIncrement);
+        if (null != ctx.fieldDefinition().dorisColumnAggType()) {
+            result.setAggType(ctx.fieldDefinition().dorisColumnAggType().getText());
+        }
         return result;
     }
     

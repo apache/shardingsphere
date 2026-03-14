@@ -3462,8 +3462,8 @@
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />
         </table>
-        <add-column agg-type="SUM">
-            <column-definition type="INT" start-index="43" stop-index="69">
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="43" stop-index="69">
                 <column name="new_col" />
             </column-definition>
             <column-position start-index="71" stop-index="83">
@@ -3476,8 +3476,8 @@
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />
         </table>
-        <add-column agg-type="SUM">
-            <column-definition type="INT" start-index="43" stop-index="69">
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="43" stop-index="69">
                 <column name="new_col" />
             </column-definition>
             <column-position start-index="71" stop-index="83">
@@ -3491,8 +3491,8 @@
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />
         </table>
-        <add-column agg-type="SUM">
-            <column-definition type="INT" start-index="43" stop-index="69">
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="43" stop-index="69">
                 <column name="new_col" />
             </column-definition>
             <column-position start-index="71" stop-index="83">
@@ -3523,8 +3523,8 @@
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />
         </table>
-        <add-column agg-type="SUM">
-            <column-definition type="INT" start-index="43" stop-index="69">
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="43" stop-index="69">
                 <column name="new_col" />
             </column-definition>
             <column-position start-index="71" stop-index="75" />
@@ -3535,8 +3535,8 @@
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />
         </table>
-        <add-column agg-type="SUM">
-            <column-definition type="INT" start-index="43" stop-index="69">
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="43" stop-index="69">
                 <column name="new_col" />
             </column-definition>
             <column-position start-index="71" stop-index="75" />
@@ -3548,11 +3548,11 @@
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />
         </table>
-        <add-column agg-type="SUM">
-            <column-definition type="INT" start-index="44" stop-index="71">
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="44" stop-index="71">
                 <column name="new_col1" />
             </column-definition>
-            <column-definition type="INT" start-index="74" stop-index="101">
+            <column-definition type="INT" agg-type="SUM" start-index="74" stop-index="101">
                 <column name="new_col2" />
             </column-definition>
         </add-column>
@@ -3562,11 +3562,11 @@
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />
         </table>
-        <add-column agg-type="SUM">
-            <column-definition type="INT" start-index="44" stop-index="71">
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="44" stop-index="71">
                 <column name="new_col1" />
             </column-definition>
-            <column-definition type="INT" start-index="74" stop-index="101">
+            <column-definition type="INT" agg-type="SUM" start-index="74" stop-index="101">
                 <column name="new_col2" />
             </column-definition>
             <rollup-index name="rollup_1" start-index="107" stop-index="114" />
@@ -3577,11 +3577,11 @@
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />
         </table>
-        <add-column agg-type="SUM">
-            <column-definition type="INT" start-index="44" stop-index="71">
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="44" stop-index="71">
                 <column name="new_col1" />
             </column-definition>
-            <column-definition type="INT" start-index="74" stop-index="101">
+            <column-definition type="INT" agg-type="SUM" start-index="74" stop-index="101">
                 <column name="new_col2" />
             </column-definition>
             <properties start-index="104" stop-index="132">
@@ -3590,12 +3590,40 @@
         </add-column>
     </alter-table>
 
+    <alter-table sql-case-id="alter_table_add_columns_with_different_agg_types_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="44" stop-index="65">
+                <column name="c1" />
+            </column-definition>
+            <column-definition type="INT" agg-type="MAX" start-index="68" stop-index="89">
+                <column name="c2" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_with_key_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-column>
+            <column-definition type="INT" primary-key="true" start-index="44" stop-index="71">
+                <column name="new_col1" />
+            </column-definition>
+            <column-definition type="INT" start-index="74" stop-index="97">
+                <column name="new_col2" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
     <alter-table sql-case-id="alter_table_modify_column_with_agg_type_doris">
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />
         </table>
-        <modify-column agg-type="REPLACE">
-            <column-definition type="VARCHAR" start-index="46" stop-index="83">
+        <modify-column>
+            <column-definition type="VARCHAR" agg-type="REPLACE" start-index="46" stop-index="83">
                 <column name="val1" />
             </column-definition>
         </modify-column>
@@ -3605,8 +3633,8 @@
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />
         </table>
-        <modify-column agg-type="REPLACE">
-            <column-definition type="VARCHAR" start-index="46" stop-index="83">
+        <modify-column>
+            <column-definition type="VARCHAR" agg-type="REPLACE" start-index="46" stop-index="83">
                 <column name="val1" />
             </column-definition>
             <column-position start-index="85" stop-index="92">
@@ -3619,8 +3647,8 @@
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />
         </table>
-        <modify-column agg-type="REPLACE">
-            <column-definition type="VARCHAR" start-index="46" stop-index="83">
+        <modify-column>
+            <column-definition type="VARCHAR" agg-type="REPLACE" start-index="46" stop-index="83">
                 <column name="val1" />
             </column-definition>
             <column-position start-index="85" stop-index="89" />
@@ -3631,8 +3659,8 @@
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />
         </table>
-        <modify-column agg-type="REPLACE">
-            <column-definition type="VARCHAR" start-index="46" stop-index="83">
+        <modify-column>
+            <column-definition type="VARCHAR" agg-type="REPLACE" start-index="46" stop-index="83">
                 <column name="val1" />
             </column-definition>
             <rollup-index name="rollup_1" start-index="90" stop-index="97" />
@@ -3643,8 +3671,8 @@
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />
         </table>
-        <modify-column agg-type="REPLACE">
-            <column-definition type="VARCHAR" start-index="46" stop-index="83">
+        <modify-column>
+            <column-definition type="VARCHAR" agg-type="REPLACE" start-index="46" stop-index="83">
                 <column name="val1" />
             </column-definition>
             <column-position start-index="85" stop-index="92">
@@ -3654,6 +3682,44 @@
             <properties start-index="108" stop-index="136">
                 <property key="timeout" value="100" start-index="119" stop-index="135" />
             </properties>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_column_with_key_after_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-column>
+            <column-definition type="BIGINT" primary-key="true" start-index="46" stop-index="72">
+                <column name="col1" />
+            </column-definition>
+            <column-position start-index="74" stop-index="83">
+                <column name="col2" />
+            </column-position>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_column_with_key_null_comment_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-column>
+            <column-definition type="VARCHAR" primary-key="true" not-null="false" start-index="46" stop-index="84">
+                <column name="k3" />
+                <comment text="to 50" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_column_with_key_not_null_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-column>
+            <column-definition type="VARCHAR" primary-key="true" not-null="true" start-index="46" stop-index="91">
+                <column name="k3" />
+                <comment text="not null" />
+            </column-definition>
         </modify-column>
     </alter-table>
 </sql-parser-test-cases>
