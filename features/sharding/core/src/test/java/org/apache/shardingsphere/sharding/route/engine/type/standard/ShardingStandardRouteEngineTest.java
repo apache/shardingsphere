@@ -88,8 +88,7 @@ class ShardingStandardRouteEngineTest {
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
-    // TODO remove @Disabled when autoTables support config actualDataNodes in #33364
-    @Disabled("FIXME")
+    @Disabled("remove when autoTables support config actualDataNodes in #33364")
     @Test
     void assertRouteByErrorShardingTableStrategy() {
         ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine("t_order", ShardingRouteEngineFixtureBuilder.createErrorShardingConditions("t_order"),
