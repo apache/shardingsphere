@@ -1179,7 +1179,9 @@
         <from start-index="14" stop-index="23">
             <simple-table name="ALL_TABLES" start-index="14" stop-index="23">
                 <table-bound>
+                    <original-database name="foo_db_1" />
                     <original-schema name="SYS" />
+                    <original-table name="ALL_TABLES" />
                 </table-bound>
             </simple-table>
         </from>
