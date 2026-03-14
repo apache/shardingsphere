@@ -141,18 +141,6 @@ class DataNodeTest {
                 Arguments.of("postgresql_lowercases_table", "test_db", POSTGRESQL_DATABASE_TYPE, "ds.schema.TABLE", "ds", "schema", "table"));
     }
     
-    private static Stream<Arguments> equalsArguments() {
-        final DataNode self = new DataNode("ds_0.tbl_0");
-        return Stream.of(
-                Arguments.of("self", self, self, true),
-                Arguments.of("null_object", new DataNode("ds_0.tbl_0"), null, false),
-                Arguments.of("different_type", new DataNode("ds_0.tbl_0"), "ds.tbl", false),
-                Arguments.of("ignore_case", new DataNode("ds_0.tbl_0"), new DataNode("DS_0.TBL_0"), true),
-                Arguments.of("different_data_source", new DataNode("ds_0.tbl_0"), new DataNode("ds_1.tbl_0"), false),
-                Arguments.of("different_table", new DataNode("ds_0.tbl_0"), new DataNode("ds_0.tbl_1"), false),
-                Arguments.of("different_schema", new DataNode("ds", "schema1", "tbl"), new DataNode("ds", "schema2", "tbl"), false));
-    }
-    
     private static Stream<Arguments> formatArguments() {
         return Stream.of(
                 Arguments.of("with_schema", new DataNode("foo_ds", "foo_schema", "foo_tbl"), "foo_ds.foo_schema.foo_tbl"),
@@ -164,6 +152,18 @@ class DataNodeTest {
                 Arguments.of("postgresql_with_schema", new DataNode("ds", "schema", "tbl"), POSTGRESQL_DATABASE_TYPE, "ds.schema.tbl"),
                 Arguments.of("mysql_without_schema", new DataNode("ds", (String) null, "tbl"), MYSQL_DATABASE_TYPE, "ds.tbl"),
                 Arguments.of("mysql_ignores_explicit_schema", new DataNode("ds", "schema", "tbl"), MYSQL_DATABASE_TYPE, "ds.tbl"));
+    }
+    
+    private static Stream<Arguments> equalsArguments() {
+        final DataNode self = new DataNode("ds_0.tbl_0");
+        return Stream.of(
+                Arguments.of("self", self, self, true),
+                Arguments.of("null_object", new DataNode("ds_0.tbl_0"), null, false),
+                Arguments.of("different_type", new DataNode("ds_0.tbl_0"), "ds.tbl", false),
+                Arguments.of("ignore_case", new DataNode("ds_0.tbl_0"), new DataNode("DS_0.TBL_0"), true),
+                Arguments.of("different_data_source", new DataNode("ds_0.tbl_0"), new DataNode("ds_1.tbl_0"), false),
+                Arguments.of("different_table", new DataNode("ds_0.tbl_0"), new DataNode("ds_0.tbl_1"), false),
+                Arguments.of("different_schema", new DataNode("ds", "schema1", "tbl"), new DataNode("ds", "schema2", "tbl"), false));
     }
     
     private static Stream<Arguments> hashCodeArguments() {

@@ -37,8 +37,10 @@ Missing input handling:
 - `Related test classes`: existing `TargetClassName + Test` classes resolvable within the same module's test scope.
 - `Assertion differences`: distinguishable assertions in externally observable results or side effects.
 - `Necessity reason tag`: fixed-format tag for retention reasons, using `KEEP:<id>:<reason>`, recorded in the "Implementation and Optimization" section of the delivery report.
+- `Baseline quality summary`: one pre-edit diagnostic run that combines rule scanning, candidate summary, and coverage evidence for the current scope.
 - `Verification snapshot digest`: content hash over `<ResolvedTestFileSet>` used to decide whether a previous green verification result is still reusable.
-- `Latest green target-test digest`: most recent `Verification snapshot digest` whose standalone target-test command succeeded.
+- `Gate reuse state`: persisted mapping from logical gate names (for example `target-test`, `coverage`, `rule-scan`) to the latest green digest for that gate.
+- `Latest green target-test digest`: compatibility alias for the `target-test` entry in `Gate reuse state`.
 - `Consolidated hard-gate scan`: one script execution that enforces `R8`, `R14`, and all file-content-based `R15` rules while still reporting results per rule.
 
 Module resolution order:
@@ -186,20 +188,23 @@ Module resolution order:
    - Capture scope baseline once: `git status --porcelain > /tmp/gen-ut-status-before.txt`.
 2. Parse target classes, related test classes, and input-blocked state (`R10-INPUT_BLOCKED`).
 3. Resolve `<ResolvedTestClass>`, `<ResolvedTestFileSet>`, `<ResolvedTestModules>`, and record `pom.xml` evidence (`R3`).
-4. Decide whether `R12` is triggered; if not, output `R4` branch mapping.
-5. Execute `R8` parameterized optimization analysis, output `R8-CANDIDATES`, and apply required refactoring.
-6. Execute `R9` dead-code checks and record evidence.
-7. Complete test implementation or extension according to `R2-R7`.
-8. Perform necessity trimming and coverage re-verification according to `R13`.
-9. After each edit batch, recompute the `Verification snapshot digest`; during in-scope repair loops, prefer `target test + one consolidated hard-gate scan` as the minimal verification required by `R11`.
-    - After any standalone target-test command succeeds, `SHOULD` persist the digest through `scripts/verification_snapshot_state.py mark-green`.
-10. Run final verification commands and handle failures by `R11`.
+4. Run a `Baseline quality summary` using the bundled baseline script unless equivalent evidence was just produced in the same turn.
+    - Use the baseline summary to identify current branch-miss lines, existing `R15` risks, and likely `R8-CANDIDATES` before editing.
+5. Decide whether `R12` is triggered; if not, output `R4` branch mapping.
+6. Execute `R8` parameterized optimization analysis, output `R8-CANDIDATES`, and apply required refactoring.
+7. Execute `R9` dead-code checks and record evidence.
+8. Complete test implementation or extension according to `R2-R7`.
+9. Perform necessity trimming and coverage re-verification according to `R13`.
+10. After each edit batch, recompute the `Verification snapshot digest`; during in-scope repair loops, prefer `target test + one consolidated hard-gate scan` as the minimal verification required by `R11`.
+    - After any standalone target-test command succeeds, `SHOULD` persist the digest through `scripts/verification_snapshot_state.py mark-gate-green --gate target-test`.
+11. Run final verification commands and handle failures by `R11`.
     - Independent final gates (`coverage`, `checkstyle`, `spotless`, `consolidated hard-gate scan`) `SHOULD` run in parallel when the environment allows; otherwise serialize them.
-    - Prefer the bundled `scripts/run_quality_gates.py` runner so the four independent gates share one orchestration entry and emit deterministic per-gate exit codes.
-    - If `scripts/verification_snapshot_state.py match-green` reports a match for the current `<ResolvedTestFileSet>`, and the final coverage command re-executes tests on that same digest, `MAY` skip an extra standalone target-test rerun before delivery.
-    - The consolidated hard-gate scan `MUST` be executed twice to satisfy `R14`: once after implementation stabilizes and once immediately before delivery.
-11. Decide status by `R10` after verification; if status is `R10-D`, return to Step 5 and continue.
-12. Before final response, run a second `R10` status decision and output `R10=<state>` with rule-to-evidence mapping.
+    - Prefer the bundled `scripts/run_quality_gates.py` runner so independent gates share one orchestration entry and can reuse gate-level green results from `Gate reuse state`.
+    - If `scripts/verification_snapshot_state.py match-gate-green --gate target-test` reports a match for the current `<ResolvedTestFileSet>`, and the final coverage command re-executes tests on that same digest, `MAY` skip an extra standalone target-test rerun before delivery.
+    - A previously green `coverage` gate `MAY` be reused for the same digest; `checkstyle` and `spotless` `SHOULD` still execute for the current module scope.
+    - The consolidated hard-gate scan `MUST` be executed twice to satisfy `R14`: once after implementation stabilizes and once immediately before delivery. Only the earlier scan may be reused for diagnostics; the delivery scan must execute again.
+12. Decide status by `R10` after verification; if status is `R10-D`, return to Step 5 and continue.
+13. Before final response, run a second `R10` status decision and output `R10=<state>` with rule-to-evidence mapping.
 
 ## Verification and Commands
 
@@ -212,13 +217,24 @@ Flag presets:
   - `<GateModuleFlags>` = `-pl <ResolvedTestModules>`
   - `<FallbackGateModuleFlags>` = `<GateModuleFlags> -am` (for troubleshooting missing cross-module dependencies only; does not change `R3` and `R10`).
 
+0. Baseline quality summary (recommended before editing):
+```bash
+python3 scripts/collect_quality_baseline.py --workdir <RepoRoot> \
+  --coverage-command "./mvnw <GateModuleFlags> -DskipITs -Dsurefire.useManifestOnlyJar=false -Dtest=<ResolvedTestClass> -DfailIfNoTests=true -Dsurefire.failIfNoSpecifiedTests=false -Djacoco.skip=false -Djacoco.append=false -Djacoco.destFile=/tmp/gen-ut-baseline.exec test jacoco:report -Djacoco.dataFile=/tmp/gen-ut-baseline.exec" \
+  --jacoco-xml-path <JacocoXmlPath> \
+  --target-classes <ResolvedTargetClasses> \
+  --baseline-before /tmp/gen-ut-status-before.txt \
+  <ResolvedTestFileSet>
+```
+The baseline script reuses `scan_quality_rules.py` diagnostics and prints current coverage plus branch-miss lines for each target class.
+
 1. Target tests:
 ```bash
 ./mvnw <TestModuleFlags> -DskipITs -Dspotless.skip=true -Dtest=<ResolvedTestClass> -DfailIfNoTests=true -Dsurefire.failIfNoSpecifiedTests=false test
 ```
 After a green standalone target-test command, record the digest:
 ```bash
-python3 scripts/verification_snapshot_state.py mark-green --state-file /tmp/gen-ut-target-test-state.json <ResolvedTestFileSet>
+python3 scripts/verification_snapshot_state.py mark-gate-green --state-file /tmp/gen-ut-gate-state.json --gate target-test <ResolvedTestFileSet>
 ```
 
 1.1 Verification snapshot digest:
@@ -228,7 +244,7 @@ python3 scripts/verification_snapshot_state.py digest <ResolvedTestFileSet>
 
 1.2 Latest green target-test digest reuse check:
 ```bash
-python3 scripts/verification_snapshot_state.py match-green --state-file /tmp/gen-ut-target-test-state.json <ResolvedTestFileSet>
+python3 scripts/verification_snapshot_state.py match-gate-green --state-file /tmp/gen-ut-gate-state.json --gate target-test <ResolvedTestFileSet>
 ```
 
 2. Coverage:
@@ -238,6 +254,10 @@ python3 scripts/verification_snapshot_state.py match-green --state-file /tmp/gen
 If the module does not define `jacoco-check@jacoco-check`:
 ```bash
 ./mvnw <GateModuleFlags> -DskipITs -Djacoco.skip=false test jacoco:report
+```
+After a green standalone coverage command, the digest may be recorded for reuse:
+```bash
+python3 scripts/verification_snapshot_state.py mark-gate-green --state-file /tmp/gen-ut-gate-state.json --gate coverage <ResolvedTestFileSet>
 ```
 
 2.1 Target-class coverage hard gate (default target 100 unless explicitly lowered, aggregated over `Target-class coverage scope`):
@@ -301,6 +321,11 @@ If missing cross-module dependencies occur, rerun the gate command above once wi
 4.1 Unified final-gate runner (recommended):
 ```bash
 python3 scripts/run_quality_gates.py --workdir <RepoRoot> \
+  --state-file /tmp/gen-ut-gate-state.json \
+  --tracked-path <ResolvedTestFileSet> \
+  --reuse-gate coverage \
+  --record-gate coverage \
+  --record-gate hard-gate=rule-scan \
   --gate coverage="./mvnw <GateModuleFlags> -DskipITs -Djacoco.skip=false test jacoco:report" \
   --gate checkstyle="./mvnw <GateModuleFlags> -Pcheck checkstyle:check -DskipTests" \
   --gate spotless="./mvnw <GateModuleFlags> -Pcheck spotless:check -DskipTests" \
@@ -318,6 +343,11 @@ If the user explicitly requested metadata accessor tests in the current turn:
 python3 scripts/scan_quality_rules.py --allow-metadata-accessor-tests --baseline-before /tmp/gen-ut-status-before.txt <ResolvedTestFileSet>
 ```
 The script consolidates repeated file parsing and git-diff inspection without changing rule accuracy. It also evaluates `R15-C` by comparing the current git status against `/tmp/gen-ut-status-before.txt`.
+For machine-readable automation or quick summaries, the script also supports:
+```bash
+python3 scripts/scan_quality_rules.py --json --baseline-before /tmp/gen-ut-status-before.txt <ResolvedTestFileSet>
+python3 scripts/scan_quality_rules.py --summary-only --baseline-before /tmp/gen-ut-status-before.txt <ResolvedTestFileSet>
+```
 
 6. Scope validation:
 ```bash
