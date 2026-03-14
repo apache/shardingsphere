@@ -144,15 +144,12 @@ class ClusterMetaDataManagerPersistServiceTest {
     @Test
     void assertRemoveRuleConfigurationItem() {
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
-        RuleMetaData ruleMetaData = mock(RuleMetaData.class);
         ruleConfig.setTables(Collections.singleton("ds_0.t_order"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getName()).thenReturn("foo_db");
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        SingleRuleConfiguration originalRuleConfig = new SingleRuleConfiguration();
         SingleRule singleRule = mock(SingleRule.class);
-        when(singleRule.getConfiguration()).thenReturn(originalRuleConfig);
-        when(ruleMetaData.getSingleRule(SingleRule.class)).thenReturn(singleRule);
+        when(singleRule.getConfiguration()).thenReturn(new SingleRuleConfiguration());
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(singleRule)));
         metaDataManagerPersistService.removeRuleConfigurationItem(database, ruleConfig);
         verify(metaDataPersistFacade.getDatabaseRuleService()).delete("foo_db", Collections.singleton(ruleConfig));
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade()).persistAlteredTables(eq("foo_db"), any(), argThat(actual -> 1 == actual.size() && actual.contains("t_order")));
@@ -160,8 +157,7 @@ class ClusterMetaDataManagerPersistServiceTest {
     
     @Test
     void assertRemoveRuleConfiguration() {
-        metaDataManagerPersistService.removeRuleConfiguration(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()),
-                mock(RuleConfiguration.class), "fixtureRule");
+        metaDataManagerPersistService.removeRuleConfiguration(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()), mock(RuleConfiguration.class), "fixtureRule");
         verify(metaDataPersistFacade.getDatabaseRuleService()).delete("foo_db", "fixtureRule");
     }
     
