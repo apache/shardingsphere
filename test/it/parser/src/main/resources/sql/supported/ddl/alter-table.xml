@@ -466,7 +466,7 @@
     <sql-case id="alter_table_modify_column_with_agg_type_first_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN val1 VARCHAR(64) REPLACE DEFAULT &quot;abc&quot; FIRST" db-types="Doris" />
     <sql-case id="alter_table_modify_column_with_agg_type_from_rollup_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN val1 VARCHAR(64) REPLACE DEFAULT &quot;abc&quot; FROM rollup_1" db-types="Doris" />
     <sql-case id="alter_table_modify_column_with_agg_type_rollup_and_properties_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN val1 VARCHAR(64) REPLACE DEFAULT &quot;abc&quot; AFTER k1 FROM rollup_1 PROPERTIES(&quot;timeout&quot; = &quot;100&quot;)" db-types="Doris" />
-    <sql-case id="alter_table_modify_column_with_key_after_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN col1 BIGINT KEY DEFAULT &quot;1&quot; AFTER col2" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_key_after_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN col1 BIGINT KEY DEFAULT &quot;1&quot; AFTER col2;" db-types="Doris" />
     <sql-case id="alter_table_modify_column_with_key_null_comment_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k3 VARCHAR(50) KEY NULL COMMENT 'to 50'" db-types="Doris" />
     <sql-case id="alter_table_modify_column_with_key_not_null_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k3 VARCHAR(50) KEY NOT NULL COMMENT 'not null'" db-types="Doris" />
 </sql-cases>
