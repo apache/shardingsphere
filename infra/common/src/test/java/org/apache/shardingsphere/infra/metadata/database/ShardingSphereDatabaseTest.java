@@ -21,6 +21,8 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -28,12 +30,14 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -42,15 +46,22 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -163,6 +174,59 @@ class ShardingSphereDatabaseTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, ruleMetaData, Collections.emptyList());
         database.reloadRules();
         assertThat(database.getRuleMetaData().getRules().size(), is(2));
+    }
+    
+    @Test
+    void assertCheckStorageUnitsExisted() {
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logic_ds", Collections.singleton("actual_ds")));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", mock(DatabaseType.class), new ResourceMetaData(Collections.emptyMap()), createRuleMetaData(ruleAttribute), Collections.emptyList());
+        assertDoesNotThrow(() -> database.checkStorageUnitsExisted(Collections.singleton("logic_ds")));
+    }
+    
+    @Test
+    void assertCheckStorageUnitsExistedWithMissingStorageUnits() {
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logic_ds", Collections.singleton("actual_ds")));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", mock(DatabaseType.class), new ResourceMetaData(Collections.emptyMap()), createRuleMetaData(ruleAttribute), Collections.emptyList());
+        MissingRequiredStorageUnitsException actual = assertThrows(MissingRequiredStorageUnitsException.class, () -> database.checkStorageUnitsExisted(Collections.singleton("missing_ds")));
+        assertThat(actual.getMessage(), is("Storage units 'missing_ds' do not exist in database 'foo_db'."));
+    }
+    
+    @Test
+    void assertDecorateRuleConfiguration() {
+        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), new ResourceMetaData(Collections.emptyMap()),
+                new RuleMetaData(Collections.singleton(mock(ShardingSphereRule.class))), Collections.emptyList());
+        try (MockedStatic<TypedSPILoader> mockedTypedSPILoader = mockStatic(TypedSPILoader.class)) {
+            mockedTypedSPILoader.when(() -> TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass())).thenReturn(Optional.empty());
+            assertThat(database.decorateRuleConfiguration(ruleConfig), is(ruleConfig));
+        }
+    }
+    
+    @Test
+    void assertDecorateRuleConfigurationWithDecorator() {
+        RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
+        RuleConfigurationDecorator<RuleConfiguration> decorator = mock(RuleConfigurationDecorator.class);
+        RuleConfiguration decoratedRuleConfig = mock(RuleConfiguration.class);
+        RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(mock(ShardingSphereRule.class)));
+        ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("ds", new MockedDataSource()));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, ruleMetaData, Collections.emptyList());
+        try (MockedStatic<TypedSPILoader> mockedTypedSPILoader = mockStatic(TypedSPILoader.class)) {
+            mockedTypedSPILoader.when(() -> TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass())).thenReturn(Optional.of(decorator));
+            when(decorator.decorate(eq("foo_db"), anyMap(), eq(ruleMetaData.getRules()), eq(ruleConfig))).thenReturn(decoratedRuleConfig);
+            RuleConfiguration actual = database.decorateRuleConfiguration(ruleConfig);
+            assertThat(actual, is(decoratedRuleConfig));
+            verify(decorator).decorate(eq("foo_db"), anyMap(), eq(ruleMetaData.getRules()), eq(ruleConfig));
+        }
+    }
+    
+    private RuleMetaData createRuleMetaData(final DataSourceMapperRuleAttribute ruleAttribute) {
+        ShardingSphereRule rule = mock(ShardingSphereRule.class);
+        when(rule.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        return new RuleMetaData(Collections.singleton(rule));
     }
     
     @Test
