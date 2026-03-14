@@ -55,6 +55,16 @@ class FileScanContext:
 
 
 RULE_ORDER = ("R8", "R14", "R15-A", "R15-B", "R15-C", "R15-D", "R15-E", "R15-F", "R15-G", "R15-H", "R15-I")
+PRECHECK_ORDER = (
+    "checkstyle-final-parameters",
+    "parameterized-methodsource",
+    "parameterized-name-parameter",
+)
+PRECHECK_MESSAGES = {
+    "checkstyle-final-parameters": "test method parameters should be final to avoid Checkstyle FinalParameters failures",
+    "parameterized-methodsource": "parameterized tests should use @MethodSource providers with at least 3 Arguments rows",
+    "parameterized-name-parameter": "parameterized tests should declare the first parameter exactly as `final String name`",
+}
 RULE_MESSAGES = {
     "R8": "@ParameterizedTest must use name = \"{0}\"",
     "R14": "forbidden boolean assertion found",
@@ -90,6 +100,11 @@ PARAM_METHOD_PATTERN = re.compile(
 TEST_METHOD_DECL_PATTERN = re.compile(
     r"((?:@Test(?:\s*\([^)]*\))?|@ParameterizedTest(?:\s*\([^)]*\))?)\s*(?:@\w+(?:\s*\([^)]*\))?\s*)*)"
     r"void\s+(assert\w+)\s*\([^)]*\)\s*(?:throws [^{]+)?\{",
+    re.S,
+)
+TEST_METHOD_SIGNATURE_PATTERN = re.compile(
+    r"((?:@Test(?:\s*\([^)]*\))?|@ParameterizedTest(?:\s*\([^)]*\))?)\s*(?:@\w+(?:\s*\([^)]*\))?\s*)*)"
+    r"void\s+(assert\w+)\s*\(([^)]*)\)\s*(?:throws [^{]+)?",
     re.S,
 )
 R15_A_CALL_PATTERN = re.compile(r"\b\w+\.(\w+)\s*\(")
@@ -143,6 +158,38 @@ def extract_block(text: str, brace_index: int) -> str:
                 return text[brace_index + 1:index]
         index += 1
     return ""
+
+
+def split_parameters(params: str) -> list[str]:
+    result = []
+    current = []
+    angle_depth = 0
+    paren_depth = 0
+    bracket_depth = 0
+    for char in params:
+        if "," == char and 0 == angle_depth and 0 == paren_depth and 0 == bracket_depth:
+            part = "".join(current).strip()
+            if part:
+                result.append(part)
+            current = []
+            continue
+        current.append(char)
+        if "<" == char:
+            angle_depth += 1
+        elif ">" == char and angle_depth > 0:
+            angle_depth -= 1
+        elif "(" == char:
+            paren_depth += 1
+        elif ")" == char and paren_depth > 0:
+            paren_depth -= 1
+        elif "[" == char:
+            bracket_depth += 1
+        elif "]" == char and bracket_depth > 0:
+            bracket_depth -= 1
+    tail = "".join(current).strip()
+    if tail:
+        result.append(tail)
+    return result
 
 
 def parse_method_sources(method_name: str, annotation_block: str) -> list[str]:
@@ -446,6 +493,29 @@ def check_r15_b(path: Path, source: str) -> list[str]:
     return [f"{path}:{line_number(source, match.start())}" for match in R15_B_PATTERN.finditer(source)]
 
 
+def checkstyle_preview_final_parameters(path: Path, source: str) -> list[str]:
+    violations = []
+    for match in TEST_METHOD_SIGNATURE_PATTERN.finditer(source):
+        method_name = match.group(2)
+        params = match.group(3).strip()
+        if not params:
+            continue
+        line = line_number(source, match.start())
+        for each in split_parameters(params):
+            normalized = re.sub(r"\s+", " ", each.strip())
+            if not normalized.startswith("final "):
+                violations.append(f"{path}:{line} method={method_name} param={each.strip()}")
+    return violations
+
+
+def collect_precheck_violations(context: FileScanContext) -> dict[str, list[str]]:
+    return {
+        "checkstyle-final-parameters": checkstyle_preview_final_parameters(context.path, context.source),
+        "parameterized-methodsource": check_r15_d(context.path, context.source, context.method_bodies),
+        "parameterized-name-parameter": check_r15_e(context.path, context.source),
+    }
+
+
 def scan_java_file(path: Path, allow_metadata_accessor_tests: bool) -> tuple[dict[str, list[str]], list[CandidateSummary]]:
     source = path.read_text(encoding="utf-8")
     method_bodies = parse_method_bodies(source)
@@ -517,13 +587,23 @@ def build_rule_result(violations_by_rule: dict[str, list[str]]) -> dict[str, dic
 
 def collect_scan_result(java_paths: list[Path], baseline_before: Path | None, allow_metadata_accessor_tests: bool) -> dict:
     violations_by_rule = defaultdict(list)
+    precheck_violations = defaultdict(list)
     contexts = [create_file_scan_context(each) for each in java_paths]
     for context in contexts:
         for rule, entries in file_rule_violations(context, allow_metadata_accessor_tests).items():
             violations_by_rule[rule].extend(entries)
+        for name, entries in collect_precheck_violations(context).items():
+            precheck_violations[name].extend(entries)
     violations_by_rule["R15-C"].extend(check_r15_c(baseline_before))
     return {
         "rules": build_rule_result(violations_by_rule),
+        "prechecks": {
+            name: {
+                "message": PRECHECK_MESSAGES[name],
+                "violations": precheck_violations[name],
+            }
+            for name in PRECHECK_ORDER
+        },
         "candidates": [asdict(each) for context in contexts for each in context.candidates],
         "java_file_count": len(contexts),
     }
@@ -531,6 +611,11 @@ def collect_scan_result(java_paths: list[Path], baseline_before: Path | None, al
 
 def failed_rule_names(result: dict) -> list[str]:
     return [each.name for each in RULE_SPECS if result["rules"][each.name]["violations"]]
+
+
+def failed_precheck_names(result: dict) -> list[str]:
+    prechecks = result.get("prechecks", {})
+    return [each for each in PRECHECK_ORDER if prechecks.get(each, {}).get("violations")]
 
 
 def print_rule_summary(result: dict) -> int:
@@ -563,12 +648,31 @@ def print_summary_only(result: dict) -> int:
     return 0
 
 
+def print_precheck_summary(result: dict) -> int:
+    prechecks = result.get("prechecks", {})
+    failed = False
+    for name in PRECHECK_ORDER:
+        details = prechecks.get(name)
+        if not details:
+            continue
+        violations = details["violations"]
+        if not violations:
+            print(f"[precheck:{name}] ok")
+            continue
+        failed = True
+        print(f"[precheck:{name}] {details['message']}")
+        for each in violations:
+            print(each)
+    return 1 if failed else 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Consolidated quality-rule scan for gen-ut.")
     parser.add_argument("--baseline-before", help="Path to the baseline git status captured at task start.")
     parser.add_argument("--allow-metadata-accessor-tests", action="store_true", help="Allow R15-B when user explicitly requested metadata accessor tests.")
     parser.add_argument("--json", action="store_true", help="Emit JSON output instead of the default text report.")
     parser.add_argument("--summary-only", action="store_true", help="Emit a compact text summary with candidate information.")
+    parser.add_argument("--precheck-only", action="store_true", help="Emit only lightweight deterministic prechecks for early edit loops.")
     parser.add_argument("paths", nargs="+", help="Resolved test file set.")
     args = parser.parse_args()
 
@@ -578,6 +682,8 @@ def main() -> int:
     if args.json:
         print(json.dumps(result, indent=2, sort_keys=True))
         return 1 if failed_rule_names(result) else 0
+    if args.precheck_only:
+        return print_precheck_summary(result)
     if args.summary_only:
         return print_summary_only(result)
     return print_rule_summary(result)
