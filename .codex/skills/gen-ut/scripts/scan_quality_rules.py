@@ -51,10 +51,13 @@ class FileScanContext:
     path: Path
     source: str
     method_bodies: dict[str, str]
+    method_blocks: dict[str, tuple[int, str]]
     candidates: list[CandidateSummary]
+    target_type_name: str | None
+    target_public_methods: set[str]
 
 
-RULE_ORDER = ("R8", "R14", "R15-A", "R15-B", "R15-C", "R15-D", "R15-E", "R15-F", "R15-G", "R15-H", "R15-I")
+RULE_ORDER = ("R8", "R14", "R15-A", "R15-B", "R15-C", "R15-D", "R15-E", "R15-F", "R15-G", "R15-H", "R15-I", "R15-J")
 PRECHECK_ORDER = (
     "checkstyle-final-parameters",
     "parameterized-methodsource",
@@ -77,6 +80,7 @@ RULE_MESSAGES = {
     "R15-G": "parameterized tests must not introduce nested helper type declarations",
     "R15-H": "do not dispatch boolean assertions by control flow to choose assertTrue/assertFalse",
     "R15-I": "parameterized tests must not use Consumer in signatures or @MethodSource argument rows",
+    "R15-J": "non-test helpers and @MethodSource providers must not invoke target public methods without assertions in test bodies",
 }
 RULE_SPECS = tuple(RuleSpec(each, RULE_MESSAGES[each]) for each in RULE_ORDER)
 BOOLEAN_ASSERTION_BAN_PATTERN = re.compile(
@@ -133,6 +137,10 @@ R15_B_PATTERN = re.compile(
 )
 TYPE_DECL_LINE_PATTERN = re.compile(
     r"^\s*(?:(?:public|protected|private|static|final|abstract|sealed|non-sealed)\s+)*(class|interface|enum|record)\s+(\w+)\b"
+)
+PUBLIC_METHOD_DECL_PATTERN = re.compile(
+    r"^\s*public\s+(?:default\s+)?(?:static\s+)?(?:final\s+)?[\w$<>\[\], ?]+\s+(\w+)\s*\(",
+    re.M,
 )
 UNTRACKED_STATUS_PREFIX = "?? "
 CONSTRUCTOR_TEST_PREFIXES = ("New", "Construct", "Constructor")
@@ -209,17 +217,27 @@ def parse_method_sources(method_name: str, annotation_block: str) -> list[str]:
 
 
 def parse_method_bodies(source: str) -> dict[str, str]:
+    return {name: body for name, (_, body) in parse_method_blocks(source).items()}
+
+
+def parse_method_blocks(source: str) -> dict[str, tuple[int, str]]:
     result = {}
     for match in METHOD_DECL_PATTERN.finditer(source):
         method_name = match.group(1)
+        line = line_number(source, match.start())
         brace_index = opening_brace_index(match)
         if brace_index >= 0:
-            result[method_name] = extract_block(source, brace_index)
+            result[method_name] = (line, extract_block(source, brace_index))
     return result
 
 
-def run_git_command(args: list[str]) -> str:
-    return subprocess.run(args, check=True, capture_output=True, text=True).stdout
+def run_git_command(args: list[str], *, allow_failure: bool = False) -> str:
+    try:
+        return subprocess.run(args, check=True, capture_output=True, text=True).stdout
+    except subprocess.CalledProcessError:
+        if allow_failure:
+            return ""
+        raise
 
 
 def get_git_diff_lines(path: Path, *, cached: bool = False) -> list[str]:
@@ -227,11 +245,11 @@ def get_git_diff_lines(path: Path, *, cached: bool = False) -> list[str]:
     if cached:
         command.append("--cached")
     command.extend(["-U0", "--", str(path)])
-    return run_git_command(command).splitlines()
+    return run_git_command(command, allow_failure=True).splitlines()
 
 
 def get_status_line_for_path(path: Path) -> str | None:
-    output = run_git_command(["git", "status", "--porcelain", "--", str(path)])
+    output = run_git_command(["git", "status", "--porcelain", "--", str(path)], allow_failure=True)
     lines = [each for each in output.splitlines() if each]
     return lines[0] if lines else None
 
@@ -261,6 +279,29 @@ def get_target_type_name(source: str) -> str | None:
     if top_level_class_name and top_level_class_name.endswith("Test"):
         return top_level_class_name[:-4]
     return None
+
+
+def get_test_method_names(source: str) -> set[str]:
+    return {match.group(2) for match in TEST_METHOD_DECL_PATTERN.finditer(source)}
+
+
+def resolve_target_source_path(path: Path, source: str) -> Path | None:
+    target_type_name = get_target_type_name(source)
+    if not target_type_name:
+        return None
+    path_text = str(path)
+    test_marker = "/src/test/java/"
+    if test_marker not in path_text:
+        return None
+    return Path(path_text.replace(test_marker, "/src/main/java/")).with_name(f"{target_type_name}.java")
+
+
+def load_target_public_methods(path: Path, source: str) -> set[str]:
+    target_source_path = resolve_target_source_path(path, source)
+    if target_source_path is None or not target_source_path.exists():
+        return set()
+    target_source = target_source_path.read_text(encoding="utf-8")
+    return {match.group(1) for match in PUBLIC_METHOD_DECL_PATTERN.finditer(target_source)}
 
 
 def get_after_status_lines() -> set[str]:
@@ -473,6 +514,29 @@ def check_r15_i(path: Path, source: str, method_bodies: dict[str, str]) -> list[
     return violations
 
 
+def check_r15_j(context: FileScanContext) -> list[str]:
+    if not context.target_type_name or not context.target_public_methods:
+        return []
+    test_method_names = get_test_method_names(context.source)
+    local_var_pattern = re.compile(rf"\b{re.escape(context.target_type_name)}\s+(\w+)\s*=")
+    method_pattern = "|".join(sorted((re.escape(each) for each in context.target_public_methods), key=len, reverse=True))
+    if not method_pattern:
+        return []
+    violations = []
+    for method_name, (line, body) in context.method_blocks.items():
+        if method_name in test_method_names:
+            continue
+        local_vars = list_distinct(local_var_pattern.findall(body))
+        if local_vars:
+            variable_pattern = "|".join(sorted((re.escape(each) for each in local_vars), key=len, reverse=True))
+            if re.search(rf"\b(?:{variable_pattern})\s*\.\s*(?:{method_pattern})\s*\(", body):
+                violations.append(f"{context.path}:{line} method={method_name} reason=helperInvokesTargetPublicMethod")
+                continue
+        if re.search(rf"new\s+{re.escape(context.target_type_name)}\s*\([^;{{}}]*\)\s*\.\s*(?:{method_pattern})\s*\(", body, re.S):
+            violations.append(f"{context.path}:{line} method={method_name} reason=chainedTargetInvocationOutsideTestBody")
+    return violations
+
+
 def check_r14(path: Path, source: str) -> list[str]:
     return [f"{path}:{line_number(source, match.start())}" for match in BOOLEAN_ASSERTION_BAN_PATTERN.finditer(source)]
 
@@ -551,11 +615,15 @@ def check_r15_c(baseline_before: Path | None) -> list[str]:
 
 def create_file_scan_context(path: Path) -> FileScanContext:
     source = path.read_text(encoding="utf-8")
+    method_blocks = parse_method_blocks(source)
     return FileScanContext(
         path=path,
         source=source,
-        method_bodies=parse_method_bodies(source),
+        method_bodies={name: body for name, (_, body) in method_blocks.items()},
+        method_blocks=method_blocks,
         candidates=analyze_parameterization_candidates(path, source),
+        target_type_name=get_target_type_name(source),
+        target_public_methods=load_target_public_methods(path, source),
     )
 
 
@@ -570,6 +638,7 @@ def file_rule_violations(context: FileScanContext, allow_metadata_accessor_tests
     violations["R15-G"].extend(check_r15_g(context.path, context.source))
     violations["R15-H"].extend(check_r15_h(context.path, context.source))
     violations["R15-I"].extend(check_r15_i(context.path, context.source, context.method_bodies))
+    violations["R15-J"].extend(check_r15_j(context))
     if not allow_metadata_accessor_tests:
         violations["R15-B"].extend(check_r15_b(context.path, context.source))
     return violations
