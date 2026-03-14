@@ -70,15 +70,16 @@ public final class PipelineInventoryCalculateSQLBuilder {
             return String.format("SELECT %s FROM %s WHERE %s AND %s ORDER BY %s", queryColumns, qualifiedTableName,
                     buildRangeQueryLowerCondition(range.isLowerInclusive(), firstUniqueKey),
                     buildRangeQueryUpperCondition(firstUniqueKey), orderByColumns);
-        } else if (null != range.getLowerBound()) {
+        }
+        if (null != range.getLowerBound()) {
             return String.format("SELECT %s FROM %s WHERE %s ORDER BY %s", queryColumns, qualifiedTableName,
                     buildRangeQueryLowerCondition(range.isLowerInclusive(), firstUniqueKey), orderByColumns);
-        } else if (null != range.getUpperBound()) {
+        }
+        if (null != range.getUpperBound()) {
             return String.format("SELECT %s FROM %s WHERE %s ORDER BY %s", queryColumns, qualifiedTableName,
                     buildRangeQueryUpperCondition(firstUniqueKey), orderByColumns);
-        } else {
-            return String.format("SELECT %s FROM %s ORDER BY %s", queryColumns, qualifiedTableName, orderByColumns);
         }
+        return String.format("SELECT %s FROM %s ORDER BY %s", queryColumns, qualifiedTableName, orderByColumns);
     }
     
     private String buildRangeQueryLowerCondition(final boolean inclusive, final String firstUniqueKey) {
