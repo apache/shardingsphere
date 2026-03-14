@@ -190,21 +190,26 @@ Module resolution order:
 3. Resolve `<ResolvedTestClass>`, `<ResolvedTestFileSet>`, `<ResolvedTestModules>`, and record `pom.xml` evidence (`R3`).
 4. Run a `Baseline quality summary` using the bundled baseline script unless equivalent evidence was just produced in the same turn.
     - Use the baseline summary to identify current branch-miss lines, existing `R15` risks, and likely `R8-CANDIDATES` before editing.
+    - `SHOULD` fix deterministic precheck warnings from the baseline summary before the first standalone target-test run; these warnings are advisory only and do not replace final `checkstyle` / `spotless` / hard-gate verification.
 5. Decide whether `R12` is triggered; if not, output `R4` branch mapping.
+   - For parser / utility classes that return context or value objects, `SHOULD` align planned assertions with the returned object's public API before the first target-test run, to avoid internal-branch coverage assertions that do not match externally observable behavior.
 6. Execute `R8` parameterized optimization analysis, output `R8-CANDIDATES`, and apply required refactoring.
 7. Execute `R9` dead-code checks and record evidence.
 8. Complete test implementation or extension according to `R2-R7`.
 9. Perform necessity trimming and coverage re-verification according to `R13`.
-10. After each edit batch, recompute the `Verification snapshot digest`; during in-scope repair loops, prefer `target test + one consolidated hard-gate scan` as the minimal verification required by `R11`.
+10. After each edit batch, `SHOULD` run one lightweight precheck pass before expensive verification when signatures or parameterized-test structure changed.
+    - Recommended command: `python3 scripts/scan_quality_rules.py --precheck-only <ResolvedTestFileSet>`.
+    - This pass is advisory and deterministic; it may fail fast on early style issues such as missing `final` on test-method parameters, missing `@MethodSource`, too-few `Arguments` rows, or an invalid first parameter for parameterized tests, but it does not replace formal `R14` / `R15` / `checkstyle` verification.
+11. After each edit batch, recompute the `Verification snapshot digest`; during in-scope repair loops, prefer `target test + one consolidated hard-gate scan` as the minimal verification required by `R11`.
     - After any standalone target-test command succeeds, `SHOULD` persist the digest through `scripts/verification_gate_state.py mark-gate-green --gate target-test`.
-11. Run final verification commands and handle failures by `R11`.
+12. Run final verification commands and handle failures by `R11`.
     - Independent final gates (`coverage`, `checkstyle`, `spotless`, `consolidated hard-gate scan`) `SHOULD` run in parallel when the environment allows; otherwise serialize them.
     - Prefer the bundled `scripts/run_quality_gates.py` runner so independent gates share one orchestration entry and can reuse gate-level green results from `Gate reuse state`.
     - If `scripts/verification_gate_state.py match-gate-green --gate target-test` reports a match for the current `<ResolvedTestFileSet>`, and the final coverage command re-executes tests on that same digest, `MAY` skip an extra standalone target-test rerun before delivery.
     - A previously green `coverage` gate `MAY` be reused for the same digest; `checkstyle` and `spotless` `SHOULD` still execute for the current module scope.
     - The consolidated hard-gate scan `MUST` be executed twice to satisfy `R14`: once after implementation stabilizes and once immediately before delivery. Only the earlier scan may be reused for diagnostics; the delivery scan must execute again.
-12. Decide status by `R10` after verification; if status is `R10-D`, return to Step 5 and continue.
-13. Before final response, run a second `R10` status decision and output `R10=<state>` with rule-to-evidence mapping.
+13. Decide status by `R10` after verification; if status is `R10-D`, return to Step 5 and continue.
+14. Before final response, run a second `R10` status decision and output `R10=<state>` with rule-to-evidence mapping.
 
 ## Verification and Commands
 
@@ -227,6 +232,13 @@ python3 scripts/collect_quality_baseline.py --workdir <RepoRoot> \
   <ResolvedTestFileSet>
 ```
 The baseline script reuses `scan_quality_rules.py` diagnostics and prints current coverage plus branch-miss lines for each target class.
+It also prints deterministic non-blocking precheck warnings for high-frequency style failures such as missing `final` on test-method parameters or obvious parameterized-test structure issues; these warnings are for early repair only and do not replace formal gates.
+
+0.1 Lightweight precheck pass (recommended after structural edits and before the next standalone target-test):
+```bash
+python3 scripts/scan_quality_rules.py --precheck-only <ResolvedTestFileSet>
+```
+This mode is intentionally narrower than the consolidated hard-gate scan. It exists only to catch deterministic early-fix issues cheaply and `MUST NOT` be used as a replacement for final `R14`, `R15`, `checkstyle`, or `spotless` verification.
 
 1. Target tests:
 ```bash

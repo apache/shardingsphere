@@ -124,6 +124,15 @@ def print_rule_baseline(scan_result: dict) -> None:
                 print(each)
         else:
             print(f"[{rule}] ok")
+    prechecks = scan_result.get("prechecks", {})
+    for name in sorted(prechecks):
+        violations = prechecks[name]["violations"]
+        if not violations:
+            print(f"[precheck:{name}] ok")
+            continue
+        print(f"[precheck:{name}] {prechecks[name]['message']}")
+        for each in violations:
+            print(each)
 
 
 def print_coverage_baseline(jacoco_xml_path: Path, target_classes: list[str]) -> None:
