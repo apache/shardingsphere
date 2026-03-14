@@ -184,7 +184,8 @@ class PipelineGovernanceFacadeTest {
     void assertPersistJobOffset() {
         assertFalse(governanceFacade.getJobFacade().getOffset().load("1").isTargetSchemaTableCreated());
         governanceFacade.getJobFacade().getOffset().persist("1", new JobOffsetInfo(true));
-        assertTrue(governanceFacade.getJobFacade().getOffset().load("1").isTargetSchemaTableCreated());
+        JobOffsetInfo actual = governanceFacade.getJobFacade().getOffset().load("1");
+        assertTrue(actual.isTargetSchemaTableCreated());
     }
     
     private ClusterPersistRepository getClusterPersistRepository() {
