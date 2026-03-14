@@ -84,6 +84,8 @@ Module resolution order:
   - For parameterized tests, each `Arguments` row `MUST` represent one independent scenario and one branch/path mapping unit for `R4`.
   - For parameterized tests, `Arguments` row count `MUST` be greater than or equal to 3.
   - Tests `MUST` exercise behavior through public methods only.
+  - Coverage-relevant invocations of target public methods `MUST` appear in test method bodies together with assertions for the externally observable result of that invocation.
+  - Helper methods and `@MethodSource` providers `MUST NOT` invoke target public methods merely to warm caches, precompute coverage, or otherwise execute target behavior without assertions in the same test method body.
   - Public production methods with business logic `MUST` be covered with dedicated test methods.
   - For interface targets, only `default` public methods are required test targets by default, and non-`default` public methods `MUST NOT` be tested unless the user explicitly requests them in the current turn.
   - Dedicated test targets `MUST` follow the `R4` branch-mapping exclusion scope.
@@ -181,6 +183,7 @@ Module resolution order:
   - `R15-G` (parameterized nested-type ban): when a file contains `@ParameterizedTest`, newly introduced diff lines `MUST NOT` add nested helper type declarations (`class` / `interface` / `enum` / `record`) inside the test class.
   - `R15-H` (boolean variable assertion style): for variable-driven boolean expectations, tests `MUST` assert with `assertThat(actual, is(expected))`, and `MUST NOT` use control-flow dispatch only to choose `assertTrue`/`assertFalse`.
   - `R15-I` (parameterized Consumer ban): files containing `@ParameterizedTest` `MUST NOT` introduce or retain `Consumer`-based scenario transport in parameterized method signatures or `@MethodSource` argument rows.
+  - `R15-J` (assertion-backed target invocation): non-test helper methods and `@MethodSource` providers `MUST NOT` invoke target public methods; target public method invocations that contribute to coverage `MUST` be asserted in the same test method body.
 
 ## Workflow
 
@@ -346,7 +349,7 @@ python3 scripts/run_quality_gates.py --workdir <RepoRoot> \
 If the environment cannot or should not parallelize, rerun the same command with `--serial`.
 Coverage still remains the authoritative source for target-class counters, and the runner does not relax any gate.
 
-5. Consolidated hard-gate scan (`R8`, `R14`, `R15-A/B/C/D/E/F/G/H/I`):
+5. Consolidated hard-gate scan (`R8`, `R14`, `R15-A/B/C/D/E/F/G/H/I/J`):
 ```bash
 python3 scripts/scan_quality_rules.py --baseline-before /tmp/gen-ut-status-before.txt <ResolvedTestFileSet>
 ```
