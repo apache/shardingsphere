@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.instance.util;
 
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +46,7 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(NetworkInterface.class)
 class IpUtilsTest {
     
+    @BeforeEach
     @AfterEach
     void clearCachedIpAddress() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(IpUtils.class.getDeclaredField("cachedIpAddress"), null, null);
