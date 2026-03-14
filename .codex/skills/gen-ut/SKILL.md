@@ -196,11 +196,11 @@ Module resolution order:
 8. Complete test implementation or extension according to `R2-R7`.
 9. Perform necessity trimming and coverage re-verification according to `R13`.
 10. After each edit batch, recompute the `Verification snapshot digest`; during in-scope repair loops, prefer `target test + one consolidated hard-gate scan` as the minimal verification required by `R11`.
-    - After any standalone target-test command succeeds, `SHOULD` persist the digest through `scripts/verification_snapshot_state.py mark-gate-green --gate target-test`.
+    - After any standalone target-test command succeeds, `SHOULD` persist the digest through `scripts/verification_gate_state.py mark-gate-green --gate target-test`.
 11. Run final verification commands and handle failures by `R11`.
     - Independent final gates (`coverage`, `checkstyle`, `spotless`, `consolidated hard-gate scan`) `SHOULD` run in parallel when the environment allows; otherwise serialize them.
     - Prefer the bundled `scripts/run_quality_gates.py` runner so independent gates share one orchestration entry and can reuse gate-level green results from `Gate reuse state`.
-    - If `scripts/verification_snapshot_state.py match-gate-green --gate target-test` reports a match for the current `<ResolvedTestFileSet>`, and the final coverage command re-executes tests on that same digest, `MAY` skip an extra standalone target-test rerun before delivery.
+    - If `scripts/verification_gate_state.py match-gate-green --gate target-test` reports a match for the current `<ResolvedTestFileSet>`, and the final coverage command re-executes tests on that same digest, `MAY` skip an extra standalone target-test rerun before delivery.
     - A previously green `coverage` gate `MAY` be reused for the same digest; `checkstyle` and `spotless` `SHOULD` still execute for the current module scope.
     - The consolidated hard-gate scan `MUST` be executed twice to satisfy `R14`: once after implementation stabilizes and once immediately before delivery. Only the earlier scan may be reused for diagnostics; the delivery scan must execute again.
 12. Decide status by `R10` after verification; if status is `R10-D`, return to Step 5 and continue.
@@ -234,17 +234,17 @@ The baseline script reuses `scan_quality_rules.py` diagnostics and prints curren
 ```
 After a green standalone target-test command, record the digest:
 ```bash
-python3 scripts/verification_snapshot_state.py mark-gate-green --state-file /tmp/gen-ut-gate-state.json --gate target-test <ResolvedTestFileSet>
+python3 scripts/verification_gate_state.py mark-gate-green --state-file /tmp/gen-ut-gate-state.json --gate target-test <ResolvedTestFileSet>
 ```
 
 1.1 Verification snapshot digest:
 ```bash
-python3 scripts/verification_snapshot_state.py digest <ResolvedTestFileSet>
+python3 scripts/verification_gate_state.py digest <ResolvedTestFileSet>
 ```
 
 1.2 Latest green target-test digest reuse check:
 ```bash
-python3 scripts/verification_snapshot_state.py match-gate-green --state-file /tmp/gen-ut-gate-state.json --gate target-test <ResolvedTestFileSet>
+python3 scripts/verification_gate_state.py match-gate-green --state-file /tmp/gen-ut-gate-state.json --gate target-test <ResolvedTestFileSet>
 ```
 
 2. Coverage:
@@ -257,7 +257,7 @@ If the module does not define `jacoco-check@jacoco-check`:
 ```
 After a green standalone coverage command, the digest may be recorded for reuse:
 ```bash
-python3 scripts/verification_snapshot_state.py mark-gate-green --state-file /tmp/gen-ut-gate-state.json --gate coverage <ResolvedTestFileSet>
+python3 scripts/verification_gate_state.py mark-gate-green --state-file /tmp/gen-ut-gate-state.json --gate coverage <ResolvedTestFileSet>
 ```
 
 2.1 Target-class coverage hard gate (default target 100 unless explicitly lowered, aggregated over `Target-class coverage scope`):

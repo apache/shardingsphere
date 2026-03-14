@@ -17,7 +17,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
-import verification_snapshot_state as snapshot_state
+import verification_gate_state as snapshot_state
 
 
 @dataclass(frozen=True)
