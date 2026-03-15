@@ -20,7 +20,6 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
-import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -409,16 +408,12 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     }
     
     private DatabaseType getProtocolType() {
-        ShardingSphereConnection connection = getConnection();
-        return null == connection ? null : connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getCurrentDatabaseName()).getProtocolType();
-    }
-    
-    private ShardingSphereConnection getConnection() {
         if (getStatement() instanceof ShardingSpherePreparedStatement) {
-            return ((ShardingSpherePreparedStatement) getStatement()).getConnection();
+            return ((ShardingSpherePreparedStatement) getStatement()).getUsedDatabase().getProtocolType();
         }
         if (getStatement() instanceof ShardingSphereStatement) {
-            return ((ShardingSphereStatement) getStatement()).getConnection();
+            ShardingSphereStatement statement = (ShardingSphereStatement) getStatement();
+            return statement.getConnection().getContextManager().getMetaDataContexts().getMetaData().getDatabase(statement.getUsedDatabaseName()).getProtocolType();
         }
         return null;
     }
