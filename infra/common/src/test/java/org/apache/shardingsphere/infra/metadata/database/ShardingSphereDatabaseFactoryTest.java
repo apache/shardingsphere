@@ -48,7 +48,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -113,29 +112,6 @@ class ShardingSphereDatabaseFactoryTest {
         assertThat(actual.getAllSchemas().size(), is(1));
         assertThat(actual.getRuleMetaData().getRules().size(), is(1));
         assertTrue(actual.containsSchema("foo_schema"));
-    }
-    
-    @Test
-    void assertCreateWithoutSystemSchema() throws SQLException {
-        DatabaseType protocolType = mock(DatabaseType.class);
-        Map<String, ShardingSphereSchema> genericSchemas = Collections.singletonMap("foo_schema", new ShardingSphereSchema("foo_schema", protocolType));
-        try (
-                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class,
-                        (mock, context) -> when(mock.getDefaultSchemaName("foo_db")).thenReturn("foo_schema"));
-                MockedStatic<DatabaseRulesBuilder> mockedRulesBuilder = mockStatic(DatabaseRulesBuilder.class);
-                MockedStatic<GenericSchemaBuilder> mockedGenericSchemaBuilder = mockStatic(GenericSchemaBuilder.class)) {
-            ComputeNodeInstanceContext computeNodeInstanceContext = mock(ComputeNodeInstanceContext.class);
-            mockedRulesBuilder.when(() -> DatabaseRulesBuilder.build(eq("foo_db"), eq(protocolType), eq(databaseConfig), eq(computeNodeInstanceContext), any(ResourceMetaData.class)))
-                    .thenReturn(Collections.singleton(mock(ShardingSphereRule.class)));
-            mockedGenericSchemaBuilder.when(() -> GenericSchemaBuilder.build(eq(protocolType), any(GenericSchemaBuilderMaterial.class))).thenReturn(genericSchemas);
-            ShardingSphereDatabase actual = ShardingSphereDatabaseFactory.createWithoutSystemSchema("foo_db", protocolType, databaseConfig, props, computeNodeInstanceContext);
-            assertThat(actual.getName(), is("foo_db"));
-            assertThat(actual.getProtocolType(), is(protocolType));
-            assertThat(actual.getAllSchemas().size(), is(1));
-            assertThat(actual.getRuleMetaData().getRules().size(), is(1));
-            assertTrue(actual.containsSchema("foo_schema"));
-            assertFalse(actual.containsSchema("system_schema"));
-        }
     }
     
     private static Stream<Arguments> createWithSystemDatabaseArguments() {
