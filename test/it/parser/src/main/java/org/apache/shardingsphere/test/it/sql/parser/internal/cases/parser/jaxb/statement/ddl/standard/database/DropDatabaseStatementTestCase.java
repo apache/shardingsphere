@@ -17,10 +17,19 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.database;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * Drop database statement test case.
  */
+@Getter
+@Setter
 public final class DropDatabaseStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute
+    private Boolean force;
 }

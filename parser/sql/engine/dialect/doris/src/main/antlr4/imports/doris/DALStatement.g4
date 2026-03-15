@@ -155,7 +155,7 @@ showCreateView
     ;
 
 showDatabases
-    : SHOW (DATABASES | SCHEMAS) showFilter?
+    : SHOW (DATABASES | SCHEMAS) (FROM catalogName)? showFilter?
     ;
 
 showEngine

@@ -18,29 +18,36 @@
 package org.apache.shardingsphere.infra.metadata.database.schema;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import java.util.Objects;
+import java.util.stream.Stream;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.is;
 
 class HashColumnTest {
     
-    @Test
-    void assertEquals() {
-        assertThat(new HashColumn("col", "tbl", false), not(new Object()));
-        assertThat(new HashColumn("col", "tbl", false), is(new HashColumn("COL", "TBL", false)));
-        assertThat(new HashColumn("col", "tbl", false), not(new HashColumn("col1", "tbl", false)));
-        assertThat(new HashColumn("col", "tbl", false), not(new HashColumn("col", "tbl1", false)));
-        HashColumn column1 = new HashColumn("col", "tbl", false);
-        HashColumn column2 = new HashColumn("COL", "TBL", false);
-        assertTrue(column1.equals(column2));
-        assertTrue(column2.equals(column1));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("equalsArguments")
+    void assertEqualsWithComparisonValue(final String name,
+                                         final boolean compareHashColumn, final String compareName, final String compareTableName, final boolean compareCaseSensitive, final boolean expectedMatched) {
+        assertThat(new HashColumn("col", "tbl", false).equals(compareHashColumn ? new HashColumn(compareName, compareTableName, compareCaseSensitive) : new Object()), is(expectedMatched));
     }
     
     @Test
     void assertHashCode() {
-        assertThat(new HashColumn("col", "tbl", false).hashCode(), is(new HashColumn("COL", "TBL", false).hashCode()));
-        assertThat(new HashColumn("col", "tbl", false).hashCode(), not(new HashColumn("different_col", "tbl", false).hashCode()));
+        assertThat(new HashColumn("col", "tbl", false).hashCode(), is(Objects.hash("COL", "TBL")));
+    }
+    
+    private static Stream<Arguments> equalsArguments() {
+        return Stream.of(
+                Arguments.of("non-hash-column", false, "", "", false, false),
+                Arguments.of("different-name", true, "col1", "tbl", false, false),
+                Arguments.of("different-table", true, "col", "tbl1", false, false),
+                Arguments.of("different-case-sensitive", true, "COL", "TBL", true, false),
+                Arguments.of("same-value-ignoring-case", true, "COL", "TBL", false, true));
     }
 }
