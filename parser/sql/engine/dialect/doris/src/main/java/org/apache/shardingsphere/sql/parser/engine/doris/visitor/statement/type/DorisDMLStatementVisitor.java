@@ -45,6 +45,14 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisLo
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadPropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.String_Context;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.UserVariableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadDataDescContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadPropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadWithClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadPropertiesContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadDataPropertiesContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BrokerLoadSetAssignmentContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoadXmlStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowClauseContext;
@@ -53,6 +61,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowI
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WindowingClauseContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.BrokerLoadDataDescSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.ColNameOrUserVarSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.IgnoreLinesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.load.LiteralValueSegment;
@@ -87,12 +96,14 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisCreateRouti
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisPauseRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisResumeRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisStopRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dml.DorisBrokerLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadDataStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLHandlerStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLImportStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dml.MySQLLoadXMLStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -130,7 +141,142 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitLoadStatement(final LoadStatementContext ctx) {
+        if (null != ctx.brokerLoadStatement()) {
+            return visit(ctx.brokerLoadStatement());
+        }
         return null == ctx.dorisLoadDataStatement() ? visit(ctx.loadXmlStatement()) : visit(ctx.dorisLoadDataStatement());
+    }
+    
+    @Override
+    public ASTNode visitBrokerLoadStatement(final BrokerLoadStatementContext ctx) {
+        DorisBrokerLoadStatement result = new DorisBrokerLoadStatement(getDatabaseType());
+        result.setLoadLabel(ctx.identifier().getText());
+        if (null != ctx.owner()) {
+            result.setDatabase(new DatabaseSegment(ctx.owner().start.getStartIndex(), ctx.owner().stop.getStopIndex(), new IdentifierValue(ctx.owner().getText())));
+        }
+        for (BrokerLoadDataDescContext each : ctx.brokerLoadDataDesc()) {
+            result.getDataDescs().add(buildBrokerLoadDataDesc(each));
+        }
+        BrokerLoadWithClauseContext withCtx = ctx.brokerLoadWithClause();
+        if (null != withCtx.S3()) {
+            result.setBrokerType("S3");
+        } else if (null != withCtx.HDFS()) {
+            result.setBrokerType("HDFS");
+        } else if (null != withCtx.BROKER()) {
+            result.setBrokerType("BROKER");
+            if (null != withCtx.string_()) {
+                result.setBrokerName(SQLUtils.getExactlyValue(withCtx.string_().getText()));
+            }
+        }
+        PropertiesSegment brokerProps = new PropertiesSegment(withCtx.start.getStartIndex(), withCtx.stop.getStopIndex());
+        for (BrokerLoadPropertyContext each : withCtx.brokerLoadProperty()) {
+            brokerProps.getProperties().add(buildBrokerLoadProperty(each));
+        }
+        result.setBrokerProperties(brokerProps);
+        if (null != ctx.brokerLoadProperties()) {
+            BrokerLoadPropertiesContext loadPropsCtx = ctx.brokerLoadProperties();
+            PropertiesSegment loadProps = new PropertiesSegment(loadPropsCtx.start.getStartIndex(), loadPropsCtx.stop.getStopIndex());
+            for (BrokerLoadPropertyContext each : loadPropsCtx.brokerLoadProperty()) {
+                loadProps.getProperties().add(buildBrokerLoadProperty(each));
+            }
+            result.setLoadProperties(loadProps);
+        }
+        if (null != ctx.string_()) {
+            result.setComment(SQLUtils.getExactlyValue(ctx.string_().getText()));
+        }
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    private BrokerLoadDataDescSegment buildBrokerLoadDataDesc(final BrokerLoadDataDescContext ctx) {
+        BrokerLoadDataDescSegment result = new BrokerLoadDataDescSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.MERGE()) {
+            result.setMergeType("MERGE");
+        } else if (null != ctx.APPEND()) {
+            result.setMergeType("APPEND");
+        } else if (ctx.DELETE().size() > (null != ctx.ON() ? 1 : 0)) {
+            result.setMergeType("DELETE");
+        }
+        for (String_Context each : ctx.string_()) {
+            result.getFilePaths().add(SQLUtils.getExactlyValue(each.getText()));
+        }
+        result.setNegative(null != ctx.NEGATIVE());
+        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.partitionNames()) {
+            for (IdentifierContext each : ctx.partitionNames().identifier()) {
+                result.getPartitions().add(new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each)));
+            }
+        }
+        if (null != ctx.brokerLoadColumnTerminator()) {
+            result.setColumnSeparator(SQLUtils.getExactlyValue(ctx.brokerLoadColumnTerminator().string_().getText()));
+        }
+        if (null != ctx.brokerLoadLineTerminator()) {
+            result.setLineDelimiter(SQLUtils.getExactlyValue(ctx.brokerLoadLineTerminator().string_().getText()));
+        }
+        if (null != ctx.brokerLoadFormatClause()) {
+            result.setFormatType(SQLUtils.getExactlyValue(ctx.brokerLoadFormatClause().string_().getText()));
+        }
+        if (null != ctx.brokerLoadCompressClause()) {
+            result.setCompressType(SQLUtils.getExactlyValue(ctx.brokerLoadCompressClause().string_().getText()));
+        }
+        extractBrokerLoadDataDescColumns(ctx, result);
+        extractBrokerLoadDataDescExpressions(ctx, result);
+        if (null != ctx.brokerLoadDataProperties()) {
+            BrokerLoadDataPropertiesContext dataPropsCtx = ctx.brokerLoadDataProperties();
+            PropertiesSegment dataProps = new PropertiesSegment(dataPropsCtx.start.getStartIndex(), dataPropsCtx.stop.getStopIndex());
+            for (BrokerLoadPropertyContext each : dataPropsCtx.brokerLoadProperty()) {
+                dataProps.getProperties().add(buildBrokerLoadProperty(each));
+            }
+            result.setDataProperties(dataProps);
+        }
+        return result;
+    }
+    
+    private void extractBrokerLoadDataDescColumns(final BrokerLoadDataDescContext ctx, final BrokerLoadDataDescSegment result) {
+        if (null != ctx.brokerLoadColumnList()) {
+            for (ColumnNameContext each : ctx.brokerLoadColumnList().columnName()) {
+                result.getColumnList().add((ColumnSegment) visit(each));
+            }
+        }
+        if (null != ctx.columnName() && !ctx.columnName().isEmpty()) {
+            for (ColumnNameContext each : ctx.columnName()) {
+                result.getColumnsFromPath().add((ColumnSegment) visit(each));
+            }
+        }
+        if (null != ctx.brokerLoadSetAssignment() && !ctx.brokerLoadSetAssignment().isEmpty()) {
+            for (BrokerLoadSetAssignmentContext each : ctx.brokerLoadSetAssignment()) {
+                ColumnSegment column = (ColumnSegment) visit(each.columnName());
+                ExpressionSegment value = (ExpressionSegment) visit(each.expr());
+                ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(each.start.getStartIndex(), each.stop.getStopIndex(), Collections.singletonList(column), value);
+                result.getSetAssignments().add(assignment);
+            }
+        }
+    }
+    
+    private void extractBrokerLoadDataDescExpressions(final BrokerLoadDataDescContext ctx, final BrokerLoadDataDescSegment result) {
+        if (null != ctx.expr() && !ctx.expr().isEmpty()) {
+            int exprIndex = 0;
+            if (null != ctx.PRECEDING()) {
+                result.setPrecedingFilter((ExpressionSegment) visit(ctx.expr(exprIndex)));
+                exprIndex++;
+            }
+            if (null != ctx.WHERE()) {
+                result.setWhereExpr((ExpressionSegment) visit(ctx.expr(exprIndex)));
+                exprIndex++;
+            }
+            if (null != ctx.ON()) {
+                result.setDeleteOnExpr((ExpressionSegment) visit(ctx.expr(exprIndex)));
+            }
+        }
+        if (null != ctx.ORDER()) {
+            result.setOrderByColumn(ctx.identifier().getText());
+        }
+    }
+    
+    private PropertySegment buildBrokerLoadProperty(final BrokerLoadPropertyContext ctx) {
+        String key = getPropertyKey(ctx.identifier(), ctx.SINGLE_QUOTED_TEXT(), ctx.DOUBLE_QUOTED_TEXT());
+        String value = SQLUtils.getExactlyValue(ctx.literals().getText());
+        return new PropertySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), key, value);
     }
     
     @Override

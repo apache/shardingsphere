@@ -87,6 +87,10 @@ ANY
     : A N Y
     ;
 
+APPEND
+    : A P P E N D
+    ;
+
 ARRAY
     : A R R A Y
     ;
@@ -211,6 +215,10 @@ BOTH
 
 BRIEF
     : B R I E F
+    ;
+
+BROKER
+    : B R O K E R
     ;
 
 BTREE
@@ -409,6 +417,10 @@ COMPRESSED
 
 COMPRESSION
     : C O M P R E S S I O N
+    ;
+
+COMPRESS_TYPE
+    : C O M P R E S S UL_ T Y P E
     ;
 
 CONCURRENT
@@ -1311,6 +1323,10 @@ KILL
     : K I L L
     ;
 
+LABEL
+    : L A B E L
+    ;
+
 LAG
     : L A G
     ;
@@ -1747,6 +1763,10 @@ NDB
 
 NDBCLUSTER
     : N D B C L U S T E R
+    ;
+
+NEGATIVE
+    : N E G A T I V E
     ;
 
 NESTED

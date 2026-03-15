@@ -162,6 +162,7 @@ identifierKeywordsUnambiguous
     | BOOLEAN
     | BOOL
     | BRIEF
+    | BROKER
     | BTREE
     | BUCKETS
     | BUILTIN
@@ -187,6 +188,7 @@ identifierKeywordsUnambiguous
     | COMPONENT
     | COMPRESSED
     | COMPRESSION
+    | COMPRESS_TYPE
     | CONCURRENT
     | CONNECTION
     | CONSISTENT
@@ -293,6 +295,7 @@ identifierKeywordsUnambiguous
     | KEY
     | KEYS
     | KEY_BLOCK_SIZE
+    | LABEL
     | LAST
     | LEAVES
     | LESS
@@ -355,6 +358,7 @@ identifierKeywordsUnambiguous
     | MUTEX
     | MYSQL
     | Doris_ERRNO
+    | NEGATIVE
     | NAMES
     | NAME
     | NATIONAL

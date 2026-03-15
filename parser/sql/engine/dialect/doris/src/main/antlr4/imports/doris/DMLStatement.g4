@@ -192,7 +192,7 @@ importStatement
     ;
 
 loadStatement
-    : dorisLoadDataStatement | loadXmlStatement
+    : dorisLoadDataStatement | loadXmlStatement | brokerLoadStatement
     ;
 
 createRoutineLoad
@@ -325,6 +325,74 @@ loadXmlStatement
       ( IGNORE numberLiterals (LINES | ROWS) )?
       fieldOrVarSpec?
       (setAssignmentsClause)?
+    ;
+
+brokerLoadStatement
+    : LOAD LABEL (owner DOT_)? identifier
+      LP_ brokerLoadDataDesc (COMMA_ brokerLoadDataDesc)* RP_
+      brokerLoadWithClause
+      brokerLoadProperties?
+      (COMMENT string_)?
+    ;
+
+brokerLoadDataDesc
+    : (MERGE | APPEND | DELETE)?
+      DATA INFILE LP_ string_ (COMMA_ string_)* RP_
+      NEGATIVE?
+      INTO TABLE tableName
+      partitionNames?
+      brokerLoadColumnTerminator?
+      brokerLoadLineTerminator?
+      brokerLoadFormatClause?
+      brokerLoadCompressClause?
+      (LP_ brokerLoadColumnList RP_)?
+      (COLUMNS FROM PATH AS LP_ columnName (COMMA_ columnName)* RP_)?
+      (SET LP_ brokerLoadSetAssignment (COMMA_ brokerLoadSetAssignment)* RP_)?
+      (PRECEDING FILTER expr)?
+      (WHERE expr)?
+      (DELETE ON expr)?
+      (ORDER BY identifier)?
+      brokerLoadDataProperties?
+    ;
+
+brokerLoadColumnTerminator
+    : COLUMNS TERMINATED BY string_
+    ;
+
+brokerLoadLineTerminator
+    : LINES TERMINATED BY string_
+    ;
+
+brokerLoadFormatClause
+    : FORMAT AS string_
+    ;
+
+brokerLoadCompressClause
+    : COMPRESS_TYPE AS string_
+    ;
+
+brokerLoadColumnList
+    : columnName (COMMA_ columnName)*
+    ;
+
+brokerLoadSetAssignment
+    : columnName EQ_ expr
+    ;
+
+brokerLoadDataProperties
+    : PROPERTIES LP_ brokerLoadProperty (COMMA_ brokerLoadProperty)* RP_
+    ;
+
+brokerLoadWithClause
+    : WITH (S3 | HDFS | BROKER string_?) LP_ brokerLoadProperty (COMMA_ brokerLoadProperty)* RP_
+    ;
+
+brokerLoadProperties
+    : PROPERTIES LP_ brokerLoadProperty (COMMA_ brokerLoadProperty)* RP_
+    ;
+
+brokerLoadProperty
+    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_? literals
     ;
 
 tableStatement
