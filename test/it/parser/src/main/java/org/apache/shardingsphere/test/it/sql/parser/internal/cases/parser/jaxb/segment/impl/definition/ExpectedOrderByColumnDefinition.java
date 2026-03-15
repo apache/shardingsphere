@@ -15,34 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.bound.ExpectedColumnBoundInfo;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperties;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedExpressionSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedIndex;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedOwner;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Expected column.
+ * Expected order by column definition for Doris ALTER TABLE ORDER BY.
  */
 @Getter
 @Setter
-public final class ExpectedColumn extends AbstractExpectedIdentifierSQLSegment implements ExpectedExpressionSegment {
+public final class ExpectedOrderByColumnDefinition extends AbstractExpectedSQLSegment {
     
-    @XmlElement
-    private ExpectedOwner owner;
+    @XmlElement(name = "column")
+    private final List<ExpectedColumn> columns = new LinkedList<>();
     
-    @XmlElement(name = "column-bound")
-    private ExpectedColumnBoundInfo columnBound;
-    
-    @XmlElement(name = "rollup-index")
-    private ExpectedIndex rollupIndex;
+    @XmlElement(name = "from-index")
+    private ExpectedIndex fromIndex;
     
     @XmlElement(name = "properties")
     private ExpectedProperties properties;
