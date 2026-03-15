@@ -384,7 +384,7 @@ brokerLoadDataProperties
     ;
 
 brokerLoadWithClause
-    : WITH (S3 | HDFS | BROKER string_?) LP_ brokerLoadProperty (COMMA_ brokerLoadProperty)* RP_
+    : WITH (S3 | HDFS | BROKER string_) LP_ brokerLoadProperty (COMMA_ brokerLoadProperty)* RP_
     ;
 
 brokerLoadProperties
@@ -392,7 +392,7 @@ brokerLoadProperties
     ;
 
 brokerLoadProperty
-    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_? literals
+    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_ literals
     ;
 
 tableStatement

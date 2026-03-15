@@ -164,9 +164,7 @@ public final class DorisDMLStatementVisitor extends DorisStatementVisitor implem
             result.setBrokerType("HDFS");
         } else if (null != withCtx.BROKER()) {
             result.setBrokerType("BROKER");
-            if (null != withCtx.string_()) {
-                result.setBrokerName(SQLUtils.getExactlyValue(withCtx.string_().getText()));
-            }
+            result.setBrokerName(SQLUtils.getExactlyValue(withCtx.string_().getText()));
         }
         PropertiesSegment brokerProps = new PropertiesSegment(withCtx.start.getStartIndex(), withCtx.stop.getStopIndex());
         for (BrokerLoadPropertyContext each : withCtx.brokerLoadProperty()) {
