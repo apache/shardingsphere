@@ -81,8 +81,8 @@ class SystemSchemaUtilsTest {
                         Collections.emptyList(), "information_schema", true, false),
                 Arguments.of("returns true when incomplete MySQL database name is a system schema", MYSQL_DATABASE_TYPE,
                         Collections.emptyList(), "information_schema", false, true),
-                Arguments.of("returns false when incomplete MySQL database name is not a system schema", MYSQL_DATABASE_TYPE,
-                        Collections.emptyList(), "sharding_db", false, false),
+                Arguments.of("returns false when schema names do not contain a MySQL system schema", MYSQL_DATABASE_TYPE,
+                        Collections.singletonList("sharding_db"), "sharding_db", false, false),
                 Arguments.of("returns false when PostgreSQL falls back to database name with default schema", POSTGRESQL_DATABASE_TYPE,
                         Collections.emptyList(), "pg_catalog", true, false));
     }
