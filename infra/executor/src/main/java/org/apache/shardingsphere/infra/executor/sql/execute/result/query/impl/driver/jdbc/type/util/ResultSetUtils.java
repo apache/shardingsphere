@@ -41,6 +41,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -66,6 +67,19 @@ public final class ResultSetUtils {
      * @throws SQLFeatureNotSupportedException SQL feature not supported exception
      */
     public static Object convertValue(final Object value, final Class<?> convertType) throws SQLFeatureNotSupportedException {
+        return convertValue(value, convertType, false);
+    }
+    
+    /**
+     * Convert value via expected class type.
+     *
+     * @param value original value
+     * @param convertType expected class type
+     * @param isMySQLCompatibleConversion is MySQL compatible conversion or not
+     * @return converted value
+     * @throws SQLFeatureNotSupportedException SQL feature not supported exception
+     */
+    public static Object convertValue(final Object value, final Class<?> convertType, final boolean isMySQLCompatibleConversion) throws SQLFeatureNotSupportedException {
         ShardingSpherePreconditions.checkNotNull(convertType, () -> new SQLFeatureNotSupportedException("Type can not be null"));
         if (null == value) {
             return convertNullValue(convertType);
@@ -94,17 +108,17 @@ public final class ResultSetUtils {
         if (value instanceof byte[]) {
             return convertByteArrayValue((byte[]) value, convertType);
         }
-        if (boolean.class.equals(convertType)) {
-            return convertBooleanValue(value);
-        }
         if (String.class.equals(convertType)) {
             return value.toString();
         }
         if (value instanceof String) {
-            Optional<Object> result = convertStringValue((String) value, convertType);
+            Optional<Object> result = convertStringValue((String) value, convertType, isMySQLCompatibleConversion);
             if (result.isPresent()) {
                 return result.get();
             }
+        }
+        if (boolean.class.equals(convertType)) {
+            return convertBooleanValue(value);
         }
         try {
             return convertType.cast(value);
@@ -113,7 +127,7 @@ public final class ResultSetUtils {
         }
     }
     
-    private static Optional<Object> convertStringValue(final String value, final Class<?> convertType) {
+    private static Optional<Object> convertStringValue(final String value, final Class<?> convertType, final boolean isMySQLCompatibleConversion) {
         if (byte[].class.equals(convertType)) {
             return Optional.of(value.getBytes(StandardCharsets.UTF_8));
         }
@@ -128,7 +142,65 @@ public final class ResultSetUtils {
         if (Time.class.equals(convertType)) {
             return Optional.of(Time.valueOf(LocalTime.from(LOOSE_DATE_TIME_FORMATTER.parse(value))));
         }
+        if (isMySQLCompatibleConversion) {
+            return convertMySQLStringValue(value, convertType);
+        }
         return Optional.empty();
+    }
+    
+    private static Optional<Object> convertMySQLStringValue(final String value, final Class<?> convertType) {
+        String trimmedValue = value.trim();
+        if (trimmedValue.isEmpty()) {
+            throw new UnsupportedDataTypeConversionException(convertType, value);
+        }
+        try {
+            switch (convertType.getName()) {
+                case "boolean":
+                case "java.lang.Boolean":
+                    return Optional.of(convertMySQLBooleanValue(trimmedValue, convertType, value));
+                case "byte":
+                case "java.lang.Byte":
+                    return Optional.of(new BigDecimal(trimmedValue).byteValueExact());
+                case "short":
+                case "java.lang.Short":
+                    return Optional.of(new BigDecimal(trimmedValue).shortValueExact());
+                case "int":
+                case "java.lang.Integer":
+                    return Optional.of(new BigDecimal(trimmedValue).intValueExact());
+                case "long":
+                case "java.lang.Long":
+                    return Optional.of(new BigDecimal(trimmedValue).longValueExact());
+                case "double":
+                case "java.lang.Double":
+                    return Optional.of(Double.parseDouble(trimmedValue));
+                case "float":
+                case "java.lang.Float":
+                    return Optional.of(Float.parseFloat(trimmedValue));
+                case "java.math.BigDecimal":
+                    return Optional.of(new BigDecimal(trimmedValue));
+                default:
+                    return Optional.empty();
+            }
+        } catch (final NumberFormatException | ArithmeticException ignored) {
+            throw new UnsupportedDataTypeConversionException(convertType, value);
+        }
+    }
+    
+    private static Boolean convertMySQLBooleanValue(final String trimmedValue, final Class<?> convertType, final String originalValue) {
+        if ("1".equals(trimmedValue) || "-1".equals(trimmedValue)) {
+            return true;
+        }
+        if ("0".equals(trimmedValue)) {
+            return false;
+        }
+        String normalizedValue = trimmedValue.toLowerCase(Locale.ENGLISH);
+        if ("true".equals(normalizedValue) || "t".equals(normalizedValue) || "yes".equals(normalizedValue) || "y".equals(normalizedValue)) {
+            return true;
+        }
+        if ("false".equals(normalizedValue) || "f".equals(normalizedValue) || "no".equals(normalizedValue) || "n".equals(normalizedValue)) {
+            return false;
+        }
+        throw new UnsupportedDataTypeConversionException(convertType, originalValue);
     }
     
     private static Object convertNullValue(final Class<?> convertType) {

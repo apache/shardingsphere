@@ -126,6 +126,26 @@ class ResultSetUtilsTest {
     }
     
     @Test
+    void assertConvertStringToIntegerWithMySQLCompatibility() throws SQLException {
+        assertThat(ResultSetUtils.convertValue(" 123 ", Integer.class, true), is(123));
+    }
+    
+    @Test
+    void assertConvertStringToBooleanWithMySQLCompatibility() throws SQLException {
+        assertTrue((boolean) ResultSetUtils.convertValue("true", Boolean.class, true));
+    }
+    
+    @Test
+    void assertConvertInvalidStringToIntegerWithMySQLCompatibility() {
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertValue("abc", Integer.class, true));
+    }
+    
+    @Test
+    void assertConvertStringToIntegerWithoutMySQLCompatibility() {
+        assertThrows(SQLFeatureNotSupportedException.class, () -> ResultSetUtils.convertValue("123", Integer.class));
+    }
+    
+    @Test
     void assertConvertDateValue() throws SQLException {
         Date now = new Date();
         assertThat(ResultSetUtils.convertValue(now, Date.class), is(now));

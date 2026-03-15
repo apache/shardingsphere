@@ -18,7 +18,11 @@
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
+import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
+import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -383,9 +387,9 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
             return (T) getClob(columnIndex);
         }
         if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type) || OffsetDateTime.class.equals(type)) {
-            return (T) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type);
+            return (T) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type, isMySQLProtocolType());
         }
-        return (T) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, type), type);
+        return (T) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, type), type, isMySQLProtocolType());
     }
     
     @Override
@@ -397,5 +401,25 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
         Integer result = columnLabelAndIndexMap.get(columnLabel);
         ShardingSpherePreconditions.checkNotNull(result, () -> new SQLFeatureNotSupportedException(String.format("Can not get index from column label `%s`.", columnLabel)));
         return result;
+    }
+    
+    private boolean isMySQLProtocolType() {
+        DatabaseType protocolType = getProtocolType();
+        return null != protocolType && ("MySQL".equals(protocolType.getType()) || protocolType.getTrunkDatabaseType().map(optional -> "MySQL".equals(optional.getType())).orElse(false));
+    }
+    
+    private DatabaseType getProtocolType() {
+        ShardingSphereConnection connection = getConnection();
+        return null == connection ? null : connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getCurrentDatabaseName()).getProtocolType();
+    }
+    
+    private ShardingSphereConnection getConnection() {
+        if (getStatement() instanceof ShardingSpherePreparedStatement) {
+            return ((ShardingSpherePreparedStatement) getStatement()).getConnection();
+        }
+        if (getStatement() instanceof ShardingSphereStatement) {
+            return ((ShardingSphereStatement) getStatement()).getConnection();
+        }
+        return null;
     }
 }
