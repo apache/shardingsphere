@@ -35,11 +35,18 @@ public final class MySQLShowDatabasesStatement extends DALStatement {
     
     private final ShowFilterSegment filter;
     
+    private final String catalogName;
+    
     private final SQLStatementAttributes attributes;
     
     public MySQLShowDatabasesStatement(final DatabaseType databaseType, final ShowFilterSegment filter) {
+        this(databaseType, filter, null);
+    }
+    
+    public MySQLShowDatabasesStatement(final DatabaseType databaseType, final ShowFilterSegment filter, final String catalogName) {
         super(databaseType);
         this.filter = filter;
+        this.catalogName = catalogName;
         attributes = new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute(), new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
     
@@ -50,5 +57,14 @@ public final class MySQLShowDatabasesStatement extends DALStatement {
      */
     public Optional<ShowFilterSegment> getFilter() {
         return Optional.ofNullable(filter);
+    }
+    
+    /**
+     * Get catalog name.
+     *
+     * @return catalog name
+     */
+    public Optional<String> getCatalogName() {
+        return Optional.ofNullable(catalogName);
     }
 }
