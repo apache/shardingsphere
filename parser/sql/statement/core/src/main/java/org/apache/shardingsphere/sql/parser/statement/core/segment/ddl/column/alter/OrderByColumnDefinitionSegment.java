@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -27,35 +26,34 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Drop column definition segment.
+ * Order by column definition segment for Doris ALTER TABLE ORDER BY.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-public final class DropColumnDefinitionSegment implements AlterDefinitionSegment {
+@Setter
+public final class OrderByColumnDefinitionSegment implements AlterDefinitionSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final Collection<ColumnSegment> columns;
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
     
-    @Setter
-    private IndexSegment rollupIndex;
+    private IndexSegment fromIndex;
     
-    @Setter
     private PropertiesSegment properties;
     
     /**
-     * Get rollup index.
+     * Get from index.
      *
-     * @return rollup index
+     * @return from index
      */
-    public Optional<IndexSegment> getRollupIndex() {
-        return Optional.ofNullable(rollupIndex);
+    public Optional<IndexSegment> getFromIndex() {
+        return Optional.ofNullable(fromIndex);
     }
     
     /**

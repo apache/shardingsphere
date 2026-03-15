@@ -154,6 +154,7 @@ identifierKeywordsUnambiguous
     | BEFORE
     | BINLOG
     | BIT
+    | BITMAP_UNION
     // DORIS ADDED BEGIN
     | BITXOR
     // DORIS ADDED END
@@ -264,6 +265,7 @@ identifierKeywordsUnambiguous
     | GROUPS
     | HASH
     | HDFS
+    | HLL_UNION
     | HISTOGRAM
     | HISTORY
     | HOSTS
@@ -434,6 +436,7 @@ identifierKeywordsUnambiguous
     | REMOVE
     | REORGANIZE
     | REPEATABLE
+    | REPLACE_IF_NOT_NULL
     | REPLICATE_DO_DB
     | REPLICATE_DO_TABLE
     | REPLICATE_IGNORE_DB
