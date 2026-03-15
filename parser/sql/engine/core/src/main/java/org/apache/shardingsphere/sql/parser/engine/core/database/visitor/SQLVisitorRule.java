@@ -417,7 +417,11 @@ public enum SQLVisitorRule {
     
     SHOW_DATABASES("ShowDatabases", SQLStatementType.DAL),
     
+    SHOW_DATABASE("ShowDatabase", SQLStatementType.DAL),
+    
     SHOW_TABLES("ShowTables", SQLStatementType.DAL),
+    
+    SHOW_TABLE("ShowTable", SQLStatementType.DAL),
     
     SHOW_EVENTS("ShowEvents", SQLStatementType.DAL),
     

@@ -87,7 +87,9 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCre
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDatabasesContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowEngineContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowEnginesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowErrorsContext;
@@ -237,6 +239,8 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDescFunctio
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowFunctionsStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowProcStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowDataTypesStatement;
@@ -740,6 +744,16 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         MySQLShowDatabasesStatement result = new MySQLShowDatabasesStatement(getDatabaseType(), filter, catalogName);
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitShowDatabase(final ShowDatabaseContext ctx) {
+        return new DorisShowDatabaseStatement(getDatabaseType(), Long.parseLong(ctx.NUMBER_().getText()));
+    }
+    
+    @Override
+    public ASTNode visitShowTable(final ShowTableContext ctx) {
+        return new DorisShowTableStatement(getDatabaseType(), Long.parseLong(ctx.NUMBER_().getText()));
     }
     
     @Override

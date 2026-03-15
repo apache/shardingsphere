@@ -52,6 +52,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowStreamLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowCreateRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisStopRoutineLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowDatabaseStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowProcStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowDataTypesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowTrashStatementTestCase;
@@ -660,6 +662,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "doris-show-proc")
     private final List<DorisShowProcStatementTestCase> dorisShowProcTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-database")
+    private final List<DorisShowDatabaseStatementTestCase> dorisShowDatabaseTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-table")
+    private final List<DorisShowTableStatementTestCase> dorisShowTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "doris-show-data-types")
     private final List<DorisShowDataTypesStatementTestCase> dorisShowDataTypesTestCases = new LinkedList<>();
