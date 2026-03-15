@@ -941,6 +941,16 @@
         </filter>
     </show-databases>
 
+    <show-databases sql-case-id="show_databases_doris" />
+
+    <show-databases sql-case-id="show_databases_doris_from_catalog" catalog-name="hms_catalog" />
+
+    <show-databases sql-case-id="show_databases_doris_with_like">
+        <filter start-index="15" stop-index="27">
+            <like pattern="infor%" start-delimiter="'" end-delimiter="'" start-index="15" stop-index="27" />
+        </filter>
+    </show-databases>
+
     <show sql-case-id="show_connectors" />
 
     <show-tables sql-case-id="show_tables_basic" />

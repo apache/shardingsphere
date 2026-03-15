@@ -19,9 +19,16 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.PropertyTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.database.CreateDatabaseStatementTestCase;
+
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Create database statement assert.
@@ -37,5 +44,23 @@ public final class CreateDatabaseStatementAssert {
      * @param expected expected create database statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateDatabaseStatement actual, final CreateDatabaseStatementTestCase expected) {
+        assertProperties(assertContext, actual, expected);
+    }
+    
+    private static void assertProperties(final SQLCaseAssertContext assertContext, final CreateDatabaseStatement actual, final CreateDatabaseStatementTestCase expected) {
+        if (expected.getProperties().isEmpty()) {
+            return;
+        }
+        assertNotNull(actual.getProperties(), assertContext.getText("Properties should not be null"));
+        assertThat(assertContext.getText("Properties size does not match: "), actual.getProperties().getProperties().size(), is(expected.getProperties().size()));
+        for (int i = 0; i < expected.getProperties().size(); i++) {
+            assertProperty(assertContext, actual.getProperties().getProperties().get(i), expected.getProperties().get(i));
+        }
+    }
+    
+    private static void assertProperty(final SQLCaseAssertContext assertContext, final PropertySegment actual, final PropertyTestCase expected) {
+        assertThat(assertContext.getText(String.format("Property key '%s' assertion error: ", expected.getKey())), actual.getKey(), is(expected.getKey()));
+        assertThat(assertContext.getText(String.format("Property value for key '%s' assertion error: ", expected.getKey())), actual.getValue(), is(expected.getValue()));
+        SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

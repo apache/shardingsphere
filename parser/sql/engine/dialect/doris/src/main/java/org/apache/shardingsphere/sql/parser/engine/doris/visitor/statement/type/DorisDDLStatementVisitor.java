@@ -344,7 +344,11 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        return new CreateDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifNotExists());
+        CreateDatabaseStatement result = new CreateDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifNotExists());
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
     }
     
     @Override
@@ -381,7 +385,11 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        return new DropDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifExists());
+        DropDatabaseStatement result = new DropDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifExists());
+        if (null != ctx.FORCE()) {
+            result.setForce(true);
+        }
+        return result;
     }
     
     @Override
