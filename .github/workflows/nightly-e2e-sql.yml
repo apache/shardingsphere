@@ -54,6 +54,7 @@ jobs:
           enable-docker-setup: 'true'
       - name: Build E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/sql -Pe2e.env.docker -DskipTests -Dspotless.apply.skip=true
+      - uses: ./.github/workflows/resources/actions/upload-source-snapshot
       - uses: ./.github/workflows/resources/actions/save-maven-cache
         with:
           cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
@@ -101,7 +102,7 @@ jobs:
             mode: Standalone
             scenario: passthrough
     steps:
-      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/download-source-snapshot
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           java-version: 21
