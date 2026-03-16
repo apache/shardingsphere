@@ -180,11 +180,11 @@ class SingleRuleTest {
     void assertFindSingleLogicalDataSource() {
         ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
         DataSourceMapperRuleAttribute mapperRuleAttribute = mock(DataSourceMapperRuleAttribute.class);
-        when(mapperRuleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("dual_write_ds", Arrays.asList("foo_ds", "bar_ds")));
+        when(mapperRuleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logical_ds", Arrays.asList("foo_ds", "bar_ds")));
         when(builtRule.getAttributes()).thenReturn(new RuleAttributes(mapperRuleAttribute));
         SingleRule singleRule = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule));
         assertThat(singleRule.getDataSourceNames().size(), is(1));
-        assertThat(singleRule.getDataSourceNames().iterator().next(), is("dual_write_ds"));
+        assertThat(singleRule.getDataSourceNames().iterator().next(), is("logical_ds"));
     }
     
     @Test

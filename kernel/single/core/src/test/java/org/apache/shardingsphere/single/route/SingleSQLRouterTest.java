@@ -311,7 +311,7 @@ class SingleSQLRouterTest {
         SingleRule rule = mock(SingleRule.class);
         when(rule.getQualifiedTables(any(), any())).thenReturn(Collections.emptyList());
         when(rule.getSingleTables(anyCollection())).thenReturn(Collections.emptyList());
-        when(rule.getDataSourceNames()).thenReturn(Collections.singleton("dual_write_ds"));
+        when(rule.getDataSourceNames()).thenReturn(Collections.singleton("logical_ds"));
         ShardingSphereDatabase database = mockDatabaseWithMultipleResources();
         when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class))
@@ -320,8 +320,8 @@ class SingleSQLRouterTest {
                 createQueryContext(), mock(RuleMetaData.class), database, rule, Collections.singletonList("t_order"), new ConfigurationProperties(new Properties()));
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
-        assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("dual_write_ds"));
-        assertThat(routeUnit.getDataSourceMapper().getActualName(), is("dual_write_ds"));
+        assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("logical_ds"));
+        assertThat(routeUnit.getDataSourceMapper().getActualName(), is("logical_ds"));
     }
     
     @Test
@@ -329,7 +329,7 @@ class SingleSQLRouterTest {
         SingleRule rule = mock(SingleRule.class);
         when(rule.getQualifiedTables(any(), any())).thenReturn(Collections.emptyList());
         when(rule.getSingleTables(anyCollection())).thenReturn(Collections.emptyList());
-        when(rule.getDataSourceNames()).thenReturn(Collections.singleton("dual_write_ds"));
+        when(rule.getDataSourceNames()).thenReturn(Collections.singleton("logical_ds"));
         ShardingSphereDatabase database = mockDatabaseWithMultipleResources();
         when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
         when(database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class))
