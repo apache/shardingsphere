@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
@@ -173,6 +174,30 @@ class SingleRuleTest {
         } else {
             assertTrue(actualTables.isEmpty());
         }
+    }
+    
+    @Test
+    void assertFindSingleLogicalDataSource() {
+        ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
+        DataSourceMapperRuleAttribute mapperRuleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(mapperRuleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("dual_write_ds", Arrays.asList("foo_ds", "bar_ds")));
+        when(builtRule.getAttributes()).thenReturn(new RuleAttributes(mapperRuleAttribute));
+        SingleRule singleRule = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule));
+        assertThat(singleRule.getDataSourceNames().size(), is(1));
+        assertThat(singleRule.getDataSourceNames().iterator().next(), is("dual_write_ds"));
+    }
+    
+    @Test
+    void assertFindSingleLogicalDataSourceWhenMultipleLogicalDataSources() {
+        ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
+        DataSourceMapperRuleAttribute mapperRuleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        Map<String, Collection<String>> dataSourceMapper = new LinkedHashMap<>();
+        dataSourceMapper.put("logic_ds_0", Collections.singleton("foo_ds"));
+        dataSourceMapper.put("logic_ds_1", Collections.singleton("bar_ds"));
+        when(mapperRuleAttribute.getDataSourceMapper()).thenReturn(dataSourceMapper);
+        when(builtRule.getAttributes()).thenReturn(new RuleAttributes(mapperRuleAttribute));
+        SingleRule singleRule = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule));
+        assertThat(singleRule.getDataSourceNames().size(), is(2));
     }
     
     @Test
