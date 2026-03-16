@@ -118,7 +118,7 @@ public final class SimpleTableSegmentBinder {
                 () -> new SchemaNotFoundException(identifierValue.getValue())));
         return result;
     }
-
+    
     private static Optional<IdentifierValue> getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
         if (segment.getOwner().isPresent()) {
             return Optional.ofNullable(segment.getOwner().get().getIdentifier());

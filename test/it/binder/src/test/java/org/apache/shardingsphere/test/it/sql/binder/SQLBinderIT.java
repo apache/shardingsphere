@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.test.it.sql.binder;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
-import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
@@ -64,7 +62,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -98,7 +95,7 @@ public abstract class SQLBinderIT {
         databases.add(new ShardingSphereDatabase("foo_db_2", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), mockSchemas(databaseType, "foo_db_2")));
         return new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
     }
-
+    
     private Collection<ShardingSphereSchema> mockSchemas(final DatabaseType databaseType, final String databaseName) {
         Collection<ShardingSphereSchema> result = new LinkedList<>();
         String defaultSchemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
