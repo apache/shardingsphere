@@ -34,7 +34,11 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -57,12 +61,37 @@ class IndexMetaDataUtilsTest {
     
     @Test
     void assertGetActualIndexNameWithActualTableName() {
-        assertThat(IndexMetaDataUtils.getActualIndexName("order_index", "t_order"), is("order_index_t_order"));
+        String actual = IndexMetaDataUtils.getActualIndexName("order_index", "t_order");
+        assertThat(actual, startsWith("order_index_s"));
+        assertThat(actual, not(containsString("t_order")));
+    }
+    
+    @Test
+    void assertGetActualIndexNameReducesLengthForLongActualTableName() {
+        String actualTableName = "order_detail_archive_20260316_0001";
+        assertThat(IndexMetaDataUtils.getActualIndexName("order_index", actualTableName).length(),
+                lessThan(IndexMetaDataUtils.getLegacyActualIndexName("order_index", actualTableName).length()));
+    }
+    
+    @Test
+    void assertGetLegacyActualIndexNameWithActualTableName() {
+        assertThat(IndexMetaDataUtils.getLegacyActualIndexName("order_index", "t_order"), is("order_index_t_order"));
     }
     
     @Test
     void assertGetActualIndexNameWithoutActualTableName() {
         assertThat(IndexMetaDataUtils.getActualIndexName("order_index", null), is("order_index"));
+    }
+    
+    @Test
+    void assertGetGeneratedLogicIndexNameWithShortenedIndexNameSuffix() {
+        String actualIndexName = IndexMetaDataUtils.getActualIndexName("order_index", "t_order");
+        assertThat(IndexMetaDataUtils.getGeneratedLogicIndexName(actualIndexName, "t_order"), is("order_index"));
+    }
+    
+    @Test
+    void assertGetGeneratedLogicIndexNameWithLegacyIndexNameSuffix() {
+        assertThat(IndexMetaDataUtils.getGeneratedLogicIndexName("order_index_t_order", "t_order"), is("order_index"));
     }
     
     @Test

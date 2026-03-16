@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.metadata.reviser.index;
 
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.junit.jupiter.api.Test;
@@ -42,10 +43,19 @@ class ShardingIndexReviserTest {
     
     @Test
     void assertReviseWithActualDataNodes() {
-        Optional<IndexMetaData> actual = new ShardingIndexReviser(mockShardingTable()).revise("tbl_0", new IndexMetaData("foo_idx", Collections.singletonList("foo_col")), mock(ShardingRule.class));
+        Optional<IndexMetaData> actual = new ShardingIndexReviser(mockShardingTable())
+                .revise("tbl_0", new IndexMetaData(IndexMetaDataUtils.getActualIndexName("foo_idx", "tbl_0"), Collections.singletonList("foo_col")), mock(ShardingRule.class));
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("foo_idx"));
         assertThat(actual.get().getColumns().size(), is(1));
+    }
+    
+    @Test
+    void assertReviseWithLegacyActualIndexName() {
+        Optional<IndexMetaData> actual = new ShardingIndexReviser(mockShardingTable())
+                .revise("tbl_0", new IndexMetaData(IndexMetaDataUtils.getLegacyActualIndexName("foo_idx", "tbl_0"), Collections.singletonList("foo_col")), mock(ShardingRule.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getName(), is("foo_idx"));
     }
     
     private static ShardingTable mockShardingTable() {

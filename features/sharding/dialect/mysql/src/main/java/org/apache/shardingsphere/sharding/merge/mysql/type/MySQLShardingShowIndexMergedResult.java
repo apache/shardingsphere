@@ -52,7 +52,7 @@ public final class MySQLShardingShowIndexMergedResult extends MemoryMergedResult
                 String actualIndexName = memoryResultSetRow.getCell(3).toString();
                 Optional<ShardingTable> shardingTable = shardingRule.findShardingTableByActualTable(actualTableName);
                 shardingTable.ifPresent(optional -> memoryResultSetRow.setCell(1, optional.getLogicTable()));
-                memoryResultSetRow.setCell(3, IndexMetaDataUtils.getLogicIndexName(actualIndexName, actualTableName));
+                memoryResultSetRow.setCell(3, IndexMetaDataUtils.getGeneratedLogicIndexName(actualIndexName, actualTableName));
                 result.add(memoryResultSetRow);
             }
         }

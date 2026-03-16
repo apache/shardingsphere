@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLSt
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -58,7 +59,7 @@ class IndexTokenTest {
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.isShardingTable("foo_tbl")).thenReturn(true);
         IndexToken indexToken = new IndexToken(0, 0, new IdentifierValue("foo_idx"), selectStatementContext, rule, mockSchema());
-        assertThat(indexToken.toString(mockRouteUnit()), is("foo_idx_foo_tbl_0"));
+        assertThat(indexToken.toString(mockRouteUnit()), is(IndexMetaDataUtils.getActualIndexName("foo_idx", "foo_tbl_0")));
     }
     
     @Test
@@ -66,7 +67,7 @@ class IndexTokenTest {
         CreateIndexStatement sqlStatement = CreateIndexStatement.builder().databaseType(databaseType).build();
         CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         IndexToken indexToken = new IndexToken(0, 0, new IdentifierValue("bar_idx"), sqlStatementContext, mock(ShardingRule.class), mockSchema());
-        assertThat(indexToken.toString(mockRouteUnit()), is(" bar_idx_foo_tbl_0 "));
+        assertThat(indexToken.toString(mockRouteUnit()), is(" " + IndexMetaDataUtils.getActualIndexName("bar_idx", "foo_tbl_0") + " "));
     }
     
     private ShardingSphereSchema mockSchema() {

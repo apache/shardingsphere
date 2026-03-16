@@ -40,7 +40,7 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
             return Optional.empty();
         }
         IndexMetaData result = new IndexMetaData(
-                IndexMetaDataUtils.getLogicIndexName(originalMetaData.getName(), shardingTable.getActualDataNodes().iterator().next().getTableName()), originalMetaData.getColumns());
+                IndexMetaDataUtils.getGeneratedLogicIndexName(originalMetaData.getName(), shardingTable.getActualDataNodes().iterator().next().getTableName()), originalMetaData.getColumns());
         result.setUnique(originalMetaData.isUnique());
         return Optional.of(result);
     }

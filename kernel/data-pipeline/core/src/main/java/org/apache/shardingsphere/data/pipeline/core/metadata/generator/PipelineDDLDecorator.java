@@ -114,7 +114,7 @@ public final class PipelineDDLDecorator {
         if (!tableNameSegment.getIdentifier().getValue().equals(targetTableName)) {
             SQLStatementAttributes attributes = sqlStatementContext.getSqlStatement().getAttributes();
             for (IndexSegment each : attributes.findAttribute(IndexSQLStatementAttribute.class).map(IndexSQLStatementAttribute::getIndexes).orElse(Collections.emptyList())) {
-                String logicIndexName = IndexMetaDataUtils.getLogicIndexName(each.getIndexName().getIdentifier().getValue(), tableNameSegment.getIdentifier().getValue());
+                String logicIndexName = IndexMetaDataUtils.getGeneratedLogicIndexName(each.getIndexName().getIdentifier().getValue(), tableNameSegment.getIdentifier().getValue());
                 replaceMap.put(each.getIndexName(), logicIndexName);
             }
             for (ConstraintSegment each : attributes.findAttribute(ConstraintSQLStatementAttribute.class).map(ConstraintSQLStatementAttribute::getConstraints).orElse(Collections.emptyList())) {

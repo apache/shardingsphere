@@ -83,12 +83,14 @@ public final class MySQLShardingShowCreateTableMergedResult extends MySQLShardin
         for (ShardingSphereIndex each : table.getAllIndexes()) {
             String actualIndexName = IndexMetaDataUtils.getActualIndexName(each.getName(), actualTableName);
             memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(actualIndexName, each.getName()));
+            String legacyActualIndexName = IndexMetaDataUtils.getLegacyActualIndexName(each.getName(), actualTableName);
+            memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(legacyActualIndexName, each.getName()));
         }
     }
     
     private void replaceConstraints(final MemoryQueryResultRow memoryResultSetRow, final String actualTableName, final ShardingSphereTable table, final ShardingRule rule) {
         for (ShardingSphereConstraint each : table.getAllConstraints()) {
-            String actualIndexName = IndexMetaDataUtils.getActualIndexName(each.getName(), actualTableName);
+            String actualIndexName = IndexMetaDataUtils.getLegacyActualIndexName(each.getName(), actualTableName);
             memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(actualIndexName, each.getName()));
             Optional<ShardingTable> shardingTable = rule.findShardingTable(each.getReferencedTableName());
             if (!shardingTable.isPresent()) {
