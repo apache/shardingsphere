@@ -158,6 +158,10 @@ showDatabases
     : SHOW (DATABASES | SCHEMAS) (FROM catalogName)? showFilter?
     ;
 
+showDatabase
+    : SHOW DATABASE NUMBER_
+    ;
+
 showEngine
     : SHOW ENGINE engineRef (STATUS | MUTEX)
     ;
@@ -265,6 +269,10 @@ showStatus
 
 showTableStatus
     : SHOW TABLE STATUS fromDatabase? showFilter?
+    ;
+
+showTable
+    : SHOW TABLE NUMBER_
     ;
 
 showTables
@@ -848,8 +856,10 @@ cancelBackup
 
 show
     : showDatabases
+    | showDatabase
     | showTables
     | showTableStatus
+    | showTable
     | showBinaryLogs
     | showColumns
     | showIndex
