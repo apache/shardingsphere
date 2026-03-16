@@ -47,9 +47,7 @@ import static org.mockito.Mockito.when;
 
 class DatabaseIdentifierContextFactoryTest {
     
-    private static final DatabaseType POSTGRESQL_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-    
-    private static final DatabaseType ORACLE_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     @Test
     void assertCreateDefault() {
@@ -106,40 +104,40 @@ class DatabaseIdentifierContextFactoryTest {
     private static Stream<Arguments> createWithProtocolTypeAndPropsArguments() {
         return Stream.of(
                 Arguments.of("null protocol type and null props use insensitive rules", null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
-                Arguments.of("sensitive props override protocol rules", POSTGRESQL_DATABASE_TYPE,
+                Arguments.of("sensitive props override protocol rules", DATABASE_TYPE,
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("insensitive props normalize identifiers", ORACLE_DATABASE_TYPE,
+                Arguments.of("insensitive props normalize identifiers", DATABASE_TYPE,
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE), LookupMode.NORMALIZED, "Foo", "foo", true));
     }
     
     private static Stream<Arguments> createWithResourceMetaDataAndPropsArguments() {
         return Stream.of(
                 Arguments.of("null resource metadata and null props use insensitive rules", null, null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
-                Arguments.of("null storage units keep explicit sensitive rules", POSTGRESQL_DATABASE_TYPE, mock(ResourceMetaData.class),
+                Arguments.of("null storage units keep explicit sensitive rules", DATABASE_TYPE, mock(ResourceMetaData.class),
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("empty storage units keep explicit sensitive rules", POSTGRESQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
+                Arguments.of("empty storage units keep explicit sensitive rules", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("first data source path keeps explicit sensitive rules", POSTGRESQL_DATABASE_TYPE, createResourceMetaDataWithFirstDataSource(),
+                Arguments.of("first data source path keeps explicit sensitive rules", DATABASE_TYPE, createResourceMetaDataWithFirstDataSource(),
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false));
     }
     
     private static Stream<Arguments> refreshWithProtocolTypeAndPropsArguments() {
         return Stream.of(
                 Arguments.of("null protocol type and null props refresh to insensitive rules", null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
-                Arguments.of("sensitive props refresh to exact lookup", POSTGRESQL_DATABASE_TYPE,
+                Arguments.of("sensitive props refresh to exact lookup", DATABASE_TYPE,
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("insensitive props refresh to normalized lookup", ORACLE_DATABASE_TYPE,
+                Arguments.of("insensitive props refresh to normalized lookup", DATABASE_TYPE,
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE), LookupMode.NORMALIZED, "Foo", "foo", true));
     }
     
     private static Stream<Arguments> refreshWithResourceMetaDataAndPropsArguments() {
         return Stream.of(
                 Arguments.of("null resource metadata and null props refresh to insensitive rules", null, null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
-                Arguments.of("null storage units refresh to exact lookup", POSTGRESQL_DATABASE_TYPE, mock(ResourceMetaData.class),
+                Arguments.of("null storage units refresh to exact lookup", DATABASE_TYPE, mock(ResourceMetaData.class),
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("empty storage units refresh to exact lookup", POSTGRESQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
+                Arguments.of("empty storage units refresh to exact lookup", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
-                Arguments.of("first data source path refreshes to exact lookup", POSTGRESQL_DATABASE_TYPE, createResourceMetaDataWithFirstDataSource(),
+                Arguments.of("first data source path refreshes to exact lookup", DATABASE_TYPE, createResourceMetaDataWithFirstDataSource(),
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false));
     }
     
