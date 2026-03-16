@@ -179,13 +179,6 @@ jobs:
       matrix: ${{ steps.generate.outputs.matrix }}
       has-remaining-jobs: ${{ steps.generate.outputs.has-remaining-jobs }}
     steps:
-      - name: Download Source Snapshot
-        uses: actions/download-artifact@v4
-        with:
-          name: e2e-sql-source-snapshot
-          path: /tmp/source-snapshot
-      - name: Restore Source Snapshot
-        run: tar -xzf /tmp/source-snapshot/e2e-sql-source-snapshot.tar.gz -C "$GITHUB_WORKSPACE"
       - name: Detect Remaining Matrix
         id: generate
         env:
