@@ -243,7 +243,7 @@ public final class SimpleTableSegmentBinder {
                                                                                             final IdentifierValue schemaName, final SQLStatementBinderContext binderContext) {
         IdentifierValue tableName = segment.getTableName().getIdentifier();
         if (null != schema && schema.containsTable(tableName.getValue())) {
-            return Optional.of(createSimpleTableSegmentBinderContextWithMetaData(segment, schema, databaseName, schemaName, binderContext, tableName));
+            return createSimpleTableSegmentBinderContextWithMetaData(segment, schema, databaseName, schemaName, binderContext, tableName);
         }
         if (binderContext.getSqlStatement() instanceof CreateTableStatement) {
             Collection<ProjectionSegment> projectionSegments = createProjectionSegments((CreateTableStatement) binderContext.getSqlStatement(), databaseName, schemaName, tableName);
@@ -273,9 +273,9 @@ public final class SimpleTableSegmentBinder {
         return result;
     }
     
-    private static SimpleTableSegmentBinderContext createSimpleTableSegmentBinderContextWithMetaData(final SimpleTableSegment segment, final ShardingSphereSchema schema,
-                                                                                                     final IdentifierValue databaseName, final IdentifierValue schemaName,
-                                                                                                     final SQLStatementBinderContext binderContext, final IdentifierValue tableName) {
+    private static Optional<SimpleTableSegmentBinderContext> createSimpleTableSegmentBinderContextWithMetaData(final SimpleTableSegment segment, final ShardingSphereSchema schema,
+                                                                                                               final IdentifierValue databaseName, final IdentifierValue schemaName,
+                                                                                                               final SQLStatementBinderContext binderContext, final IdentifierValue tableName) {
         Collection<ProjectionSegment> projectionSegments = new LinkedList<>();
         QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType()).getDialectDatabaseMetaData().getQuoteCharacter();
         for (ShardingSphereColumn each : schema.getTable(tableName.getValue()).getAllColumns()) {
@@ -283,7 +283,7 @@ public final class SimpleTableSegmentBinder {
             columnProjectionSegment.setVisible(each.isVisible());
             projectionSegments.add(columnProjectionSegment);
         }
-        return new SimpleTableSegmentBinderContext(projectionSegments, TableSourceType.PHYSICAL_TABLE);
+        return Optional.of(new SimpleTableSegmentBinderContext(projectionSegments, TableSourceType.PHYSICAL_TABLE));
     }
     
     private static ColumnSegment createColumnSegment(final SimpleTableSegment segment, final IdentifierValue databaseName, final IdentifierValue schemaName,
