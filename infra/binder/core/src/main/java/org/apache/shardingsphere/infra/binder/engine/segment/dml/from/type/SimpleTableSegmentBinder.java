@@ -118,19 +118,25 @@ public final class SimpleTableSegmentBinder {
                 () -> new SchemaNotFoundException(identifierValue.getValue())));
         return result;
     }
-    
+
     private static Optional<IdentifierValue> getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext) {
         if (segment.getOwner().isPresent()) {
             return Optional.ofNullable(segment.getOwner().get().getIdentifier());
         }
         DatabaseType databaseType = binderContext.getSqlStatement().getDatabaseType();
         DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(databaseType);
+        String defaultSchemaName = databaseTypeRegistry.getDefaultSchemaName(binderContext.getCurrentDatabaseName());
+        String tableName = segment.getTableName().getIdentifier().getValue();
+        ShardingSphereSchema defaultSchema = binderContext.getMetaData().getDatabase(binderContext.getCurrentDatabaseName()).getSchema(defaultSchemaName);
+        if (null != defaultSchema && defaultSchema.containsTable(tableName)) {
+            return Optional.of(new IdentifierValue(defaultSchemaName));
+        }
         DialectDatabaseMetaData dialectDatabaseMetaData = databaseTypeRegistry.getDialectDatabaseMetaData();
         Optional<String> defaultSystemSchema = dialectDatabaseMetaData.getSchemaOption().getDefaultSystemSchema();
-        if (defaultSystemSchema.isPresent() && SystemSchemaManager.isSystemTable(databaseType.getType(), defaultSystemSchema.get(), segment.getTableName().getIdentifier().getValue())) {
+        if (defaultSystemSchema.isPresent() && SystemSchemaManager.isSystemTable(databaseType.getType(), defaultSystemSchema.get(), tableName)) {
             return Optional.of(new IdentifierValue(defaultSystemSchema.get()));
         }
-        return Optional.of(new IdentifierValue(databaseTypeRegistry.getDefaultSchemaName(binderContext.getCurrentDatabaseName())));
+        return Optional.of(new IdentifierValue(defaultSchemaName));
     }
     
     private static void checkTableExists(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final String tableName, final SimpleTableSegment segment) {

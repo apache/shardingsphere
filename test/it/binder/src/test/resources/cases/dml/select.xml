@@ -1172,6 +1172,28 @@
             </expr>
         </where>
     </select>
+    <select sql-case-id="select_oracle_all_tables_with_column">
+        <projections start-index="7" stop-index="11">
+            <column-projection name="OWNER" start-index="7" stop-index="11">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="SYS" />
+                    <original-table name="ALL_TABLES" />
+                    <original-column name="OWNER" start-delimiter="&quot;" end-delimiter="&quot;" />
+                    <table-source-type name="PHYSICAL_TABLE" />
+                </column-bound>
+            </column-projection>
+        </projections>
+        <from start-index="18" stop-index="27">
+            <simple-table name="ALL_TABLES" start-index="18" stop-index="27">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="SYS" />
+                    <original-table name="ALL_TABLES" />
+                </table-bound>
+            </simple-table>
+        </from>
+    </select>
     <select sql-case-id="select_oracle_all_tables_unqualified">
         <projections start-index="7" stop-index="7">
             <shorthand-projection start-index="7" stop-index="7" />
