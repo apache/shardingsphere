@@ -123,7 +123,8 @@ if [ "$feature_sharding" = "true" ] || [ "$feature_encrypt" = "true" ] || \
    [ "$feature_distsql" = "true" ] || [ "$feature_sql_federation" = "true" ] || \
    [ "$mode_standalone" = "true" ] || [ "$mode_cluster" = "true" ] || [ "$mode_core" = "true" ] || \
    [ "$database_mysql" = "true" ] || [ "$database_postgresql" = "true" ] || \
-   [ "$adapter_proxy" = "true" ] || [ "$adapter_jdbc" = "true" ]; then
+   [ "$adapter_proxy" = "true" ] || [ "$adapter_jdbc" = "true" ] || \
+   [ "$core_infra" = "true" ] || [ "$test_framework" = "true" ] || [ "$pom_changes" = "true" ]; then
   any_relevant_change=true
 fi
 
