@@ -259,6 +259,17 @@ public final class ShardingSphereDatabase {
     }
     
     /**
+     * Refresh identifier context.
+     *
+     * @param props configuration properties
+     */
+    public synchronized void refreshIdentifierContext(final ConfigurationProperties props) {
+        DatabaseIdentifierContextFactory.refresh(identifierContext, protocolType, resourceMetaData, props);
+        schemas.values().forEach(this::attachSchemaIdentifierContext);
+        rebuildSchemaIndex();
+    }
+    
+    /**
      * Decorate rule configuration.
      *
      * @param ruleConfig rule configuration
