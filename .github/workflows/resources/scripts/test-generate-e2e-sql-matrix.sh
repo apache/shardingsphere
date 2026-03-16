@@ -124,6 +124,14 @@ assert_all_field_eq() {
   assert_eq "$desc" "0" "$violations"
 }
 
+# Verify all three dimensions cover full range (2 adapters, 2 modes, 2 databases)
+assert_all_dimensions() {
+  local label="$1" matrix_json="$2"
+  assert_eq "$label: has both adapters" "2" "$(echo "$matrix_json" | jq '[.include[].adapter] | unique | length')"
+  assert_eq "$label: has both modes" "2" "$(echo "$matrix_json" | jq '[.include[].mode] | unique | length')"
+  assert_eq "$label: has both databases" "2" "$(echo "$matrix_json" | jq '[.include[].database] | unique | length')"
+}
+
 # Common assertions for full-trigger tests (base change / workflow_dispatch)
 assert_full_trigger() {
   local label="$1" outputs="$2"
@@ -213,10 +221,28 @@ smoke=$(get_output "$outputs" "smoke-matrix")
 assert_all_field_eq "#8: smoke all database=MySQL" "$smoke" "database" "MySQL"
 
 echo ""
-echo "--- #9: mode_standalone only ---"
+echo "--- #9: database_postgresql only ---"
+outputs=$(run_script "$(build_filters database_postgresql=true)")
+smoke=$(get_output "$outputs" "smoke-matrix")
+assert_all_field_eq "#9: smoke all database=PostgreSQL" "$smoke" "database" "PostgreSQL"
+
+echo ""
+echo "--- #10: mode_standalone only ---"
 outputs=$(run_script "$(build_filters mode_standalone=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
-assert_all_field_eq "#9: smoke all mode=Standalone" "$smoke" "mode" "Standalone"
+assert_all_field_eq "#10: smoke all mode=Standalone" "$smoke" "mode" "Standalone"
+
+echo ""
+echo "--- #11: mode_cluster only ---"
+outputs=$(run_script "$(build_filters mode_cluster=true)")
+smoke=$(get_output "$outputs" "smoke-matrix")
+assert_all_field_eq "#11: smoke all mode=Cluster" "$smoke" "mode" "Cluster"
+
+echo ""
+echo "--- #12: mode_core only ---"
+outputs=$(run_script "$(build_filters mode_core=true)")
+smoke=$(get_output "$outputs" "smoke-matrix")
+assert_eq "#12: smoke has both modes" "2" "$(echo "$smoke" | jq '[.include[].mode] | unique | length')"
 
 # ============================================================
 # D. Feature scenario mapping
@@ -225,29 +251,65 @@ echo ""
 echo "=== D. Feature scenario mapping ==="
 
 echo ""
-echo "--- #10: feature_sharding ---"
+echo "--- #13: feature_sharding ---"
 outputs=$(run_script "$(build_filters feature_sharding=true)")
 full=$(get_output "$outputs" "full-matrix")
 expected_sharding='["db","tbl","dbtbl_with_readwrite_splitting","dbtbl_with_readwrite_splitting_and_encrypt","sharding_and_encrypt","sharding_and_shadow","sharding_encrypt_shadow","mask_sharding","mask_encrypt_sharding","db_tbl_sql_federation"]'
-assert_scenarios "#10: sharding scenarios" "$full" "$expected_sharding"
-assert_eq "#10: has both adapters" "2" "$(echo "$full" | jq '[.include[].adapter] | unique | length')"
-assert_eq "#10: has both databases" "2" "$(echo "$full" | jq '[.include[].database] | unique | length')"
+assert_scenarios "#13: sharding scenarios" "$full" "$expected_sharding"
+assert_all_dimensions "#13" "$full"
 
 echo ""
-echo "--- #11: feature_encrypt ---"
+echo "--- #14: feature_encrypt ---"
 outputs=$(run_script "$(build_filters feature_encrypt=true)")
 full=$(get_output "$outputs" "full-matrix")
 expected_encrypt='["encrypt","dbtbl_with_readwrite_splitting_and_encrypt","sharding_and_encrypt","encrypt_and_readwrite_splitting","encrypt_shadow","sharding_encrypt_shadow","mask_encrypt","mask_encrypt_sharding"]'
-assert_scenarios "#11: encrypt scenarios" "$full" "$expected_encrypt"
-assert_eq "#11: has both adapters" "2" "$(echo "$full" | jq '[.include[].adapter] | unique | length')"
-assert_eq "#11: has both databases" "2" "$(echo "$full" | jq '[.include[].database] | unique | length')"
+assert_scenarios "#14: encrypt scenarios" "$full" "$expected_encrypt"
+assert_all_dimensions "#14" "$full"
 
 echo ""
-echo "--- #12: feature_distsql ---"
+echo "--- #15: feature_readwrite_splitting ---"
+outputs=$(run_script "$(build_filters feature_readwrite_splitting=true)")
+full=$(get_output "$outputs" "full-matrix")
+expected_rws='["readwrite_splitting","dbtbl_with_readwrite_splitting","dbtbl_with_readwrite_splitting_and_encrypt","encrypt_and_readwrite_splitting","readwrite_splitting_and_shadow"]'
+assert_scenarios "#15: readwrite_splitting scenarios" "$full" "$expected_rws"
+assert_all_dimensions "#15" "$full"
+
+echo ""
+echo "--- #16: feature_shadow ---"
+outputs=$(run_script "$(build_filters feature_shadow=true)")
+full=$(get_output "$outputs" "full-matrix")
+expected_shadow='["shadow","encrypt_shadow","readwrite_splitting_and_shadow","sharding_and_shadow","sharding_encrypt_shadow"]'
+assert_scenarios "#16: shadow scenarios" "$full" "$expected_shadow"
+assert_all_dimensions "#16" "$full"
+
+echo ""
+echo "--- #17: feature_mask ---"
+outputs=$(run_script "$(build_filters feature_mask=true)")
+full=$(get_output "$outputs" "full-matrix")
+expected_mask='["mask","mask_encrypt","mask_sharding","mask_encrypt_sharding"]'
+assert_scenarios "#17: mask scenarios" "$full" "$expected_mask"
+assert_all_dimensions "#17" "$full"
+
+echo ""
+echo "--- #18: feature_distsql ---"
 outputs=$(run_script "$(build_filters feature_distsql=true)")
 full=$(get_output "$outputs" "full-matrix")
-assert_scenarios "#12: distsql scenarios" "$full" '["distsql_rdl"]'
-assert_eq "#12: has both adapters" "2" "$(echo "$full" | jq '[.include[].adapter] | unique | length')"
+assert_scenarios "#18: distsql scenarios" "$full" '["distsql_rdl"]'
+assert_all_dimensions "#18" "$full"
+
+echo ""
+echo "--- #19: feature_sql_federation ---"
+outputs=$(run_script "$(build_filters feature_sql_federation=true)")
+full=$(get_output "$outputs" "full-matrix")
+assert_scenarios "#19: sql_federation scenarios" "$full" '["db_tbl_sql_federation"]'
+assert_all_dimensions "#19" "$full"
+
+echo ""
+echo "--- #20: feature_broadcast ---"
+outputs=$(run_script "$(build_filters feature_broadcast=true)")
+full=$(get_output "$outputs" "full-matrix")
+assert_scenarios "#20: broadcast scenarios" "$full" '["empty_rules"]'
+assert_all_dimensions "#20" "$full"
 
 # ============================================================
 # E. Mixed dimensions
@@ -256,24 +318,24 @@ echo ""
 echo "=== E. Mixed dimensions ==="
 
 echo ""
-echo "--- #13: base change overrides dimension filters ---"
+echo "--- #21: base change overrides dimension filters ---"
 outputs_mixed=$(run_script "$(build_filters adapter_proxy=true mode_standalone=true database_mysql=true core_infra=true)")
 outputs_base=$(run_script "$(build_filters core_infra=true)")
-assert_eq "#13: same full-matrix as core_infra only" \
+assert_eq "#21: same full-matrix as core_infra only" \
   "$(get_output "$outputs_base" "full-matrix")" \
   "$(get_output "$outputs_mixed" "full-matrix")"
-assert_eq "#13: same smoke-matrix as core_infra only" \
+assert_eq "#21: same smoke-matrix as core_infra only" \
   "$(get_output "$outputs_base" "smoke-matrix")" \
   "$(get_output "$outputs_mixed" "smoke-matrix")"
 
 echo ""
-echo "--- #14: feature trigger overrides dimension filters ---"
+echo "--- #22: feature trigger overrides dimension filters ---"
 outputs_mixed=$(run_script "$(build_filters adapter_jdbc=true feature_sharding=true)")
 outputs_feature=$(run_script "$(build_filters feature_sharding=true)")
-assert_eq "#14: same full-matrix as feature_sharding only" \
+assert_eq "#22: same full-matrix as feature_sharding only" \
   "$(get_output "$outputs_feature" "full-matrix")" \
   "$(get_output "$outputs_mixed" "full-matrix")"
-assert_eq "#14: same smoke-matrix as feature_sharding only" \
+assert_eq "#22: same smoke-matrix as feature_sharding only" \
   "$(get_output "$outputs_feature" "smoke-matrix")" \
   "$(get_output "$outputs_mixed" "smoke-matrix")"
 
