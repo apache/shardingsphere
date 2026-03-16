@@ -250,8 +250,14 @@ if [ "$feature_broadcast" = "true" ]; then
   add_scenario "empty_rules"
 fi
 
-echo "::notice::filters any_base_change=$any_base_change"
-echo "::notice::dimensions adapters=$adapters modes=$modes databases=$databases"
+if [ "$any_feature_triggered" = "true" ]; then
+  adapters=$ALL_ADAPTERS
+  modes=$ALL_MODES
+  databases=$ALL_DATABASES
+  echo "::notice::Feature filters triggered, including all adapters, modes, and databases"
+fi
+
+echo "::notice::any_base_change=$any_base_change, any_feature_triggered=$any_feature_triggered, dimensions adapters=$adapters modes=$modes databases=$databases"
 
 # Always generate smoke-matrix (fixed 6 scenarios), and DO NOT add the extra passthrough job
 SMOKE_MATRIX=$(build_matrix "$adapters" "$modes" "$databases" "$SMOKE_SCENARIOS" false)
@@ -260,7 +266,7 @@ log_counts "smoke-matrix" "$SMOKE_MATRIX"
 # Build full-matrix scenarios
 if [ "$any_base_change" = "true" ]; then
   full_scenarios_json="$ALL_SCENARIOS"
-  echo "::notice::full-matrix reason=base-change, scenarios: $full_scenarios_json"
+  echo "::notice::full-matrix reason=base-change, use all scenarios: $full_scenarios_json"
 else
   if [ "$any_feature_triggered" = "false" ]; then
     # When no feature triggered, full-matrix is limited to smoke scenario set
