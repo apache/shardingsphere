@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
- * Expected algorithm.
+ * Show table statement test case for Doris.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class ExpectedAlgorithm extends AbstractExpectedIdentifierSQLSegment {
+public final class DorisShowTableStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "algorithm-name")
-    private String name;
-    
-    // TODO XML parsing doesn't work, try ExpectedProperties instead
-    @XmlElement(name = "property")
-    private final List<ExpectedProperty> properties = new LinkedList<>();
+    @XmlAttribute(name = "table-id")
+    private long tableId;
 }

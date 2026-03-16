@@ -15,28 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql;
+package org.apache.shardingsphere.sql.parser.statement.doris.dal;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
- * Expected algorithm.
+ * Show database statement for Doris.
  */
 @Getter
-@Setter
-public final class ExpectedAlgorithm extends AbstractExpectedIdentifierSQLSegment {
+public final class DorisShowDatabaseStatement extends DALStatement {
     
-    @XmlAttribute(name = "algorithm-name")
-    private String name;
+    private final long databaseId;
     
-    // TODO XML parsing doesn't work, try ExpectedProperties instead
-    @XmlElement(name = "property")
-    private final List<ExpectedProperty> properties = new LinkedList<>();
+    public DorisShowDatabaseStatement(final DatabaseType databaseType, final long databaseId) {
+        super(databaseType);
+        this.databaseId = databaseId;
+    }
 }
