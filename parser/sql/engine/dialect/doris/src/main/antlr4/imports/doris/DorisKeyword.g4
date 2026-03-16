@@ -87,6 +87,10 @@ ANY
     : A N Y
     ;
 
+APPEND
+    : A P P E N D
+    ;
+
 ARRAY
     : A R R A Y
     ;
@@ -185,6 +189,10 @@ BIT
     : B I T
     ;
 
+BITMAP_UNION
+    : B I T M A P UL_ U N I O N
+    ;
+
 BLOB
     : B L O B
     ;
@@ -207,6 +215,10 @@ BOTH
 
 BRIEF
     : B R I E F
+    ;
+
+BROKER
+    : B R O K E R
     ;
 
 BTREE
@@ -405,6 +417,10 @@ COMPRESSED
 
 COMPRESSION
     : C O M P R E S S I O N
+    ;
+
+COMPRESS_TYPE
+    : C O M P R E S S UL_ T Y P E
     ;
 
 CONCURRENT
@@ -1055,6 +1071,10 @@ HIGH_PRIORITY
     : H I G H UL_ P R I O R I T Y
     ;
 
+HLL_UNION
+    : H L L UL_ U N I O N
+    ;
+
 HISTOGRAM
     : H I S T O G R A M
     ;
@@ -1301,6 +1321,10 @@ KEY_BLOCK_SIZE
 
 KILL
     : K I L L
+    ;
+
+LABEL
+    : L A B E L
     ;
 
 LAG
@@ -1739,6 +1763,10 @@ NDB
 
 NDBCLUSTER
     : N D B C L U S T E R
+    ;
+
+NEGATIVE
+    : N E G A T I V E
     ;
 
 NESTED
@@ -2258,6 +2286,10 @@ REPLICATE_DO_DB
 
 REPLICATE_DO_TABLE
     : R E P L I C A T E UL_ D O UL_ T A B L E
+    ;
+
+REPLACE_IF_NOT_NULL
+    : R E P L A C E UL_ I F UL_ N O T UL_ N U L L
     ;
 
 REPLICATE_IGNORE_DB

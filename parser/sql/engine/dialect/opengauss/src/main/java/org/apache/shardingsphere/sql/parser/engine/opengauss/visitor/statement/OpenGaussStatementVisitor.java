@@ -955,6 +955,9 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     public ASTNode visitSelectNoParens(final SelectNoParensContext ctx) {
         SelectStatement result = (SelectStatement) visit(ctx.selectClauseN());
         SelectStatement.SelectStatementBuilder selectStatementBuilder = createSelectStatementBuilder(result);
+        if (null != ctx.withClause()) {
+            selectStatementBuilder.with((WithSegment) visit(ctx.withClause()));
+        }
         if (null != ctx.sortClause()) {
             selectStatementBuilder.orderBy((OrderBySegment) visit(ctx.sortClause()));
         }
@@ -963,9 +966,6 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         }
         if (null != ctx.forLockingClause()) {
             selectStatementBuilder.lock((LockSegment) visit(ctx.forLockingClause()));
-        }
-        if (null != ctx.withClause()) {
-            selectStatementBuilder.with((WithSegment) visit(ctx.withClause()));
         }
         return selectStatementBuilder.build();
     }

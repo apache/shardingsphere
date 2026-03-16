@@ -47,8 +47,8 @@ public final class StorageUnitNodeMapCreator {
      * @return storage unit node map
      */
     public static Map<String, StorageNode> create(final Map<String, DataSourcePoolProperties> propsMap, final boolean isInstanceConnectionEnabled) {
-        return propsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getKey(), entry.getValue(), isInstanceConnectionEnabled),
-                (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return propsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
+                entry -> create(entry.getKey(), entry.getValue(), isInstanceConnectionEnabled), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private static StorageNode create(final String storageUnitName, final DataSourcePoolProperties props, final boolean isInstanceConnectionEnabled) {

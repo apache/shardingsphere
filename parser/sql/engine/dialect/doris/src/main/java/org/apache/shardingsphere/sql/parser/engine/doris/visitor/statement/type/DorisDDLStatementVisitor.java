@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterSe
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterStoragePolicyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTableDropContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTableOrderContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTablespaceInnodbContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTablespaceNdbContext;
@@ -199,6 +200,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.AddRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.DropRollupDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.OrderByColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RollupSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
@@ -342,7 +344,11 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
-        return new CreateDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifNotExists());
+        CreateDatabaseStatement result = new CreateDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifNotExists());
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
     }
     
     @Override
@@ -379,7 +385,11 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
-        return new DropDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifExists());
+        DropDatabaseStatement result = new DropDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifExists());
+        if (null != ctx.FORCE()) {
+            result.setForce(true);
+        }
+        return result;
     }
     
     @Override
@@ -809,6 +819,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             alterTableStatement.dropRollupDefinition((DropRollupDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenameRollupDefinitionSegment) {
             alterTableStatement.renameRollupDefinition((RenameRollupDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof OrderByColumnDefinitionSegment) {
+            alterTableStatement.orderByColumnDefinition((OrderByColumnDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof RenamePartitionDefinitionSegment) {
             alterTableStatement.renamePartitionDefinition((RenamePartitionDefinitionSegment) alterDefinitionSegment);
         } else if (alterDefinitionSegment instanceof AddPartitionDefinitionSegment) {
@@ -828,9 +840,12 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         DataTypeSegment dataTypeSegment = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = ctx.columnAttribute().stream().anyMatch(each -> null != each.KEY() && null == each.UNIQUE());
         boolean isAutoIncrement = ctx.columnAttribute().stream().anyMatch(each -> null != each.AUTO_INCREMENT());
-        // TODO parse not null
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(column.getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, false, getText(ctx));
+        boolean isNotNull = ctx.columnAttribute().stream().anyMatch(each -> null != each.NOT() && null != each.NULL());
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(column.getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, isNotNull, getText(ctx));
         result.setAutoIncrement(isAutoIncrement);
+        if (null != ctx.dorisColumnAggType()) {
+            result.setAggType(ctx.dorisColumnAggType().getText());
+        }
         ctx.columnAttribute().stream().filter(each -> null != each.COMMENT() && null != each.string_()).findFirst()
                 .ifPresent(each -> result.setComment(SQLUtils.getExactlyValue(each.string_().getText())));
         return result;
@@ -913,6 +928,9 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         if (alterListItemContext instanceof RenameRollupContext) {
             return Optional.of((RenameRollupDefinitionSegment) visit(alterListItemContext));
         }
+        if (alterListItemContext instanceof AlterTableOrderContext) {
+            return Optional.of((OrderByColumnDefinitionSegment) visit(alterListItemContext));
+        }
         if (alterListItemContext instanceof RenamePartitionContext) {
             return Optional.of((RenamePartitionDefinitionSegment) visit(alterListItemContext));
         }
@@ -921,8 +939,8 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     
     private Optional<AlterDefinitionSegment> getDropItemDefinitionSegment(final AlterListContext alterListContext, final AlterTableDropContext alterTableDrop) {
         if (null != alterTableDrop.CHECK() || null != alterTableDrop.CONSTRAINT()) {
-            ConstraintSegment constraint = new ConstraintSegment(alterTableDrop.identifier().getStart().getStartIndex(), alterTableDrop.identifier().getStop().getStopIndex(),
-                    (IdentifierValue) visit(alterTableDrop.identifier()));
+            ConstraintSegment constraint = new ConstraintSegment(alterTableDrop.identifier(0).getStart().getStartIndex(), alterTableDrop.identifier(0).getStop().getStopIndex(),
+                    (IdentifierValue) visit(alterTableDrop.identifier(0)));
             return Optional.of(new DropConstraintDefinitionSegment(alterListContext.getStart().getStartIndex(), alterListContext.getStop().getStopIndex(), constraint));
         }
         if (null == alterTableDrop.KEY() && null == alterTableDrop.keyOrIndex()) {
@@ -930,6 +948,12 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
                     (IdentifierValue) visit(alterTableDrop.columnInternalRef));
             DropColumnDefinitionSegment dropColumnSegment =
                     new DropColumnDefinitionSegment(alterTableDrop.getStart().getStartIndex(), alterTableDrop.getStop().getStopIndex(), Collections.singleton(column));
+            if (null != alterTableDrop.fromRollup) {
+                int startIndex = alterTableDrop.fromRollup.getStart().getStartIndex();
+                int stopIndex = alterTableDrop.fromRollup.getStop().getStopIndex();
+                IdentifierValue identifierValue = (IdentifierValue) visit(alterTableDrop.fromRollup);
+                dropColumnSegment.setRollupIndex(new IndexSegment(startIndex, stopIndex, new IndexNameSegment(startIndex, stopIndex, identifierValue)));
+            }
             if (null != alterTableDrop.propertiesClause()) {
                 dropColumnSegment.setProperties(extractPropertiesSegment(alterTableDrop.propertiesClause()));
             }
@@ -1046,6 +1070,15 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         if (null != ctx.place()) {
             result.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
         }
+        if (null != ctx.fromRollup) {
+            int startIndex = ctx.fromRollup.getStart().getStartIndex();
+            int stopIndex = ctx.fromRollup.getStop().getStopIndex();
+            IdentifierValue identifierValue = (IdentifierValue) visit(ctx.fromRollup);
+            result.setRollupIndex(new IndexSegment(startIndex, stopIndex, new IndexNameSegment(startIndex, stopIndex, identifierValue)));
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
         return result;
     }
     
@@ -1077,6 +1110,33 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
             Preconditions.checkState(1 == columnDefinitions.size());
             result.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
         }
+        if (null != ctx.identifier()) {
+            int startIndex = ctx.identifier().getStart().getStartIndex();
+            int stopIndex = ctx.identifier().getStop().getStopIndex();
+            IdentifierValue identifierValue = (IdentifierValue) visit(ctx.identifier());
+            result.setRollupIndex(new IndexSegment(startIndex, stopIndex, new IndexNameSegment(startIndex, stopIndex, identifierValue)));
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterTableOrder(final AlterTableOrderContext ctx) {
+        OrderByColumnDefinitionSegment result = new OrderByColumnDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        for (int i = 0; i < ctx.alterOrderList().columnRef().size(); i++) {
+            result.getColumns().add((ColumnSegment) visit(ctx.alterOrderList().columnRef(i)));
+        }
+        if (null != ctx.identifier()) {
+            int startIndex = ctx.identifier().getStart().getStartIndex();
+            int stopIndex = ctx.identifier().getStop().getStopIndex();
+            IdentifierValue identifierValue = (IdentifierValue) visit(ctx.identifier());
+            result.setFromIndex(new IndexSegment(startIndex, stopIndex, new IndexNameSegment(startIndex, stopIndex, identifierValue)));
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
         return result;
     }
     
@@ -1097,6 +1157,9 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, isNotNull, getText(ctx));
         result.getReferencedTables().addAll(getReferencedTables(ctx));
         result.setAutoIncrement(isAutoIncrement);
+        if (null != ctx.fieldDefinition().dorisColumnAggType()) {
+            result.setAggType(ctx.fieldDefinition().dorisColumnAggType().getText());
+        }
         return result;
     }
     

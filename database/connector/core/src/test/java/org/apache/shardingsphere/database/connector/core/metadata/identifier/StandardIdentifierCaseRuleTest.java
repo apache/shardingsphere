@@ -19,57 +19,56 @@ package org.apache.shardingsphere.database.connector.core.metadata.identifier;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class StandardIdentifierCaseRuleTest {
     
+    private final StandardIdentifierCaseRule rule = new StandardIdentifierCaseRule(LookupMode.EXACT, LookupMode.NORMALIZED,
+            each -> each.toLowerCase(Locale.ENGLISH), each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
+    
     @Test
     void assertGetLookupModeWithQuotedIdentifier() {
-        StandardIdentifierCaseRule rule = createPostgreSQLRule();
-        LookupMode actualLookupMode = rule.getLookupMode(QuoteCharacter.QUOTE);
-        assertThat(actualLookupMode, is(LookupMode.EXACT));
+        assertThat(rule.getLookupMode(QuoteCharacter.QUOTE), is(LookupMode.EXACT));
     }
     
     @Test
     void assertGetLookupModeWithUnquotedIdentifier() {
-        StandardIdentifierCaseRule rule = createPostgreSQLRule();
-        LookupMode actualLookupMode = rule.getLookupMode(QuoteCharacter.NONE);
-        assertThat(actualLookupMode, is(LookupMode.NORMALIZED));
+        assertThat(rule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
     }
     
     @Test
     void assertNormalize() {
-        StandardIdentifierCaseRule rule = createPostgreSQLRule();
-        String actualValue = rule.normalize("Foo");
-        assertThat(actualValue, is("foo"));
+        assertThat(rule.normalize("Foo"), is("foo"));
     }
     
     @Test
-    void assertMatchesWithQuotedIdentifier() {
-        StandardIdentifierCaseRule rule = createPostgreSQLRule();
-        assertTrue(rule.matches("Foo", "Foo", QuoteCharacter.QUOTE));
+    void assertNormalizeWithNullValue() {
+        assertNull(rule.normalize(null));
     }
     
-    @Test
-    void assertMatchesWithUnquotedIdentifier() {
-        StandardIdentifierCaseRule rule = createPostgreSQLRule();
-        assertTrue(rule.matches("foo", "FOO", QuoteCharacter.NONE));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("matchesArguments")
+    void assertMatches(final String name, final String storedName, final String actualIdentifier, final QuoteCharacter quoteCharacter, final boolean expected) {
+        assertThat(rule.matches(storedName, actualIdentifier, quoteCharacter), is(expected));
     }
     
-    @Test
-    void assertNotMatchesWithUnquotedIdentifierForNonDefaultStoredName() {
-        StandardIdentifierCaseRule rule = createPostgreSQLRule();
-        assertFalse(rule.matches("Foo", "FOO", QuoteCharacter.NONE));
-    }
-    
-    private StandardIdentifierCaseRule createPostgreSQLRule() {
-        return new StandardIdentifierCaseRule(LookupMode.EXACT, LookupMode.NORMALIZED,
-                each -> each.toLowerCase(Locale.ENGLISH), each -> each.equals(each.toLowerCase(Locale.ENGLISH)));
+    private static Stream<Arguments> matchesArguments() {
+        return Stream.of(
+                Arguments.of("quoted_match", "Foo", "Foo", QuoteCharacter.QUOTE, true),
+                Arguments.of("quoted_mismatch", "Foo", "foo", QuoteCharacter.QUOTE, false),
+                Arguments.of("unquoted_match", "foo", "FOO", QuoteCharacter.NONE, true),
+                Arguments.of("unquoted_non_default_stored_name", "Foo", "FOO", QuoteCharacter.NONE, false),
+                Arguments.of("unquoted_null_names", null, null, QuoteCharacter.NONE, true),
+                Arguments.of("unquoted_null_actual_identifier", "foo", null, QuoteCharacter.NONE, false),
+                Arguments.of("unquoted_different_actual_identifier", "foo", "bar", QuoteCharacter.NONE, false));
     }
 }

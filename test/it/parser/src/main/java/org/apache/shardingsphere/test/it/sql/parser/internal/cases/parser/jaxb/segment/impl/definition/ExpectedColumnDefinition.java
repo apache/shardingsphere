@@ -53,11 +53,14 @@ public final class ExpectedColumnDefinition extends AbstractExpectedSQLSegment {
     private ExpectedDataType dataType;
     
     @XmlAttribute(name = "not-null")
-    private boolean notNull;
+    private Boolean notNull;
     
     @XmlElement(name = "referenced-table")
     private final List<ExpectedSimpleTable> referencedTables = new LinkedList<>();
     
     @XmlElement(name = "comment")
     private ExpectedComment comment;
+    
+    @XmlAttribute(name = "agg-type")
+    private String aggType;
 }

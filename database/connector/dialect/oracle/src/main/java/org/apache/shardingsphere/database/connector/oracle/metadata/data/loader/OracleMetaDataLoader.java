@@ -100,8 +100,9 @@ public final class OracleMetaDataLoader implements DialectMetaDataLoader {
         }
         Collection<TableMetaData> result = new LinkedList<>();
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
-            result.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList(),
-                    viewNames.contains(entry.getKey()) ? TableType.VIEW : TableType.TABLE));
+            TableMetaData tableMetaData = new TableMetaData(entry.getKey(), entry.getValue(),
+                    indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList(), viewNames.contains(entry.getKey()) ? TableType.VIEW : TableType.TABLE);
+            result.add(tableMetaData);
         }
         return result;
     }
