@@ -90,7 +90,7 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), createTableMappers(tableNames)));
         return result;
     }
-
+    
     private RouteContext createSingleLogicalDataSourceRouteContext(final SingleRule rule, final QueryContext queryContext) {
         String logicDataSource = rule.getDataSourceNames().iterator().next();
         RouteContext result = new RouteContext();

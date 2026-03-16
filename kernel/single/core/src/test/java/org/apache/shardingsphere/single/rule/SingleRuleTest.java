@@ -189,12 +189,12 @@ class SingleRuleTest {
     
     @Test
     void assertFindSingleLogicalDataSourceWhenMultipleLogicalDataSources() {
-        ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
         DataSourceMapperRuleAttribute mapperRuleAttribute = mock(DataSourceMapperRuleAttribute.class);
         Map<String, Collection<String>> dataSourceMapper = new LinkedHashMap<>();
         dataSourceMapper.put("logic_ds_0", Collections.singleton("foo_ds"));
         dataSourceMapper.put("logic_ds_1", Collections.singleton("bar_ds"));
         when(mapperRuleAttribute.getDataSourceMapper()).thenReturn(dataSourceMapper);
+        ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
         when(builtRule.getAttributes()).thenReturn(new RuleAttributes(mapperRuleAttribute));
         SingleRule singleRule = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule));
         assertThat(singleRule.getDataSourceNames().size(), is(2));
