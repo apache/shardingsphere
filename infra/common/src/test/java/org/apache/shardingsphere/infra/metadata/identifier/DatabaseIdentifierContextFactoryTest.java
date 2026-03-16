@@ -24,6 +24,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Loo
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
@@ -62,6 +63,17 @@ class DatabaseIdentifierContextFactoryTest {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         ConfigurationProperties props = new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), "sensitive")));
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), props);
+        IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.TABLE);
+        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.EXACT));
+    }
+    
+    @Test
+    void assertRefreshWithProtocolTypeAndProps() {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        ConfigurationProperties props = new ConfigurationProperties(PropertiesBuilder.build(
+                new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name())));
+        DatabaseIdentifierContextFactory.refresh(actual, databaseType, props);
         IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.TABLE);
         assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.EXACT));
     }
