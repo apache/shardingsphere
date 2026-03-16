@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.type;
 
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser;
@@ -748,12 +750,20 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowDatabase(final ShowDatabaseContext ctx) {
-        return new DorisShowDatabaseStatement(getDatabaseType(), Long.parseLong(ctx.NUMBER_().getText()));
+        return new DorisShowDatabaseStatement(getDatabaseType(), parseIntegerToken(ctx.NUMBER_()));
     }
     
     @Override
     public ASTNode visitShowTable(final ShowTableContext ctx) {
-        return new DorisShowTableStatement(getDatabaseType(), Long.parseLong(ctx.NUMBER_().getText()));
+        return new DorisShowTableStatement(getDatabaseType(), parseIntegerToken(ctx.NUMBER_()));
+    }
+    
+    private long parseIntegerToken(final TerminalNode token) {
+        String text = token.getText();
+        if (!text.chars().allMatch(Character::isDigit)) {
+            throw new SQLParsingException(String.format("Expected integer ID, got: %s", text), text, token.getSymbol().getLine());
+        }
+        return Long.parseLong(text);
     }
     
     @Override
