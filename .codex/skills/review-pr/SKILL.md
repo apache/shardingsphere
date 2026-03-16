@@ -36,6 +36,13 @@ description: >-
 6. If unrelated changes exist, you must explicitly ask for rollback; if none exist, do not output that section.
 7. Any "fallback-only without root-cause repair" or "unresolved risk" must not receive `Merge Verdict: Mergeable`.
 8. Review only the PR's latest code version; do not reuse conclusions from older versions.
+9. If a patch changes name resolution, default schema, fallback binding, routing precedence, or identifier interpretation,
+   you must perform an explicit semantic-compatibility review against the documented behavior of the target database or framework
+   before considering `Mergeable`.
+10. For any change that alters lookup order or fallback targets, you must validate at least one counterexample scenario,
+    for example: same-name object, shadowing, disabled-flag path, or adjacent valid input.
+    If no such validation exists, bias to `Not Mergeable`.
+11. Closing previous-round blockers and passing happy-path tests is not sufficient for `Mergeable`; you must still run a fresh-pass risk scan on the latest head.
 
 ## Execution Boundary
 
@@ -68,6 +75,8 @@ Before deep review, answer:
 2. Do current changes directly touch the suspected root-cause path?
 3. Is there corresponding validation (unit/integration/regression tests)?
 4. Are there file changes unrelated to the stated goal?
+5. Does the patch change documented semantics such as name resolution, default schema, fallback precedence, or routing order?
+6. Is there at least one counterexample or negative scenario validated, not only the reported happy path?
 
 Triage policy:
 
@@ -97,10 +106,13 @@ When information gaps block mergeability, request at least:
    - Performance: new loops/remote calls/object allocations on hot paths
    - Compatibility: behavior/config/API-SPI/SQL dialect versions
    - Regression: similar statements, adjacent features, exception branches
+   - For parser, binder, routing, and default-schema changes, explicitly compare the new behavior against official dialect semantics and check whether precedence or shadowing rules changed
 5. Test adequacy:
    - Is there a failing case first or reproducible steps?
    - Are major branches, boundaries, and counterexamples covered?
    - Are tests mapped one-to-one with fix points?
+   - Distinguish fixture-assisted validation from production-path validation; if tests bypass the real assembly chain,
+     metadata loader, SPI discovery path, or routing path, state that gap explicitly and downgrade confidence
 6. Supply-chain and license gates (triggered by changes):
    - If dependency manifests or lockfiles changed, check vulnerability severity and license constraints
    - Mark whether extra security review is required
@@ -118,6 +130,8 @@ When information gaps block mergeability, request at least:
 - Is it only adding null checks/defaults/try-catch without fixing root cause?
 - Does it introduce silent error swallowing or downgrade to wrong semantics?
 - Are adjacent paths sharing the same root cause also validated?
+- Does the fix preserve the original precedence or lookup semantics for adjacent valid cases?
+- Would a same-name or shadowing case take a different path after this patch?
 
 If the root-cause chain cannot be fully proven fixed, set `Merge Verdict: Not Mergeable`.
 
@@ -130,6 +144,8 @@ If the root-cause chain cannot be fully proven fixed, set `Merge Verdict: Not Me
   - Config compatibility
   - API/SPI compatibility
   - SQL compatibility (database/version/dialect)
+  - Name-resolution or fallback-precedence compatibility
+  - Feature-flag or disabled-path compatibility
 - Functional degradation risk: old-scenario regression, boundary input behavior changes, error-code/exception semantic drift.
 - Operational risk: config migration complexity, gray-release and rollback complexity.
 - Supply-chain risk: vulnerabilities, licenses, transitive dependency changes from new deps.
@@ -208,6 +224,8 @@ Use committer tone, gentle wording, no emojis; structure:
 
 - Do not output `Mergeable` when evidence is insufficient or risks are unclear.
 - Do not use "fallback logic passes tests" to replace proof of root-cause repair.
+- Do not treat fixture-injected or mocked-path tests as full end-to-end proof without explicitly stating the gap.
+- Do not output `Mergeable` only because previous-round blockers were closed; always do one fresh-pass semantic and regression scan on the latest head.
 - Do not ignore unrelated changes.
 - Do not reuse old conclusions after new commits are added without re-review.
 - Do not include emojis in change request text.
