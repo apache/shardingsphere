@@ -29,4 +29,6 @@
     <sql-case id="select_with_outer_join_operator" value="SELECT o.order_id FROM t_order o, t_order_item i WHERE o.order_id = i.order_id(+)" db-types="Oracle"/>
     <sql-case id="select_oracle_all_tables_with_column" value="SELECT OWNER FROM ALL_TABLES" db-types="Oracle" />
     <sql-case id="select_oracle_all_tables_unqualified" value="SELECT * FROM ALL_TABLES" db-types="Oracle" />
+    <sql-case id="select_oracle_all_sequences_unqualified" value="SELECT * FROM ALL_SEQUENCES" db-types="Oracle" />
+    <sql-case id="select_oracle_all_synonyms_unqualified" value="SELECT * FROM ALL_SYNONYMS" db-types="Oracle" />
 </sql-cases>

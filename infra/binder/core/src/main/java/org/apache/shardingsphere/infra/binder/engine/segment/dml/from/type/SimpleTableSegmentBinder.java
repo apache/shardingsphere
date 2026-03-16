@@ -128,11 +128,20 @@ public final class SimpleTableSegmentBinder {
         String defaultSchemaName = databaseTypeRegistry.getDefaultSchemaName(binderContext.getCurrentDatabaseName());
         String tableName = segment.getTableName().getIdentifier().getValue();
         ShardingSphereSchema defaultSchema = binderContext.getMetaData().getDatabase(binderContext.getCurrentDatabaseName()).getSchema(defaultSchemaName);
-        if (null != defaultSchema && defaultSchema.containsTable(tableName)) {
-            return Optional.of(new IdentifierValue(defaultSchemaName));
-        }
         DialectDatabaseMetaData dialectDatabaseMetaData = databaseTypeRegistry.getDialectDatabaseMetaData();
         Optional<String> defaultSystemSchema = dialectDatabaseMetaData.getSchemaOption().getDefaultSystemSchema();
+        if ("Oracle".equals(databaseType.getType())) {
+            if (null != defaultSchema && defaultSchema.containsTable(tableName)) {
+                return Optional.of(new IdentifierValue(defaultSchemaName));
+            }
+            if (defaultSystemSchema.isPresent() && SystemSchemaManager.isSystemTable(databaseType.getType(), defaultSystemSchema.get(), tableName)) {
+                ShardingSphereSchema sysSchema = binderContext.getMetaData().getDatabase(binderContext.getCurrentDatabaseName()).getSchema(defaultSystemSchema.get());
+                if (null != sysSchema && sysSchema.containsTable(tableName)) {
+                    return Optional.of(new IdentifierValue(defaultSystemSchema.get()));
+                }
+            }
+            return Optional.of(new IdentifierValue(defaultSchemaName));
+        }
         if (defaultSystemSchema.isPresent() && SystemSchemaManager.isSystemTable(databaseType.getType(), defaultSystemSchema.get(), tableName)) {
             return Optional.of(new IdentifierValue(defaultSystemSchema.get()));
         }
