@@ -481,6 +481,15 @@ showSqlBlockRule
     : SHOW SQL_BLOCK_RULE (FOR ruleName)?
     ;
 
+showLoadWarnings
+    : SHOW LOAD WARNINGS (FROM databaseName)? (WHERE showLoadWarningsWhereCondition)?
+    ;
+
+showLoadWarningsWhereCondition
+    : LABEL EQ_ string_
+    | LOAD_JOB_ID EQ_ string_
+    ;
+
 showLoad
     : SHOW LOAD (FROM databaseName)? showWhereClause? orderByClause? limitClause?
     ;
@@ -854,6 +863,16 @@ cancelBackup
     : CANCEL GLOBAL? BACKUP (FROM databaseName)?
     ;
 
+cancelLoadStatement
+    : CANCEL LOAD (FROM databaseName)? (WHERE cancelLoadWhereCondition)?
+    ;
+
+cancelLoadWhereCondition
+    : LABEL EQ_ string_
+    | LABEL LIKE string_
+    | STATE EQ_ string_
+    ;
+
 show
     : showDatabases
     | showDatabase
@@ -874,6 +893,7 @@ show
     | showCreateFunction
     | showCreateProcedure
     | showCreateRoutineLoad
+    | showLoadWarnings
     | showLoad
     | showStreamLoad
     | showCreateLoad

@@ -581,6 +581,10 @@ public enum SQLVisitorRule {
     
     CANCEL_BACKUP("CancelBackup", SQLStatementType.DAL),
     
+    CANCEL_LOAD_STATEMENT("CancelLoadStatement", SQLStatementType.DAL),
+    
+    SHOW_LOAD_WARNINGS("ShowLoadWarnings", SQLStatementType.DAL),
+    
     DORIS_ALTER_SYSTEM("DorisAlterSystem", SQLStatementType.DAL),
     
     ADMIN_SET_REPLICA_STATUS("AdminSetReplicaStatus", SQLStatementType.DAL),

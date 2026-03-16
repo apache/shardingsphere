@@ -296,6 +296,7 @@ identifierKeywordsUnambiguous
     | KEYS
     | KEY_BLOCK_SIZE
     | LABEL
+    | LOAD_JOB_ID
     | LAST
     | LEAVES
     | LESS
@@ -502,6 +503,7 @@ identifierKeywordsUnambiguous
     | STATS_AUTO_RECALC
     | STATS_PERSISTENT
     | STATS_SAMPLE_PAGES
+    | STATE
     | STATUS
     | STORAGE
     | STREAM
