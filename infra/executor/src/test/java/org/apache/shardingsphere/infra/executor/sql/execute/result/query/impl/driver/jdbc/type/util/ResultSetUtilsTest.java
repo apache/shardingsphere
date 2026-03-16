@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.d
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +38,7 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -45,8 +47,24 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ResultSetUtilsTest {
+    
+    private DatabaseType createMySQLProtocolType() {
+        DatabaseType result = mock(DatabaseType.class);
+        when(result.getType()).thenReturn("MySQL");
+        when(result.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        return result;
+    }
+    
+    private DatabaseType createPostgreSQLProtocolType() {
+        DatabaseType result = mock(DatabaseType.class);
+        when(result.getType()).thenReturn("PostgreSQL");
+        when(result.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        return result;
+    }
     
     @Test
     void assertConvertNullType() {
@@ -126,23 +144,63 @@ class ResultSetUtilsTest {
     }
     
     @Test
-    void assertConvertStringToIntegerWithMySQLCompatibility() throws SQLException {
-        assertThat(ResultSetUtils.convertValue(" 123 ", Integer.class, true), is(123));
+    void assertConvertStringToBooleanWithMySQLProtocolType() throws SQLException {
+        assertTrue((boolean) ResultSetUtils.convertValue("true", Boolean.class, createMySQLProtocolType()));
     }
     
     @Test
-    void assertConvertStringToBooleanWithMySQLCompatibility() throws SQLException {
-        assertTrue((boolean) ResultSetUtils.convertValue("true", Boolean.class, true));
+    void assertConvertStringToByteWithMySQLProtocolType() throws SQLException {
+        assertThat(ResultSetUtils.convertValue("127", Byte.class, createMySQLProtocolType()), is((Object) Byte.valueOf((byte) 127)));
     }
     
     @Test
-    void assertConvertInvalidStringToIntegerWithMySQLCompatibility() {
-        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertValue("abc", Integer.class, true));
+    void assertConvertStringToShortWithMySQLProtocolType() throws SQLException {
+        assertThat(ResultSetUtils.convertValue("32767", Short.class, createMySQLProtocolType()), is((Object) Short.valueOf((short) 32767)));
+    }
+    
+    @Test
+    void assertConvertStringToIntegerWithMySQLProtocolType() throws SQLException {
+        assertThat(ResultSetUtils.convertValue(" 123 ", Integer.class, createMySQLProtocolType()), is((Object) Integer.valueOf(123)));
+    }
+    
+    @Test
+    void assertConvertStringToLongWithMySQLProtocolType() throws SQLException {
+        assertThat(ResultSetUtils.convertValue("123456", Long.class, createMySQLProtocolType()), is((Object) Long.valueOf(123456L)));
+    }
+    
+    @Test
+    void assertConvertStringToFloatWithMySQLProtocolType() throws SQLException {
+        assertThat(ResultSetUtils.convertValue("3.14", Float.class, createMySQLProtocolType()), is((Object) Float.valueOf(3.14F)));
+    }
+    
+    @Test
+    void assertConvertStringToDoubleWithMySQLProtocolType() throws SQLException {
+        assertThat(ResultSetUtils.convertValue("3.1415926", Double.class, createMySQLProtocolType()), is((Object) Double.valueOf(3.1415926D)));
+    }
+    
+    @Test
+    void assertConvertStringToBigDecimalWithMySQLProtocolType() throws SQLException {
+        assertThat(ResultSetUtils.convertValue("123.45", BigDecimal.class, createMySQLProtocolType()), is((Object) new BigDecimal("123.45")));
+    }
+    
+    @Test
+    void assertConvertInvalidStringToIntegerWithMySQLProtocolType() {
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertValue("abc", Integer.class, createMySQLProtocolType()));
+    }
+    
+    @Test
+    void assertConvertInvalidStringToBooleanWithMySQLProtocolType() {
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertValue("unknown", Boolean.class, createMySQLProtocolType()));
+    }
+    
+    @Test
+    void assertConvertEmptyStringToIntegerWithMySQLProtocolType() {
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertValue("   ", Integer.class, createMySQLProtocolType()));
     }
     
     @Test
     void assertConvertStringToIntegerWithoutMySQLCompatibility() {
-        assertThrows(SQLFeatureNotSupportedException.class, () -> ResultSetUtils.convertValue("123", Integer.class));
+        assertThrows(SQLFeatureNotSupportedException.class, () -> ResultSetUtils.convertValue("123", Integer.class, createPostgreSQLProtocolType()));
     }
     
     @Test

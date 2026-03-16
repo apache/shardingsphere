@@ -66,12 +66,15 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     private final MergedResult mergeResultSet;
     
+    private final DatabaseType protocolType;
+    
     @Getter
     private final Map<String, Integer> columnLabelAndIndexMap;
     
     public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final SQLStatementContext sqlStatementContext) throws SQLException {
         super(resultSets, statement, sqlStatementContext);
         this.mergeResultSet = mergeResultSet;
+        protocolType = getProtocolType(statement);
         columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData());
     }
     
@@ -79,6 +82,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
                                    final SQLStatementContext sqlStatementContext, final Map<String, Integer> columnLabelAndIndexMap) {
         super(resultSets, statement, sqlStatementContext);
         this.mergeResultSet = mergeResultSet;
+        protocolType = getProtocolType(statement);
         this.columnLabelAndIndexMap = columnLabelAndIndexMap;
     }
     
@@ -386,9 +390,9 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
             return (T) getClob(columnIndex);
         }
         if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type) || OffsetDateTime.class.equals(type)) {
-            return (T) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type, isMySQLProtocolType());
+            return (T) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type, protocolType);
         }
-        return (T) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, type), type, isMySQLProtocolType());
+        return (T) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, type), type, protocolType);
     }
     
     @Override
@@ -402,18 +406,13 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
         return result;
     }
     
-    private boolean isMySQLProtocolType() {
-        DatabaseType protocolType = getProtocolType();
-        return null != protocolType && ("MySQL".equals(protocolType.getType()) || protocolType.getTrunkDatabaseType().map(optional -> "MySQL".equals(optional.getType())).orElse(false));
-    }
-    
-    private DatabaseType getProtocolType() {
-        if (getStatement() instanceof ShardingSpherePreparedStatement) {
-            return ((ShardingSpherePreparedStatement) getStatement()).getUsedDatabase().getProtocolType();
+    private DatabaseType getProtocolType(final Statement statement) {
+        if (statement instanceof ShardingSpherePreparedStatement) {
+            return ((ShardingSpherePreparedStatement) statement).getUsedDatabase().getProtocolType();
         }
-        if (getStatement() instanceof ShardingSphereStatement) {
-            ShardingSphereStatement statement = (ShardingSphereStatement) getStatement();
-            return statement.getConnection().getContextManager().getMetaDataContexts().getMetaData().getDatabase(statement.getUsedDatabaseName()).getProtocolType();
+        if (statement instanceof ShardingSphereStatement) {
+            ShardingSphereStatement shardingSphereStatement = (ShardingSphereStatement) statement;
+            return shardingSphereStatement.getConnection().getContextManager().getMetaDataContexts().getMetaData().getDatabase(shardingSphereStatement.getUsedDatabaseName()).getProtocolType();
         }
         return null;
     }

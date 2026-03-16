@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.d
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -75,11 +76,15 @@ public final class ResultSetUtils {
      *
      * @param value original value
      * @param convertType expected class type
-     * @param isMySQLCompatibleConversion is MySQL compatible conversion or not
+     * @param protocolType protocol database type
      * @return converted value
      * @throws SQLFeatureNotSupportedException SQL feature not supported exception
      */
-    public static Object convertValue(final Object value, final Class<?> convertType, final boolean isMySQLCompatibleConversion) throws SQLFeatureNotSupportedException {
+    public static Object convertValue(final Object value, final Class<?> convertType, final DatabaseType protocolType) throws SQLFeatureNotSupportedException {
+        return convertValue(value, convertType, isMySQLCompatibleConversion(protocolType));
+    }
+    
+    private static Object convertValue(final Object value, final Class<?> convertType, final boolean isMySQLCompatibleConversion) throws SQLFeatureNotSupportedException {
         ShardingSpherePreconditions.checkNotNull(convertType, () -> new SQLFeatureNotSupportedException("Type can not be null"));
         if (null == value) {
             return convertNullValue(convertType);
@@ -125,6 +130,10 @@ public final class ResultSetUtils {
         } catch (final ClassCastException ignored) {
             throw new SQLFeatureNotSupportedException("getObject with type, cannot convert " + value.getClass().getName() + ":" + value + " to " + convertType.getName());
         }
+    }
+    
+    private static boolean isMySQLCompatibleConversion(final DatabaseType protocolType) {
+        return null != protocolType && ("MySQL".equals(protocolType.getType()) || protocolType.getTrunkDatabaseType().map(optional -> "MySQL".equals(optional.getType())).orElse(false));
     }
     
     private static Optional<Object> convertStringValue(final String value, final Class<?> convertType, final boolean isMySQLCompatibleConversion) {

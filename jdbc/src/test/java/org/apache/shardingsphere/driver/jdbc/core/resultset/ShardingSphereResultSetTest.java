@@ -606,18 +606,25 @@ class ShardingSphereResultSetTest {
     
     @Test
     void assertGetObjectWithIntegerFromStringUsesUsedDatabaseProtocolForStatement() throws SQLException {
+        ShardingSphereConnection statementConnection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts statementMetaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        when(statementMetaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         DatabaseType currentDatabaseProtocolType = mock(DatabaseType.class);
         when(currentDatabaseProtocolType.getType()).thenReturn("PostgreSQL");
         when(currentDatabaseProtocolType.getTrunkDatabaseType()).thenReturn(Optional.empty());
         DatabaseType usedDatabaseProtocolType = mock(DatabaseType.class);
         when(usedDatabaseProtocolType.getType()).thenReturn("MySQL");
         when(usedDatabaseProtocolType.getTrunkDatabaseType()).thenReturn(Optional.empty());
-        when(connection.getCurrentDatabaseName()).thenReturn("current_db");
-        when(statement.getUsedDatabaseName()).thenReturn("used_db");
-        when(metaDataContexts.getMetaData().getDatabase("current_db").getProtocolType()).thenReturn(currentDatabaseProtocolType);
-        when(metaDataContexts.getMetaData().getDatabase("used_db").getProtocolType()).thenReturn(usedDatabaseProtocolType);
+        ShardingSphereStatement usedDatabaseStatement = mock(ShardingSphereStatement.class);
+        when(statementConnection.getCurrentDatabaseName()).thenReturn("current_db");
+        when(statementConnection.getContextManager().getMetaDataContexts()).thenReturn(statementMetaDataContexts);
+        when(statementMetaDataContexts.getMetaData().getDatabase("current_db").getProtocolType()).thenReturn(currentDatabaseProtocolType);
+        when(statementMetaDataContexts.getMetaData().getDatabase("used_db").getProtocolType()).thenReturn(usedDatabaseProtocolType);
+        when(usedDatabaseStatement.getConnection()).thenReturn(statementConnection);
+        when(usedDatabaseStatement.getUsedDatabaseName()).thenReturn("used_db");
+        ShardingSphereResultSet usedDatabaseResultSet = new ShardingSphereResultSet(getResultSets(), mergeResultSet, usedDatabaseStatement, createSQLStatementContext());
         when(mergeResultSet.getValue(1, Integer.class)).thenReturn("123");
-        assertThat(shardingSphereResultSet.getObject(1, Integer.class), is(123));
+        assertThat(usedDatabaseResultSet.getObject(1, Integer.class), is(123));
     }
     
     @Test
