@@ -98,7 +98,6 @@ core_infra:
   - 'kernel/sql-parser/**/src/main/**'
   - 'kernel/sql-translator/**/src/main/**'
   - 'kernel/transaction/**/src/main/**'
-  - 'parser/distsql/**/src/main/**'
   - 'parser/sql/engine/core/src/main/**'
   - 'parser/sql/spi/src/main/**'
   - 'parser/sql/statement/core/src/main/**'
