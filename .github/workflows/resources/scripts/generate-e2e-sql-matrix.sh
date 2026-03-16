@@ -121,6 +121,12 @@ if [ "$core_infra" = "true" ] || [ "$test_framework" = "true" ] || [ "$pom_chang
   echo "::notice::Base filters triggered (core_infra=$core_infra, test_framework=$test_framework, pom_changes=$pom_changes)"
 fi
 
+# Handle workflow_dispatch: run full tests when manually triggered
+if [ "${GITHUB_EVENT_NAME:-}" = "workflow_dispatch" ]; then
+  any_base_change=true
+  echo "::notice::workflow_dispatch detected, enabling full test matrix"
+fi
+
 # Check whether any relevant dimension changed at all
 any_relevant_change=false
 if [ "$feature_sharding" = "true" ] || [ "$feature_encrypt" = "true" ] || \
