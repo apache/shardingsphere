@@ -115,4 +115,14 @@ test_framework:
 
 # ---- POM changes (full fallback triggers) ----
 pom_changes:
-  - '**/pom.xml'
+  - 'database/**/pom.xml'
+  - 'features/**/pom.xml'
+  - 'infra/**/pom.xml'
+  - 'jdbc/**/pom.xml'
+  - 'jdbc-dialect/**/pom.xml'
+  - 'kernel/**/pom.xml'
+  - 'mode/**/pom.xml'
+  - 'parser/**/pom.xml'
+  - 'proxy/**/pom.xml'
+  - 'test/**/pom.xml'
+  - 'pom.xml'
