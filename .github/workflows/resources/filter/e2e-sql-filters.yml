@@ -98,7 +98,6 @@ core_infra:
   - 'kernel/sql-parser/**/src/main/**'
   - 'kernel/sql-translator/**/src/main/**'
   - 'kernel/transaction/**/src/main/**'
-  - 'parser/distsql/**/src/main/**'
   - 'parser/sql/engine/core/src/main/**'
   - 'parser/sql/spi/src/main/**'
   - 'parser/sql/statement/core/src/main/**'
@@ -116,4 +115,14 @@ test_framework:
 
 # ---- POM changes (full fallback triggers) ----
 pom_changes:
-  - '**/pom.xml'
+  - 'database/**/pom.xml'
+  - 'features/**/pom.xml'
+  - 'infra/**/pom.xml'
+  - 'jdbc/**/pom.xml'
+  - 'jdbc-dialect/**/pom.xml'
+  - 'kernel/**/pom.xml'
+  - 'mode/**/pom.xml'
+  - 'parser/**/pom.xml'
+  - 'proxy/**/pom.xml'
+  - 'test/**/pom.xml'
+  - 'pom.xml'
