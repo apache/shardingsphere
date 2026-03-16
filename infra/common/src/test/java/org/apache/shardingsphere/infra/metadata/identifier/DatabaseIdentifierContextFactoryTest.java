@@ -113,7 +113,7 @@ class DatabaseIdentifierContextFactoryTest {
     private static Stream<Arguments> createWithResourceMetaDataAndPropsArguments() {
         return Stream.of(
                 Arguments.of("null resource metadata and null props use insensitive rules", null, null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
-                Arguments.of("null storage units keep explicit sensitive rules", DATABASE_TYPE, mock(ResourceMetaData.class),
+                Arguments.of("null storage units keep explicit sensitive rules", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), null),
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
                 Arguments.of("empty storage units keep explicit sensitive rules", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
@@ -133,7 +133,7 @@ class DatabaseIdentifierContextFactoryTest {
     private static Stream<Arguments> refreshWithResourceMetaDataAndPropsArguments() {
         return Stream.of(
                 Arguments.of("null resource metadata and null props refresh to insensitive rules", null, null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
-                Arguments.of("null storage units refresh to exact lookup", DATABASE_TYPE, mock(ResourceMetaData.class),
+                Arguments.of("null storage units refresh to exact lookup", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), null),
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
                 Arguments.of("empty storage units refresh to exact lookup", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
