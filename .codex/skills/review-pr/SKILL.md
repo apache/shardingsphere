@@ -43,6 +43,19 @@ description: >-
     for example: same-name object, shadowing, disabled-flag path, or adjacent valid input.
     If no such validation exists, bias to `Not Mergeable`.
 11. Closing previous-round blockers and passing happy-path tests is not sufficient for `Mergeable`; you must still run a fresh-pass risk scan on the latest head.
+12. If a PR touches any shared execution path, reusable SPI, metadata assembly path, or other code that can affect multiple dialects or features,
+    treat it as a blast-radius review.
+    Trigger signals (examples only, not a whitelist): `infra/common`, `infra/binder/core`, shared kernel entrypoints, common SPI, reusable metadata loaders,
+    shared name-resolution logic, or shared default-schema / fallback logic.
+    You must explicitly enumerate the non-target dialects or features that also execute that path, and review at least one concrete counterexample outside the PR's stated target.
+    Do not interpret the trigger signals above as a complete list. If this blast-radius scan is missing, bias to `Not Mergeable`.
+13. If local verification is used to support mergeability and the command is module-scoped, include `-am` by default unless you can prove all dependent modules were built from the same latest PR head.
+    Do not treat a scoped run without dependent modules as conclusive evidence for `Mergeable`.
+14. Before outputting `Mergeable`, perform one explicit adversarial pass that assumes the PR is unsafe and actively searches for:
+    - one cross-dialect or adjacent-feature regression path,
+    - one config-disabled or feature-flag-off path,
+    - one original symptom path that is only partially covered by tests.
+    If any of these remain unresolved, set `Merge Verdict: Not Mergeable`.
 
 ## Execution Boundary
 
@@ -107,12 +120,15 @@ When information gaps block mergeability, request at least:
    - Compatibility: behavior/config/API-SPI/SQL dialect versions
    - Regression: similar statements, adjacent features, exception branches
    - For parser, binder, routing, and default-schema changes, explicitly compare the new behavior against official dialect semantics and check whether precedence or shadowing rules changed
+   - If shared code is touched, build a blast-radius list of affected dialects/features and review at least one non-target example against its documented semantics
+   - If config flags or temporary properties exist on the touched path, review both enabled and disabled states
 5. Test adequacy:
    - Is there a failing case first or reproducible steps?
    - Are major branches, boundaries, and counterexamples covered?
    - Are tests mapped one-to-one with fix points?
    - Distinguish fixture-assisted validation from production-path validation; if tests bypass the real assembly chain,
      metadata loader, SPI discovery path, or routing path, state that gap explicitly and downgrade confidence
+   - If the PR adds multiple static metadata definitions, verify that regression tests cover the originally reported objects one-to-one; do not infer coverage from a single representative object unless the code path is truly identical and that equivalence is stated
 6. Supply-chain and license gates (triggered by changes):
    - If dependency manifests or lockfiles changed, check vulnerability severity and license constraints
    - Mark whether extra security review is required
@@ -132,6 +148,8 @@ When information gaps block mergeability, request at least:
 - Are adjacent paths sharing the same root cause also validated?
 - Does the fix preserve the original precedence or lookup semantics for adjacent valid cases?
 - Would a same-name or shadowing case take a different path after this patch?
+- If the fix sits in shared code, would another dialect or feature now take a different path from its documented semantics?
+- Does the config-disabled or feature-flag-off path still behave correctly?
 
 If the root-cause chain cannot be fully proven fixed, set `Merge Verdict: Not Mergeable`.
 
@@ -147,6 +165,7 @@ If the root-cause chain cannot be fully proven fixed, set `Merge Verdict: Not Me
   - Name-resolution or fallback-precedence compatibility
   - Feature-flag or disabled-path compatibility
 - Functional degradation risk: old-scenario regression, boundary input behavior changes, error-code/exception semantic drift.
+- Cross-dialect/shared-path risk: a target-specific fix changing generic behavior for other databases or features.
 - Operational risk: config migration complexity, gray-release and rollback complexity.
 - Supply-chain risk: vulnerabilities, licenses, transitive dependency changes from new deps.
 
@@ -229,3 +248,5 @@ Use committer tone, gentle wording, no emojis; structure:
 - Do not ignore unrelated changes.
 - Do not reuse old conclusions after new commits are added without re-review.
 - Do not include emojis in change request text.
+- Do not output `Mergeable` for a shared-code change unless you have checked at least one non-target dialect or feature that also uses the changed path.
+- Do not output `Mergeable` when local verification omitted `-am` on a module-scoped Maven run and dependency freshness matters.

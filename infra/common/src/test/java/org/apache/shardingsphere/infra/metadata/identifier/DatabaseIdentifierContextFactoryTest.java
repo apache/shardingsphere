@@ -26,20 +26,30 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import javax.sql.DataSource;
 import java.util.Collections;
-import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class DatabaseIdentifierContextFactoryTest {
+    
+    private static final DatabaseType POSTGRESQL_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
+    private static final DatabaseType ORACLE_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "Oracle");
     
     @Test
     void assertCreateDefault() {
@@ -49,32 +59,99 @@ class DatabaseIdentifierContextFactoryTest {
         assertTrue(actualRule.matches("Foo", "foo", QuoteCharacter.NONE));
     }
     
-    @Test
-    void assertCreateWithProtocolTypeAndProps() {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
-        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(databaseType, new ConfigurationProperties(new Properties()));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("createWithProtocolTypeAndPropsArguments")
+    void assertCreateWithProtocolTypeAndProps(final String name, final DatabaseType protocolType, final ConfigurationProperties props, final LookupMode expectedLookupMode,
+                                              final String actualIdentifier, final String logicIdentifier, final boolean expectedMatched) {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(protocolType, props);
         IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.TABLE);
-        assertTrue(actualRule.matches("FOO", "foo", QuoteCharacter.NONE));
-        assertFalse(actualRule.matches("Foo", "foo", QuoteCharacter.NONE));
+        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(expectedLookupMode));
+        assertThat(actualRule.matches(actualIdentifier, logicIdentifier, QuoteCharacter.NONE), is(expectedMatched));
     }
     
-    @Test
-    void assertCreateWithResourceMetaDataAndProps() {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        ConfigurationProperties props = new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), "sensitive")));
-        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), props);
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("createWithResourceMetaDataAndPropsArguments")
+    void assertCreateWithResourceMetaDataAndProps(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
+                                                  final ConfigurationProperties props, final LookupMode expectedLookupMode,
+                                                  final String actualIdentifier, final String logicIdentifier, final boolean expectedMatched) {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(protocolType, resourceMetaData, props);
         IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.TABLE);
-        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.EXACT));
+        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(expectedLookupMode));
+        assertThat(actualRule.matches(actualIdentifier, logicIdentifier, QuoteCharacter.NONE), is(expectedMatched));
     }
     
-    @Test
-    void assertRefreshWithProtocolTypeAndProps() {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("refreshWithProtocolTypeAndPropsArguments")
+    void assertRefreshWithProtocolTypeAndProps(final String name, final DatabaseType protocolType, final ConfigurationProperties props, final LookupMode expectedLookupMode,
+                                               final String actualIdentifier, final String logicIdentifier, final boolean expectedMatched) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
-        ConfigurationProperties props = new ConfigurationProperties(PropertiesBuilder.build(
-                new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name())));
-        DatabaseIdentifierContextFactory.refresh(actual, databaseType, props);
+        DatabaseIdentifierContextFactory.refresh(actual, protocolType, props);
         IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.TABLE);
-        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.EXACT));
+        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(expectedLookupMode));
+        assertThat(actualRule.matches(actualIdentifier, logicIdentifier, QuoteCharacter.NONE), is(expectedMatched));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("refreshWithResourceMetaDataAndPropsArguments")
+    void assertRefreshWithResourceMetaDataAndProps(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
+                                                   final ConfigurationProperties props, final LookupMode expectedLookupMode,
+                                                   final String actualIdentifier, final String logicIdentifier, final boolean expectedMatched) {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, protocolType, resourceMetaData, props);
+        IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.TABLE);
+        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(expectedLookupMode));
+        assertThat(actualRule.matches(actualIdentifier, logicIdentifier, QuoteCharacter.NONE), is(expectedMatched));
+    }
+    
+    private static Stream<Arguments> createWithProtocolTypeAndPropsArguments() {
+        return Stream.of(
+                Arguments.of("null protocol type and null props use insensitive rules", null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
+                Arguments.of("sensitive props override protocol rules", POSTGRESQL_DATABASE_TYPE,
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
+                Arguments.of("insensitive props normalize identifiers", ORACLE_DATABASE_TYPE,
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE), LookupMode.NORMALIZED, "Foo", "foo", true));
+    }
+    
+    private static Stream<Arguments> createWithResourceMetaDataAndPropsArguments() {
+        return Stream.of(
+                Arguments.of("null resource metadata and null props use insensitive rules", null, null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
+                Arguments.of("null storage units keep explicit sensitive rules", POSTGRESQL_DATABASE_TYPE, mock(ResourceMetaData.class),
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
+                Arguments.of("empty storage units keep explicit sensitive rules", POSTGRESQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
+                Arguments.of("first data source path keeps explicit sensitive rules", POSTGRESQL_DATABASE_TYPE, createResourceMetaDataWithFirstDataSource(),
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false));
+    }
+    
+    private static Stream<Arguments> refreshWithProtocolTypeAndPropsArguments() {
+        return Stream.of(
+                Arguments.of("null protocol type and null props refresh to insensitive rules", null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
+                Arguments.of("sensitive props refresh to exact lookup", POSTGRESQL_DATABASE_TYPE,
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
+                Arguments.of("insensitive props refresh to normalized lookup", ORACLE_DATABASE_TYPE,
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.INSENSITIVE), LookupMode.NORMALIZED, "Foo", "foo", true));
+    }
+    
+    private static Stream<Arguments> refreshWithResourceMetaDataAndPropsArguments() {
+        return Stream.of(
+                Arguments.of("null resource metadata and null props refresh to insensitive rules", null, null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
+                Arguments.of("null storage units refresh to exact lookup", POSTGRESQL_DATABASE_TYPE, mock(ResourceMetaData.class),
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
+                Arguments.of("empty storage units refresh to exact lookup", POSTGRESQL_DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
+                Arguments.of("first data source path refreshes to exact lookup", POSTGRESQL_DATABASE_TYPE, createResourceMetaDataWithFirstDataSource(),
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false));
+    }
+    
+    private static ConfigurationProperties createConfigurationProperties(final MetadataIdentifierCaseSensitivity caseSensitivity) {
+        return new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), caseSensitivity.name())));
+    }
+    
+    private static ResourceMetaData createResourceMetaDataWithFirstDataSource() {
+        ResourceMetaData result = mock(ResourceMetaData.class);
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getDataSource()).thenReturn(mock(DataSource.class));
+        when(result.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
+        return result;
     }
 }
