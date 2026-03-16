@@ -123,14 +123,7 @@ jobs:
           enable-docker-setup: 'true'
       - name: Build E2E Image
         run: ./mvnw -B clean install -am -pl test/e2e/sql -Pe2e.env.docker -DskipTests -Dspotless.apply.skip=true
-      - name: Create Source Snapshot
-        run: git archive --format=tar.gz --output=/tmp/e2e-sql-source-snapshot.tar.gz HEAD -- . ':(exclude)docs'
-      - name: Upload Source Snapshot
-        uses: actions/upload-artifact@v6
-        with:
-          name: e2e-sql-source-snapshot
-          path: /tmp/e2e-sql-source-snapshot.tar.gz
-          retention-days: 3
+      - uses: ./.github/workflows/resources/actions/upload-source-snapshot
       - uses: ./.github/workflows/resources/actions/save-maven-cache
         with:
           cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
@@ -148,13 +141,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.detect-and-generate-matrix.outputs.smoke-matrix) }}
     steps:
-      - name: Download Source Snapshot
-        uses: actions/download-artifact@v4
-        with:
-          name: e2e-sql-source-snapshot
-          path: /tmp/source-snapshot
-      - name: Restore Source Snapshot
-        run: tar -xzf /tmp/source-snapshot/e2e-sql-source-snapshot.tar.gz -C "$GITHUB_WORKSPACE"
+      - uses: ./.github/workflows/resources/actions/download-source-snapshot
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'
@@ -210,13 +197,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.detect-remaining-matrix.outputs.matrix) }}
     steps:
-      - name: Download Source Snapshot
-        uses: actions/download-artifact@v4
-        with:
-          name: e2e-sql-source-snapshot
-          path: /tmp/source-snapshot
-      - name: Restore Source Snapshot
-        run: tar -xzf /tmp/source-snapshot/e2e-sql-source-snapshot.tar.gz -C "$GITHUB_WORKSPACE"
+      - uses: ./.github/workflows/resources/actions/download-source-snapshot
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'
