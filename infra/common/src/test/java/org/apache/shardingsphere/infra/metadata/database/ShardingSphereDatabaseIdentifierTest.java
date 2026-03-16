@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -95,6 +96,20 @@ class ShardingSphereDatabaseIdentifierTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", postgreSQLDatabaseType, createResourceMetaData(),
                 new RuleMetaData(Collections.emptyList()), Collections.singleton(createSchema("foo_schema", postgreSQLDatabaseType)));
         assertTrue(database.containsSchema("FOO_SCHEMA"));
+    }
+    
+    @Test
+    void assertRefreshIdentifierContext() {
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", java.sql.Types.INTEGER, false, true, false, true, false, false);
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
+        ShardingSphereDatabase database = createDatabase(postgreSQLDatabaseType, schema);
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name());
+        database.refreshIdentifierContext(new ConfigurationProperties(props));
+        assertFalse(database.containsSchema("FOO_SCHEMA"));
+        assertFalse(database.getSchema("foo_schema").containsTable("FOO_TBL"));
+        assertFalse(database.getSchema("foo_schema").getTable("foo_tbl").containsColumn("FOO_COL"));
     }
     
     private ShardingSphereDatabase createDatabase(final DatabaseType databaseType, final String schemaName) {

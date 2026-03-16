@@ -69,6 +69,29 @@ public final class DatabaseIdentifierContextFactory {
         return new DatabaseIdentifierContext(new IdentifierCaseRuleResolver().resolve(protocolType, props, dataSource));
     }
     
+    /**
+     * Refresh identifier context with protocol-aware identifier rules.
+     *
+     * @param identifierContext identifier context
+     * @param protocolType protocol type
+     * @param props configuration properties
+     */
+    public static void refresh(final DatabaseIdentifierContext identifierContext, final DatabaseType protocolType, final ConfigurationProperties props) {
+        refresh(identifierContext, protocolType, null, props);
+    }
+    
+    /**
+     * Refresh identifier context with protocol-aware identifier rules.
+     *
+     * @param identifierContext identifier context
+     * @param protocolType protocol type
+     * @param resourceMetaData resource meta data
+     * @param props configuration properties
+     */
+    public static void refresh(final DatabaseIdentifierContext identifierContext, final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final ConfigurationProperties props) {
+        identifierContext.refresh(new IdentifierCaseRuleResolver().resolve(protocolType, getProps(props), getFirstDataSource(resourceMetaData)));
+    }
+    
     private static ConfigurationProperties getProps(final ConfigurationProperties props) {
         return null == props ? new ConfigurationProperties(new Properties()) : props;
     }
