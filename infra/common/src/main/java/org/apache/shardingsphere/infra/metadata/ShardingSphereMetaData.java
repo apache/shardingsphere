@@ -20,26 +20,32 @@ package org.apache.shardingsphere.infra.metadata;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseFactory;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierIndex;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule.GlobalRuleChangedType;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -50,7 +56,13 @@ import java.util.stream.Collectors;
 public final class ShardingSphereMetaData implements AutoCloseable {
     
     @Getter(AccessLevel.NONE)
-    private final Map<ShardingSphereIdentifier, ShardingSphereDatabase> databases;
+    private final Map<String, ShardingSphereDatabase> databases;
+    
+    @Getter(AccessLevel.NONE)
+    private final DatabaseIdentifierContext identifierContext;
+    
+    @Getter(AccessLevel.NONE)
+    private final IdentifierIndex<ShardingSphereDatabase> databaseIndex;
     
     private final ResourceMetaData globalResourceMetaData;
     
@@ -62,14 +74,49 @@ public final class ShardingSphereMetaData implements AutoCloseable {
     
     private final DatabaseType protocolType;
     
+    /**
+     * Construct metadata through the legacy compatibility path.
+     *
+     * <p>This constructor keeps existing callers and tests working until all metadata creation paths pass an explicit protocol-aware identifier context.</p>
+     *
+     * <p>TODO(haoran): Remove this constructor after all metadata initialization paths migrate to the protocol-aware constructor.</p>
+     *
+     * @param databases databases
+     * @param globalResourceMetaData global resource meta data
+     * @param globalRuleMetaData global rule meta data
+     * @param props configuration properties
+     */
     public ShardingSphereMetaData(final Collection<ShardingSphereDatabase> databases, final ResourceMetaData globalResourceMetaData,
                                   final RuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
-        this.databases = new ConcurrentHashMap<>(databases.stream().collect(Collectors.toMap(each -> new ShardingSphereIdentifier(each.getName()), each -> each)));
+        this(databases, globalResourceMetaData, globalRuleMetaData, props, resolveProtocolType(databases, props), DatabaseIdentifierContextFactory.createDefault());
+    }
+    
+    /**
+     * Construct metadata with protocol-aware identifier rules.
+     *
+     * @param databases databases
+     * @param globalResourceMetaData global resource meta data
+     * @param globalRuleMetaData global rule meta data
+     * @param props configuration properties
+     * @param protocolType protocol type
+     */
+    public ShardingSphereMetaData(final Collection<ShardingSphereDatabase> databases, final ResourceMetaData globalResourceMetaData,
+                                  final RuleMetaData globalRuleMetaData, final ConfigurationProperties props, final DatabaseType protocolType) {
+        this(databases, globalResourceMetaData, globalRuleMetaData, props, protocolType, DatabaseIdentifierContextFactory.create(protocolType, props));
+    }
+    
+    private ShardingSphereMetaData(final Collection<ShardingSphereDatabase> databases, final ResourceMetaData globalResourceMetaData,
+                                   final RuleMetaData globalRuleMetaData, final ConfigurationProperties props, final DatabaseType protocolType,
+                                   final DatabaseIdentifierContext identifierContext) {
+        this.databases = new ConcurrentHashMap<>(databases.stream().collect(Collectors.toMap(ShardingSphereDatabase::getName, each -> each)));
         this.globalResourceMetaData = globalResourceMetaData;
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
         temporaryProps = new TemporaryConfigurationProperties(props.getProps());
-        protocolType = databases.isEmpty() ? DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), props) : databases.iterator().next().getProtocolType();
+        this.protocolType = protocolType;
+        this.identifierContext = identifierContext;
+        databaseIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.DATABASE);
+        rebuildDatabaseIndex();
     }
     
     /**
@@ -82,13 +129,36 @@ public final class ShardingSphereMetaData implements AutoCloseable {
     }
     
     /**
+     * Find database.
+     *
+     * @param databaseName database name
+     * @return found database
+     */
+    private Optional<ShardingSphereDatabase> findDatabase(final IdentifierValue databaseName) {
+        if (null == databaseName || null == databaseName.getValue()) {
+            return Optional.empty();
+        }
+        return databaseIndex.find(databaseName);
+    }
+    
+    /**
      * Judge contains database from meta data or not.
      *
      * @param databaseName database name
      * @return contains database from meta data or not
      */
     public boolean containsDatabase(final String databaseName) {
-        return databases.containsKey(new ShardingSphereIdentifier(databaseName));
+        return null != databaseName && containsDatabase(new IdentifierValue(databaseName, QuoteCharacter.NONE));
+    }
+    
+    /**
+     * Judge contains database from meta data or not.
+     *
+     * @param databaseName database name
+     * @return contains database from meta data or not
+     */
+    private boolean containsDatabase(final IdentifierValue databaseName) {
+        return findDatabase(databaseName).isPresent();
     }
     
     /**
@@ -98,7 +168,17 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @return meta data database
      */
     public ShardingSphereDatabase getDatabase(final String databaseName) {
-        return databases.get(new ShardingSphereIdentifier(databaseName));
+        return null == databaseName ? null : getDatabase(new IdentifierValue(databaseName, QuoteCharacter.NONE));
+    }
+    
+    /**
+     * Get database.
+     *
+     * @param databaseName database name
+     * @return meta data database
+     */
+    private ShardingSphereDatabase getDatabase(final IdentifierValue databaseName) {
+        return findDatabase(databaseName).orElse(null);
     }
     
     /**
@@ -110,7 +190,8 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      */
     public void addDatabase(final String databaseName, final DatabaseType protocolType, final ConfigurationProperties props) {
         ShardingSphereDatabase database = ShardingSphereDatabaseFactory.create(databaseName, protocolType, props);
-        databases.put(new ShardingSphereIdentifier(database.getName()), database);
+        databases.put(database.getName(), database);
+        rebuildDatabaseIndex();
         globalRuleMetaData.getRules().forEach(each -> ((GlobalRule) each).refresh(databases.values(), GlobalRuleChangedType.DATABASE_CHANGED));
     }
     
@@ -120,7 +201,8 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @param database database
      */
     public void putDatabase(final ShardingSphereDatabase database) {
-        databases.put(new ShardingSphereIdentifier(database.getName()), database);
+        databases.put(database.getName(), database);
+        rebuildDatabaseIndex();
     }
     
     /**
@@ -129,7 +211,16 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @param databaseName database name
      */
     public void dropDatabase(final String databaseName) {
-        cleanResources(databases.remove(new ShardingSphereIdentifier(databaseName)));
+        if (null == databaseName) {
+            return;
+        }
+        ShardingSphereDatabase database = getDatabase(databaseName);
+        if (null == database) {
+            return;
+        }
+        databases.remove(database.getName());
+        rebuildDatabaseIndex();
+        cleanResources(database);
     }
     
     @SneakyThrows(Exception.class)
@@ -159,5 +250,17 @@ public final class ShardingSphereMetaData implements AutoCloseable {
         Collection<ShardingSphereRule> result = new LinkedList<>(globalRuleMetaData.getRules());
         getAllDatabases().stream().map(each -> each.getRuleMetaData().getRules()).forEach(result::addAll);
         return result;
+    }
+    
+    private static ConfigurationProperties getProps(final ConfigurationProperties props) {
+        return null == props ? new ConfigurationProperties(new Properties()) : props;
+    }
+    
+    private static DatabaseType resolveProtocolType(final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props) {
+        return databases.isEmpty() ? DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), getProps(props)) : databases.iterator().next().getProtocolType();
+    }
+    
+    private void rebuildDatabaseIndex() {
+        databaseIndex.rebuild(databases);
     }
 }

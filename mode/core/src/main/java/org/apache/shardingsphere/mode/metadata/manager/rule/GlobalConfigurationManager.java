@@ -59,7 +59,8 @@ public final class GlobalConfigurationManager {
         metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().clear();
         metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
         metaDataContexts.update(new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
-                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps()), metaDataPersistFacade);
+                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
+                metaDataContexts.getMetaData().getProps(), metaDataContexts.getMetaData().getProtocolType()), metaDataPersistFacade);
     }
     
     @SneakyThrows(Exception.class)
@@ -85,7 +86,8 @@ public final class GlobalConfigurationManager {
     public synchronized void alterProperties(final Properties props) {
         boolean isProxyMetaDataCollectorCronChanged = isProxyMetaDataCollectorCronChanged(props);
         metaDataContexts.update(new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
-                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(props)), metaDataPersistFacade);
+                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
+                new ConfigurationProperties(props), metaDataContexts.getMetaData().getProtocolType()), metaDataPersistFacade);
         if (isProxyMetaDataCollectorCronChanged) {
             for (StatisticsCollectJobCronUpdateListener each : ShardingSphereServiceLoader.getServiceInstances(StatisticsCollectJobCronUpdateListener.class)) {
                 each.updated();
