@@ -19,7 +19,10 @@ package org.apache.shardingsphere.infra.metadata.database;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
@@ -27,11 +30,14 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storag
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
+import org.apache.shardingsphere.infra.metadata.identifier.IdentifierIndex;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -58,15 +64,59 @@ public final class ShardingSphereDatabase {
     private final RuleMetaData ruleMetaData;
     
     @Getter(AccessLevel.NONE)
-    private final Map<ShardingSphereIdentifier, ShardingSphereSchema> schemas;
+    private final Map<String, ShardingSphereSchema> schemas;
     
+    @Getter(AccessLevel.NONE)
+    private final DatabaseIdentifierContext identifierContext;
+    
+    @Getter(AccessLevel.NONE)
+    private final IdentifierIndex<ShardingSphereSchema> schemaIndex;
+    
+    /**
+     * Construct database through the legacy compatibility path.
+     *
+     * <p>This constructor keeps existing callers and tests working until all database creation paths pass protocol-aware identifier rules explicitly.</p>
+     *
+     * <p>TODO(haoran): Remove this constructor after all metadata builders and tests migrate to the protocol-aware constructor.</p>
+     *
+     * @param name database name
+     * @param protocolType protocol type
+     * @param resourceMetaData resource meta data
+     * @param ruleMetaData rule meta data
+     * @param schemas schemas
+     */
     public ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
                                   final RuleMetaData ruleMetaData, final Collection<ShardingSphereSchema> schemas) {
+        this(name, protocolType, resourceMetaData, ruleMetaData, schemas, DatabaseIdentifierContextFactory.createDefault());
+    }
+    
+    /**
+     * Construct database with protocol-aware identifier rules.
+     *
+     * @param name database name
+     * @param protocolType protocol type
+     * @param resourceMetaData resource meta data
+     * @param ruleMetaData rule meta data
+     * @param schemas schemas
+     * @param props configuration properties
+     */
+    public ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
+                                  final RuleMetaData ruleMetaData, final Collection<ShardingSphereSchema> schemas, final ConfigurationProperties props) {
+        this(name, protocolType, resourceMetaData, ruleMetaData, schemas, DatabaseIdentifierContextFactory.create(protocolType, resourceMetaData, props));
+    }
+    
+    private ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
+                                   final RuleMetaData ruleMetaData, final Collection<ShardingSphereSchema> schemas,
+                                   final DatabaseIdentifierContext identifierContext) {
         this.name = name;
         this.protocolType = protocolType;
         this.resourceMetaData = resourceMetaData;
         this.ruleMetaData = ruleMetaData;
-        this.schemas = new ConcurrentHashMap<>(schemas.stream().collect(Collectors.toMap(each -> new ShardingSphereIdentifier(each.getName()), each -> each)));
+        this.identifierContext = identifierContext;
+        schemaIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.SCHEMA);
+        this.schemas = new ConcurrentHashMap<>(schemas.stream().collect(Collectors.toMap(ShardingSphereSchema::getName, each -> each)));
+        this.schemas.values().forEach(this::attachSchemaIdentifierContext);
+        rebuildSchemaIndex();
     }
     
     /**
@@ -79,13 +129,36 @@ public final class ShardingSphereDatabase {
     }
     
     /**
+     * Find schema.
+     *
+     * @param schemaName schema name
+     * @return schema
+     */
+    private Optional<ShardingSphereSchema> findSchema(final IdentifierValue schemaName) {
+        if (null == schemaName || null == schemaName.getValue()) {
+            return Optional.empty();
+        }
+        return schemaIndex.find(schemaName);
+    }
+    
+    /**
      * Judge contains schema from database or not.
      *
      * @param schemaName schema name
      * @return contains schema from database or not
      */
     public boolean containsSchema(final String schemaName) {
-        return schemas.containsKey(new ShardingSphereIdentifier(schemaName));
+        return null != schemaName && containsSchema(new IdentifierValue(schemaName, QuoteCharacter.NONE));
+    }
+    
+    /**
+     * Judge contains schema from database or not.
+     *
+     * @param schemaName schema name
+     * @return contains schema from database or not
+     */
+    private boolean containsSchema(final IdentifierValue schemaName) {
+        return findSchema(schemaName).isPresent();
     }
     
     /**
@@ -95,7 +168,17 @@ public final class ShardingSphereDatabase {
      * @return schema
      */
     public ShardingSphereSchema getSchema(final String schemaName) {
-        return schemas.get(new ShardingSphereIdentifier(schemaName));
+        return null == schemaName ? null : getSchema(new IdentifierValue(schemaName, QuoteCharacter.NONE));
+    }
+    
+    /**
+     * Get schema.
+     *
+     * @param schemaName schema name
+     * @return schema
+     */
+    private ShardingSphereSchema getSchema(final IdentifierValue schemaName) {
+        return findSchema(schemaName).orElse(null);
     }
     
     /**
@@ -104,7 +187,9 @@ public final class ShardingSphereDatabase {
      * @param schema schema
      */
     public void addSchema(final ShardingSphereSchema schema) {
-        schemas.put(new ShardingSphereIdentifier(schema.getName()), schema);
+        attachSchemaIdentifierContext(schema);
+        schemas.put(schema.getName(), schema);
+        rebuildSchemaIndex();
     }
     
     /**
@@ -113,7 +198,15 @@ public final class ShardingSphereDatabase {
      * @param schemaName schema name
      */
     public void dropSchema(final String schemaName) {
-        schemas.remove(new ShardingSphereIdentifier(schemaName));
+        if (null == schemaName) {
+            return;
+        }
+        ShardingSphereSchema schema = getSchema(schemaName);
+        if (null == schema) {
+            return;
+        }
+        schemas.remove(schema.getName());
+        rebuildSchemaIndex();
     }
     
     /**
@@ -180,5 +273,13 @@ public final class ShardingSphereDatabase {
         Map<String, DataSource> dataSources = resourceMetaData.getStorageUnits().entrySet().stream()
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getDataSource(), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
         return decorator.get().decorate(name, dataSources, ruleMetaData.getRules(), ruleConfig);
+    }
+    
+    private void rebuildSchemaIndex() {
+        schemaIndex.rebuild(new LinkedHashMap<>(schemas));
+    }
+    
+    private void attachSchemaIdentifierContext(final ShardingSphereSchema schema) {
+        schema.attachIdentifierContext(identifierContext);
     }
 }

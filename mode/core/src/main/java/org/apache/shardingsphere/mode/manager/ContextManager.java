@@ -164,7 +164,8 @@ public final class ContextManager implements AutoCloseable {
         Collection<RuleConfiguration> globalRuleConfigs = persistServiceFacade.getMetaDataFacade().getGlobalRuleService().load();
         RuleMetaData changedGlobalMetaData = new RuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, metaDataContexts.getMetaData().getAllDatabases(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                metaDataContexts.getMetaData().getAllDatabases(), metaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
+                metaDataContexts.getMetaData().getAllDatabases(), metaDataContexts.getMetaData().getGlobalResourceMetaData(),
+                changedGlobalMetaData, props, metaDataContexts.getMetaData().getProtocolType());
         MetaDataContexts result =
                 new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistServiceFacade.getMetaDataFacade().getStatisticsService().load(metaData)));
         switchingResource.closeStaleDataSources();
