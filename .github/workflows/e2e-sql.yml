@@ -141,7 +141,13 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.detect-and-generate-matrix.outputs.smoke-matrix) }}
     steps:
-      - uses: ./.github/workflows/resources/actions/download-source-snapshot
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: source-snapshot
+          path: /tmp/source-snapshot
+      - name: Restore Source Snapshot
+        run: tar -xzf /tmp/source-snapshot/source-snapshot.tar.gz -C "$GITHUB_WORKSPACE"
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'
@@ -197,7 +203,13 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.detect-remaining-matrix.outputs.matrix) }}
     steps:
-      - uses: ./.github/workflows/resources/actions/download-source-snapshot
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: source-snapshot
+          path: /tmp/source-snapshot
+      - name: Restore Source Snapshot
+        run: tar -xzf /tmp/source-snapshot/source-snapshot.tar.gz -C "$GITHUB_WORKSPACE"
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'

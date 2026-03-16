@@ -109,7 +109,13 @@ jobs:
           - operation: showprocesslist
             image: { type: "e2e.docker.database.opengauss.images", version: "opengauss/opengauss:3.1.0" }
     steps:
-      - uses: ./.github/workflows/resources/actions/download-source-snapshot
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: source-snapshot
+          path: /tmp/source-snapshot
+      - name: Restore Source Snapshot
+        run: tar -xzf /tmp/source-snapshot/source-snapshot.tar.gz -C "$GITHUB_WORKSPACE"
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           java-version: ${{ matrix.java-version }}
