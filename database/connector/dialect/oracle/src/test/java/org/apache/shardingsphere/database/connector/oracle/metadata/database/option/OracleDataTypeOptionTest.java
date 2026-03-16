@@ -30,15 +30,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OracleDataTypeOptionTest {
     
+    private static final int BINARY_DOUBLE = 101;
+    
     private final DialectDataTypeOption dataTypeOption = new OracleDataTypeOption();
     
     @Test
     void assertGetExtraDataTypes() {
         Map<String, Integer> extraDataTypes = dataTypeOption.getExtraDataTypes();
-        assertThat(extraDataTypes.size(), is(11));
-        assertThat(extraDataTypes.get("SMALLINT"), is(Types.SMALLINT));
+        assertThat(extraDataTypes.size(), is(13));
+        assertThat(extraDataTypes.get("SMALLINT"), is(Types.NUMERIC));
         assertThat(extraDataTypes.get("TEXT"), is(Types.LONGVARCHAR));
-        assertThat(extraDataTypes.get("BINARY_DOUBLE"), is(Types.DOUBLE));
+        assertThat(extraDataTypes.get("BINARY_DOUBLE"), is(BINARY_DOUBLE));
     }
     
     @Test

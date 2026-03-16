@@ -32,6 +32,10 @@ public final class OracleDataTypeOption implements DialectDataTypeOption {
     
     private static final Map<String, Integer> EXTRA_DATA_TYPES;
     
+    private static final int BINARY_FLOAT = 100;
+    
+    private static final int BINARY_DOUBLE = 101;
+    
     private final DialectDataTypeOption delegate = new DefaultDataTypeOption();
     
     static {
@@ -40,17 +44,19 @@ public final class OracleDataTypeOption implements DialectDataTypeOption {
     
     private static Map<String, Integer> setUpExtraDataTypes() {
         Map<String, Integer> result = new CaseInsensitiveMap<>();
-        result.put("SMALLINT", Types.SMALLINT);
-        result.put("TINYINT", Types.TINYINT);
-        result.put("INT", Types.INTEGER);
+        result.put("SMALLINT", Types.NUMERIC);
+        result.put("TINYINT", Types.NUMERIC);
+        result.put("INT", Types.NUMERIC);
         result.put("TEXT", Types.LONGVARCHAR);
         result.put("CHARACTER", Types.CHAR);
         result.put("VARCHAR2", Types.VARCHAR);
         result.put("DATETIME", Types.TIMESTAMP);
         result.put("ROWID", Types.ROWID);
-        result.put("BINARY_DOUBLE", Types.DOUBLE);
-        result.put("BINARY_FLOAT", Types.FLOAT);
+        result.put("BINARY_DOUBLE", BINARY_DOUBLE);
+        result.put("BINARY_FLOAT", BINARY_FLOAT);
         result.put("NUMBER", Types.NUMERIC);
+        result.put("UROWID", Types.ROWID);
+        result.put("OTHER", Types.OTHER);
         return result;
     }
     
