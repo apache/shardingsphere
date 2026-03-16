@@ -93,8 +93,8 @@ public final class SimpleTableSegmentBinder {
         Optional<ShardingSphereSchema> schema = schemaName.map(identifierValue -> binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(identifierValue.getValue()));
         checkTableExists(binderContext, schema.orElse(null), tableName.getValue(), segment);
         checkTableMetadata(binderContext, schema.orElse(null), schemaName.map(IdentifierValue::getValue).orElse(null), tableName.getValue());
-        tableBinderContexts.put(CaseInsensitiveString.of(segment.getAliasName().orElseGet(tableName::getValue)),
-                createSimpleTableBinderContext(segment, schema.orElse(null), databaseName, schemaName.orElse(null), binderContext));
+        createSimpleTableBinderContext(segment, schema.orElse(null), databaseName, schemaName.orElse(null), binderContext)
+                .ifPresent(context -> tableBinderContexts.put(CaseInsensitiveString.of(segment.getAliasName().orElseGet(tableName::getValue)), context));
         TableNameSegment tableNameSegment = new TableNameSegment(segment.getTableName().getStartIndex(), segment.getTableName().getStopIndex(), tableName);
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(databaseName, schemaName.orElse(null)));
         SimpleTableSegment result = new SimpleTableSegment(tableNameSegment);
@@ -239,15 +239,15 @@ public final class SimpleTableSegmentBinder {
         }
     }
     
-    private static SimpleTableSegmentBinderContext createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue databaseName,
-                                                                                  final IdentifierValue schemaName, final SQLStatementBinderContext binderContext) {
+    private static Optional<SimpleTableSegmentBinderContext> createSimpleTableBinderContext(final SimpleTableSegment segment, final ShardingSphereSchema schema, final IdentifierValue databaseName,
+                                                                                            final IdentifierValue schemaName, final SQLStatementBinderContext binderContext) {
         IdentifierValue tableName = segment.getTableName().getIdentifier();
         if (null != schema && schema.containsTable(tableName.getValue())) {
-            return createSimpleTableSegmentBinderContextWithMetaData(segment, schema, databaseName, schemaName, binderContext, tableName);
+            return Optional.of(createSimpleTableSegmentBinderContextWithMetaData(segment, schema, databaseName, schemaName, binderContext, tableName));
         }
         if (binderContext.getSqlStatement() instanceof CreateTableStatement) {
             Collection<ProjectionSegment> projectionSegments = createProjectionSegments((CreateTableStatement) binderContext.getSqlStatement(), databaseName, schemaName, tableName);
-            return new SimpleTableSegmentBinderContext(projectionSegments, TableSourceType.PHYSICAL_TABLE);
+            return Optional.of(new SimpleTableSegmentBinderContext(projectionSegments, TableSourceType.PHYSICAL_TABLE));
         }
         CaseInsensitiveString caseInsensitiveTableName = CaseInsensitiveString.of(tableName.getValue());
         if (binderContext.getExternalTableBinderContexts().containsKey(caseInsensitiveTableName)) {
@@ -255,11 +255,11 @@ public final class SimpleTableSegmentBinder {
             Collection<ProjectionSegment> subqueryProjections =
                     SubqueryTableBindUtils.createSubqueryProjections(tableSegmentBinderContext.getProjectionSegments(), tableName, binderContext.getSqlStatement().getDatabaseType(),
                             TableSourceType.TEMPORARY_TABLE);
-            return new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE);
+            return Optional.of(new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.TEMPORARY_TABLE));
         }
         SimpleTableSegmentBinderContext result = new SimpleTableSegmentBinderContext(Collections.emptyList(), TableSourceType.TEMPORARY_TABLE);
         segment.getDbLink().ifPresent(optional -> result.setContainsDBLink(true));
-        return result;
+        return Optional.of(result);
     }
     
     private static Collection<ProjectionSegment> createProjectionSegments(final CreateTableStatement sqlStatement, final IdentifierValue databaseName,
