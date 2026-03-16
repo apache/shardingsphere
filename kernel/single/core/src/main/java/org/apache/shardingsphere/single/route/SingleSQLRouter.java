@@ -29,11 +29,13 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.route.lifecycle.DecorateSQLRouter;
 import org.apache.shardingsphere.infra.route.lifecycle.EntranceSQLRouter;
+import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.route.engine.SingleRouteEngine;
 import org.apache.shardingsphere.single.rule.SingleRule;
+import org.apache.shardingsphere.single.rule.attribute.SingleDataNodeRuleAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 
 import java.util.Collection;
@@ -55,9 +57,18 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
         RouteContext routeContext = new RouteContext();
         Collection<QualifiedTable> singleTables = getSingleTables(database, rule, sqlStatementContext);
         if (singleTables.isEmpty()) {
-            return routeContext;
+            return isAllowedToRouteWithSingleLogicalDataSource(database, rule) ? createSingleLogicalDataSourceRouteContext(rule, queryContext) : routeContext;
         }
         return new SingleRouteEngine(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).route(routeContext, rule);
+    }
+    
+    private boolean isAllowedToRouteWithSingleLogicalDataSource(final ShardingSphereDatabase database, final SingleRule rule) {
+        return 1 == rule.getDataSourceNames().size() && isOnlySingleDataNodeRuleAttribute(database);
+    }
+    
+    private boolean isOnlySingleDataNodeRuleAttribute(final ShardingSphereDatabase database) {
+        Collection<DataNodeRuleAttribute> dataNodeRuleAttributes = database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class);
+        return 1 == dataNodeRuleAttributes.size() && dataNodeRuleAttributes.iterator().next() instanceof SingleDataNodeRuleAttribute;
     }
     
     @Override
@@ -77,6 +88,14 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
         RouteContext result = new RouteContext();
         Collection<String> tableNames = queryContext.getSqlStatementContext().getTablesContext().getTableNames();
         result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, actualDataSource), createTableMappers(tableNames)));
+        return result;
+    }
+    
+    private RouteContext createSingleLogicalDataSourceRouteContext(final SingleRule rule, final QueryContext queryContext) {
+        String logicDataSource = rule.getDataSourceNames().iterator().next();
+        RouteContext result = new RouteContext();
+        Collection<String> tableNames = queryContext.getSqlStatementContext().getTablesContext().getTableNames();
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(logicDataSource, logicDataSource), createTableMappers(tableNames)));
         return result;
     }
     
