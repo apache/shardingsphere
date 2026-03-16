@@ -137,7 +137,8 @@ class MySQLShardingShowCreateTableMergedResultTest {
     @Test
     void assertGetValueWithLegacyIndexName() throws SQLException {
         MySQLShardingShowCreateTableMergedResult actual = new MySQLShardingShowCreateTableMergedResult(
-                rule, mock(SQLStatementContext.class), createSchemaWithIndex(), Collections.singletonList(mockQueryResultWithIndex(IndexMetaDataUtils.getLegacyActualIndexName("foo_idx", "foo_tbl_0"))));
+                rule, mock(SQLStatementContext.class), createSchemaWithIndex(),
+                Collections.singletonList(mockQueryResultWithIndex(IndexMetaDataUtils.getLegacyActualIndexName("foo_idx", "foo_tbl_0"))));
         assertTrue(actual.next());
         assertThat(actual.getValue(2, String.class), is("CREATE TABLE `foo_tbl` (\n"
                 + "  `id` int(11) NOT NULL,\n"
@@ -174,7 +175,8 @@ class MySQLShardingShowCreateTableMergedResultTest {
     }
     
     private ShardingSphereSchema createSchemaWithIndex() {
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("foo_idx", Collections.emptyList(), false)), Collections.emptyList());
+        ShardingSphereTable table =
+                new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("foo_idx", Collections.emptyList(), false)), Collections.emptyList());
         return new ShardingSphereSchema("foo_db", mock(DatabaseType.class), Collections.singleton(table), Collections.emptyList());
     }
     
