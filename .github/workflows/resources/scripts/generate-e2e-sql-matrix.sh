@@ -123,8 +123,10 @@ if [ "$feature_sharding" = "true" ] || [ "$feature_encrypt" = "true" ] || \
    [ "$feature_distsql" = "true" ] || [ "$feature_sql_federation" = "true" ] || \
    [ "$mode_standalone" = "true" ] || [ "$mode_cluster" = "true" ] || [ "$mode_core" = "true" ] || \
    [ "$database_mysql" = "true" ] || [ "$database_postgresql" = "true" ] || \
-   [ "$adapter_proxy" = "true" ] || [ "$adapter_jdbc" = "true" ]; then
+   [ "$adapter_proxy" = "true" ] || [ "$adapter_jdbc" = "true" ] || \
+   [ "$core_infra" = "true" ] || [ "$test_framework" = "true" ] || [ "$pom_changes" = "true" ]; then
   any_relevant_change=true
+  echo "::notice::At least one relevant filter is true, will generate jobs based on dimensions and scenarios"
 fi
 
 if [ "$any_relevant_change" = "false" ]; then
@@ -133,6 +135,7 @@ if [ "$any_relevant_change" = "false" ]; then
   echo "need-proxy-image=false" >> "$GITHUB_OUTPUT"
   echo "smoke-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "full-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
+  echo "::notice::No relevant filters triggered, skipping job generation"
   exit 0
 fi
 
@@ -265,6 +268,7 @@ if [ "$FULL_JOB_COUNT" -eq 0 ]; then
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-jobs=false" >> "$GITHUB_OUTPUT"
   echo "need-proxy-image=false" >> "$GITHUB_OUTPUT"
+  echo "::notice::No jobs generated after applying all filters and rules, skipping job execution"
   exit 0
 fi
 
@@ -277,5 +281,6 @@ echo "full-matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
 echo "matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
 echo "has-jobs=true" >> "$GITHUB_OUTPUT"
 echo "need-proxy-image=$NEED_PROXY_IMAGE" >> "$GITHUB_OUTPUT"
+echo "::notice::Generated $(echo "$SMOKE_MATRIX" | jq '.include | length') smoke jobs and $(echo "$FULL_MATRIX" | jq '.include | length') full jobs. Proxy image needed: $NEED_PROXY_IMAGE"
 
 exit 0

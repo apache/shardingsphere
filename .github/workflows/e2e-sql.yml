@@ -20,21 +20,8 @@ name: E2E - SQL
 on:
   pull_request:
     branches: [ master ]
-    paths:
-      - '.github/workflows/e2e-sql.yml'
-      - '**/pom.xml'
-      - '**/src/main/**'
-      - '!examples/**'
-      - '!distribution/**'
-      - 'distribution/proxy/**'
-      - '!distribution/proxy/src/main/release-docs/**'
-      - '!kernel/data-pipeline/**'
-      - '!test/**'
-      - 'test/pom.xml'
-      - 'test/e2e/fixture/**'
-      - 'test/e2e/env/**'
-      - 'test/e2e/sql/**'
-      - '!*.md'
+    paths-ignore:
+      - '**/*.md'
   workflow_dispatch:
 
 concurrency:
