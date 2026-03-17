@@ -1252,4 +1252,16 @@
     <doris-show-database sql-case-id="show_database_by_id" database-id="10396" />
 
     <doris-show-table sql-case-id="show_table_by_id" table-id="2261121" />
+
+    <doris-show-load-warnings sql-case-id="doris_show_load_warnings_simple" />
+
+    <doris-show-load-warnings sql-case-id="doris_show_load_warnings_with_database">
+        <database name="demo" start-index="24" stop-index="27" />
+    </doris-show-load-warnings>
+
+    <doris-show-load-warnings sql-case-id="doris_show_load_warnings_with_label" condition-type="LABEL" condition-value="load_demo_20210112">
+        <database name="demo" start-index="24" stop-index="27" />
+    </doris-show-load-warnings>
+
+    <doris-show-load-warnings sql-case-id="doris_show_load_warnings_with_load_job_id" condition-type="LOAD_JOB_ID" condition-value="20001" />
 </sql-parser-test-cases>

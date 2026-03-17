@@ -1407,6 +1407,10 @@ LOAD
     : L O A D
     ;
 
+LOAD_JOB_ID
+    : L O A D UL_ J O B UL_ I D
+    ;
+
 LOCAL
     : L O C A L
     ;
@@ -2742,6 +2746,10 @@ STATS_PERSISTENT
 
 STATS_SAMPLE_PAGES
     : S T A T S UL_ S A M P L E UL_ P A G E S
+    ;
+
+STATE
+    : S T A T E
     ;
 
 STATUS

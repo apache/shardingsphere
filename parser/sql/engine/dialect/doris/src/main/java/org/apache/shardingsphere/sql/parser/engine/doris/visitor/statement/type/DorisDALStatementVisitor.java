@@ -171,10 +171,14 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RuleNam
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowBuildIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowAlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowLoadContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowLoadWarningsContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowLoadWarningsWhereConditionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowStreamLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BackupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BackupTableSpecContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelBackupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelLoadStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelLoadWhereConditionContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.BackupTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
@@ -233,6 +237,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResour
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisBackupStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCancelBackupStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCancelLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSwitchStatement;
@@ -256,6 +261,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutine
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowCreateLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowCreateRoutineLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowLoadWarningsStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowStreamLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSyncStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.RepositoryNameSegment;
@@ -1641,6 +1647,44 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         result.setGlobal(null != ctx.GLOBAL());
         if (null != ctx.databaseName()) {
             result.setDatabase((DatabaseSegment) visit(ctx.databaseName()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowLoadWarnings(final ShowLoadWarningsContext ctx) {
+        DorisShowLoadWarningsStatement result = new DorisShowLoadWarningsStatement(getDatabaseType());
+        if (null != ctx.databaseName()) {
+            result.setDatabase((DatabaseSegment) visit(ctx.databaseName()));
+        }
+        if (null != ctx.showLoadWarningsWhereCondition()) {
+            ShowLoadWarningsWhereConditionContext condCtx = ctx.showLoadWarningsWhereCondition();
+            if (null != condCtx.LOAD_JOB_ID()) {
+                result.setConditionType("LOAD_JOB_ID");
+            } else {
+                result.setConditionType("LABEL");
+            }
+            result.setConditionValue(SQLUtils.getExactlyValue(condCtx.string_().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCancelLoadStatement(final CancelLoadStatementContext ctx) {
+        DorisCancelLoadStatement result = new DorisCancelLoadStatement(getDatabaseType());
+        if (null != ctx.databaseName()) {
+            result.setDatabase((DatabaseSegment) visit(ctx.databaseName()));
+        }
+        if (null != ctx.cancelLoadWhereCondition()) {
+            CancelLoadWhereConditionContext condCtx = ctx.cancelLoadWhereCondition();
+            if (null != condCtx.STATE()) {
+                result.setConditionType("STATE");
+            } else if (null != condCtx.LIKE()) {
+                result.setConditionType("LABEL_LIKE");
+            } else {
+                result.setConditionType("LABEL");
+            }
+            result.setConditionValue(SQLUtils.getExactlyValue(condCtx.string_().getText()));
         }
         return result;
     }

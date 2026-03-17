@@ -170,6 +170,7 @@ execute
     | cancelTask
     | backup
     | cancelBackup
+    | cancelLoadStatement
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF
