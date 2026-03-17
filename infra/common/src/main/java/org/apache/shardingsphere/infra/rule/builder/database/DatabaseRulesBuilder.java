@@ -111,7 +111,7 @@ public final class DatabaseRulesBuilder {
         return ruleConfigs.stream().filter(each -> !isRuleConfigurationEmpty(each)).collect(Collectors.toList());
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     private static boolean isRuleConfigurationEmpty(final RuleConfiguration ruleConfig) {
         if (!(ruleConfig instanceof DatabaseRuleConfiguration)) {
             return false;
