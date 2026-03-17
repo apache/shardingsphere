@@ -22,52 +22,61 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefresher;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-@ExtendWith(MockitoExtension.class)
 class AlterSchemaPushDownMetaDataRefresherTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     private final AlterSchemaPushDownMetaDataRefresher refresher = (AlterSchemaPushDownMetaDataRefresher) TypedSPILoader.getService(PushDownMetaDataRefresher.class, AlterSchemaStatement.class);
     
-    @Mock
-    private MetaDataManagerPersistService metaDataManagerPersistService;
-    
     @Test
     void assertRefreshRenamesSchema() {
-        ShardingSphereDatabase database = createDatabase();
+        final SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
         AlterSchemaStatement sqlStatement = new AlterSchemaStatement(databaseType);
         sqlStatement.setSchemaName(new IdentifierValue("FOO_SCHEMA"));
         sqlStatement.setRenameSchema(new IdentifierValue("BAR_SCHEMA"));
-        refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-        verify(metaDataManagerPersistService).renameSchema(database, "foo_schema", "bar_schema");
+        refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
+        assertThat(persistService.getSourceSchemaName(), is("FOO_SCHEMA"));
+        assertThat(persistService.getRenamedSchemaName(), is("bar_schema"));
+    }
+    
+    @Test
+    void assertRefreshRenamesSchemaWithSensitiveProps() {
+        final SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
+        AlterSchemaStatement sqlStatement = new AlterSchemaStatement(databaseType);
+        sqlStatement.setSchemaName(new IdentifierValue("FOO_SCHEMA"));
+        sqlStatement.setRenameSchema(new IdentifierValue("BAR_SCHEMA"));
+        Properties props = new Properties();
+        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
+        refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(props));
+        assertThat(persistService.getSourceSchemaName(), is("FOO_SCHEMA"));
+        assertThat(persistService.getRenamedSchemaName(), is("BAR_SCHEMA"));
     }
     
     @Test
     void assertRefreshDoesNothingWithoutRename() {
-        ShardingSphereDatabase database = createDatabase();
+        final SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
         AlterSchemaStatement sqlStatement = new AlterSchemaStatement(databaseType);
         sqlStatement.setSchemaName(new IdentifierValue("FOO_SCHEMA"));
-        refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-        verifyNoInteractions(metaDataManagerPersistService);
+        refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
+        assertThat(persistService.getSourceSchemaName(), org.hamcrest.Matchers.nullValue());
+        assertThat(persistService.getRenamedSchemaName(), org.hamcrest.Matchers.nullValue());
     }
     
     private ShardingSphereDatabase createDatabase() {
-        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
+                Collections.singletonList(new ShardingSphereSchema("FOO_SCHEMA", databaseType)));
     }
 }
