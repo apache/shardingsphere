@@ -32,6 +32,9 @@ import java.util.stream.Stream;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class TypedPropertyValueTest {
     
@@ -109,22 +112,9 @@ class TypedPropertyValueTest {
     }
     
     private static TypedPropertyKey createTypedPropertyKey(final Class<?> type) {
-        return new TypedPropertyKey() {
-            
-            @Override
-            public String getKey() {
-                return "key";
-            }
-            
-            @Override
-            public String getDefaultValue() {
-                return "";
-            }
-            
-            @Override
-            public Class<?> getType() {
-                return type;
-            }
-        };
+        TypedPropertyKey result = mock(TypedPropertyKey.class);
+        when(result.getKey()).thenReturn("key");
+        doReturn(type).when(result).getType();
+        return result;
     }
 }
