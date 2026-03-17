@@ -37,6 +37,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.exp
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.generic.ParenthesesAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.owner.OwnerAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.window.WindowClauseAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dml.standard.type.SelectStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjection;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjections;
@@ -192,6 +193,12 @@ public final class ProjectionAssert {
         assertThat(assertContext.getText("Aggregation projection inner expression assertion error: "), actual.getExpression(), is(expected.getExpression()));
         assertThat(assertContext.getText("Aggregation projection alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
         assertThat(assertContext.getText("Aggregation projection separator assertion error: "), actual.getSeparator().orElse(null), is(expected.getSeparator()));
+        if (null == expected.getWindowItem()) {
+            assertFalse(actual.getWindow().isPresent(), assertContext.getText("Actual aggregation projection window item should not exist."));
+        } else {
+            assertTrue(actual.getWindow().isPresent(), assertContext.getText("Actual aggregation projection window item should exist."));
+            WindowClauseAssert.assertIs(assertContext, actual.getWindow().get(), expected.getWindowItem());
+        }
         if (actual instanceof AggregationDistinctProjectionSegment) {
             assertThat(assertContext.getText("Projection type assertion error: "), expected, isA(ExpectedAggregationDistinctProjection.class));
             assertThat(assertContext.getText("Aggregation projection distinct inner expression assertion error: "),

@@ -115,6 +115,18 @@ log_counts() {
   echo "::notice::$name count=$count"
 }
 
+any_base_change=false
+if [ "$core_infra" = "true" ] || [ "$test_framework" = "true" ] || [ "$pom_changes" = "true" ]; then
+  any_base_change=true
+  echo "::notice::Base filters triggered (core_infra=$core_infra, test_framework=$test_framework, pom_changes=$pom_changes)"
+fi
+
+# Handle workflow_dispatch: run full tests when manually triggered
+if [ "${GITHUB_EVENT_NAME:-}" = "workflow_dispatch" ]; then
+  any_base_change=true
+  echo "::notice::workflow_dispatch detected, enabling full test matrix"
+fi
+
 # Check whether any relevant dimension changed at all
 any_relevant_change=false
 if [ "$feature_sharding" = "true" ] || [ "$feature_encrypt" = "true" ] || \
@@ -123,8 +135,10 @@ if [ "$feature_sharding" = "true" ] || [ "$feature_encrypt" = "true" ] || \
    [ "$feature_distsql" = "true" ] || [ "$feature_sql_federation" = "true" ] || \
    [ "$mode_standalone" = "true" ] || [ "$mode_cluster" = "true" ] || [ "$mode_core" = "true" ] || \
    [ "$database_mysql" = "true" ] || [ "$database_postgresql" = "true" ] || \
-   [ "$adapter_proxy" = "true" ] || [ "$adapter_jdbc" = "true" ]; then
+   [ "$adapter_proxy" = "true" ] || [ "$adapter_jdbc" = "true" ] || \
+   [ "$any_base_change" = "true" ]; then
   any_relevant_change=true
+  echo "::notice::At least one relevant filter is true, will generate jobs based on dimensions and scenarios"
 fi
 
 if [ "$any_relevant_change" = "false" ]; then
@@ -133,11 +147,15 @@ if [ "$any_relevant_change" = "false" ]; then
   echo "need-proxy-image=false" >> "$GITHUB_OUTPUT"
   echo "smoke-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "full-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
+  echo "::notice::No relevant filters triggered, skipping job generation"
   exit 0
 fi
 
 # Determine adapters
-if [ "$adapter_proxy" = "true" ] && [ "$adapter_jdbc" = "false" ]; then
+if [ "$any_base_change" = "true" ]; then
+  adapters="$ALL_ADAPTERS"
+  echo "::notice::Base change detected, including all adapters"
+elif [ "$adapter_proxy" = "true" ] && [ "$adapter_jdbc" = "false" ]; then
   adapters='["proxy"]'
 elif [ "$adapter_jdbc" = "true" ] && [ "$adapter_proxy" = "false" ]; then
   adapters='["jdbc"]'
@@ -146,7 +164,10 @@ else
 fi
 
 # Determine modes
-if [ "$mode_standalone" = "true" ] && [ "$mode_cluster" = "false" ] && [ "$mode_core" = "false" ]; then
+if [ "$any_base_change" = "true" ]; then
+  modes="$ALL_MODES"
+  echo "::notice::Base change detected, including all modes"
+elif [ "$mode_standalone" = "true" ] && [ "$mode_cluster" = "false" ] && [ "$mode_core" = "false" ]; then
   modes='["Standalone"]'
 elif [ "$mode_cluster" = "true" ] && [ "$mode_standalone" = "false" ] && [ "$mode_core" = "false" ]; then
   modes='["Cluster"]'
@@ -155,7 +176,10 @@ else
 fi
 
 # Determine databases
-if [ "$database_mysql" = "true" ] && [ "$database_postgresql" = "false" ]; then
+if [ "$any_base_change" = "true" ]; then
+  databases="$ALL_DATABASES"
+  echo "::notice::Base change detected, including all databases"
+elif [ "$database_mysql" = "true" ] && [ "$database_postgresql" = "false" ]; then
   databases='["MySQL"]'
 elif [ "$database_postgresql" = "true" ] && [ "$database_mysql" = "false" ]; then
   databases='["PostgreSQL"]'
@@ -232,25 +256,31 @@ if [ "$feature_broadcast" = "true" ]; then
   add_scenario "empty_rules"
 fi
 
-echo "::notice::filters core_infra=$core_infra test_framework=$test_framework pom_changes=$pom_changes"
-echo "::notice::dimensions adapters=$adapters modes=$modes databases=$databases"
+if [ "$any_feature_triggered" = "true" ]; then
+  adapters=$ALL_ADAPTERS
+  modes=$ALL_MODES
+  databases=$ALL_DATABASES
+  echo "::notice::Feature filters triggered, including all adapters, modes, and databases"
+fi
+
+echo "::notice::any_base_change=$any_base_change, any_feature_triggered=$any_feature_triggered, dimensions adapters=$adapters modes=$modes databases=$databases"
 
 # Always generate smoke-matrix (fixed 6 scenarios), and DO NOT add the extra passthrough job
 SMOKE_MATRIX=$(build_matrix "$adapters" "$modes" "$databases" "$SMOKE_SCENARIOS" false)
 log_counts "smoke-matrix" "$SMOKE_MATRIX"
 
 # Build full-matrix scenarios
-if [ "$core_infra" = "true" ] || [ "$test_framework" = "true" ] || [ "$pom_changes" = "true" ]; then
+if [ "$any_base_change" = "true" ]; then
   full_scenarios_json="$ALL_SCENARIOS"
-  echo "::notice::full-matrix reason=full-fallback"
+  echo "::notice::full-matrix reason=base-change, use all scenarios: $full_scenarios_json"
 else
   if [ "$any_feature_triggered" = "false" ]; then
     # When no feature triggered, full-matrix is limited to smoke scenario set
     full_scenarios_json="$SMOKE_SCENARIOS"
-    echo "::notice::full-matrix reason=no-feature-triggered (use smoke scenarios)"
+    echo "::notice::full-matrix reason=no-feature-triggered, use smoke scenarios: $full_scenarios_json"
   else
     full_scenarios_json=$(printf '%s\n' "${scenarios_set[@]}" | jq -R . | jq -sc .)
-    echo "::notice::full-matrix reason=feature-triggered"
+    echo "::notice::full-matrix reason=feature-triggered, scenarios: $full_scenarios_json"
   fi
 fi
 
@@ -265,6 +295,7 @@ if [ "$FULL_JOB_COUNT" -eq 0 ]; then
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-jobs=false" >> "$GITHUB_OUTPUT"
   echo "need-proxy-image=false" >> "$GITHUB_OUTPUT"
+  echo "::notice::No jobs generated after applying all filters and rules, skipping job execution"
   exit 0
 fi
 
@@ -277,5 +308,6 @@ echo "full-matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
 echo "matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
 echo "has-jobs=true" >> "$GITHUB_OUTPUT"
 echo "need-proxy-image=$NEED_PROXY_IMAGE" >> "$GITHUB_OUTPUT"
+echo "::notice::Generated $(echo "$SMOKE_MATRIX" | jq '.include | length') smoke jobs and $(echo "$FULL_MATRIX" | jq '.include | length') full jobs. Proxy image needed: $NEED_PROXY_IMAGE"
 
 exit 0

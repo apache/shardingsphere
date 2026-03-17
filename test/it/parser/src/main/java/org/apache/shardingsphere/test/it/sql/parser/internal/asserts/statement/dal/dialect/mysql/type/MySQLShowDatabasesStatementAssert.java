@@ -24,6 +24,10 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAsse
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.show.ShowFilterAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.show.database.MySQLShowDatabasesStatementTestCase;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 /**
  * Show databases statement assert for MySQL.
  */
@@ -38,8 +42,17 @@ public final class MySQLShowDatabasesStatementAssert {
      * @param expected expected show databases statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLShowDatabasesStatement actual, final MySQLShowDatabasesStatementTestCase expected) {
+        assertCatalogName(assertContext, actual, expected);
         if (actual.getFilter().isPresent()) {
             ShowFilterAssert.assertIs(assertContext, actual.getFilter().get(), expected.getFilter());
+        }
+    }
+    
+    private static void assertCatalogName(final SQLCaseAssertContext assertContext, final MySQLShowDatabasesStatement actual, final MySQLShowDatabasesStatementTestCase expected) {
+        if (null != expected.getCatalogName()) {
+            assertThat(assertContext.getText("Catalog name does not match: "), actual.getCatalogName().orElse(null), is(expected.getCatalogName()));
+        } else {
+            assertFalse(actual.getCatalogName().isPresent(), assertContext.getText("Catalog name should not exist: "));
         }
     }
 }

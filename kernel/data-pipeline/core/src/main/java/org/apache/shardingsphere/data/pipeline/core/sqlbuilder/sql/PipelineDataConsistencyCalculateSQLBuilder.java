@@ -47,7 +47,6 @@ public final class PipelineDataConsistencyCalculateSQLBuilder {
      * @return built SQL
      */
     public Optional<String> buildCRC32SQL(final QualifiedTable qualifiedTable, final String columnName) {
-        return dialectSQLBuilder.buildCRC32SQL(
-                sqlSegmentBuilder.getQualifiedTableName(qualifiedTable), sqlSegmentBuilder.getEscapedIdentifier(columnName));
+        return dialectSQLBuilder.buildCRC32SQL(sqlSegmentBuilder.getQualifiedTableName(qualifiedTable), sqlSegmentBuilder.getEscapedIdentifier(columnName));
     }
 }

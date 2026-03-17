@@ -49,7 +49,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match.MatchAgainstExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -309,18 +312,43 @@ public final class ExpressionExtractor {
     }
     
     /**
-     * Get nested subquery compare expressions from select statement.
+     * Get nested subquery compare expressions from SQL statement.
      * Extract expressions where a subquery is connected by comparison operators (=, !=, <>, >, <, >=, <=).
      *
-     * @param selectStatement select statement
+     * @param sqlStatement SQL statement
      * @return collection of expressions containing subquery with comparison operators
      */
-    public static Collection<ExpressionSegment> getNestedSubqueryCompareExpressions(final SelectStatement selectStatement) {
+    public static Collection<ExpressionSegment> getNestedSubqueryCompareExpressions(final SQLStatement sqlStatement) {
+        if (sqlStatement instanceof SelectStatement) {
+            return getNestedSubqueryCompareExpressions((SelectStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof UpdateStatement) {
+            return getNestedSubqueryCompareExpressions((UpdateStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof DeleteStatement) {
+            return getNestedSubqueryCompareExpressions((DeleteStatement) sqlStatement);
+        }
+        return Collections.emptyList();
+    }
+    
+    private static Collection<ExpressionSegment> getNestedSubqueryCompareExpressions(final SelectStatement selectStatement) {
         Collection<ExpressionSegment> result = new LinkedList<>();
         extractSubqueryCompareExpressionsFromProjections(result, selectStatement);
         extractSubqueryCompareExpressionsFromWhere(result, selectStatement);
         extractSubqueryCompareExpressionsFromHaving(result, selectStatement);
         extractSubqueryCompareExpressionsFromJoin(result, selectStatement);
+        return result;
+    }
+    
+    private static Collection<ExpressionSegment> getNestedSubqueryCompareExpressions(final UpdateStatement updateStatement) {
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        updateStatement.getWhere().ifPresent(optional -> extractSubqueryCompareExpressionsFromExpression(result, optional.getExpr()));
+        return result;
+    }
+    
+    private static Collection<ExpressionSegment> getNestedSubqueryCompareExpressions(final DeleteStatement deleteStatement) {
+        Collection<ExpressionSegment> result = new LinkedList<>();
+        deleteStatement.getWhere().ifPresent(optional -> extractSubqueryCompareExpressionsFromExpression(result, optional.getExpr()));
         return result;
     }
     

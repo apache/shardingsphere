@@ -120,8 +120,8 @@ class DatabaseMetaDataPersistFacadeTest {
         when(GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(any(), any()))
                 .thenReturn(Collections.singleton(new ShardingSphereSchema("Foo_Added", mock(DatabaseType.class))));
         databaseMetaDataFacade.persistReloadDatabase("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
-        verify(tableMetaDataService).persist(eq("foo_db"), eq("foo_added"), anyCollection());
-        verify(tableMetaDataService).drop(eq("foo_db"), eq("foo_dropped"), anyCollection());
+        verify(tableMetaDataService).persist(eq("foo_db"), eq("Foo_Added"), anyCollection());
+        verify(tableMetaDataService).drop(eq("foo_db"), eq("Foo_Dropped"), anyCollection());
     }
     
     @Test

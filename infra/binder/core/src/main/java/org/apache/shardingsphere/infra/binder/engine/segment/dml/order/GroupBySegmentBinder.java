@@ -56,7 +56,7 @@ public final class GroupBySegmentBinder {
         for (OrderByItemSegment each : segment.getGroupByItems()) {
             boundGroupByItems.add(bind(binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts, each));
         }
-        return new GroupBySegment(segment.getStartIndex(), segment.getStopIndex(), boundGroupByItems);
+        return new GroupBySegment(segment.getStartIndex(), segment.getStopIndex(), boundGroupByItems, segment.isWithRollup());
     }
     
     private static OrderByItemSegment bind(final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,

@@ -50,14 +50,15 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
     
     @Override
     public InsertStatement bind(final InsertStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
+        WithSegment boundWith = sqlStatement.getWith().map(optional -> WithSegmentBinder.bind(optional, binderContext, outerTableBinderContexts)).orElse(null);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        WithSegment boundWith = sqlStatement.getWith().map(optional -> WithSegmentBinder.bind(optional, binderContext, binderContext.getExternalTableBinderContexts())).orElse(null);
         SimpleTableSegment boundTable = sqlStatement.getTable().map(optional -> SimpleTableSegmentBinder.bind(optional, binderContext, tableBinderContexts)).orElse(null);
         InsertColumnsSegment boundInsertColumns = sqlStatement.getInsertColumns().isPresent() && !sqlStatement.getInsertColumns().get().getColumns().isEmpty()
                 ? InsertColumnsSegmentBinder.bind(sqlStatement.getInsertColumns().get(), binderContext, tableBinderContexts)
                 : sqlStatement.getInsertColumns().orElse(null);
         SetAssignmentSegment boundSetAssignment = sqlStatement.getSetAssignment()
-                .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())).orElse(null);
+                .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         SubquerySegment boundInsertSelect = sqlStatement.getInsertSelect().map(optional -> SubquerySegmentBinder.bind(optional, binderContext, tableBinderContexts)).orElse(null);
         InsertStatement result = copy(sqlStatement, boundWith, boundTable, boundInsertColumns, boundSetAssignment, boundInsertSelect);
         if (!sqlStatement.getInsertColumns().isPresent() || sqlStatement.getInsertColumns().get().getColumns().isEmpty()) {
@@ -68,34 +69,20 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
     
     private InsertStatement copy(final InsertStatement sqlStatement, final WithSegment boundWith, final SimpleTableSegment boundTable,
                                  final InsertColumnsSegment boundInsertColumns, final SetAssignmentSegment boundSetAssignment, final SubquerySegment boundInsertSelect) {
-        InsertStatement result = InsertStatement.builder()
-                .databaseType(sqlStatement.getDatabaseType())
-                .table(boundTable)
-                .insertColumns(boundInsertColumns)
-                .insertSelect(boundInsertSelect)
-                .setAssignment(boundSetAssignment)
-                .onDuplicateKeyColumns(sqlStatement.getOnDuplicateKeyColumns().orElse(null))
-                .valueReference(sqlStatement.getValueReference().orElse(null))
-                .returning(sqlStatement.getReturning().orElse(null))
-                .output(sqlStatement.getOutput().orElse(null))
-                .with(boundWith)
-                .multiTableInsertType(sqlStatement.getMultiTableInsertType().orElse(null))
-                .multiTableInsertInto(sqlStatement.getMultiTableInsertInto().orElse(null))
-                .multiTableConditionalInto(sqlStatement.getMultiTableConditionalInto().orElse(null))
-                .where(sqlStatement.getWhere().orElse(null))
-                .exec(sqlStatement.getExec().orElse(null))
-                .withTableHint(sqlStatement.getWithTableHint().orElse(null))
-                .rowSetFunction(sqlStatement.getRowSetFunction().orElse(null))
-                .ignore(sqlStatement.isIgnore())
-                .replace(sqlStatement.isReplace())
-                .values(new LinkedList<>(sqlStatement.getValues()))
-                .build();
+        InsertStatement result = InsertStatement.builder().databaseType(sqlStatement.getDatabaseType()).table(boundTable).insertColumns(boundInsertColumns)
+                .insertSelect(boundInsertSelect).setAssignment(boundSetAssignment).onDuplicateKeyColumns(sqlStatement.getOnDuplicateKeyColumns().orElse(null))
+                .valueReference(sqlStatement.getValueReference().orElse(null)).returning(sqlStatement.getReturning().orElse(null))
+                .output(sqlStatement.getOutput().orElse(null)).with(boundWith).multiTableInsertType(sqlStatement.getMultiTableInsertType().orElse(null))
+                .multiTableInsertInto(sqlStatement.getMultiTableInsertInto().orElse(null)).multiTableConditionalInto(sqlStatement.getMultiTableConditionalInto().orElse(null))
+                .where(sqlStatement.getWhere().orElse(null)).exec(sqlStatement.getExec().orElse(null)).withTableHint(sqlStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(sqlStatement.getRowSetFunction().orElse(null)).ignore(sqlStatement.isIgnore()).replace(sqlStatement.isReplace())
+                .values(new LinkedList<>(sqlStatement.getValues())).build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }
     
     private Collection<ColumnSegment> getVisibleColumns(final Collection<ProjectionSegment> projectionSegments) {
-        return projectionSegments.stream()
-                .filter(each -> each instanceof ColumnProjectionSegment && each.isVisible()).map(each -> ((ColumnProjectionSegment) each).getColumn()).collect(Collectors.toList());
+        return projectionSegments.stream().filter(each -> each instanceof ColumnProjectionSegment
+                && each.isVisible()).map(each -> ((ColumnProjectionSegment) each).getColumn()).collect(Collectors.toList());
     }
 }

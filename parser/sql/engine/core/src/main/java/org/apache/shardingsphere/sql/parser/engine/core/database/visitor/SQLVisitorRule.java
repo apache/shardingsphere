@@ -417,7 +417,11 @@ public enum SQLVisitorRule {
     
     SHOW_DATABASES("ShowDatabases", SQLStatementType.DAL),
     
+    SHOW_DATABASE("ShowDatabase", SQLStatementType.DAL),
+    
     SHOW_TABLES("ShowTables", SQLStatementType.DAL),
+    
+    SHOW_TABLE("ShowTable", SQLStatementType.DAL),
     
     SHOW_EVENTS("ShowEvents", SQLStatementType.DAL),
     
@@ -438,6 +442,8 @@ public enum SQLVisitorRule {
     SHOW_DATA("ShowData", SQLStatementType.DAL),
     
     SHOW_DATA_TYPES("ShowDataTypes", SQLStatementType.DAL),
+    
+    SHOW_TRASH("ShowTrash", SQLStatementType.DAL),
     
     ALTER_SQL_BLOCK_RULE("AlterSqlBlockRule", SQLStatementType.DAL),
     
@@ -460,6 +466,12 @@ public enum SQLVisitorRule {
     STOP_ROUTINE_LOAD("StopRoutineLoad", SQLStatementType.DML),
     
     SHOW_CREATE_ROUTINE_LOAD("ShowCreateRoutineLoad", SQLStatementType.DAL),
+    
+    SHOW_LOAD("ShowLoad", SQLStatementType.DAL),
+    
+    SHOW_CREATE_LOAD("ShowCreateLoad", SQLStatementType.DAL),
+    
+    SHOW_STREAM_LOAD("ShowStreamLoad", SQLStatementType.DAL),
     
     SHOW_CREATE_TABLE("ShowCreateTable", SQLStatementType.DAL),
     
@@ -576,6 +588,8 @@ public enum SQLVisitorRule {
     ADMIN_SET_REPLICA_VERSION("AdminSetReplicaVersion", SQLStatementType.DAL),
     
     ADMIN_COPY_TABLET("AdminCopyTablet", SQLStatementType.DAL),
+    
+    ADMIN_CLEAN_TRASH("AdminCleanTrash", SQLStatementType.DAL),
     
     CREATE_SQL_BLOCK_RULE("CreateSqlBlockRule", SQLStatementType.DAL),
     

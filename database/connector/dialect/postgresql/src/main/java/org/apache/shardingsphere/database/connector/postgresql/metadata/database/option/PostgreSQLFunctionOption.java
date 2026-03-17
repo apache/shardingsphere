@@ -34,6 +34,7 @@ public final class PostgreSQLFunctionOption implements DialectFunctionOption {
     
     @Override
     public String getIfNullFunctionName() {
+        // TODO `COALESCE` can support more features, `IFNULL` can not full cover. It should add `COALESCE` support, and map `IFNULL` on `COALESCE` @duanzhengqiang
         return "COALESCE";
     }
     

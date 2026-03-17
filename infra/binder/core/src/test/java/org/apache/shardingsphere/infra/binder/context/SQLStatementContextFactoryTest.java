@@ -68,8 +68,7 @@ class SQLStatementContextFactoryTest {
     
     @Test
     void assertSQLStatementContextCreatedWhenSQLStatementInstance() {
-        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
-                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl")))).build();
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl")))).build();
         SQLStatementContext sqlStatementContext = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(insertStatement);
         assertThat(sqlStatementContext, isA(InsertStatementContext.class));
     }
@@ -106,7 +105,8 @@ class SQLStatementContextFactoryTest {
     @Test
     void assertNewInstanceForFetchStatement() {
         FetchStatement fetchStatement = new FetchStatement(databaseType, null, null);
-        assertThat(new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(fetchStatement), isA(CursorHeldSQLStatementContext.class));
+        SQLStatementContext actual = new SQLBindEngine(mockMetaData(), "foo_db", new HintValueContext()).bind(fetchStatement);
+        assertThat(actual, isA(CursorHeldSQLStatementContext.class));
     }
     
     private ShardingSphereMetaData mockMetaData() {

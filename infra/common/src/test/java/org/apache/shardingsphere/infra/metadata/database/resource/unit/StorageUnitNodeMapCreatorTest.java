@@ -23,85 +23,77 @@ import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.Connecti
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
-import org.mockito.Mock;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class StorageUnitNodeMapCreatorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private DataSourcePoolProperties dataSourcePoolProps;
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("createArguments")
+    void assertCreate(final String name, final boolean instanceConnectionEnabled, final boolean instanceConnectionAvailable,
+                      final boolean unrecognizedDatabaseUrl, final StorageNode expectedStorageNode) {
+        String url = "jdbc:mock://127.0.0.1/foo_ds";
+        ConnectionPropertiesParser parser = mock(ConnectionPropertiesParser.class);
+        DataSourcePoolProperties dataSourcePoolProps = createDataSourcePoolProperties();
+        try (
+                MockedStatic<DatabaseTypeFactory> mockedDatabaseTypeFactory = mockStatic(DatabaseTypeFactory.class);
+                MockedStatic<DatabaseTypedSPILoader> mockedLoader = mockStatic(DatabaseTypedSPILoader.class);
+                MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, (mock, context) -> {
+                    DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class, RETURNS_DEEP_STUBS);
+                    when(dialectDatabaseMetaData.getConnectionOption().isInstanceConnectionAvailable()).thenReturn(instanceConnectionAvailable);
+                    when(mock.getDialectDatabaseMetaData()).thenReturn(dialectDatabaseMetaData);
+                })) {
+            mockedDatabaseTypeFactory.when(() -> DatabaseTypeFactory.get(url)).thenReturn(databaseType);
+            mockedLoader.when(() -> DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType)).thenReturn(parser);
+            if (unrecognizedDatabaseUrl) {
+                when(parser.parse(url, "sa", null)).thenThrow(UnrecognizedDatabaseURLException.class);
+            } else {
+                when(parser.parse(url, "sa", null)).thenReturn(new ConnectionProperties("127.0.0.1", 3307, null, "foo_schema", new Properties()));
+            }
+            Map<String, StorageNode> actual = StorageUnitNodeMapCreator.create(Collections.singletonMap("foo_ds", dataSourcePoolProps), instanceConnectionEnabled);
+            assertThat(actual.size(), is(1));
+            assertThat(actual.get("foo_ds"), is(expectedStorageNode));
+        }
+    }
     
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private DialectDatabaseMetaData dialectDatabaseMetaData;
-    
-    @BeforeEach
-    void setUp() {
+    private DataSourcePoolProperties createDataSourcePoolProperties() {
         Map<String, Object> standardProps = new HashMap<>(2, 1F);
         standardProps.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         standardProps.put("username", "sa");
-        when(dataSourcePoolProps.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(standardProps);
+        DataSourcePoolProperties result = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(result.getConnectionPropertySynonyms().getStandardProperties()).thenReturn(standardProps);
+        return result;
     }
     
-    @Test
-    void assertNewWithIsInstanceConnectionAvailable() {
-        try (MockedStatic<DatabaseTypedSPILoader> mockedLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            when(dialectDatabaseMetaData.getConnectionOption().isInstanceConnectionAvailable()).thenReturn(true);
-            mockedLoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
-            ConnectionPropertiesParser parser = mock(ConnectionPropertiesParser.class);
-            when(parser.parse("jdbc:mock://127.0.0.1/foo_ds", "sa", null)).thenReturn(new ConnectionProperties("127.0.0.1", 3307, null, "foo_schema", new Properties()));
-            mockedLoader.when(() -> DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType)).thenReturn(parser);
-            Map<String, StorageNode> actual = StorageUnitNodeMapCreator.create(Collections.singletonMap("foo_ds", dataSourcePoolProps), true);
-            assertThat(actual.size(), is(1));
-            assertTrue(actual.containsKey("foo_ds"));
-        }
-    }
-    
-    @Test
-    void assertNewWithIsNotInstanceConnectionAvailable() {
-        try (MockedStatic<DatabaseTypedSPILoader> mockedLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockedLoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
-            ConnectionPropertiesParser parser = mock(ConnectionPropertiesParser.class);
-            when(parser.parse("jdbc:mock://127.0.0.1/foo_ds", "sa", null)).thenReturn(new ConnectionProperties("127.0.0.1", 3307, null, "foo_schema", new Properties()));
-            mockedLoader.when(() -> DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType)).thenReturn(parser);
-            Map<String, StorageNode> actual = StorageUnitNodeMapCreator.create(Collections.singletonMap("foo_ds", dataSourcePoolProps), true);
-            assertThat(actual.size(), is(1));
-            assertTrue(actual.containsKey("foo_ds"));
-        }
-    }
-    
-    @Test
-    void assertNewWithUnrecognizedDatabaseURLException() {
-        try (MockedStatic<DatabaseTypedSPILoader> mockedLoader = mockStatic(DatabaseTypedSPILoader.class)) {
-            mockedLoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
-            ConnectionPropertiesParser parser = mock(ConnectionPropertiesParser.class);
-            when(parser.parse("jdbc:mock://127.0.0.1/foo_ds", "sa", null)).thenThrow(UnrecognizedDatabaseURLException.class);
-            mockedLoader.when(() -> DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType)).thenReturn(parser);
-            Map<String, StorageNode> actual = StorageUnitNodeMapCreator.create(Collections.singletonMap("foo_ds", dataSourcePoolProps), true);
-            assertThat(actual.size(), is(1));
-            assertTrue(actual.containsKey("foo_ds"));
-        }
+    private static Stream<Arguments> createArguments() {
+        return Stream.of(
+                Arguments.of("instance connection enabled and available", true, true, false, new StorageNode("127.0.0.1", 3307, "sa")),
+                Arguments.of("instance connection enabled and unavailable", true, false, false, new StorageNode("foo_ds")),
+                Arguments.of("instance connection disabled and available", false, true, false, new StorageNode("foo_ds")),
+                Arguments.of("unrecognized database url", true, true, true, new StorageNode("foo_ds")));
     }
 }

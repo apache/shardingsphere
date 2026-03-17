@@ -539,7 +539,7 @@
         <projections start-index="16" stop-index="17" distinct-row="true">
             <column-projection name="f1" start-index="16" stop-index="17" />
         </projections>
-        <group-by>
+        <group-by with-rollup="true">
             <column-item name="f1" order-direction="ASC" start-index="36" stop-index="37" />
         </group-by>
         <order-by>
@@ -548,7 +548,11 @@
                 <expr>
                     <function start-index="64" stop-index="86" text="ANY_VALUE(GROUPING(f1))" function-name="ANY_VALUE">
                         <parameter>
-                            <function start-index="74" stop-index="85" text="GROUPING(f1)" function-name="GROUPING(f1)" />
+                            <function start-index="74" stop-index="85" text="GROUPING(f1)" function-name="GROUPING">
+                                <parameter>
+                                    <column name="f1" start-index="83" stop-index="84" />
+                                </parameter>
+                            </function>
                         </parameter>
                     </function>
                 </expr>
@@ -7034,6 +7038,12 @@
                         <parameter>
                             <column name="amount" start-index="11" stop-index="16" literal-start-index="11" literal-stop-index="16" />
                         </parameter>
+                        <parameter>
+                            <literal-expression value="1" start-index="19" stop-index="19" literal-start-index="19" literal-stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0" start-index="22" stop-index="22" literal-start-index="22" literal-stop-index="22" />
+                        </parameter>
                     </function>
                 </expr>
             </expression-projection>
@@ -10406,7 +10416,7 @@
         <from>
             <simple-table name="t" start-index="14" stop-index="14" />
         </from>
-        <group-by>
+        <group-by with-rollup="true">
             <column-item name="a" start-index="25" stop-index="25" />
             <expression-item start-index="28" stop-index="52" expression="MATCH (a) AGAINST ('abc')">
                 <expr>
@@ -11310,7 +11320,7 @@
                 <owner name="Sales" start-index="90" stop-index="94" />
             </simple-table>
         </from>
-        <group-by>
+        <group-by with-rollup="true">
             <column-item name="SalesQuota" order-direction="ASC" start-index="117" stop-index="126" />
         </group-by>
     </select>

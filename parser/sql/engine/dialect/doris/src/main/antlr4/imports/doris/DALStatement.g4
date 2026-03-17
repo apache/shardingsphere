@@ -155,7 +155,11 @@ showCreateView
     ;
 
 showDatabases
-    : SHOW (DATABASES | SCHEMAS) showFilter?
+    : SHOW (DATABASES | SCHEMAS) (FROM catalogName)? showFilter?
+    ;
+
+showDatabase
+    : SHOW DATABASE NUMBER_
     ;
 
 showEngine
@@ -267,6 +271,10 @@ showTableStatus
     : SHOW TABLE STATUS fromDatabase? showFilter?
     ;
 
+showTable
+    : SHOW TABLE NUMBER_
+    ;
+
 showTables
     : SHOW EXTENDED? FULL? TABLES fromDatabase? showFilter?
     ;
@@ -293,6 +301,10 @@ showDataTypes
 
 showData
     : SHOW DATA (FROM tableName)? orderByClause?
+    ;
+
+showTrash
+    : SHOW TRASH (ON (LP_ string_ (COMMA_ string_)* RP_ | string_))?
     ;
 
 showFile
@@ -426,6 +438,10 @@ propertyValue
     : literals | identifier
     ;
 
+adminCleanTrash
+    : ADMIN CLEAN TRASH (ON LP_ string_ (COMMA_ string_)* RP_)?
+    ;
+
 dorisAlterSystem
     : ALTER SYSTEM dorisAlterSystemAction
     ;
@@ -463,6 +479,18 @@ dropSqlBlockRule
 
 showSqlBlockRule
     : SHOW SQL_BLOCK_RULE (FOR ruleName)?
+    ;
+
+showLoad
+    : SHOW LOAD (FROM databaseName)? showWhereClause? orderByClause? limitClause?
+    ;
+
+showStreamLoad
+    : SHOW STREAM LOAD (FROM databaseName)? showWhereClause? orderByClause? limitClause?
+    ;
+
+showCreateLoad
+    : SHOW CREATE LOAD FOR identifier
     ;
 
 showRoutineLoadTask
@@ -828,8 +856,10 @@ cancelBackup
 
 show
     : showDatabases
+    | showDatabase
     | showTables
     | showTableStatus
+    | showTable
     | showBinaryLogs
     | showColumns
     | showIndex
@@ -844,6 +874,9 @@ show
     | showCreateFunction
     | showCreateProcedure
     | showCreateRoutineLoad
+    | showLoad
+    | showStreamLoad
+    | showCreateLoad
     | showCreateTrigger
     | showCreateUser
     | showCreateView
@@ -884,4 +917,5 @@ show
     | showData
     | showFile
     | showEncryptKeys
+    | showTrash
     ;

@@ -24,17 +24,24 @@ import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.Fi
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,38 +52,65 @@ class FirebirdAcceptPacketTest {
     @Mock
     private FirebirdPacketPayload payload;
     
-    @Mock
-    private ByteBuf byteBuf;
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("constructArguments")
+    void assertConstruct(final String name, final FirebirdProtocol firstProtocol, final FirebirdProtocol secondProtocol, final FirebirdArchType expectedArch, final int expectedWeight) {
+        FirebirdAcceptPacket packet = new FirebirdAcceptPacket(new LinkedList<>(Arrays.asList(firstProtocol, secondProtocol)));
+        assertThat(packet.getOpCode(), is(FirebirdCommandPacketType.ACCEPT));
+        assertThat(packet.getProtocol().getArch(), is(expectedArch));
+        assertThat(packet.getProtocol().getWeight(), is(expectedWeight));
+    }
     
     @Test
-    void assertAcceptPacket() {
-        when(byteBuf.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 1);
-        ByteBuf buf2 = mock(ByteBuf.class);
-        when(buf2.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 2);
-        List<FirebirdProtocol> list = new LinkedList<>();
-        list.add(new FirebirdProtocol(byteBuf));
-        list.add(new FirebirdProtocol(buf2));
-        FirebirdAcceptPacket packet = new FirebirdAcceptPacket(list);
-        assertThat(packet.getOpCode(), is(FirebirdCommandPacketType.ACCEPT));
-        assertThat(packet.getProtocol().getWeight(), is(2));
+    void assertSetAcceptDataPacket() {
+        FirebirdAcceptPacket packet = new FirebirdAcceptPacket(new LinkedList<>(Collections.singletonList(createProtocol(FirebirdArchType.ARCH_GENERIC, 5, 1))));
+        packet.setAcceptDataPacket(new byte[]{1, 2}, "key", FirebirdAuthenticationMethod.SRP, 7, "keys");
+        assertThat(packet.getOpCode(), is(FirebirdCommandPacketType.ACCEPT_DATA));
+        assertThat(packet.getAcceptDataPacket(), isA(FirebirdAcceptDataPacket.class));
+        assertThat(packet.getAcceptDataPacket().getPlugin(), is(FirebirdAuthenticationMethod.SRP));
+        assertThat(packet.getAcceptDataPacket().getAuthenticated(), is(7));
+        assertThat(packet.getAcceptDataPacket().getKeys(), is("keys"));
+    }
+    
+    @Test
+    void assertWriteWithoutAcceptDataPacket() {
+        FirebirdAcceptPacket packet = new FirebirdAcceptPacket(new LinkedList<>(Collections.singletonList(createProtocol(FirebirdArchType.ARCH_GENERIC, 7, 1))));
+        InOrder order = inOrder(payload);
+        packet.write((PacketPayload) payload);
+        order.verify(payload).writeInt4(FirebirdCommandPacketType.ACCEPT.getValue());
+        order.verify(payload).writeInt4(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode());
+        order.verify(payload).writeInt4(FirebirdArchType.ARCH_GENERIC.getCode());
+        order.verify(payload).writeInt4(5);
+        order.verifyNoMoreInteractions();
     }
     
     @Test
     void assertWriteWithAcceptDataPacket() {
-        when(byteBuf.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), FirebirdArchType.ARCH_GENERIC.getCode(), 0, 5, 1);
-        List<FirebirdProtocol> list = new LinkedList<>();
-        list.add(new FirebirdProtocol(byteBuf));
-        FirebirdAcceptPacket packet = new FirebirdAcceptPacket(list);
+        FirebirdAcceptPacket packet = new FirebirdAcceptPacket(new LinkedList<>(Collections.singleton(createProtocol(FirebirdArchType.ARCH_GENERIC, 0x107, 1))));
         packet.setAcceptDataPacket(new byte[0], "", FirebirdAuthenticationMethod.SRP, 0, "");
-        InOrder io = inOrder(payload);
-        packet.write(payload);
-        io.verify(payload).writeInt4(FirebirdCommandPacketType.ACCEPT_DATA.getValue());
-        io.verify(payload).writeInt4(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode());
-        io.verify(payload).writeInt4(FirebirdArchType.ARCH_GENERIC.getCode());
-        io.verify(payload).writeInt4(5);
-        io.verify(payload).writeInt4(0);
-        io.verify(payload).writeString("Srp");
-        io.verify(payload).writeInt4(0);
-        io.verify(payload).writeString("");
+        InOrder order = inOrder(payload);
+        packet.write((PacketPayload) payload);
+        order.verify(payload).writeInt4(FirebirdCommandPacketType.ACCEPT_DATA.getValue());
+        order.verify(payload).writeInt4(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode());
+        order.verify(payload).writeInt4(FirebirdArchType.ARCH_GENERIC.getCode());
+        order.verify(payload).writeInt4(0x105);
+        order.verify(payload).writeInt4(0);
+        order.verify(payload).writeString("Srp");
+        order.verify(payload).writeInt4(0);
+        order.verify(payload).writeString("");
+        order.verifyNoMoreInteractions();
+    }
+    
+    private static Stream<Arguments> constructArguments() {
+        return Stream.of(
+                Arguments.of("valid_higher_weight", createProtocol(FirebirdArchType.ARCH_GENERIC, 5, 1), createProtocol(FirebirdArchType.ARCH_GENERIC, 5, 2), FirebirdArchType.ARCH_GENERIC, 2),
+                Arguments.of("invalid_architecture", createProtocol(FirebirdArchType.ARCH_GENERIC, 5, 1), createProtocol(FirebirdArchType.ARCH_MAX, 5, 3), FirebirdArchType.ARCH_GENERIC, 1),
+                Arguments.of("lower_weight", createProtocol(FirebirdArchType.ARCH_GENERIC, 5, 2), createProtocol(FirebirdArchType.ARCH_GENERIC, 5, 1), FirebirdArchType.ARCH_GENERIC, 2));
+    }
+    
+    private static FirebirdProtocol createProtocol(final FirebirdArchType arch, final int maxType, final int weight) {
+        ByteBuf buffer = mock(ByteBuf.class);
+        when(buffer.readInt()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION11.getCode(), arch.getCode(), 0, maxType, weight);
+        return new FirebirdProtocol(buffer);
     }
 }

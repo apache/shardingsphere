@@ -70,6 +70,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Functio
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GeomCollectionFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupConcatFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupingFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HavingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HexadecimalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
@@ -233,6 +234,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Datab
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match.MatchAgainstExpression;
@@ -761,14 +763,14 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result = (SelectStatement) visit(ctx.queryExpressionParens());
         }
         SelectStatement.SelectStatementBuilder selectStatementBuilder = createSelectStatementBuilder(result);
+        if (null != ctx.withClause()) {
+            selectStatementBuilder.with((WithSegment) visit(ctx.withClause()));
+        }
         if (null != ctx.orderByClause()) {
             selectStatementBuilder.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.limitClause()) {
             selectStatementBuilder.limit((LimitSegment) visit(ctx.limitClause()));
-        }
-        if (null != ctx.withClause()) {
-            selectStatementBuilder.with((WithSegment) visit(ctx.withClause()));
         }
         return selectStatementBuilder.build();
     }
@@ -1032,6 +1034,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), separator);
         result.getParameters().addAll(getExpressions(ctx.aggregationExpression().expr()));
+        if (null != ctx.overClause()) {
+            result.setWindow((WindowItemSegment) visit(ctx.overClause()));
+        }
         return result;
     }
     
@@ -1054,6 +1059,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public final ASTNode visitSpecialFunction(final SpecialFunctionContext ctx) {
         if (null != ctx.groupConcatFunction()) {
             return visit(ctx.groupConcatFunction());
+        }
+        if (null != ctx.groupingFunction()) {
+            return visit(ctx.groupingFunction());
         }
         if (null != ctx.windowFunction()) {
             return visit(ctx.windowFunction());
@@ -1103,6 +1111,13 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         for (ExprContext each : getTargetRuleContextFromParseTree(ctx, ExprContext.class)) {
             result.getParameters().add((ExpressionSegment) visit(each));
         }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitGroupingFunction(final GroupingFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.GROUPING().getText(), getOriginalText(ctx));
+        result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;
     }
     
@@ -2137,7 +2152,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         for (OrderByItemContext each : ctx.orderByItem()) {
             items.add((OrderByItemSegment) visit(each));
         }
-        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items, null != ctx.ROLLUP());
     }
     
     @Override
