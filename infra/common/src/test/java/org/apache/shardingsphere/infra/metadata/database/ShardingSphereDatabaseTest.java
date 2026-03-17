@@ -184,7 +184,8 @@ class ShardingSphereDatabaseTest {
     void assertCheckStorageUnitsExisted() {
         DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
         when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logic_ds", Collections.singleton("actual_ds")));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), createRuleMetaData(ruleAttribute), Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), createRuleMetaData(ruleAttribute), Collections.emptyList());
         assertDoesNotThrow(() -> database.checkStorageUnitsExisted(Collections.singleton("logic_ds")));
     }
     
@@ -192,7 +193,8 @@ class ShardingSphereDatabaseTest {
     void assertCheckStorageUnitsExistedWithMissingStorageUnits() {
         DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class);
         when(ruleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logic_ds", Collections.singleton("actual_ds")));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), createRuleMetaData(ruleAttribute), Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), createRuleMetaData(ruleAttribute), Collections.emptyList());
         MissingRequiredStorageUnitsException ex = assertThrows(MissingRequiredStorageUnitsException.class, () -> database.checkStorageUnitsExisted(Collections.singleton("missing_ds")));
         assertThat(ex.getMessage(), is("Storage units 'missing_ds' do not exist in database 'foo_db'."));
     }
@@ -230,7 +232,8 @@ class ShardingSphereDatabaseTest {
     @Test
     void assertDecorateRuleConfiguration() {
         RuleConfiguration ruleConfig = mock(RuleConfiguration.class);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.singleton(mock())), Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase(
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.singleton(mock())), Collections.emptyList());
         try (MockedStatic<TypedSPILoader> mockedTypedSPILoader = mockStatic(TypedSPILoader.class)) {
             mockedTypedSPILoader.when(() -> TypedSPILoader.findService(RuleConfigurationDecorator.class, ruleConfig.getClass())).thenReturn(Optional.empty());
             RuleConfiguration actualRuleConfig = database.decorateRuleConfiguration(ruleConfig);
@@ -280,7 +283,8 @@ class ShardingSphereDatabaseTest {
         return Stream.of(
                 Arguments.of("rules and storage units exist", createResourceMetaData("ds"), new RuleMetaData(Collections.singleton(mock(ShardingSphereRule.class))), true),
                 Arguments.of("missing rules returns false", createResourceMetaData("ds"), new RuleMetaData(Collections.emptyList()), false),
-                Arguments.of("missing storage units returns false", new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.singleton(mock(ShardingSphereRule.class))), false));
+                Arguments.of("missing storage units returns false",
+                        new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.singleton(mock(ShardingSphereRule.class))), false));
     }
     
     private static Stream<Arguments> containsDataSourceArguments() {
