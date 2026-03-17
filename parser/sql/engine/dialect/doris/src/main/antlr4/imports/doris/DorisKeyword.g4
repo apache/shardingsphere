@@ -687,6 +687,10 @@ DUAL
     : D U A L
     ;
 
+DUMP
+    : D U M P
+    ;
+
 DUMPFILE
     : D U M P F I L E
     ;
@@ -2026,6 +2030,14 @@ PHASE
     : P H A S E
     ;
 
+PLAN
+    : P L A N
+    ;
+
+PLAY
+    : P L A Y
+    ;
+
 PLUGIN
     : P L U G I N
     ;
@@ -2274,6 +2286,10 @@ REPEATABLE
 
 REPLACE
     : R E P L A C E
+    ;
+
+REPLAYER
+    : R E P L A Y E R
     ;
 
 REPLICA

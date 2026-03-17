@@ -404,6 +404,7 @@ identifierKeywordsUnambiguous
     | PATH
     | PAUSE
     | PHASE
+    | PLAN
     | PLUGINS
     | PLUGIN_DIR
     | PLUGIN
@@ -442,6 +443,7 @@ identifierKeywordsUnambiguous
     | REORGANIZE
     | REPEATABLE
     | REPLACE_IF_NOT_NULL
+    | REPLAYER
     | REPLICATE_DO_DB
     | REPLICATE_DO_TABLE
     | REPLICATE_IGNORE_DB

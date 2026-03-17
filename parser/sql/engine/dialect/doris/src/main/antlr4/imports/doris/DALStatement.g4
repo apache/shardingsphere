@@ -442,6 +442,18 @@ adminCleanTrash
     : ADMIN CLEAN TRASH (ON LP_ string_ (COMMA_ string_)* RP_)?
     ;
 
+cleanAllProfile
+    : CLEAN ALL PROFILE
+    ;
+
+planReplayerDump
+    : PLAN REPLAYER DUMP select
+    ;
+
+planReplayerPlay
+    : PLAN REPLAYER PLAY DOUBLE_QUOTED_TEXT
+    ;
+
 dorisAlterSystem
     : ALTER SYSTEM dorisAlterSystemAction
     ;
