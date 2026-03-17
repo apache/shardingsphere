@@ -134,12 +134,22 @@ public final class SimpleTableSegmentBinder {
             if (null != defaultSchema && defaultSchema.containsTable(tableName)) {
                 return Optional.of(new IdentifierValue(defaultSchemaName));
             }
-            if (defaultSystemSchema.isPresent() && SystemSchemaManager.isSystemTable(databaseType.getType(), defaultSystemSchema.get(), tableName)) {
-                ShardingSphereSchema sysSchema = binderContext.getMetaData().getDatabase(binderContext.getCurrentDatabaseName()).getSchema(defaultSystemSchema.get());
-                if (null != sysSchema && sysSchema.containsTable(tableName)) {
-                    return Optional.of(new IdentifierValue(defaultSystemSchema.get()));
-                }
+
+            if (!defaultSystemSchema.isPresent()) {
+                return Optional.of(new IdentifierValue(defaultSchemaName));
             }
+
+            if (!SystemSchemaManager.isSystemTable(databaseType.getType(), defaultSystemSchema.get(), tableName)) {
+                return Optional.of(new IdentifierValue(defaultSchemaName));
+            }
+
+            ShardingSphereSchema sysSchema =
+              binderContext.getMetaData().getDatabase(binderContext.getCurrentDatabaseName()).getSchema(defaultSystemSchema.get());
+
+            if (null != sysSchema && sysSchema.containsTable(tableName)) {
+                return Optional.of(new IdentifierValue(defaultSystemSchema.get()));
+            }
+
             return Optional.of(new IdentifierValue(defaultSchemaName));
         }
         if (defaultSystemSchema.isPresent() && SystemSchemaManager.isSystemTable(databaseType.getType(), defaultSystemSchema.get(), tableName)) {
