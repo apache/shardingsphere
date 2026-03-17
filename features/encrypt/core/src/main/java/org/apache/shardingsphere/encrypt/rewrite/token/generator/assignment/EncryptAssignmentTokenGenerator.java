@@ -38,7 +38,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -74,25 +73,15 @@ public final class EncryptAssignmentTokenGenerator {
             ColumnSegment columnSegment = each.getColumns().get(0);
             Optional<EncryptTable> encryptTable = findEncryptTable(columnSegment);
             if (encryptTable.isPresent() && encryptTable.get().isEncryptColumn(columnSegment.getIdentifier().getValue())) {
-                generateSQLToken(schemaName, encryptTable.get().getTable(), encryptTable.get().getEncryptColumn(columnSegment.getIdentifier().getValue()), each, quoteCharacter).ifPresent(result::add);
-            } else if (each.getValue() instanceof ColumnSegment && isEncryptColumn((ColumnSegment) each.getValue())) {
-                throw new UnsupportedSQLOperationException(
-                        "Can not use different encryptor for " + columnSegment.getColumnBoundInfo() + " and " + ((ColumnSegment) each.getValue()).getColumnBoundInfo() + " in set clause");
+                EncryptColumn encryptColumn = encryptTable.get().getEncryptColumn(columnSegment.getIdentifier().getValue());
+                generateSQLToken(schemaName, encryptTable.get().getTable(), encryptColumn, each, quoteCharacter).ifPresent(result::add);
             }
         }
         return result;
     }
     
-    private boolean isEncryptColumn(final ColumnSegment columnSegment) {
-        ColumnSegmentBoundInfo columnBoundInfo = columnSegment.getColumnBoundInfo();
-        String originalTable = columnBoundInfo.getOriginalTable().getValue();
-        String originalColumn = columnBoundInfo.getOriginalColumn().getValue();
-        Optional<EncryptTable> encryptTable = rule.findEncryptTable(originalTable);
-        return encryptTable.isPresent() && encryptTable.get().isEncryptColumn(originalColumn);
-    }
-    
-    private Optional<EncryptAssignmentToken> generateSQLToken(final String schemaName, final String tableName, final EncryptColumn encryptColumn, final ColumnAssignmentSegment segment,
-                                                              final QuoteCharacter quoteCharacter) {
+    private Optional<EncryptAssignmentToken> generateSQLToken(final String schemaName, final String tableName, final EncryptColumn encryptColumn,
+                                                              final ColumnAssignmentSegment segment, final QuoteCharacter quoteCharacter) {
         if (segment.getValue() instanceof ParameterMarkerExpressionSegment) {
             return Optional.of(generateParameterSQLToken(encryptColumn, segment, quoteCharacter));
         }
