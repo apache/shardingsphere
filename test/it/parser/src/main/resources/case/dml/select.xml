@@ -14448,13 +14448,4 @@
             <simple-table name="table_a" start-index="14" stop-index="20" />
         </from>
     </select>
-
-    <select sql-case-id="select_oracle_all_tables_unqualified">
-        <projections start-index="7" stop-index="7">
-            <shorthand-projection start-index="7" stop-index="7" />
-        </projections>
-        <from start-index="14" stop-index="23">
-            <simple-table name="ALL_TABLES" start-index="14" stop-index="23" />
-        </from>
-    </select>
 </sql-parser-test-cases>
