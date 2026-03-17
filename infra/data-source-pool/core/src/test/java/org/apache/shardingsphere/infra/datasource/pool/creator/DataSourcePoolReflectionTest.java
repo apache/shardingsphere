@@ -204,7 +204,7 @@ class DataSourcePoolReflectionTest {
     private static Stream<Arguments> addDefaultDataSourcePoolPropertiesWithDefaultQueryProperties() {
         return Stream.of(
                 Arguments.of("missing provider keeps original properties",
-                        PropertiesBuilder.build(new Property("existing", "value")), 
+                        PropertiesBuilder.build(new Property("existing", "value")),
                         new Properties(),
                         null,
                         PropertiesBuilder.build(new Property("existing", "value"))),

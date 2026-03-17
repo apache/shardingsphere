@@ -70,7 +70,7 @@ final class DataSourcePoolReflectionFixture implements DataSource {
     
     /**
      * Get string value.
-     * 
+     *
      * @return string value
      * @throws ReflectiveOperationException reflective operation exception
      */
@@ -83,7 +83,7 @@ final class DataSourcePoolReflectionFixture implements DataSource {
     
     /**
      * Set primitive integer value.
-     * 
+     *
      * @param primitiveIntegerValue primitive integer value
      */
     public void setPrimitiveIntegerValue(final int primitiveIntegerValue) {
@@ -92,7 +92,7 @@ final class DataSourcePoolReflectionFixture implements DataSource {
     
     /**
      * Set primitive long value.
-     * 
+     *
      * @param primitiveLongValue primitive long value
      */
     public void setPrimitiveLongValue(final long primitiveLongValue) {
@@ -101,7 +101,7 @@ final class DataSourcePoolReflectionFixture implements DataSource {
     
     /**
      * Set primitive enabled value.
-     * 
+     *
      * @param primitiveEnabled primitive enabled value
      */
     public void setPrimitiveEnabled(final boolean primitiveEnabled) {
@@ -128,7 +128,7 @@ final class DataSourcePoolReflectionFixture implements DataSource {
     
     /**
      * Get ignored value.
-     * 
+     *
      * @param value value
      * @return ignored value
      */
@@ -138,7 +138,7 @@ final class DataSourcePoolReflectionFixture implements DataSource {
     
     /**
      * Set broken value.
-     * 
+     *
      * @param brokenValue broken value
      * @param ignored ignored or not
      */
