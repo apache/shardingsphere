@@ -49,6 +49,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowCreateLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowLoadWarningsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowStreamLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowCreateRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisStopRoutineLoadStatementTestCase;
@@ -126,6 +127,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterResourceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisBackupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCancelBackupStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCancelLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisSyncStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDescFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowFunctionsStatementTestCase;
@@ -593,6 +595,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "doris-show-load")
     private final List<DorisShowLoadStatementTestCase> dorisShowLoadTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-load-warnings")
+    private final List<DorisShowLoadWarningsStatementTestCase> dorisShowLoadWarningsTestCases = new LinkedList<>();
     
     @XmlElement(name = "doris-show-stream-load")
     private final List<DorisShowStreamLoadStatementTestCase> dorisShowStreamLoadTestCases = new LinkedList<>();
@@ -1355,6 +1360,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "cancel-backup")
     private final List<DorisCancelBackupStatementTestCase> cancelBackupTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "cancel-load")
+    private final List<DorisCancelLoadStatementTestCase> cancelLoadTestCases = new LinkedList<>();
     
     @XmlElement(name = "cancel-task")
     private final List<DorisCancelTaskStatementTestCase> cancelTaskTestCases = new LinkedList<>();

@@ -280,4 +280,8 @@
     <sql-case id="show_brief_create_table_with_db_doris" value="SHOW BRIEF CREATE TABLE demo.test_table" db-types="Doris" />
     <sql-case id="show_database_by_id" value="SHOW DATABASE 10396;" db-types="Doris" />
     <sql-case id="show_table_by_id" value="SHOW TABLE 2261121;" db-types="Doris" />
+    <sql-case id="doris_show_load_warnings_simple" value="SHOW LOAD WARNINGS" db-types="Doris" />
+    <sql-case id="doris_show_load_warnings_with_database" value="SHOW LOAD WARNINGS FROM demo" db-types="Doris" />
+    <sql-case id="doris_show_load_warnings_with_label" value="SHOW LOAD WARNINGS FROM demo WHERE LABEL = &quot;load_demo_20210112&quot;" db-types="Doris" />
+    <sql-case id="doris_show_load_warnings_with_load_job_id" value="SHOW LOAD WARNINGS WHERE LOAD_JOB_ID = &quot;20001&quot;" db-types="Doris" />
 </sql-cases>
