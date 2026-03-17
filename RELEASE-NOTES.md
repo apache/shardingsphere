@@ -21,6 +21,7 @@
 1. SQL Binder: Support sql bind when with temp table name is same with physical table - [#38411](https://github.com/apache/shardingsphere/pull/38411)
 1. JDBC: Support setMaxRows and getMaxRows method in jdbc when not execute SQL - [#38337](https://github.com/apache/shardingsphere/pull/38337)
 1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
+1. Metadata: Support Oracle dictionary views by adding SYS default system schema and YAML definitions - [#38388](https://github.com/apache/shardingsphere/pull/38388)
 1. JDBC: Support safe close statement manager - [#38473](https://github.com/apache/shardingsphere/pull/38473)
 
 ## Release 5.5.3

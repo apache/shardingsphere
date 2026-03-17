@@ -21,11 +21,13 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -58,6 +60,8 @@ class OracleSchemaOptionTest {
     
     @Test
     void assertGetDefaultSystemSchema() {
-        assertFalse(new OracleSchemaOption().getDefaultSystemSchema().isPresent());
+        Optional<String> actual = new OracleSchemaOption().getDefaultSystemSchema();
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("SYS"));
     }
 }
