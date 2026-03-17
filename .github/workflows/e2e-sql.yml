@@ -100,7 +100,7 @@ jobs:
             '$ARGS.named')
           bash .github/workflows/resources/scripts/generate-e2e-sql-matrix.sh "$filters"
           echo "filter-json=$filters" >> "$GITHUB_OUTPUT"
-      - name: Log Outputs
+      - name: Logs
         run: |
           echo "smoke-matrix=${{ steps.generate-matrix.outputs.smoke-matrix }}"
           echo "has-jobs=${{ steps.generate-matrix.outputs.has-jobs }}"
@@ -141,6 +141,11 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.detect-and-generate-matrix.outputs.smoke-matrix) }}
     steps:
+      - name: Logs
+        run: |
+          echo "runner.temp=${{ runner.temp }}"
+          echo "RUNNER_TEMP=$RUNNER_TEMP"
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
       - name: Download Source Snapshot
         uses: actions/download-artifact@v4
         with:
@@ -194,7 +199,7 @@ jobs:
             "$FILTER_JSON" \
             "$FULL_MATRIX" \
             "$SMOKE_MATRIX"
-      - name: Log Outputs
+      - name: Logs
         run: |
           echo "matrix=${{ steps.generate.outputs.matrix }}"
           echo "has-remaining-jobs=${{ steps.generate.outputs.has-remaining-jobs }}"

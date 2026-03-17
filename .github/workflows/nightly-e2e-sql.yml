@@ -102,6 +102,11 @@ jobs:
             mode: Standalone
             scenario: passthrough
     steps:
+      - name: Logs
+        run: |
+          echo "runner.temp=${{ runner.temp }}"
+          echo "RUNNER_TEMP=$RUNNER_TEMP"
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
       - name: Download Source Snapshot
         uses: actions/download-artifact@v4
         with:
