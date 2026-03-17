@@ -20,13 +20,22 @@ package org.apache.shardingsphere.mode.metadata.refresher.util;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
@@ -37,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Table refresh utility class.
@@ -55,6 +65,64 @@ public final class TableRefreshUtils {
         return QuoteCharacter.NONE == tableIdentifierValue.getQuoteCharacter()
                 ? new DatabaseTypeRegistry(databaseType).formatIdentifierPattern(tableIdentifierValue.getValue())
                 : tableIdentifierValue.getValue();
+    }
+    
+    /**
+     * Get actual table name.
+     *
+     * @param database database
+     * @param schemaName schema name
+     * @param tableIdentifierValue table identifier value
+     * @param props configuration properties
+     * @return actual table name
+     */
+    public static String getActualTableName(final ShardingSphereDatabase database, final String schemaName,
+                                            final IdentifierValue tableIdentifierValue, final ConfigurationProperties props) {
+        return getActualObjectName(database, schemaName, tableIdentifierValue, props, IdentifierScope.TABLE,
+                schema -> schema.getAllTables().stream().map(ShardingSphereTable::getName));
+    }
+    
+    /**
+     * Get actual table names.
+     *
+     * @param database database
+     * @param schemaName schema name
+     * @param tableIdentifierValues table identifier values
+     * @param props configuration properties
+     * @return actual table names
+     */
+    public static Collection<String> getActualTableNames(final ShardingSphereDatabase database, final String schemaName,
+                                                         final Collection<IdentifierValue> tableIdentifierValues, final ConfigurationProperties props) {
+        Collection<String> result = new LinkedList<>();
+        for (IdentifierValue each : tableIdentifierValues) {
+            String actualTableName = getActualTableName(database, schemaName, each, props);
+            if (null != actualTableName) {
+                result.add(actualTableName);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get actual view names.
+     *
+     * @param database database
+     * @param schemaName schema name
+     * @param viewIdentifierValues view identifier values
+     * @param props configuration properties
+     * @return actual view names
+     */
+    public static Collection<String> getActualViewNames(final ShardingSphereDatabase database, final String schemaName,
+                                                        final Collection<IdentifierValue> viewIdentifierValues, final ConfigurationProperties props) {
+        Collection<String> result = new LinkedList<>();
+        for (IdentifierValue each : viewIdentifierValues) {
+            String actualViewName = getActualObjectName(database, schemaName, each, props, IdentifierScope.VIEW,
+                    schema -> schema.getAllViews().stream().map(ShardingSphereView::getName));
+            if (null != actualViewName) {
+                result.add(actualViewName);
+            }
+        }
+        return result;
     }
     
     /**
@@ -117,5 +185,27 @@ public final class TableRefreshUtils {
     
     private static String joinDataNodeSegments(final String... segments) {
         return Joiner.on(".").join(segments);
+    }
+    
+    private static String getActualObjectName(final ShardingSphereDatabase database, final String schemaName,
+                                              final IdentifierValue objectIdentifierValue, final ConfigurationProperties props,
+                                              final IdentifierScope scope, final Function<ShardingSphereSchema, java.util.stream.Stream<String>> actualNameStream) {
+        if (null == objectIdentifierValue || null == objectIdentifierValue.getValue()) {
+            return null;
+        }
+        DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(database.getProtocolType(), database.getResourceMetaData(), props);
+        IdentifierCaseRule rule = identifierContext.getRule(scope);
+        String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
+        ShardingSphereSchema schema = database.getSchema(actualSchemaName);
+        if (null != schema) {
+            Optional<String> matchedName = actualNameStream.apply(schema)
+                    .filter(each -> rule.matches(each, objectIdentifierValue.getValue(), objectIdentifierValue.getQuoteCharacter())).findFirst();
+            if (matchedName.isPresent()) {
+                return matchedName.get();
+            }
+        }
+        return QuoteCharacter.NONE == objectIdentifierValue.getQuoteCharacter() && LookupMode.NORMALIZED == rule.getLookupMode(objectIdentifierValue.getQuoteCharacter())
+                ? rule.normalize(objectIdentifierValue.getValue())
+                : objectIdentifierValue.getValue();
     }
 }
