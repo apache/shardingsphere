@@ -110,6 +110,10 @@ jobs:
           - operation: showprocesslist
             image: { type: "e2e.docker.database.opengauss.images", version: "opengauss/opengauss:3.1.0" }
     steps:
+      - name: Logs
+        run: |
+          echo "runner.temp=${{ runner.temp }}"
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
       - name: Download Source Snapshot
         uses: actions/download-artifact@v4
         with:
