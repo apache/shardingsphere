@@ -70,7 +70,7 @@ public final class SchemaMetaDataPersistService {
      * @param schema to be altered schema
      */
     public void alterByRefresh(final String databaseName, final ShardingSphereSchema schema) {
-        String schemaName = schema.getName().toLowerCase();
+        String schemaName = schema.getName();
         if (schema.isEmpty()) {
             add(databaseName, schemaName);
         }
