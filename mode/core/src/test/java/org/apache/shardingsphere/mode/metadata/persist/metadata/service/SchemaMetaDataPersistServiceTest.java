@@ -59,7 +59,7 @@ class SchemaMetaDataPersistServiceTest {
     @Test
     void assertAdd() {
         persistService.add("foo_db", "foo_schema");
-        assertThat(repository.query("/metadata/foo_db/schemas/foo_schema/tables"), is(""));
+        assertThat(repository.query("/metadata/foo_db/schemas/foo_schema"), is(""));
     }
     
     @Test
@@ -72,7 +72,7 @@ class SchemaMetaDataPersistServiceTest {
     @Test
     void assertAlterByRefreshWithoutTablesAndViews() {
         persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", databaseType));
-        assertThat(repository.query("/metadata/foo_db/schemas/foo_schema/tables"), is(""));
+        assertThat(repository.query("/metadata/foo_db/schemas/foo_schema"), is(""));
         assertTrue(tableMetaDataPersistService.load("foo_db", "foo_schema").isEmpty());
     }
     
@@ -86,13 +86,13 @@ class SchemaMetaDataPersistServiceTest {
     @Test
     void assertAlterByRefreshWithViews() {
         persistService.alterByRefresh("foo_db", new ShardingSphereSchema("foo_schema", databaseType, Collections.emptyList(), Collections.singleton(new ShardingSphereView("Foo_View", "select 1"))));
-        assertFalse(repository.isExisted("/metadata/foo_db/schemas/foo_schema/tables"));
+        assertFalse(repository.isExisted("/metadata/foo_db/schemas/foo_schema"));
     }
     
     @Test
     void assertAlterByRefreshWithRawSchemaName() {
         persistService.alterByRefresh("foo_db", new ShardingSphereSchema("Foo_Schema", databaseType));
-        assertThat(repository.query("/metadata/foo_db/schemas/Foo_Schema/tables"), is(""));
+        assertThat(repository.query("/metadata/foo_db/schemas/Foo_Schema"), is(""));
     }
     
     @Test
