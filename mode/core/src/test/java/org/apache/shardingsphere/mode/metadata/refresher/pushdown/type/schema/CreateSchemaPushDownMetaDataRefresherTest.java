@@ -24,45 +24,47 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaDa
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefresher;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema.CreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-@ExtendWith(MockitoExtension.class)
 class CreateSchemaPushDownMetaDataRefresherTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
     private final CreateSchemaPushDownMetaDataRefresher refresher = (CreateSchemaPushDownMetaDataRefresher) TypedSPILoader.getService(PushDownMetaDataRefresher.class, CreateSchemaStatement.class);
     
-    @Mock
-    private MetaDataManagerPersistService metaDataManagerPersistService;
-    
     @Test
     void assertRefreshCreateSchemaWithSchemaName() {
-        ShardingSphereDatabase database = createDatabase();
+        SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
         CreateSchemaStatement sqlStatement = new CreateSchemaStatement(databaseType);
         sqlStatement.setSchemaName(new IdentifierValue("FOO_SCHEMA"));
-        refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-        verify(metaDataManagerPersistService).createSchema(database, "foo_schema");
+        refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
+        assertThat(persistService.getCreatedSchemaName(), is("foo_schema"));
+    }
+    
+    @Test
+    void assertRefreshCreateSchemaWithSensitiveProps() {
+        SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
+        CreateSchemaStatement sqlStatement = new CreateSchemaStatement(databaseType);
+        sqlStatement.setSchemaName(new IdentifierValue("FOO_SCHEMA"));
+        Properties props = new Properties();
+        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
+        refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(props));
+        assertThat(persistService.getCreatedSchemaName(), is("FOO_SCHEMA"));
     }
     
     @Test
     void assertRefreshNoSchemaOrUserDoesNothing() {
-        ShardingSphereDatabase database = createDatabase();
-        CreateSchemaStatement sqlStatement = new CreateSchemaStatement(databaseType);
-        refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-        verifyNoInteractions(metaDataManagerPersistService);
+        SchemaMetaDataManagerPersistServiceFixture persistService = new SchemaMetaDataManagerPersistServiceFixture();
+        refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, new CreateSchemaStatement(databaseType), new ConfigurationProperties(new Properties()));
+        assertThat(persistService.getCreatedSchemaName(), org.hamcrest.Matchers.nullValue());
     }
     
     private ShardingSphereDatabase createDatabase() {
