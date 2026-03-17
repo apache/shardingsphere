@@ -58,6 +58,7 @@ jobs:
         with:
           cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
           cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
+      - uses: ./.github/workflows/resources/actions/upload-source-snapshot
       - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
   
   e2e-sql:
@@ -101,7 +102,13 @@ jobs:
             mode: Standalone
             scenario: passthrough
     steps:
-      - uses: actions/checkout@v6.0.1
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: source-snapshot
+          path: /tmp/source-snapshot
+      - name: Restore Source Snapshot
+        run: tar -xzf /tmp/source-snapshot/source-snapshot.tar.gz -C "$GITHUB_WORKSPACE"
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           java-version: 21
