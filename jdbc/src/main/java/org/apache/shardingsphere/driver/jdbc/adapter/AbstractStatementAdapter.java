@@ -241,7 +241,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
             getRoutedStatements().clear();
         }
     }
-
+    
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void safeCloseRoutedStatements() {
         try {
@@ -252,7 +252,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
             log.warn("Close routed statements failed", ex);
         }
     }
-
+    
     private void safeCloseExecutor() {
         try {
             closeExecutor();
@@ -262,7 +262,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
             log.warn("Close executor failed", ex);
         }
     }
-
+    
     private void safeCloseAndUnregisterStatementManager() {
         StatementManager statementManager = getStatementManager();
         if (null == statementManager) {
@@ -283,7 +283,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
             log.warn("Close and unregister statement manager failed", ex);
         }
     }
-
+    
     private void safeCloseStatementManager(final StatementManager statementManager) {
         try {
             statementManager.close();
@@ -293,7 +293,7 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
             log.warn("Close manager failed", ex);
         }
     }
-
+    
     private void safeHandleAutoCommitAfterExecution(final ShardingSphereConnection logicalConnection) {
         try {
             handleAutoCommitAfterExecution(logicalConnection);
