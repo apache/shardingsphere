@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
@@ -60,6 +62,31 @@ class TableRefreshUtilsIdentifierTest {
     }
     
     @Test
+    void assertGetActualViewNameUsesExistingViewName() {
+        assertThat(TableRefreshUtils.getActualViewName(createDatabase(), "foo_schema", new IdentifierValue("foo_view"),
+                new ConfigurationProperties(new Properties())), is("Foo_View"));
+    }
+    
+    @Test
+    void assertGetActualIndexNameUsesExistingIndexName() {
+        assertThat(TableRefreshUtils.getActualIndexName(createDatabase(), "foo_schema", "foo_tbl", new IdentifierValue("idx_foo"),
+                new ConfigurationProperties(new Properties())), is("Idx_Foo"));
+    }
+    
+    @Test
+    void assertGetActualColumnNamesUsesExistingColumnNames() {
+        assertThat(TableRefreshUtils.getActualColumnNames(createDatabase(), "foo_schema", "foo_tbl",
+                Arrays.asList(new IdentifierValue("order_id"), new IdentifierValue("user_id")), new ConfigurationProperties(new Properties())),
+                is(Arrays.asList("Order_ID", "User_ID")));
+    }
+    
+    @Test
+    void assertFindActualTableNameByIndexUsesExistingIndexName() {
+        assertThat(TableRefreshUtils.findActualTableNameByIndex(createDatabase(), "foo_schema", new IdentifierValue("idx_foo"),
+                new ConfigurationProperties(new Properties())).get(), is("Foo_Tbl"));
+    }
+    
+    @Test
     void assertGetActualTableNameWithSensitiveProps() {
         Properties props = new Properties();
         props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
@@ -69,7 +96,11 @@ class TableRefreshUtilsIdentifierTest {
     
     private ShardingSphereDatabase createDatabase() {
         ShardingSphereSchema schema = new ShardingSphereSchema("Foo_Schema", databaseType,
-                Arrays.asList(new ShardingSphereTable("Foo_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
+                Arrays.asList(new ShardingSphereTable("Foo_Tbl",
+                        Arrays.asList(new ShardingSphereColumn("Order_ID", 0, false, false, false, true, false, true),
+                                new ShardingSphereColumn("User_ID", 0, false, false, false, true, false, true)),
+                        Collections.singletonList(new ShardingSphereIndex("Idx_Foo", Collections.singletonList("Order_ID"), false)),
+                        Collections.emptyList()),
                         new ShardingSphereTable("Bar_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())),
                 Arrays.asList(new ShardingSphereView("Foo_View", "SELECT 1"), new ShardingSphereView("Bar_View", "SELECT 1")));
         return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()),

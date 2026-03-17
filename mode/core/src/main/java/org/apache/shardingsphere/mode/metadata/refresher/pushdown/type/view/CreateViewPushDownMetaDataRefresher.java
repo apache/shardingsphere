@@ -43,23 +43,53 @@ import java.util.Optional;
  */
 public final class CreateViewPushDownMetaDataRefresher implements PushDownMetaDataRefresher<CreateViewStatement> {
     
+    private final ViewLoader viewLoader;
+    
+    public CreateViewPushDownMetaDataRefresher() {
+        viewLoader = CreateViewPushDownMetaDataRefresher::loadView;
+    }
+    
+    CreateViewPushDownMetaDataRefresher(final ViewLoader viewLoader) {
+        this.viewLoader = viewLoader;
+    }
+    
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String viewName = TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType);
+        ShardingSphereTable actualViewMetaData = viewLoader.load(database, logicDataSourceName, schemaName, viewName, props);
+        metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(actualViewMetaData));
+    }
+    
+    private static ShardingSphereTable loadView(final ShardingSphereDatabase database, final String logicDataSourceName,
+                                                final String schemaName, final String viewName, final ConfigurationProperties props) throws SQLException {
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
-        if (TableRefreshUtils.isSingleTable(viewName, database)) {
+        boolean singleTable = TableRefreshUtils.isSingleTable(viewName, database);
+        if (singleTable) {
             ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceName, schemaName, viewName));
         }
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(viewName), database.getProtocolType(), material);
         Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(viewName));
         Preconditions.checkState(actualTableMetaData.isPresent(), "Load actual view metadata '%s' failed.", viewName);
-        metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(actualTableMetaData.get()));
+        ShardingSphereTable result = actualTableMetaData.get();
+        if (singleTable && !result.getName().equals(viewName)) {
+            ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> {
+                each.remove(schemaName, viewName);
+                each.put(logicDataSourceName, schemaName, result.getName());
+            });
+        }
+        return result;
     }
     
     @Override
     public Class<CreateViewStatement> getType() {
         return CreateViewStatement.class;
+    }
+    
+    @FunctionalInterface
+    interface ViewLoader {
+        
+        ShardingSphereTable load(ShardingSphereDatabase database, String logicDataSourceName, String schemaName, String viewName, ConfigurationProperties props) throws SQLException;
     }
 }

@@ -41,27 +41,51 @@ import java.util.Map;
  */
 public final class CreateTablePushDownMetaDataRefresher implements PushDownMetaDataRefresher<CreateTableStatement> {
     
+    private final TableLoader tableLoader;
+    
+    public CreateTablePushDownMetaDataRefresher() {
+        tableLoader = CreateTablePushDownMetaDataRefresher::loadTable;
+    }
+    
+    CreateTablePushDownMetaDataRefresher(final TableLoader tableLoader) {
+        this.tableLoader = tableLoader;
+    }
+    
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = TableRefreshUtils.getTableName(sqlStatement.getTable().getTableName().getIdentifier(), databaseType);
-        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
-        if (TableRefreshUtils.isSingleTable(tableName, database)) {
-            ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceName, schemaName, tableName));
-        }
-        ShardingSphereTable loadedTable = loadTable(database, schemaName, tableName, ruleMetaData, props);
+        ShardingSphereTable loadedTable = tableLoader.load(database, logicDataSourceName, schemaName, tableName, props);
         metaDataManagerPersistService.createTable(database, schemaName, loadedTable);
     }
     
-    private ShardingSphereTable loadTable(final ShardingSphereDatabase database, final String schemaName, final String tableName,
-                                          final RuleMetaData ruleMetaData, final ConfigurationProperties props) throws SQLException {
+    private static ShardingSphereTable loadTable(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName,
+                                                 final String tableName, final ConfigurationProperties props) throws SQLException {
+        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
+        boolean singleTable = TableRefreshUtils.isSingleTable(tableName, database);
+        if (singleTable) {
+            ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceName, schemaName, tableName));
+        }
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(tableName), database.getProtocolType(), material);
-        return schemas.get(schemaName).getTable(tableName);
+        ShardingSphereTable result = schemas.get(schemaName).getTable(tableName);
+        if (singleTable && null != result && !result.getName().equals(tableName)) {
+            ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> {
+                each.remove(schemaName, tableName);
+                each.put(logicDataSourceName, schemaName, result.getName());
+            });
+        }
+        return result;
     }
     
     @Override
     public Class<CreateTableStatement> getType() {
         return CreateTableStatement.class;
+    }
+    
+    @FunctionalInterface
+    interface TableLoader {
+        
+        ShardingSphereTable load(ShardingSphereDatabase database, String logicDataSourceName, String schemaName, String tableName, ConfigurationProperties props) throws SQLException;
     }
 }

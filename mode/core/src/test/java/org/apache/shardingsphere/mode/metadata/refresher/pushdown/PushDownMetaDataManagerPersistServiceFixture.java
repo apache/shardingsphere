@@ -34,6 +34,10 @@ import java.util.Properties;
 @Getter
 public final class PushDownMetaDataManagerPersistServiceFixture implements MetaDataManagerPersistService {
     
+    private String createdTableSchemaName;
+    
+    private ShardingSphereTable createdTable;
+    
     private String alteredTableSchemaName;
     
     private Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
@@ -73,7 +77,8 @@ public final class PushDownMetaDataManagerPersistServiceFixture implements MetaD
     
     @Override
     public void createTable(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable table) {
-        throw new UnsupportedOperationException();
+        createdTableSchemaName = schemaName;
+        createdTable = table;
     }
     
     @Override
