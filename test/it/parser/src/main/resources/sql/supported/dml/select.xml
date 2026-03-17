@@ -539,4 +539,5 @@
     <sql-case id="select_group_by_match_against_with_rollup" value="SELECT 1 FROM t GROUP BY a, MATCH (a) AGAINST ('abc') WITH ROLLUP;" db-types="MySQL" />
     <sql-case id="select_for_system_time_as_of_hive" value="SELECT * FROM table_a FOR SYSTEM_TIME AS OF '2021-08-09 10:35:57';" db-types="Hive" />
     <sql-case id="select_for_system_version_as_of_hive" value="SELECT * FROM table_a FOR SYSTEM_VERSION AS OF 1234567;" db-types="Hive" />
+    <sql-case id="select_oracle_all_tables_unqualified" value="SELECT * FROM ALL_TABLES" db-types="Oracle" />
 </sql-cases>
