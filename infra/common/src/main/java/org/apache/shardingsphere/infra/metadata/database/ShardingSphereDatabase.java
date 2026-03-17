@@ -135,9 +135,6 @@ public final class ShardingSphereDatabase {
      * @return schema
      */
     private Optional<ShardingSphereSchema> findSchema(final IdentifierValue schemaName) {
-        if (null == schemaName || null == schemaName.getValue()) {
-            return Optional.empty();
-        }
         return schemaIndex.find(schemaName);
     }
     
