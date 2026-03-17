@@ -113,9 +113,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: source-snapshot
-          path: /tmp/source-snapshot
+          path: ${{ runner.temp }}/source-snapshot
       - name: Restore Source Snapshot
-        run: tar -xzf /tmp/source-snapshot/source-snapshot.tar.gz -C "$GITHUB_WORKSPACE"
+        run: |
+          find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
+          tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           java-version: ${{ matrix.java-version }}
