@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -61,7 +60,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -101,8 +99,6 @@ public abstract class SQLBinderIT {
         String defaultSchemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
         Collection<ShardingSphereTable> tables = "foo_db_1".equalsIgnoreCase(databaseName) ? mockFooDB1Tables() : mockFooDB2Tables();
         result.add(new ShardingSphereSchema(defaultSchemaName, databaseType, tables, Collections.emptyList()));
-        Map<String, ShardingSphereSchema> systemSchemas = SystemSchemaBuilder.build(databaseName, databaseType, new ConfigurationProperties(new Properties()));
-        result.addAll(systemSchemas.values());
         return result;
     }
     
