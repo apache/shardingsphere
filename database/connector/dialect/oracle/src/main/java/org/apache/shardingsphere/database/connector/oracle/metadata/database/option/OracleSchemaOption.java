@@ -52,6 +52,6 @@ public final class OracleSchemaOption implements DialectSchemaOption {
     
     @Override
     public Optional<String> getDefaultSystemSchema() {
-        return Optional.of("SYS");
+        return delegate.getDefaultSystemSchema();
     }
 }
