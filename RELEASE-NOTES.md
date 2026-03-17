@@ -12,17 +12,17 @@
 
 ### Enhancements
 
+1. Metadata: Support Oracle dictionary views by adding SYS default system schema and YAML definitions - [#38388](https://github.com/apache/shardingsphere/pull/38388)
 1. SQL Parser: Support MySQL Function statement parse - [#38182](https://github.com/apache/shardingsphere/pull/38182) [#38219](https://github.com/apache/shardingsphere/pull/38219)
-1. SQL Parser: Support parsing MySQL SELECT SQL - [#38233](https://github.com/apache/shardingsphere/pull/38233)
-1. SQL Parser: Support parsing MySQL CREATE SQL - [#38237](https://github.com/apache/shardingsphere/pull/38237)
-1. SQL Parser: Support mysql subquery table projection alias visit to SQL statement - [#38320](https://github.com/apache/shardingsphere/pull/38320)
+1. SQL Parser: Support additional MySQL SELECT index hint and MATCH ... AGAINST WITH ROLLUP syntax - [#38233](https://github.com/apache/shardingsphere/pull/38233)
+1. SQL Parser: Support MySQL CREATE EVENT and additional CREATE FUNCTION RETURN syntax - [#38237](https://github.com/apache/shardingsphere/pull/38237)
+1. SQL Parser: Support MySQL subquery table projection alias visit to SQL statement - [#38320](https://github.com/apache/shardingsphere/pull/38320)
 1. SQL Parser: Enhance select window partition by order by, lead placeholder parse - [#38392](https://github.com/apache/shardingsphere/pull/38392)
 1. SQL Binder: Support select order by index bind metadata - [#38386](https://github.com/apache/shardingsphere/pull/38386)
-1. SQL Binder: Support sql bind when with temp table name is same with physical table - [#38411](https://github.com/apache/shardingsphere/pull/38411)
+1. SQL Binder: Support SQL bind when with temp table name is same with physical table - [#38411](https://github.com/apache/shardingsphere/pull/38411)
 1. JDBC: Support setMaxRows and getMaxRows method in jdbc when not execute SQL - [#38337](https://github.com/apache/shardingsphere/pull/38337)
-1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
-1. Metadata: Support Oracle dictionary views by adding SYS default system schema and YAML definitions - [#38388](https://github.com/apache/shardingsphere/pull/38388)
 1. JDBC: Support safe close statement manager - [#38473](https://github.com/apache/shardingsphere/pull/38473)
+1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
 
 ## Release 5.5.3
 
