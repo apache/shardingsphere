@@ -21,12 +21,17 @@ description: 'Create and upload source snapshot to avoid repeated checkout'
 runs:
   using: composite
   steps:
+    - name: Logs
+      shell: bash
+      run: |
+        echo "runner.temp=${{ runner.temp }}"
+        echo "RUNNER_TEMP=$RUNNER_TEMP"
     - name: Create Source Snapshot
       shell: bash
-      run: git archive --format=tar.gz --output=/tmp/source-snapshot.tar.gz HEAD -- . ':(exclude)docs'
+      run: git archive --format=tar.gz --output="$RUNNER_TEMP/source-snapshot.tar.gz" HEAD -- . ':(exclude)docs'
     - name: Upload Source Snapshot
       uses: actions/upload-artifact@v6
       with:
         name: source-snapshot
-        path: /tmp/source-snapshot.tar.gz
+        path: ${{ runner.temp }}/source-snapshot.tar.gz
         retention-days: 3
