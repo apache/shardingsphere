@@ -144,5 +144,9 @@
                 </binary-operation-expression>
             </expr>
         </where>
+        <parameters>
+            <parameter-marker-expression parameter-index="0" start-index="61" stop-index="61" />
+            <parameter-marker-expression parameter-index="1" start-index="96" stop-index="96" />
+        </parameters>
     </update>
 </sql-parser-test-cases>
