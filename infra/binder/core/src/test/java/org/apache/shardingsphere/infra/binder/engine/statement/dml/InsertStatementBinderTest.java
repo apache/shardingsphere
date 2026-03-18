@@ -208,5 +208,4 @@ class InsertStatementBinderTest {
         when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("t_order")).thenReturn(true);
         return result;
     }
-    
 }
