@@ -17,6 +17,6 @@
   -->
 
 <databases>
-    <database>db</database>
-    <database>encrypt_shadow_db</database>
+    <database name="db" />
+    <database name="encrypt_shadow_db" />
 </databases>

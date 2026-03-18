@@ -36,6 +36,9 @@ public final class ExpectedPaginationValue extends AbstractExpectedSQLSegment {
     @XmlAttribute
     private Long value;
     
+    @XmlAttribute
+    private String expression;
+    
     @XmlAttribute(name = "parameter-index")
     private Integer parameterIndex;
 }

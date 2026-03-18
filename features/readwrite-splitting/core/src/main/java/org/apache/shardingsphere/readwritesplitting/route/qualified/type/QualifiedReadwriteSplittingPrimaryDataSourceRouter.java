@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.readwritesplitting.route.qualified.QualifiedReadwriteSplittingDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 /**
  * Qualified data source primary router for readwrite-splitting.
@@ -42,7 +42,7 @@ public final class QualifiedReadwriteSplittingPrimaryDataSourceRouter implements
     
     private boolean isWriteRouteStatement(final SQLStatementContext sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        return containsLockSegment(sqlStatement) || containsLastInsertIdProjection(sqlStatementContext) || !(sqlStatement instanceof SelectStatement);
+        return containsLockSegment(sqlStatement) || containsLastInsertIdProjection(sqlStatementContext) || !isSelectStatement(sqlStatement);
     }
     
     private boolean containsLockSegment(final SQLStatement sqlStatement) {
@@ -51,6 +51,10 @@ public final class QualifiedReadwriteSplittingPrimaryDataSourceRouter implements
     
     private boolean containsLastInsertIdProjection(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).getProjectionsContext().isContainsLastInsertIdProjection();
+    }
+    
+    private boolean isSelectStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof SelectStatement;
     }
     
     private boolean isHintWriteRouteOnly(final HintValueContext hintValueContext) {

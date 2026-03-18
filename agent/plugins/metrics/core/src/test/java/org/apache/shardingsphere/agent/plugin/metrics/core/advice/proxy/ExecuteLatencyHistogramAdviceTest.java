@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
@@ -28,13 +29,12 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 class ExecuteLatencyHistogramAdviceTest {
@@ -50,7 +50,7 @@ class ExecuteLatencyHistogramAdviceTest {
     void assertExecuteLatencyHistogramWhenQueryCommandExecutor() {
         ExecuteLatencyHistogramAdvice advice = new ExecuteLatencyHistogramAdvice();
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
-        Method method = mock(Method.class);
+        TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         Object[] args = new Object[]{null, null, mock(MySQLComQueryPacketExecutor.class)};
         advice.beforeMethod(targetObject, method, args, "FIXTURE");
         Awaitility.await().pollDelay(500L, TimeUnit.MILLISECONDS).until(() -> true);
@@ -62,11 +62,11 @@ class ExecuteLatencyHistogramAdviceTest {
     void assertExecuteLatencyHistogramWhenNotQueryCommandExecutor() {
         ExecuteLatencyHistogramAdvice advice = new ExecuteLatencyHistogramAdvice();
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
-        Method method = mock(Method.class);
+        TargetAdviceMethod method = mock(TargetAdviceMethod.class);
         Object[] args = new Object[]{null, null, mock(MySQLComQuitExecutor.class)};
         advice.beforeMethod(targetObject, method, args, "FIXTURE");
         Awaitility.await().pollDelay(20L, TimeUnit.MILLISECONDS).until(() -> true);
         advice.afterMethod(targetObject, method, args, null, "FIXTURE");
-        assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), equalTo(0D));
+        assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), is(0D));
     }
 }

@@ -19,5 +19,4 @@
 <sql-cases>
     <sql-case id="preview-sql" value="PREVIEW SELECT * FROM t_order;" db-types="ShardingSphere" />
     <sql-case id="parse-sql" value="PARSE SELECT * FROM t_order;" db-types="ShardingSphere" />
-    <sql-case id="format-sql" value="FORMAT SELECT * FROM t_order WHERE order_id=1;" db-types="ShardingSphere" />
 </sql-cases>

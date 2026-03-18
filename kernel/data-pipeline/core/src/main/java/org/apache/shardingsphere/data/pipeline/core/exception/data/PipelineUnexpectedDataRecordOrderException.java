@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.exception.data;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Pipeline unexpected data record order exception.
@@ -28,6 +28,6 @@ public final class PipelineUnexpectedDataRecordOrderException extends PipelineDa
     private static final long serialVersionUID = 6023695604738387750L;
     
     public PipelineUnexpectedDataRecordOrderException(final DataRecord beforeDataRecord, final DataRecord afterDataRecord) {
-        super(XOpenSQLState.GENERAL_ERROR, 0, "Before data record is '%s', after data record is '%s'.", beforeDataRecord, afterDataRecord);
+        super(XOpenSQLState.GENERAL_ERROR, 0, String.format("Before data record is '%s', after data record is '%s'.", beforeDataRecord, afterDataRecord));
     }
 }

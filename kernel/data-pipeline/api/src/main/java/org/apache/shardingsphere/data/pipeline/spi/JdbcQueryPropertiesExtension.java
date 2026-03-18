@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.spi;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.util.Properties;
@@ -31,7 +31,7 @@ public interface JdbcQueryPropertiesExtension extends DatabaseTypedSPI {
     /**
      * Extend query properties.
      *
-     * @param props props
+     * @param props query properties
      */
     void extendQueryProperties(Properties props);
 }

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.single.distsql.handler.provider.SingleRuleConfigurationToDistSQLConverter
+org.apache.shardingsphere.single.distsql.handler.converter.SingleRuleConfigurationToDistSQLConverter

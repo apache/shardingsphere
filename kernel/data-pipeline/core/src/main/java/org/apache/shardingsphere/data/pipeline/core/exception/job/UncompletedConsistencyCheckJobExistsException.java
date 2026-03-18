@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
 import org.apache.shardingsphere.data.pipeline.core.job.progress.ConsistencyCheckJobItemProgress;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Uncompleted consistency check job exists exception.
@@ -28,6 +28,6 @@ public final class UncompletedConsistencyCheckJobExistsException extends Pipelin
     private static final long serialVersionUID = 2854259384634892428L;
     
     public UncompletedConsistencyCheckJobExistsException(final String jobId, final ConsistencyCheckJobItemProgress progress) {
-        super(XOpenSQLState.GENERAL_ERROR, 13, "Uncompleted consistency check job '%s' exists, progress '%s'.", jobId, progress);
+        super(XOpenSQLState.GENERAL_ERROR, 13, String.format("Uncompleted consistency check job '%s' exists, progress '%s'.", jobId, progress));
     }
 }

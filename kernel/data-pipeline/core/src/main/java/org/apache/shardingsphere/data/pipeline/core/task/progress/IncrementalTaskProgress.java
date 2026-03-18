@@ -42,7 +42,7 @@ public final class IncrementalTaskProgress implements TaskProgress {
     
     /**
      * Set position.
-     * 
+     *
      * @param position position
      */
     public void setPosition(final IngestPosition position) {
@@ -51,7 +51,7 @@ public final class IncrementalTaskProgress implements TaskProgress {
     
     /**
      * Get incremental task delay.
-     * 
+     *
      * @return incremental task delay
      */
     public IncrementalTaskDelay getIncrementalTaskDelay() {
@@ -60,7 +60,7 @@ public final class IncrementalTaskProgress implements TaskProgress {
     
     /**
      * Set incremental task delay.
-     * 
+     *
      * @param incrementalTaskDelay incremental task delay
      */
     public void setIncrementalTaskDelay(final IncrementalTaskDelay incrementalTaskDelay) {

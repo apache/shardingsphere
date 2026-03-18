@@ -27,7 +27,7 @@ import java.util.Properties;
  */
 @RequiredArgsConstructor
 @Getter
-public class DataSourceSegment implements DistSQLSegment {
+public abstract class DataSourceSegment implements DistSQLSegment {
     
     private final String name;
     

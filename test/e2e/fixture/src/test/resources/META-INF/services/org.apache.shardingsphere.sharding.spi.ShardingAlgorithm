@@ -15,4 +15,4 @@
 # limitations under the License.
 #
  
-org.apache.shardingsphere.test.e2e.fixture.ITStandardShardingAlgorithmFixture
+org.apache.shardingsphere.test.e2e.fixture.E2EStandardShardingAlgorithmFixture

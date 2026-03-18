@@ -18,27 +18,30 @@
 package org.apache.shardingsphere.agent.plugin.core.recorder;
 
 import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 class MethodTimeRecorderTest {
     
     @Test
-    void assertGetElapsedTimeAndCleanWithRecorded() throws NoSuchMethodException {
+    void assertGetElapsedTimeAndCleanWithRecorded() {
         MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(AgentAdvice.class);
-        methodTimeRecorder.recordNow(Object.class.getDeclaredMethod("toString"));
+        TargetAdviceMethod method = new TargetAdviceMethod("test");
+        methodTimeRecorder.recordNow(method);
         Awaitility.await().pollDelay(5L, TimeUnit.MILLISECONDS).until(() -> true);
-        assertThat(methodTimeRecorder.getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), greaterThanOrEqualTo(5L));
+        assertThat(methodTimeRecorder.getElapsedTimeAndClean(method), greaterThanOrEqualTo(5L));
     }
     
     @Test
-    void assertGetElapsedTimeAndCleanWithoutRecorded() throws NoSuchMethodException {
-        assertThat(new MethodTimeRecorder(AgentAdvice.class).getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), is(0L));
+    void assertGetElapsedTimeAndCleanWithoutRecorded() {
+        TargetAdviceMethod method = new TargetAdviceMethod("test");
+        assertThat(new MethodTimeRecorder(AgentAdvice.class).getElapsedTimeAndClean(method), is(0L));
     }
 }

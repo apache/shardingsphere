@@ -28,7 +28,7 @@ public final class AuthenticationResultBuilder {
     
     /**
      * Create finished authentication result.
-     * 
+     *
      * @param username username
      * @param hostname hostname
      * @param database database
@@ -49,7 +49,7 @@ public final class AuthenticationResultBuilder {
     
     /**
      * Create continued authentication result.
-     * 
+     *
      * @param username username
      * @param hostname hostname
      * @param database database

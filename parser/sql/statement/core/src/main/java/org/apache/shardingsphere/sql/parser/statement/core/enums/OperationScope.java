@@ -21,13 +21,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * OperationScope enum.
+ * Operation scope.
  */
 @RequiredArgsConstructor
 @Getter
 public enum OperationScope {
     
     GLOBAL("GLOBAL"),
+    
     SESSION("SESSION");
     
     private final String scope;

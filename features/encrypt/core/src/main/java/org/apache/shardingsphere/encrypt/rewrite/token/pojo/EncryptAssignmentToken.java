@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Substitutable;
 
 /**
  * Assignment token for encrypt.
@@ -29,8 +30,11 @@ public abstract class EncryptAssignmentToken extends SQLToken implements Substit
     
     private final int stopIndex;
     
-    protected EncryptAssignmentToken(final int startIndex, final int stopIndex) {
+    private final QuoteCharacter quoteCharacter;
+    
+    protected EncryptAssignmentToken(final int startIndex, final int stopIndex, final QuoteCharacter quoteCharacter) {
         super(startIndex);
         this.stopIndex = stopIndex;
+        this.quoteCharacter = quoteCharacter;
     }
 }

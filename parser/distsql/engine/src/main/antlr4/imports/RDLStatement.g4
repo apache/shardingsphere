@@ -20,15 +20,19 @@ grammar RDLStatement;
 import BaseRule;
 
 registerStorageUnit
-    : REGISTER STORAGE UNIT ifNotExists? storageUnitDefinition (COMMA_ storageUnitDefinition)*
+    : REGISTER STORAGE UNIT ifNotExists? storageUnitsDefinition (COMMA_ checkPrivileges)?
     ;
 
 alterStorageUnit
-    : ALTER STORAGE UNIT storageUnitDefinition (COMMA_ storageUnitDefinition)*
+    : ALTER STORAGE UNIT storageUnitsDefinition (COMMA_ checkPrivileges)?
     ;
 
 unregisterStorageUnit
     : UNREGISTER STORAGE UNIT ifExists? storageUnitName (COMMA_ storageUnitName)* ignoreTables?
+    ;
+
+storageUnitsDefinition
+    : storageUnitDefinition (COMMA_ storageUnitDefinition)*
     ;
 
 storageUnitDefinition
@@ -79,4 +83,12 @@ ifExists
 
 ifNotExists
     : IF NOT EXISTS
+    ;
+
+checkPrivileges
+    : CHECK_PRIVILEGES EQ_ privilegeType (COMMA_ privilegeType)*
+    ;
+
+privilegeType
+    : IDENTIFIER_
     ;

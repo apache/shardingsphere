@@ -65,7 +65,7 @@ public final class DataSourcePoolPropertiesCreator {
         return new DataSourcePoolProperties(realDataSource.getClass().getName(), createProperties(realDataSource));
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes", "CollectionWithoutInitialCapacity"})
     private static Map<String, Object> createProperties(final DataSourceConfiguration config) {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("dataSourceClassName", config.getConnection().getDataSourceClassName());

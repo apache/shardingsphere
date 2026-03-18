@@ -18,16 +18,14 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.table.TableMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.table.TableMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -43,13 +41,9 @@ public final class SchemaMetaDataReviseEngine {
     
     private final ConfigurationProperties props;
     
-    private final DatabaseType databaseType;
-    
-    private final DataSource dataSource;
-    
     /**
      * Revise schema meta data.
-     * 
+     *
      * @param originalMetaData original schema meta data
      * @return revised schema meta data
      */
@@ -63,7 +57,7 @@ public final class SchemaMetaDataReviseEngine {
     }
     
     private <T extends ShardingSphereRule> SchemaMetaData revise(final SchemaMetaData originalMetaData, final T rule, final MetaDataReviseEntry<T> reviseEntry) {
-        TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<>(rule, databaseType, dataSource, reviseEntry);
+        TableMetaDataReviseEngine<T> tableMetaDataReviseEngine = new TableMetaDataReviseEngine<>(rule, reviseEntry);
         Optional<? extends SchemaTableAggregationReviser<T>> aggregationReviser = reviseEntry.getSchemaTableAggregationReviser(props);
         if (!aggregationReviser.isPresent()) {
             return new SchemaMetaData(originalMetaData.getName(), originalMetaData.getTables().stream().map(tableMetaDataReviseEngine::revise).collect(Collectors.toList()));

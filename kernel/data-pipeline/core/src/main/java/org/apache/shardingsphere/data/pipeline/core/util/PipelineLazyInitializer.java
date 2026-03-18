@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
-import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,20 +31,16 @@ public abstract class PipelineLazyInitializer<T> extends LazyInitializer<T> {
     private final AtomicBoolean initialized = new AtomicBoolean();
     
     @Override
-    protected final T initialize() throws ConcurrentException {
+    protected final T initialize() {
         T result = doInitialize();
         initialized.set(true);
         return result;
     }
     
-    /**
-     * Is initialized.
-     *
-     * @return initialized or not
-     */
+    @Override
     public boolean isInitialized() {
         return initialized.get();
     }
     
-    protected abstract T doInitialize() throws ConcurrentException;
+    protected abstract T doInitialize();
 }

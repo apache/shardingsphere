@@ -21,14 +21,13 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test-e2e-agent</artifactId>
-        <version>5.5.1-SNAPSHOT</version>
+        <version>5.5.4-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-e2e-agent-plugins</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>common</module>
         <module>metrics</module>
         <module>tracing</module>
         <module>logging</module>

@@ -27,10 +27,6 @@ parseSQL
     : PARSE sql
     ;
 
-formatSQL
-    : FORMAT sql
-    ;
-
 sql
     : SQLString
     ;

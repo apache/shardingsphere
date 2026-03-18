@@ -28,9 +28,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -166,6 +169,13 @@ class JDBCStreamQueryResultTest {
     }
     
     @Test
+    void assertGetValueByZonedDateTime() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getObject(1, ZonedDateTime.class)).thenReturn(ZonedDateTime.ofInstant(Instant.ofEpochSecond(1), ZoneId.systemDefault()));
+        assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, ZonedDateTime.class), is(ZonedDateTime.ofInstant(Instant.ofEpochSecond(1), ZoneId.systemDefault())));
+    }
+    
+    @Test
     void assertGetCalendarValueWithDate() throws SQLException {
         ResultSet result = getResultSet();
         Calendar calendar = Calendar.getInstance();
@@ -264,6 +274,14 @@ class JDBCStreamQueryResultTest {
         assertFalse(actual.wasNull());
         actual.next();
         assertTrue(actual.wasNull());
+    }
+    
+    @Test
+    void assertClose() throws SQLException {
+        ResultSet resultSet = getResultSet();
+        JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
+        queryResult.close();
+        verify(resultSet).close();
     }
     
     private ResultSet getResultSet() throws SQLException {

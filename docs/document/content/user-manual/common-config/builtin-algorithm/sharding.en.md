@@ -31,9 +31,10 @@ Type: HASH_MOD
 
 Attributes:
 
-| *Name*         | *DataType* | *Description*  |
-|----------------|------------|----------------|
-| sharding-count | int        | Sharding count |
+| *Name*                          | *DataType* | *Description*                                                                                                                         |
+|---------------------------------|------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| sharding-count                  | int        | Sharding count                                                                                                                        |
+| normalize-numeric-int-range (?) | boolean    | Whether to normalize `Long` and `BigInteger` values in integer range to integer semantics for consistent routing across numeric types | false |
 
 #### Volume Based Range Sharding Algorithm
 
@@ -94,20 +95,22 @@ Attributes:
 
 This algorithm actively ignores the time zone information of `datetime-pattern`. 
 This means that when `datetime-lower`, `datetime-upper` and the incoming shard key contain time zone information, time zone conversion will not occur due to time zone inconsistencies.
-When the incoming sharding key is `java.time.Instant`, there is a special case, which will carry the time zone information of the system and convert it into the string format of `datetime-pattern`, and then proceed to the next sharding.
+
+When the shard key passed in is `java.time.Instant` or `java.util.Date`, there is a special case.
+It will carry the system's time zone information and convert it into a string format of `datetime-pattern` before the next sharding.
 
 Type: INTERVAL
 
 Attributes:
 
-| *Name*                       | *DataType* | *Description*                                                                                                                                                                                                                 | *Default Value* |
-|------------------------------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
-| datetime-pattern             | String     | Timestamp pattern of sharding value, must can be transformed to Java LocalDateTime. For example: yyyy-MM-dd HH:mm:ss, yyyy-MM-dd or HH:mm:ss etc. But Gy-MM etc. related to `java.time.chrono.JapaneseDate` are not supported | -               |
-| datetime-lower               | String     | Datetime sharding lower boundary, pattern is defined `datetime-pattern`                                                                                                                                                       | -               |
-| datetime-upper (?)           | String     | Datetime sharding upper boundary, pattern is defined `datetime-pattern`                                                                                                                                                       | Now             |
-| sharding-suffix-pattern      | String     | Suffix pattern of sharding data sources or tables, must can be transformed to Java LocalDateTime, must be consistent with `datetime-interval-unit`. For example: yyyyMM                                                       | -               |
-| datetime-interval-amount (?) | int        | Interval of sharding value, after which the next shard will be entered                                                                                                                                                        | 1               |
-| datetime-interval-unit (?)   | String     | Unit of sharding value interval, must can be transformed to Java ChronoUnit's Enum value. For example: MONTHS                                                                                                                 | DAYS            |
+| *Name*                       | *DataType* | *Description*                                                                                                                                                                                                                    | *Default Value* |
+|------------------------------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| datetime-pattern             | String     | Timestamp pattern of sharding value, must can be transformed to Java LocalDateTime. For example: yyyy-MM-dd HH:mm:ss, yyyy-MM-dd or HH:mm:ss etc. But GGGGy-MM etc. related to `java.time.chrono.JapaneseDate` are not supported | -               |
+| datetime-lower               | String     | Datetime sharding lower boundary, pattern is defined `datetime-pattern`                                                                                                                                                          | -               |
+| datetime-upper (?)           | String     | Datetime sharding upper boundary, pattern is defined `datetime-pattern`                                                                                                                                                          | Now             |
+| sharding-suffix-pattern      | String     | Suffix pattern of sharding data sources or tables, must can be transformed to Java LocalDateTime, must be consistent with `datetime-interval-unit`. For example: yyyyMM                                                          | -               |
+| datetime-interval-amount (?) | int        | Interval of sharding value, after which the next shard will be entered                                                                                                                                                           | 1               |
+| datetime-interval-unit (?)   | String     | Unit of sharding value interval, must can be transformed to Java ChronoUnit's Enum value. For example: MONTHS                                                                                                                    | DAYS            |
 
 ### Complex Sharding Algorithm
 
@@ -119,7 +122,7 @@ Type: COMPLEX_INLINE
 
 | *Name*                                     | *DataType* | *Description*                                                                                            | *Default Value* |
 |--------------------------------------------|------------|----------------------------------------------------------------------------------------------------------|-----------------|
-| sharding-columns (?)                       | String     | sharing column names                                                                                     | -               |
+| sharding-columns (?)                       | String     | sharding column names                                                                                    | -               |
 | algorithm-expression                       | String     | Inline expression sharding algorithm                                                                     | -               |
 | allow-range-query-with-inline-sharding (?) | boolean    | Whether range query is allowed. Note: range query will ignore sharding strategy and conduct full routing | false           |
 

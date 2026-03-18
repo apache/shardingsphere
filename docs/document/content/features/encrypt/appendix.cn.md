@@ -9,6 +9,8 @@ weight = 3
 - 加密字段无法支持比较操作，如：大于、小于、ORDER BY、BETWEEN 等；
 - 加密字段无法支持计算操作，如：AVG、SUM 以及计算表达式；
 - 不支持子查询中包含加密字段，并且外层投影使用星号的 SQL；
+- 不支持 WITH 语句中包含加密列；
+- 不支持 INSERT SELECT 语句中包含加密列；
 - 不支持 UNION、INTERSECT、EXCEPT 等集合运算语句中包含加密列。
 
 其他：

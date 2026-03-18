@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.datasource.fixture;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+
 import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Array;
@@ -48,9 +50,7 @@ public final class CallTimeRecordDataSource implements DataSource, AutoCloseable
     
     @Override
     public Connection getConnection() throws SQLException {
-        if (5 <= count.get()) {
-            throw new SQLException("Data source is not enough");
-        }
+        ShardingSpherePreconditions.checkState(count.get() < 5, () -> new SQLException("Data source is not enough"));
         count.getAndIncrement();
         return new CallTimeRecordConnection();
     }
@@ -97,7 +97,7 @@ public final class CallTimeRecordDataSource implements DataSource, AutoCloseable
     public void close() {
     }
     
-    private final class CallTimeRecordConnection implements Connection {
+    private class CallTimeRecordConnection implements Connection {
         
         @Override
         public Statement createStatement() {
@@ -224,7 +224,7 @@ public final class CallTimeRecordDataSource implements DataSource, AutoCloseable
         
         @Override
         public int getTransactionIsolation() {
-            return Connection.TRANSACTION_NONE;
+            return TRANSACTION_NONE;
         }
         
         @Override

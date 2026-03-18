@@ -16,9 +16,9 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case service-name="shardingsphere" span-name="/ShardingSphere/rootInvoke/">
-        <tag-assertion key="component" value="ShardingSphere"/>
-        <tag-assertion key="span.kind" value="client"/>
+        <tag key="component" value="ShardingSphere" />
+        <tag key="span.kind" value="client" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

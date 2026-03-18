@@ -19,14 +19,15 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CreateIndexStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.RouteUnitAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Substitutable;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Map;
@@ -44,7 +45,7 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     
     private final SQLStatementContext sqlStatementContext;
     
-    private final ShardingRule shardingRule;
+    private final ShardingRule rule;
     
     private final ShardingSphereSchema schema;
     
@@ -54,7 +55,7 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
         this.stopIndex = stopIndex;
         this.identifier = identifier;
         this.sqlStatementContext = sqlStatementContext;
-        this.shardingRule = shardingRule;
+        rule = shardingRule;
         this.schema = schema;
     }
     
@@ -65,23 +66,23 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
     }
     
     private boolean isGeneratedIndex() {
-        return sqlStatementContext instanceof CreateIndexStatementContext && ((CreateIndexStatementContext) sqlStatementContext).isGeneratedIndex();
+        return sqlStatementContext.getSqlStatement() instanceof CreateIndexStatement && null == ((CreateIndexStatement) sqlStatementContext.getSqlStatement()).getIndex();
     }
     
     private String getIndexValue(final RouteUnit routeUnit) {
         Optional<String> logicTableName = findLogicTableNameFromMetaData(identifier.getValue());
-        if (logicTableName.isPresent() && !shardingRule.isShardingTable(logicTableName.get())) {
+        if (logicTableName.isPresent() && !rule.isShardingTable(logicTableName.get())) {
             return identifier.getValue();
         }
-        Map<String, String> logicAndActualTables = TokenUtils.getLogicAndActualTableMap(routeUnit, sqlStatementContext, shardingRule);
+        Map<String, String> logicAndActualTables = ShardingTokenUtils.getLogicAndActualTableMap(routeUnit, sqlStatementContext, rule);
         String actualTableName = logicTableName.map(logicAndActualTables::get).orElseGet(() -> logicAndActualTables.isEmpty() ? null : logicAndActualTables.values().iterator().next());
         return IndexMetaDataUtils.getActualIndexName(identifier.getValue(), actualTableName);
     }
     
     private Optional<String> findLogicTableNameFromMetaData(final String logicIndexName) {
-        for (String each : schema.getAllTableNames()) {
-            if (schema.getTable(each).containsIndex(logicIndexName)) {
-                return Optional.of(each);
+        for (ShardingSphereTable each : schema.getAllTables()) {
+            if (each.containsIndex(logicIndexName)) {
+                return Optional.of(each.getName());
             }
         }
         return Optional.empty();

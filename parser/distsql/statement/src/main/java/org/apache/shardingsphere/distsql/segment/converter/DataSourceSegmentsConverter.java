@@ -19,10 +19,10 @@ package org.apache.shardingsphere.distsql.segment.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.segment.URLBasedDataSourceSegment;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 
 import java.util.Collection;
@@ -50,7 +50,7 @@ public final class DataSourceSegmentsConverter {
         return result;
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes", "CollectionWithoutInitialCapacity"})
     private static Map<String, Object> createProperties(final DatabaseType databaseType, final DataSourceSegment segment) {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("jdbcUrl", getURL(databaseType, segment));

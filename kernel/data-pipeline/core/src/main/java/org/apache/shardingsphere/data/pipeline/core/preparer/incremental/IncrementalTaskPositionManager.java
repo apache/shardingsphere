@@ -21,14 +21,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.type.StandardPipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
+import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIncrementalPositionManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.JobItemIncrementalTasksProgress;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIngestPositionManager;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
@@ -44,11 +44,11 @@ public final class IncrementalTaskPositionManager {
     
     private final DatabaseType databaseType;
     
-    private final DialectIngestPositionManager positionInitializer;
+    private final DialectIncrementalPositionManager dialectPositionManager;
     
     public IncrementalTaskPositionManager(final DatabaseType databaseType) {
         this.databaseType = databaseType;
-        positionInitializer = DatabaseTypedSPILoader.getService(DialectIngestPositionManager.class, databaseType);
+        dialectPositionManager = DatabaseTypedSPILoader.getService(DialectIncrementalPositionManager.class, databaseType);
     }
     
     /**
@@ -68,7 +68,7 @@ public final class IncrementalTaskPositionManager {
                 return position.get();
             }
         }
-        return positionInitializer.init(dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig()), dumperContext.getJobId());
+        return dialectPositionManager.init(dataSourceManager.getDataSource(dumperContext.getCommonContext().getDataSourceConfig()), dumperContext.getJobId());
     }
     
     /**
@@ -82,28 +82,24 @@ public final class IncrementalTaskPositionManager {
         final long startTimeMillis = System.currentTimeMillis();
         log.info("Cleanup position, database type: {}, pipeline data source type: {}", databaseType.getType(), pipelineDataSourceConfig.getType());
         if (pipelineDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
-            destroyPosition(jobId, (ShardingSpherePipelineDataSourceConfiguration) pipelineDataSourceConfig, positionInitializer);
+            destroyPosition(jobId, (ShardingSpherePipelineDataSourceConfiguration) pipelineDataSourceConfig);
         } else if (pipelineDataSourceConfig instanceof StandardPipelineDataSourceConfiguration) {
-            destroyPosition(jobId, (StandardPipelineDataSourceConfiguration) pipelineDataSourceConfig, positionInitializer);
+            destroyPosition(jobId, (StandardPipelineDataSourceConfiguration) pipelineDataSourceConfig);
         }
-        log.info("destroyPosition cost {} ms", System.currentTimeMillis() - startTimeMillis);
+        log.info("Destroy position cost {} ms.", System.currentTimeMillis() - startTimeMillis);
     }
     
-    private void destroyPosition(final String jobId,
-                                 final ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig, final DialectIngestPositionManager positionInitializer) throws SQLException {
+    private void destroyPosition(final String jobId, final ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
         for (DataSourcePoolProperties each : new YamlDataSourceConfigurationSwapper().getDataSourcePoolPropertiesMap(pipelineDataSourceConfig.getRootConfig()).values()) {
-            try (PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(each), databaseType)) {
-                positionInitializer.destroy(dataSource, jobId);
+            try (PipelineDataSource dataSource = new PipelineDataSource(DataSourcePoolCreator.create(each), databaseType)) {
+                dialectPositionManager.destroy(dataSource, jobId);
             }
         }
     }
     
-    private void destroyPosition(final String jobId, final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig,
-                                 final DialectIngestPositionManager positionInitializer) throws SQLException {
-        try (
-                PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(
-                        DataSourcePoolCreator.create((DataSourcePoolProperties) pipelineDataSourceConfig.getDataSourceConfiguration()), databaseType)) {
-            positionInitializer.destroy(dataSource, jobId);
+    private void destroyPosition(final String jobId, final StandardPipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
+        try (PipelineDataSource dataSource = new PipelineDataSource(DataSourcePoolCreator.create((DataSourcePoolProperties) pipelineDataSourceConfig.getDataSourceConfiguration()), databaseType)) {
+            dialectPositionManager.destroy(dataSource, jobId);
         }
     }
 }

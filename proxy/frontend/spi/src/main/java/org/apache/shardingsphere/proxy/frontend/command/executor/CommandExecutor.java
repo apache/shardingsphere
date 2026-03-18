@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.command.executor;
 
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 
 import java.sql.SQLException;
 import java.util.Collection;

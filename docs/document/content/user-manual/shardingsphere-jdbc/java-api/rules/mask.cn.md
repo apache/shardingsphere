@@ -44,7 +44,7 @@ weight = 6
 
 ### 加解密算法配置
 
-类名称：org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration
+类名称：org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration
 
 可配置属性：
 

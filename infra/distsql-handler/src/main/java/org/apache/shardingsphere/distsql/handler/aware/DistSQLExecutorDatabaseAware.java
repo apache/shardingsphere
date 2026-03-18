@@ -26,7 +26,7 @@ public interface DistSQLExecutorDatabaseAware {
     
     /**
      * Set database.
-     * 
+     *
      * @param database database
      */
     void setDatabase(ShardingSphereDatabase database);

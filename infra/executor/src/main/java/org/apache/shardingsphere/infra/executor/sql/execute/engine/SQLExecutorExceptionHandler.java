@@ -44,7 +44,7 @@ public final class SQLExecutorExceptionHandler {
     
     /**
      * Get throw exception if error occur or not.
-     * 
+     *
      * @return throw exception if error occur or not
      */
     public static boolean isExceptionThrown() {
@@ -53,7 +53,7 @@ public final class SQLExecutorExceptionHandler {
     
     /**
      * Handle exception. 
-     * 
+     *
      * @param exception to be handled exception
      * @throws SQLException SQL exception
      */

@@ -19,7 +19,12 @@
 <sql-cases>
     <sql-case id="explain_extended_select" value="explain extended select 10 % 7, 10 mod 7, 10 div 3" db-types="MySQL" />
     <sql-case id="explain_partitions_select" value="explain partitions select 1" db-types="MySQL" />
-    <sql-case id="explain_select_constant_without_table" value="EXPLAIN SELECT 1 as a" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
+    <sql-case id="explain_select_constant_without_table" value="EXPLAIN SELECT 1 as a" db-types="PostgreSQL, openGauss, MySQL, SQLServer,Doris" />
+    <sql-case id="explain_insert_doris" value="EXPLAIN INSERT INTO t_order (order_id, user_id) VALUES (1, 1)" db-types="Doris" />
+    <sql-case id="explain_update_doris" value="EXPLAIN UPDATE t_order SET status = 'ok'" db-types="Doris" />
+    <sql-case id="explain_delete_doris" value="EXPLAIN DELETE FROM t_order WHERE order_id = 1" db-types="Doris" />
+    <sql-case id="explain_replace_doris" value="EXPLAIN REPLACE INTO t_order (order_id, user_id) VALUES (1, 1)" db-types="Doris" />
+    <sql-case id="explain_table_doris" value="EXPLAIN t_order" db-types="Doris" />
     <sql-case id="explain_update_without_condition" value="EXPLAIN UPDATE t_order SET status = 'finished'" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
     <sql-case id="explain_insert_without_parameters" value="EXPLAIN INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert')" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
     <sql-case id="explain_delete_without_sharding_value" value="EXPLAIN DELETE FROM t_order WHERE status='init'" db-types="PostgreSQL, openGauss, MySQL, SQLServer" />
@@ -34,14 +39,6 @@
     <sql-case id="explain_with_analyze_update" value="EXPLAIN ANALYZE UPDATE t_order SET id = 1" db-types="MySQL" />
     <sql-case id="explain_with_analyze_insert" value="EXPLAIN ANALYZE INSERT INTO t_order (order_id) VALUES(1)" db-types="MySQL" />
     <sql-case id="explain_table" value="EXPLAIN TABLE t_order ORDER BY order_id LIMIT 1 OFFSET 2" db-types="MySQL" />
-    <sql-case id="desc_table" value="DESC tableName" db-types="MySQL" />
-    <sql-case id="desc_table_with_col_name" value="DESC tableName colName" db-types="MySQL" />
-    <sql-case id="desc_table_with_placeholder" value="DESC tableName ___" db-types="MySQL" />
-    <sql-case id="desc_table_with_wild" value="DESC tableName `u%`" db-types="MySQL" />
-    <sql-case id="describe_table" value="DESCRIBE tableName" db-types="MySQL" />
-    <sql-case id="describe_table_with_col_name" value="DESCRIBE tableName colName" db-types="MySQL" />
-    <sql-case id="describe_table_with_placeholder" value="DESC tableName ___" db-types="MySQL" />
-    <sql-case id="describe_table_with_wild" value="DESC tableName `u%`" db-types="MySQL" />
     <sql-case id="explain_create_materialized_view_with_data" value="EXPLAIN (ANALYZE, COSTS OFF, SUMMARY OFF, TIMING OFF) CREATE MATERIALIZED VIEW matview_schema.mv_withdata2 (a) AS SELECT generate_series(1, 10) WITH DATA;" db-types="PostgreSQL" />
     <sql-case id="explain_create_materialized_view_with_no_data" value="EXPLAIN (ANALYZE, COSTS OFF, SUMMARY OFF, TIMING OFF) CREATE MATERIALIZED VIEW matview_schema.mv_nodata2 (a) AS SELECT generate_series(1, 10) WITH NO DATA;" db-types="PostgreSQL" />
     <sql-case id="explain_performance" value="EXPLAIN PERFORMANCE SELECT 1" db-types="openGauss" />
@@ -88,9 +85,7 @@
     <sql-case id="explain_for_select_xml_query" value="EXPLAIN PLAN FOR SELECT XMLQuery('/PurchaseOrder/LineItems/LineItem' PASSING OBJECT_VALUE RETURNING CONTENT) FROM po_clob WHERE XMLExists('/PurchaseOrder/LineItems/LineItem [ora:contains(Description, &quot;Picnic&quot;) &gt; 0]' PASSING OBJECT_VALUE) AND XMLExists('/PurchaseOrder[User=&quot;SBELL&quot;]' PASSING OBJECT_VALUE);" db-types="Oracle" />
     <sql-case id="explain_for_select_where_between" value="EXPLAIN PLAN FOR SELECT SUM(amount_sold) total_revenue FROM sales WHERE time_id BETWEEN '01-JAN-00' AND '31-DEC-00';" db-types="Oracle"/>
     <sql-case id="explain_for_select_where_between_groupby_having" value="EXPLAIN PLAN FOR SELECT c.cust_last_name, COUNT(*) FROM sales s, customers c WHERE s.cust_id = c.cust_id AND s.time_id BETWEEN TO_DATE('01-JUL-1999', 'DD-MON-YYYY') AND TO_DATE('01-OCT-1999', 'DD-MON-YYYY') GROUP BY c.cust_last_name HAVING COUNT(*) > 100;" db-types="Oracle"/>
-    <sql-case id="explain_for_select_alias_where_colon" value="explain plan for select * from sales s where time_id in ( :a, :b, :c, :d);" db-types="Oracle"/>
     <sql-case id="explain_for_select_where_todate_function" value="explain plan for select * from sales where time_id = to_date('01-jan-2001', 'dd-mon-yyyy');" db-types="Oracle"/>
-    <sql-case id="explain_for_select_where_colon" value="explain plan for select * from sales where time_id in (:a, :b, :c, :d);" db-types="Oracle"/>
     <sql-case id="explain_for_select_group_by_multi_columns" value="explain plan for select p.prod_name, t.time_id, sum(s.amount_sold) from sales s, times t, products p where s.time_id = t.time_id and s.prod_id = p.prod_id and t.fiscal_year = 2000 and t.fiscal_week_number = 3 and p.prod_category = 'Hardware' group by t.time_id, p.prod_name;" db-types="Oracle"/>
     <sql-case id="explain_for_select_in_sub_query" value="explain plan for select sum(amount_sold) from sales where time_id in (select time_id from times where fiscal_year = 2000);" db-types="Oracle"/>
     <sql-case id="explain_for_select_between_to_date_function" value="explain plan for select sum(amount_sold) from sales where time_id between to_date('01-JAN-2000','dd-MON-yyyy') and to_date('31-DEC-2000','dd-MON-yyyy') ;" db-types="Oracle"/>

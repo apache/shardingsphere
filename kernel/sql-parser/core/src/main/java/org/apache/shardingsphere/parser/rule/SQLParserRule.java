@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.parser.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.infra.parser.SimpleSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.parser.constant.SQLParserOrder;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 
 /**
  * SQL parser rule.
@@ -38,24 +38,24 @@ public final class SQLParserRule implements GlobalRule {
     
     private final CacheOption parseTreeCache;
     
-    private final String engineType;
-    
     public SQLParserRule(final SQLParserRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         sqlStatementCache = ruleConfig.getSqlStatementCache();
         parseTreeCache = ruleConfig.getParseTreeCache();
-        engineType = "Standard";
     }
     
     /**
      * Get SQL parser engine.
-     * 
+     *
      * @param databaseType database type
      * @return SQL parser engine
      */
     public SQLParserEngine getSQLParserEngine(final DatabaseType databaseType) {
-        return "Standard".equals(engineType)
-                ? new ShardingSphereSQLParserEngine(databaseType, sqlStatementCache, parseTreeCache)
-                : new SimpleSQLParserEngine();
+        return new ShardingSphereSQLParserEngine(databaseType, sqlStatementCache, parseTreeCache);
+    }
+    
+    @Override
+    public int getOrder() {
+        return SQLParserOrder.ORDER;
     }
 }

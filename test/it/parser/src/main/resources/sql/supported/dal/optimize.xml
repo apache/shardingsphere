@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="optimize_table" value="OPTIMIZE TABLE table1,table2" db-types="MySQL" />
+    <sql-case id="optimize_table" value="OPTIMIZE TABLE table1,table2" db-types="MySQL,Doris" />
 </sql-cases>

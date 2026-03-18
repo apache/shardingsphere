@@ -26,11 +26,10 @@ Environment preparation mode is divided into Native and Docker, and Embed type w
 
 Currently, the Native environment is adopted by default, and ShardingSphere-JDBC + H2 database is used to run test cases.
 Maven's `-pit. Env.docker` parameter specifies how the Docker environment is run.
-In the future, ShardingSphere-JDBC + MySQL of the Embed environment will be adopted to replace the default environment type used when Native executes test cases.
 
 Database types currently support MySQL, PostgreSQL, SQLServer, and Oracle, and test cases can be executed using ShardingSphere-JDBC or ShardingSphere-Proxy.
 
-Scenarios are used to test the supporting rules of ShardingSphere. Currently, data sharding and read/write splitting and other related scenarios are supported, and the combination of scenarios will be improved continuously in the future.
+Scenarios are used to test the supporting rules of ShardingSphere. Currently, data sharding, data encrypt, data mask and read/write splitting and other related scenarios are supported, and the combination of scenarios will be improved continuously in the future.
 
 ### Test engine
 
@@ -55,20 +54,28 @@ Module path：`test/e2e/sql`
 
 ### Test case configuration
 
-SQL test case is in `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xml`.
+SQL test case is in `resources/cases/${SQL-TYPE}/e2e-${SQL-TYPE}-${cases-description}.xml`.
 
 The case file format is as follows:
 
 ```xml
-<integration-test-cases>
+<e2e-test-cases>
+    <test-case sql="${SQL}">
+        <!-- select case -->
+        <assertion parameters="${value_1}:${type_1}, ${value_2}:${type_2}" expected-data-source-name="{datasource-name}" />
+        <!-- not select case -->
+        <assertion parameters="${value_1}:${type_1}, ${value_2}:${type_2}" expected-data-file="${dataset_file_1}.xml" />
+        <!-- ... more assertions -->
+    </test-case>
+
     <test-case sql="${SQL}">
         <assertion parameters="${value_1}:${type_1}, ${value_2}:${type_2}" expected-data-file="${dataset_file_1}.xml" />
         <!-- ... more assertions -->
         <assertion parameters="${value_3}:${type_3}, ${value_4}:${type_4}" expected-data-file="${dataset_file_2}.xml" />
-     </test-case>
+    </test-case>
 
     <!-- ... more test cases -->
-</integration-test-cases>
+</e2e-test-cases>
 ```
 
 The lookup rule of `expected-data-file`is as follows:
@@ -92,8 +99,6 @@ The assertion file format is as follows:
 </dataset>
 ```
 
-> e2e operation module is E2E test，does not contains the assertion for `</dataset>` tag
-
 ### Environment configuration
 
 `${SCENARIO-TYPE}` Refers to the scenario name used to identify a unique scenario during the test engine run.
@@ -101,75 +106,103 @@ The assertion file format is as follows:
 
 #### Native environment configuration
 
-Directory: `src/test/resources/env/${SCENARIO-TYPE}`
+Modify `e2e.run.type` in `src/test/resources/env/e2e-env.properties` file of `e2e-sql` module to `NATIVE` mode, and then modify the following properties to the local database address and account.
 
-  - `scenario-env.properties`: data source configuration；
-  - `rules.yaml`: rule configuration；
-  - `databases.xml`: name of the real database；
-  - `dataset.xml`: initialize the data；
-  - `init-sql\${DATABASE-TYPE}\init.sql`: initialize the database and table structure；
-  - `authority.xml`: to be supplemented.
+```properties
+e2e.native.database.host=127.0.0.1
+e2e.native.database.port=3306
+e2e.native.database.username=root
+e2e.native.database.password=123456
+```
+
+After the modification is completed, you can adjust other properties in `e2e-env.properties` to test ShardingSphere's Proxy, JDBC access terminal, or test the stand-alone and cluster modes.
 
 #### Docker environment configuration
 
-Directory: `src/test/resources/docker/${SCENARIO-TYPE}`
+Modify `e2e.run.type` in the `src/test/resources/env/e2e-env.properties` file of the `e2e-sql` module to `DOCKER` mode.
+If you perform a Proxy access end test, you need to execute the following command to package the Proxy image.
 
-  - `docker-compose.yml`: Docker-Compose config files, used for Docker environment startup；
-  - `proxy/conf/database-${SCENARIO-TYPE}.yaml`: rule configuration。
+```bash
+./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true -Drat.skip=true
+```
 
-**The Docker environment configuration provides a remote debugging port for ShardingSphere-Proxy. You can find the second exposed port for remote debugging in `shardingsphere-proxy` of the `docker-comemage. yml` file. **
+If it is a Mac platform M series chip, before packaging the Proxy image, you need to execute the following command first, and then package the Proxy image.
+
+```bash
+# Install socat
+brew install socat
+socat TCP-LISTEN:2375,reuseaddr,fork UNIX-CLIENT:/var/run/docker.sock
+
+# Execute in the terminal where the image is created
+export DOCKER_HOST=tcp://127.0.0.1:2375
+```
+
+After the modification is completed, you can adjust other properties in `e2e-env.properties` to test ShardingSphere's Proxy, JDBC access terminal, or test the stand-alone and cluster modes.
 
 ### Run the test engine
 
 #### Configure the running environment of the test engine
 
-Control the test engine by configuring `src/test/resources/env/engine-env.properties`.
+Control the test engine by configuring `src/test/resources/env/e2e-env.properties`.
 
 All attribute values can be dynamically injected via Maven command line `-D`.
 
 ```properties
 
 # Scenario type. Multiple values can be separated by commas. Optional values: db, tbl, dbtbl_with_replica_query, replica_query
-it.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
+e2e.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
 
 # Whether to run additional test cases
-it.run.additional.cases=false
+e2e.run.additional.cases=false
 
-# Configure the environment type. Only one value is supported. Optional value: docker or null. The default value: null.
-it.cluster.env.type=${it.env}
+# Whether to run smoke test
+e2e.run.smoke.cases=false
+
+# Configure the environment type. Only one value is supported. Optional value: DOCKER, NATIVE
+e2e.run.type=DOCKER
+
 # Access port types to be tested. Multiple values can be separated by commas. Optional value: jdbc, proxy. The default value: jdbc
-it.cluster.adapters=jdbc
+e2e.artifact.adapters=jdbc
 
-# Scenario type. Multiple values can be separated by commas. Optional value: H2, MySQL, Oracle, SQLServer, PostgreSQL
-it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
+# Database type. Multiple values can be separated by commas. Optional value: H2, MySQL, PostgreSQL, openGauss
+e2e.artifact.databases=H2,MySQL,PostgreSQL,openGauss
+
+# The docker image version of the database
+e2e.docker.database.mysql.images=mysql:8.2.0
+
+# Database connection information and account in NATIVE mode
+e2e.native.database.host=127.0.0.1
+e2e.native.database.port=3306
+e2e.native.database.username=root
+e2e.native.database.password=123456
 ```
 
 #### Run debugging mode
 
   - Standard test engine
-    Run `org.apache.shardingsphere.test.integration.engine.${SQL-TYPE}.General${SQL-TYPE}E2EIT` to start the test engines of different SQL types.
+    Run `org.apache.shardingsphere.test.e2e.it.sql.${SQL-TYPE}.General${SQL-TYPE}E2EIT` to start the test engines of different SQL types.
 
   - Batch test engine
-    Run `org.apache.shardingsphere.test.integration.engine.dml.BatchDMLE2EIT` to start the batch test engine for the test `addBatch()` provided for DML statements.
+    Run `org.apache.shardingsphere.test.e2e.it.sql.dml.BatchDMLE2EIT` to start the batch test engine for the test `addBatch()` provided for DML statements.
 
   - Additional test engine
-    Run `org.apache.shardingsphere.test.integration.engine.${SQL-TYPE}.Additional${SQL-TYPE}E2EIT` to start the test engine with more JDBC method calls.
-    Additional test engines need to be enabled by setting `it.run.additional.cases=true`.
+    Run `org.apache.shardingsphere.test.e2e.it.sql.${SQL-TYPE}.Additional${SQL-TYPE}E2EIT` to start the test engine with more JDBC method calls.
+    Additional test engines need to be enabled by setting `e2e.run.additional.cases=true`.
 
 #### Run Docker mode
 
 ```bash
-./mvnw -B clean install -f test/e2e/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
+./mvnw -B clean install -f test/e2e/pom.xml -Pit.env.docker -De2e.artifact.adapters=proxy,jdbc -De2e.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -De2e.artifact.databases=MySQL
 ```
 Run the above command to build a Docker mirror `apache/shardingsphere-proxy-test:latest` used for integration testing.
 If you only modify the test code, you can reuse the existing test mirror without rebuilding it. Skip the mirror building and run the integration testing directly with the following command:
 
 ```bash
-./mvnw -B clean install -f test/e2e/sql/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
+./mvnw -B clean install -f test/e2e/sql/pom.xml -Pit.env.docker -De2e.artifact.adapters=proxy,jdbc -De2e.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -De2e.artifact.databases=MySQL
 ```
 
 #### Remote debug Proxy code in Docker container
-First of all, you need to modify the configuration file it-env.properties, set function.it.env.type to `docker`, and then set the corresponding database image version like `transaction.it.docker.mysql.version=mysql:5.7`.
+First of all, you need to modify the configuration file e2e-env.properties, set function.it.env.type to `docker`, and then set the corresponding database image version like `transaction.it.docker.mysql.version=mysql:5.7`.
 Then generate the test image through the command, for example:
 
 ```bash

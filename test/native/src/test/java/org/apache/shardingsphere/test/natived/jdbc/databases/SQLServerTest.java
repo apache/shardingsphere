@@ -19,28 +19,44 @@ package org.apache.shardingsphere.test.natived.jdbc.databases;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
+import org.apache.shardingsphere.test.natived.commons.TestShardingService;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
+import org.testcontainers.jdbc.ContainerDatabaseDriver;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
+@EnabledInNativeImage
 class SQLServerTest {
+    
+    private DataSource logicDataSource;
     
     private TestShardingService testShardingService;
     
-    @EnabledInNativeImage
+    @AfterEach
+    void afterEach() throws SQLException {
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
+        ContainerDatabaseDriver.killContainers();
+    }
+    
+    /**
+     * TODO `shardingsphere-parser-sql-engine-sqlserver` module does not support `DROP TABLE IF EXISTS t_order` statements yet.
+     *
+     * @throws SQLException SQL exception
+     */
     @Test
     void assertShardingInLocalTransactions() throws SQLException {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/databases/sqlserver.yaml");
-        DataSource dataSource = new HikariDataSource(config);
-        testShardingService = new TestShardingService(dataSource);
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/sqlserver.yaml");
+        logicDataSource = new HikariDataSource(config);
+        testShardingService = new TestShardingService(logicDataSource);
         initEnvironment();
         testShardingService.processSuccess();
-        testShardingService.cleanEnvironment();
+        testShardingService.cleanEnvironmentWithoutVerify();
     }
     
     private void initEnvironment() throws SQLException {

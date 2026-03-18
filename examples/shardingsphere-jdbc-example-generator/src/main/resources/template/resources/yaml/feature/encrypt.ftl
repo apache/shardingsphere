@@ -37,5 +37,10 @@
       type: AES
       props:
         aes-key-value: 123456
+        digest-algorithm-name: SHA-1
     assisted_encryptor:
       type: assistedTest
+
+- !SINGLE
+  tables:
+    - "*.*"

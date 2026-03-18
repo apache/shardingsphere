@@ -21,31 +21,32 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>5.5.1-SNAPSHOT</version>
+        <version>5.5.4-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>annotation</module>
         <module>spi</module>
         <module>exception</module>
-        <module>database</module>
         <module>data-source-pool</module>
         <module>common</module>
         <module>context</module>
         <module>url</module>
+        <module>algorithm</module>
         <module>distsql-handler</module>
         <module>parser</module>
         <module>binder</module>
-        <module>rewrite</module>
+        <module>checker</module>
         <module>route</module>
+        <module>rewrite</module>
         <module>merge</module>
         <module>executor</module>
         <module>session</module>
         <module>expr</module>
         <module>util</module>
         <module>reachability-metadata</module>
-        <module>algorithm</module>
     </modules>
 </project>

@@ -31,7 +31,7 @@ public final class RootSpanContext {
     
     /**
      * Get root span.
-     * 
+     *
      * @param <T> type of span
      * @return root span
      */
@@ -42,7 +42,7 @@ public final class RootSpanContext {
     
     /**
      * Set root span.
-     * 
+     *
      * @param value root span
      * @param <T> type of span
      */

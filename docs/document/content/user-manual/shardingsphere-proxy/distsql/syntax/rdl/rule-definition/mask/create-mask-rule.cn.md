@@ -12,7 +12,7 @@ weight = 1
 {{< tabs >}}
 {{% tab name="语法" %}}
 ```sql
-CreateEncryptRule ::=
+CreateMaskRule ::=
   'CREATE' 'MASK' 'RULE' ifNotExists? maskRuleDefinition (',' maskRuleDefinition)*
 
 ifNotExists ::=

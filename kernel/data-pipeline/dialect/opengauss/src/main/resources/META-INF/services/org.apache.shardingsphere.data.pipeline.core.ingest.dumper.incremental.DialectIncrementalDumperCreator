@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.opengauss.ingest.dumper.OpenGaussIncrementalDumperCreator
+org.apache.shardingsphere.data.pipeline.opengauss.ingest.incremental.dumper.OpenGaussIncrementalDumperCreator
 

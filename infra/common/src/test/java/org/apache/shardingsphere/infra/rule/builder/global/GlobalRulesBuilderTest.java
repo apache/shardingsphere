@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.rule.builder.global;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabaseFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRule;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureGlobalRuleConfiguration;
@@ -30,28 +31,27 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 class GlobalRulesBuilderTest {
     
     @Test
     void assertBuildRules() {
-        Collection<ShardingSphereRule> shardingSphereRules = GlobalRulesBuilder
-                .buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildDatabase()), mock(ConfigurationProperties.class));
-        assertThat(shardingSphereRules.size(), is(1));
+        Collection<ShardingSphereRule> rules = GlobalRulesBuilder.buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singleton(buildDatabase()), mock());
+        assertThat(rules.size(), is(1));
+        assertThat(rules.iterator().next(), isA(FixtureGlobalRule.class));
     }
     
     @Test
-    void assertBuildRulesClassType() {
-        Collection<ShardingSphereRule> shardingSphereRules = GlobalRulesBuilder
-                .buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildDatabase()), mock(ConfigurationProperties.class));
-        assertTrue(shardingSphereRules.toArray()[0] instanceof FixtureGlobalRule);
+    void assertBuildSingleRules() {
+        Collection<ShardingSphereRule> rules = GlobalRulesBuilder.buildSingleRules(new FixtureGlobalRuleConfiguration(), Collections.singleton(buildDatabase()), mock());
+        assertThat(rules.size(), is(1));
     }
     
     private ShardingSphereDatabase buildDatabase() {
-        return ShardingSphereDatabase.create("logic_db", TypedSPILoader.getService(DatabaseType.class, "MySQL"), new ConfigurationProperties(new Properties()));
+        return ShardingSphereDatabaseFactory.create("foo_db", TypedSPILoader.getService(DatabaseType.class, "FIXTURE"), new ConfigurationProperties(new Properties()));
     }
 }

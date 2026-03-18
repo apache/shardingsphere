@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.authority.yaml.swapper;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.config.UserConfiguration;
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 
@@ -52,7 +52,7 @@ public final class YamlAuthorityRuleConfigurationSwapper implements YamlRuleConf
     
     @Override
     public AuthorityRuleConfiguration swapToObject(final YamlAuthorityRuleConfiguration yamlConfig) {
-        Collection<ShardingSphereUser> users = yamlConfig.getUsers().stream().map(userSwapper::swapToObject).collect(Collectors.toList());
+        Collection<UserConfiguration> users = yamlConfig.getUsers().stream().map(userSwapper::swapToObject).collect(Collectors.toList());
         AlgorithmConfiguration provider = algorithmSwapper.swapToObject(yamlConfig.getPrivilege());
         if (null == provider) {
             provider = new DefaultAuthorityRuleConfigurationBuilder().build().getPrivilegeProvider();

@@ -40,7 +40,7 @@ public final class ShardingStrategyFactory {
     
     /**
      * Create sharding strategy.
-     * 
+     *
      * @param shardingStrategyConfig sharding strategy configuration
      * @param shardingAlgorithm sharding algorithm
      * @param defaultShardingColumn default sharding column

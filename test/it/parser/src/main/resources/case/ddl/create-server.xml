@@ -18,4 +18,5 @@
 
 <sql-parser-test-cases>
 <!--    <create-server sql-case-id="create_server" />-->
+    <create-server sql-case-id="create_server_doris_basic" />
 </sql-parser-test-cases>

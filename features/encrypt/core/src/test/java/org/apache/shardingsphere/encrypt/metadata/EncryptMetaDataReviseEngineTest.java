@@ -17,50 +17,56 @@
 
 package org.apache.shardingsphere.encrypt.metadata;
 
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.SchemaMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEngine;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class EncryptMetaDataReviseEngineTest {
     
-    private static final String TABLE_NAME = "t_encrypt";
-    
     @Test
     void assertRevise() {
-        Map<String, SchemaMetaData> schemaMetaData = Collections.singletonMap(
-                DefaultDatabase.LOGIC_NAME, new SchemaMetaData(DefaultDatabase.LOGIC_NAME, Collections.singleton(createTableMetaData())));
-        TableMetaData actual = new MetaDataReviseEngine(Collections.singleton(mockEncryptRule())).revise(
-                schemaMetaData, mock(GenericSchemaBuilderMaterial.class)).get(DefaultDatabase.LOGIC_NAME).getTables().iterator().next();
-        assertThat(actual.getColumns().size(), is(2));
-        Iterator<ColumnMetaData> columns = actual.getColumns().iterator();
-        assertThat(columns.next().getName(), is("id"));
-        assertThat(columns.next().getName(), is("pwd"));
+        Map<String, SchemaMetaData> schemaMetaData = Collections.singletonMap("foo_db", new SchemaMetaData("foo_db", Collections.singleton(createTableMetaData())));
+        Map<String, ShardingSphereSchema> actual = new MetaDataReviseEngine(Collections.singleton(mockEncryptRule()), mock(DatabaseType.class))
+                .revise(schemaMetaData, mock(GenericSchemaBuilderMaterial.class));
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.containsKey("foo_db"));
+        assertThat(actual.get("foo_db").getAllTables().size(), is(1));
+        ShardingSphereTable table = actual.get("foo_db").getAllTables().iterator().next();
+        assertThat(table.getAllColumns().size(), is(2));
+        List<ShardingSphereColumn> columns = new ArrayList<>(table.getAllColumns());
+        assertThat(columns.get(0).getName(), is("id"));
+        assertThat(columns.get(1).getName(), is("pwd"));
     }
     
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
         EncryptTable encryptTable = mock(EncryptTable.class);
-        when(result.findEncryptTable(TABLE_NAME)).thenReturn(Optional.of(encryptTable));
+        when(result.findEncryptTable("foo_tbl")).thenReturn(Optional.of(encryptTable));
         when(encryptTable.isCipherColumn("pwd_cipher")).thenReturn(true);
         when(encryptTable.isLikeQueryColumn("pwd_like")).thenReturn(true);
         when(encryptTable.getLogicColumnByCipherColumn("pwd_cipher")).thenReturn("pwd");
@@ -71,6 +77,6 @@ class EncryptMetaDataReviseEngineTest {
         Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false, false),
                 new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false, false),
                 new ColumnMetaData("pwd_like", Types.VARCHAR, false, false, true, true, false, false));
-        return new TableMetaData(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList());
+        return new TableMetaData("foo_tbl", columns, Collections.emptyList(), Collections.emptyList());
     }
 }

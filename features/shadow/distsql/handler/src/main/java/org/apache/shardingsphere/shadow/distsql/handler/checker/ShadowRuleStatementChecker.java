@@ -19,10 +19,10 @@ package org.apache.shardingsphere.shadow.distsql.handler.checker;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.KernelSQLException;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.KernelSQLException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.MissingRequiredStorageUnitsException;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 
@@ -52,7 +52,7 @@ public final class ShadowRuleStatementChecker {
     
     /**
      * Check if there are duplicated rules.
-     * 
+     *
      * @param rules rules to be checked
      * @param thrower exception thrower
      */
@@ -100,7 +100,7 @@ public final class ShadowRuleStatementChecker {
     
     /**
      * Check if there are duplicated names with logical data sources.
-     * 
+     *
      * @param toBeCreatedRuleNames rule names
      * @param database ShardingSphere database
      */

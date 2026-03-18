@@ -18,29 +18,30 @@
 package org.apache.shardingsphere.distsql.handler.executor.rql.resource;
 
 import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.distsql.statement.rql.resource.ShowStorageUnitsStatement;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.distsql.statement.type.rql.resource.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.datasource.pool.CatalogSwitchableDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.creator.DataSourcePoolPropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.regex.RegexUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Show storage unit executor.
@@ -58,50 +59,34 @@ public final class ShowStorageUnitExecutor implements DistSQLQueryExecutor<ShowS
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowStorageUnitsStatement sqlStatement, final ContextManager contextManager) {
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        for (Entry<String, StorageUnit> entry : getToBeShownStorageUnits(sqlStatement).entrySet()) {
-            ConnectionProperties connectionProps = entry.getValue().getConnectionProperties();
-            DataSourcePoolProperties dataSourcePoolProps = getDataSourcePoolProperties(entry.getValue());
-            Map<String, Object> poolProps = dataSourcePoolProps.getPoolPropertySynonyms().getStandardProperties();
-            Map<String, Object> customProps = getCustomProperties(dataSourcePoolProps.getCustomProperties().getProperties(), connectionProps.getQueryProperties());
-            result.add(new LocalDataQueryResultRow(entry.getKey(),
-                    entry.getValue().getStorageType().getType(),
-                    connectionProps.getHostname(),
-                    connectionProps.getPort(),
-                    connectionProps.getCatalog(),
-                    getStandardProperty(poolProps, "connectionTimeoutMilliseconds"),
-                    getStandardProperty(poolProps, "idleTimeoutMilliseconds"),
-                    getStandardProperty(poolProps, "maxLifetimeMilliseconds"),
-                    getStandardProperty(poolProps, "maxPoolSize"),
-                    getStandardProperty(poolProps, "minPoolSize"),
-                    getStandardProperty(poolProps, "readOnly"),
-                    customProps));
-        }
-        return result;
+        return getStorageUnits(sqlStatement).entrySet().stream().map(entry -> getRow(entry.getKey(), entry.getValue())).collect(Collectors.toList());
     }
     
-    private Map<String, StorageUnit> getToBeShownStorageUnits(final ShowStorageUnitsStatement sqlStatement) {
-        Map<String, StorageUnit> result = new LinkedHashMap<>(database.getResourceMetaData().getStorageUnits().size(), 1F);
-        Optional<Integer> usageCount = sqlStatement.getUsageCount();
-        if (usageCount.isPresent()) {
-            Map<String, Collection<Class<? extends ShardingSphereRule>>> inUsedStorageUnits = database.getRuleMetaData().getInUsedStorageUnitNameAndRulesMap();
-            for (Entry<String, StorageUnit> entry : database.getResourceMetaData().getStorageUnits().entrySet()) {
-                int currentUsageCount = inUsedStorageUnits.containsKey(entry.getKey()) ? inUsedStorageUnits.get(entry.getKey()).size() : 0;
-                if (usageCount.get().equals(currentUsageCount)) {
-                    result.put(entry.getKey(), entry.getValue());
-                }
-            }
-        } else {
-            result.putAll(database.getResourceMetaData().getStorageUnits());
-        }
-        return result;
+    private LocalDataQueryResultRow getRow(final String name, final StorageUnit storageUnit) {
+        ConnectionProperties connectionProps = storageUnit.getConnectionProperties();
+        DataSourcePoolProperties dataSourcePoolProps = getDataSourcePoolProperties(storageUnit);
+        Map<String, Object> poolProps = dataSourcePoolProps.getPoolPropertySynonyms().getStandardProperties();
+        Map<String, Object> customProps = getCustomProperties(dataSourcePoolProps.getCustomProperties().getProperties(), connectionProps.getQueryProperties());
+        return new LocalDataQueryResultRow(name, storageUnit.getStorageType().getType(), connectionProps.getHostname(), connectionProps.getPort(), connectionProps.getCatalog(),
+                getStandardProperty(poolProps, "connectionTimeoutMilliseconds"), getStandardProperty(poolProps, "idleTimeoutMilliseconds"),
+                getStandardProperty(poolProps, "maxLifetimeMilliseconds"), getStandardProperty(poolProps, "maxPoolSize"), getStandardProperty(poolProps, "minPoolSize"),
+                getStandardProperty(poolProps, "readOnly"), customProps);
+    }
+    
+    private Map<String, StorageUnit> getStorageUnits(final ShowStorageUnitsStatement sqlStatement) {
+        return getLikePattern(sqlStatement).map(optional -> database.getResourceMetaData().getStorageUnits().entrySet().stream().filter(entry -> optional.matcher(entry.getKey()).matches())
+                .collect(Collectors.toMap(Entry::getKey, Entry::getValue))).orElseGet(() -> database.getResourceMetaData().getStorageUnits());
+    }
+    
+    private Optional<Pattern> getLikePattern(final ShowStorageUnitsStatement sqlStatement) {
+        return sqlStatement.getLikePattern().map(optional -> Pattern.compile(RegexUtils.convertLikePatternToRegex(optional), Pattern.CASE_INSENSITIVE));
     }
     
     private DataSourcePoolProperties getDataSourcePoolProperties(final StorageUnit storageUnit) {
         DataSource dataSource = storageUnit.getDataSource();
         DataSourcePoolProperties result = DataSourcePoolPropertiesCreator.create(
                 dataSource instanceof CatalogSwitchableDataSource ? ((CatalogSwitchableDataSource) dataSource).getDataSource() : dataSource);
-        if (new DatabaseTypeRegistry(storageUnit.getStorageType()).getDialectDatabaseMetaData().isInstanceConnectionAvailable()) {
+        if (new DatabaseTypeRegistry(storageUnit.getStorageType()).getDialectDatabaseMetaData().getConnectionOption().isInstanceConnectionAvailable()) {
             for (Entry<String, Object> entry : storageUnit.getDataSourcePoolProperties().getPoolPropertySynonyms().getStandardProperties().entrySet()) {
                 if (null != entry.getValue()) {
                     result.getPoolPropertySynonyms().getStandardProperties().put(entry.getKey(), entry.getValue());

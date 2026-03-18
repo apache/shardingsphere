@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.metadata.reviser.column;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.column.ColumnExistedReviser;
 
 /**

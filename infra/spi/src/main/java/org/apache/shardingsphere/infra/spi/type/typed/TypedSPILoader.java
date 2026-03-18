@@ -33,7 +33,7 @@ public final class TypedSPILoader {
     
     /**
      * Find service.
-     * 
+     *
      * @param serviceInterface typed SPI service interface
      * @param type type
      * @param <T> SPI class type
@@ -45,7 +45,7 @@ public final class TypedSPILoader {
     
     /**
      * Find service.
-     * 
+     *
      * @param serviceInterface typed SPI service interface
      * @param type type
      * @param props properties
@@ -59,26 +59,6 @@ public final class TypedSPILoader {
         for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
             if (matchesType(type, each)) {
                 each.init(null == props ? new Properties() : convertToStringTypedProperties(props));
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
-    }
-    
-    /**
-     * Find uninited service.
-     *
-     * @param serviceInterface typed SPI service interface
-     * @param type type
-     * @param <T> SPI class type
-     * @return found service
-     */
-    public static <T extends TypedSPI> Optional<T> findUninitedService(final Class<T> serviceInterface, final Object type) {
-        if (null == type) {
-            return findDefaultService(serviceInterface);
-        }
-        for (T each : ShardingSphereServiceLoader.getServiceInstances(serviceInterface)) {
-            if (matchesType(type, each)) {
                 return Optional.of(each);
             }
         }
@@ -107,7 +87,7 @@ public final class TypedSPILoader {
     
     /**
      * Get service.
-     * 
+     *
      * @param serviceInterface typed SPI service interface
      * @param type type
      * @param <T> SPI class type
@@ -119,7 +99,7 @@ public final class TypedSPILoader {
     
     /**
      * Get service.
-     * 
+     *
      * @param serviceInterface typed SPI service interface
      * @param type type
      * @param props properties
@@ -132,7 +112,7 @@ public final class TypedSPILoader {
     
     /**
      * Check service.
-     * 
+     *
      * @param serviceInterface typed SPI service interface
      * @param type type
      * @param props properties

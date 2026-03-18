@@ -1,0 +1,162 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "io.grpc.netty.ProtocolNegotiators$GrpcNegotiationHandler"
+      },
+      "type": "io.grpc.netty.AbstractNettyHandler",
+      "methods": [
+        {
+          "name": "channelActive",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext"
+          ]
+        },
+        {
+          "name": "exceptionCaught",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext",
+            "java.lang.Throwable"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "io.grpc.netty.ProtocolNegotiators$GrpcNegotiationHandler"
+      },
+      "type": "io.grpc.netty.NettyClientHandler",
+      "methods": [
+        {
+          "name": "channelInactive",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext"
+          ]
+        },
+        {
+          "name": "close",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext",
+            "io.netty.channel.ChannelPromise"
+          ]
+        },
+        {
+          "name": "write",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext",
+            "java.lang.Object",
+            "io.netty.channel.ChannelPromise"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "io.grpc.netty.ProtocolNegotiators$ProtocolNegotiationHandler"
+      },
+      "type": "io.grpc.netty.ProtocolNegotiators$GrpcNegotiationHandler",
+      "methods": [
+        {
+          "name": "userEventTriggered",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "io.grpc.netty.WriteBufferingAndExceptionHandler"
+      },
+      "type": "io.grpc.netty.ProtocolNegotiators$ProtocolNegotiationHandler",
+      "methods": [
+        {
+          "name": "userEventTriggered",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "io.grpc.netty.WriteBufferingAndExceptionHandler"
+      },
+      "type": "io.grpc.netty.ProtocolNegotiators$WaitUntilActiveHandler",
+      "methods": [
+        {
+          "name": "channelActive",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "io.grpc.netty.NettyChannelBuilder"
+      },
+      "type": "io.grpc.netty.UdsNameResolverProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "io.grpc.netty.NettyClientTransport"
+      },
+      "type": "io.grpc.netty.WriteBufferingAndExceptionHandler",
+      "methods": [
+        {
+          "name": "channelInactive",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext"
+          ]
+        },
+        {
+          "name": "channelRead",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext",
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "close",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext",
+            "io.netty.channel.ChannelPromise"
+          ]
+        },
+        {
+          "name": "connect",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext",
+            "java.net.SocketAddress",
+            "java.net.SocketAddress",
+            "io.netty.channel.ChannelPromise"
+          ]
+        },
+        {
+          "name": "exceptionCaught",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext",
+            "java.lang.Throwable"
+          ]
+        },
+        {
+          "name": "flush",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext"
+          ]
+        },
+        {
+          "name": "write",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext",
+            "java.lang.Object",
+            "io.netty.channel.ChannelPromise"
+          ]
+        }
+      ]
+    }
+  ]
+}

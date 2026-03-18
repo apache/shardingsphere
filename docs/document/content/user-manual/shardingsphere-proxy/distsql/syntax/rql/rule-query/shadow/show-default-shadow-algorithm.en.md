@@ -12,8 +12,8 @@ The `SHOW DEFAULT SHADOW ALGORITHM` syntax is used to query default shadow algor
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-ShowEncryptAlgorithm::=
-  'SHOW' 'SHADOW' 'ALGORITHM' ('FROM' databaseName)?
+ShowDefaultShadowAlgorithm::=
+  'SHOW' 'DEFAULT' 'SHADOW' 'ALGORITHM' ('FROM' databaseName)?
 
 databaseName ::=
   identifier
@@ -57,11 +57,11 @@ mysql> SHOW DEFAULT SHADOW ALGORITHM FROM shadow_db;
 - Query default shadow algorithm for current database.
 
 ```sql
-SHOW SHADOW ALGORITHM;
+SHOW DEFAULT SHADOW ALGORITHM;
 ```
 
 ```sql
-mysql> SHOW SHADOW ALGORITHM;
+mysql> SHOW DEFAULT SHADOW ALGORITHM;
 +-------------------------+-------------+-----------------------------------------+
 | shadow_algorithm_name   | type        | props                                   |
 +-------------------------+-------------+-----------------------------------------+

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema;
 
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.TableMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.TableMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
@@ -31,14 +31,14 @@ public interface SchemaTableAggregationReviser<T extends ShardingSphereRule> {
     
     /**
      * Add table meta data.
-     * 
+     *
      * @param metaData table meta data
      */
     void add(TableMetaData metaData);
     
     /**
      * Aggregate table meta data list.
-     * 
+     *
      * @param rule rule
      * @return aggregated meta data list
      */

@@ -41,9 +41,12 @@
     </module>
     <module name="Translation" />
     <module name="UniqueProperties" />
-    
     <module name="TreeWalker">
         <module name="SuppressionCommentFilter" />
+        <module name="SuppressionXpathSingleFilter">
+            <property name="checks" value="FinalClass" />
+            <property name="query" value="//CLASS_DEF[./MODIFIERS/LITERAL_PRIVATE]" />
+        </module>
         
         <!-- Annotations -->
         <module name="AnnotationLocation">
@@ -59,7 +62,9 @@
         <module name="MissingDeprecated" />
         <module name="MissingOverride" />
         <module name="PackageAnnotation" />
-        <module name="SuppressWarnings" />
+        <module name="SuppressWarnings">
+            <property name="format" value="^(?i:all)$" />
+        </module>
         <module name="SuppressWarningsHolder" />
         
         <!-- Block Checks -->
@@ -105,6 +110,15 @@
             <property name="format" value="\\u00(09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\\(0(10|11|12|14|15|42|47)|134)" />
             <property name="message" value="Consider using special escape sequence instead of octal value or Unicode escaped value." />
         </module>
+        <module name="MatchXpath">
+            <property name="query" value="//METHOD_CALL[(./IDENT[@text='assertThat'] or ./DOT/IDENT[@text='assertThat']) and ./ELIST/EXPR[last()]/METHOD_CALL[(./IDENT[@text='is'] or ./DOT/IDENT[@text='is']) and ./ELIST/EXPR/*[self::LITERAL_TRUE or self::LITERAL_FALSE]]]" />
+            <message key="matchxpath.match" value="Use assertTrue/assertFalse instead of assertThat(..., is(true/false))." />
+        </module>
+        <module name="MatchXpath">
+            <property name="query"
+                      value="//METHOD_DEF[./MODIFIERS/ANNOTATION[(./IDENT[@text='Test'] or ./DOT/IDENT[@text='Test'] or ./IDENT[@text='ParameterizedTest'] or ./DOT/IDENT[@text='ParameterizedTest'])] and not(./IDENT[starts-with(@text, 'assert')])]" />
+            <message key="matchxpath.match" value="Method names for @Test and @ParameterizedTest must start with 'assert'." />
+        </module>
         <module name="IllegalType" />
         <module name="MissingSwitchDefault" />
         <module name="ModifiedControlVariable" />
@@ -135,11 +149,21 @@
         <module name="UnnecessarySemicolonInTryWithResources" />
         <module name="UnusedLocalVariable" />
         <module name="VariableDeclarationUsageDistance" />
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="^(?!\s*import\s+java\.util\.Map\.Entry\s*;).*\b(?:java\.util\.)?Map\.Entry\b" />
+            <property name="ignoreComments" value="true" />
+            <property name="message" value="Use Entry instead of Map.Entry (import java.util.Map.Entry)." />
+        </module>
         
         <!-- Imports -->
         <module name="AvoidStarImport" />
         <module name="AvoidStaticImport">
-            <property name="excludes" value="org.junit.jupiter.api.Assertions.*,org.junit.jupiter.api.Assumptions.*,org.hamcrest.Matchers.*,org.hamcrest.CoreMatchers.*,org.hamcrest.MatcherAssert.*,org.mockito.Mockito.*,org.mockito.ArgumentMatchers.*" />
+            <property name="excludes" value="org.junit.jupiter.api.Assertions.assertTrue,org.junit.jupiter.api.Assertions.assertFalse,org.junit.jupiter.api.Assertions.assertNull,org.junit.jupiter.api.Assertions.assertNotNull,org.junit.jupiter.api.Assertions.assertArrayEquals,org.junit.jupiter.api.Assertions.assertThrows,org.junit.jupiter.api.Assertions.assertDoesNotThrow,org.junit.jupiter.api.Assertions.assertTimeout,org.junit.jupiter.api.Assertions.assertTimeoutPreemptively,org.junit.jupiter.api.Assertions.fail,org.junit.jupiter.api.Assumptions.*,org.hamcrest.Matchers.aMapWithSize,org.hamcrest.Matchers.arrayContaining,org.hamcrest.Matchers.contains,org.hamcrest.Matchers.containsInAnyOrder,org.hamcrest.Matchers.containsString,org.hamcrest.Matchers.empty,org.hamcrest.Matchers.emptyString,org.hamcrest.Matchers.greaterThan,org.hamcrest.Matchers.greaterThanOrEqualTo,org.hamcrest.Matchers.hasEntry,org.hamcrest.Matchers.hasItem,org.hamcrest.Matchers.hasItems,org.hamcrest.Matchers.hasKey,org.hamcrest.Matchers.hasSize,org.hamcrest.Matchers.is,org.hamcrest.Matchers.isA,org.hamcrest.Matchers.lessThan,org.hamcrest.Matchers.lessThanOrEqualTo,org.hamcrest.Matchers.matchesPattern,org.hamcrest.Matchers.not,org.hamcrest.Matchers.sameInstance,org.hamcrest.Matchers.startsWith,org.hamcrest.Matchers.anyOf,org.hamcrest.Matchers.closeTo,org.hamcrest.MatcherAssert.*,org.mockito.Mockito.*,org.mockito.ArgumentMatchers.*,org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereAssertionMatchers.*,org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.*" />
+        </module>
+        <module name="RegexpSinglelineJava">
+            <property name="format" value="^\s*import\s+org\.(hamcrest\.Matchers|junit\.jupiter\.api\.Assertions)\s*;" />
+            <property name="ignoreComments" value="true" />
+            <property name="message" value="Use static import for org.hamcrest.Matchers and org.junit.jupiter.api.Assertions." />
         </module>
         <module name="IllegalImport" />
         <module name="RedundantImport" />
@@ -159,10 +183,6 @@
         </module>
         <module name="JavadocMissingLeadingAsterisk" />
         <module name="JavadocMissingWhitespaceAfterAsterisk" />
-        <module name="JavadocParagraph">
-            <property name="violateExecutionOnNonTightHtml" value="true" />
-            <property name="allowNewlineParagraph" value="false" />
-        </module>
         <module name="JavadocStyle" />
         <module name="JavadocTagContinuationIndentation">
             <property name="violateExecutionOnNonTightHtml" value="true" />
@@ -222,7 +242,7 @@
         <module name="TodoComment" />
         <module name="TrailingComment" />
         <module name="UncommentedMain">
-            <property name="excludedClasses" value="\.Bootstrap" />
+            <property name="excludedClasses" value="\.Bootstrap$|ShardingSphereVersion$" />
         </module>
         <module name="UpperEll" />
         

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.encrypt.metadata.reviser.index;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.IndexMetaData;
+import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.index.IndexReviser;
 
 import java.util.Collection;
@@ -50,8 +50,7 @@ public final class EncryptIndexReviser implements IndexReviser<EncryptRule> {
                 columns.add(each);
             }
         }
-        IndexMetaData result = new IndexMetaData(originalMetaData.getName());
-        result.getColumns().addAll(columns);
+        IndexMetaData result = new IndexMetaData(originalMetaData.getName(), columns);
         result.setUnique(originalMetaData.isUnique());
         return Optional.of(result);
     }

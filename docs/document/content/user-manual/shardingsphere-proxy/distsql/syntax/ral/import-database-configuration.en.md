@@ -12,7 +12,7 @@ The `IMPORT DATABASE CONFIGURATION` syntax is used to import a database from the
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-ExportDatabaseConfiguration ::=
+ImportDatabaseConfiguration ::=
   'IMPORT' 'DATABASE' 'CONFIGURATION' 'FROM' 'FILE' filePath
 
 filePath ::=

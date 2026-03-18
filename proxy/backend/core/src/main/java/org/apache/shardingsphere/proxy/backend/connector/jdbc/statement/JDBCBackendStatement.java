@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.statement;
 
-import org.apache.shardingsphere.db.protocol.parameter.TypeUnspecifiedSQLParameter;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.protocol.parameter.TypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
@@ -49,8 +49,8 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
     }
     
     @Override
-    public Statement createStorageResource(final ExecutionUnit executionUnit, final Connection connection, final ConnectionMode connectionMode, final StatementOption option,
-                                           final DatabaseType databaseType) throws SQLException {
+    public Statement createStorageResource(final ExecutionUnit executionUnit, final Connection connection, final int connectionOffset,
+                                           final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
         String sql = executionUnit.getSqlUnit().getSql();
         List<Object> params = executionUnit.getSqlUnit().getParameters();
         PreparedStatement result = option.isReturnGeneratedKeys()

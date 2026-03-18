@@ -21,16 +21,15 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.state.ShardingSphereState;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -42,7 +41,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,75 +52,80 @@ import static org.mockito.Mockito.when;
 class ShardingSphereDataSourceTest {
     
     @Test
-    void assertNewConstructorWithModeConfigurationOnly() throws Exception {
-        try (ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultDatabase.LOGIC_NAME, null)) {
+    void assertNewConstructorWithModeConfigurationOnly() throws SQLException {
+        try (ShardingSphereDataSource actual = new ShardingSphereDataSource("foo_db", null)) {
             ContextManager contextManager = getContextManager(actual);
-            assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME));
-            assertThat(contextManager.getStateContext().getClusterState(), is(ClusterState.OK));
+            assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db"));
+            assertThat(contextManager.getStateContext().getState(), is(ShardingSphereState.OK));
             assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getState().getCurrentState(), is(InstanceState.OK));
-            assertTrue(contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).isEmpty());
+            assertTrue(contextManager.getStorageUnits("foo_db").isEmpty());
         }
     }
     
     @Test
-    void assertNewConstructorWithAllArguments() throws Exception {
+    void assertNewConstructorWithAllArguments() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         try (ShardingSphereDataSource actual = createShardingSphereDataSource(new MockedDataSource(connection))) {
             ContextManager contextManager = getContextManager(actual);
-            assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME));
-            assertThat(contextManager.getStateContext().getClusterState(), is(ClusterState.OK));
+            assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db"));
+            assertThat(contextManager.getStateContext().getState(), is(ShardingSphereState.OK));
             assertThat(contextManager.getComputeNodeInstanceContext().getInstance().getState().getCurrentState(), is(InstanceState.OK));
-            assertThat(contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).size(), is(1));
-            assertThat(contextManager.getStorageUnits(DefaultDatabase.LOGIC_NAME).get("ds").getDataSource().getConnection().getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
+            assertThat(contextManager.getStorageUnits("foo_db").size(), is(1));
+            try (Connection storageUnitConnection = contextManager.getStorageUnits("foo_db").get("ds").getDataSource().getConnection()) {
+                assertThat(storageUnitConnection.getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
+            }
         }
     }
     
     @Test
-    void assertRemoveGlobalRuleConfiguration() throws Exception {
+    void assertRemoveGlobalRuleConfiguration() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         CacheOption cacheOption = new CacheOption(1024, 1024L);
         SQLParserRuleConfiguration sqlParserRuleConfig = new SQLParserRuleConfiguration(cacheOption, cacheOption);
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        shardingRuleConfig.setDefaultShardingColumn("user_id");
         try (
-                ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultDatabase.LOGIC_NAME,
-                        null, Collections.singletonMap("ds", new MockedDataSource(connection)), Arrays.asList(mock(ShardingRuleConfiguration.class), sqlParserRuleConfig), new Properties())) {
-            assertThat(getContextManager(actual).getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getConfigurations().size(), is(2));
+                ShardingSphereDataSource actual = new ShardingSphereDataSource("foo_db",
+                        null, Collections.singletonMap("ds", new MockedDataSource(connection)), Arrays.asList(shardingRuleConfig, sqlParserRuleConfig), new Properties())) {
+            assertThat(getContextManager(actual).getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getConfigurations().size(), is(2));
         }
     }
     
     @Test
-    void assertGetConnectionWithUsernameAndPassword() throws Exception {
+    void assertGetConnectionWithUsernameAndPassword() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
-        try (ShardingSphereDataSource actual = createShardingSphereDataSource(new MockedDataSource(connection))) {
-            assertThat(((ShardingSphereConnection) actual.getConnection("", "")).getDatabaseConnectionManager().getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY)
-                    .get(0), is(connection));
+        try (
+                ShardingSphereDataSource actual = createShardingSphereDataSource(new MockedDataSource(connection));
+                ShardingSphereConnection actualConnection = (ShardingSphereConnection) actual.getConnection("", "")) {
+            assertThat(actualConnection.getDatabaseConnectionManager().getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0), is(connection));
         }
     }
     
     private ShardingSphereDataSource createShardingSphereDataSource(final DataSource dataSource) throws SQLException {
-        return new ShardingSphereDataSource(DefaultDatabase.LOGIC_NAME, null, Collections.singletonMap("ds", dataSource), Collections.singleton(mock(RuleConfiguration.class)), new Properties());
+        return new ShardingSphereDataSource("foo_db", null, Collections.singletonMap("ds", dataSource), Collections.singleton(mock(RuleConfiguration.class)), new Properties());
     }
     
     @Test
-    void assertEmptyDataSourceMap() throws Exception {
-        try (ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultDatabase.LOGIC_NAME, null)) {
-            assertTrue(getContextManager(actual).getStorageUnits(DefaultDatabase.LOGIC_NAME).isEmpty());
+    void assertEmptyDataSourceMap() throws SQLException {
+        try (ShardingSphereDataSource actual = new ShardingSphereDataSource("foo_db", null)) {
+            assertTrue(getContextManager(actual).getStorageUnits("foo_db").isEmpty());
             assertThat(actual.getLoginTimeout(), is(0));
         }
     }
     
     @Test
-    void assertNotEmptyDataSourceMap() throws Exception {
+    void assertNotEmptyDataSourceMap() throws SQLException {
         try (ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource())) {
-            assertThat(getContextManager(actual).getStorageUnits(DefaultDatabase.LOGIC_NAME).size(), is(1));
+            assertThat(getContextManager(actual).getStorageUnits("foo_db").size(), is(1));
             assertThat(actual.getLoginTimeout(), is(15));
         }
     }
     
     @Test
-    void assertSetLoginTimeout() throws Exception {
+    void assertSetLoginTimeout() throws SQLException {
         try (ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource())) {
             actual.setLoginTimeout(30);
             assertThat(actual.getLoginTimeout(), is(30));
@@ -129,12 +133,11 @@ class ShardingSphereDataSourceTest {
     }
     
     @Test
-    void assertClose() throws Exception {
+    void assertClose() throws SQLException {
         try (HikariDataSource dataSource = createHikariDataSource()) {
             ShardingSphereDataSource actual = createShardingSphereDataSource(dataSource);
             actual.close();
-            Map<StorageNode, DataSource> dataSourceMap = getContextManager(actual).getMetaDataContexts().getMetaData()
-                    .getDatabase(DefaultDatabase.LOGIC_NAME).getResourceMetaData().getDataSources();
+            Map<StorageNode, DataSource> dataSourceMap = getContextManager(actual).getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getDataSources();
             assertTrue(((HikariDataSource) dataSourceMap.get(new StorageNode("ds"))).isClosed());
         }
     }

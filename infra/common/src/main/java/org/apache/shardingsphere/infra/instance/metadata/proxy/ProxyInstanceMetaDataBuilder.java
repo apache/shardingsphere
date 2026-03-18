@@ -28,7 +28,7 @@ import java.util.UUID;
 public final class ProxyInstanceMetaDataBuilder implements InstanceMetaDataBuilder {
     
     @Override
-    public InstanceMetaData build(final int port) {
+    public InstanceMetaData build(final int port, final String databaseName) {
         return new ProxyInstanceMetaData(UUID.randomUUID().toString(), port);
     }
     

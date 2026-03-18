@@ -33,7 +33,7 @@ public final class WhereClauseAssert {
     
     /**
      * Assert actual where segment is correct with expected where clause.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual where segment
      * @param expected expected where clause

@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="select_group_concat_with_order_by" value="SELECT GROUP_CONCAT(status ORDER BY status) FROM t_order" db-types="MySQL,Doris" />
+    <sql-case id="select_group_concat_with_order_by_for_opengauss" value="SELECT GROUP_CONCAT(status ORDER BY status) FROM t_order" db-types="openGauss" />
+    <sql-case id="select_window_function" value="SELECT order_id, ROW_NUMBER() OVER() FROM t_order" db-types="MySQL" />
+    <sql-case id="select_cast_function" value="SELECT CAST('1' AS UNSIGNED)" db-types="MySQL" />
+    <sql-case id="select_cast_as_year" value="SELECT CAST(-1.1 AS YEAR)" db-types="MySQL" />
+    <sql-case id="select_cast" value="SELECT CAST(c AT TIME ZONE 'UTC' AS DATETIME)" db-types="MySQL" />
+    <sql-case id="select_cast_multiset" value="select CAST(MULTISET(SELECT cust_address FROM customers c WHERE c.customer_id = cd.customer_id) as cust_address_tab_typ) from customer;" db-types="Oracle" />
+    <sql-case id="select_convert_function" value="SELECT CONVERT('2020-10-01', DATE)" db-types="MySQL" />
+    <sql-case id="select_position" value="SELECT POSITION('bar' IN 'foobarbar')" db-types="MySQL" />
+    <sql-case id="select_substring" value="SELECT SUBSTRING('foobarbar' from 4)" db-types="MySQL" />
+    <sql-case id="select_substr" value="SELECT SUBSTR('foobarbar' from 4)" db-types="MySQL" />
+    <sql-case id="select_extract" value="SELECT EXTRACT(YEAR FROM '2019-07-02')" db-types="MySQL" />
+    <sql-case id="select_extract_from_column" value="SELECT EXTRACT(YEAR FROM o.creation_date) FROM t_order o" db-types="MySQL,Presto" />
+    <sql-case id="select_char" value="SELECT CHAR(77,121,83,81,'76')" db-types="MySQL" />
+    <sql-case id="select_chr_using_nchar_cs" value="SELECT CHR (196 USING NCHAR_CS) FROM DUAL;" db-types="Oracle" />
+    <sql-case id="select_trim" value="SELECT TRIM('  bar   ')" db-types="MySQL" />
+    <sql-case id="select_trim_with_both" value="SELECT TRIM(BOTH ' ' from ' bar ')" db-types="MySQL" />
+    <sql-case id="select_with_trim_expr" value="SELECT TRIM('#' FROM `name`) FROM t_order" db-types="MySQL" />
+    <sql-case id="select_with_trim_expr_and_both" value="SELECT TRIM(BOTH '#' FROM `name`) FROM `t_order`" db-types="MySQL" />
+    <sql-case id="select_with_trim_expr_from_expr" value="SELECT TRIM(remove_name FROM name) FROM t_order" db-types="MySQL" />
+    <sql-case id="select_with_trim_expr_from_expr_and_both" value="SELECT TRIM(BOTH `remove_name` FROM `name`) FROM `t_order`" db-types="MySQL" />
+    <sql-case id="select_weight_string" value="SELECT WEIGHT_STRING('bar')" db-types="MySQL" />
+    <sql-case id="select_values" value="SELECT VALUES(order_id) FROM t_order" db-types="MySQL" />
+    <sql-case id="select_current_user_brackets" value="SELECT CURRENT_USER()" db-types="MySQL" />
+    <sql-case id="select_extract_function" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_extract_function_week" value="SELECT EXTRACT(WEEK FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_extract_function_quarter" value="SELECT EXTRACT(QUARTER FROM TIMESTAMP '2001-02-16 20:38:40')" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_extract_function_for_oracle" value="SELECT EXTRACT(YEAR FROM TIMESTAMP '2001-02-16 20:38:40') FROM DUAL" db-types="Oracle" />
+    <sql-case id="select_mod_function" value="SELECT MOD(order_id, 1) from t_order" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_sys_xml_agg" value="SELECT SYS_XMLAGG(SYS_XMLGEN(last_name)) XMLAGG FROM employees WHERE last_name LIKE 'R%' ORDER BY xmlagg;" db-types="Oracle" />
+    <sql-case id="select_set_function" value="SELECT customer_id, SET(cust_address_ntab) address FROM customers_demo ORDER BY customer_id;" db-types="Oracle" />
+    <sql-case id="select_pivot" value="SELECT * FROM (SELECT * FROM sales) PIVOT (SUM(amount) FOR (year, month) IN ((2018, 'Jan'), (2018, 'Feb')))" db-types="Oracle"/>
+    <sql-case id="select_unpivot" value="SELECT * FROM (SELECT * FROM sales) UNPIVOT ((cert_type, cert_number) FOR cert_source IN ((primary_cert_type, primary_cert_no), (alt_cert_type1, alt_cert_no1), (alt_cert_type2, alt_cert_no2)))" db-types="Oracle"/>
+    <sql-case id="select_string_split_function" value="SELECT value as tag, COUNT(*) AS [number_of_articles] FROM Product CROSS APPLY STRING_SPLIT(Tags, ',') GROUP BY value HAVING COUNT(*) > 2 ORDER BY COUNT(*) DESC"  db-types="SQLServer"/>
+    <sql-case id="select_from_open_json_function" value="SELECT * FROM OPENJSON(@array) WITH (  month VARCHAR(3), temp int, month_id tinyint '$.sql:identity()') as months" db-types="SQLServer"/>
+    <sql-case id="select_from_open_json_function_with_path" value="SELECT [key], value FROM OPENJSON(@json,'$.path.to.&quot;sub-object&quot;')" db-types="SQLServer"/>
+    <sql-case id="select_from_open_row_set_with_provider_name" value="SELECT a.* FROM OPENROWSET('Microsoft.Jet.OLEDB.4.0', 'C:\SAMPLES\Northwind.mdb';'admin';'password', Customers) AS a;" db-types="SQLServer"/>
+    <sql-case id="select_from_open_row_set_with_provider_string" value="SELECT d.* FROM OPENROWSET('SQLNCLI','Server=Seattle1;Trusted_Connection=yes;',AdventureWorks2022.HumanResources.Department) AS d;" db-types="SQLServer"/>
+    <sql-case id="select_json_object_simple_key_value" value="SELECT JSON_OBJECT('name':'value', 'type':1)" db-types="SQLServer" />
+    <sql-case id="select_json_object_absent_not_null" value="SELECT JSON_OBJECT('name':'value', 'type':NULL ABSENT ON NULL)" db-types="SQLServer" />
+    <sql-case id="select_json_object_with_json_array" value="SELECT JSON_OBJECT('name':'value', 'type':JSON_ARRAY(1, 2))" db-types="SQLServer" />
+    <sql-case id="select_json_array" value="SELECT JSON_ARRAY(1, 'abc', NULL, TRUE, CURTIME());" db-types="MySQL" />
+    <sql-case id="select_json_array_append" value="SELECT JSON_ARRAY_APPEND('[&quot;a&quot;, [&quot;b&quot;, &quot;c&quot;], &quot;d&quot;]', '$[1]', 1);" db-types="MySQL" />
+    <sql-case id="select_json_array_insert" value="SELECT JSON_ARRAY_INSERT('[&quot;a&quot;, {&quot;b&quot;: [1, 2]}, [3, 4]]', '$[1]', 'x');" db-types="MySQL" />
+    <sql-case id="select_json_arrayagg" value="SELECT o_id, JSON_ARRAYAGG(attribute) AS 'attributes' FROM t3 GROUP BY o_id" db-types="MySQL" />
+    <sql-case id="select_json_contains" value="SELECT JSON_CONTAINS('{&quot;a&quot;: 1, &quot;b&quot;: 2, &quot;c&quot;: {&quot;d&quot;: 4}}', '1', '$.a')" db-types="MySQL" />
+    <sql-case id="select_json_contains_one" value="SELECT JSON_CONTAINS_PATH('{&quot;a&quot;: 1, &quot;b&quot;: 2, &quot;c&quot;: {&quot;d&quot;: 4}}', 'one', '$.a', '$.e')" db-types="MySQL" />
+    <sql-case id="select_json_contains_all" value="SELECT JSON_CONTAINS_PATH('{&quot;a&quot;: 1, &quot;b&quot;: 2, &quot;c&quot;: {&quot;d&quot;: 4}}', 'all', '$.a', '$.e')" db-types="MySQL" />
+    <sql-case id="select_json_depth" value="SELECT JSON_DEPTH('[10, {&quot;a&quot;: 20}]')" db-types="MySQL" />
+    <sql-case id="select_json_extract" value="SELECT JSON_EXTRACT('[10, 20, [30, 40]]', '$[1]', '$[0]')" db-types="MySQL" />
+    <sql-case id="select_json_keys" value="SELECT JSON_KEYS('{&quot;a&quot;: 1, &quot;b&quot;: {&quot;c&quot;: 30}}')" db-types="MySQL" />
+    <sql-case id="select_json_length" value="SELECT JSON_LENGTH('[1, 2, {&quot;a&quot;: 3}]')" db-types="MySQL" />
+    <sql-case id="select_json_merge" value="SELECT JSON_MERGE('[1, 2]', '[true, false]')" db-types="MySQL" />
+    <sql-case id="select_json_merge_patch" value="SELECT JSON_MERGE_PATCH('[1, 2]', '[true, false]')" db-types="MySQL" />
+    <sql-case id="select_json_merge_preserve" value="SELECT JSON_MERGE_PRESERVE('[1, 2]', '[true, false]')" db-types="MySQL" />
+    <sql-case id="select_nest_json_object" value="SELECT JSON_OBJECT('name':'value', 'type':JSON_OBJECT('type_id':1, 'name':'a'))" db-types="SQLServer" />
+    <sql-case id="select_json_object_with_subquery" value="SELECT JSON_OBJECT('user_name':USER_NAME(), @id_key:@id_value, 'sid':(SELECT @@SPID))" db-types="SQLServer" />
+    <sql-case id="select_dm_exec_sessions_with_json_object_function" value="SELECT s.session_id, JSON_OBJECT('security_id':s.security_id, 'login':s.login_name, 'status':s.status) as info FROM sys.dm_exec_sessions AS s WHERE s.is_user_process = 1" db-types="SQLServer" />
+    <sql-case id="select_first_last_value_function" value="SELECT BusinessEntityID, DATEPART(QUARTER, QuotaDate) AS Quarter, YEAR(QuotaDate) AS SalesYear, SalesQuota AS QuotaThisQuarter, SalesQuota - FIRST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate)) AS DifferenceFromFirstQuarter, SalesQuota - LAST_VALUE(SalesQuota) OVER (PARTITION BY BusinessEntityID, YEAR(QuotaDate) ORDER BY DATEPART(QUARTER, QuotaDate) RANGE BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING) AS DifferenceFromLastQuarter FROM Sales.SalesPersonQuotaHistory WHERE YEAR(QuotaDate) > 2005 AND BusinessEntityID BETWEEN 274 AND 275 ORDER BY BusinessEntityID, SalesYear, Quarter" db-types="SQLServer" />
+    <sql-case id="select_approx_percentile_cont_function" value="SELECT DeptId,APPROX_PERCENTILE_CONT(0.10) WITHIN GROUP(ORDER BY Salary) AS 'P10',APPROX_PERCENTILE_CONT(0.90) WITHIN GROUP(ORDER BY Salary) AS 'P90' FROM tblEmployee GROUP BY DeptId" db-types="SQLServer" />
+    <sql-case id="select_wm_concat_function_with_schema" value="SELECT TO_CHAR(WMSYS.WM_CONCAT(DISTINCT o.status)) FROM t_order o GROUP BY o.order_id" db-types="Oracle" />
+    <sql-case id="select_add_date" value="SELECT ADDDATE('2008-01-02', 31)" db-types="MySQL" />
+    <sql-case id="select_add_time" value="SELECT ADDTIME('2007-12-31 23:59:59.999999', '1 1:1:1.000002')" db-types="MySQL" />
+    <sql-case id="select_aes_decrypt" value="SELECT AES_DECRYPT('encrypt_text','key_str')" db-types="MySQL" />
+    <sql-case id="select_any_value" value="SELECT ANY_VALUE(age) FROM t" db-types="MySQL" />
+    <sql-case id="select_ascii" value="SELECT ASCII('2')" db-types="MySQL" />
+    <sql-case id="select_bin" value="SELECT BIN(12)" db-types="MySQL" />
+    <sql-case id="select_bin_uuid" value="SELECT BIN_TO_UUID(UUID_TO_BIN('6ccd780c-baba-1026-9564-5b8c656024db'))" db-types="MySQL" />
+    <sql-case id="select_bit_length" value="SELECT BIT_LENGTH(1)" db-types="MySQL" />
+    <sql-case id="select_bit_count" value="SELECT BIT_COUNT(1)" db-types="MySQL" />
+    <sql-case id="select_ceil" value="SELECT CEIL(1.1)" db-types="MySQL" />
+    <sql-case id="select_ceiling" value="SELECT CEILING(1.1)" db-types="MySQL" />
+    <sql-case id="select_with_uuid_function" value="SELECT UUID();" db-types="MySQL"/>
+    <sql-case id="select_with_uuid_short_function" value="SELECT UUID_SHORT();" db-types="MySQL"/>
+    <sql-case id="select_with_uuid_to_bin_function" value="SELECT UUID_TO_BIN('6ccd780c-baba-1026-9564-5b8c656024db', 0);" db-types="MySQL"/>
+    <sql-case id="select_with_validate_password_strength_function" value="SELECT VALIDATE_PASSWORD_STRENGTH('N0Tweak$_@123!');" db-types="MySQL"/>
+    <sql-case id="select_with_var_pop_function" value="SELECT VAR_POP(s.year) FROM sales_view s;" db-types="MySQL"/>
+    <sql-case id="select_with_var_samp_function" value="SELECT VAR_SAMP(s.year) FROM sales_view s;" db-types="MySQL"/>
+    <sql-case id="select_with_variance_function" value="SELECT VARIANCE(s.year) FROM sales_view s;" db-types="MySQL"/>
+    <sql-case id="select_with_version_function" value="SELECT VERSION();" db-types="MySQL"/>
+    <sql-case id="select_with_wait_for_executed_gtid_set_function" value="SELECT WAIT_FOR_EXECUTED_GTID_SET('3E11FA47-71CA-11E1-9E33-C80AA9429562:1-5');" db-types="MySQL"/>
+    <sql-case id="select_with_wait_until_sql_thread_after_gtids_function" value="SELECT WAIT_UNTIL_SQL_THREAD_AFTER_GTIDS('3E11FA47-71CA-11E1-9E33-C80AA9429562:1-5');" db-types="MySQL"/>
+    <sql-case id="select_with_week_function" value="SELECT WEEK('2018-02-20',1);" db-types="MySQL"/>
+    <sql-case id="select_with_weekday_function" value="SELECT WEEKDAY('2017-02-03 22:23:00');" db-types="MySQL"/>
+    <sql-case id="select_with_weekofyear_function" value="SELECT WEEKOFYEAR('2019-02-20');" db-types="MySQL"/>
+    <sql-case id="select_with_xor_function" value="SELECT 1 XOR NULL;" db-types="MySQL"/>
+    <sql-case id="select_with_year_function" value="SELECT YEAR('1999-09-09');" db-types="MySQL"/>
+    <sql-case id="select_with_yearweek_function" value="SELECT YEARWEEK('1988-08-08');" db-types="MySQL"/>
+    <sql-case id="select_with_weight_string_function" value="SELECT HEX(WEIGHT_STRING('MySQL'));" db-types="MySQL"/>
+    <sql-case id="select_row_number" value="SELECT ROW_NUMBER() OVER w FROM t_order" db-types="MySQL" />
+    <sql-case id="select_rpad" value="SELECT RPAD('Hello', 10, '*')" db-types="MySQL" />
+    <sql-case id="select_rtrim" value="SELECT RTRIM('  Hello  ')" db-types="MySQL" />
+    <sql-case id="select_schema" value="SELECT SCHEMA()" db-types="MySQL" />
+    <sql-case id="select_sec_to_time" value="SELECT SEC_TO_TIME(3600)" db-types="MySQL" />
+    <sql-case id="select_second" value="SELECT SECOND('2020-06-10 12:34:56')" db-types="MySQL" />
+    <sql-case id="select_session_user" value="SELECT SESSION_USER()" db-types="MySQL" />
+    <sql-case id="select_sha" value="SELECT SHA('test_string')" db-types="MySQL" />
+    <sql-case id="select_sign" value="SELECT SIGN(-5)" db-types="MySQL" />
+    <sql-case id="select_sin" value="SELECT SIN(0.5)" db-types="MySQL" />
+    <sql-case id="select_sleep" value="SELECT SLEEP(5)" db-types="MySQL" />
+    <sql-case id="select_char_length" value="SELECT CHAR_LENGTH('str')" db-types="MySQL" />
+    <sql-case id="select_character_length" value="SELECT CHARACTER_LENGTH('str')" db-types="MySQL" />
+    <sql-case id="select_charset" value="SELECT CHARSET('str')" db-types="MySQL" />
+    <sql-case id="select_coalesce" value="SELECT COALESCE(null, 1)" db-types="MySQL" />
+    <sql-case id="select_coercibility" value="SELECT COERCIBILITY('str')" db-types="MySQL" />
+    <sql-case id="select_collation" value="SELECT COLLATION('str')" db-types="MySQL" />
+    <sql-case id="select_compress" value="SELECT COMPRESS('str')" db-types="MySQL" />
+    <sql-case id="select_concat" value="SELECT CONCAT('My', 'S', 'QL')" db-types="MySQL" />
+    <sql-case id="select_concat_ws" value="SELECT CONCAT_WS(',', 'First name', 'Second name', 'Last Name')" db-types="MySQL" />
+    <sql-case id="select_connection_id" value="SELECT CONNECTION_ID()" db-types="MySQL" />
+    <sql-case id="select_conv" value="SELECT CONV('a',16,2)" db-types="MySQL" />
+    <sql-case id="select_convert_function_using_character_set" value="SELECT CONVERT('abc' USING utf8mb4)" db-types="MySQL" />
+    <sql-case id="select_convert_tz_function" value="SELECT CONVERT_TZ('2004-01-01 12:00:00','GMT','MET')" db-types="MySQL" />
+    <sql-case id="select_cos_function" value="SELECT COS(PI())" db-types="MySQL" />
+    <sql-case id="select_cot_function" value="SELECT COT(12)" db-types="MySQL" />
+    <sql-case id="select_crc32_function" value="SELECT CRC32('MySQL')" db-types="MySQL" />
+    <sql-case id="select_window_with_cume_dist_function" value="SELECT val, CUME_DIST() OVER() FROM numbers" db-types="MySQL" />
+    <sql-case id="select_curdate_function" value="SELECT CURDATE()" db-types="MySQL" />
+    <sql-case id="select_current_date_function" value="SELECT CURRENT_DATE()" db-types="MySQL" />
+    <sql-case id="select_current_time_function" value="SELECT CURRENT_TIME()" db-types="MySQL" />
+    <sql-case id="select_current_timestamp_function" value="SELECT CURRENT_TIMESTAMP()" db-types="MySQL" />
+    <sql-case id="select_curtime_function" value="SELECT CURTIME()" db-types="MySQL" />
+    <sql-case id="select_date_function" value="SELECT DATE('2003-12-31 01:02:03')" db-types="MySQL" />
+    <sql-case id="select_date_add_function" value="SELECT DATE_ADD('2018-05-01',INTERVAL 1 DAY)" db-types="MySQL" />
+    <sql-case id="select_date_format_function" value="SELECT DATE_FORMAT('2009-10-04 22:23:00', '%W %M %Y')" db-types="MySQL" />
+    <sql-case id="select_date_sub_function" value="SELECT DATE_SUB('2018-05-01',INTERVAL 1 DAY)" db-types="MySQL" />
+    <sql-case id="select_datediff_function" value="SELECT DATEDIFF('2007-12-31 23:59:59','2007-12-30')" db-types="MySQL" />
+    <sql-case id="select_day_function" value="SELECT DAY('2007-02-03')" db-types="MySQL" />
+    <sql-case id="select_dayname_function" value="SELECT DAYNAME('2007-02-03')" db-types="MySQL" />
+    <sql-case id="select_dayofmonth_function" value="SELECT DAYOFMONTH('2007-02-03')" db-types="MySQL" />
+    <sql-case id="select_dayofweek_function" value="SELECT DAYOFWEEK('2007-02-03')" db-types="MySQL" />
+    <sql-case id="select_dayofyear_function" value="SELECT DAYOFYEAR('2007-02-03')" db-types="MySQL" />
+    <sql-case id="select_default_function" value="SELECT DEFAULT(val) FROM numbers" db-types="MySQL" />
+    <sql-case id="select_degrees_function" value="SELECT DEGREES(PI())" db-types="MySQL" />
+    <sql-case id="select_window_with_dense_rank_function" value="SELECT val, DENSE_RANK() OVER() FROM numbers" db-types="MySQL" />
+    <sql-case id="select_elt" value="SELECT ELT(1, 'Aa', 'Bb')" db-types="MySQL" />
+    <sql-case id="select_exp" value="SELECT EXP(2)" db-types="MySQL" />
+    <sql-case id="select_export_set" value="SELECT EXPORT_SET(5,'Y','N',',',4)" db-types="MySQL" />
+    <sql-case id="select_extractvalue" value="SELECT ExtractValue('&lt;a&gt;&lt;b/&gt;&lt;/a&gt;', '/a/b')" db-types="MySQL" />
+    <sql-case id="select_field" value="SELECT FIELD('Bb', 'Aa', 'Bb')" db-types="MySQL" />
+    <sql-case id="select_find_in_set" value="SELECT FIND_IN_SET('b','a,b,c,d')" db-types="MySQL" />
+    <sql-case id="select_first_value" value="SELECT FIRST_VALUE(name) OVER (ORDER BY id) FROM t_order" db-types="MySQL" />
+    <sql-case id="select_floor" value="SELECT FLOOR(1.23)" db-types="MySQL" />
+    <sql-case id="select_format" value="SELECT FORMAT(12332.123456, 4)" db-types="MySQL" />
+    <sql-case id="select_format_bytes" value="SELECT FORMAT_BYTES(512)" db-types="MySQL" />
+    <sql-case id="select_json_parse" value="SELECT JSON_PARSE('{&quot;k1&quot;:&quot;v31&quot;,&quot;k2&quot;:300}')" db-types="Doris" />
+    <sql-case id="select_json_parse_error_to_null" value="SELECT JSON_PARSE('invalid json')" db-types="Doris" />
+    <sql-case id="select_json_parse_error_to_value" value="SELECT JSON_PARSE('invalid json', '{}')" db-types="Doris" />
+    <sql-case id="select_std" value="SELECT STD(1)" db-types="MySQL" />
+    <sql-case id="select_stddev" value="SELECT STDDEV(1)" db-types="MySQL" />
+    <sql-case id="select_stddev_pop" value="SELECT STDDEV_POP(1)" db-types="MySQL" />
+    <sql-case id="select_stddev_samp" value="SELECT STDDEV_SAMP(1)" db-types="MySQL" />
+    <sql-case id="select_str_to_date" value="SELECT STR_TO_DATE('01,5,2013','%d,%m,%Y')" db-types="MySQL" />
+    <sql-case id="select_strcmp" value="SELECT STRCMP('text', 'text2')" db-types="MySQL" />
+    <sql-case id="select_subdate" value="SELECT SUBDATE('2008-01-02 12:00:00', 31)" db-types="MySQL" />
+    <sql-case id="select_subtime" value="SELECT SUBTIME('2007-12-31 23:59:59.999999','1 1:1:1.000002')" db-types="MySQL" />
+    <sql-case id="select_sysdate" value="SELECT SYSDATE()" db-types="MySQL" />
+    <sql-case id="select_format_pico_time" value="SELECT FORMAT_PICO_TIME(3501)" db-types="MySQL" />
+    <sql-case id="select_found_rows" value="SELECT FOUND_ROWS()" db-types="MySQL" />
+    <sql-case id="select_from_base64" value="SELECT FROM_BASE64(TO_BASE64('abc'))" db-types="MySQL" />
+    <sql-case id="select_from_days" value="SELECT FROM_DAYS(730669)" db-types="MySQL" />
+    <sql-case id="select_from_unixtime" value="SELECT FROM_UNIXTIME(1447430881)" db-types="MySQL" />
+    <sql-case id="select_get_format" value="SELECT GET_FORMAT(DATE, 'EUR')" db-types="MySQL" />
+    <sql-case id="select_get_lock" value="SELECT GET_LOCK('lock1',10)" db-types="MySQL" />
+    <sql-case id="select_greatest" value="SELECT GREATEST(2,0)" db-types="MySQL" />
+    <sql-case id="select_grouping" value="SELECT GROUPING(status) FROM t_order order by status" db-types="MySQL" />
+    <sql-case id="select_gtid_subset" value="SELECT GTID_SUBSET('3E11FA47-71CA-11E1-9E33-C80AA9429562:23','3E11FA47-71CA-11E1-9E33-C80AA9429562:21-57')" db-types="MySQL" />
+    <sql-case id="select_gtid_subtract" value="SELECT GTID_SUBTRACT('3E11FA47-71CA-11E1-9E33-C80AA9429562:21-57','3E11FA47-71CA-11E1-9E33-C80AA9429562:21')" db-types="MySQL" />
+    <sql-case id="select_hex" value="SELECT HEX('abc')" db-types="MySQL" />
+    <sql-case id="select_hour" value="SELECT HOUR('10:05:03')" db-types="MySQL" />
+    <sql-case id="select_is_ipv4" value="SELECT IS_IPV4('10.0.5.9')" db-types="MySQL" />
+    <sql-case id="select_is_ipv4_compat" value="SELECT IS_IPV4_COMPAT(INET6_ATON('::10.0.5.9'))" db-types="MySQL" />
+    <sql-case id="select_is_ipv4_mapped" value="SELECT IS_IPV4_MAPPED(INET6_ATON('::10.0.5.9'))" db-types="MySQL" />
+    <sql-case id="select_is_ipv6" value="SELECT IS_IPV6('10.0.5.9')" db-types="MySQL" />
+    <sql-case id="select_is_free_lock" value="SELECT IS_FREE_LOCK('lock1')" db-types="MySQL" />
+    <sql-case id="select_is_used_lock" value="SELECT IS_USED_LOCK('lock1')" db-types="MySQL" />
+    <sql-case id="select_is_null" value="SELECT ISNULL(1+1)" db-types="MySQL" />
+    <sql-case id="select_is_not_null" value="SELECT 1 IS NOT NULL" db-types="MySQL" />
+    <sql-case id="select_is_uuid" value="SELECT IS_UUID('6ccd780c-baba-1026-9564-5b8c656024db')" db-types="MySQL" />
+    <sql-case id="select_random_bytes" value="SELECT RANDOM_BYTES(16)" db-types="MySQL" />
+    <sql-case id="select_rank" value="SELECT RANK() FROM numbers" db-types="MySQL" />
+    <sql-case id="select_regexp_instr" value="SELECT REGEXP_INSTR('dog cat dog', 'dog')" db-types="MySQL" />
+    <sql-case id="select_regexp_like" value="SELECT REGEXP_LIKE('CamelCase', 'CAMELCASE')" db-types="MySQL" />
+    <sql-case id="select_regexp_replace" value="SELECT REGEXP_REPLACE('a b c', 'b', 'X')" db-types="MySQL" />
+    <sql-case id="select_regexp_substr" value="SELECT REGEXP_SUBSTR('abc def ghi', '[a-z]+')" db-types="MySQL" />
+    <sql-case id="select_release_lock" value="SELECT RELEASE_LOCK('lock1')" db-types="MySQL" />
+    <sql-case id="select_release_all_locks" value="SELECT RELEASE_ALL_LOCKS()" db-types="MySQL" />
+    <sql-case id="select_repeat" value="SELECT REPEAT('MySQL', 3)" db-types="MySQL" />
+    <sql-case id="select_replace" value="SELECT REPLACE('www.mysql.com', 'w', 'Ww')" db-types="MySQL" />
+    <sql-case id="select_reverse" value="SELECT REVERSE('abc')" db-types="MySQL" />
+    <sql-case id="select_right" value="SELECT RIGHT('foobarbar', 4)" db-types="MySQL, Doris" />
+    <sql-case id="select_roles_graphml" value="SELECT ROLES_GRAPHML()" db-types="MySQL" />
+    <sql-case id="select_round" value="SELECT ROUND(1.58)" db-types="MySQL" />
+    <sql-case id="select_row_count" value="SELECT ROW_COUNT()" db-types="MySQL" />
+    <sql-case id="select_md5" value="SELECT MD5('testing')" db-types="MySQL,Doris" />
+    <sql-case id="select_member_of" value="SELECT 'ab' MEMBER OF('[23, &quot;abc&quot;, 17, &quot;ab&quot;, 10]')" db-types="MySQL" />
+    <sql-case id="select_microsecond" value="SELECT MICROSECOND('12:00:00.123456')" db-types="MySQL" />
+    <sql-case id="select_mid" value="SELECT MID('foobarbar' from 4)" db-types="MySQL" />
+    <sql-case id="select_minute" value="SELECT MINUTE('2008-02-03 10:05:03')" db-types="MySQL,Doris" />
+    <sql-case id="select_mod" value="SELECT MOD(234, 10)" db-types="MySQL,Doris" />
+    <sql-case id="select_month" value="SELECT MONTH('2008-02-03')" db-types="MySQL,Doris" />
+    <sql-case id="select_monthname" value="SELECT MONTHNAME('2008-02-03')" db-types="MySQL,Doris" />
+    <sql-case id="select_multilinestring" value="SELECT MultiLineString(ST_GeomFromText('LineString(1 1, 2 2)'),ST_GeomFromText('LineString(1 1, 2 2)'))" db-types="MySQL" />
+    <sql-case id="select_multipoint" value="SELECT MultiPoint(point(1,1),point(1,1))" db-types="MySQL" />
+    <sql-case id="select_multipolygon" value="SELECT MultiPolygon(ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))'),ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))'))" db-types="MySQL" />
+    <sql-case id="select_polygon" value="SELECT ST_GeomFromText('Polygon((0 0, 1 0, 1 1, 0 1, 0 0))')" db-types="MySQL" />
+    <sql-case id="select_point" value="SELECT Point(1,1)" db-types="MySQL" />
+    <sql-case id="select_ps_current_thread_id" value="SELECT PS_CURRENT_THREAD_ID()" db-types="MySQL" />
+    <sql-case id="select_ps_thread_id" value="SELECT PS_THREAD_ID(5)" db-types="MySQL" />
+    <sql-case id="select_quote" value="SELECT QUOTE('Don\'t!')" db-types="MySQL" />
+    <sql-case id="select_from_table_function" value="SELECT * FROM GENERATE_SERIES(1, name)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_json_objectagg" value="SELECT JSON_OBJECTAGG(attribute, value) FROM t GROUP BY id" db-types="MySQL" />
+    <sql-case id="select_json_overlaps" value="SELECT JSON_OVERLAPS(&quot;[1,3,5,7]&quot;, &quot;[2,5,7]&quot;)" db-types="MySQL" />
+    <sql-case id="select_json_pretty" value="SELECT JSON_PRETTY('123')" db-types="MySQL" />
+    <sql-case id="select_json_quote" value="SELECT JSON_QUOTE('a')" db-types="MySQL,Doris" />
+    <sql-case id="select_json_remove" value="SELECT JSON_REMOVE('[&quot;a&quot;, &quot;b&quot;, &quot;d&quot;]', '$[0]')" db-types="MySQL" />
+    <sql-case id="select_json_replace" value="SELECT JSON_REPLACE('{ &quot;a&quot;: 1, &quot;b&quot;: &quot;2&quot;}', '$.a', 10)" db-types="MySQL" />
+    <sql-case id="select_json_schema_valid" value="SELECT JSON_SCHEMA_VALID('{&quot;type&quot;:&quot;object&quot;,&quot;required&quot;:[&quot;name&quot;,&quot;value&quot;]}','{&quot;name&quot;:&quot;a&quot;,&quot;value&quot;:10}')" db-types="MySQL" />
+    <sql-case id="select_json_schema_validation_report" value="SELECT JSON_SCHEMA_VALIDATION_REPORT('{&quot;type&quot;:&quot;object&quot;,&quot;required&quot;:[&quot;name&quot;,&quot;value&quot;]}','{&quot;name&quot;:&quot;a&quot;,&quot;value&quot;:10}')" db-types="MySQL" />
+    <sql-case id="select_json_search" value="SELECT JSON_SEARCH('[&quot;abc&quot;,{&quot;x&quot;:&quot;abc&quot;}]', 'one', 'abc')" db-types="MySQL" />
+    <sql-case id="select_json_set" value="SELECT JSON_SET('{&quot;a&quot;:1,&quot;b&quot;:[2,3]}','$.c',10)" db-types="MySQL" />
+    <sql-case id="select_json_storage_free" value="SELECT JSON_STORAGE_FREE(json_col) FROM t" db-types="MySQL" />
+    <sql-case id="select_json_storage_size" value="SELECT JSON_STORAGE_SIZE(json_col) FROM t" db-types="MySQL" />
+    <sql-case id="select_json_table" value="SELECT * FROM JSON_TABLE('[{&quot;name&quot;: 2}]','$[*]' COLUMNS( name INT PATH '$.name' error on empty)) as t" db-types="MySQL" />
+    <sql-case id="select_json_table_with_path" value="SELECT * FROM JSON_TABLE('[]', '$[*]' COLUMNS (p NCHAR PATH '$.a')) AS t" db-types="MySQL" />
+    <sql-case id="select_json_type" value="SELECT JSON_TYPE('[1,2,3]')" db-types="MySQL" />
+    <sql-case id="select_json_unquote" value="SELECT JSON_UNQUOTE('&quot;abc&quot;')" db-types="MySQL" />
+    <sql-case id="select_json_valid" value="SELECT JSON_VALID('{&quot;a&quot;: 1}')" db-types="MySQL" />
+    <sql-case id="select_json_value" value="SELECT JSON_VALUE('{&quot;price&quot;: &quot;49.95&quot;}', '$.price' RETURNING DECIMAL(4,1) null on empty default 0 on error)" db-types="MySQL" />
+    <sql-case id="select_st_difference" value="SELECT ST_Difference(Point(1,1), Point(2,2))" db-types="MySQL" />
+    <sql-case id="select_st_dimension" value="SELECT ST_Dimension(ST_GeomFromText('LineString(1 1,2 2)'))" db-types="MySQL" />
+    <sql-case id="select_st_disjoint" value="SELECT ST_Disjoint(Point(1,1),Point(2,2))" db-types="MySQL" />
+    <sql-case id="select_st_distance" value="SELECT ST_Distance(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(1 1)'))" db-types="MySQL" />
+    <sql-case id="select_st_distance_sphere" value="SELECT ST_Distance_Sphere(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(1 1)'))" db-types="MySQL" />
+    <sql-case id="doris_select_st_distance_sphere" value="select st_distance_sphere(116, 39, 116, 40)" db-types="Doris" />
+    <sql-case id="select_st_endpoint" value="SELECT ST_EndPoint(ST_GeomFromText('LineString(1 1,2 2)'))" db-types="MySQL" />
+    <sql-case id="select_st_envelope" value="SELECT ST_Envelope(ST_GeomFromText('LineString(1 1,2 2)'))" db-types="MySQL" />
+    <sql-case id="select_st_equals" value="SELECT ST_Equals(Point(1,1), Point(2,2))" db-types="MySQL" />
+    <sql-case id="select_st_exteriorring" value="SELECT ST_ExteriorRing(ST_GeomFromText('Polygon((0 0,0 3,3 3,3 0,0 0),(1 1,1 2,2 2,2 1,1 1))'))" db-types="MySQL" />
+    <sql-case id="select_st_frechetdistance" value="SELECT ST_FrechetDistance(ST_GeomFromText('LINESTRING(0 0,0 0,0 0,0 0)'), ST_GeomFromText('LINESTRING(2 2,2 2,2 2,2 2)'))" db-types="MySQL" />
+    <sql-case id="select_st_geohash" value="SELECT ST_GeoHash(180,0,10)" db-types="MySQL" />
+    <sql-case id="select_st_geomcollfromtext" value="SELECT ST_GeomCollFromText('MULTILINESTRING((10 10, 11 11), (9 9, 10 10))')" db-types="MySQL" />
+    <sql-case id="select_st_geometrycollectionfromwkb" value="SELECT ST_GeometryCollectionFromWKB(0x0107000000020000000103000000010000000400000000000000000014400000000000001440000000000000244000000000000014400000000000002440000000000000244000000000000014400000000000001440010100000000000000000024400000000000002440)" db-types="MySQL" />
+    <sql-case id="select_st_geometryn" value="SELECT ST_GeometryN(ST_GeomFromText('GeometryCollection(Point(1 1),LineString(2 2, 3 3))'),1)" db-types="MySQL" />
+    <sql-case id="select_st_geometrytype" value="SELECT ST_GeometryType(ST_GeomFromText('POINT(1 1)'))" db-types="MySQL" />
+    <sql-case id="select_st_geomfromgeojson" value="SELECT ST_GeomFromGeoJSON('{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[102.0, 0.0]}')" db-types="MySQL" />
+    <sql-case id="select_soundex" value="SELECT SOUNDEX('Hello')" db-types="MySQL,Doris" />
+    <sql-case id="select_space" value="SELECT SPACE(6)" db-types="MySQL,Doris" />
+    <sql-case id="select_sqrt" value="SELECT SQRT(4)" db-types="MySQL,Doris" />
+    <sql-case id="select_st_area" value="SELECT ST_Area(ST_GeomFromText('Polygon((0 0,0 3,3 0,0 0),(1 1,1 2,2 1,1 1))'))" db-types="MySQL,Doris" />
+    <sql-case id="select_st_asbinary" value="SELECT ST_AsBinary(POINT(1, 1))" db-types="MySQL,Doris" />
+    <sql-case id="select_st_asgeojson" value="SELECT ST_AsGeoJSON(ST_GeomFromText('POINT(11.11111 12.22222)'),2)" db-types="MySQL,Doris" />
+    <sql-case id="select_st_astext" value="SELECT ST_AsText(ST_GeomFromText('LineString(1 1,2 2,3 3)'))" db-types="MySQL,Doris" />
+    <sql-case id="select_st_buffer" value="SELECT ST_Buffer(ST_GeomFromText('POINT(0 0)'), 0)" db-types="MySQL,Doris" />
+    <sql-case id="select_st_buffer_strategy" value="SELECT ST_Buffer_Strategy('end_flat')" db-types="MySQL,Doris" />
+    <sql-case id="select_st_centroid" value="SELECT ST_Centroid(ST_GeomFromText('POLYGON((0 0,0 3,3 3,3 0,0 0))'))" db-types="MySQ,Doris" />
+    <sql-case id="select_st_contains" value="SELECT ST_Contains(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(2 1)'))" db-types="MySQL,Doris" />
+    <sql-case id="select_st_convexhull" value="SELECT ST_ConvexHull(ST_GeomFromText('MULTIPOINT(5 0,25 0,15 10,15 25)'))" db-types="MySQL,Doris" />
+    <sql-case id="select_st_crosses" value="SELECT ST_Crosses(ST_GeomFromText('POINT(1 1)'), ST_GeomFromText('POINT(2 2)'))" db-types="MySQL,Doris" />
+    <sql-case id="select_bitxor" value="SELECT BITXOR(3,5)" db-types="Doris" />
+    <sql-case id="select_instr" value="SELECT INSTR('foobar','bar')" db-types="Doris" />
+    <sql-case id="select_strright" value="SELECT STRRIGHT('foobarbar',4)" db-types="Doris" />
+    <sql-case id="select_extract_url_parameter" value="SELECT EXTRACT_URL_PARAMETER('http://foo.com/?bar=baz','bar')" db-types="Doris" />
+    <sql-case id="select_last_insert_id" value="SELECT LAST_INSERT_ID()" db-types="MySQL" />
+    <sql-case id="select_last_value" value="SELECT LAST_VALUE(AGE) OVER (PARTITION BY AGE ORDER BY AGE) from TEST" db-types="MySQL" />
+    <sql-case id="select_lcase_function" value="SELECT LCASE('QUADRATICALLY')" db-types="MySQL" />
+    <sql-case id="select_lower_function" value="SELECT LOWER('QUADRATICALLY')" db-types="MySQL" />
+    <sql-case id="select_length" value="SELECT LENGTH('TEXT')" db-types="MySQL" />
+    <sql-case id="select_locate" value="SELECT LOCATE('bar','foobarbar')" db-types="MySQL" />
+    <sql-case id="select_localtime" value="SELECT LOCALTIME()" db-types="MySQL" />
+    <sql-case id="select_localtimestamp" value="SELECT LOCALTIMESTAMP()" db-types="MySQL" />
+    <sql-case id="select_lpad" value="SELECT LPAD('hi',4,'??')" db-types="MySQL" />
+    <sql-case id="select_prediction_cost" value="SELECT cust_id FROM mining_data_apply_v WHERE country_name = 'Italy' ORDER BY PREDICTION_COST(DT_SH_Clas_sample, 1 COST MODEL USING *)" db-types="Oracle" />
+    <sql-case id="select_name_const" value="SELECT NAME_CONST('myname',14)" db-types="MySQL" />
+    <sql-case id="select_not_in" value="SELECT (3,4) NOT IN ((1,2), (3,4))" db-types="MySQL" />
+    <sql-case id="select_not_like" value="SELECT 'hello world' NOT LIKE '%test%'" db-types="MySQL" />
+    <sql-case id="select_now" value="SELECT NOW()" db-types="MySQL" />
+    <sql-case id="select_nth_value" value="SELECT NTH_VALUE(salary, 3) OVER (ORDER BY salary) AS third_highest_salary FROM employees" db-types="MySQL" />
+    <sql-case id="select_nullif" value="SELECT NULLIF(1,1)" db-types="MySQL" />
+    <sql-case id="select_oct" value="SELECT OCT(12)" db-types="MySQL" />
+    <sql-case id="select_octet_length" value="SELECT OCTET_LENGTH('text')" db-types="MySQL" />
+    <sql-case id="select_ord" value="SELECT ORD('2')" db-types="MySQL" />
+    <sql-case id="select_period_add" value="SELECT PERIOD_ADD(200801,2)" db-types="MySQL" />
+    <sql-case id="select_period_diff" value="SELECT PERIOD_DIFF(200802,200703)" db-types="MySQL" />
+    <sql-case id="select_percent_rank" value="SELECT PERCENT_RANK() OVER (ORDER BY salary) FROM employees;" db-types="MySQL" />
+    <sql-case id="select_pi" value="SELECT PI()" db-types="MySQL" />
+    <sql-case id="select_regexp" value="SELECT 'a' REGEXP '^[a-d]'" db-types="MySQL" />
+    <sql-case id="select_with_json_object_function" value="SELECT JSON_OBJECT('name' VALUE 'John', 'age' VALUE 30) AS json_data FROM DUAL" db-types="Oracle" />
+</sql-cases>

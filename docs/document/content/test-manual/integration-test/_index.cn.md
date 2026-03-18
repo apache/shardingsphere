@@ -25,11 +25,10 @@ weight = 1
   - Embed 环境由测试框架自动搭建嵌入式 MySQL，适用于 ShardingSphere-JDBC 的本地环境测试。
 
 当前默认采用 Docker 环境，使用 Testcontainer 创建运行时环境并执行测试用例。
-未来将采用 Embed 环境的 ShardingSphere-JDBC + MySQL，替换 Native 执行测试用例的默认环境类型。
 
 数据库类型目前支持 MySQL、PostgreSQL、SQLServer 和 Oracle，并且可以支持使用 ShardingSphere-JDBC 或是使用 ShardingSphere-Proxy 执行测试用例。
 
-场景用于对 ShardingSphere 支持规则进行测试，目前支持数据分片和读写分离的相关场景，未来会不断完善场景的组合。
+场景用于对 ShardingSphere 支持规则进行测试，目前支持数据分片、数据加密、数据脱敏和读写分离的相关场景，未来会不断完善场景的组合。
 
 ### 测试引擎
 
@@ -53,20 +52,28 @@ weight = 1
 
 ### 测试用例配置
 
-SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xml`。
+SQL 用例在 `resources/cases/${SQL-TYPE}/e2e-${SQL-TYPE}-${cases-description}.xml`。
 
 用例文件格式如下：
 
 ```xml
-<integration-test-cases>
+<e2e-test-cases>
+    <test-case sql="${SQL}">
+        <!-- 查询场景 -->
+        <assertion parameters="${value_1}:${type_1}, ${value_2}:${type_2}" expected-data-source-name="{datasource-name}" />
+        <!-- 非查询场景 -->
+        <assertion parameters="${value_1}:${type_1}, ${value_2}:${type_2}" expected-data-file="${dataset_file_1}.xml" />
+        <!-- ... more assertions -->
+    </test-case>
+
     <test-case sql="${SQL}">
         <assertion parameters="${value_1}:${type_1}, ${value_2}:${type_2}" expected-data-file="${dataset_file_1}.xml" />
         <!-- ... more assertions -->
         <assertion parameters="${value_3}:${type_3}, ${value_4}:${type_4}" expected-data-file="${dataset_file_2}.xml" />
-     </test-case>
+    </test-case>
 
     <!-- ... more test cases -->
-</integration-test-cases>
+</e2e-test-cases>
 ```
 
 `expected-data-file` 的查找规则是：
@@ -90,8 +97,6 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xm
 </dataset>
 ```
 
-> e2e operation 为 E2E 测试，并不包含 <dataset> 这类断言
-
 ### 环境配置
 
 `${SCENARIO-TYPE}` 表示场景名称，在测试引擎运行中用于标识唯一场景。
@@ -99,20 +104,37 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xm
 
 #### Native 环境配置
 
-目录：`src/test/resources/env/scenario/${SCENARIO-TYPE}`
+修改 `e2e-sql` 模块 `src/test/resources/env/e2e-env.properties` 文件中 `e2e.run.type` 为 `NATIVE` 模式，然后修改如下的属性为本地数据库地址和账号。 
 
-  - `scenario-env.properties`: 数据源配置；
-  - `rules.yaml`: 规则配置；
-  - `databases.xml`: 真实库名称；
-  - `dataset.xml`: 初始化数据；
-  - `init-sql\${DATABASE-TYPE}\init.sql`: 初始化数据库表结构；
-  - `authority.xml`: 待补充。
+```properties
+e2e.native.database.host=127.0.0.1
+e2e.native.database.port=3306
+e2e.native.database.username=root
+e2e.native.database.password=123456
+```
+
+修改完成后，可以再调整 `e2e-env.properties` 中其他属性，测试 ShardingSphere 的 Proxy、JDBC 接入端，或者测试单机、集群模式。
 
 #### Docker 环境配置
 
-目录：`src/test/resources/env/${SCENARIO-TYPE}`
+修改 `e2e-sql` 模块 `src/test/resources/env/e2e-env.properties` 文件中 `e2e.run.type` 为 `DOCKER` 模式，如果执行 Proxy 接入端测试，需要执行如下的命令打包 Proxy 镜像。
 
-  - `proxy/conf/database-${SCENARIO-TYPE}.yaml`: 规则配置。
+```bash
+./mvnw -B clean install -am -pl test/e2e/sql -Pit.env.docker -DskipTests -Dspotless.apply.skip=true -Drat.skip=true
+```
+
+如果是 Mac 平台 M 系列芯片，在打包 Proxy 镜像前，需要先执行如下的命令，然后再进行 Proxy 镜像打包。
+
+```bash
+# 安装 socat
+brew install socat
+socat TCP-LISTEN:2375,reuseaddr,fork UNIX-CLIENT:/var/run/docker.sock
+
+# 在创建镜像的窗口中执行
+export DOCKER_HOST=tcp://127.0.0.1:2375
+```
+
+修改完成后，可以再调整 `e2e-env.properties` 中其他属性，测试 ShardingSphere 的 Proxy、JDBC 接入端，或者测试单机、集群模式。
 
 **Docker 环境配置为 ShardingSphere-Proxy 提供了远程调试端口，可以在 `test/e2e/fixture/src/test/assembly/bin/start.sh` 文件的 `JAVA_OPTS` 中找到第 2 个暴露的端口用于远程调试。**
 
@@ -120,56 +142,69 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xm
 
 #### 配置测试引擎运行环境
 
-通过配置 `src/test/resources/env/engine-env.properties` 控制测试引擎。
+通过配置 `src/test/resources/env/e2e-env.properties` 控制测试引擎。
 
 所有的属性值都可以通过 Maven 命令行 `-D` 的方式动态注入。
 
 ```properties
-# 运行模式，多个值可用逗号分隔。可选值：Standalone, Cluster
-it.run.modes=Cluster
-
 # 场景类型，多个值可用逗号分隔。可选值：db, tbl, dbtbl_with_replica_query, replica_query
-it.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
+e2e.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
 
 # 是否运行附加测试用例
-it.run.additional.cases=false
+e2e.run.additional.cases=false
 
-# 配置环境类型，只支持单值。可选值：docker或空，默认值：空
-it.cluster.env.type=${it.env}
+# 是否运行冒烟测试
+e2e.run.smoke.cases=false
+
+# 配置环境类型，只支持单值。可选值：DOCKER, NATIVE
+e2e.run.type=DOCKER
+
+# 运行模式，多个值可用逗号分隔。可选值：Standalone, Cluster
+e2e.artifact.modes=Cluster
+
 # 待测试的接入端类型，多个值可用逗号分隔。可选值：jdbc, proxy, 默认值：jdbc
-it.cluster.adapters=jdbc
+e2e.artifact.adapters=jdbc
 
-# 场景类型，多个值可用逗号分隔。可选值：H2, MySQL, Oracle, SQLServer, PostgreSQL
-it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
+# 场景类型，多个值可用逗号分隔。可选值：H2, MySQL, PostgreSQL，openGauss
+e2e.artifact.databases=H2,MySQL,PostgreSQL,openGauss
+
+# 测试数据库的镜像版本
+e2e.docker.database.mysql.images=mysql:8.2.0
+
+# NATIVE 模式下数据库连接信息及账号
+e2e.native.database.host=127.0.0.1
+e2e.native.database.port=3306
+e2e.native.database.username=root
+e2e.native.database.password=123456
 ```
 
 #### 运行调试模式
 
   - 标准测试引擎
-    运行 `org.apache.shardingsphere.test.integration.engine.${SQL-TYPE}.General${SQL-TYPE}E2EIT` 以启动不同 SQL 类型的测试引擎。
+    运行 `org.apache.shardingsphere.test.e2e.it.sql.${SQL-TYPE}.General${SQL-TYPE}E2EIT` 以启动不同 SQL 类型的测试引擎。
 
   - 批量测试引擎
-    运行 `org.apache.shardingsphere.test.integration.engine.dml.BatchDMLE2EIT`，以启动为 DML 语句提供的测试 `addBatch()` 的批量测试引擎。
+    运行 `org.apache.shardingsphere.test.e2e.it.sql.dml.BatchDMLE2EIT`，以启动为 DML 语句提供的测试 `addBatch()` 的批量测试引擎。
 
   - 附加测试引擎
-    运行 `org.apache.shardingsphere.test.integration.engine.${SQL-TYPE}.Additional${SQL-TYPE}E2EIT` 以启动使用更多 JDBC 方法调用的测试引擎。
-    附加测试引擎需要通过设置 `it.run.additional.cases=true` 开启。
+    运行 `org.apache.shardingsphere.test.e2e.it.sql.${SQL-TYPE}.Additional${SQL-TYPE}E2EIT` 以启动使用更多 JDBC 方法调用的测试引擎。
+    附加测试引擎需要通过设置 `e2e.run.additional.cases=true` 开启。
 
 #### 运行 Docker 模式
 
 ```bash
-./mvnw -B clean install -f test/e2e/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
+./mvnw -B clean install -f test/e2e/pom.xml -Pit.env.docker -De2e.artifact.adapters=proxy,jdbc -De2e.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -De2e.artifact.databases=MySQL
 ```
 
 运行以上命令会构建出一个用于集成测试的 Docker 镜像 `apache/shardingsphere-proxy-test:latest`。
 如果仅修改了测试代码，可以复用已有的测试镜像，无须重新构建。使用以下命令可以跳过镜像构建，直接运行集成测试：
 
 ```bash
-./mvnw -B clean install -f test/e2e/sql/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
+./mvnw -B clean install -f test/e2e/sql/pom.xml -Pit.env.docker -De2e.artifact.adapters=proxy,jdbc -De2e.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -De2e.artifact.databases=MySQL
 ```
 
 #### 远程 debug Docker 容器中的 Proxy 代码
-首先修改要测试模块的配置文件 it-env.properties，将 function.it.env.type 设置为 `docker`；设置对应的数据库镜像版本，例如 `transaction.it.docker.mysql.version=mysql:5.7`。
+首先修改要测试模块的配置文件 e2e-env.properties，将 function.it.env.type 设置为 `docker`；设置对应的数据库镜像版本，例如 `transaction.it.docker.mysql.version=mysql:5.7`。
 其次通过命令生成测试镜像，例如：
 
 ```bash

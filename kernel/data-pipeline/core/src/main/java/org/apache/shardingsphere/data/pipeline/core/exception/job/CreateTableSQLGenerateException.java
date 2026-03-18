@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Create table SQL generate exception.
@@ -27,6 +27,6 @@ public final class CreateTableSQLGenerateException extends PipelineJobException 
     private static final long serialVersionUID = -219467568498936298L;
     
     public CreateTableSQLGenerateException(final String tableName) {
-        super(XOpenSQLState.GENERAL_ERROR, 14, "Failed to get DDL for table '%s'.", tableName);
+        super(XOpenSQLState.GENERAL_ERROR, 14, String.format("Failed to get DDL for table '%s'.", tableName));
     }
 }

@@ -24,8 +24,8 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.con
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineWriteConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 
 /**
  * Pipeline process configuration utility class.
@@ -36,39 +36,28 @@ public final class PipelineProcessConfigurationUtils {
     private static final YamlPipelineProcessConfigurationSwapper SWAPPER = new YamlPipelineProcessConfigurationSwapper();
     
     /**
-     * Convert with default value.
+     * Fill default value for pipeline process configuration.
      *
-     * @param originalConfig original process configuration, nullable
+     * @param originalConfig original process configuration
      * @return process configuration
      */
-    public static PipelineProcessConfiguration convertWithDefaultValue(final PipelineProcessConfiguration originalConfig) {
+    public static PipelineProcessConfiguration fillInDefaultValue(final PipelineProcessConfiguration originalConfig) {
         YamlPipelineProcessConfiguration yamlConfig = null == originalConfig ? new YamlPipelineProcessConfiguration() : SWAPPER.swapToYamlConfiguration(originalConfig);
         fillInDefaultValue(yamlConfig);
         return SWAPPER.swapToObject(yamlConfig);
     }
     
-    /**
-     * Fill in default value.
-     *
-     * @param yamlConfig YAML configuration, non-null
-     */
-    public static void fillInDefaultValue(final YamlPipelineProcessConfiguration yamlConfig) {
+    private static void fillInDefaultValue(final YamlPipelineProcessConfiguration yamlConfig) {
         if (null == yamlConfig.getRead()) {
-            yamlConfig.setRead(YamlPipelineReadConfiguration.buildWithDefaultValue());
-        } else {
-            yamlConfig.getRead().fillInNullFieldsWithDefaultValue();
+            yamlConfig.setRead(new YamlPipelineReadConfiguration());
         }
         if (null == yamlConfig.getWrite()) {
-            yamlConfig.setWrite(YamlPipelineWriteConfiguration.buildWithDefaultValue());
-        } else {
-            yamlConfig.getWrite().fillInNullFieldsWithDefaultValue();
+            yamlConfig.setWrite(new YamlPipelineWriteConfiguration());
         }
         if (null == yamlConfig.getStreamChannel()) {
             YamlAlgorithmConfiguration yamlAlgorithmConfig = new YamlAlgorithmConfiguration();
             yamlAlgorithmConfig.setType("MEMORY");
-            Properties props = new Properties();
-            props.setProperty("block-queue-size", "2000");
-            yamlAlgorithmConfig.setProps(props);
+            yamlAlgorithmConfig.setProps(PropertiesBuilder.build(new Property("block-queue-size", "2000")));
             yamlConfig.setStreamChannel(yamlAlgorithmConfig);
         }
     }

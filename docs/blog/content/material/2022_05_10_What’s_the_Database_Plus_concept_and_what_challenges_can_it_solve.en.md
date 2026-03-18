@@ -167,7 +167,7 @@ Apache ShardingSphere currently only supports federated queries between homogene
 ## Conclusion
 The Apache ShardingSphere community has been active in open source for 7 years. Through perseverance, the community has become mature we’d like to extend our sincere welcome to any devs or contributors who are enthusiastic about open source and coding to collaborate with us.
 
-Among our recent achievements we’re particulary proud of, Apache ShardingSphere’s pluggable architecture and data sharding philosophy have been recognized by the academic community. [The paper, Apache ShardingSphere: A Holistic and Pluggable Platform for Data Sharding, has been published at this year’s ICDE, a top conference in the database field.](https://faun.pub/a-holistic-pluggable-platform-for-data-sharding-icde-2022-understanding-apache-shardingsphere-55779cfde16)
+Among our recent achievements we’re particularly proud of, Apache ShardingSphere’s pluggable architecture and data sharding philosophy have been recognized by the academic community. [The paper, Apache ShardingSphere: A Holistic and Pluggable Platform for Data Sharding, has been published at this year’s ICDE, a top conference in the database field.](https://faun.pub/a-holistic-pluggable-platform-for-data-sharding-icde-2022-understanding-apache-shardingsphere-55779cfde16)
 
 ## Author
 

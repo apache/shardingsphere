@@ -22,7 +22,7 @@ import Symbol, RDLStatement, RQLStatement;
 execute
     : (setDefaultSingleTableStorageUnit
     | showDefaultSingleTableStorageUnit
-    | showSingleTable
+    | showSingleTables
     | countSingleTable
     | loadSingleTable
     | unloadSingleTable

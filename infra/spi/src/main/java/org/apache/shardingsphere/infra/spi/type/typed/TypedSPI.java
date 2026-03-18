@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.spi.type.typed;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
@@ -24,11 +26,11 @@ import java.util.Properties;
 /**
  * Typed SPI.
  */
-public interface TypedSPI {
+public interface TypedSPI extends ShardingSphereSPI {
     
     /**
      * Initialize SPI.
-     * 
+     *
      * @param props properties to be initialized
      */
     default void init(final Properties props) {
@@ -36,14 +38,14 @@ public interface TypedSPI {
     
     /**
      * Get type.
-     * 
+     *
      * @return type
      */
     Object getType();
     
     /**
      * Get type aliases.
-     * 
+     *
      * @return type aliases
      */
     default Collection<Object> getTypeAliases() {
@@ -52,7 +54,7 @@ public interface TypedSPI {
     
     /**
      * Judge whether default service provider.
-     * 
+     *
      * @return is default service provider or not
      */
     default boolean isDefault() {

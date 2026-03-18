@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.it.sql.parser.internal;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.distsql.parser.engine.api.DistSQLStatementParserEngine;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.SQLStatementAssert;
@@ -36,6 +36,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -64,11 +65,11 @@ public abstract class InternalSQLParserIT {
                 : new SQLStatementVisitorEngine(databaseType).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            InternalSQLParserITSettings settings = extensionContext.getRequiredTestClass().getAnnotation(InternalSQLParserITSettings.class);
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
+            InternalSQLParserITSettings settings = context.getRequiredTestClass().getAnnotation(InternalSQLParserITSettings.class);
             Preconditions.checkNotNull(settings, "Annotation InternalSQLParserITSettings is required.");
             return getTestParameters(settings.value()).stream();
         }

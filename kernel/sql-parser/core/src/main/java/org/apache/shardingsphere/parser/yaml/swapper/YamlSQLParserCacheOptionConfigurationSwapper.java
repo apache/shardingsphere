@@ -19,7 +19,7 @@ package org.apache.shardingsphere.parser.yaml.swapper;
 
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 
 /**
  * YAML SQL parser cache option configuration swapper.

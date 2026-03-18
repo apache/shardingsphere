@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.datasource.pool.destroyer.fixture;
 
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolActiveDetector;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

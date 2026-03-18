@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.infra.spi.type.ordered;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+
 /**
  * Ordered SPI.
  * 
  * @param <T> type
  */
-public interface OrderedSPI<T> {
+public interface OrderedSPI<T> extends ShardingSphereSPI {
     
     /**
      * Get order of load.
@@ -33,7 +35,7 @@ public interface OrderedSPI<T> {
     
     /**
      * Get type class.
-     * 
+     *
      * @return type class
      */
     Class<T> getTypeClass();

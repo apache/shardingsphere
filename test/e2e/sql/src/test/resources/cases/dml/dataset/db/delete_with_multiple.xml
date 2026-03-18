@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<dataset update-count="38">
+<dataset update-count="1">
     <metadata data-nodes="db_${0..9}.t_order">
         <column name="order_id" type="numeric" />
         <column name="user_id" type="numeric" />

@@ -22,8 +22,8 @@ import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -37,13 +37,24 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * Result set utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResultSetUtils {
+    
+    private static final DateTimeFormatter LOOSE_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
+            "[yyyy-MM-dd][yyyy_MM_dd][yyyyMMdd][yyyy-M-d][MM/dd/yy][yyMMdd]"
+                    + "['T'][ ]"
+                    + "[HH:mm:ss][HHmmss][HH:mm][HHmm]"
+                    + "[.SSSSSSSSS][.SSSSSSSS][.SSSSSSS][.SSSSSS][.SSSSS][.SSSS][.SSS][.SS][.S]"
+                    + "[ ]"
+                    + "[XXXXX][XXXX][XXX][XX][X]");
     
     /**
      * Convert value via expected class type.
@@ -63,6 +74,9 @@ public final class ResultSetUtils {
         }
         if (value instanceof LocalDateTime) {
             return convertLocalDateTimeValue((LocalDateTime) value, convertType);
+        }
+        if (value instanceof LocalDate) {
+            return convertLocalDateValue((LocalDate) value, convertType);
         }
         if (value instanceof Timestamp) {
             return convertTimestampValue((Timestamp) value, convertType);
@@ -85,58 +99,71 @@ public final class ResultSetUtils {
         if (String.class.equals(convertType)) {
             return value.toString();
         }
+        if (value instanceof String) {
+            Optional<Object> result = convertStringValue((String) value, convertType);
+            if (result.isPresent()) {
+                return result.get();
+            }
+        }
         try {
             return convertType.cast(value);
         } catch (final ClassCastException ignored) {
-            throw new SQLFeatureNotSupportedException("getObject with type");
+            throw new SQLFeatureNotSupportedException("getObject with type, cannot convert " + value.getClass().getName() + ":" + value + " to " + convertType.getName());
         }
     }
     
-    private static Object convertURL(final Object value) {
-        try {
-            return new URL(value.toString());
-        } catch (final MalformedURLException ignored) {
-            throw new UnsupportedDataTypeConversionException(URL.class, value);
+    private static Optional<Object> convertStringValue(final String value, final Class<?> convertType) {
+        if (Timestamp.class.equals(convertType)) {
+            TemporalAccessor temporalAccessor = LOOSE_DATE_TIME_FORMATTER.parseBest(value, LocalDateTime::from, LocalDate::from);
+            LocalDateTime localDateTime = (temporalAccessor instanceof LocalDateTime) ? (LocalDateTime) temporalAccessor : ((LocalDate) temporalAccessor).atStartOfDay();
+            return Optional.of(Timestamp.valueOf(localDateTime));
         }
+        if (java.sql.Date.class.equals(convertType)) {
+            return Optional.of(java.sql.Date.valueOf(LocalDate.from(LOOSE_DATE_TIME_FORMATTER.parse(value))));
+        }
+        if (Time.class.equals(convertType)) {
+            return Optional.of(Time.valueOf(LocalTime.from(LOOSE_DATE_TIME_FORMATTER.parse(value))));
+        }
+        return Optional.empty();
     }
     
-    /**
-     * Convert object to BigDecimal.
-     *
-     * @param value current db object
-     * @param needScale need scale
-     * @param scale scale size
-     * @return big decimal
-     * @throws UnsupportedDataTypeConversionException unsupported data type conversion exception
-     */
-    public static Object convertBigDecimalValue(final Object value, final boolean needScale, final int scale) {
-        if (null == value) {
-            return convertNullValue(BigDecimal.class);
+    private static Object convertNullValue(final Class<?> convertType) {
+        switch (convertType.getName()) {
+            case "boolean":
+                return false;
+            case "byte":
+                return (byte) 0;
+            case "short":
+                return (short) 0;
+            case "int":
+                return 0;
+            case "long":
+                return 0L;
+            case "float":
+                return 0.0F;
+            case "double":
+                return 0.0D;
+            default:
+                return null;
         }
-        if (BigDecimal.class == value.getClass()) {
-            return adjustBigDecimalResult((BigDecimal) value, needScale, scale);
-        }
-        if (value instanceof Number || value instanceof String) {
-            BigDecimal bigDecimal = new BigDecimal(value.toString());
-            return adjustBigDecimalResult(bigDecimal, needScale, scale);
-        }
-        throw new UnsupportedDataTypeConversionException(BigDecimal.class, value);
-    }
-    
-    private static BigDecimal adjustBigDecimalResult(final BigDecimal value, final boolean needScale, final int scale) {
-        if (needScale) {
-            try {
-                return value.setScale(scale, RoundingMode.UNNECESSARY);
-            } catch (final ArithmeticException ex) {
-                return value.setScale(scale, RoundingMode.HALF_UP);
-            }
-        }
-        return value;
     }
     
     private static Object convertLocalDateTimeValue(final LocalDateTime value, final Class<?> convertType) {
         if (Timestamp.class.equals(convertType)) {
             return Timestamp.valueOf(value);
+        }
+        if (String.class.equals(convertType)) {
+            return value.toString();
+        }
+        return value;
+    }
+    
+    private static Object convertLocalDateValue(final LocalDate value, final Class<?> convertType) {
+        if (java.sql.Date.class.equals(convertType)) {
+            return java.sql.Date.valueOf(value);
+        }
+        if (Timestamp.class.equals(convertType)) {
+            return Timestamp.valueOf(value.atStartOfDay());
         }
         if (String.class.equals(convertType)) {
             return value.toString();
@@ -163,24 +190,11 @@ public final class ResultSetUtils {
         return value;
     }
     
-    private static Object convertNullValue(final Class<?> convertType) {
-        switch (convertType.getName()) {
-            case "boolean":
-                return false;
-            case "byte":
-                return (byte) 0;
-            case "short":
-                return (short) 0;
-            case "int":
-                return 0;
-            case "long":
-                return 0L;
-            case "float":
-                return 0.0F;
-            case "double":
-                return 0.0D;
-            default:
-                return null;
+    private static Object convertURL(final Object value) {
+        try {
+            return new URL(value.toString());
+        } catch (final MalformedURLException ignored) {
+            throw new UnsupportedDataTypeConversionException(URL.class, value);
         }
     }
     
@@ -218,6 +232,10 @@ public final class ResultSetUtils {
         }
     }
     
+    private static Boolean longToBoolean(final long longVal) {
+        return -1L == longVal || longVal > 0L;
+    }
+    
     private static Object convertDateValue(final Date value, final Class<?> convertType) {
         switch (convertType.getName()) {
             case "java.sql.Date":
@@ -226,6 +244,8 @@ public final class ResultSetUtils {
                 return new Time(value.getTime());
             case "java.sql.Timestamp":
                 return new Timestamp(value.getTime());
+            case "java.time.LocalDate":
+                return new java.sql.Date(value.getTime()).toLocalDate();
             case "java.lang.String":
                 return value.toString();
             default:
@@ -260,7 +280,37 @@ public final class ResultSetUtils {
         return 't' == firstChar || 'y' == firstChar || '1' == firstChar || "-1".equals(stringVal);
     }
     
-    private static Boolean longToBoolean(final long longVal) {
-        return -1L == longVal || longVal > 0L;
+    /**
+     * Convert object to BigDecimal.
+     *
+     * @param value current db object
+     * @param needScale need scale
+     * @param scale scale size
+     * @return big decimal
+     * @throws UnsupportedDataTypeConversionException unsupported data type conversion exception
+     */
+    public static Object convertBigDecimalValue(final Object value, final boolean needScale, final int scale) {
+        if (null == value) {
+            return convertNullValue(BigDecimal.class);
+        }
+        if (BigDecimal.class == value.getClass()) {
+            return adjustBigDecimalResult((BigDecimal) value, needScale, scale);
+        }
+        if (value instanceof Number || value instanceof String) {
+            BigDecimal bigDecimal = new BigDecimal(value.toString());
+            return adjustBigDecimalResult(bigDecimal, needScale, scale);
+        }
+        throw new UnsupportedDataTypeConversionException(BigDecimal.class, value);
+    }
+    
+    private static BigDecimal adjustBigDecimalResult(final BigDecimal value, final boolean needScale, final int scale) {
+        if (needScale) {
+            try {
+                return value.setScale(scale, RoundingMode.UNNECESSARY);
+            } catch (final ArithmeticException ex) {
+                return value.setScale(scale, RoundingMode.HALF_UP);
+            }
+        }
+        return value;
     }
 }

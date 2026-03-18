@@ -23,7 +23,7 @@ git config --global core.longpaths true
 
 ## 安装 JDK
 
-使用 JDK 11 或以上版本。
+使用 JDK 17 或以上版本。
 
 可以从 [OpenJDK 下载页面]( https://adoptium.net/temurin/releases ) 下载。
 
@@ -81,4 +81,4 @@ git config --global core.longpaths true
 ### CheckStyle 插件配置
 
 1. 添加配置文件 ：使用 `src/resources/checkstyle.xml`；
-2. 选择 Checkstyle 版本 ：使用 `9.3`。
+2. 选择 Checkstyle 版本 ：使用 `12.3.0`。

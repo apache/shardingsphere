@@ -19,4 +19,5 @@
 <sql-parser-test-cases>
     <savepoint sql-case-id="savepoint" savepoint-name="savepoint1" />
     <savepoint sql-case-id="savepoint_transaction" />
+    <savepoint sql-case-id="savepoint_firebird" />
 </sql-parser-test-cases>

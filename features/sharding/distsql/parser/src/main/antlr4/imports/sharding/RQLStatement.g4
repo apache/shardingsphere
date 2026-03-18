@@ -78,7 +78,3 @@ countShardingRule
 tableRule
     : RULE tableName
     ;
-
-databaseName
-    : IDENTIFIER_
-    ;

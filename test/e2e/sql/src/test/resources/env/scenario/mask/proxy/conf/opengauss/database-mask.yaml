@@ -21,7 +21,7 @@ dataSources:
   encrypt:
     url: jdbc:opengauss://opengauss.mask.host:5432/mask
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

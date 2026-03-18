@@ -26,14 +26,14 @@ public interface ShardingConditionValue {
     
     /**
      * Get column name.
-     * 
+     *
      * @return column name
      */
     String getColumnName();
     
     /**
      * Get table name.
-     * 
+     *
      * @return table name
      */
     String getTableName();

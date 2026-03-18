@@ -47,6 +47,6 @@ public final class ShardingSphereUser {
         grantee = new Grantee(username, hostname);
         this.password = password;
         this.authenticationMethodName = authenticationMethodName;
-        this.admin = isAdmin;
+        admin = isAdmin;
     }
 }

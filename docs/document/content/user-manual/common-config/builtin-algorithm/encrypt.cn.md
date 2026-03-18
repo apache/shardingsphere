@@ -17,10 +17,10 @@ weight = 5
 
 可配置属性：
 
-| *名称*                  | *数据类型* | *说明*                         |
-|-----------------------|--------|------------------------------|
-| aes-key-value         | String | AES 使用的 KEY                  |
-| digest-algorithm-name | String | AES KEY 的摘要算法 (可选，默认值：SHA-1) |
+| *名称*                  | *数据类型* | *说明*          |
+|-----------------------|--------|---------------|
+| aes-key-value         | String | AES 使用的 KEY   |
+| digest-algorithm-name | String | AES KEY 的摘要算法 |
 
 ### 辅助查询加密算法
 
@@ -58,6 +58,7 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
+        digest-algorithm-name: SHA-1
     assisted_encryptor:
       type: MD5
       props:

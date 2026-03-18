@@ -20,7 +20,8 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.security.SecureRandom;
@@ -74,6 +75,7 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
         return Splitter.on(",").trimResults().splitToList(props).stream().map(each -> each.charAt(0)).collect(Collectors.toList());
     }
     
+    @HighFrequencyInvocation
     @Override
     public String mask(final Object plainValue) {
         String result = null == plainValue ? null : String.valueOf(plainValue);
@@ -83,11 +85,11 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
         char[] chars = result.toCharArray();
         for (int i = 0; i < chars.length; i++) {
             char c = chars[i];
-            if ('A' <= c && c <= 'Z') {
+            if (c >= 'A' && c <= 'Z') {
                 chars[i] = uppercaseLetterCodes.get(random.nextInt(uppercaseLetterCodes.size()));
-            } else if ('a' <= c && c <= 'z') {
+            } else if (c >= 'a' && c <= 'z') {
                 chars[i] = lowercaseLetterCodes.get(random.nextInt(lowercaseLetterCodes.size()));
-            } else if ('0' <= c && c <= '9') {
+            } else if (c >= '0' && c <= '9') {
                 chars[i] = digitalCodes.get(random.nextInt(digitalCodes.size()));
             } else {
                 chars[i] = specialCodes.get(random.nextInt(specialCodes.size()));

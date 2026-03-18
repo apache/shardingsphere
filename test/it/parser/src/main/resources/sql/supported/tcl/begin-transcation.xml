@@ -17,8 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="begin" value="BEGIN" db-types="MySQL,PostgreSQL,openGauss" />
-    <sql-case id="begin_work" value="BEGIN WORK" db-types="MySQL" />
+    <sql-case id="begin" value="BEGIN" db-types="MySQL,PostgreSQL,openGauss,Doris" />
+    <sql-case id="begin_work" value="BEGIN WORK" db-types="MySQL,Doris" />
     <sql-case id="begin_transaction" value="BEGIN TRANSACTION" db-types="SQLServer,PostgreSQL,openGauss" />
     <sql-case id="begin_with_name" value="BEGIN TRANSACTION transaction1" db-types="SQLServer" />
     <sql-case id="begin_with_variable_name" value="BEGIN TRANSACTION @TranName" db-types="SQLServer" />

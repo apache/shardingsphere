@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.authority.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.rql.rule.global.ShowGlobalRulesStatement;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.global.ShowGlobalRulesStatement;
 
 /**
  * Show authority rule statement.

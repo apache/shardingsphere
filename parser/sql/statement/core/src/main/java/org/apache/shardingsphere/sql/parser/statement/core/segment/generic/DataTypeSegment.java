@@ -42,7 +42,7 @@ public final class DataTypeSegment implements ExpressionSegment {
     
     /**
      * Get data type length.
-     * 
+     *
      * @return data type length segment
      */
     public Optional<DataTypeLengthSegment> getDataTypeLength() {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datasource.pool.props.validator;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDriver;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +37,6 @@ class DataSourcePoolPropertiesValidatorTest {
     @Test
     void assertValidate() {
         assertTrue(DataSourcePoolPropertiesValidator.validate(
-                Collections.singletonMap("name", new DataSourcePoolProperties(HikariDataSource.class.getName(), Collections.singletonMap("jdbcUrl", "jdbc:mock")))).isEmpty());
+                Collections.singletonMap("name", new DataSourcePoolProperties(HikariDataSource.class.getName(), Collections.singletonMap("jdbcUrl", "jdbc:mock"))), Collections.emptySet()).isEmpty());
     }
 }

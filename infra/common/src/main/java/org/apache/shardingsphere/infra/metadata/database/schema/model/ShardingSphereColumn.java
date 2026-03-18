@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ColumnMetaData;
 
 /**
  * ShardingSphere column.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 @ToString
 public final class ShardingSphereColumn {
     
@@ -46,4 +45,9 @@ public final class ShardingSphereColumn {
     private final boolean unsigned;
     
     private final boolean nullable;
+    
+    public ShardingSphereColumn(final ColumnMetaData columnMetaData) {
+        this(columnMetaData.getName(), columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(),
+                columnMetaData.isCaseSensitive(), columnMetaData.isVisible(), columnMetaData.isUnsigned(), columnMetaData.isNullable());
+    }
 }

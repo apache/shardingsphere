@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rule.builder;
 
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
@@ -30,8 +29,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -52,14 +51,14 @@ class ShardingRuleBuilderTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertBuild() {
-        assertThat(builder.build(ruleConfig, "sharding_db", new MySQLDatabaseType(),
-                mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), Collections.emptyList(), mock(ComputeNodeInstanceContext.class)), instanceOf(ShardingRule.class));
+        assertThat(builder.build(ruleConfig, "sharding_db", mock(), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), Collections.emptyList(), mock(ComputeNodeInstanceContext.class)),
+                isA(ShardingRule.class));
     }
     
     @SuppressWarnings("unchecked")
     @Test
     void assertBuildWithEmptyDataSourceMap() {
         assertThrows(MissingRequiredShardingConfigurationException.class,
-                () -> builder.build(ruleConfig, "sharding_db", new MySQLDatabaseType(), mock(ResourceMetaData.class), Collections.emptyList(), mock(ComputeNodeInstanceContext.class)));
+                () -> builder.build(ruleConfig, "sharding_db", mock(), mock(ResourceMetaData.class), Collections.emptyList(), mock(ComputeNodeInstanceContext.class)));
     }
 }

@@ -20,5 +20,5 @@
         <column name="name" />
         <column name="sharding_table_reference" />
     </metadata>
-    <row values="ref_0| t_order,t_order_item,t_order_details" />
+    <row values="ref_0| t_order,t_order_item,t_order_sharding_view,t_order_details" />
 </dataset>

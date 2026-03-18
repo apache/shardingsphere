@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.config;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 /**
  * Pipeline job configuration.

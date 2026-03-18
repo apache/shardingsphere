@@ -19,4 +19,5 @@
 <sql-parser-test-cases>
     <drop-server sql-case-id="drop_server" />
     <drop-server sql-case-id="drop_server_if_exists" />
+    <drop-server sql-case-id="drop_server_doris" />
 </sql-parser-test-cases>

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint;
 
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.ConstraintMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.reviser.MetaDataReviseEntry;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.jupiter.api.Test;
@@ -28,10 +28,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -68,6 +67,13 @@ class ConstraintReviseEngineTest {
         ConstraintMetaData constraint3 = new ConstraintMetaData("constraint3", tableName);
         when(reviser.revise(tableName, constraint1, mockRule)).thenReturn(Optional.of(constraint3));
         when(reviser.revise(tableName, constraint2, mockRule)).thenReturn(Optional.empty());
-        assertThat(engine.revise(tableName, Arrays.asList(constraint1, constraint2)), is(Collections.singleton(constraint3)));
+        Collection<ConstraintMetaData> actual = engine.revise(tableName, Arrays.asList(constraint1, constraint2));
+        assertThat(actual.size(), is(1));
+        assertConstraintMetaData(actual.iterator().next(), constraint3);
+    }
+    
+    private void assertConstraintMetaData(final ConstraintMetaData actual, final ConstraintMetaData expected) {
+        assertThat(actual.getName(), is(expected.getName()));
+        assertThat(actual.getReferencedTableName(), is(expected.getReferencedTableName()));
     }
 }

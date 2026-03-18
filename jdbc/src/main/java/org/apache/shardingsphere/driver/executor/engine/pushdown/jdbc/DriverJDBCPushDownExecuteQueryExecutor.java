@@ -21,7 +21,6 @@ import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallba
 import org.apache.shardingsphere.driver.executor.callback.execute.ExecuteQueryCallbackFactory;
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSetFactory;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
@@ -37,11 +36,11 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
@@ -59,7 +58,7 @@ public final class DriverJDBCPushDownExecuteQueryExecutor {
     
     private final String processId;
     
-    private final RuleMetaData globalRuleMetaData;
+    private final ShardingSphereMetaData metaData;
     
     private final ConfigurationProperties props;
     
@@ -70,7 +69,7 @@ public final class DriverJDBCPushDownExecuteQueryExecutor {
     public DriverJDBCPushDownExecuteQueryExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final JDBCExecutor jdbcExecutor) {
         connectionContext = connection.getDatabaseConnectionManager().getConnectionContext();
         processId = connection.getProcessId();
-        globalRuleMetaData = metaData.getGlobalRuleMetaData();
+        this.metaData = metaData;
         props = metaData.getProps();
         this.jdbcExecutor = jdbcExecutor;
         statements = new LinkedList<>();
@@ -78,7 +77,7 @@ public final class DriverJDBCPushDownExecuteQueryExecutor {
     
     /**
      * Execute query.
-     * 
+     *
      * @param database database
      * @param queryContext query context
      * @param prepareEngine prepare engine
@@ -90,25 +89,25 @@ public final class DriverJDBCPushDownExecuteQueryExecutor {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("rawtypes")
-    public ShardingSphereResultSet executeQuery(final ShardingSphereDatabase database, final QueryContext queryContext,
-                                                final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement,
-                                                final Map<String, Integer> columnLabelAndIndexMap,
-                                                final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
+    public ResultSet executeQuery(final ShardingSphereDatabase database, final QueryContext queryContext,
+                                  final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final Statement statement,
+                                  final Map<String, Integer> columnLabelAndIndexMap,
+                                  final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         List<QueryResult> queryResults = getQueryResults(database, queryContext, prepareEngine, addCallback, replayCallback);
-        return new ShardingSphereResultSetFactory(connectionContext, globalRuleMetaData, props, statements).newInstance(database, queryContext, queryResults, statement, columnLabelAndIndexMap);
+        return new ShardingSphereResultSetFactory(connectionContext, metaData, props, statements).newInstance(database, queryContext, queryResults, statement, columnLabelAndIndexMap);
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private List<QueryResult> getQueryResults(final ShardingSphereDatabase database, final QueryContext queryContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                               final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         statements.clear();
-        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, props, connectionContext);
-        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(database.getName(), executionContext.getRouteContext(), executionContext.getExecutionUnits(),
+        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), props);
+        ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(database.getName(), executionContext, executionContext.getExecutionUnits(),
                 new ExecutionGroupReportContext(processId, database.getName(), connectionContext.getGrantee()));
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
             Collection<Statement> statements = getStatements(each);
             this.statements.addAll(statements);
-            addCallback.add(statements, JDBCDriverType.PREPARED_STATEMENT.equals(prepareEngine.getType()) ? getParameterSets(each) : Collections.emptyList());
+            addCallback.add(statements, JDBCDriverType.PREPARED_STATEMENT == prepareEngine.getType() ? getParameterSets(each) : Collections.emptyList());
         }
         replayCallback.replay();
         ProcessEngine processEngine = new ProcessEngine();

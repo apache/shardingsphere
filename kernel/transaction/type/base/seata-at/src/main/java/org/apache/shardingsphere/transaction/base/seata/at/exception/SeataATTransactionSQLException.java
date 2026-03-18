@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.transaction.base.seata.at.exception;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.TransactionSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.TransactionSQLException;
 
 /**
  * Seata AT transaction SQL exception.

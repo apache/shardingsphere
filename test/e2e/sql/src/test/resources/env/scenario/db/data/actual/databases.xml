@@ -17,14 +17,14 @@
   -->
 
 <databases>
-    <database>db_0</database>
-    <database>db_1</database>
-    <database>db_2</database>
-    <database>db_3</database>
-    <database>db_4</database>
-    <database>db_5</database>
-    <database>db_6</database>
-    <database>db_7</database>
-    <database>db_8</database>
-    <database>db_9</database>
+    <database name="db_0" />
+    <database name="db_1" />
+    <database name="db_2" />
+    <database name="db_3" />
+    <database name="db_4" />
+    <database name="db_5" />
+    <database name="db_6" />
+    <database name="db_7" />
+    <database name="db_8" />
+    <database name="db_9" />
 </databases>

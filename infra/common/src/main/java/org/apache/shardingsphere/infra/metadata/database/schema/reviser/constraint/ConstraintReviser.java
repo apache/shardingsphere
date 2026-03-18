@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint;
 
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.ConstraintMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Optional;
@@ -31,7 +31,7 @@ public interface ConstraintReviser<T extends ShardingSphereRule> {
     
     /**
      * Revise constraint meta data.
-     * 
+     *
      * @param tableName table name
      * @param originalMetaData original constraint meta data
      * @param rule rule

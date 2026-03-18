@@ -19,48 +19,36 @@ package org.apache.shardingsphere.test.natived.jdbc.databases;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.test.natived.jdbc.commons.TestShardingService;
+import org.apache.shardingsphere.test.natived.commons.TestShardingService;
+import org.apache.shardingsphere.test.natived.commons.util.ResourceUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
+import org.testcontainers.jdbc.ContainerDatabaseDriver;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
+@EnabledInNativeImage
 class ClickHouseTest {
     
-    private TestShardingService testShardingService;
+    private DataSource logicDataSource;
     
-    /**
-     * TODO Need to fix `shardingsphere-parser-sql-clickhouse` module to use {@link TestShardingService#cleanEnvironment()}
-     *      after {@link TestShardingService#processSuccessInClickHouse()}.
-     *
-     */
-    @EnabledInNativeImage
+    @AfterEach
+    void afterEach() throws SQLException {
+        ResourceUtils.closeJdbcDataSource(logicDataSource);
+        ContainerDatabaseDriver.killContainers();
+    }
+    
     @Test
     void assertShardingInLocalTransactions() {
         HikariConfig config = new HikariConfig();
         config.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/databases/clickhouse.yaml");
-        DataSource dataSource = new HikariDataSource(config);
-        testShardingService = new TestShardingService(dataSource);
-        assertDoesNotThrow(() -> testShardingService.processSuccessInClickHouse());
-    }
-    
-    /**
-     * TODO Need to fix `shardingsphere-parser-sql-clickhouse` module to use `initEnvironment()`
-     * before {@link TestShardingService#processSuccessInClickHouse()}.
-     *
-     * @throws SQLException An exception that provides information on a database access error or other errors.
-     */
-    @SuppressWarnings("unused")
-    private void initEnvironment() throws SQLException {
-        testShardingService.getOrderRepository().createTableIfNotExistsInClickHouse();
-        testShardingService.getOrderItemRepository().createTableIfNotExistsInClickHouse();
-        testShardingService.getAddressRepository().createTableIfNotExistsInMySQL();
-        testShardingService.getOrderRepository().truncateTable();
-        testShardingService.getOrderItemRepository().truncateTable();
-        testShardingService.getAddressRepository().truncateTable();
+        config.setJdbcUrl("jdbc:shardingsphere:classpath:test-native/yaml/jdbc/databases/clickhouse.yaml");
+        logicDataSource = new HikariDataSource(config);
+        TestShardingService testShardingService = new TestShardingService(logicDataSource);
+        assertDoesNotThrow(testShardingService::processSuccessInClickHouse);
     }
 }

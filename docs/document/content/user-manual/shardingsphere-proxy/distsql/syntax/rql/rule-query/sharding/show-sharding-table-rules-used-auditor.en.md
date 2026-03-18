@@ -6,7 +6,7 @@ weight = 12
 
 ### Description
 
-`SHOW SHARDING TABLE RULES USED ALGORITHM` syntax is used to query sharding rules used specified sharding auditor in specified logical database
+`SHOW SHARDING TABLE RULES USED AUDITOR` syntax is used to query sharding rules used specified sharding auditor in specified logical database
 
 ### Syntax
 

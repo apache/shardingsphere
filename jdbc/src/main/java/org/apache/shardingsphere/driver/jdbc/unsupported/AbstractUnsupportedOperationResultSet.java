@@ -31,62 +31,62 @@ import java.util.Map;
 public abstract class AbstractUnsupportedOperationResultSet extends AbstractUnsupportedUpdateOperationResultSet {
     
     @Override
-    public boolean previous() throws SQLException {
+    public final boolean previous() throws SQLException {
         throw new SQLFeatureNotSupportedException("previous");
     }
     
     @Override
-    public boolean isBeforeFirst() throws SQLException {
+    public final boolean isBeforeFirst() throws SQLException {
         throw new SQLFeatureNotSupportedException("isBeforeFirst");
     }
     
     @Override
-    public boolean isAfterLast() throws SQLException {
+    public final boolean isAfterLast() throws SQLException {
         throw new SQLFeatureNotSupportedException("isAfterLast");
     }
     
     @Override
-    public boolean isFirst() throws SQLException {
+    public final boolean isFirst() throws SQLException {
         throw new SQLFeatureNotSupportedException("isFirst");
     }
     
     @Override
-    public boolean isLast() throws SQLException {
+    public final boolean isLast() throws SQLException {
         throw new SQLFeatureNotSupportedException("isLast");
     }
     
     @Override
-    public void beforeFirst() throws SQLException {
+    public final void beforeFirst() throws SQLException {
         throw new SQLFeatureNotSupportedException("beforeFirst");
     }
     
     @Override
-    public void afterLast() throws SQLException {
+    public final void afterLast() throws SQLException {
         throw new SQLFeatureNotSupportedException("afterLast");
     }
     
     @Override
-    public boolean first() throws SQLException {
+    public final boolean first() throws SQLException {
         throw new SQLFeatureNotSupportedException("first");
     }
     
     @Override
-    public boolean last() throws SQLException {
+    public final boolean last() throws SQLException {
         throw new SQLFeatureNotSupportedException("last");
     }
     
     @Override
-    public boolean absolute(final int row) throws SQLException {
+    public final boolean absolute(final int row) throws SQLException {
         throw new SQLFeatureNotSupportedException("absolute");
     }
     
     @Override
-    public boolean relative(final int rows) throws SQLException {
+    public final boolean relative(final int rows) throws SQLException {
         throw new SQLFeatureNotSupportedException("relative");
     }
     
     @Override
-    public int getRow() throws SQLException {
+    public final int getRow() throws SQLException {
         throw new SQLFeatureNotSupportedException("getRow");
     }
     

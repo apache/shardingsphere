@@ -26,7 +26,7 @@ public interface CaseTypedSQLBuilder {
     
     /**
      * Build SQL.
-     * 
+     *
      * @param sql to be built SQL
      * @param params SQL parameters
      * @return built SQL

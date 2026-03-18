@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * Exportable item constants.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ExportableItemConstants {
+public final class ExportableItemConstants {
     
     public static final String PRIMARY_DATA_SOURCE_NAME = "primary_data_source_name";
     

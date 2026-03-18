@@ -45,6 +45,35 @@
         </rule>
     </alter-streaming-rule>
 
+    <alter-streaming-rule sql-case-id="alter-streaming-rule-read-lite">
+        <job-type-name>STREAMING</job-type-name>
+        <rule>
+            <read>
+                <rate-limiter algorithm-name="QPS" />
+            </read>
+        </rule>
+    </alter-streaming-rule>
+
+    <alter-streaming-rule sql-case-id="alter-streaming-rule-read-without-rate-limiter">
+        <job-type-name>STREAMING</job-type-name>
+        <rule>
+            <read>
+                <worker-thread>20</worker-thread>
+                <batch-size>1000</batch-size>
+                <sharding-size>10000000</sharding-size>
+            </read>
+        </rule>
+    </alter-streaming-rule>
+
+    <alter-streaming-rule sql-case-id="alter-streaming-rule-write-lite">
+        <job-type-name>STREAMING</job-type-name>
+        <rule>
+            <write>
+                <rate-limiter algorithm-name="TPS" />
+            </write>
+        </rule>
+    </alter-streaming-rule>
+
     <show-streaming-list sql-case-id="show-streaming-list" />
     
     <show-streaming-status sql-case-id="show-streaming-status">

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -35,63 +35,16 @@ public final class PipelineInventoryDumpSQLBuilder {
     }
     
     /**
-     * Build divisible inventory dump SQL.
-     *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnNames column names
-     * @param uniqueKey unique key
-     * @return built SQL
-     */
-    public String buildDivisibleSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        return String.format("SELECT %s FROM %s WHERE %s>=? AND %s<=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, escapedUniqueKey, escapedUniqueKey);
-    }
-    
-    /**
-     * Build divisible inventory dump SQL with unlimited value.
-     *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnNames column names
-     * @param uniqueKey unique key
-     * @return built SQL
-     */
-    public String buildUnlimitedDivisibleSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        return String.format("SELECT %s FROM %s WHERE %s>=? ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, escapedUniqueKey, escapedUniqueKey);
-    }
-    
-    /**
-     * Build indivisible inventory dump first SQL.
-     *
-     * @param schemaName schema name
-     * @param tableName table name
-     * @param columnNames column names
-     * @param uniqueKey unique key
-     * @return built SQL
-     */
-    public String buildIndivisibleSQL(final String schemaName, final String tableName, final Collection<String> columnNames, final String uniqueKey) {
-        String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        String quotedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
-        return String.format("SELECT %s FROM %s ORDER BY %s ASC", buildQueryColumns(columnNames), qualifiedTableName, quotedUniqueKey);
-    }
-    
-    private String buildQueryColumns(final Collection<String> columnNames) {
-        return columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
-    }
-    
-    /**
      * Build fetch all inventory dump SQL.
      *
      * @param schemaName schema name
      * @param tableName tableName
+     * @param columnNames column names
      * @return built SQL
      */
-    public String buildFetchAllSQL(final String schemaName, final String tableName) {
+    public String buildFetchAllSQL(final String schemaName, final String tableName, final Collection<String> columnNames) {
         String qualifiedTableName = sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName);
-        return String.format("SELECT * FROM %s", qualifiedTableName);
+        String queryColumns = columnNames.stream().map(sqlSegmentBuilder::getEscapedIdentifier).collect(Collectors.joining(","));
+        return String.format("SELECT %s FROM %s", queryColumns, qualifiedTableName);
     }
 }

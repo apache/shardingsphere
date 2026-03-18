@@ -18,54 +18,59 @@
 package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 
 import org.apache.shardingsphere.infra.algorithm.loadbalancer.round.robin.RoundRobinLoadBalanceAlgorithm;
-import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
-import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionManager;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
+import org.apache.shardingsphere.readwritesplitting.transaction.TransactionalReadQueryStrategy;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 class QualifiedReadwriteSplittingTransactionalDataSourceRouterTest {
     
-    @Mock
-    private HintValueContext hintValueContext;
-    
     @Test
-    void assertWriteRouteTransaction() {
-        ConnectionContext connectionContext = mock(ConnectionContext.class);
-        TransactionConnectionContext transactionConnectionContext = mock(TransactionConnectionContext.class);
-        when(connectionContext.getTransactionContext()).thenReturn(transactionConnectionContext);
-        when(connectionContext.getTransactionContext().isInTransaction()).thenReturn(Boolean.TRUE);
-        assertTrue(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).isQualified(null, null, hintValueContext));
-        when(connectionContext.getTransactionContext().isInTransaction()).thenReturn(Boolean.FALSE);
-        assertFalse(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).isQualified(null, null, hintValueContext));
+    void assertIsQualified() {
+        assertFalse(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext(Collections::emptySet)).isQualified(null, null, null));
     }
     
     @Test
-    void assertRoute() {
-        ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
-                "test_config", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null);
-        ReadwriteSplittingDataSourceGroupRule rule;
-        rule = new ReadwriteSplittingDataSourceGroupRule(dataSourceGroupConfig, TransactionalReadQueryStrategy.PRIMARY, null);
-        assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext(Collections::emptySet)).route(rule), is("write_ds"));
-        rule = new ReadwriteSplittingDataSourceGroupRule(dataSourceGroupConfig, TransactionalReadQueryStrategy.FIXED, new RoundRobinLoadBalanceAlgorithm());
-        assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext(Collections::emptySet)).route(rule), is("read_ds_0"));
-        rule = new ReadwriteSplittingDataSourceGroupRule(dataSourceGroupConfig, TransactionalReadQueryStrategy.DYNAMIC, new RoundRobinLoadBalanceAlgorithm());
-        assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext(Collections::emptySet)).route(rule), is("read_ds_0"));
+    void assertIsQualifiedInTransaction() {
+        ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);
+        connectionContext.getTransactionContext().beginTransaction("LOCAL", mock(TransactionManager.class));
+        assertTrue(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).isQualified(null, null, null));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("routeArguments")
+    void assertRoute(final String name, final TransactionalReadQueryStrategy transactionalReadQueryStrategy, final String readWriteSplitReplicaRoute, final String expectedDataSourceName) {
+        ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);
+        if (null != readWriteSplitReplicaRoute) {
+            connectionContext.getTransactionContext().setReadWriteSplitReplicaRoute(readWriteSplitReplicaRoute);
+        }
+        ReadwriteSplittingDataSourceGroupRule rule = new ReadwriteSplittingDataSourceGroupRule(
+                new ReadwriteSplittingDataSourceGroupRuleConfiguration("foo_group", "write_ds", Arrays.asList("read_ds0", "read_ds1"), null), transactionalReadQueryStrategy,
+                TransactionalReadQueryStrategy.PRIMARY == transactionalReadQueryStrategy ? null : new RoundRobinLoadBalanceAlgorithm());
+        String actualDataSourceName = new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).route(rule);
+        assertThat(actualDataSourceName, is(expectedDataSourceName));
+    }
+    
+    private static Stream<Arguments> routeArguments() {
+        return Stream.of(
+                Arguments.of("fixed without route", TransactionalReadQueryStrategy.FIXED, null, "read_ds0"),
+                Arguments.of("fixed with route", TransactionalReadQueryStrategy.FIXED, "read_ds1", "read_ds1"),
+                Arguments.of("dynamic", TransactionalReadQueryStrategy.DYNAMIC, null, "read_ds0"),
+                Arguments.of("primary", TransactionalReadQueryStrategy.PRIMARY, null, "write_ds"));
     }
 }

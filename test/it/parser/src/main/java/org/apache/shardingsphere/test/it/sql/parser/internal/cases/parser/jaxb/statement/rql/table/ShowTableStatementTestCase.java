@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 @Getter
 @Setter
-public abstract class ShowTableStatementTestCase extends DatabaseContainedTestCase {
+public final class ShowTableStatementTestCase extends DatabaseContainedTestCase {
     
     @XmlAttribute(name = "like-pattern")
     private String likePattern;

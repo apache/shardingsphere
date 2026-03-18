@@ -17,6 +17,6 @@
 
 write_ds:
   dataSourceClassName: com.zaxxer.hikari.HikariDataSource
-  url: jdbc:mysql://localhost:3306/demo_write_ds
+  url: jdbc:mock://localhost:3306/demo_write_ds
   username: root
   password: null

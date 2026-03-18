@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mask.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.database.type.CreateRuleStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.type.CreateRuleStatement;
 import org.apache.shardingsphere.mask.distsql.segment.MaskRuleSegment;
 
 import java.util.Collection;

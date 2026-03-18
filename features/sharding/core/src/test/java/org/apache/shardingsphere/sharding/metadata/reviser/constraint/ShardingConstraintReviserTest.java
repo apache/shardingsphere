@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser.constraint;
 
-import org.apache.shardingsphere.infra.database.core.metadata.data.model.ConstraintMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.ConstraintMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -49,14 +49,14 @@ class ShardingConstraintReviserTest {
     void setUp() {
         shardingRule = createShardingRule();
         ShardingTable shardingTable = mock(ShardingTable.class);
-        when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("schema_name", "table_name_0"), new DataNode("schema_name", "table_name_1")));
+        when(shardingTable.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("schema_name", (String) null, "table_name_0"), new DataNode("schema_name", (String) null, "table_name_1")));
         reviser = new ShardingConstraintReviser(shardingTable);
     }
     
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ruleConfig.setTables(Collections.singleton(new ShardingTableRuleConfiguration("table_name", "ds.table_name")));
-        return new ShardingRule(ruleConfig, Collections.singletonMap("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class));
+        return new ShardingRule(ruleConfig, Collections.singletonMap("ds", new MockedDataSource()), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     
     @Test

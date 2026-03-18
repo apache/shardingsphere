@@ -22,13 +22,5 @@ package org.apache.shardingsphere.sql.parser.statement.core.enums;
  */
 public enum OrderDirection {
     
-    /**
-     * Ascending direction.
-     */
-    ASC,
-    
-    /**
-     * Descending direction.
-     */
-    DESC
+    ASC, DESC
 }

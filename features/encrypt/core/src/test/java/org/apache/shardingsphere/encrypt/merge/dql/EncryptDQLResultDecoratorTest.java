@@ -18,36 +18,37 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class EncryptDQLResultDecoratorTest {
     
     @Test
-    void assertDecorateQueryResult() throws SQLException {
-        QueryResult queryResult = mock(QueryResult.class);
-        when(queryResult.next()).thenReturn(true);
-        EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(mock(ShardingSphereDatabase.class), mock(EncryptRule.class), mock(SelectStatementContext.class));
-        MergedResult actual = decorator.decorate(queryResult, mock(SQLStatementContext.class), mock(EncryptRule.class));
-        assertTrue(actual.next());
-    }
-    
-    @Test
-    void assertDecorateMergedResult() throws SQLException {
+    void assertDecorate() throws SQLException {
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
-        EncryptDQLResultDecorator decorator = new EncryptDQLResultDecorator(mock(ShardingSphereDatabase.class), mock(EncryptRule.class), mock(SelectStatementContext.class));
-        MergedResult actual = decorator.decorate(mergedResult, mock(SQLStatementContext.class), mock(EncryptRule.class));
+        EncryptRule rule = mock(EncryptRule.class);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(rule)));
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
+        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.emptyMap());
+        when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+        EncryptDQLResultDecorator decorator =
+                new EncryptDQLResultDecorator(database, mock(ShardingSphereMetaData.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
+        MergedResult actual = decorator.decorate(mergedResult, mock());
         assertTrue(actual.next());
     }
 }

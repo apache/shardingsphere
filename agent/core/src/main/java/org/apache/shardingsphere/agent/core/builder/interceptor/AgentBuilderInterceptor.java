@@ -26,7 +26,7 @@ public interface AgentBuilderInterceptor {
     
     /**
      * Intercept agent builder.
-     * 
+     *
      * @param builder to be intercepted agent builder
      * @return intercepted agent builder
      */

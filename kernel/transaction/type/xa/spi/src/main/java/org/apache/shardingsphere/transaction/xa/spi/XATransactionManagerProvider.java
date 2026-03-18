@@ -50,14 +50,14 @@ public interface XATransactionManagerProvider extends TypedSPI, AutoCloseable {
     
     /**
      * Enlist single XA resource.
-     * 
+     *
      * @param singleXAResource single XA resource
      */
     void enlistResource(SingleXAResource singleXAResource);
     
     /**
      * Get transaction manager.
-     * 
+     *
      * @return transaction manager
      */
     TransactionManager getTransactionManager();

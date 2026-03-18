@@ -17,10 +17,10 @@ Type: AES
 
 Attributes:
 
-| *Name*                | *DataType* | *Description*                                       |
-|-----------------------|------------|-----------------------------------------------------|
-| aes-key-value         | String     | AES KEY                                             |
-| digest-algorithm-name | String     | AES KEY DIGEST ALGORITHM (optional, default: SHA-1) |
+| *Name*                | *DataType* | *Description*            |
+|-----------------------|------------|--------------------------|
+| aes-key-value         | String     | AES KEY                  |
+| digest-algorithm-name | String     | AES KEY DIGEST ALGORITHM |
 
 ### Assisted Encrypt Algorithm
 
@@ -58,6 +58,7 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
+        digest-algorithm-name: SHA-1
     assisted_encryptor:
       type: MD5
       props:

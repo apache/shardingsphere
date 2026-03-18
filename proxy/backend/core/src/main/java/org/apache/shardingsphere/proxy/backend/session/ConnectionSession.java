@@ -21,7 +21,7 @@ import io.netty.util.AttributeMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -31,6 +31,7 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBack
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -43,7 +44,7 @@ public final class ConnectionSession {
     private final DatabaseType protocolType;
     
     @Setter(AccessLevel.NONE)
-    private volatile String databaseName;
+    private volatile String currentDatabaseName;
     
     private volatile int connectionId;
     
@@ -94,11 +95,12 @@ public final class ConnectionSession {
     /**
      * Change database of current channel.
      *
-     * @param databaseName database name
+     * @param currentDatabaseName current database name
      */
-    public void setCurrentDatabase(final String databaseName) {
-        if (null == databaseName || !databaseName.equals(this.databaseName)) {
-            this.databaseName = databaseName;
+    public void setCurrentDatabaseName(final String currentDatabaseName) {
+        if (null == currentDatabaseName || !currentDatabaseName.equals(this.currentDatabaseName)) {
+            this.currentDatabaseName = currentDatabaseName;
+            connectionContext.get().setCurrentDatabaseName(currentDatabaseName);
         }
     }
     
@@ -112,21 +114,21 @@ public final class ConnectionSession {
     }
     
     /**
-     * Get database name.
+     * Get used database name.
      *
-     * @return database name
+     * @return used database name
      */
-    public String getDatabaseName() {
-        return null == queryContext ? databaseName : queryContext.getDatabaseNameFromSQLStatement().orElse(databaseName);
+    public String getUsedDatabaseName() {
+        return null == queryContext || queryContext.getUsedDatabaseNames().isEmpty() ? currentDatabaseName : queryContext.getUsedDatabaseNames().iterator().next();
     }
     
     /**
-     * Get default database name.
+     * Get isolation level.
      *
-     * @return default database name
+     * @return isolation level
      */
-    public String getDefaultDatabaseName() {
-        return databaseName;
+    public Optional<TransactionIsolationLevel> getIsolationLevel() {
+        return Optional.ofNullable(isolationLevel);
     }
     
     /**

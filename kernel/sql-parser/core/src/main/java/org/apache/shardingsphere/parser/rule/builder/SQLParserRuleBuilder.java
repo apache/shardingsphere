@@ -24,7 +24,7 @@ import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.constant.SQLParserOrder;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * SQL parser rule builder.
@@ -32,7 +32,7 @@ import java.util.Map;
 public final class SQLParserRuleBuilder implements GlobalRuleBuilder<SQLParserRuleConfiguration> {
     
     @Override
-    public SQLParserRule build(final SQLParserRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
+    public SQLParserRule build(final SQLParserRuleConfiguration ruleConfig, final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         return new SQLParserRule(ruleConfig);
     }
     

@@ -61,7 +61,7 @@
     <show-shadow-rules sql-case-id="show-shadow-rules">
         <database name="shadow_db" start-index="34" stop-index="42" />
     </show-shadow-rules>
-
+    
     <show-shadow-table-rules sql-case-id="show-shadow-table-rules">
         <database name="shadow_db" start-index="29" stop-index="37" />
     </show-shadow-table-rules>
@@ -78,22 +78,18 @@
     <show-shadow-algorithms sql-case-id="show-shadow-algorithms">
         <database name="shadow_db" start-index="28" stop-index="36" />
     </show-shadow-algorithms>
-
+    
     <show-default-shadow-algorithm sql-case-id="show-default-shadow-algorithm">
         <database name="shadow_db" start-index="35" stop-index="43" />
     </show-default-shadow-algorithm>
     
-    <show-single-table sql-case-id="show-single-table" table="t_order">
-        <database name="single_table_db" start-index="31" stop-index="45" />
-    </show-single-table>
-    
-    <show-single-table sql-case-id="show-single-tables">
+    <show-single-tables sql-case-id="show-single-tables">
         <database name="single_table_db" start-index="24" stop-index="38" />
-    </show-single-table>
+    </show-single-tables>
     
-    <show-single-table sql-case-id="show-single-tables-like" like-pattern="t_%">
-        <database name="single_table_db" start-index="35" stop-index="49" />
-    </show-single-table>
+    <show-single-tables sql-case-id="show-single-tables-like" like-pattern="t_%">
+        <database name="single_table_db" start-index="24" stop-index="38" />
+    </show-single-tables>
     
     <show-default-single-table-storage-unit sql-case-id="show-default-single-table-storage-unit">
         <database name="single_table_db" start-index="44" stop-index="58" />
@@ -118,7 +114,7 @@
     <show-unused-sharding-algorithms sql-case-id="show-unused-sharding-algorithms">
         <database name="databaseName" start-index="37" stop-index="48" />
     </show-unused-sharding-algorithms>
-
+    
     <show-unused-sharding-key-generators sql-case-id="show-unused-sharding-key-generators">
         <database name="databaseName" start-index="41" stop-index="52" />
     </show-unused-sharding-key-generators>
@@ -166,7 +162,7 @@
     <count-mask-rule sql-case-id="count-mask-rule">
         <database name="db1" start-index="21" stop-index="23" />
     </count-mask-rule>
-
+    
     <count-broadcast-rule sql-case-id="count-broadcast-rule">
         <database name="db1" start-index="26" stop-index="28" />
     </count-broadcast-rule>
@@ -177,7 +173,7 @@
         <database name="sharding_db" start-index="24" stop-index="34" />
     </show-storage-units>
     
-    <show-storage-units sql-case-id="show-storage-units-where-usage-count" usage-count="0">
+    <show-storage-units sql-case-id="show-storage-units-like"  like-pattern="ds_%">
         <database name="sharding_db" start-index="24" stop-index="34" />
     </show-storage-units>
     
@@ -188,6 +184,6 @@
     </show-logical-tables>
     
     <show-logical-tables sql-case-id="show-logical-tables-like" like-pattern="t_%">
-        <database name="sharding_db" start-index="36" stop-index="46" />
+        <database name="sharding_db" start-index="25" stop-index="35" />
     </show-logical-tables>
 </sql-parser-test-cases>

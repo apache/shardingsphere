@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Missing required target database exception.
@@ -27,6 +27,6 @@ public final class MissingRequiredTargetDatabaseException extends PipelineJobExc
     private static final long serialVersionUID = -1557471818392592482L;
     
     public MissingRequiredTargetDatabaseException(final String databaseName) {
-        super(XOpenSQLState.NOT_FOUND, 0, "Target database '%s' does not exist.", databaseName);
+        super(XOpenSQLState.NOT_FOUND, 0, String.format("Target database '%s' does not exist.", databaseName));
     }
 }

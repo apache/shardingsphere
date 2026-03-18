@@ -42,6 +42,9 @@
         <database name="database_name" start-index="28" stop-index="40" />
     </export-database-config>
     <export-metadata sql-case-id="export-metadata" />
+    <export-metadata-to-file sql-case-id="export-metadata-to-file">
+        <file-path>/tmp/metadata.json</file-path>
+    </export-metadata-to-file>
     <export-storage-nodes sql-case-id="export-storage-nodes" />
     <convert-yaml-config sql-case-id="convert-yaml-config">
         <file-path>/yaml/database-sharding.yaml</file-path>

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.algorithm.core.exception;
 
 import org.apache.shardingsphere.infra.algorithm.core.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Algorithm execute exception.
@@ -29,7 +29,7 @@ public final class AlgorithmExecuteException extends AlgorithmDefinitionExceptio
     private static final long serialVersionUID = -9099514178650043282L;
     
     public AlgorithmExecuteException(final ShardingSphereAlgorithm algorithm, final String reason, final Object... args) {
-        super(XOpenSQLState.GENERAL_ERROR, 40, "Algorithm '%s.%s' execute failed, reason is: %s.",
-                algorithm.getClass().getSuperclass().getSimpleName(), algorithm.getType(), String.format(reason, args));
+        super(XOpenSQLState.GENERAL_ERROR, 40, "Algorithm '%s' execute failed, reason is: %s.",
+                algorithm.getClass().getSimpleName(), String.format(reason, args));
     }
 }

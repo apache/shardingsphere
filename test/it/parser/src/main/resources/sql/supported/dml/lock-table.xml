@@ -19,4 +19,5 @@
 <sql-cases>
     <sql-case id="lock-table" value="LOCK TABLE employees IN EXCLUSIVE MODE NOWAIT" db-types="Oracle" />
     <sql-case id="lock-table-remote" value="LOCK TABLE employees@remote IN SHARE MODE" db-types="Oracle" />
+    <sql-case id="lock_table_with_alias_doris" value="LOCK TABLES t1 READ, t1 AS a READ" db-types="Doris" />
 </sql-cases>

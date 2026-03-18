@@ -27,7 +27,7 @@ public interface StatementExecuteUpdateCallback {
     
     /**
      * Execute update.
-     * 
+     *
      * @param sql SQL to be executed
      * @param statement JDBC statement
      * @return effected records count

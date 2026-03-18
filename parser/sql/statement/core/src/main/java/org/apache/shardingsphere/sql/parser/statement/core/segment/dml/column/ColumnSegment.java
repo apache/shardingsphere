@@ -20,13 +20,12 @@ package org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bounded.ColumnSegmentBoundedInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -48,19 +47,21 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     
     private OwnerSegment owner;
     
-    private ColumnSegmentBoundedInfo columnBoundedInfo;
+    private ColumnSegmentBoundInfo columnBoundInfo;
     
-    private ColumnSegmentBoundedInfo otherUsingColumnBoundedInfo;
+    private ColumnSegmentBoundInfo otherUsingColumnBoundInfo;
     
     private boolean isVariable;
     
-    private List<ParenthesesSegment> parentheses = new LinkedList<>();
+    private ParenthesesSegment leftParentheses;
+    
+    private ParenthesesSegment rightParentheses;
     
     public ColumnSegment(final int startIndex, final int stopIndex, final IdentifierValue identifier) {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.identifier = identifier;
-        columnBoundedInfo = new ColumnSegmentBoundedInfo(identifier);
+        columnBoundInfo = new ColumnSegmentBoundInfo(identifier);
     }
     
     /**
@@ -79,7 +80,7 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
     
     /**
      * Get expression.
-     * 
+     *
      * @return expression
      */
     public String getExpression() {
@@ -88,6 +89,24 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
             column = String.join(".", column, nestedObjectAttributes.stream().map(IdentifierValue::getValue).collect(Collectors.joining(".")));
         }
         return null == owner ? column : String.join(".", owner.getIdentifier().getValue(), column);
+    }
+    
+    /**
+     * Get left parentheses.
+     *
+     * @return left parentheses
+     */
+    public Optional<ParenthesesSegment> getLeftParentheses() {
+        return Optional.ofNullable(leftParentheses);
+    }
+    
+    /**
+     * Get right parentheses.
+     *
+     * @return right parentheses
+     */
+    public Optional<ParenthesesSegment> getRightParentheses() {
+        return Optional.ofNullable(rightParentheses);
     }
     
     @Override

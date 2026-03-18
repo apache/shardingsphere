@@ -19,41 +19,41 @@
 <rewrite-assertions yaml-rule="scenario/mix/config/query-with-cipher.yaml">
     <rewrite-assertion id="insert_set_with_id_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account SET account_id = ?, password = ?, amount = ?, status = ?" parameters="1, aaa, 1000, OK" />
-        <output sql="INSERT INTO t_account_1 SET account_id = ?, cipher_password = ?, assisted_query_password = ?, cipher_amount = ?, status = ?" parameters="1, encrypt_aaa, assisted_query_aaa, encrypt_1000, OK" />
+        <output sql="INSERT INTO t_account_1 SET account_id = ?, `cipher_password` = ?, `assisted_query_password` = ?, `cipher_amount` = ?, status = ?" parameters="1, encrypt_aaa, assisted_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_set_with_id_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account SET account_id = 1, password = 'aaa', amount = 1000, status = 'OK'" />
-        <output sql="INSERT INTO t_account_1 SET account_id = 1, cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', cipher_amount = 'encrypt_1000', status = 'OK'" />
+        <output sql="INSERT INTO t_account_1 SET account_id = 1, `cipher_password` = 'encrypt_aaa', `assisted_query_password` = 'assisted_query_aaa', `cipher_amount` = 'encrypt_1000', status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_set_without_id_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account SET password = ?, amount = ?, status = ?" parameters="aaa, 1000, OK" />
-        <output sql="INSERT INTO t_account_1 SET cipher_password = ?, assisted_query_password = ?, cipher_amount = ?, status = ?, account_id = ?" parameters="encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 1" />
+        <output sql="INSERT INTO t_account_1 SET `cipher_password` = ?, `assisted_query_password` = ?, `cipher_amount` = ?, status = ?, account_id = ?" parameters="encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_set_without_id_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account SET password = 'aaa', amount = 1000, status = 'OK'" />
-        <output sql="INSERT INTO t_account_1 SET cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', cipher_amount = 'encrypt_1000', status = 'OK', account_id = 1" />
+        <output sql="INSERT INTO t_account_1 SET `cipher_password` = 'encrypt_aaa', `assisted_query_password` = 'assisted_query_aaa', `cipher_amount` = 'encrypt_1000', status = 'OK', account_id = 1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_set_with_plain_with_id_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak SET account_id = ?, password = ?, amount = ?, status = ?" parameters="1, aaa, 1000, OK" />
-        <output sql="INSERT INTO t_account_bak_1 SET account_id = ?, cipher_password = ?, assisted_query_password = ?, cipher_amount = ?, status = ?" parameters="1, encrypt_aaa, assisted_query_aaa, encrypt_1000, OK" />
+        <output sql="INSERT INTO t_account_bak_1 SET account_id = ?, `cipher_password` = ?, `assisted_query_password` = ?, `cipher_amount` = ?, status = ?" parameters="1, encrypt_aaa, assisted_query_aaa, encrypt_1000, OK" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_set_without_plain_with_id_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak SET password = ?, amount = ?, status = ?" parameters="aaa, 1000, OK" />
-        <output sql="INSERT INTO t_account_bak_1 SET cipher_password = ?, assisted_query_password = ?, cipher_amount = ?, status = ?, account_id = ?" parameters="encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 1" />
+        <output sql="INSERT INTO t_account_bak_1 SET `cipher_password` = ?, `assisted_query_password` = ?, `cipher_amount` = ?, status = ?, account_id = ?" parameters="encrypt_aaa, assisted_query_aaa, encrypt_1000, OK, 1" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_set_with_plain_with_id_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak SET account_id = 1, password = 'aaa', amount = 1000, status = 'OK'" />
-        <output sql="INSERT INTO t_account_bak_1 SET account_id = 1, cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', cipher_amount = 'encrypt_1000', status = 'OK'" />
+        <output sql="INSERT INTO t_account_bak_1 SET account_id = 1, `cipher_password` = 'encrypt_aaa', `assisted_query_password` = 'assisted_query_aaa', `cipher_amount` = 'encrypt_1000', status = 'OK'" />
     </rewrite-assertion>
     
     <rewrite-assertion id="insert_set_with_plain_without_id_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak SET password = 'aaa', amount = 1000, status = 'OK'" />
-        <output sql="INSERT INTO t_account_bak_1 SET cipher_password = 'encrypt_aaa', assisted_query_password = 'assisted_query_aaa', cipher_amount = 'encrypt_1000', status = 'OK', account_id = 1" />
+        <output sql="INSERT INTO t_account_bak_1 SET `cipher_password` = 'encrypt_aaa', `assisted_query_password` = 'assisted_query_aaa', `cipher_amount` = 'encrypt_1000', status = 'OK', account_id = 1" />
     </rewrite-assertion>
 </rewrite-assertions>

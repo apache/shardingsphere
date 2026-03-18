@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.client;
 
+import com.google.common.base.Preconditions;
 import com.google.common.hash.Hashing;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -29,6 +30,7 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.config.CDCClientConfiguration;
@@ -54,11 +56,13 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
  * CDC client.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class CDCClient implements AutoCloseable {
     
@@ -67,20 +71,6 @@ public final class CDCClient implements AutoCloseable {
     private NioEventLoopGroup group;
     
     private Channel channel;
-    
-    public CDCClient(final CDCClientConfiguration config) {
-        validateParameter(config);
-        this.config = config;
-    }
-    
-    private void validateParameter(final CDCClientConfiguration parameter) {
-        if (null == parameter.getAddress() || parameter.getAddress().isEmpty()) {
-            throw new IllegalArgumentException("The address parameter can't be null");
-        }
-        if (parameter.getPort() <= 0) {
-            throw new IllegalArgumentException("The port must be greater than 0");
-        }
-    }
     
     /**
      * Connect.
@@ -127,44 +117,37 @@ public final class CDCClient implements AutoCloseable {
      * @throws IllegalStateException the channel is not active
      */
     public synchronized void login(final CDCLoginParameter parameter) {
-        checkChannelActive();
+        Preconditions.checkState(null != channel && channel.isActive(), "The channel is not active, call the `connect` method first.");
         ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
-        if (ClientConnectionStatus.LOGGED_IN == connectionContext.getStatus().get()) {
-            throw new IllegalStateException("The client is already logged in");
-        }
-        LoginRequestBody loginRequestBody = LoginRequestBody.newBuilder().setType(LoginType.BASIC).setBasicBody(BasicBody.newBuilder().setUsername(parameter.getUsername())
-                .setPassword(Hashing.sha256().hashBytes(parameter.getPassword().getBytes()).toString().toUpperCase()).build()).build();
+        Preconditions.checkState(ClientConnectionStatus.LOGGED_IN != connectionContext.getStatus().get(), "The client is already logged in.");
+        LoginRequestBody loginRequestBody = LoginRequestBody.newBuilder().setType(LoginType.BASIC).setBasicBody(BasicBody.newBuilder()
+                .setUsername(parameter.getUsername()).setPassword(Hashing.sha256().hashBytes(parameter.getPassword().getBytes()).toString().toUpperCase()).build()).build();
         String requestId = RequestIdUtils.generateRequestId();
         CDCRequest data = CDCRequest.newBuilder().setType(Type.LOGIN).setVersion(1).setRequestId(requestId).setLoginRequestBody(loginRequestBody).build();
         ResponseFuture responseFuture = new ResponseFuture(requestId, Type.LOGIN);
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(data);
-        responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
+        responseFuture.waitResponseResult(config.getTimeoutMillis(), connectionContext);
         log.info("Login success, username: {}", parameter.getUsername());
-    }
-    
-    private void checkChannelActive() {
-        if (null == channel || !channel.isActive()) {
-            throw new IllegalStateException("The channel is not active, call the `connect` method first");
-        }
     }
     
     /**
      * Start streaming.
      *
      * @param parameter parameter
-     * @return streaming id
+     * @return streaming ID
      */
     public String startStreaming(final StartStreamingParameter parameter) {
-        StreamDataRequestBody streamDataRequestBody = StreamDataRequestBody.newBuilder().setDatabase(parameter.getDatabase()).setFull(parameter.isFull())
-                .addAllSourceSchemaTable(parameter.getSchemaTables()).build();
+        StreamDataRequestBody streamDataRequestBody = StreamDataRequestBody.newBuilder()
+                .setDatabase(parameter.getDatabase()).setFull(parameter.isFull()).addAllSourceSchemaTable(parameter.getSchemaTables()).build();
         String requestId = RequestIdUtils.generateRequestId();
         CDCRequest request = CDCRequest.newBuilder().setRequestId(requestId).setType(Type.STREAM_DATA).setStreamDataRequestBody(streamDataRequestBody).build();
         ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
         ResponseFuture responseFuture = new ResponseFuture(requestId, Type.STREAM_DATA);
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(request);
-        String result = responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext).toString();
+        log.info("Sending start streaming request, param: {}, timeout: {} s", parameter, TimeUnit.MILLISECONDS.toSeconds(config.getTimeoutMillis()));
+        String result = responseFuture.waitResponseResult(config.getTimeoutMillis(), connectionContext).toString();
         log.info("Start streaming success, streaming id: {}", result);
         return result;
     }
@@ -172,7 +155,7 @@ public final class CDCClient implements AutoCloseable {
     /**
      * Restart streaming.
      *
-     * @param streamingId streaming id
+     * @param streamingId streaming ID
      */
     public void restartStreaming(final String streamingId) {
         String requestId = RequestIdUtils.generateRequestId();
@@ -182,14 +165,14 @@ public final class CDCClient implements AutoCloseable {
         ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(request);
-        responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
+        responseFuture.waitResponseResult(config.getTimeoutMillis(), connectionContext);
         log.info("Restart streaming success, streaming id: {}", streamingId);
     }
     
     /**
      * Stop streaming.
      *
-     * @param streamingId streaming id
+     * @param streamingId streaming ID
      */
     public void stopStreaming(final String streamingId) {
         String requestId = RequestIdUtils.generateRequestId();
@@ -199,7 +182,7 @@ public final class CDCClient implements AutoCloseable {
         ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(request);
-        responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
+        responseFuture.waitResponseResult(config.getTimeoutMillis(), connectionContext);
         connectionContext.getStreamingIds().remove(streamingId);
         log.info("Stop streaming success, streaming id: {}", streamingId);
     }
@@ -207,7 +190,7 @@ public final class CDCClient implements AutoCloseable {
     /**
      * Drop streaming.
      *
-     * @param streamingId streaming id
+     * @param streamingId streaming ID
      */
     public void dropStreaming(final String streamingId) {
         String requestId = RequestIdUtils.generateRequestId();
@@ -217,7 +200,7 @@ public final class CDCClient implements AutoCloseable {
         ClientConnectionContext connectionContext = channel.attr(ClientConnectionContext.CONTEXT_KEY).get();
         connectionContext.getResponseFutureMap().put(requestId, responseFuture);
         channel.writeAndFlush(request);
-        responseFuture.waitResponseResult(config.getTimeoutMills(), connectionContext);
+        responseFuture.waitResponseResult(config.getTimeoutMillis(), connectionContext);
         connectionContext.getStreamingIds().remove(streamingId);
         log.info("Drop streaming success, streaming id: {}", streamingId);
     }

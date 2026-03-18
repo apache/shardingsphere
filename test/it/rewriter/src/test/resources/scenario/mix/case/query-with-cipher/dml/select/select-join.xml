@@ -19,21 +19,21 @@
 <rewrite-assertions yaml-rule="scenario/mix/config/query-with-cipher.yaml">
     <rewrite-assertion id="select_with_encrypt_left_join_table" db-types="MySQL">
         <input sql="SELECT a.* FROM t_account a left join t_account_bak b on a.password = b.password left join t_account_detail c on a.password = c.password" />
-        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_0 a left join t_account_bak_0 b on a.assisted_query_password = b.assisted_query_password left join t_account_detail_0 c on a.assisted_query_password = c.assisted_query_password" />
-        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_0 a left join t_account_bak_1 b on a.assisted_query_password = b.assisted_query_password left join t_account_detail_0 c on a.assisted_query_password = c.assisted_query_password" />
-        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_1 a left join t_account_bak_0 b on a.assisted_query_password = b.assisted_query_password left join t_account_detail_1 c on a.assisted_query_password = c.assisted_query_password" />
-        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_1 a left join t_account_bak_1 b on a.assisted_query_password = b.assisted_query_password left join t_account_detail_1 c on a.assisted_query_password = c.assisted_query_password" />
+        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_0 a left join t_account_bak_0 b on a.`assisted_query_password` = b.`assisted_query_password` left join t_account_detail_0 c on a.`assisted_query_password` = c.`assisted_query_password`" />
+        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_0 a left join t_account_bak_1 b on a.`assisted_query_password` = b.`assisted_query_password` left join t_account_detail_0 c on a.`assisted_query_password` = c.`assisted_query_password`" />
+        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_1 a left join t_account_bak_0 b on a.`assisted_query_password` = b.`assisted_query_password` left join t_account_detail_1 c on a.`assisted_query_password` = c.`assisted_query_password`" />
+        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_1 a left join t_account_bak_1 b on a.`assisted_query_password` = b.`assisted_query_password` left join t_account_detail_1 c on a.`assisted_query_password` = c.`assisted_query_password`" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_encrypt_right_join_table" db-types="MySQL">
         <input sql="SELECT a.* FROM t_account a right join t_account_detail b on a.password = b.password" />
-        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_0 a right join t_account_detail_0 b on a.assisted_query_password = b.assisted_query_password" />
-        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_1 a right join t_account_detail_1 b on a.assisted_query_password = b.assisted_query_password" />
+        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_0 a right join t_account_detail_0 b on a.`assisted_query_password` = b.`assisted_query_password`" />
+        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_1 a right join t_account_detail_1 b on a.`assisted_query_password` = b.`assisted_query_password`" />
     </rewrite-assertion>
     
     <rewrite-assertion id="select_with_encrypt_join_table" db-types="MySQL">
         <input sql="SELECT a.* FROM t_account a join t_account_detail b on a.password = b.password" />
-        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_0 a join t_account_detail_0 b on a.assisted_query_password = b.assisted_query_password" />
-        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_1 a join t_account_detail_1 b on a.assisted_query_password = b.assisted_query_password" />
+        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_0 a join t_account_detail_0 b on a.`assisted_query_password` = b.`assisted_query_password`" />
+        <output sql="SELECT a.`account_id`, a.`cipher_password` AS `password`, a.`cipher_amount` AS `amount` FROM t_account_1 a join t_account_detail_1 b on a.`assisted_query_password` = b.`assisted_query_password`" />
     </rewrite-assertion>
 </rewrite-assertions>

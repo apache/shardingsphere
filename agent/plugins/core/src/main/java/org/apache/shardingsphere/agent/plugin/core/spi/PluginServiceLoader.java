@@ -63,7 +63,7 @@ public final class PluginServiceLoader<T> {
     
     /**
      * Get service.
-     * 
+     *
      * @param pluginType plugin type
      * @return service
      */

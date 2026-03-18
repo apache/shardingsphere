@@ -75,12 +75,12 @@ public abstract class AbstractUnsupportedOperationConnection extends WrapperAdap
     }
     
     @Override
-    public final int getNetworkTimeout() throws SQLException {
+    public int getNetworkTimeout() throws SQLException {
         throw new SQLFeatureNotSupportedException("getNetworkTimeout");
     }
     
     @Override
-    public final void setNetworkTimeout(final Executor executor, final int milliseconds) throws SQLException {
+    public void setNetworkTimeout(final Executor executor, final int milliseconds) throws SQLException {
         throw new SQLFeatureNotSupportedException("setNetworkTimeout");
     }
     

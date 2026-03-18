@@ -17,14 +17,14 @@
 
 <dataset>
     <metadata>
-        <column name="instance_id" assertion="false" />
-        <column name="host" assertion="false" />
+        <column name="instance_id" ignore-assert-data="true" />
+        <column name="host" ignore-assert-data="true" />
         <column name="port" />
         <column name="status" />
         <column name="mode_type" />
         <column name="worker_id" />
         <column name="labels" />
-        <column name="version" assertion="false"/>
+        <column name="version" ignore-assert-data="true" />
     </metadata>
     <row values=" | | 3307| OK| Standalone| 1| |" />
 </dataset>

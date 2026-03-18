@@ -32,7 +32,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -152,7 +152,7 @@ class DataNodesTest {
     
     private ShardingSphereRule mockSingleRule() {
         DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
-        when(ruleAttribute.getDataNodesByTableName("t_single")).thenReturn(Collections.singleton(new DataNode("readwrite_ds", "t_single")));
+        when(ruleAttribute.getDataNodesByTableName("t_single")).thenReturn(Collections.singleton(new DataNode("readwrite_ds", (String) null, "t_single")));
         ShardingSphereRule result = mock(ShardingSphereRule.class);
         when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
         return result;
@@ -160,8 +160,8 @@ class DataNodesTest {
     
     private ShardingSphereRule mockShardingRule() {
         Collection<DataNode> dataNodes = new LinkedList<>();
-        dataNodes.add(new DataNode("readwrite_ds", "t_order_0"));
-        dataNodes.add(new DataNode("readwrite_ds", "t_order_1"));
+        dataNodes.add(new DataNode("readwrite_ds", (String) null, "t_order_0"));
+        dataNodes.add(new DataNode("readwrite_ds", (String) null, "t_order_1"));
         DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class);
         when(ruleAttribute.getDataNodesByTableName("t_order")).thenReturn(dataNodes);
         ShardingSphereRule result = mock(ShardingSphereRule.class);

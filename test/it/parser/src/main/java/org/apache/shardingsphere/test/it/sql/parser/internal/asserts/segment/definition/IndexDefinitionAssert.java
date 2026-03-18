@@ -23,7 +23,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Ind
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition.ExpectedIndexDefinition;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -34,7 +34,7 @@ public final class IndexDefinitionAssert {
     
     /**
      * Assert actual index definition segment is correct with expected index definition.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual index definition segment
      * @param expected expected index definition

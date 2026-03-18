@@ -74,7 +74,7 @@ public final class YamlDataSourceConfigurationSwapper {
     
     /**
      * Swap to data source pool properties.
-     * 
+     *
      * @param yamlConfig YAML configurations
      * @return data source pool properties
      */
@@ -98,7 +98,7 @@ public final class YamlDataSourceConfigurationSwapper {
     
     /**
      * Swap to map from data source properties.
-     * 
+     *
      * @param props data source pool properties
      * @return data source map
      */

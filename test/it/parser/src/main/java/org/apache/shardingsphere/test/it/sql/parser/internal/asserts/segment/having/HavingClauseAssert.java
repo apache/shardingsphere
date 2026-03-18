@@ -33,7 +33,7 @@ public final class HavingClauseAssert {
     
     /**
      * Assert actual having segment is correct with expected having clause.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual having segment
      * @param expected expected having clause

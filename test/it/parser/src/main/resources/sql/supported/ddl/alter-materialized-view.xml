@@ -26,4 +26,8 @@
     <sql-case id="alter_materialized_view_refresh_enable_query_rewrite" value="ALTER MATERIALIZED VIEW emp_data ENABLE QUERY REWRITE;" db-types="Oracle" />
     <sql-case id="alter_materialized_view_refresh_with_primary_key" value="ALTER MATERIALIZED VIEW order_data REFRESH WITH PRIMARY KEY;" db-types="Oracle" />
     <sql-case id="alter_materialized_view_compile" value="ALTER MATERIALIZED VIEW order_data COMPILE;" db-types="Oracle" />
+    <sql-case id="alter_materialized_view_enable_rewrite_basic" value="ALTER MATERIALIZED VIEW sales_mv ENABLE REWRITE" db-types="Hive" />
+    <sql-case id="alter_materialized_view_disable_rewrite_basic" value="ALTER MATERIALIZED VIEW sales_mv DISABLE REWRITE" db-types="Hive" />
+    <sql-case id="alter_materialized_view_enable_rewrite_with_db" value="ALTER MATERIALIZED VIEW db1.sales_mv ENABLE REWRITE" db-types="Hive" />
+    <sql-case id="alter_materialized_view_disable_rewrite_with_db" value="ALTER MATERIALIZED VIEW db1.sales_mv DISABLE REWRITE" db-types="Hive" />
 </sql-cases>

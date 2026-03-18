@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="select_with_geometric_translation_plus" value="SELECT box '((0,0),(1,1))' + point '(2.0,0)' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_translation_minus" value="SELECT box '((0,0),(1,1))' - point '(2.0,0)' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_rotation_multiply" value="SELECT box '((0,0),(1,1))' * point '(2.0,0)' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_rotation_divide" value="SELECT box '((0,0),(2,2))' / point '(2.0,0)' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_intersection" value="SELECT box '((1,-1),(-1,1))' # box '((1,1),(-2,-2))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_number_of_path" value="SELECT # path'((1,0),(0,1),(-1,0))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_length" value="SELECT @-@ path '((0,0),(1,0))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_center_of_box" value="SELECT @@ circle '((0,0),10)' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_distance" value="SELECT circle '((0,0),1)' &lt;-> circle '((5,0),1)' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_overlaps" value="SELECT box '((0,0),(1,1))' &amp;&amp; box '((0,0),(2,2))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_strict_left" value="SELECT circle '((0,0),1)' &lt;&lt; circle '((5,0),1)' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_strict_right" value="SELECT circle '((5,0),1)' >> circle '((0,0),1)' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_extend_to_right" value="SELECT box '((0,0),(1,1))' &amp;&lt; box '((0,0),(2,2))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_extend_to_left" value="SELECT box '((0,0),(3,3))' &amp;> box '((0,0),(2,2))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_strict_below" value="SELECT box '((0,0),(3,3))' &lt;&lt;| box '((3,4),(5,5))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_strict_above" value="SELECT box '((3,4),(5,5))' |>> box '((0,0),(3,3))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_extend_above" value="SELECT box '((0,0),(1,1))' &amp;&lt;| box '((0,0),(2,2))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_extend_below" value="SELECT box '((0,0),(3,3))' |&amp;> box '((0,0),(2,2))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_below" value="SELECT box '((0,0),(-3,-3))' &lt;^ box '((0,0),(2,2))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_above" value="SELECT box '((0,0),(2,2))' >^ box '((0,0),(-3,-3))'  AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_intersect" value="SELECT lseg '((-1,0),(1,0))' ?# box '((-2,-2),(2,2))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <!-- FIXME optimize add ?- operator to Symbol.g4 and solve lexer conflict -->
+    <!--<sql-case id="select_with_geometric_horizontal" value="SELECT ?- lseg '((-1,0),(1,0))' AS RESULT;" db-types="PostgreSQL,openGauss" />-->
+    <sql-case id="select_with_geometric_horizontal_aligned" value="SELECT point '(1,0)' ?- point '(0,0)' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <!-- FIXME optimize add ?| operator to Symbol.g4 and solve lexer conflict -->
+    <!--<sql-case id="select_with_geometric_vertical" value="SELECT ?| lseg '((-1,0),(1,0))' AS RESULT;" db-types="PostgreSQL,openGauss" />-->
+    <sql-case id="select_with_geometric_vertical_aligned" value="SELECT point '(0,1)' ?| point '(0,0)' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_perpendicular" value="SELECT lseg '((0,0),(0,1))' ?-| lseg '((0,0),(1,0))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_parallel" value="SELECT lseg '((-1,0),(1,0))' ?|| lseg '((-1,2),(1,2))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_contains" value="SELECT circle '((0,0),2)' @> point '(1,1)' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_contains_in" value="SELECT point '(1,1)' &lt;@ circle '((0,0),2)' AS RESULT;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="select_with_geometric_same_as" value="SELECT polygon '((0,0),(1,1))' ~= polygon '((1,1),(0,0))' AS RESULT;" db-types="PostgreSQL,openGauss" />
+</sql-cases>

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.execute.PipelineExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
@@ -35,15 +35,15 @@ import java.util.concurrent.atomic.AtomicReference;
  * Inventory task.
  */
 @RequiredArgsConstructor
-@ToString(exclude = {"inventoryDumperExecuteEngine", "inventoryImporterExecuteEngine", "dumper", "importer"})
+@ToString(of = {"taskId", "position"})
 public final class InventoryTask implements PipelineTask {
     
     @Getter
     private final String taskId;
     
-    private final ExecuteEngine inventoryDumperExecuteEngine;
+    private final PipelineExecuteEngine inventoryDumperExecuteEngine;
     
-    private final ExecuteEngine inventoryImporterExecuteEngine;
+    private final PipelineExecuteEngine inventoryImporterExecuteEngine;
     
     private final Dumper dumper;
     
@@ -70,9 +70,5 @@ public final class InventoryTask implements PipelineTask {
     @Override
     public InventoryTaskProgress getTaskProgress() {
         return new InventoryTaskProgress(position.get());
-    }
-    
-    @Override
-    public void close() {
     }
 }

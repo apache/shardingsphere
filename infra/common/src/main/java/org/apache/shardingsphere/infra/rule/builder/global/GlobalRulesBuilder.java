@@ -49,7 +49,7 @@ public final class GlobalRulesBuilder {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static Collection<ShardingSphereRule> buildRules(final Collection<RuleConfiguration> globalRuleConfigs,
-                                                            final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
+                                                            final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, GlobalRuleBuilder> entry : getRuleBuilderMap(globalRuleConfigs).entrySet()) {
             result.add(entry.getValue().build(entry.getKey(), databases, props));
@@ -67,13 +67,10 @@ public final class GlobalRulesBuilder {
     
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, GlobalRuleBuilder> getMissedDefaultRuleBuilderMap(final Map<RuleConfiguration, GlobalRuleBuilder> builders) {
-        Map<RuleConfiguration, GlobalRuleBuilder> result = new LinkedHashMap<>();
         Map<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> defaultBuilders = OrderedSPILoader.getServices(
                 DefaultGlobalRuleConfigurationBuilder.class, getMissedDefaultRuleBuilders(builders.values()));
-        for (Entry<GlobalRuleBuilder, DefaultGlobalRuleConfigurationBuilder> entry : defaultBuilders.entrySet()) {
-            result.put(entry.getValue().build(), entry.getKey());
-        }
-        return result;
+        return defaultBuilders.entrySet().stream().collect(
+                Collectors.toMap(entry -> entry.getValue().build(), Entry::getKey, (oldValue, currentValue) -> currentValue, LinkedHashMap::new));
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -90,13 +87,9 @@ public final class GlobalRulesBuilder {
      * @param props props
      * @return built rule
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> buildSingleRules(final RuleConfiguration globalRuleConfig,
-                                                                  final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
-        Collection<ShardingSphereRule> result = new LinkedList<>();
-        for (Entry<RuleConfiguration, GlobalRuleBuilder> each : OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(globalRuleConfig)).entrySet()) {
-            result.add(each.getValue().build(each.getKey(), databases, props));
-        }
-        return result;
+    @SuppressWarnings("unchecked")
+    public static Collection<ShardingSphereRule> buildSingleRules(final RuleConfiguration globalRuleConfig, final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props) {
+        return OrderedSPILoader.getServices(GlobalRuleBuilder.class, Collections.singleton(globalRuleConfig)).entrySet()
+                .stream().map(each -> each.getValue().build(each.getKey(), databases, props)).collect(Collectors.toList());
     }
 }

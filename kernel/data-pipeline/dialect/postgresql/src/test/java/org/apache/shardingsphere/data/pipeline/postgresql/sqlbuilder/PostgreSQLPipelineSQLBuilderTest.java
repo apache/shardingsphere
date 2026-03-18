@@ -18,31 +18,155 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
-import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.WALPosition;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.incremental.wal.decode.PostgreSQLLogSequenceNumber;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.column.PostgreSQLColumnPropertiesAppender;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.constraints.PostgreSQLConstraintsPropertiesAppender;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.index.PostgreSQLIndexSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.table.PostgreSQLTablePropertiesLoader;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template.PostgreSQLPipelineFreemarkerManager;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.postgresql.replication.LogSequenceNumber;
 
-import static org.hamcrest.CoreMatchers.is;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 class PostgreSQLPipelineSQLBuilderTest {
     
-    private final PostgreSQLPipelineSQLBuilder sqlBuilder = new PostgreSQLPipelineSQLBuilder();
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
+    private final DialectPipelineSQLBuilder sqlBuilder = DatabaseTypedSPILoader.getService(DialectPipelineSQLBuilder.class, databaseType);
+    
+    @Test
+    void assertBuildCreateSchemaSQL() {
+        Optional<String> actual = sqlBuilder.buildCreateSchemaSQL("foo_schema");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("CREATE SCHEMA IF NOT EXISTS foo_schema"));
+    }
+    
+    @Test
+    void assertBuildInsertSQLOnDuplicateClauseWithEmptyUniqueKey() {
+        Optional<String> actual = sqlBuilder.buildInsertOnDuplicateClause(
+                new DataRecord(PipelineSQLOperationType.INSERT, "foo_tbl", new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))), 2));
+        assertFalse(actual.isPresent());
+    }
     
     @Test
     void assertBuildInsertSQLOnDuplicateClause() {
-        String actual = sqlBuilder.buildInsertOnDuplicateClause(mockDataRecord()).orElse(null);
-        assertThat(actual, is("ON CONFLICT (order_id) DO UPDATE SET user_id=EXCLUDED.user_id,status=EXCLUDED.status"));
+        Optional<String> actual = sqlBuilder.buildInsertOnDuplicateClause(createDataRecord());
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("ON CONFLICT (\"order_id\") DO UPDATE SET \"user_id\"=EXCLUDED.\"user_id\",\"status\"=EXCLUDED.\"status\""));
     }
     
-    private DataRecord mockDataRecord() {
-        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, "t_order", new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))), 2);
-        result.addColumn(new Column("order_id", 1, true, true));
-        result.addColumn(new Column("user_id", 2, true, false));
-        result.addColumn(new Column("status", "ok", true, false));
+    private DataRecord createDataRecord() {
+        DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, "foo_tbl", new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))), 2);
+        result.addColumn(new NormalColumn("order_id", 1, true, true));
+        result.addColumn(new NormalColumn("user_id", 2, true, false));
+        result.addColumn(new NormalColumn("status", "ok", true, false));
         return result;
+    }
+    
+    @Test
+    void assertBuildCheckEmptyTableSQL() {
+        assertThat(sqlBuilder.buildCheckEmptyTableSQL("foo_tbl"), is("SELECT * FROM foo_tbl LIMIT 1"));
+    }
+    
+    @Test
+    void assertBuildEstimatedCountSQL() {
+        Optional<String> actual = sqlBuilder.buildEstimatedCountSQL("foo_catalog", "foo_tbl");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("SELECT reltuples::integer FROM pg_class WHERE oid='foo_tbl'::regclass::oid;"));
+    }
+    
+    @Test
+    void assertBuildCRC32SQL() {
+        Optional<String> actual = sqlBuilder.buildCRC32SQL("foo_tbl", "foo_col");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("SELECT pg_catalog.pg_checksum_table('foo_tbl', true)"));
+    }
+    
+    @Test
+    void assertBuildSplitByUniqueKeyRangedSubqueryClause() {
+        assertThat(sqlBuilder.buildSplitByUniqueKeyRangedSubqueryClause("foo_tbl", "id", true),
+                is("SELECT id FROM foo_tbl WHERE id>? ORDER BY id LIMIT ?"));
+        assertThat(sqlBuilder.buildSplitByUniqueKeyRangedSubqueryClause("foo_tbl", "id", false),
+                is("SELECT id FROM foo_tbl ORDER BY id LIMIT ?"));
+    }
+    
+    @Test
+    void assertBuildQueryCurrentPositionSQL() {
+        Optional<String> actual = sqlBuilder.buildQueryCurrentPositionSQL();
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("SELECT * FROM pg_current_wal_lsn()"));
+    }
+    
+    @Test
+    void assertWrapWithPageQuery() {
+        assertThat(sqlBuilder.wrapWithPageQuery("SELECT * FROM foo_tbl"), is("SELECT * FROM foo_tbl LIMIT ?"));
+    }
+    
+    @Test
+    void assertBuildCreateTableSQLs() throws SQLException {
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getDatabaseMajorVersion()).thenReturn(10);
+        when(connection.getMetaData().getDatabaseMinorVersion()).thenReturn(1);
+        DataSource dataSource = new MockedDataSource(connection);
+        Collection<Map<String, Object>> columns = new ArrayList<>(3);
+        Map<String, Object> arrayColumn = new HashMap<>(2, 1F);
+        arrayColumn.put("cltype", "int4[]");
+        columns.add(arrayColumn);
+        Map<String, Object> normalColumn = new HashMap<>(2, 1F);
+        normalColumn.put("cltype", "text");
+        columns.add(normalColumn);
+        Map<String, Object> columnWithoutType = Collections.singletonMap("name", "no_type");
+        columns.add(columnWithoutType);
+        Map<String, Object> materials = Collections.singletonMap("columns", columns);
+        try (
+                MockedStatic<PostgreSQLPipelineFreemarkerManager> freemarkerManager = mockStatic(PostgreSQLPipelineFreemarkerManager.class);
+                MockedConstruction<PostgreSQLTablePropertiesLoader> ignoredLoader =
+                        mockConstruction(PostgreSQLTablePropertiesLoader.class, (mocked, mockContext) -> when(mocked.load()).thenReturn(materials));
+                MockedConstruction<PostgreSQLColumnPropertiesAppender> ignoredColumnAppender = mockConstruction(PostgreSQLColumnPropertiesAppender.class);
+                MockedConstruction<PostgreSQLConstraintsPropertiesAppender> ignoredConstraintsAppender = mockConstruction(PostgreSQLConstraintsPropertiesAppender.class);
+                MockedConstruction<PostgreSQLIndexSQLGenerator> ignoredIndexGenerator =
+                        mockConstruction(PostgreSQLIndexSQLGenerator.class, (mocked, mockContext) -> when(mocked.generate(materials)).thenReturn("CREATE INDEX foo_index"))) {
+            freemarkerManager.when(() -> PostgreSQLPipelineFreemarkerManager.getSQLByVersion(materials, "component/table/%s/create.ftl", 10, 1)).thenReturn("CREATE TABLE foo;");
+            Collection<String> actual = sqlBuilder.buildCreateTableSQLs(dataSource, "public", "foo_tbl");
+            List<String> actualList = actual.stream().map(String::trim).collect(Collectors.toList());
+            assertThat(actualList.size(), is(2));
+            assertThat(actualList.get(0), is("CREATE TABLE foo"));
+            assertThat(actualList.get(1), is("CREATE INDEX foo_index"));
+            assertThat(arrayColumn.get("cltype"), is("int4"));
+            assertTrue((boolean) arrayColumn.get("hasSqrBracket"));
+            assertFalse((boolean) normalColumn.get("hasSqrBracket"));
+            assertFalse(columnWithoutType.containsKey("hasSqrBracket"));
+        }
     }
 }

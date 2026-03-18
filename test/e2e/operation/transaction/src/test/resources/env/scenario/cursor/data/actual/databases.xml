@@ -17,7 +17,7 @@
   -->
 
 <databases>
-    <database>ds_0</database>
-    <database>ds_1</database>
-    <database>ds_2</database>
+    <database name="ds_0" />
+    <database name="ds_1" />
+    <database name="ds_2" />
 </databases>

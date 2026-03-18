@@ -99,6 +99,17 @@
         <parameter-assign value="'utf8'">
             <parameter name="character_set_client" />
         </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_results" />
+        </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_connection" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_character_set_doris">
+        <parameter-assign value="utf8mb4">
+            <parameter name="character_set_client" />
+        </parameter-assign>
     </set-parameter>
     <set-resource-group sql-case-id="set_resource_group">
         <group name="rg" />
@@ -106,6 +117,12 @@
     <set-parameter sql-case-id="set_charset_mysql">
         <parameter-assign value="'utf8'">
             <parameter name="character_set_client" />
+        </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_results" />
+        </parameter-assign>
+        <parameter-assign value="'utf8'">
+            <parameter name="character_set_connection" />
         </parameter-assign>
     </set-parameter>
     <set-parameter sql-case-id="set_charset_postgresql">
@@ -118,5 +135,37 @@
             <parameter name="CLIENT_ENCODING" />
         </parameter-assign>
     </set-parameter>
+    <set-parameter sql-case-id="set_quoted_identifier_sqlserver">
+        <parameter-assign value="ON">
+            <parameter name="QUOTED_IDENTIFIER" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_textsize_sqlserver">
+        <parameter-assign value="2048">
+            <parameter name="TEXTSIZE" />
+        </parameter-assign>
+    </set-parameter>
     <set-parameter sql-case-id="set_session_authorization" />
+    <set-parameter sql-case-id="set_persist_system_variable_doris">
+        <parameter-assign value="200">
+            <parameter name="max_connections" scope="PERSIST" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_persist_only_system_variable_doris">
+        <parameter-assign value="'+08:00'">
+            <parameter name="time_zone" scope="PERSIST_ONLY" />
+        </parameter-assign>
+    </set-parameter>
+    <set-parameter sql-case-id="set_mysql_version_comment">
+        <parameter-assign value="123">
+            <parameter name="max_connections" scope="GLOBAL" />
+        </parameter-assign>
+        <comment start-index="0" stop-index="36" text="/*! SET GLOBAL max_connections=123 */" />
+    </set-parameter>
+    <set-parameter sql-case-id="set_mysql_version_comment_with_version">
+        <parameter-assign value="456">
+            <parameter name="max_connections" scope="GLOBAL" />
+        </parameter-assign>
+        <comment start-index="0" stop-index="41" text="/*!80029 SET GLOBAL max_connections=456 */" />
+    </set-parameter>
 </sql-parser-test-cases>

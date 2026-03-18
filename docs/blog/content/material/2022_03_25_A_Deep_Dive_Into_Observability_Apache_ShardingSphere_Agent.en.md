@@ -199,7 +199,7 @@ After performing the same access test as before, we can view dependencies throug
 
 ## Sampling Rate
 
-The Observability plugin also enables users to set differnt sampling rate configured to suit different scenarios. Zipkin plugins support various sampling rate type configurations including const, counting, rate limiting, and boundary.
+The Observability plugin also enables users to set different sampling rate configured to suit different scenarios. Zipkin plugins support various sampling rate type configurations including const, counting, rate limiting, and boundary.
 
 For scenarios with a high volume of requests, we suggest you to choose the boundary type and configure it with the appropriate sampling rate to reduce the collect volume of tracing data.
 

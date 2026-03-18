@@ -16,6 +16,6 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case log-regex="Build meta data contexts finished, cost\s(?=[1-9]+\d*)"/>
-</integration-test-cases>
+</e2e-test-cases>

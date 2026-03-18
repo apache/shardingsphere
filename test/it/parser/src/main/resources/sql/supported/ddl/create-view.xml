@@ -20,7 +20,9 @@
     <sql-case id="create_view_with_udf" value="CREATE VIEW V_T1_C AS SELECT DB29023216.TESTFUNC()" db-types="MySQL" />
     <sql-case id="create_view_with_udf_nested_fun" value="CREATE VIEW V_T1_C AS SELECT DB29023216.TESTFUNC(NOW())" db-types="MySQL" />
     <sql-case id="create_view_with_udf_arg" value="CREATE VIEW V_T1_C AS SELECT DB29023216.TESTFUNC(1,2,3,4)" db-types="MySQL" />
-    <sql-case id="create_view" value="CREATE VIEW comedies AS SELECT * FROM films WHERE kind = 'Comedy'" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
+    <sql-case id="create_view" value="CREATE VIEW comedies AS SELECT * FROM films WHERE kind = 'Comedy'" db-types="MySQL,PostgreSQL,openGauss,SQLServer,Doris" />
+    <sql-case id="create_view_with_owner_doris" value="CREATE VIEW report.v_sales AS SELECT order_id, user_id FROM t_order" db-types="Doris" />
+    <sql-case id="create_view_with_columns_doris" value="CREATE VIEW example_view (c1, c2) AS SELECT k1, k2 FROM example_table" db-types="Doris" />
     <sql-case id="create_view_with_check_option" value="CREATE VIEW universal_comedies AS SELECT * FROM comedies WHERE classification = 'U' WITH LOCAL CHECK OPTION" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_view_with_recursive" value="CREATE RECURSIVE VIEW public.nums_1_100 (n) AS VALUES (1) UNION ALL SELECT n+1 FROM nums_1_100 WHERE n = 100" db-types="PostgreSQL,openGauss" />
     <sql-case id="create_view_with_option" value="CREATE OR REPLACE TEMP view order_view (order_id,user_id) WITH (security_barrier=TRUE) AS SELECT * FROM t_order" db-types="PostgreSQL,openGauss" />
@@ -30,6 +32,7 @@
     <sql-case id="create_view_as_simple_select3" value="CREATE VIEW emp AS SELECT empno, ename, mgr, deptno FROM company.emp" db-types="Oracle" />
     <sql-case id="create_view_as_simple_select4" value="CREATE VIEW emp_v AS SELECT empno, ename, deptno FROM emp" db-types="Oracle" />
     <sql-case id="create_view_as_simple_select5" value="CREATE VIEW hr_verify AS SELECT EMPLOYEE_ID, FIRST_NAME, LAST_NAME, EMAIL, MANAGER_ID FROM EMPLOYEES" db-types="Oracle" />
+    <sql-case id="create_or_replace_view_simple_oracle" value="CREATE OR REPLACE VIEW v_or_replace AS SELECT 1 FROM dual" db-types="Oracle" />
     <sql-case id="create_view_as_select_with_condition1" value="CREATE VIEW emp_emp AS SELECT e1.ename, e2.empno, e2.deptno FROM emp e1, emp e2 WHERE e1.empno = e2.empno" db-types="Oracle" />
     <sql-case id="create_view_as_select_with_condition2" value="CREATE VIEW lowsal AS SELECT * FROM employees  WHERE salary &lt; 10000" db-types="Oracle" />
     <sql-case id="create_view_as_select_with_condition3" value="CREATE VIEW employees_departments AS SELECT employee_id, last_name, department_id FROM employees, departments WHERE employees.department_id = departments.department_id" db-types="Oracle" />
@@ -96,4 +99,14 @@
     <sql-case id="create_view_select_to_number_to_char" value="CREATE VIEW time_view AS SELECT time_id, TO_NUMBER(TO_CHAR(time_id, 'ddd')) AS day_in_year FROM times" db-types="Oracle" />
     <sql-case id="create_view_select_subquery_with_union_all" value="CREATE VIEW view_with_unionall AS (SELECT c.rowid crid, c.cust_id, 2 umarker FROM customers c WHERE c.cust_last_name = 'Smith' UNION ALL SELECT c.rowid crid, c.cust_id, 3 umarker FROM customers c WHERE c.cust_last_name = 'Jones')" db-types="Oracle" />
     <sql-case id="create_view_select_sys_XMLGen" value="CREATE OR REPLACE VIEW employee_view OF XMLType WITH OBJECT ID (XMLCast(XMLQuery('/Emp/@empno' PASSING OBJECT_VALUE RETURNING CONTENT) AS BINARY_DOUBLE)) AS SELECT sys_XMLGen(emp_t(e.employee_id, e.first_name, e.last_name, e.hire_date),XMLFormat('EMP')) FROM employees e WHERE salary &gt; 15000;" db-types="Oracle" />
+    <sql-case id="create_view_hive" value="CREATE VIEW onion_referrers(url COMMENT 'URL of Referring page') COMMENT 'Referrers to The Onion website' AS SELECT DISTINCT referrer_url FROM page_view WHERE page_url='http://www.theonion.com';" db-types="Hive" />
+    <sql-case id="create_view_basic" value="CREATE VIEW sales_summary AS SELECT order_id, total FROM sales" db-types="Hive" />
+    <sql-case id="create_view_with_if_not_exists" value="CREATE VIEW IF NOT EXISTS sales_summary AS SELECT order_id, total FROM sales" db-types="Hive" />
+    <sql-case id="create_view_with_column_def" value="CREATE VIEW sales_summary (order_id COMMENT 'ID', total COMMENT 'total') AS SELECT order_id, total FROM sales" db-types="Hive" />
+    <sql-case id="create_view_with_comment" value="CREATE VIEW sales_summary COMMENT 'view' AS SELECT order_id, total FROM sales" db-types="Hive" />
+    <sql-case id="create_view_with_tblproperties" value="CREATE VIEW sales_summary TBLPROPERTIES ('creator' = 'data_team', 'version' = '1.0') AS SELECT order_id, total FROM sales" db-types="Hive" />
+    <sql-case id="create_view_with_order_by" value="CREATE VIEW top_sales AS SELECT order_id, total FROM sales ORDER BY total DESC" db-types="Hive" />
+    <sql-case id="create_view_with_limit" value="CREATE VIEW recent_orders AS SELECT order_id, order_date FROM sales LIMIT 100" db-types="Hive" />
+    <sql-case id="create_view_with_db_name" value="CREATE VIEW db1.sales_summary AS SELECT order_id, total FROM db2.sales" db-types="Hive" />
+    <sql-case id="create_view_with_cte" value="CREATE VIEW user_orders AS WITH user_cte AS (SELECT id, name FROM users) SELECT u.name, o.order_id FROM user_cte u JOIN orders o ON u.id = o.user_id" db-types="Hive" />
 </sql-cases>

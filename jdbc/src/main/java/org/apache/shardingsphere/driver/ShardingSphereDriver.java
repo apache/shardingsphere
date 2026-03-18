@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver;
 
 import org.apache.shardingsphere.driver.exception.DriverRegisterException;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.driver.DriverDataSourceCache;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 
@@ -27,11 +26,8 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * ShardingSphere driver.
@@ -45,7 +41,7 @@ public final class ShardingSphereDriver implements Driver {
     
     private static final int MINOR_DRIVER_VERSION = 5;
     
-    private final DriverDataSourceCache dataSourceCache = new DriverDataSourceCache();
+    private static final DriverDataSourceCache DATA_SOURCE_CACHE = new DriverDataSourceCache();
     
     static {
         try {
@@ -55,20 +51,10 @@ public final class ShardingSphereDriver implements Driver {
         }
     }
     
-    /**
-     * Get ShardingSphere data sources.
-     *
-     * @return ShardingSphere data source map
-     */
-    public Map<String, ShardingSphereDataSource> getShardingSphereDataSources() {
-        return dataSourceCache.getDataSourceMap().entrySet().stream()
-                .filter(entry -> entry.getValue() instanceof ShardingSphereDataSource).collect(Collectors.toMap(Entry::getKey, entry -> (ShardingSphereDataSource) entry.getValue()));
-    }
-    
     @HighFrequencyInvocation(canBeCached = true)
     @Override
     public Connection connect(final String url, final Properties info) throws SQLException {
-        return acceptsURL(url) ? dataSourceCache.get(url, DRIVER_URL_PREFIX).getConnection() : null;
+        return acceptsURL(url) ? DATA_SOURCE_CACHE.get(url, DRIVER_URL_PREFIX).getConnection() : null;
     }
     
     @Override

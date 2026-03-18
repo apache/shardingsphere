@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.distsql.handler.validate;
 
+import org.apache.shardingsphere.database.connector.core.checker.PrivilegeCheckType;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.datasource.pool.props.validator.DataSourcePoolPropertiesValidator;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.StorageUnitsConnectException;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storageunit.StorageUnitsValidateException;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -31,11 +34,21 @@ public final class DistSQLDataSourcePoolPropertiesValidator {
     
     /**
      * Validate data source properties map.
-     * 
+     *
      * @param propsMap data source pool properties map
      */
     public void validate(final Map<String, DataSourcePoolProperties> propsMap) {
-        Map<String, Exception> exceptions = DataSourcePoolPropertiesValidator.validate(propsMap);
-        ShardingSpherePreconditions.checkMustEmpty(exceptions, () -> new StorageUnitsConnectException(exceptions));
+        validate(propsMap, Collections.emptySet());
+    }
+    
+    /**
+     * Validate data source properties map.
+     *
+     * @param propsMap data source pool properties map
+     * @param expectedPrivileges expected privileges
+     */
+    public void validate(final Map<String, DataSourcePoolProperties> propsMap, final Collection<PrivilegeCheckType> expectedPrivileges) {
+        Map<String, Exception> exceptions = DataSourcePoolPropertiesValidator.validate(propsMap, expectedPrivileges);
+        ShardingSpherePreconditions.checkMustEmpty(exceptions, () -> new StorageUnitsValidateException(exceptions));
     }
 }

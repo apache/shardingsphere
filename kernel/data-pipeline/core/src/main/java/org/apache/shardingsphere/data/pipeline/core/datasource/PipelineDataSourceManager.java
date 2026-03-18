@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.datasource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public final class PipelineDataSourceManager implements AutoCloseable {
     
-    private final Map<PipelineDataSourceConfiguration, PipelineDataSourceWrapper> cachedDataSources = new ConcurrentHashMap<>();
+    private final Map<PipelineDataSourceConfiguration, PipelineDataSource> cachedDataSources = new ConcurrentHashMap<>();
     
     /**
      * Get cached data source.
@@ -38,8 +37,8 @@ public final class PipelineDataSourceManager implements AutoCloseable {
      * @param dataSourceConfig data source configuration
      * @return data source
      */
-    public PipelineDataSourceWrapper getDataSource(final PipelineDataSourceConfiguration dataSourceConfig) {
-        PipelineDataSourceWrapper result = cachedDataSources.get(dataSourceConfig);
+    public PipelineDataSource getDataSource(final PipelineDataSourceConfiguration dataSourceConfig) {
+        PipelineDataSource result = cachedDataSources.get(dataSourceConfig);
         if (null != result) {
             return result;
         }
@@ -51,7 +50,7 @@ public final class PipelineDataSourceManager implements AutoCloseable {
                 }
                 log.warn("{} is already closed, create again.", result);
             }
-            result = new PipelineDataSourceWrapper(dataSourceConfig);
+            result = new PipelineDataSource(dataSourceConfig);
             cachedDataSources.put(dataSourceConfig, result);
             return result;
         }
@@ -59,15 +58,11 @@ public final class PipelineDataSourceManager implements AutoCloseable {
     
     @Override
     public void close() {
-        for (PipelineDataSourceWrapper each : cachedDataSources.values()) {
+        for (PipelineDataSource each : cachedDataSources.values()) {
             if (each.isClosed()) {
                 continue;
             }
-            try {
-                each.close();
-            } catch (final SQLException ex) {
-                log.error("An exception occurred while closing the data source.", ex);
-            }
+            each.close();
         }
         cachedDataSources.clear();
     }

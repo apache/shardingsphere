@@ -48,6 +48,8 @@ public final class HintValueContext {
     
     private boolean skipSQLRewrite;
     
+    private boolean skipMetadataValidate;
+    
     private boolean shadow;
     
     /**

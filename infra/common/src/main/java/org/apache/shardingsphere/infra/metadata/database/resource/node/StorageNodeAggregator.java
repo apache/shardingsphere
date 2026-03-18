@@ -19,12 +19,13 @@ package org.apache.shardingsphere.infra.metadata.database.resource.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
-import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 
 import javax.sql.DataSource;
@@ -54,24 +55,31 @@ public final class StorageNodeAggregator {
      * Aggregate data source pool properties map to storage node grouped.
      *
      * @param storageUnitDataSourcePoolPropsMap storage unit name and data source pool properties map
+     * @param isInstanceConnectionEnabled is instance connection enabled
      * @return storage node and data source pool properties map
      */
-    public static Map<StorageNode, DataSourcePoolProperties> aggregateDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolPropsMap) {
-        Map<StorageNode, DataSourcePoolProperties> result = new LinkedHashMap<>();
+    public static Map<StorageNode, DataSourcePoolProperties> aggregateDataSourcePoolProperties(final Map<String, DataSourcePoolProperties> storageUnitDataSourcePoolPropsMap,
+                                                                                               final boolean isInstanceConnectionEnabled) {
+        Map<StorageNode, DataSourcePoolProperties> result = new LinkedHashMap<>(storageUnitDataSourcePoolPropsMap.size(), 1F);
         for (Entry<String, DataSourcePoolProperties> entry : storageUnitDataSourcePoolPropsMap.entrySet()) {
             Map<String, Object> standardProps = entry.getValue().getConnectionPropertySynonyms().getStandardProperties();
             String url = standardProps.get("url").toString();
-            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
-            StorageNode storageNode = getStorageNode(entry.getKey(), url, standardProps.get("username").toString(), isInstanceConnectionAvailable);
+            String username = standardProps.get("username").toString();
+            DatabaseType databaseType = DatabaseTypeFactory.get(url);
+            StorageNode storageNode = getStorageNode(entry.getKey(), url, username, databaseType, isInstanceConnectionEnabled);
             result.putIfAbsent(storageNode, entry.getValue());
         }
         return result;
     }
     
-    private static StorageNode getStorageNode(final String dataSourceName, final String url, final String username, final boolean isInstanceConnectionAvailable) {
+    private static StorageNode getStorageNode(final String dataSourceName, final String url, final String username,
+                                              final DatabaseType databaseType, final boolean isInstanceConnectionEnabled) {
         try {
-            ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(url)).parse(url, username, null);
-            return isInstanceConnectionAvailable ? new StorageNode(connectionProps.getHostname(), connectionProps.getPort(), username) : new StorageNode(dataSourceName);
+            ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, databaseType).parse(url, username, null);
+            boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getConnectionOption().isInstanceConnectionAvailable();
+            return isInstanceConnectionEnabled && isInstanceConnectionAvailable
+                    ? new StorageNode(connectionProps.getHostname(), connectionProps.getPort(), username)
+                    : new StorageNode(dataSourceName);
         } catch (final UnrecognizedDatabaseURLException ex) {
             return new StorageNode(dataSourceName);
         }

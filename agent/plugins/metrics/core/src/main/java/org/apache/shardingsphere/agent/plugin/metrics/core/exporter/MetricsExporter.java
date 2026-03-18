@@ -28,7 +28,7 @@ public interface MetricsExporter {
     
     /**
      * Export.
-     * 
+     *
      * @param pluginType plugin type
      * @return gauge metric family metrics collector
      */

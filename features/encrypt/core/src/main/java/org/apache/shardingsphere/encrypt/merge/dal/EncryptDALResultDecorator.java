@@ -17,51 +17,60 @@
 
 package org.apache.shardingsphere.encrypt.merge.dal;
 
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ViewInResultSetSQLStatementAttribute;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.merge.dal.show.DecoratedEncryptShowColumnsMergedResult;
-import org.apache.shardingsphere.encrypt.merge.dal.show.DecoratedEncryptShowCreateTableMergedResult;
-import org.apache.shardingsphere.encrypt.merge.dal.show.MergedEncryptShowColumnsMergedResult;
-import org.apache.shardingsphere.encrypt.merge.dal.show.MergedEncryptShowCreateTableMergedResult;
+import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowColumnsMergedResult;
+import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowCreateTableMergedResult;
+import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowCreateViewMergedResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.decorator.ResultDecorator;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLExplainStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowColumnsStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLShowCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ColumnInResultSetSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableInResultSetSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * DAL result decorator for encrypt.
  */
 @RequiredArgsConstructor
-public final class EncryptDALResultDecorator implements ResultDecorator<EncryptRule> {
+public final class EncryptDALResultDecorator implements ResultDecorator {
     
-    private final RuleMetaData globalRuleMetaData;
+    private final ShardingSphereDatabase database;
     
-    @Override
-    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof MySQLExplainStatement || sqlStatement instanceof MySQLShowColumnsStatement) {
-            return new MergedEncryptShowColumnsMergedResult(queryResult, sqlStatementContext, rule);
-        }
-        if (sqlStatement instanceof MySQLShowCreateTableStatement) {
-            return new MergedEncryptShowCreateTableMergedResult(globalRuleMetaData, queryResult, sqlStatementContext, rule);
-        }
-        return new TransparentMergedResult(queryResult);
-    }
+    private final ShardingSphereMetaData metaData;
     
     @Override
-    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof MySQLExplainStatement || sqlStatement instanceof MySQLShowColumnsStatement) {
-            return new DecoratedEncryptShowColumnsMergedResult(mergedResult, sqlStatementContext, rule);
+    public MergedResult decorate(final MergedResult mergedResult, final QueryContext queryContext) {
+        Collection<SimpleTableSegment> simpleTables = queryContext.getSqlStatementContext().getTablesContext().getSimpleTables();
+        if (1 != simpleTables.size()) {
+            return mergedResult;
         }
-        if (sqlStatement instanceof MySQLShowCreateTableStatement) {
-            return new DecoratedEncryptShowCreateTableMergedResult(globalRuleMetaData, mergedResult, sqlStatementContext, rule);
+        ShardingSphereDatabase shardingSphereDatabase = simpleTables.iterator().next().getTableName().getTableBoundInfo().map(TableSegmentBoundInfo::getOriginalDatabase)
+                .map(IdentifierValue::getValue).map(metaData::getDatabase).orElse(database);
+        Optional<EncryptRule> encryptRule = shardingSphereDatabase.getRuleMetaData().findSingleRule(EncryptRule.class);
+        if (!encryptRule.isPresent()) {
+            return mergedResult;
+        }
+        SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
+        if (sqlStatement.getAttributes().findAttribute(ColumnInResultSetSQLStatementAttribute.class).isPresent()) {
+            return new EncryptShowColumnsMergedResult(mergedResult, queryContext.getSqlStatementContext(), encryptRule.get());
+        }
+        if (sqlStatement.getAttributes().findAttribute(TableInResultSetSQLStatementAttribute.class).isPresent()) {
+            return new EncryptShowCreateTableMergedResult(metaData.getGlobalRuleMetaData(), mergedResult, queryContext.getSqlStatementContext(), encryptRule.get());
+        }
+        Optional<ViewInResultSetSQLStatementAttribute> viewInResultSetSQLStatementAttribute = sqlStatement.getAttributes().findAttribute(ViewInResultSetSQLStatementAttribute.class);
+        if (viewInResultSetSQLStatementAttribute.isPresent()) {
+            String currentDatabaseName = queryContext.getConnectionContext().getCurrentDatabaseName().orElse(null);
+            return new EncryptShowCreateViewMergedResult(metaData, mergedResult, viewInResultSetSQLStatementAttribute.get().getViewName(), encryptRule.get(), currentDatabaseName);
         }
         return mergedResult;
     }

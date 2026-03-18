@@ -20,6 +20,7 @@ package org.apache.shardingsphere.agent.plugin.metrics.prometheus.exoprter;
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
 
 import java.util.Collections;
@@ -29,13 +30,21 @@ import java.util.List;
  * Metrics exporter of Prometheus.
  */
 @RequiredArgsConstructor
+@Slf4j
 public final class PrometheusMetricsExporter extends Collector {
     
     private final MetricsExporter exporter;
     
     @Override
     public List<MetricFamilySamples> collect() {
-        return exporter.export("Prometheus")
-                .<List<MetricFamilySamples>>map(optional -> Collections.singletonList((GaugeMetricFamily) optional.getRawMetricFamilyObject())).orElse(Collections.emptyList());
+        try {
+            return exporter.export("Prometheus")
+                    .<List<MetricFamilySamples>>map(optional -> Collections.singletonList((GaugeMetricFamily) optional.getRawMetricFamilyObject())).orElse(Collections.emptyList());
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("Collect metrics error: {}", ex.getMessage());
+        }
+        return Collections.emptyList();
     }
 }

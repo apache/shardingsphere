@@ -45,7 +45,7 @@ class ProcessOperationLockRegistryTest {
     }
     
     private void waitUntilReleaseReady(final String lockId) {
-        ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(lockId, new ProcessOperationLockReleaseStrategy() {
+        ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(lockId, 1, new ProcessOperationLockReleaseStrategy() {
             
             private final AtomicBoolean firstTime = new AtomicBoolean(true);
             

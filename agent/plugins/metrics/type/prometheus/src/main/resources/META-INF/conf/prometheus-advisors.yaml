@@ -16,7 +16,7 @@
 #
 
 advisors:
-  # config for proxy and jdbc
+  # Configure for proxy and JDBC
   - target: org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.SQLParseCountAdvice
     pointcuts:
@@ -32,7 +32,7 @@ advisors:
     pointcuts:
       - name: route
         type: method
-  # config for proxy
+  # Configure for proxy
   - target: org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.ExecuteLatencyHistogramAdvice
     pointcuts:
@@ -55,80 +55,89 @@ advisors:
     pointcuts:
       - name: run
         type: method
-  - target: org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager
+  - target: org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.CommitTransactionsCountAdvice
     pointcuts:
       - name: commit
         type: method
-  - target: org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager
+  - target: org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.RollbackTransactionsCountAdvice
     pointcuts:
       - name: rollback
         type: method
-  # config for jdbc
+  # Configure for JDBC
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.StatementExecuteCountAdvice
     pointcuts:
       - name: executeQuery
         type: method
+        modifiers: public
       - name: execute
         type: method
+        modifiers: public
       - name: executeUpdate
         type: method
-        params:
-          - index: 0
-            type: java.lang.String
+        modifiers: public
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.StatementExecuteErrorsCountAdvice
     pointcuts:
       - name: executeQuery
         type: method
+        modifiers: public
       - name: execute
         type: method
+        modifiers: public
       - name: executeUpdate
         type: method
-        params:
-          - index: 0
-            type: java.lang.String
+        modifiers: public
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.StatementExecuteLatencyHistogramAdvice
     pointcuts:
       - name: executeQuery
         type: method
+        modifiers: public
       - name: execute
         type: method
+        modifiers: public
       - name: executeUpdate
         type: method
-        params:
-          - index: 0
-            type: java.lang.String
+        modifiers: public
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.PreparedStatementExecuteCountAdvice
     pointcuts:
       - name: executeQuery
         type: method
+        modifiers: public
       - name: execute
         type: method
+        modifiers: public
       - name: executeUpdate
         type: method
+        modifiers: public
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.PreparedStatementExecuteErrorsCountAdvice
     pointcuts:
       - name: executeQuery
         type: method
+        modifiers: public
       - name: execute
         type: method
+        modifiers: public
       - name: executeUpdate
         type: method
+        modifiers: public
   - target: org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.PreparedStatementExecuteLatencyHistogramAdvice
     pointcuts:
       - name: executeQuery
         type: method
+        modifiers: public
       - name: execute
         type: method
+        modifiers: public
       - name: executeUpdate
         type: method
+        modifiers: public
   - target: org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.CommitTransactionsCountAdvice
     pointcuts:
@@ -139,3 +148,11 @@ advisors:
     pointcuts:
       - name: rollback
         type: method
+  - target: org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource
+    advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc.ShardingSphereDataSourceAdvice
+    pointcuts:
+      - name: createContextManager
+        type: method
+      - name: close
+        type: method
+        paramLength: 0

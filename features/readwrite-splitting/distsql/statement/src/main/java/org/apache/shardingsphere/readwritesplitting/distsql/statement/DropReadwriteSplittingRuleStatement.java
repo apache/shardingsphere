@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.aware.StaticDataSourceContainedRuleAwareStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.database.type.DropRuleStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.rule.aware.StaticDataSourceContainedRuleAwareStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.type.DropRuleStatement;
 
 import java.util.Collection;
 

@@ -19,38 +19,42 @@ package org.apache.shardingsphere.infra.expr.literal;
 
 import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LiteralInlineExpressionParserTest {
     
     @Test
-    void assertEvaluateForExpressionIsNull() {
-        InlineExpressionParser parser = TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", new Properties());
-        List<String> expected = parser.splitAndEvaluate();
-        assertThat(expected, is(Collections.<String>emptyList()));
+    void assertEvaluateWithEmptyExpression() {
+        assertTrue(getInlineExpressionParser("").splitAndEvaluate().isEmpty());
     }
     
     @Test
-    void assertEvaluateForSimpleString() {
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, " t_order_0, t_order_1 "))).splitAndEvaluate();
-        assertThat(expected.size(), is(2));
-        assertThat(expected, hasItems("t_order_0", "t_order_1"));
+    void assertEvaluateWithCommaExpression() {
+        List<String> actual = getInlineExpressionParser(",").splitAndEvaluate();
+        List<String> expected = Collections.singletonList("");
+        assertThat(actual, is(expected));
     }
     
     @Test
-    void assertEvaluateForLong() {
+    void assertEvaluateWithSimpleExpression() {
+        List<String> actual = getInlineExpressionParser(" t_order_0, t_order_1 ").splitAndEvaluate();
+        List<String> expected = Arrays.asList("t_order_0", "t_order_1");
+        assertThat(actual, is(expected));
+    }
+    
+    @Test
+    void assertEvaluateWithLongExpression() {
         StringBuilder expression = new StringBuilder();
         for (int i = 0; i < 1024; i++) {
             expression.append("ds_");
@@ -61,25 +65,25 @@ class LiteralInlineExpressionParserTest {
                 expression.append(",");
             }
         }
-        List<String> expected = TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression.toString()))).splitAndEvaluate();
-        assertThat(expected.size(), is(1024));
-        assertThat(expected, hasItems("ds_0.t_user_0", "ds_15.t_user_1023"));
+        List<String> actual = getInlineExpressionParser(expression.toString()).splitAndEvaluate();
+        assertThat(actual.size(), is(1024));
+        assertThat(actual, hasItems("ds_0.t_user_0", "ds_15.t_user_1023"));
     }
     
     @Test
-    void assertHandlePlaceHolder() {
-        assertThrows(UnsupportedOperationException.class, () -> {
-            TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", PropertiesBuilder.build(
-                    new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_$->{[\"new$->{1+2}\"]}"))).handlePlaceHolder();
-            TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", PropertiesBuilder.build(
-                    new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "t_${[\"new$->{1+2}\"]}"))).handlePlaceHolder();
-        });
+    void assertEvaluateWithPlaceholderExpression() {
+        assertThrows(UnsupportedOperationException.class, () -> getInlineExpressionParser("t_$->{[\"new$->{1+2}\"]}").handlePlaceHolder());
+        assertThrows(UnsupportedOperationException.class, () -> getInlineExpressionParser("t_${[\"new$->{1+2}\"]}").handlePlaceHolder());
     }
     
     @Test
-    void assertEvaluateWithArgs() {
-        assertThrows(UnsupportedOperationException.class, () -> TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", PropertiesBuilder.build(
-                new PropertiesBuilder.Property(InlineExpressionParser.INLINE_EXPRESSION_KEY, "${1+2}"))).evaluateWithArgs(new LinkedHashMap<>()));
+    void assertEvaluateWithArgumentsExpression() {
+        assertThrows(UnsupportedOperationException.class, () -> getInlineExpressionParser("${1+2}").evaluateWithArgs(Collections.emptyMap()));
+    }
+    
+    private InlineExpressionParser getInlineExpressionParser(final String expression) {
+        Properties props = new Properties();
+        props.setProperty(InlineExpressionParser.INLINE_EXPRESSION_KEY, expression);
+        return TypedSPILoader.getService(InlineExpressionParser.class, "LITERAL", props);
     }
 }

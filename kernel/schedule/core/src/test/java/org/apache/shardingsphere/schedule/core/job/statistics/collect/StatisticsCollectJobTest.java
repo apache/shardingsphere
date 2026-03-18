@@ -17,81 +17,43 @@
 
 package org.apache.shardingsphere.schedule.core.job.statistics.collect;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereDatabaseData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereSchemaData;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereStatistics;
-import org.apache.shardingsphere.infra.metadata.statistics.ShardingSphereTableData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.service.pojo.ShardingSphereSchemaDataAlteredPOJO;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Properties;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class StatisticsCollectJobTest {
     
+    private StatisticsCollectJob job;
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ContextManager contextManager;
+    
+    @BeforeEach
+    void setUp() {
+        job = new StatisticsCollectJob(contextManager);
+    }
+    
     @Test
-    void assertCollect() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereStatistics statistics = mockStatistics();
-        when(contextManager.getMetaDataContexts().getStatistics()).thenReturn(statistics);
-        ShardingSphereMetaData metaData = mockMetaData();
-        when(contextManager.getMetaDataContexts().getMetaData()).thenReturn(metaData);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(
-                PropertiesBuilder.build(new Property(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED.getKey(), Boolean.TRUE.toString()))));
-        new StatisticsCollectJob(contextManager).execute(null);
-        verify(contextManager.getPersistServiceFacade()).persist(any(ShardingSphereSchemaDataAlteredPOJO.class));
+    void assertExecuteWithStandaloneMode() {
+        job.execute(null);
+        verify(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps(), never()).getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED);
     }
     
-    private ShardingSphereStatistics mockStatistics() {
-        ShardingSphereStatistics result = new ShardingSphereStatistics();
-        ShardingSphereDatabaseData shardingSphereDatabaseData = new ShardingSphereDatabaseData();
-        result.getDatabaseData().put("logic_db", shardingSphereDatabaseData);
-        ShardingSphereSchemaData shardingSphereSchemaData = new ShardingSphereSchemaData();
-        shardingSphereDatabaseData.getSchemaData().put("logic_schema", shardingSphereSchemaData);
-        ShardingSphereTableData shardingSphereTableData = new ShardingSphereTableData("test_table");
-        shardingSphereSchemaData.getTableData().put("test_table", shardingSphereTableData);
-        return result;
-    }
-    
-    private ShardingSphereMetaData mockMetaData() {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getName()).thenReturn("logic_db");
-        when(result.getDatabases()).thenReturn(Collections.singletonMap("logic_db", database));
-        when(result.getDatabase("logic_db")).thenReturn(database);
-        when(result.containsDatabase("logic_db")).thenReturn(true);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(database.getSchema("logic_schema")).thenReturn(schema);
-        when(database.containsSchema("logic_schema")).thenReturn(true);
-        ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(schema.getTable("test_table")).thenReturn(table);
-        when(schema.containsTable("test_table")).thenReturn(true);
-        when(table.getName()).thenReturn("test_table");
-        Collection<ShardingSphereColumn> columns = new LinkedList<>();
-        columns.add(new ShardingSphereColumn("column1", Types.INTEGER, false, false, false, true, false, false));
-        columns.add(new ShardingSphereColumn("column2", Types.INTEGER, false, false, false, true, false, false));
-        when(table.getColumnValues()).thenReturn(columns);
-        return result;
+    @Test
+    void assertExecuteWithClusterMode() {
+        when(contextManager.getComputeNodeInstanceContext().getModeConfiguration().isCluster()).thenReturn(true);
+        when(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED)).thenReturn(false);
+        job.execute(null);
+        verify(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps()).getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED);
     }
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="values_with_regexp_replace" value="SELECT REGEXP_REPLACE(e, 'pattern', 'xyz')FROM (VALUES ROW('Find pattern'), ROW(NULL), ROW('Find pattern')) AS v(e)" db-types="MySQL" />
+    <sql-case id="values_with_row" value="values ROW(1,2)" db-types="MySQL" />
+    <sql-case id="values_with_order_limit" value="VALUES ROW(1,-2,3), ROW(5,7,9), ROW(4,6,8) ORDER BY column_1 desc , column_0 desc limit 10" db-types="MySQL" />
+    <sql-case id="values_with_select" value="values row((select 1), 2)" db-types="MySQL" />
+</sql-cases>

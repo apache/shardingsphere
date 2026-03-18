@@ -18,15 +18,11 @@
 package org.apache.shardingsphere.shadow.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
-import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
-import org.apache.shardingsphere.shadow.metadata.nodepath.ShadowRuleNodePathProvider;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.shadow.yaml.config.table.YamlShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfigurationSwapper;
@@ -37,7 +33,7 @@ import org.apache.shardingsphere.shadow.yaml.swapper.table.YamlShadowTableConfig
 public final class ShadowTableChangedProcessor implements RuleItemConfigurationChangedProcessor<ShadowRuleConfiguration, ShadowTableConfiguration> {
     
     @Override
-    public ShadowTableConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
+    public ShadowTableConfiguration swapRuleItemConfiguration(final String itemName, final String yamlContent) {
         return new YamlShadowTableConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlShadowTableConfiguration.class));
     }
     
@@ -47,17 +43,17 @@ public final class ShadowTableChangedProcessor implements RuleItemConfigurationC
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig, final ShadowTableConfiguration toBeChangedItemConfig) {
-        currentRuleConfig.getTables().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
+    public void changeRuleItemConfiguration(final String itemName, final ShadowRuleConfiguration currentRuleConfig, final ShadowTableConfiguration toBeChangedItemConfig) {
+        currentRuleConfig.getTables().put(itemName, toBeChangedItemConfig);
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShadowRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getTables().remove(((DropNamedRuleItemEvent) event).getItemName());
+    public void dropRuleItemConfiguration(final String itemName, final ShadowRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getTables().remove(itemName);
     }
     
     @Override
-    public String getType() {
-        return ShadowRuleNodePathProvider.RULE_TYPE + "." + ShadowRuleNodePathProvider.TABLES;
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("shadow", "tables");
     }
 }

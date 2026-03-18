@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.mode.state;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.spi.PersistRepository;
-
-import java.util.Optional;
+import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
+import org.apache.shardingsphere.mode.node.path.type.global.state.StateNodePath;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
  * State persist service.
@@ -34,21 +31,20 @@ public final class StatePersistService {
     private final PersistRepository repository;
     
     /**
-     * Update cluster state.
+     * Update state.
      *
-     * @param state cluster state
+     * @param state to be updated state
      */
-    public void updateClusterState(final ClusterState state) {
-        repository.persist(ComputeNode.getClusterStateNodePath(), state.name());
+    public void update(final ShardingSphereState state) {
+        repository.persist(NodePathGenerator.toPath(new StateNodePath()), state.name());
     }
     
     /**
-     * Load cluster state.
+     * Load state.
      *
-     * @return cluster state
+     * @return loaded state
      */
-    public Optional<ClusterState> loadClusterState() {
-        String value = repository.query(ComputeNode.getClusterStateNodePath());
-        return Strings.isNullOrEmpty(value) ? Optional.empty() : Optional.of(ClusterState.valueOf(value));
+    public ShardingSphereState load() {
+        return ShardingSphereState.valueFrom(repository.query(NodePathGenerator.toPath(new StateNodePath())));
     }
 }

@@ -26,7 +26,7 @@ dataSources:
   ds_0:
     url: jdbc:mysql://mysql.default.host:3306/ds_0?useSSL=false&characterEncoding=utf-8
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -35,7 +35,7 @@ dataSources:
   ds_1:
     url: jdbc:mysql://mysql.default.host:3306/ds_1?useSSL=false&characterEncoding=utf-8
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

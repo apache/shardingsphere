@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.authority.checker;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -42,7 +41,7 @@ public final class AuthorityChecker {
      */
     @HighFrequencyInvocation
     public boolean isAuthorized(final String database) {
-        return null == grantee || Strings.isNullOrEmpty(grantee.getUsername()) || rule.findUser(grantee).map(ShardingSphereUser::isAdmin).orElse(false)
+        return null == grantee || rule.findUser(grantee).map(ShardingSphereUser::isAdmin).orElse(false)
                 || rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(database)).orElse(false);
     }
 }

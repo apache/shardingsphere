@@ -32,7 +32,7 @@ public final class ConnectionIdGenerator {
     
     /**
      * Get instance.
-     * 
+     *
      * @return instance
      */
     public static ConnectionIdGenerator getInstance() {
@@ -41,7 +41,7 @@ public final class ConnectionIdGenerator {
     
     /**
      * Get next connection ID.
-     * 
+     *
      * @return next connection ID
      */
     public synchronized int nextId() {

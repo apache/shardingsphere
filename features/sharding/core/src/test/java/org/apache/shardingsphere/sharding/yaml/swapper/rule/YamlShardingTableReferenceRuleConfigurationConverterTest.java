@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.yaml.swapper.rule;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class YamlShardingTableReferenceRuleConfigurationConverterTest {

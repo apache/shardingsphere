@@ -52,7 +52,7 @@ public final class ShowEncryptRuleExecutor implements DistSQLQueryExecutor<ShowE
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowEncryptRulesStatement sqlStatement, final ContextManager contextManager) {
-        return rule.getConfiguration().getTables().stream().filter(each -> null == sqlStatement.getTableName() || each.getName().equals(sqlStatement.getTableName()))
+        return rule.getConfiguration().getTables().stream().filter(each -> null == sqlStatement.getTableName() || each.getName().equalsIgnoreCase(sqlStatement.getTableName()))
                 .map(each -> buildColumnData(each, rule.getConfiguration().getEncryptors())).flatMap(Collection::stream).collect(Collectors.toList());
     }
     

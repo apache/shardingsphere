@@ -17,24 +17,34 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.etcd.props;
 
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class EtcdPropertiesTest {
     
     @Test
     void assertGetValue() {
-        assertThat(new EtcdProperties(PropertiesBuilder.build(new Property(EtcdPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "50"))).getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(50L));
+        EtcdProperties actual = new EtcdProperties(createProperties());
+        assertThat(actual.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(50L));
+        assertThat(actual.getValue(EtcdPropertyKey.CONNECTION_TIMEOUT_SECONDS), is(60L));
+    }
+    
+    private Properties createProperties() {
+        return PropertiesBuilder.build(
+                new Property(EtcdPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "50"),
+                new Property(EtcdPropertyKey.CONNECTION_TIMEOUT_SECONDS.getKey(), "60"));
     }
     
     @Test
     void assertGetDefaultValue() {
-        assertThat(new EtcdProperties(new Properties()).getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(30L));
+        EtcdProperties actual = new EtcdProperties(new Properties());
+        assertThat(actual.getValue(EtcdPropertyKey.TIME_TO_LIVE_SECONDS), is(30L));
+        assertThat(actual.getValue(EtcdPropertyKey.CONNECTION_TIMEOUT_SECONDS), is(30L));
     }
 }

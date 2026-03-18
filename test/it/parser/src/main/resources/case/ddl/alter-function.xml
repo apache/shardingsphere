@@ -24,4 +24,6 @@
     <alter-function sql-case-id="alter_function_set" />
     <alter-function sql-case-id="alter_function_depend_on" />
     <alter-function sql-case-id="alter_function_compile" />
+    <alter-function sql-case-id="alter_function_doris" />
+    <alter-function sql-case-id="alter_function_mysql" />
 </sql-parser-test-cases>

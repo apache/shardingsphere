@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.importer.sink;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 
 import java.io.Closeable;
 import java.util.Collection;
@@ -35,5 +35,5 @@ public interface PipelineSink extends Closeable {
      * @param records records
      * @return job progress updated parameter
      */
-    PipelineJobProgressUpdatedParameter write(String ackId, Collection<Record> records);
+    PipelineJobUpdateProgress write(String ackId, Collection<Record> records);
 }

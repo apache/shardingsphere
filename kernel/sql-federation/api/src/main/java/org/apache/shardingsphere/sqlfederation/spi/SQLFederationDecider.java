@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqlfederation.spi;
 
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
@@ -39,7 +39,7 @@ public interface SQLFederationDecider<T extends ShardingSphereRule> extends Orde
     /**
      * Judge whether to use SQL federation.
      *
-     * @param selectStatementContext select statement context
+     * @param sqlStatementContext sql statement context
      * @param parameters parameters
      * @param globalRuleMetaData global rule meta data
      * @param database database
@@ -47,6 +47,6 @@ public interface SQLFederationDecider<T extends ShardingSphereRule> extends Orde
      * @param includedDataNodes included data nodes
      * @return use SQL federation or not
      */
-    boolean decide(SelectStatementContext selectStatementContext, List<Object> parameters,
+    boolean decide(SQLStatementContext sqlStatementContext, List<Object> parameters,
                    RuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, Collection<DataNode> includedDataNodes);
 }

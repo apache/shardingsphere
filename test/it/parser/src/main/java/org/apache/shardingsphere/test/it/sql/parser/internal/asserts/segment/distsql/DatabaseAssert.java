@@ -38,7 +38,7 @@ public final class DatabaseAssert {
      * @param expected expected database test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DatabaseSegment actual, final ExpectedDatabase expected) {
-        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "schema");
+        IdentifierValueAssert.assertIs(assertContext, actual.getIdentifier(), expected, "database");
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

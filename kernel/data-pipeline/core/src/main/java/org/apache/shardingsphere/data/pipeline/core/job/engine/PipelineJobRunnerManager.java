@@ -33,7 +33,6 @@ import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
 import org.apache.shardingsphere.infra.util.close.QuietlyCloser;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -48,7 +47,9 @@ import java.util.concurrent.atomic.AtomicReference;
 @Slf4j
 public final class PipelineJobRunnerManager {
     
-    private static final long JOB_WAITING_TIMEOUT_MILLS = 2000L;
+    private static final long JOB_WAITING_TIMEOUT_MILLIS = 2000L;
+    
+    private final PipelineJobRunnerCleaner cleaner;
     
     private final AtomicBoolean stopping = new AtomicBoolean(false);
     
@@ -58,8 +59,6 @@ public final class PipelineJobRunnerManager {
     
     @Getter
     private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
-    
-    private final PipelineJobRunnerCleaner cleaner;
     
     public PipelineJobRunnerManager() {
         this(null);
@@ -99,19 +98,19 @@ public final class PipelineJobRunnerManager {
      * @return sharding items
      */
     public Collection<Integer> getShardingItems() {
-        return new ArrayList<>(tasksRunners.keySet());
+        return tasksRunners.keySet();
     }
     
     /**
      * Add tasks runner.
-     * 
+     *
      * @param shardingItem sharding item
      * @param tasksRunner tasks runner
      * @return add success or not
      */
     public boolean addTasksRunner(final int shardingItem, final PipelineTasksRunner tasksRunner) {
         if (null != tasksRunners.putIfAbsent(shardingItem, tasksRunner)) {
-            log.warn("shardingItem {} tasks runner exists, ignore", shardingItem);
+            log.warn("Tasks runner on sharding item {} exists, ignore.", shardingItem);
             return false;
         }
         String jobId = tasksRunner.getJobItemContext().getJobId();
@@ -148,9 +147,9 @@ public final class PipelineJobRunnerManager {
         if (!jobListener.isPresent()) {
             return;
         }
-        long spentMills = 0L;
+        long spentMillis = 0L;
         long sleepMillis = 50L;
-        while (spentMills < JOB_WAITING_TIMEOUT_MILLS) {
+        while (spentMillis < JOB_WAITING_TIMEOUT_MILLIS) {
             if (!((PipelineElasticJobListener) jobListener.get()).isJobRunning(jobId)) {
                 break;
             }
@@ -160,7 +159,7 @@ public final class PipelineJobRunnerManager {
                 Thread.currentThread().interrupt();
                 break;
             }
-            spentMills += sleepMillis;
+            spentMillis += sleepMillis;
         }
     }
 }

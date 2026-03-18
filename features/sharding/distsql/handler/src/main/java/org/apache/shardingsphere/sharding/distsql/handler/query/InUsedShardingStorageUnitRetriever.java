@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.distsql.handler.executor.rql.resource.InUsedStorageUnitRetriever;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowRulesUsedStorageUnitStatement;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowRulesUsedStorageUnitStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.HashSet;
 
 /**
  * In used sharding storage unit retriever.
@@ -33,12 +33,11 @@ public final class InUsedShardingStorageUnitRetriever implements InUsedStorageUn
     
     @Override
     public Collection<String> getInUsedResources(final ShowRulesUsedStorageUnitStatement sqlStatement, final ShardingRule rule) {
-        Collection<String> result = new LinkedList<>();
-        for (ShardingAutoTableRuleConfiguration each : rule.getConfiguration().getAutoTables()) {
-            result.add(each.getLogicTable());
-        }
-        for (ShardingTableRuleConfiguration each : rule.getConfiguration().getTables()) {
-            result.add(each.getLogicTable());
+        Collection<String> result = new HashSet<>(rule.getShardingTables().size(), 1F);
+        for (ShardingTable each : rule.getShardingTables().values()) {
+            if (new CaseInsensitiveSet<>(each.getActualDataSourceNames()).contains(sqlStatement.getStorageUnitName())) {
+                result.add(each.getLogicTable());
+            }
         }
         return result;
     }

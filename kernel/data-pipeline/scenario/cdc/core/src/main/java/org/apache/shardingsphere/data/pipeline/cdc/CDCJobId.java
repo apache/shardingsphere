@@ -19,9 +19,9 @@ package org.apache.shardingsphere.data.pipeline.cdc;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.id.PipelineJobId;
-import org.apache.shardingsphere.data.pipeline.core.job.type.PipelineJobType;
 
 import java.util.List;
 
@@ -32,11 +32,13 @@ import java.util.List;
 @Getter
 public final class CDCJobId implements PipelineJobId {
     
-    private final PipelineJobType jobType = new CDCJobType();
+    private final CDCJobType jobType = new CDCJobType();
     
     private final PipelineContextKey contextKey;
     
     private final List<String> schemaTableNames;
     
     private final boolean full;
+    
+    private final CDCSinkType sinkType;
 }

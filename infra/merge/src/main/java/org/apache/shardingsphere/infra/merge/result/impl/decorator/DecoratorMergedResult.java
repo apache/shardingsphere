@@ -36,12 +36,17 @@ public abstract class DecoratorMergedResult implements MergedResult {
     private final MergedResult mergedResult;
     
     @Override
-    public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
+    public boolean next() throws SQLException {
+        return mergedResult.next();
+    }
+    
+    @Override
+    public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
         return mergedResult.getValue(columnIndex, type);
     }
     
     @Override
-    public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
+    public final Object getCalendarValue(final int columnIndex, final Class<?> type, @SuppressWarnings("UseOfObsoleteDateTimeApi") final Calendar calendar) throws SQLException {
         return mergedResult.getCalendarValue(columnIndex, type, calendar);
     }
     

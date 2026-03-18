@@ -19,92 +19,71 @@ package org.apache.shardingsphere.encrypt.merge.dal.show;
 
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.merge.result.impl.decorator.DecoratorMergedResult;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ColumnInResultSetSQLStatementAttribute;
 
-import java.io.InputStream;
-import java.io.Reader;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.util.Calendar;
 import java.util.Optional;
 
 /**
  * Encrypt show columns merged result.
  */
-public abstract class EncryptShowColumnsMergedResult implements MergedResult {
+public final class EncryptShowColumnsMergedResult extends DecoratorMergedResult {
     
-    private static final int COLUMN_FIELD_INDEX = 1;
+    private final EncryptRule rule;
     
     private final String tableName;
     
-    private final EncryptRule encryptRule;
+    private final int columnNameResultSetIndex;
     
-    protected EncryptShowColumnsMergedResult(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
-        ShardingSpherePreconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().size(),
-                () -> new UnsupportedEncryptSQLException("SHOW COLUMNS FOR MULTI TABLE"));
-        tableName = ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
-        this.encryptRule = encryptRule;
+    public EncryptShowColumnsMergedResult(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final EncryptRule rule) {
+        super(mergedResult);
+        ShardingSpherePreconditions.checkState(1 == sqlStatementContext.getTablesContext().getSimpleTables().size(),
+                () -> new UnsupportedEncryptSQLException("SHOW COLUMNS FOR MULTI TABLES"));
+        this.rule = rule;
+        tableName = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue();
+        ColumnInResultSetSQLStatementAttribute attribute = sqlStatementContext.getSqlStatement().getAttributes().getAttribute(ColumnInResultSetSQLStatementAttribute.class);
+        columnNameResultSetIndex = attribute.getNameResultSetIndex();
     }
     
     @Override
-    public final boolean next() throws SQLException {
-        boolean hasNext = nextValue();
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
+    public boolean next() throws SQLException {
+        boolean hasNext = getMergedResult().next();
+        Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
         if (hasNext && !encryptTable.isPresent()) {
             return true;
         }
         if (!hasNext) {
             return false;
         }
-        String columnName = getOriginalValue(COLUMN_FIELD_INDEX, String.class).toString();
-        while (isDerivedColumn(encryptTable.get(), columnName)) {
-            hasNext = nextValue();
-            if (!hasNext) {
+        return next(encryptTable.get());
+    }
+    
+    private boolean next(final EncryptTable encryptTable) throws SQLException {
+        while (encryptTable.isDerivedColumn(getMergedResult().getValue(columnNameResultSetIndex, String.class).toString())) {
+            boolean isFinished = !getMergedResult().next();
+            if (isFinished) {
                 return false;
             }
-            columnName = getOriginalValue(COLUMN_FIELD_INDEX, String.class).toString();
         }
         return true;
     }
     
-    private boolean isDerivedColumn(final EncryptTable encryptTable, final String columnName) {
-        return encryptTable.isAssistedQueryColumn(columnName) || encryptTable.isLikeQueryColumn(columnName);
-    }
-    
     @Override
-    public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (COLUMN_FIELD_INDEX == columnIndex) {
-            String columnName = getOriginalValue(COLUMN_FIELD_INDEX, type).toString();
-            Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-            if (!encryptTable.isPresent()) {
-                return columnName;
-            }
-            Optional<String> logicColumn = encryptTable.get().isCipherColumn(columnName) ? Optional.of(encryptTable.get().getLogicColumnByCipherColumn(columnName)) : Optional.empty();
-            return logicColumn.orElse(columnName);
+    public Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
+        if (columnNameResultSetIndex == columnIndex) {
+            return getColumnNameValue(type);
         }
-        return getOriginalValue(columnIndex, type);
+        return getMergedResult().getValue(columnIndex, type);
     }
     
-    @Override
-    public final Object getCalendarValue(final int columnIndex, final Class<?> type, final Calendar calendar) throws SQLException {
-        throw new SQLFeatureNotSupportedException("");
+    private String getColumnNameValue(final Class<?> type) throws SQLException {
+        String columnName = getMergedResult().getValue(columnNameResultSetIndex, type).toString();
+        Optional<EncryptTable> encryptTable = rule.findEncryptTable(tableName);
+        return encryptTable.isPresent() && encryptTable.get().isCipherColumn(columnName) ? encryptTable.get().getLogicColumnByCipherColumn(columnName) : columnName;
     }
-    
-    @Override
-    public final InputStream getInputStream(final int columnIndex, final String type) throws SQLException {
-        throw new SQLFeatureNotSupportedException("");
-    }
-    
-    @Override
-    public Reader getCharacterStream(final int columnIndex) throws SQLException {
-        throw new SQLFeatureNotSupportedException("");
-    }
-    
-    protected abstract boolean nextValue() throws SQLException;
-    
-    protected abstract Object getOriginalValue(int columnIndex, Class<?> type) throws SQLException;
 }

@@ -17,6 +17,7 @@
 
 <dataset>
     <metadata>
+        <column name="oid"/>
         <column name="attrelid"/>
         <column name="attname"/>
         <column name="atttypid"/>

@@ -203,7 +203,7 @@ There are mainly 4 steps
 
 > CDCClient.await is to block the main thread, it is not a necessary step, other methods can also be used, as long as the CDC thread is always working.
 
-If you need more complex data consumption implementation, such as writing to the database, you can refer to [DataSourceRecordConsumer](https://github.com/apache/shardingsphere/blob/master/test/e2e/operation/pipeline/src/test/java/org/apache/shardingsphere/test/e2e/data/pipeline/cases/cdc/DataSourceRecordConsumer.java)
+If you need more complex data consumption implementation, such as writing to the database, you can refer to `DataSourceRecordConsumer.java`.
 
 #### Write Data
 

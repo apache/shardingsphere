@@ -311,13 +311,13 @@ The vote will be open for at least 72 hours or until necessary number of votes a
 
 Please vote accordingly:
 
-[ ] +1 approve 
+[ ] +1 approve
 
 [ ] +0 no opinion
- 
+
 [ ] -1 disapprove with the reason
 
-PMC vote is +1 binding, all others is +1 non-binding.
+PMC vote is "+1 binding", all others is "+1 non-binding".
 
 Checklist for reference:
 
@@ -345,7 +345,7 @@ Checklist for reference:
 正文：
 
 ```
-We’ve received 3 +1 binding votes and one +1 non-binding vote:
+We’ve received 3 "+1 binding votes" and one "+1 non-binding" vote:
 
 +1 binding, xxx
 +1 binding, xxx
@@ -353,7 +353,7 @@ We’ve received 3 +1 binding votes and one +1 non-binding vote:
 
 +1 non-binding, xxx
 
-Thank you everyone for taking the time to review the release and help us. 
+Thank you everyone for taking the time to review the release and help us.
 I will process to publish the release and send ANNOUNCE.
 ```
 

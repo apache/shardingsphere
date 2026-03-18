@@ -22,8 +22,6 @@ import org.apache.shardingsphere.globalclock.rule.constant.GlobalClockOrder;
 import org.apache.shardingsphere.globalclock.yaml.config.YamlGlobalClockRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 
-import java.util.Properties;
-
 /**
  * YAML global clock rule configuration swapper.
  */
@@ -41,7 +39,7 @@ public final class YamlGlobalClockRuleConfigurationSwapper implements YamlRuleCo
     
     @Override
     public GlobalClockRuleConfiguration swapToObject(final YamlGlobalClockRuleConfiguration yamlConfig) {
-        return new GlobalClockRuleConfiguration(yamlConfig.getType(), yamlConfig.getProvider(), yamlConfig.isEnabled(), null == yamlConfig.getProps() ? new Properties() : yamlConfig.getProps());
+        return new GlobalClockRuleConfiguration(yamlConfig.getType(), yamlConfig.getProvider(), yamlConfig.isEnabled(), yamlConfig.getProps());
     }
     
     @Override

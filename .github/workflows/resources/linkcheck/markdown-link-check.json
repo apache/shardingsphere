@@ -10,6 +10,12 @@
       "pattern": "^https://github.com/apache/incubator-shardingsphere/*"
     },
     {
+      "pattern": "^https://repository\\.apache\\.org"
+    },
+    {
+      "pattern": "^https://archive\\.apache\\.org"
+    },
+    {
       "pattern": "^https://twitter.com*"
     },
     {

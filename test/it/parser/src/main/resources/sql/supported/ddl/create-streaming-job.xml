@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_streaming_job_from_postgres" value="CREATE JOB test_postgres_job ON STREAMING FROM POSTGRES (&quot;jdbc_url&quot; = &quot;jdbc:postgresql://127.0.0.1:5432/postgres&quot;, &quot;driver_url&quot; = &quot;postgresql-42.5.0.jar&quot;, &quot;driver_class&quot; = &quot;org.postgresql.Driver&quot;, &quot;user&quot; = &quot;postgres&quot;, &quot;password&quot; = &quot;postgres&quot;, &quot;database&quot; = &quot;postgres&quot;, &quot;schema&quot; = &quot;public&quot;, &quot;include_tables&quot; = &quot;test_tbls&quot;, &quot;offset&quot; = &quot;latest&quot;) TO DATABASE target_test_db (&quot;table.create.properties.replication_num&quot; = &quot;1&quot;)" db-types="Doris" />
+    <sql-case id="create_streaming_job_from_mysql" value="CREATE JOB multi_table_sync ON STREAMING FROM MYSQL (&quot;jdbc_url&quot; = &quot;jdbc:mysql://127.0.0.1:3306&quot;, &quot;driver_url&quot; = &quot;mysql-connector-j-8.0.31.jar&quot;, &quot;driver_class&quot; = &quot;com.mysql.cj.jdbc.Driver&quot;, &quot;user&quot; = &quot;root&quot;, &quot;password&quot; = &quot;123456&quot;, &quot;database&quot; = &quot;test&quot;, &quot;include_tables&quot; = &quot;user_info,order_info&quot;, &quot;offset&quot; = &quot;initial&quot;) TO DATABASE target_test_db (&quot;table.create.properties.replication_num&quot; = &quot;1&quot;)" db-types="Doris" />
+    <sql-case id="create_streaming_job_do_insert" value="CREATE JOB my_job ON STREAMING DO INSERT INTO db1.tbl1 SELECT * FROM db2.tbl2" db-types="Doris" />
+    <sql-case id="create_streaming_job_with_comment" value="CREATE JOB my_job ON STREAMING COMMENT 'streaming job' FROM MYSQL (&quot;jdbc_url&quot; = &quot;jdbc:mysql://127.0.0.1:3306&quot;, &quot;user&quot; = &quot;root&quot;, &quot;password&quot; = &quot;123456&quot;, &quot;database&quot; = &quot;test&quot;, &quot;include_tables&quot; = &quot;t1&quot;, &quot;offset&quot; = &quot;initial&quot;) TO DATABASE target_db" db-types="Doris" />
+    <sql-case id="create_streaming_job_with_job_properties" value="CREATE JOB my_job ON STREAMING PROPERTIES (&quot;max_interval&quot; = &quot;10s&quot;) FROM MYSQL (&quot;jdbc_url&quot; = &quot;jdbc:mysql://127.0.0.1:3306&quot;, &quot;user&quot; = &quot;root&quot;, &quot;password&quot; = &quot;123456&quot;, &quot;database&quot; = &quot;test&quot;, &quot;include_tables&quot; = &quot;t1&quot;, &quot;offset&quot; = &quot;initial&quot;) TO DATABASE target_db" db-types="Doris" />
+    <sql-case id="create_streaming_job_with_quoted_target_db" value="CREATE JOB my_job ON STREAMING FROM MYSQL (&quot;jdbc_url&quot; = &quot;jdbc:mysql://127.0.0.1:3306&quot;, &quot;user&quot; = &quot;root&quot;, &quot;password&quot; = &quot;123456&quot;, &quot;database&quot; = &quot;test&quot;, &quot;include_tables&quot; = &quot;t1&quot;, &quot;offset&quot; = &quot;initial&quot;) TO DATABASE `target_db`" db-types="Doris" />
+</sql-cases>

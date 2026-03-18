@@ -30,7 +30,7 @@ public final class CaseTypedSQLBuilderFactory {
     
     /**
      * Create new instance of case typed SQL builder.
-     * 
+     *
      * @param caseType SQL case type
      * @return created instance
      * @throws UnsupportedOperationException unsupported operation exception

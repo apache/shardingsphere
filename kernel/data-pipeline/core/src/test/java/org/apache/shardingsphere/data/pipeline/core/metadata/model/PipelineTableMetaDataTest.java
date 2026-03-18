@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.model;
 
-import org.apache.shardingsphere.infra.metadata.caseinsensitive.CaseInsensitiveIdentifier;
+import org.apache.shardingsphere.infra.metadata.identifier.ShardingSphereIdentifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,7 +37,7 @@ class PipelineTableMetaDataTest {
     @BeforeEach
     void setUp() {
         PipelineColumnMetaData column = new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true, true, true);
-        pipelineTableMetaData = new PipelineTableMetaData("test_data", Collections.singletonMap(new CaseInsensitiveIdentifier("test"), column), Collections.emptySet());
+        pipelineTableMetaData = new PipelineTableMetaData("test_data", Collections.singletonMap(new ShardingSphereIdentifier("test"), column), Collections.emptySet());
     }
     
     @Test

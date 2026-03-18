@@ -21,5 +21,5 @@
         <column name="type" />
         <column name="props" />
     </metadata>
-    <row values="constant| IT.FIXTURE| " />
+    <row values="constant| E2E.KEYGEN.FIXTURE| " />
 </dataset>

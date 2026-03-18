@@ -24,7 +24,7 @@ public interface ComputeNodeInstanceContextAware {
     
     /**
      * Set compute node instance context.
-     * 
+     *
      * @param computeNodeInstanceContext compute node instance context
      */
     void setComputeNodeInstanceContext(ComputeNodeInstanceContext computeNodeInstanceContext);

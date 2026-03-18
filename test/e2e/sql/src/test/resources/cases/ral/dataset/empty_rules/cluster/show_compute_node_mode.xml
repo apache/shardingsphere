@@ -18,8 +18,8 @@
 <dataset>
     <metadata>
         <column name="type" />
-        <column name="repository" assertion="false" />
-        <column name="props" assertion="false"/>
+        <column name="repository" ignore-assert-data="true" />
+        <column name="props" ignore-assert-data="true" />
     </metadata>
     <row values="Cluster| | " />
 </dataset>

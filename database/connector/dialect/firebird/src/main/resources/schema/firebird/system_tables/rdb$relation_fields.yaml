@@ -1,0 +1,166 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: RDB$RELATION_FIELDS
+columns:
+  RDB$FIELD_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$FIELD_NAME
+    primaryKey: false
+    visible: true
+  RDB$RELATION_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$RELATION_NAME
+    primaryKey: false
+    visible: true
+  RDB$FIELD_SOURCE:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$FIELD_SOURCE
+    primaryKey: false
+    visible: true
+  RDB$QUERY_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$QUERY_NAME
+    primaryKey: false
+    visible: true
+  RDB$BASE_FIELD:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$BASE_FIELD
+    primaryKey: false
+    visible: true
+  RDB$EDIT_STRING:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: RDB$EDIT_STRING
+    primaryKey: false
+    visible: true
+  RDB$FIELD_POSITION:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$FIELD_POSITION
+    primaryKey: false
+    visible: true
+  RDB$QUERY_HEADER:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: RDB$QUERY_HEADER
+    primaryKey: false
+    visible: true
+  RDB$UPDATE_FLAG:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$UPDATE_FLAG
+    primaryKey: false
+    visible: true
+  RDB$FIELD_ID:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$FIELD_ID
+    primaryKey: false
+    visible: true
+  RDB$VIEW_CONTEXT:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$VIEW_CONTEXT
+    primaryKey: false
+    visible: true
+  RDB$DESCRIPTION:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: RDB$DESCRIPTION
+    primaryKey: false
+    visible: true
+  RDB$DEFAULT_VALUE:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: RDB$DEFAULT_VALUE
+    primaryKey: false
+    visible: true
+  RDB$SYSTEM_FLAG:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$SYSTEM_FLAG
+    primaryKey: false
+    visible: true
+  RDB$SECURITY_CLASS:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$SECURITY_CLASS
+    primaryKey: false
+    visible: true
+  RDB$COMPLEX_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$COMPLEX_NAME
+    primaryKey: false
+    visible: true
+  RDB$NULL_FLAG:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$NULL_FLAG
+    primaryKey: false
+    visible: true
+  RDB$DEFAULT_SOURCE:
+    caseSensitive: false
+    dataType: 2004
+    generated: false
+    name: RDB$DEFAULT_SOURCE
+    primaryKey: false
+    visible: true
+  RDB$COLLATION_ID:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$COLLATION_ID
+    primaryKey: false
+    visible: true
+  RDB$GENERATOR_NAME:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: RDB$GENERATOR_NAME
+    primaryKey: false
+    visible: true
+  RDB$IDENTITY_TYPE:
+    caseSensitive: false
+    dataType: 5
+    generated: false
+    name: RDB$IDENTITY_TYPE
+    primaryKey: false
+    visible: true

@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset;
 
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.nio.charset.Charset;
+import java.util.Collection;
 
 /**
  * Charset variable provider.
@@ -29,16 +30,26 @@ import java.nio.charset.Charset;
 public interface CharsetVariableProvider extends DatabaseTypedSPI {
     
     /**
-     * Judge whether charset variable name.
+     * Get charset variables.
+     *
+     * @return charset variables
+     */
+    Collection<String> getCharsetVariables();
+    
+    /**
+     * Determine whether charset should be set.
      *
      * @param variableName variable name
-     * @return is charset variable or not
+     * @param variableValue variable value
+     * @return true if charset should be set
      */
-    boolean isCharsetVariable(String variableName);
+    default boolean shouldSet(final String variableName, final String variableValue) {
+        return true;
+    }
     
     /**
      * Parse charset from variable.
-     * 
+     *
      * @param variableValue variable value
      * @return charset
      */

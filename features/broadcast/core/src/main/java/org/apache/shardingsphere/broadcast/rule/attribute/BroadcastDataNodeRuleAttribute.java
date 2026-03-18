@@ -41,7 +41,7 @@ public final class BroadcastDataNodeRuleAttribute implements DataNodeRuleAttribu
     }
     
     private Collection<DataNode> generateDataNodes(final String logicTable, final Collection<String> dataSourceNames) {
-        return dataSourceNames.stream().map(each -> new DataNode(each, logicTable)).collect(Collectors.toList());
+        return dataSourceNames.stream().map(each -> new DataNode(each, (String) null, logicTable)).collect(Collectors.toList());
     }
     
     @Override
@@ -71,12 +71,13 @@ public final class BroadcastDataNodeRuleAttribute implements DataNodeRuleAttribu
     
     @Override
     public Optional<String> findActualTableByCatalog(final String catalog, final String logicTable) {
-        if (!tableDataNodes.containsKey(logicTable.toLowerCase())) {
-            return Optional.empty();
-        }
-        if (tableDataNodes.get(logicTable.toLowerCase()).stream().noneMatch(each -> each.getDataSourceName().equalsIgnoreCase(catalog))) {
-            return Optional.empty();
-        }
-        return Optional.of(logicTable);
+        return tableDataNodes.getOrDefault(logicTable.toLowerCase(), Collections.emptyList()).stream().anyMatch(each -> each.getDataSourceName().equalsIgnoreCase(catalog))
+                ? Optional.of(logicTable)
+                : Optional.empty();
+    }
+    
+    @Override
+    public boolean isReplicaBasedDistribution() {
+        return true;
     }
 }

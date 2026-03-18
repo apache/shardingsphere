@@ -33,10 +33,10 @@ public interface PipelineJobId {
     
     /**
      * Get pipeline job type.
-     * 
+     *
      * @return pipeline job type
      */
-    PipelineJobType getJobType();
+    PipelineJobType<?> getJobType();
     
     /**
      * Get pipeline context key.

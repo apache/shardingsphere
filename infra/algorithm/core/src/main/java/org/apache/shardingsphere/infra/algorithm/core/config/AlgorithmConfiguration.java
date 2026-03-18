@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.algorithm.core.config;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.Properties;
@@ -27,6 +28,7 @@ import java.util.Properties;
  * Algorithm configuration.
  */
 @Getter
+@EqualsAndHashCode
 public final class AlgorithmConfiguration {
     
     private final String type;

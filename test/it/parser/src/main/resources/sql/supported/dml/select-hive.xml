@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="hive_select_simple" value="SELECT * FROM t_order" db-types="Hive" />
+    <sql-case id="hive_select_with_where" value="SELECT * FROM t_order WHERE order_id = 1" db-types="Hive" />
+    <sql-case id="hive_select_group_by" value="SELECT user_id, COUNT(*) FROM t_order GROUP BY user_id" db-types="Hive" />
+    <sql-case id="hive_select_having" value="SELECT user_id, COUNT(*) FROM t_order GROUP BY user_id HAVING COUNT(*) > 1" db-types="Hive" />
+    <sql-case id="hive_select_order_by" value="SELECT * FROM t_order ORDER BY order_id DESC" db-types="Hive" />
+    <sql-case id="hive_select_limit" value="SELECT * FROM t_order LIMIT 10" db-types="Hive" />
+    <sql-case id="hive_select_limit_offset" value="SELECT * FROM t_order LIMIT 10 OFFSET 5" db-types="Hive" />
+    <sql-case id="hive_select_join" value="SELECT * FROM t_order o JOIN t_item i ON o.order_id = i.order_id" db-types="Hive" />
+    <sql-case id="hive_select_left_join" value="SELECT * FROM t_order o LEFT JOIN t_item i ON o.order_id = i.order_id" db-types="Hive" />
+    <sql-case id="hive_select_right_join" value="SELECT * FROM t_order o RIGHT JOIN t_item i ON o.order_id = i.order_id" db-types="Hive" />
+    <sql-case id="hive_select_cross_join" value="SELECT * FROM t1 CROSS JOIN t2" db-types="Hive" />
+    <sql-case id="hive_select_union" value="SELECT * FROM t1 UNION SELECT * FROM t2" db-types="Hive" />
+    <sql-case id="hive_select_union_all" value="SELECT * FROM t1 UNION ALL SELECT * FROM t2" db-types="Hive" />
+    <sql-case id="hive_select_distinct" value="SELECT DISTINCT user_id FROM t_order" db-types="Hive" />
+    <sql-case id="hive_select_window" value="SELECT user_id, RANK() OVER (PARTITION BY city ORDER BY salary DESC) FROM t_employee" db-types="Hive" />
+    <sql-case id="hive_select_subquery" value="SELECT * FROM (SELECT * FROM t_order) t" db-types="Hive" />
+    <sql-case id="hive_select_substring" value="SELECT SUBSTRING('abc', 1, 2)" db-types="Hive" />
+    <sql-case id="hive_select_trim" value="SELECT TRIM(BOTH ' ' FROM ' a ')" db-types="Hive" />
+    <sql-case id="hive_select_extract" value="SELECT EXTRACT(YEAR FROM '2023-01-01')" db-types="Hive" />
+    <sql-case id="hive_select_qualified_shorthand" value="SELECT db1.t_order.* FROM db1.t_order" db-types="Hive" />
+    <sql-case id="hive_select_xor" value="SELECT * FROM t_logic WHERE a XOR b" db-types="Hive" />
+    <sql-case id="hive_select_in_list" value="SELECT * FROM t_pred WHERE col IN (1,2)" db-types="Hive" />
+    <sql-case id="hive_select_equal_all_subquery" value="SELECT * FROM t_pred WHERE col = ALL (SELECT 2)" db-types="Hive" />
+    <sql-case id="hive_select_order_limit_param" value="SELECT * FROM t_order ORDER BY 1, price + 1 DESC LIMIT 1 OFFSET 1" db-types="Hive" />
+    <sql-case id="hive_select_case_variables" value="SELECT CASE WHEN a &gt; 1 THEN b ELSE c END, @var, @@global.var FROM t_case" db-types="Hive" />
+    <sql-case id="hive_select_join_using_comma" value="SELECT * FROM t1 JOIN t2 USING (id), t3" db-types="Hive" />
+    <sql-case id="hive_select_literals_dual" value="SELECT DATE '2024-01-01', 0x1F, B'101' FROM DUAL" db-types="Hive" />
+    <sql-case id="hive_select_owner_function" value="SELECT analytics.fn(col) FROM t_func_owner" db-types="Hive" />
+    <sql-case id="hive_select_safe_eq" value="SELECT * FROM t_pred WHERE a &lt;=&gt; b" db-types="Hive" />
+    <sql-case id="hive_select_sounds_like" value="SELECT * FROM t_pred WHERE col SOUNDS LIKE 'abc'" db-types="Hive" />
+    <sql-case id="hive_select_interval" value="SELECT INTERVAL 1 DAY" db-types="Hive" />
+    <sql-case id="hive_select_collate_literal" value="SELECT 'a' COLLATE utf8" db-types="Hive" />
+    <sql-case id="hive_select_binary_prefix" value="SELECT BINARY 'a'" db-types="Hive" />
+    <sql-case id="hive_select_three_part_column" value="SELECT db1.tbl1.col1 FROM db1.tbl1" db-types="Hive" />
+    <sql-case id="hive_select_substr" value="SELECT SUBSTR('abc',1,2)" db-types="Hive" />
+    <sql-case id="hive_select_trim_leading" value="SELECT TRIM(LEADING 'x' FROM 'xxx')" db-types="Hive" />
+    <sql-case id="hive_select_trim_trailing" value="SELECT TRIM(TRAILING 'y' FROM 'yyy')" db-types="Hive" />
+    <sql-case id="hive_select_current_time_precision" value="SELECT CURRENT_TIME(3)" db-types="Hive" />
+    <sql-case id="hive_select_natural_join" value="SELECT * FROM t1 NATURAL JOIN t2" db-types="Hive" />
+    <sql-case id="hive_select_match" value="SELECT * FROM t_doc WHERE MATCH(title) AGAINST('hive')" db-types="Hive" />
+    <sql-case id="hive_group_concat_order" value="SELECT GROUP_CONCAT(status ORDER BY status) FROM t_order" db-types="Hive" />
+    <sql-case id="hive_json_array_simple" value="SELECT JSON_ARRAY(1, 'abc', NULL, TRUE, CURTIME())" db-types="Hive" />
+    <sql-case id="hive_convert_date" value="SELECT CONVERT('2020-10-01', DATE)" db-types="Hive" />
+    <sql-case id="hive_convert_with_placeholder" value="SELECT CONVERT(?, DATE) FROM t_order" case-types="placeholder" db-types="Hive" />
+    <sql-case id="hive_convert_using_with_placeholder" value="SELECT CONVERT(? USING utf8) FROM t_order" case-types="placeholder" db-types="Hive" />
+    <sql-case id="hive_limit_param" value="SELECT * FROM t_order LIMIT ? OFFSET ?" db-types="Hive" />
+    <sql-case id="hive_select_not" value="SELECT * FROM t_pred WHERE NOT status" db-types="Hive" />
+    <sql-case id="hive_select_is_null" value="SELECT * FROM t_pred WHERE status IS NULL" db-types="Hive" />
+    <sql-case id="hive_select_between" value="SELECT * FROM t_pred WHERE age BETWEEN 10 AND 20" db-types="Hive" />
+    <sql-case id="hive_select_regexp" value="SELECT * FROM t_pred WHERE name REGEXP 'a'" db-types="Hive" />
+    <sql-case id="hive_select_rlike" value="SELECT * FROM t_pred WHERE name RLIKE 'a'" db-types="Hive" />
+    <sql-case id="hive_select_or_expr" value="SELECT 1 OR 0" db-types="Hive" />
+    <sql-case id="hive_select_count_distinct" value="SELECT COUNT(DISTINCT user_id) FROM t_order" db-types="Hive" />
+    <sql-case id="hive_select_window_frame" value="SELECT SUM(amount) OVER (PARTITION BY user_id ORDER BY id ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) FROM t_order" db-types="Hive" />
+    <sql-case id="hive_select_position_function" value="SELECT POSITION('b' IN 'abc')" db-types="Hive" />
+    <sql-case id="hive_select_char_function" value="SELECT CHAR(97)" db-types="Hive" />
+    <sql-case id="hive_select_weight_string" value="SELECT WEIGHT_STRING('a')" db-types="Hive" />
+    <sql-case id="hive_select_current_user" value="SELECT CURRENT_USER" db-types="Hive" />
+    <sql-case id="hive_select_cast_datetime_precision" value="SELECT CAST('2024-01-01' AS DATETIME(3))" db-types="Hive" />
+    <sql-case id="hive_select_except" value="SELECT * FROM t1 EXCEPT SELECT * FROM t2" db-types="Hive" />
+</sql-cases>

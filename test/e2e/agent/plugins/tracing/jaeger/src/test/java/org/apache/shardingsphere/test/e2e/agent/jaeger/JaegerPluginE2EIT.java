@@ -17,40 +17,36 @@
 
 package org.apache.shardingsphere.test.e2e.agent.jaeger;
 
-import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
-import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.agent.jaeger.asserts.SpanAssert;
-import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.IntegrationTestCasesLoader;
-import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.SpanTestCase;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.AgentE2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.engine.framework.AgentE2ETestActionExtension;
+import org.apache.shardingsphere.test.e2e.agent.engine.framework.AgentE2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.agent.jaeger.asserts.JaegerSpanAssert;
+import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.JaegerE2ETestCase;
+import org.apache.shardingsphere.test.e2e.agent.jaeger.cases.JaegerE2ETestCases;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import java.util.stream.Stream;
-
-@ExtendWith(AgentTestActionExtension.class)
+@ExtendWith(AgentE2ETestActionExtension.class)
 class JaegerPluginE2EIT {
     
     @EnabledIf("isEnabled")
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertWithAgent(final SpanTestCase spanTestCase) {
-        SpanAssert.assertIs(E2ETestEnvironment.getInstance().getJaegerHttpUrl(), spanTestCase);
+    void assertTraceAgent(final JaegerE2ETestCase testCase) {
+        JaegerSpanAssert.assertIs(AgentE2ETestEnvironment.getInstance().getAgentPluginURL(), testCase);
     }
     
     private static boolean isEnabled() {
-        return E2ETestEnvironment.getInstance().containsTestParameter();
+        return AgentE2ETestConfiguration.getInstance().containsTestParameter();
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider extends AgentE2ETestCaseArgumentsProvider {
         
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+        private TestCaseArgumentsProvider() {
+            super(JaegerE2ETestCases.class);
         }
     }
 }

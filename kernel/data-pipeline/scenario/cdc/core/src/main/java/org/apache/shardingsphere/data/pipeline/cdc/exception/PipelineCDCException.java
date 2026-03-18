@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.cdc.exception;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.PipelineSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.PipelineSQLException;
 
 /**
  * Pipeline CDC exception.
@@ -30,8 +30,8 @@ public abstract class PipelineCDCException extends PipelineSQLException {
     
     private static final int CDC_CODE = 4;
     
-    protected PipelineCDCException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
-        super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    protected PipelineCDCException(final SQLState sqlState, final int errorCode, final String reason) {
+        super(sqlState, getErrorCode(errorCode), reason);
     }
     
     private static int getErrorCode(final int errorCode) {

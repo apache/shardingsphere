@@ -17,6 +17,6 @@
   -->
 
 <databases>
-    <database>write_dataset</database>
-    <database>read_dataset</database>
+    <database name="write_dataset" />
+    <database name="read_dataset" />
 </databases>

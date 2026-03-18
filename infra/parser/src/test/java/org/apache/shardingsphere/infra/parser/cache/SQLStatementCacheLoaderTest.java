@@ -17,28 +17,28 @@
 
 package org.apache.shardingsphere.infra.parser.cache;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserExecutor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
-import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 class SQLStatementCacheLoaderTest {
     
-    private static final String SQL = "select * from user where id=1";
+    private static final String SQL = "SELECT * FROM user WHERE id=1";
     
     @Test
     void assertSQLStatementCacheLoad() throws ReflectiveOperationException {
-        SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader(TypedSPILoader.getService(DatabaseType.class, "MySQL"), new CacheOption(128, 1024L));
+        SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader(TypedSPILoader.getService(DatabaseType.class, "SQL92"), new CacheOption(128, 1024L));
         SQLStatementParserExecutor executor = mock(SQLStatementParserExecutor.class, RETURNS_DEEP_STUBS);
-        Plugins.getMemberAccessor().set(sqlStatementCacheLoader.getClass().getDeclaredField("sqlStatementParserExecutor"), sqlStatementCacheLoader, executor);
+        Plugins.getMemberAccessor().set(SQLStatementCacheLoader.class.getDeclaredField("sqlStatementParserExecutor"), sqlStatementCacheLoader, executor);
         assertThat(sqlStatementCacheLoader.load(SQL), isA(SQLStatement.class));
     }
 }

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Attachable;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 
 /**
  * Distinct projection prefix token.
@@ -27,6 +27,11 @@ public final class DistinctProjectionPrefixToken extends SQLToken implements Att
     
     public DistinctProjectionPrefixToken(final int startIndex) {
         super(startIndex);
+    }
+    
+    @Override
+    public int getStopIndex() {
+        return getStartIndex();
     }
     
     @Override

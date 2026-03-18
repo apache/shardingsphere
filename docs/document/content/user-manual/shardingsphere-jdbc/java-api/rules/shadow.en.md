@@ -46,7 +46,7 @@ Attributes:
 
 ### Shadow Algorithm Configuration
 
-Class name：org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration
+Class name：org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration
 
 Attributes:
 

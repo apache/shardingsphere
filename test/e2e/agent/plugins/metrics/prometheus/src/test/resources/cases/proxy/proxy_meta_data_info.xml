@@ -16,8 +16,8 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case metric-name="proxy_meta_data_info" metric-type="gauge">
         <query-assertion metric="proxy_meta_data_info" query="proxy_meta_data_info{}" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

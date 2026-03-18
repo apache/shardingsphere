@@ -25,9 +25,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.is;
 
 class RecordUtilsTest {
     
@@ -41,11 +41,11 @@ class RecordUtilsTest {
     
     private DataRecord mockDataRecord() {
         DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, "t2", new IngestPlaceholderPosition(), 4);
-        result.addColumn(new Column("id", "", false, true));
-        result.addColumn(new Column("sc", "", false, true));
-        result.addColumn(new Column("c1", "", true, false));
-        result.addColumn(new Column("c2", "", true, false));
-        result.addColumn(new Column("c3", "", true, false));
+        result.addColumn(new NormalColumn("id", "", false, true));
+        result.addColumn(new NormalColumn("sc", "", false, true));
+        result.addColumn(new NormalColumn("c1", "", true, false));
+        result.addColumn(new NormalColumn("c2", "", true, false));
+        result.addColumn(new NormalColumn("c3", "", true, false));
         return result;
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sqlfederation.config.SQLFederationRuleConfigura
 import org.apache.shardingsphere.sqlfederation.constant.SQLFederationOrder;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * SQL federation rule builder.
@@ -33,7 +33,7 @@ import java.util.Map;
 public final class SQLFederationRuleBuilder implements GlobalRuleBuilder<SQLFederationRuleConfiguration> {
     
     @Override
-    public GlobalRule build(final SQLFederationRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
+    public GlobalRule build(final SQLFederationRuleConfiguration ruleConfig, final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         return new SQLFederationRule(ruleConfig, databases);
     }
     

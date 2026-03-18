@@ -62,7 +62,9 @@ chapter = true
 1. 当对应的动态占位符的值不存在时，此 YAML 属性的值将被设置为`::`右侧的默认值。
 2. 当对应的动态占位符的值和`::`右侧的默认值均不存在时，此属性将被设置为空。
 
-#### none
+#### 单个动态占位符
+
+##### none
 
 配置文件为 `xxx.yaml`，配置文件格式与 [YAML 配置](../../../yaml-config) 一致。
 
@@ -73,7 +75,7 @@ chapter = true
 - `jdbc:shardingsphere:absolutepath:/path/to/config.yaml`
 - `jdbc:shardingsphere:absolutepath:/path/to/config.yaml?placeholder-type=none`
 
-#### environment
+##### environment
 
 加载包含环境变量的配置文件时，需将 `placeholder-type`置为`environment`，这常用于 Docker Image 的部署场景。
 配置文件为 `xxx.yaml`，配置文件格式与 [YAML 配置](../../../yaml-config) 基本一致。
@@ -110,7 +112,7 @@ ds_1:
 - `jdbc:shardingsphere:classpath:config.yaml?placeholder-type=environment`
 - `jdbc:shardingsphere:absolutepath:/path/to/config.yaml?placeholder-type=environment`
 
-#### system_props
+##### system_props
 
 加载包含系统属性的配置文件时，需将 `placeholder-type`置为`system_props`。
 配置文件为 `xxx.yaml`，配置文件格式与 [YAML 配置](../../../yaml-config) 基本一致。
@@ -174,6 +176,40 @@ public class ExampleUtils {
 
 - `jdbc:shardingsphere:classpath:config.yaml?placeholder-type=system_props`
 - `jdbc:shardingsphere:absolutepath:/path/to/config.yaml?placeholder-type=system_props`
+
+#### 多个动态占位符
+
+在单个动态占位符的基础上，用户可以在单行 YAML 使用多个动态占位符。
+在配置 YAML 属性值的时候，如果 YAML 属性值的部分需要动态替换，可以通过配置多个动态占位符的方式来实现
+
+假设存在以下一组环境变量或系统属性，
+
+1. 存在环境变量或系统属性 `FIXTURE_HOST` 为 `127.0.0.1`。
+2. 存在环境变量或系统属性 `FIXTURE_PORT` 为 `3306`。
+3. 存在环境变量或系统属性 `FIXTURE_DATABASE` 为 `test`。
+4. 存在环境变量或系统属性 `FIXTURE_USERNAME` 为 `sa`。
+
+则对于以下 YAML 文件的截取片段，
+
+```yaml
+ds_1:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  driverClassName: $${FIXTURE_DRIVER_CLASS_NAME::com.mysql.cj.jdbc.Driver}
+  jdbcUrl: jdbc:mysql://$${FIXTURE_HOST::}:$${FIXTURE_PORT::}/$${FIXTURE_DATABASE::}?sslMode=REQUIRED
+  username: $${FIXTURE_USERNAME::}
+  password: $${FIXTURE_PASSWORD::}
+```
+
+此 YAML 截取片段将被解析为，
+
+```yaml
+ds_1:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  driverClassName: com.mysql.cj.jdbc.Driver
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?sslMode=REQUIRED
+  username: sa
+  password:
+```
 
 ## 其他实现
 

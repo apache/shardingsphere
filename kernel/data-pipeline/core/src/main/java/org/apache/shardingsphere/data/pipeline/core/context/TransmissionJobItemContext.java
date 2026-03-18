@@ -30,9 +30,6 @@ import java.util.Collection;
  */
 public interface TransmissionJobItemContext extends PipelineJobItemContext, PipelineJobProgressListener {
     
-    @Override
-    TransmissionProcessContext getJobProcessContext();
-    
     /**
      * Get inventory tasks.
      *
@@ -88,6 +85,9 @@ public interface TransmissionJobItemContext extends PipelineJobItemContext, Pipe
      * @return inventory records count
      */
     long getInventoryRecordsCount();
+    
+    @Override
+    TransmissionProcessContext getJobProcessContext();
     
     @Override
     default TransmissionJobItemProgress toProgress() {

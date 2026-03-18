@@ -34,15 +34,28 @@ public final class CaseLoaderTemplate {
     
     /**
      * Load test cases.
-     * 
+     *
+     * @param rootDirectory root directory
+     * @param callback callback of cases loader
+     * @param <T> type of test case
+     * @return loaded cases
+     */
+    public static <T> Map<String, T> load(final String rootDirectory, final CaseLoaderCallback<T> callback) {
+        File file = new File(CaseLoaderTemplate.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        return load(file, rootDirectory, callback);
+    }
+    
+    /**
+     * Load test cases.
+     *
+     * @param file file
      * @param rootDirectory root directory
      * @param callback callback of cases loader
      * @param <T> type of test case
      * @return loaded cases
      */
     @SneakyThrows({JAXBException.class, IOException.class})
-    public static <T> Map<String, T> load(final String rootDirectory, final CaseLoaderCallback<T> callback) {
-        File file = new File(CaseLoaderTemplate.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+    public static <T> Map<String, T> load(final File file, final String rootDirectory, final CaseLoaderCallback<T> callback) {
         return file.isFile() ? callback.loadFromJar(file, rootDirectory) : callback.loadFromDirectory(rootDirectory);
     }
 }

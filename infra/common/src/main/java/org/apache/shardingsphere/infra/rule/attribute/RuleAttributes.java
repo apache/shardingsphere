@@ -34,7 +34,7 @@ public final class RuleAttributes {
     
     /**
      * Find rule attribute.
-     * 
+     *
      * @param attributeClass rule attribute class
      * @param <T> type of rule attribute
      * @return found rule attribute

@@ -18,14 +18,18 @@
 name: E2E - Operation
 
 on:
-  push:
-    branches: [ dev ]
   pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - '**/*.md'
   workflow_dispatch:
 
 concurrency:
   group: e2e-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true -Dfailsafe.skipAfterFailureCount=1 -Dio.netty.leakDetectionLevel=advanced
@@ -37,75 +41,94 @@ jobs:
 
   detect-changed-files:
     name: Detect Changed Files
+    if: github.repository == 'apache/shardingsphere'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
+      - uses: actions/checkout@v6.0.1
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
         id: filter
         with:
           token: ${{ github.token }}
-          filters: .github/workflows/resources/filter/filters.yml
+          filters: .github/workflows/resources/filter/operation-filters.yml
     outputs:
       changed_operations: ${{ steps.filter.outputs.changes }}
 
+  prepare-e2e-artifacts:
+    name: Prepare E2E Artifacts
+    if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]'
+    needs: [ global-environment, detect-changed-files ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - id: setup-build-environment
+        uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-suffix: 'e2e-operation'
+          cache-save-enabled: 'false'
+          enable-docker-setup: 'true'
+      - name: Maven Install
+        env:
+          PREFIX: "test/e2e/operation/"
+          MODULE_LIST: "transaction,pipeline,showprocesslist"
+        run: |
+          FORMATTED_PL=$(echo "$MODULE_LIST" | sed "s|,|,$PREFIX|g" | sed "s|^|$PREFIX|")
+          echo "Ready to build: $FORMATTED_PL"
+          ./mvnw -B clean install -am -pl "$FORMATTED_PL" -Pe2e.env.docker -DskipTests
+      - uses: ./.github/workflows/resources/actions/save-maven-cache
+        with:
+          cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
+          cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
+      - uses: ./.github/workflows/resources/actions/upload-source-snapshot
+      - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
+
   e2e-operation:
-    if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     name: E2E - ${{ matrix.operation }} on ${{ matrix.image.version }}
-    needs: [ detect-changed-files, global-environment ]
+    if: github.repository == 'apache/shardingsphere' && needs.detect-changed-files.outputs.changed_operations != '[]'
+    needs: [ detect-changed-files, global-environment, prepare-e2e-artifacts ]
     runs-on: ubuntu-latest
     timeout-minutes: 40
     strategy:
-      max-parallel: 20
+      max-parallel: 15
       fail-fast: false
       matrix:
-        operation: [ transaction, pipeline, showprocesslist ]
-        image: [ { type: "it.docker.mysql.version", version: "mysql:5.7" }, { type: "it.docker.postgresql.version", version: "postgres:12-alpine" }, { type: "it.docker.mariadb.version", version: "mariadb:11" } ]
+        operation: ${{ fromJSON(needs.detect-changed-files.outputs.changed_operations) }}
+        image: [
+          { type: "e2e.docker.database.mysql.images", version: "mysql:5.7" },
+          { type: "e2e.docker.database.mariadb.images", version: "mariadb:11" },
+          { type: "e2e.docker.database.postgresql.images", version: "postgres:12-alpine" },
+          { type: "e2e.docker.database.opengauss.images", version: "opengauss/opengauss:3.1.0" }
+        ]
         exclude:
           - operation: transaction
-            image: { type: "it.docker.mariadb.version", version: "mariadb:11" }
+            image: { type: "e2e.docker.database.mariadb.images", version: "mariadb:11" }
           - operation: showprocesslist
-            image: { type: "it.docker.postgresql.version", version: "postgres:12-alpine" }
+            image: { type: "e2e.docker.database.mariadb.images", version: "mariadb:11" }
           - operation: showprocesslist
-            image: { type: "it.docker.mariadb.version", version: "mariadb:11" }
+            image: { type: "e2e.docker.database.postgresql.images", version: "postgres:12-alpine" }
+          - operation: showprocesslist
+            image: { type: "e2e.docker.database.opengauss.images", version: "opengauss/opengauss:3.1.0" }
     steps:
-      - env:
-          changed_operations: ${{ needs.detect-changed-files.outputs.changed_operations }}
-          current_operation: ${{ matrix.operation }}
-        name: Check if ${{ matrix.operation }} is Changed
+      - name: Logs
         run: |
-          echo "skip_current_step=false" >> $GITHUB_ENV
-          if [[ ${changed_operations} == '["ignore"]' ]]; then
-            echo "${current_operation} is ignored by ignore filter"
-            echo "skip_current_step=true" >> $GITHUB_ENV
-          fi
-          
-          if [[ ${changed_operations} == *""$current_operation""* ]]; then
-            echo "${current_operation} is detected by changed filter"
-            else
-              echo "${current_operation} is ignore by filter"
-              echo "skip_current_step=true" >> $GITHUB_ENV
-          fi
-      - name: Checkout Project
-        if: (env.skip_current_step == 'false')
-        uses: actions/checkout@v4
-      - name: Retrieve Maven Caches
-        if: (env.skip_current_step == 'false')
-        uses: actions/cache@v4
+          echo "runner.temp=${{ runner.temp }}"
+          echo "RUNNER_TEMP=$RUNNER_TEMP"
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v4
         with:
-          path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-${{ github.sha }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-e2e-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
-      - if: (env.skip_current_step == 'false')
-        uses: actions/setup-java@v4
+          name: source-snapshot
+          path: ${{ runner.temp }}/source-snapshot
+      - name: Restore Source Snapshot
+        run: |
+          find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
+          tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
-          java-version: 11
-      - name: Build ${{ matrix.operation }} E2E Image
-        if: (env.skip_current_step == 'false')
-        run: ./mvnw -B clean install -am -pl test/e2e/operation/${{ matrix.operation }} -Pit.env.docker -DskipTests
+          cache-suffix: 'e2e-operation'
+          cache-save-enabled: 'false'
+          enable-docker-setup: 'true'
+      - uses: ./.github/workflows/resources/actions/download-e2e-artifacts
       - name: Run ${{ matrix.operation }} on ${{ matrix.image.version }}
-        if: (env.skip_current_step == 'false')
-        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -D${{ matrix.operation }}.it.env.type=docker -D${{ matrix.operation }}.${{ matrix.image.type }}=${{ matrix.image.version }}
+        run: ./mvnw -nsu -B install -f test/e2e/operation/${{ matrix.operation }}/pom.xml -De2e.run.type=docker -D${{ matrix.image.type }}=${{ matrix.image.version }}

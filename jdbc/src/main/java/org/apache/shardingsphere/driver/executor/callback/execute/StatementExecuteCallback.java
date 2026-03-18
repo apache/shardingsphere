@@ -27,7 +27,7 @@ public interface StatementExecuteCallback {
     
     /**
      * Execute.
-     * 
+     *
      * @param sql SQL to be executed
      * @param statement JDBC statement
      * @return return true if is DQL, false if is DML

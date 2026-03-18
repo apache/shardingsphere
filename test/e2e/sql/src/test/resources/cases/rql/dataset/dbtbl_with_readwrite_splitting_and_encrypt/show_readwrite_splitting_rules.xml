@@ -24,14 +24,14 @@
         <column name="load_balancer_type" />
         <column name="load_balancer_props" />
     </metadata>
-    <row values="readwrite_ds_0| encrypt_write_ds_0| encrypt_read_ds_0| DYNAMIC| ROUND_ROBIN| " />
-    <row values="readwrite_ds_1| encrypt_write_ds_1| encrypt_read_ds_1| DYNAMIC| ROUND_ROBIN| " />
-    <row values="readwrite_ds_2| encrypt_write_ds_2| encrypt_read_ds_2| DYNAMIC| ROUND_ROBIN| " />
-    <row values="readwrite_ds_3| encrypt_write_ds_3| encrypt_read_ds_3| DYNAMIC| ROUND_ROBIN| " />
-    <row values="readwrite_ds_4| encrypt_write_ds_4| encrypt_read_ds_4| DYNAMIC| ROUND_ROBIN| " />
-    <row values="readwrite_ds_5| encrypt_write_ds_5| encrypt_read_ds_5| DYNAMIC| ROUND_ROBIN| " />
-    <row values="readwrite_ds_6| encrypt_write_ds_6| encrypt_read_ds_6| DYNAMIC| ROUND_ROBIN| " />
-    <row values="readwrite_ds_7| encrypt_write_ds_7| encrypt_read_ds_7| DYNAMIC| ROUND_ROBIN| " />
-    <row values="readwrite_ds_8| encrypt_write_ds_8| encrypt_read_ds_8| DYNAMIC| ROUND_ROBIN| " />
-    <row values="readwrite_ds_9| encrypt_write_ds_9| encrypt_read_ds_9| DYNAMIC| ROUND_ROBIN| " />
+    <row values="readwrite_ds_0| encrypt_write_ds_0| encrypt_read_ds_0| PRIMARY| ROUND_ROBIN| " />
+    <row values="readwrite_ds_1| encrypt_write_ds_1| encrypt_read_ds_1| PRIMARY| ROUND_ROBIN| " />
+    <row values="readwrite_ds_2| encrypt_write_ds_2| encrypt_read_ds_2| PRIMARY| ROUND_ROBIN| " />
+    <row values="readwrite_ds_3| encrypt_write_ds_3| encrypt_read_ds_3| PRIMARY| ROUND_ROBIN| " />
+    <row values="readwrite_ds_4| encrypt_write_ds_4| encrypt_read_ds_4| PRIMARY| ROUND_ROBIN| " />
+    <row values="readwrite_ds_5| encrypt_write_ds_5| encrypt_read_ds_5| PRIMARY| ROUND_ROBIN| " />
+    <row values="readwrite_ds_6| encrypt_write_ds_6| encrypt_read_ds_6| PRIMARY| ROUND_ROBIN| " />
+    <row values="readwrite_ds_7| encrypt_write_ds_7| encrypt_read_ds_7| PRIMARY| ROUND_ROBIN| " />
+    <row values="readwrite_ds_8| encrypt_write_ds_8| encrypt_read_ds_8| PRIMARY| ROUND_ROBIN| " />
+    <row values="readwrite_ds_9| encrypt_write_ds_9| encrypt_read_ds_9| PRIMARY| ROUND_ROBIN| " />
 </dataset>

@@ -41,7 +41,7 @@ public final class ParenthesesAssert {
      * @param expected expected parentheses
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ParenthesesSegment actual, final ExpectedParentheses expected) {
-        assertThat(assertContext.getText("Left brackets assertion error: "), actual.isLeft(), is(expected.isLeft()));
+        assertThat(assertContext.getText("Parentheses assertion error: "), actual.getParentheses(), is(expected.getParentheses()));
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
 }

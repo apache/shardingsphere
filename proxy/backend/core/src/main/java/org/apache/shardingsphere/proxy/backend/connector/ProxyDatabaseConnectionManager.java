@@ -22,12 +22,15 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ResourceLock;
-import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionResourceLock;
+import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.ProxyBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -43,6 +46,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -51,31 +56,37 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @RequiredArgsConstructor
 @Getter
+@Slf4j
 public final class ProxyDatabaseConnectionManager implements DatabaseConnectionManager<Connection> {
     
     private final ConnectionSession connectionSession;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final Collection<ProxyBackendHandler> backendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<ProxyBackendHandler> proxyBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
-    private final Collection<ProxyBackendHandler> inUseBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<ProxyBackendHandler> inUseProxyBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
     private final Collection<ConnectionPostProcessor> connectionPostProcessors = new LinkedList<>();
     
-    private final ResourceLock resourceLock = new ResourceLock();
+    private final ConnectionResourceLock connectionResourceLock = new ConnectionResourceLock();
     
     private final AtomicBoolean closed = new AtomicBoolean(false);
     
-    private final Collection<TransactionHook> transactionHooks = ShardingSphereServiceLoader.getServiceInstances(TransactionHook.class);
+    private final Object closeLock = new Object();
+    
+    @SuppressWarnings("rawtypes")
+    private final Map<ShardingSphereRule, TransactionHook> transactionHooks = OrderedSPILoader.getServices(
+            TransactionHook.class, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
     
     @Override
     public List<Connection> getConnections(final String databaseName, final String dataSourceName, final int connectionOffset, final int connectionSize,
                                            final ConnectionMode connectionMode) throws SQLException {
         Preconditions.checkNotNull(databaseName, "Current database name is null.");
         Collection<Connection> connections;
+        String cacheKey = getKey(databaseName, dataSourceName);
         synchronized (cachedConnections) {
-            connections = cachedConnections.get(databaseName.toLowerCase() + "." + dataSourceName);
+            connections = cachedConnections.get(cacheKey);
         }
         List<Connection> result;
         int maxConnectionSize = connectionOffset + connectionSize;
@@ -85,7 +96,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
             Collection<Connection> newConnections = createNewConnections(databaseName, dataSourceName, maxConnectionSize, connectionMode);
             result = new ArrayList<>(newConnections).subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(databaseName.toLowerCase() + "." + dataSourceName, newConnections);
+                cachedConnections.putAll(cacheKey, newConnections);
             }
             executeTransactionHooksAfterCreateConnections(result);
         } else {
@@ -95,16 +106,22 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
             allConnections.addAll(newConnections);
             result = allConnections.subList(connectionOffset, maxConnectionSize);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(databaseName.toLowerCase() + "." + dataSourceName, newConnections);
+                cachedConnections.putAll(cacheKey, newConnections);
             }
         }
         return result;
     }
     
-    private void executeTransactionHooksAfterCreateConnections(final List<Connection> result) throws SQLException {
+    private String getKey(final String databaseName, final String dataSourceName) {
+        return databaseName.toLowerCase() + "." + dataSourceName;
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void executeTransactionHooksAfterCreateConnections(final List<Connection> connections) throws SQLException {
         if (connectionSession.getTransactionStatus().isInTransaction()) {
-            for (TransactionHook each : transactionHooks) {
-                each.afterCreateConnections(result, connectionSession.getConnectionContext().getTransactionContext());
+            DatabaseType databaseType = ProxyContext.getInstance().getContextManager().getDatabaseType();
+            for (Entry<ShardingSphereRule, TransactionHook> entry : transactionHooks.entrySet()) {
+                entry.getValue().afterCreateConnections(entry.getKey(), databaseType, connections, connectionSession.getConnectionContext().getTransactionContext());
             }
         }
     }
@@ -115,7 +132,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         for (Connection each : result) {
             replayTransactionOption(each);
         }
-        if (connectionSession.getTransactionStatus().isInTransaction()) {
+        if (connectionSession.getConnectionContext().getTransactionContext().isTransactionStarted()) {
             for (Connection each : result) {
                 replayMethodsInvocation(each);
             }
@@ -163,6 +180,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         }
     }
     
+    @SuppressWarnings("MagicConstant")
     private void replayTransactionOption(final Connection connection) throws SQLException {
         if (null == connection) {
             return;
@@ -170,19 +188,19 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         if (connectionSession.isReadOnly()) {
             connection.setReadOnly(true);
         }
-        if (null != connectionSession.getIsolationLevel()) {
-            connection.setTransactionIsolation(TransactionUtils.getTransactionIsolationLevel(connectionSession.getIsolationLevel()));
+        if (connectionSession.getIsolationLevel().isPresent()) {
+            connection.setTransactionIsolation(TransactionUtils.getTransactionIsolationLevel(connectionSession.getIsolationLevel().get()));
         }
     }
     
     /**
      * Get used data source names.
-     * 
+     *
      * @return used data source names
      */
     public Collection<String> getUsedDataSourceNames() {
         Collection<String> result = new ArrayList<>(cachedConnections.size());
-        String databaseName = connectionSession.getDatabaseName().toLowerCase();
+        String databaseName = connectionSession.getUsedDatabaseName().toLowerCase();
         for (String each : cachedConnections.keySet()) {
             String[] split = each.split("\\.", 2);
             String cachedDatabaseName = split[0];
@@ -209,7 +227,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      * @param handler handler to be added
      */
     public void add(final ProxyBackendHandler handler) {
-        backendHandlers.add(handler);
+        proxyBackendHandlers.add(handler);
     }
     
     /**
@@ -218,7 +236,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      * @param handler handler to be marked
      */
     public void markResourceInUse(final ProxyBackendHandler handler) {
-        inUseBackendHandlers.add(handler);
+        inUseProxyBackendHandlers.add(handler);
     }
     
     /**
@@ -227,7 +245,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      * @param handler proxy backend handler to be added
      */
     public void unmarkResourceInUse(final ProxyBackendHandler handler) {
-        inUseBackendHandlers.remove(handler);
+        inUseProxyBackendHandlers.remove(handler);
     }
     
     /**
@@ -235,7 +253,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      */
     public void handleAutoCommit() {
         if (!connectionSession.isAutoCommit() && !connectionSession.getTransactionStatus().isInTransaction()) {
-            BackendTransactionManager transactionManager = new BackendTransactionManager(this);
+            ProxyBackendTransactionManager transactionManager = new ProxyBackendTransactionManager(this);
             transactionManager.begin();
         }
     }
@@ -246,7 +264,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      * @throws BackendConnectionException backend connection exception
      */
     public void closeExecutionResources() throws BackendConnectionException {
-        synchronized (this) {
+        synchronized (closeLock) {
             Collection<Exception> result = new LinkedList<>(closeHandlers(false));
             if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction(TransactionUtils.getTransactionType(connectionSession.getConnectionContext().getTransactionContext()))) {
                 result.addAll(closeHandlers(true));
@@ -264,12 +282,16 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
     
     /**
      * Close all resources.
+     *
+     * @return exceptions occurred during closing resources
      */
-    public void closeAllResources() {
-        synchronized (this) {
+    public Collection<SQLException> closeAllResources() {
+        synchronized (closeLock) {
             closed.set(true);
-            closeHandlers(true);
-            closeConnections(true);
+            Collection<SQLException> result = new LinkedList<>();
+            result.addAll(closeHandlers(true));
+            result.addAll(closeConnections(true));
+            return result;
         }
     }
     
@@ -281,8 +303,8 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
      */
     public Collection<SQLException> closeHandlers(final boolean includeInUse) {
         Collection<SQLException> result = new LinkedList<>();
-        for (ProxyBackendHandler each : backendHandlers) {
-            if (!includeInUse && inUseBackendHandlers.contains(each)) {
+        for (ProxyBackendHandler each : proxyBackendHandlers) {
+            if (!includeInUse && inUseProxyBackendHandlers.contains(each)) {
                 continue;
             }
             try {
@@ -292,15 +314,15 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
             }
         }
         if (includeInUse) {
-            inUseBackendHandlers.clear();
+            inUseProxyBackendHandlers.clear();
         }
-        backendHandlers.retainAll(inUseBackendHandlers);
+        proxyBackendHandlers.retainAll(inUseProxyBackendHandlers);
         return result;
     }
     
     /**
      * Close connections.
-     * 
+     *
      * @param forceRollback is force rollback
      * @return SQL exception when connections close
      */
@@ -313,9 +335,16 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
                     if (forceRollback && connectionSession.getTransactionStatus().isInTransaction()) {
                         each.rollback();
                     }
-                    each.close();
-                } catch (final SQLException ex) {
-                    result.add(ex);
+                } catch (final SQLException ignored) {
+                } finally {
+                    try {
+                        each.close();
+                    } catch (final SQLException ex) {
+                        if (!isClosed(each)) {
+                            log.warn("Close connection {} failed.", each, ex);
+                            result.add(ex);
+                        }
+                    }
                 }
             }
             cachedConnections.clear();
@@ -324,6 +353,16 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
             connectionPostProcessors.clear();
         }
         return result;
+    }
+    
+    private boolean isClosed(final Connection connection) {
+        try {
+            if (connection.isClosed()) {
+                return true;
+            }
+        } catch (final SQLException ignored) {
+        }
+        return false;
     }
     
     private void resetSessionVariablesIfNecessary(final Collection<Connection> values, final Collection<SQLException> exceptions) {

@@ -54,6 +54,7 @@
             <owner name="ds_0" start-index="25" stop-index="28" />
         </table>
     </revoke>
+    <revoke sql-case-id="revoke_proxy_on_user" />
     
     <revoke sql-case-id="revoke_role_from_user" />
     <revoke sql-case-id="revoke_roles_from_users" />
@@ -230,4 +231,39 @@
     <revoke sql-case-id="revoke_execute_on_xml_schema_collection" />
     <revoke sql-case-id="revoke_usage_on_column_encryption_key" />
     <revoke sql-case-id="revoke_usage_on_client_master_key" />
+    <revoke sql-case-id="revoke_alter_execute_on_procedure_from_role" />
+    <revoke sql-case-id="revoke_grant_option_on_procedure_from_user" />
+    <revoke sql-case-id="revoke_alter_execute_on_procedure_from_user" />
+    <revoke sql-case-id="revoke_grant_option_on_procedure_from_role" />
+    <revoke sql-case-id="revoke_usage_doris" />
+    <revoke sql-case-id="revoke_index_doris" />
+    <revoke sql-case-id="revoke_references_doris" />
+    <revoke sql-case-id="revoke_alter_doris" />
+    <revoke sql-case-id="revoke_drop_doris" />
+    <revoke sql-case-id="revoke_execute_doris" />
+    <revoke sql-case-id="revoke_reload_doris" />
+    <revoke sql-case-id="revoke_shutdown_doris" />
+    <revoke sql-case-id="revoke_process_doris" />
+    <revoke sql-case-id="revoke_file_doris" />
+    <revoke sql-case-id="revoke_show_databases_doris" />
+    <revoke sql-case-id="revoke_super_doris" />
+    <revoke sql-case-id="revoke_create_tmp_tables_doris" />
+    <revoke sql-case-id="revoke_lock_tables_doris" />
+    <revoke sql-case-id="revoke_replication_slave_doris" />
+    <revoke sql-case-id="revoke_replication_client_doris" />
+    <revoke sql-case-id="revoke_create_view_doris" />
+    <revoke sql-case-id="revoke_show_view_doris" />
+    <revoke sql-case-id="revoke_create_routine_doris" />
+    <revoke sql-case-id="revoke_alter_routine_doris" />
+    <revoke sql-case-id="revoke_create_user_doris" />
+    <revoke sql-case-id="revoke_trigger_doris" />
+    <revoke sql-case-id="revoke_event_doris" />
+    <revoke sql-case-id="revoke_create_tablespace_doris" />
+    <revoke sql-case-id="revoke_create_role_privilege_doris" />
+    <revoke sql-case-id="revoke_drop_role_privilege_doris" />
+    
+    <revoke sql-case-id="revoke_select_sql92">
+        <table name="t_order" start-index="28" stop-index="34" />
+        <column name="order_id" start-index="14" stop-index="21" />
+    </revoke>
 </sql-parser-test-cases>

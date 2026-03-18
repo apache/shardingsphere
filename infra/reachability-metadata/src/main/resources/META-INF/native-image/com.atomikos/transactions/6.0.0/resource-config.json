@@ -1,8 +1,0 @@
-{
-  "resources":{
-  "includes":[{
-    "condition":{"typeReachable":"com.atomikos.icatch.provider.imp.AssemblerImp"},
-    "pattern":"\\Qtransactions-defaults.properties\\E"
-  }]},
-  "bundles":[]
-}

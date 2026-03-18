@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
@@ -24,7 +25,6 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.Counte
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 
-import java.lang.reflect.Method;
 import java.util.Collections;
 
 /**
@@ -36,7 +36,7 @@ public abstract class AbstractExecuteErrorsCountAdvice extends AbstractInstanceM
             "Total number of statement execute error", Collections.singletonList("statement_type"));
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
+    public void onThrowing(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Throwable throwable, final String pluginType) {
         MetricsCollectorRegistry.<CounterMetricsCollector>get(config, pluginType).inc(getStatementType());
     }
     

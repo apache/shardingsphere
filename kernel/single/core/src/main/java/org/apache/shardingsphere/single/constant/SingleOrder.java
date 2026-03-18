@@ -29,5 +29,5 @@ public final class SingleOrder {
     /**
      * Single order.
      */
-    public static final int ORDER = 30;
+    public static final int ORDER = 5;
 }

@@ -111,10 +111,6 @@ DISABLE
     : D I S A B L E
     ;
 
-INSTANCE
-    : I N S T A N C E
-    ;
-
 IGNORE
     : I G N O R E
     ;
@@ -125,6 +121,10 @@ SCHEMA
 
 DATABASE
     : D A T A B A S E
+    ;
+
+FULL
+    : F U L L
     ;
 
 LOGICAL
@@ -227,10 +227,6 @@ WITH
     : W I T H
     ;
 
-UNUSED
-    : U N U S E D
-    ;
-
 INFO
     : I N F O
     ;
@@ -265,10 +261,6 @@ NODE
 
 NODES
     : N O D E S
-    ;
-
-USAGE_COUNT
-    : U S A G E UL_ C O U N T
     ;
 
 REGISTER
@@ -345,4 +337,16 @@ ALGORITHM
 
 FORCE
     : F O R C E
+    ;
+
+CHECK_PRIVILEGES
+    : C H E C K UL_ P R I V I L E G E S
+    ;
+
+TIMEOUT
+    : T I M E O U T
+    ;
+
+TEMP
+    : T E M P
     ;

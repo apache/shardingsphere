@@ -78,14 +78,12 @@ public final class EncryptRuleStatementConverter {
     
     private static void setAssistedQuery(final String tableName, final EncryptColumnSegment columnSegment, final EncryptColumnRuleConfiguration columnRuleConfig) {
         String assistedQueryEncryptorName = null == columnSegment.getAssistedQuery().getEncryptor() ? null : getAssistedQueryEncryptorName(tableName, columnSegment.getName());
-        EncryptColumnItemRuleConfiguration assistedQueryColumnConfig = new EncryptColumnItemRuleConfiguration(columnSegment.getAssistedQuery().getName(), assistedQueryEncryptorName);
-        columnRuleConfig.setAssistedQuery(assistedQueryColumnConfig);
+        columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration(columnSegment.getAssistedQuery().getName(), assistedQueryEncryptorName));
     }
     
     private static void setLikeQuery(final String tableName, final EncryptColumnSegment columnSegment, final EncryptColumnRuleConfiguration columnRuleConfig) {
         String likeQueryEncryptorName = null == columnSegment.getLikeQuery().getEncryptor() ? null : getLikeQueryEncryptorName(tableName, columnSegment.getName());
-        EncryptColumnItemRuleConfiguration likeQueryColumnConfig = new EncryptColumnItemRuleConfiguration(columnSegment.getLikeQuery().getName(), likeQueryEncryptorName);
-        columnRuleConfig.setLikeQuery(likeQueryColumnConfig);
+        columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration(columnSegment.getLikeQuery().getName(), likeQueryEncryptorName));
     }
     
     private static Map<String, AlgorithmConfiguration> createEncryptorConfigurations(final EncryptRuleSegment ruleSegment) {

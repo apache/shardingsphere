@@ -16,8 +16,8 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case metric-name="jdbc_statement_execute_latency_millis" metric-type="histogram">
         <query-assertion metric="jdbc_statement_execute_latency_millis_bucket" query="jdbc_statement_execute_latency_millis_bucket{}" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

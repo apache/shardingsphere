@@ -34,9 +34,9 @@
         <column name="auditor_types" />
         <column name="allow_hint_disable" />
     </metadata>
-    <row values="t_order| readwrite_ds_${0..9}.t_order_${0..9}| | STANDARD| user_id| IT.STANDARD.FIXTURE| | STANDARD| order_id| IT.STANDARD.FIXTURE| | | | | | " />
-    <row values="t_order_item| readwrite_ds_${0..9}.t_order_item_${0..9}| | STANDARD| user_id| IT.STANDARD.FIXTURE| | STANDARD| order_id| IT.STANDARD.FIXTURE| | item_id| IT.FIXTURE| | IT.AUDITOR.FIXTURE| true" />
-    <row values="t_user_item| readwrite_ds_${0..9}.t_user_item_${0..9}| | STANDARD| user_id| IT.STANDARD.FIXTURE| | STANDARD| item_id| IT.STANDARD.FIXTURE| | item_id| IT.FIXTURE| | IT.AUDITOR.FIXTURE| true" />
-    <row values="t_user| readwrite_ds_${0..9}.t_user_${0..9}| | STANDARD| address_id| IT.STANDARD.FIXTURE| | STANDARD| user_id| IT.STANDARD.FIXTURE| | user_id| IT.FIXTURE| | IT.AUDITOR.FIXTURE| true" />
-    <row values="t_user_details| readwrite_ds_${0..9}.t_user_details_${0..9}| | STANDARD| address_id| IT.STANDARD.FIXTURE| | STANDARD| user_id| IT.STANDARD.FIXTURE| | | | | | " />
+    <row values="t_order| readwrite_ds_${0..9}.t_order_${0..9}| | STANDARD| user_id| E2E.SHARDING.STANDARD.FIXTURE| | STANDARD| order_id| E2E.SHARDING.STANDARD.FIXTURE| | | | | | " />
+    <row values="t_order_item| readwrite_ds_${0..9}.t_order_item_${0..9}| | STANDARD| user_id| E2E.SHARDING.STANDARD.FIXTURE| | STANDARD| order_id| E2E.SHARDING.STANDARD.FIXTURE| | item_id| E2E.KEYGEN.FIXTURE| | E2E.AUDITOR.FIXTURE| true" />
+    <row values="t_user_item| readwrite_ds_${0..9}.t_user_item_${0..9}| | STANDARD| user_id| E2E.SHARDING.STANDARD.FIXTURE| | STANDARD| item_id| E2E.SHARDING.STANDARD.FIXTURE| | item_id| E2E.KEYGEN.FIXTURE| | E2E.AUDITOR.FIXTURE| true" />
+    <row values="t_user| readwrite_ds_${0..9}.t_user_${0..9}| | STANDARD| address_id| E2E.SHARDING.STANDARD.FIXTURE| | STANDARD| user_id| E2E.SHARDING.STANDARD.FIXTURE| | user_id| E2E.KEYGEN.FIXTURE| | E2E.AUDITOR.FIXTURE| true" />
+    <row values="t_user_details| readwrite_ds_${0..9}.t_user_details_${0..9}| | STANDARD| address_id| E2E.SHARDING.STANDARD.FIXTURE| | STANDARD| user_id| E2E.SHARDING.STANDARD.FIXTURE| | | | | | " />
 </dataset>

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.encrypt.distsql.handler.provider.EncryptRuleConfigurationToDistSQLConverter
+org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleConfigurationToDistSQLConverter

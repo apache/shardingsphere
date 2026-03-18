@@ -47,6 +47,8 @@ public final class JoinTableSegment implements TableSegment {
     
     private String joinType;
     
+    private String joinHint;
+    
     private TableSegment right;
     
     private ExpressionSegment condition;
@@ -69,7 +71,7 @@ public final class JoinTableSegment implements TableSegment {
     
     /**
      * Get alias segment.
-     * 
+     *
      * @return alias segment
      */
     public Optional<AliasSegment> getAliasSegment() {

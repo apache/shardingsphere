@@ -16,8 +16,8 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case metric-name="proxy_current_connections" metric-type="gauge">
         <query-assertion metric="proxy_current_connections" query="proxy_current_connections{}" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

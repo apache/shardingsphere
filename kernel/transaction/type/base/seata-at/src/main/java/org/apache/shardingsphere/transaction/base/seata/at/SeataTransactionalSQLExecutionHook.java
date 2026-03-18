@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
-import io.seata.core.context.RootContext;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.seata.core.context.RootContext;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 
 import java.util.List;

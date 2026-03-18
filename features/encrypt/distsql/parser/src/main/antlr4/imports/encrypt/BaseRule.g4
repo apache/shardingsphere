@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 grammar BaseRule;
 
 import Symbol, Keyword, Literals;
@@ -56,6 +56,22 @@ property
     : key=STRING_ EQ_ value=literal
     ;
 
+databaseName
+    : IDENTIFIER_
+    ;
+
 tableName
     : IDENTIFIER_
+    ;
+
+columnName
+    : IDENTIFIER_
+    ;
+
+ifExists
+    : IF EXISTS
+    ;
+
+ifNotExists
+    : IF NOT EXISTS
     ;

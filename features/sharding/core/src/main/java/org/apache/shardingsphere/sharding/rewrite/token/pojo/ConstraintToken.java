@@ -19,10 +19,9 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.RouteUnitAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Substitutable;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -58,8 +57,8 @@ public final class ConstraintToken extends SQLToken implements Substitutable, Ro
     
     private String getConstraintValue(final RouteUnit routeUnit) {
         StringBuilder result = new StringBuilder(identifier.getValue());
-        Map<String, String> logicAndActualTables = TokenUtils.getLogicAndActualTableMap(routeUnit, sqlStatementContext, shardingRule);
-        ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames().stream().findFirst().map(logicAndActualTables::get).ifPresent(optional -> result.append('_').append(optional));
+        Map<String, String> logicAndActualTables = ShardingTokenUtils.getLogicAndActualTableMap(routeUnit, sqlStatementContext, shardingRule);
+        sqlStatementContext.getTablesContext().getTableNames().stream().findFirst().map(logicAndActualTables::get).ifPresent(optional -> result.append('_').append(optional));
         return result.toString();
     }
 }

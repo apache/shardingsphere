@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.test.it.sql.parser.internal;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
+import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.SQLCases;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.registry.UnsupportedSQLCasesRegistry;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
@@ -29,6 +29,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -50,11 +51,11 @@ public abstract class InternalUnsupportedSQLParserIT {
         assertThrows(SQLParsingException.class, () -> new SQLParserEngine("H2".equals(databaseType) ? "MySQL" : databaseType, cacheOption).parse(sql, false));
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            InternalSQLParserITSettings settings = extensionContext.getRequiredTestClass().getAnnotation(InternalSQLParserITSettings.class);
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
+            InternalSQLParserITSettings settings = context.getRequiredTestClass().getAnnotation(InternalSQLParserITSettings.class);
             Preconditions.checkNotNull(settings, "Annotation InternalSQLParserITSettings is required.");
             return getTestParameters(Arrays.asList(settings.value())).stream();
         }

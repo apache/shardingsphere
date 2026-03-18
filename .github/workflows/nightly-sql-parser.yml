@@ -19,8 +19,15 @@ name: Nightly - SQL parser loading from external cases
 
 on:
   schedule:
-    - cron: '0 18 */1 * *'  # once a day. UTC time
+    - cron: '0 18 * * 1-5' # Once a day between Monday and Friday. UTC time
   workflow_dispatch:
+
+concurrency:
+  group: nightly-sql-parser-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
@@ -38,29 +45,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
-      max-parallel: 20
+      max-parallel: 15
       fail-fast: false
       matrix:
         database: [ mysql, postgresql ]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
-          java-version: 11
-      - uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Build Project with Maven
         run: ./mvnw -T1C -B -ntp clean install
       - name: Run SQL Parser
         continue-on-error: true
         run: ./mvnw -nsu -B install -f parser/sql/dialect/${{ matrix.database }}/pom.xml -Dsql.parser.external.it.enabled=true
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
-          name: sql-report
+          name: sql-report-${{ matrix.database }}
           path: /tmp/*.csv

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.readwritesplitting.checker;
 
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
@@ -56,7 +56,7 @@ public final class ReadwriteSplittingDataSourceRuleConfigurationChecker {
     
     /**
      * Check data sources.
-     * 
+     *
      * @param builtWriteDataSourceNames built write data source names
      * @param builtReadDataSourceNames built read data source names
      * @param builtRules built rules

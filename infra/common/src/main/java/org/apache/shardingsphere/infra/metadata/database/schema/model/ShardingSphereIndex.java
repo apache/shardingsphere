@@ -17,28 +17,28 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * ShardingSphere index.
  */
 @RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 @ToString
 public final class ShardingSphereIndex {
     
     private final String name;
     
-    private final Collection<String> columns = new LinkedList<>();
+    private final Collection<String> columns;
     
-    @Setter
-    private boolean unique;
+    private final boolean unique;
+    
+    public ShardingSphereIndex(final IndexMetaData indexMetaData) {
+        this(indexMetaData.getName(), indexMetaData.getColumns(), indexMetaData.isUnique());
+    }
 }

@@ -21,8 +21,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -206,5 +207,22 @@ class HintManagerTest {
         assertTrue(HintManager.isInstantiated());
         hintManager.close();
         assertFalse(HintManager.isInstantiated());
+    }
+    
+    @Test
+    void assertGetDataSourceNameWithValue() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.setDataSourceName("foo_ds");
+            Optional<String> actual = HintManager.getDataSourceName();
+            assertTrue(actual.isPresent());
+            assertThat(actual.get(), is("foo_ds"));
+        }
+    }
+    
+    @Test
+    void assertGetDataSourceNameWithoutValue() {
+        try (HintManager ignored = HintManager.getInstance()) {
+            assertFalse(HintManager.getDataSourceName().isPresent());
+        }
     }
 }

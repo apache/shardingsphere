@@ -13,7 +13,10 @@ weight = 1
 {{% tab name="语法" %}}
 ```sql
 RegisterStorageUnit ::=
-  'REGISTER' 'STORAGE' 'UNIT' ifNotExists? storageUnitDefinition (',' storageUnitDefinition)*
+  'REGISTER' 'STORAGE' 'UNIT' ifNotExists? storageUnitsDefinition (',' checkPrivileges)?
+
+storageUnitsDefinition ::=
+  storageUnitDefinition (',' storageUnitDefinition)*
 
 storageUnitDefinition ::=
   storageUnitName '(' ('HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName | 'URL' '=' url) ',' 'USER' '=' user (',' 'PASSWORD' '=' password)? (',' propertiesDefinition)?')'
@@ -50,6 +53,12 @@ key ::=
 
 value ::=
   literal
+
+checkPrivileges ::=
+  'CHECK_PRIVILEGES' '=' privilegeType (',' privilegeType)*
+
+privilegeType ::=
+  identifier
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -64,12 +73,12 @@ value ::=
 - `storageUnitName` 区分大小写；
 - `storageUnitName` 在当前逻辑库中需要唯一；
 - `storageUnitName` 命名只允许使用字母、数字以及 `_` ，且必须以字母开头；
-- `poolProperty` 用于自定义连接池参数，`key` 必须和连接池参数名一致；
-- `ifNotExists` 子句用于避免出现 `Duplicate storage unit` 的错误。
+- `PROPERTIES` 为可选参数，用于自定义连接池属性，`key` 必须和连接池参数名一致；
+- 可通过 `CHECK_PRIVILEGES` 指定注册时校验存储单元用户的权限，`privilegeType` 支持的类型有 `SELECT`、`XA`、`PIPELINE`、`NONE`，缺省值为 `SELECT`，当类型列表中包含 `NONE` 时，跳过权限校验。
 
 ### 示例
 
-- 使用标准模式注册存储单元
+- 使用 HOST & PORT 方式注册存储单元
 
 ```sql
 REGISTER STORAGE UNIT ds_0 (
@@ -81,10 +90,10 @@ REGISTER STORAGE UNIT ds_0 (
 );
 ```
 
-- 使用标准模式注册存储单元并设置连接池参数
+- 使用 HOST & PORT 方式注册存储单元并设置连接池属性
 
 ```sql
-REGISTER STORAGE UNIT ds_0 (
+REGISTER STORAGE UNIT ds_1 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="db_1",
@@ -94,14 +103,14 @@ REGISTER STORAGE UNIT ds_0 (
 );
 ```
 
-- 使用 URL 模式注册存储单元并设置连接池参数
+- 使用 URL 方式注册存储单元并设置连接池属性
 
 ```sql
-REGISTER STORAGE UNIT ds_0 (
-    URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
+REGISTER STORAGE UNIT ds_2 (
+    URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true",
     USER="root",
     PASSWORD="root",
-    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"=30000)
 );
 ```
 
@@ -117,9 +126,20 @@ REGISTER STORAGE UNIT IF NOT EXISTS ds_0 (
 );
 ```
 
+- 注册时校验 `SELECT`、`XA` 和 `PIPELINE` 权限
+
+```sql
+REGISTER STORAGE UNIT ds_3 (
+    URL="jdbc:mysql://127.0.0.1:3306/db_3?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true",
+    USER="root",
+    PASSWORD="root",
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"=30000)
+), CHECK_PRIVILEGES=SELECT,XA,PIPELINE;
+```
+
 ### 保留字
 
-`REGISTER`、`STORAGE`、`UNIT`、`HOST`、`PORT`、`DB`、`USER`、`PASSWORD`、`PROPERTIES`、`URL`
+`REGISTER`、`STORAGE`、`UNIT`、`HOST`、`PORT`、`DB`、`USER`、`PASSWORD`、`PROPERTIES`、`URL`、`CHECK_PRIVILEGES`
 
 ### 相关链接
 

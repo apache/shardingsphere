@@ -21,6 +21,6 @@
         <column name="type" />
         <column name="props" />
     </metadata>
-    <row values="it_standard_fixture| IT.STANDARD.FIXTURE| " />
+    <row values="e2e_standard_fixture| E2E.SHARDING.STANDARD.FIXTURE| " />
     <row values="t_product_hint_inline| HINT_INLINE| {&quot;algorithm-expression&quot;:&quot;t_product_${value}&quot;}" />
 </dataset>

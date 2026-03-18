@@ -12,7 +12,7 @@ Users can introduce the CDC Client into their own projects to implement data con
 ## Constraints
 
 - Pure JAVA development, JDK recommended 1.8 or above.
-- CDC Server requires SharingSphere-Proxy to use cluster mode, currently supports ZooKeeper as the registry center.
+- CDC Server requires ShardingSphere-Proxy to use cluster mode, currently supports ZooKeeper as the registry center.
 - CDC only synchronizes data, does not synchronize table structure, and currently does not support DDL statement synchronization.
 - CDC incremental task will not split transaction data of the database shards. If you want to enable XA transaction compatibility, both openGauss and ShardingSphere-Proxy need the GLT module.
 
@@ -86,7 +86,6 @@ authority:
 #    port: 6379
 
 props:
-  system-log-level: INFO
   proxy-default-port: 3307 # Proxy default port.
   cdc-server-port: 33071 # CDC Server port, must be configured
   proxy-frontend-database-protocol-type: openGauss # Consistent with the type of backend database

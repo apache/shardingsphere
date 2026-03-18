@@ -23,14 +23,15 @@ ShowMigrationList ::=
 
 ### Return Values Description
 
-| Columns        | Description                    |
-|----------------|--------------------------------|
-| id             | migration job id               |
-| tables         | migration tables               |
-| job_item_count | migration job sharding number  |
-| active         | migration job states           |
-| create_time    | migration job create time      |
-| stop_time      | migration job stop time        |
+| Columns            | Description                   |
+|--------------------|-------------------------------|
+| id                 | migration job id              |
+| tables             | migration tables              |
+| job_item_count     | migration job sharding number |
+| active             | migration job states          |
+| create_time        | migration job create time     |
+| stop_time          | migration job stop time       |
+| job_sharding_nodes | migration job sharding nodes  |
 
 ### Example
 
@@ -42,12 +43,12 @@ SHOW MIGRATION LIST;
 
 ```sql
 mysql> SHOW MIGRATION LIST;
-+---------------------------------------+---------+----------------+--------+---------------------+---------------------+
-| id                                    | tables  | job_item_count | active | create_time         | stop_time           |
-+---------------------------------------+---------+----------------+--------+---------------------+---------------------+
-| j01013a38b0184e07c864627b5bb05da09ee0 | t_order | 1              | false  | 2022-10-31 18:18:24 | 2022-10-31 18:18:31 |
-+---------------------------------------+---------+----------------+--------+---------------------+---------------------+
-1 row in set (0.28 sec)
++--------------------------------------------+---------------------+--------+---------------------+-----------+----------------+--------------------+
+| id                                         | tables              | active | create_time         | stop_time | job_item_count | job_sharding_nodes |
++--------------------------------------------+---------------------+--------+---------------------+-----------+----------------+--------------------+
+| j0102p00001d029afca1fd960d567fed6cddc9b4a2 | source_ds.t_order   | true   | 2022-10-31 18:18:24 |           | 1              | 10.7.5.76@-@27808  |
++--------------------------------------------+---------------------+--------+---------------------+-----------+----------------+--------------------+
+4 rows in set (0.06 sec)
 ```
 
 ### Reserved word

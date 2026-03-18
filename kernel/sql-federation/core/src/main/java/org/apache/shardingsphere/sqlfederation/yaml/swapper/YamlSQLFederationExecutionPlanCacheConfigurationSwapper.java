@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.sqlfederation.yaml.swapper;
 
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sqlfederation.config.SQLFederationCacheOption;
 import org.apache.shardingsphere.sqlfederation.yaml.config.YamlSQLFederationExecutionPlanCacheRuleConfiguration;
 
 /**
  * YAML SQL federation execution plan cache configuration swapper.
  */
-public final class YamlSQLFederationExecutionPlanCacheConfigurationSwapper implements YamlConfigurationSwapper<YamlSQLFederationExecutionPlanCacheRuleConfiguration, CacheOption> {
+public final class YamlSQLFederationExecutionPlanCacheConfigurationSwapper implements YamlConfigurationSwapper<YamlSQLFederationExecutionPlanCacheRuleConfiguration, SQLFederationCacheOption> {
     
     @Override
-    public YamlSQLFederationExecutionPlanCacheRuleConfiguration swapToYamlConfiguration(final CacheOption data) {
+    public YamlSQLFederationExecutionPlanCacheRuleConfiguration swapToYamlConfiguration(final SQLFederationCacheOption data) {
         YamlSQLFederationExecutionPlanCacheRuleConfiguration result = new YamlSQLFederationExecutionPlanCacheRuleConfiguration();
         result.setInitialCapacity(data.getInitialCapacity());
         result.setMaximumSize(data.getMaximumSize());
@@ -35,7 +35,7 @@ public final class YamlSQLFederationExecutionPlanCacheConfigurationSwapper imple
     }
     
     @Override
-    public CacheOption swapToObject(final YamlSQLFederationExecutionPlanCacheRuleConfiguration yamlConfig) {
-        return new CacheOption(yamlConfig.getInitialCapacity(), yamlConfig.getMaximumSize());
+    public SQLFederationCacheOption swapToObject(final YamlSQLFederationExecutionPlanCacheRuleConfiguration yamlConfig) {
+        return new SQLFederationCacheOption(yamlConfig.getInitialCapacity(), yamlConfig.getMaximumSize());
     }
 }

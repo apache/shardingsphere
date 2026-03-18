@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>
  * Manage the thread for each connection session invoking.
- * This ensure XA transaction framework processed by current thread id.
+ * This ensures XA transaction framework processed by current thread id.
  * </p>
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

@@ -21,11 +21,11 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
-import org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.PostgreSQLColumnPropertiesAppender;
-import org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.PostgreSQLConstraintsPropertiesAppender;
-import org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.PostgreSQLIndexSQLGenerator;
-import org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator.PostgreSQLTablePropertiesLoader;
-import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.column.PostgreSQLColumnPropertiesAppender;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.constraints.PostgreSQLConstraintsPropertiesAppender;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.index.PostgreSQLIndexSQLGenerator;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.ddl.table.PostgreSQLTablePropertiesLoader;
+import org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder.template.PostgreSQLPipelineFreemarkerManager;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -68,11 +68,23 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     }
     
     @Override
-    public Optional<String> buildEstimatedCountSQL(final String qualifiedTableName) {
+    public Optional<String> buildEstimatedCountSQL(final String catalogName, final String qualifiedTableName) {
         return Optional.of(String.format("SELECT reltuples::integer FROM pg_class WHERE oid='%s'::regclass::oid;", qualifiedTableName));
     }
     
-    // TODO support partitions etc.
+    // TODO support partitions etc. If user use partition table, after sharding, the partition definition will not be needed. So we need to remove it after supported.
+    @Override
+    public Optional<String> buildCRC32SQL(final String qualifiedTableName, final String columnName) {
+        return Optional.of(String.format("SELECT pg_catalog.pg_checksum_table('%s', true)", qualifiedTableName));
+    }
+    
+    @Override
+    public String buildSplitByUniqueKeyRangedSubqueryClause(final String qualifiedTableName, final String uniqueKey, final boolean hasLowerBound) {
+        return hasLowerBound
+                ? String.format("SELECT %s FROM %s WHERE %s>? ORDER BY %s LIMIT ?", uniqueKey, qualifiedTableName, uniqueKey, uniqueKey)
+                : String.format("SELECT %s FROM %s ORDER BY %s LIMIT ?", uniqueKey, qualifiedTableName, uniqueKey);
+    }
+    
     @Override
     public Collection<String> buildCreateTableSQLs(final DataSource dataSource, final String schemaName, final String tableName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
@@ -81,7 +93,7 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
             Map<String, Object> materials = loadMaterials(tableName, schemaName, connection, majorVersion, minorVersion);
             String tableSQL = generateCreateTableSQL(majorVersion, minorVersion, materials);
             String indexSQL = generateCreateIndexSQL(connection, majorVersion, minorVersion, materials);
-            // TODO use ";" to split is not always correct
+            // TODO use ";" to split is not always correct if return value's comments contains ";"
             return Arrays.asList((tableSQL + System.lineSeparator() + indexSQL).trim().split(";"));
         }
     }
@@ -124,6 +136,11 @@ public final class PostgreSQLPipelineSQLBuilder implements DialectPipelineSQLBui
     @Override
     public Optional<String> buildQueryCurrentPositionSQL() {
         return Optional.of("SELECT * FROM pg_current_wal_lsn()");
+    }
+    
+    @Override
+    public String wrapWithPageQuery(final String sql) {
+        return sql + " LIMIT ?";
     }
     
     @Override

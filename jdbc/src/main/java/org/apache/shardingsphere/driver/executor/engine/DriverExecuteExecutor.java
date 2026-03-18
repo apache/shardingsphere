@@ -24,8 +24,8 @@ import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecu
 import org.apache.shardingsphere.driver.executor.callback.replay.StatementReplayCallback;
 import org.apache.shardingsphere.driver.executor.engine.pushdown.jdbc.DriverJDBCPushDownExecuteExecutor;
 import org.apache.shardingsphere.driver.executor.engine.pushdown.raw.DriverRawPushDownExecuteExecutor;
+import org.apache.shardingsphere.driver.executor.engine.transaction.DriverTransactionSQLStatementExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -36,8 +36,10 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.attribute.raw.RawExecutionRuleAttribute;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.mode.metadata.refresher.federation.FederationMetaDataRefreshEngine;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.tcl.TCLStatement;
+import org.apache.shardingsphere.sqlfederation.context.SQLFederationContext;
 import org.apache.shardingsphere.sqlfederation.engine.SQLFederationEngine;
-import org.apache.shardingsphere.sqlfederation.executor.context.SQLFederationContext;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -62,15 +64,19 @@ public final class DriverExecuteExecutor {
     
     private final SQLFederationEngine sqlFederationEngine;
     
+    private final DriverTransactionSQLStatementExecutor transactionExecutor;
+    
     private ExecuteType executeType;
     
     public DriverExecuteExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData,
-                                 final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor, final SQLFederationEngine sqlFederationEngine) {
+                                 final JDBCExecutor jdbcExecutor, final RawExecutor rawExecutor, final SQLFederationEngine sqlFederationEngine,
+                                 final DriverTransactionSQLStatementExecutor transactionExecutor) {
         this.connection = connection;
         this.metaData = metaData;
         jdbcPushDownExecutor = new DriverJDBCPushDownExecuteExecutor(connection, metaData, jdbcExecutor);
         rawPushDownExecutor = new DriverRawPushDownExecuteExecutor(connection, metaData, rawExecutor);
         this.sqlFederationEngine = sqlFederationEngine;
+        this.transactionExecutor = transactionExecutor;
     }
     
     /**
@@ -88,14 +94,27 @@ public final class DriverExecuteExecutor {
     @SuppressWarnings("rawtypes")
     public boolean execute(final ShardingSphereDatabase database, final QueryContext queryContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                            final StatementExecuteCallback executeCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
-        if (sqlFederationEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaData.getGlobalRuleMetaData())) {
+        if (sqlFederationEngine.decide(queryContext, metaData.getGlobalRuleMetaData())) {
             executeType = ExecuteType.FEDERATION;
             ResultSet resultSet = sqlFederationEngine.executeQuery(prepareEngine,
                     new ExecuteQueryCallbackFactory(prepareEngine.getType()).newInstance(database, queryContext), new SQLFederationContext(false, queryContext, metaData, connection.getProcessId()));
             return null != resultSet;
         }
-        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(
-                queryContext, database, metaData.getGlobalRuleMetaData(), metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
+        FederationMetaDataRefreshEngine federationMetaDataRefreshEngine = new FederationMetaDataRefreshEngine(queryContext.getSqlStatementContext());
+        if (sqlFederationEngine.isSQLFederationEnabled() && federationMetaDataRefreshEngine.isNeedRefresh()) {
+            federationMetaDataRefreshEngine.refresh(connection.getContextManager().getPersistServiceFacade().getModeFacade().getMetaDataManagerService(), database);
+            return true;
+        }
+        if (transactionExecutor.decide(queryContext)) {
+            return transactionExecutor.execute((TCLStatement) queryContext.getSqlStatementContext().getSqlStatement());
+        }
+        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps());
+        return executePushDown(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback);
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private boolean executePushDown(final ShardingSphereDatabase database, final ExecutionContext executionContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
+                                    final StatementExecuteCallback executeCallback, final StatementAddCallback addCallback, final StatementReplayCallback replayCallback) throws SQLException {
         if (database.getRuleMetaData().getAttributes(RawExecutionRuleAttribute.class).isEmpty()) {
             executeType = ExecuteType.JDBC_PUSH_DOWN;
             return jdbcPushDownExecutor.execute(database, executionContext, prepareEngine, executeCallback, addCallback, replayCallback);
@@ -108,22 +127,22 @@ public final class DriverExecuteExecutor {
      * Get result set.
      *
      * @param database database
-     * @param sqlStatementContext SQL statement context
+     * @param queryContext query context
      * @param statement statement
      * @param statements statements
      * @return result set
      * @throws SQLException SQL exception
      */
-    public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
+    public Optional<ResultSet> getResultSet(final ShardingSphereDatabase database, final QueryContext queryContext,
                                             final Statement statement, final List<? extends Statement> statements) throws SQLException {
         if (null == executeType) {
             return Optional.empty();
         }
         switch (executeType) {
             case FEDERATION:
-                return Optional.of(sqlFederationEngine.getResultSet());
+                return Optional.ofNullable(sqlFederationEngine.getResultSet());
             case JDBC_PUSH_DOWN:
-                return jdbcPushDownExecutor.getResultSet(database, sqlStatementContext, statement, statements);
+                return jdbcPushDownExecutor.getResultSet(database, queryContext, statement, statements);
             default:
                 return Optional.empty();
         }

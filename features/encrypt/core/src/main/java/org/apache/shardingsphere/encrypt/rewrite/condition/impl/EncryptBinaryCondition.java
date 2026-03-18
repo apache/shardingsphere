@@ -21,16 +21,14 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Encrypt condition for equal.
@@ -40,7 +38,7 @@ import java.util.Map.Entry;
 @ToString
 public final class EncryptBinaryCondition implements EncryptCondition {
     
-    private final String columnName;
+    private final ColumnSegment columnSegment;
     
     private final String tableName;
     
@@ -56,8 +54,9 @@ public final class EncryptBinaryCondition implements EncryptCondition {
     
     private final Map<Integer, Object> positionValueMap = new LinkedHashMap<>();
     
-    public EncryptBinaryCondition(final String columnName, final String tableName, final String operator, final int startIndex, final int stopIndex, final ExpressionSegment expressionSegment) {
-        this.columnName = columnName;
+    public EncryptBinaryCondition(final ColumnSegment columnSegment, final String tableName, final String operator, final int startIndex, final int stopIndex,
+                                  final ExpressionSegment expressionSegment) {
+        this.columnSegment = columnSegment;
         this.tableName = tableName;
         this.operator = operator;
         this.startIndex = startIndex;
@@ -66,30 +65,19 @@ public final class EncryptBinaryCondition implements EncryptCondition {
         putPositionMap(0, expressionSegment);
     }
     
-    private void putPositionMap(final int index, final ExpressionSegment expressionSegment) {
+    private int putPositionMap(final int index, final ExpressionSegment expressionSegment) {
+        int parameterIndex = index;
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            positionIndexMap.put(index, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+            positionIndexMap.put(parameterIndex, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+            return parameterIndex + 1;
         } else if (expressionSegment instanceof LiteralExpressionSegment) {
-            positionValueMap.put(index, ((LiteralExpressionSegment) expressionSegment).getLiterals());
+            positionValueMap.put(parameterIndex, ((LiteralExpressionSegment) expressionSegment).getLiterals());
+            return parameterIndex + 1;
         } else if (expressionSegment instanceof FunctionSegment && "CONCAT".equalsIgnoreCase(((FunctionSegment) expressionSegment).getFunctionName())) {
-            int parameterIndex = index;
             for (ExpressionSegment each : ((FunctionSegment) expressionSegment).getParameters()) {
-                putPositionMap(parameterIndex++, each);
+                parameterIndex = putPositionMap(parameterIndex, each);
             }
         }
-    }
-    
-    @Override
-    public List<Object> getValues(final List<Object> params) {
-        List<Object> result = new ArrayList<>(positionValueMap.values());
-        for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
-            Object param = params.get(entry.getValue());
-            if (entry.getKey() < result.size()) {
-                result.add(entry.getKey(), param);
-            } else {
-                result.add(param);
-            }
-        }
-        return result;
+        return parameterIndex;
     }
 }

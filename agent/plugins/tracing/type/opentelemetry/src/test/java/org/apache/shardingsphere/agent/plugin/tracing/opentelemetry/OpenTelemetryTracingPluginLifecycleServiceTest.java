@@ -19,11 +19,13 @@ package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import org.apache.shardingsphere.agent.api.PluginConfiguration;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class OpenTelemetryTracingPluginLifecycleServiceTest {
@@ -42,5 +44,6 @@ class OpenTelemetryTracingPluginLifecycleServiceTest {
                 PropertiesBuilder.build(new Property("otel.resource.attributes", "service.name=shardingsphere-agent"), new Property("otel.traces.exporter", "zipkin"))), true);
         assertNotNull(GlobalOpenTelemetry.getTracerProvider());
         assertNotNull(GlobalOpenTelemetry.getTracer("shardingsphere-agent"));
+        assertThat(pluginLifecycleService.getType(), is("OpenTelemetry"));
     }
 }

@@ -28,6 +28,8 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlComputeNodeData implements YamlConfiguration {
     
+    private String databaseName;
+    
     private String attribute;
     
     private String version;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.distsql.parser.core;
 
-import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatementParser.AlterTransactionRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatementParser.PropertiesDefinitionContext;
@@ -27,10 +27,10 @@ import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatem
 import org.apache.shardingsphere.distsql.parser.autogen.TransactionDistSQLStatementParser.TransactionRuleDefinitionContext;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.util.IdentifierValueUtils;
 import org.apache.shardingsphere.transaction.distsql.segment.TransactionProviderSegment;
-import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.distsql.statement.queryable.ShowTransactionRuleStatement;
+import org.apache.shardingsphere.transaction.distsql.statement.updatable.AlterTransactionRuleStatement;
 
 import java.util.Properties;
 
@@ -51,13 +51,13 @@ public final class TransactionDistSQLStatementVisitor extends TransactionDistSQL
     
     @Override
     public ASTNode visitTransactionRuleDefinition(final TransactionRuleDefinitionContext ctx) {
-        return null == ctx.providerDefinition() ? new AlterTransactionRuleStatement(getIdentifierValue(ctx.defaultType()), new TransactionProviderSegment(null, null))
-                : new AlterTransactionRuleStatement(getIdentifierValue(ctx.defaultType()), (TransactionProviderSegment) visit(ctx.providerDefinition()));
+        return null == ctx.providerDefinition() ? new AlterTransactionRuleStatement(IdentifierValueUtils.getValue(ctx.defaultType()), new TransactionProviderSegment(null, null))
+                : new AlterTransactionRuleStatement(IdentifierValueUtils.getValue(ctx.defaultType()), (TransactionProviderSegment) visit(ctx.providerDefinition()));
     }
     
     @Override
     public ASTNode visitProviderDefinition(final ProviderDefinitionContext ctx) {
-        return new TransactionProviderSegment(getIdentifierValue(ctx.providerName()), getProperties(ctx.propertiesDefinition()));
+        return new TransactionProviderSegment(IdentifierValueUtils.getValue(ctx.providerName()), getProperties(ctx.propertiesDefinition()));
     }
     
     private Properties getProperties(final PropertiesDefinitionContext ctx) {
@@ -66,12 +66,8 @@ public final class TransactionDistSQLStatementVisitor extends TransactionDistSQL
             return result;
         }
         for (PropertyContext each : ctx.properties().property()) {
-            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
+            result.setProperty(QuoteCharacter.unwrapAndTrimText(each.key.getText()), QuoteCharacter.unwrapAndTrimText(each.value.getText()));
         }
         return result;
-    }
-    
-    private String getIdentifierValue(final ParseTree context) {
-        return null == context ? null : new IdentifierValue(context.getText()).getValue();
     }
 }

@@ -1,0 +1,16 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "com.google.protobuf.ExtensionRegistryFactory"
+      },
+      "type": "com.google.protobuf.ExtensionRegistry",
+      "methods": [
+        {
+          "name": "getEmptyRegistry",
+          "parameterTypes": []
+        }
+      ]
+    }
+  ]
+}

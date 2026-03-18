@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.SQL
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.assignment.AssignmentAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.insert.ExpectedOnDuplicateKeyColumns;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -38,7 +38,7 @@ public final class OnDuplicateKeyColumnsAssert {
     
     /**
      * Assert actual on duplicate key columns segment is correct with expected on duplicate key columns.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual on duplicate key columns segment
      * @param expected expected on duplicate key columns

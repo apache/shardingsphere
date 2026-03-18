@@ -21,20 +21,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSou
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttribute;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
 
-import java.util.Collection;
-import java.util.Map;
-
 /**
  * Static data source rule attribute.
  */
 public interface StaticDataSourceRuleAttribute extends RuleAttribute {
-    
-    /**
-     * Get data source mapper.
-     *
-     * @return data source mapper
-     */
-    Map<String, Collection<String>> getDataSourceMapper();
     
     /**
      * Update data source status.

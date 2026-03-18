@@ -40,7 +40,7 @@ public final class SeataXIDContext {
     
     /**
      * Get xid.
-     * 
+     *
      * @return xid
      */
     public static String get() {
@@ -49,7 +49,7 @@ public final class SeataXIDContext {
     
     /**
      * Set xid.
-     * 
+     *
      * @param xid xid
      */
     public static void set(final String xid) {

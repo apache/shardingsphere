@@ -21,7 +21,7 @@ chapter = true
  - 确保遵守编码规范。
  - 确保构建流程中的各个步骤都成功完成，包括：Apache 协议文件头检查、Checkstyle 检查、编译、单元测试等。构建流程启动命令：`./mvnw clean install -B -T1C -Pcheck`。
  - 通过 Spotless 统一代码风格，执行 `./mvnw spotless:apply -Pcheck` 格式化代码。
- - 确保覆盖率不低于 master 分支。
+ - 确保覆盖率不低于 master 分支，除去简单的 `getter /setter` 方法，单元测试需全覆盖。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
  - 如果您使用 IDEA，可导入 `src/resources/idea/code-style.xml`，用于保持代码风格一致性。
  - 如果您使用 IDEA，可导入 `src/resources/idea/inspections.xml`，用于检测代码潜在问题。
@@ -29,6 +29,7 @@ chapter = true
 ## 编码规范
 
  - 使用 linux 换行符。
+ - 每行代码不超过 200 字符无需换行。
  - 不应有无意义的空行。请提炼私有方法，代替方法体过长或代码段逻辑闭环而采用的空行间隔。
  - 命名规范：
    - 命名要做到顾名思义。
@@ -62,13 +63,14 @@ chapter = true
  - 类和方法的访问权限控制为最小。
  - 方法所用到的私有方法应紧跟该方法，如果有多个私有方法，书写私有方法应与私有方法在原方法的出现顺序相同。
  - 方法入参和返回值不允许为 `null`。
+ - 方法入参禁止使用 `Optional`；应传递普通值（必要时允许为 `null`）。
  - 优先使用 lombok 代替构造器，getter, setter 方法和 log 变量。
+ - 禁止内联全限定类名，必须通过 import 引入。
  - 优先考虑使用 `LinkedList`，只有在需要通过下标获取集合中元素值时再使用 `ArrayList`。
  - `ArrayList`，`HashMap` 等可能产生扩容的集合类型必须指定集合初始大小，避免扩容。
  - 优先使用三目运算符代替 if else 的返回和赋值语句。
  - 禁止嵌套使用三目运算符。
  - 条件表达式中，优先使用正向语义，以便于理解代码逻辑。例如：`if (null == param) {} else {}`。
- - 使用具体的 `@SuppressWarnings("xxx")` 代替 `@SuppressWarnings("all")`。
  - 合理使用 `@HighFrequencyInvocation` 注解，用于聚焦关键方法性能的优化。
    - 使用 `@HighFrequencyInvocation` 注解的时机：
      - 请求频繁调用的链路，标注其中高频调用的类、方法或构造器，标注范围精确匹配；
@@ -79,8 +81,8 @@ chapter = true
      - 禁止调用 LinkedList 的 `get(int index)` 方法。
  - 注释 & 日志规范：
    - 日志与注释一律使用英文。
-   - 注释只能包含 javadoc，todo 和 fixme。
-   - 公开的类和方法必须有 javadoc，对用户的 API 和 SPI 的 javadoc 需要写的清晰全面，其他类和方法以及覆盖自父类的方法无需 javadoc。
+   - 注释只能包含 JAVADOC，TODO 和 FIXME。
+   - 公开的类和方法必须有 JAVADOC，对用户的 API 和 SPI 的 JAVADOC 需要写的清晰全面，其他类和方法以及覆盖自父类的方法无需 JAVADOC。
 
 ## 单元测试规范
 
@@ -94,21 +96,31 @@ chapter = true
    - 正确性测试（Correct）：通过正确的输入，得到预期结果。
    - 合理性设计（Design）：与生产代码设计相结合，设计高质量的单元测试。
    - 容错性测试（Error）：通过非法数据、异常流程等错误的输入，得到预期结果。
- - 除去简单的 `getter /setter` 方法，以及声明 SPI 的静态代码，如：`getType / getOrder`，单元测试需全覆盖。
+ - 使用 `assert` 前缀命名所有的测试用例。
+ - 单元测试必须通过公共 API 验证行为，禁止通过反射调用私有成员。 若测试必须通过反射访问字段，应使用 `Plugins.getMemberAccessor()`，且反射仅限于 `Field` 访问。
+ - 当某个生产方法只由一个测试用例覆盖时，测试方法命名为 `assert<MethodName>`，无额外后缀。
+ - 每个公有方法使用一个独立的测试方法，测试方法顺序在可行时与生产方法保持一致。
+ - 参数化测试需通过参数提供显示名，并使用 `"{0}"` 作为展示名模板。
  - 每个测试用例需精确断言，尽量不使用 `not`、`containsString` 断言。
  - 准备环境的代码和测试代码分离。
  - 只有 Mockito，junit `Assertions`，hamcrest `CoreMatchers` 和 `MatcherAssert` 相关可以使用 static import。
  - 数据断言规范应遵循：
     - 布尔类型断言应使用 `assertTrue` 和 `assertFalse`；
     - 空值断言应使用 `assertNull` 和 `assertNotNull`；
-    - 其他类型应使用 `assertThat`。
+    - 其他类型断言应使用 `assertThat(actual, is(expected))` 代替 `assertEquals`；
+    - 类型断言使用 `assertThat(..., isA(...))` 代替 `instanceOf`；
+    - 禁用 `assertSame` / `assertNotSame`，使用 `assertThat(actual, is(expected))` 或 `assertThat(actual, not(expected))`；
+    - 使用 Hamcrest 匹配器（如 `is()`、`not()`）来进行精确且可读性高的断言。
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
- - 测试类和 `@Test` 标注的方法无需 javadoc。
+ - 测试类和 `@Test` 标注的方法无需 JAVADOC。
  - 使用 `mock` 应遵循如下规范：
    - 单元测试需要连接某个环境时，应使用 `mock`；
    - 单元测试包含不容易构建的对象时，例如：超过两层嵌套并且和测试无关的对象，应使用 `mock`。
    - 模拟静态方法或构造器，应优先考虑使用测试框架提供的 `AutoMockExtension` 和 `StaticMockSettings` 自动释放资源；若使用 Mockito `mockStatic` 和 `mockConstruction` 方法，必须搭配 `try-with-resource` 或在清理方法中关闭，避免泄漏。
    - 校验仅有一次调用时，无需使用 `times(1)` 参数，使用 `verify` 的单参数方法即可。
+ - 深度链式交互使用 Mockito 的 `RETURNS_DEEP_STUBS`，不要层层手动 mock。
+ - 测试数据应使用标准化前缀（如 `foo_`/`bar_`）明确标识其测试用途。
+ - 使用 `PropertiesBuilder` 简化 `Properties` 构造。
 
 ## SQL 解析规范
 
@@ -135,8 +147,6 @@ chapter = true
 
 ### G4 规范
 
- - 公共规范
-   - 每行长度不超过 `200` 个字符，保证每一行语义完整以便于理解。
  - 词法解析规范
    - 每个规则一行，规则间无需空行。
    - 规则名称使用大写字母。如果名称由多个单词组成，用 `下划线` 间隔。`DataType` 和 `Symbol` 的规则命名以 `下划线` 结尾。与 ANTLR 内置变量或关键字重名的规则在结尾加 `下划线` 以示区分。

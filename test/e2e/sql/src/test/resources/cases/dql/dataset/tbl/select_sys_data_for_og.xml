@@ -21,7 +21,7 @@
         <column name="Name" />
         <column name="Type" />
         <column name="Owner" />
-        <column name="Storage" assertion="false" />
+        <column name="Storage" ignore-assert-data="true" />
     </metadata>
     <row values="public | t_order | table | mock user" />
     <row values="public | t_order_item | table | mock user" />

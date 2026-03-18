@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.datasource.pool.hikari.detector;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDriver;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;

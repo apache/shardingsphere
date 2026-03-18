@@ -5,7 +5,7 @@ weight = 3
 
 ### Description
 
-The `SHOW LOAD BALANCE ALGORITHM PLUGINS` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm`.
+The `SHOW LOAD BALANCE ALGORITHM PLUGINS` syntax is used to query all the implementations of the interface `org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm`.
 
 ### Syntax
 
@@ -31,7 +31,7 @@ showLoadBalanceAlgorithmPlugins ::=
 
 ### Example
 
-- Query all the implementations for `org.apache.shardingsphere.infra.algorithm.loadbalancer.core.LoadBalanceAlgorithm` interface
+- Query all the implementations for `org.apache.shardingsphere.infra.algorithm.loadbalancer.spi.LoadBalanceAlgorithm` interface
 
 ```sql
 SHOW LOAD BALANCE ALGORITHM PLUGINS

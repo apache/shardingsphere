@@ -31,13 +31,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class URLArgumentLine {
     
-    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\$\\{(.+::.*)}$");
-    
-    private static final String KV_SEPARATOR = "::";
-    
-    private final String argName;
-    
-    private final String argDefaultValue;
+    private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\$\\$\\{(.*?)::(.*?)}");
     
     private final Matcher placeholderMatcher;
     
@@ -52,8 +46,7 @@ public final class URLArgumentLine {
         if (!matcher.find()) {
             return Optional.empty();
         }
-        String[] parsedArg = matcher.group(1).split(KV_SEPARATOR, 2);
-        return Optional.of(new URLArgumentLine(parsedArg[0], parsedArg[1], matcher));
+        return Optional.of(new URLArgumentLine(matcher));
     }
     
     /**
@@ -63,18 +56,29 @@ public final class URLArgumentLine {
      * @return replaced argument
      */
     public String replaceArgument(final URLArgumentPlaceholderType type) {
-        String argumentValue = getArgumentValue(type);
-        if (!Strings.isNullOrEmpty(argumentValue)) {
-            return placeholderMatcher.replaceAll(argumentValue);
+        placeholderMatcher.reset();
+        StringBuffer result = new StringBuffer();
+        while (placeholderMatcher.find()) {
+            String variableName = placeholderMatcher.group(1);
+            String defaultValue = placeholderMatcher.group(2);
+            String argumentValue = getArgumentValue(variableName, type);
+            if (Strings.isNullOrEmpty(argumentValue)) {
+                argumentValue = defaultValue;
+            }
+            placeholderMatcher.appendReplacement(result, argumentValue);
         }
-        if (!argDefaultValue.isEmpty()) {
-            return placeholderMatcher.replaceAll(argDefaultValue);
-        }
-        String modifiedLineWithSpace = placeholderMatcher.replaceAll("");
-        return modifiedLineWithSpace.substring(0, modifiedLineWithSpace.length() - 1);
+        placeholderMatcher.appendTail(result);
+        return rightTrim(result);
     }
     
-    private String getArgumentValue(final URLArgumentPlaceholderType type) {
+    private String rightTrim(final StringBuffer buffer) {
+        while (buffer.length() > 0 && Character.isWhitespace(buffer.charAt(buffer.length() - 1))) {
+            buffer.deleteCharAt(buffer.length() - 1);
+        }
+        return buffer.toString();
+    }
+    
+    private String getArgumentValue(final String argName, final URLArgumentPlaceholderType type) {
         if (URLArgumentPlaceholderType.ENVIRONMENT == type) {
             return System.getenv(argName);
         }

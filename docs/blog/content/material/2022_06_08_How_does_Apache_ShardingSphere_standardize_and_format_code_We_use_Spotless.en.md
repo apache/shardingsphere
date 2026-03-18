@@ -193,12 +193,12 @@ In extreme circumstances, Spotless formatted code cannot pass Checkstyle checkin
 The underlying cause is a conflict between the checking mechanism and formatting configurations set by both. For example, Spotless formats a newline with a 16-space indent, while Checkstyle checks for a 12-space newline.
 
 ```java
-private static Collection<PreciseHintShadowValue<Comparable<?>>> createNoteShadowValues(final ShadowDetermineCondition shadowDetermineCondition) {
+private static Collection<PreciseHintShadowValue<Comparable<?>>> createNoteShadowValues(final ShadowDetermineCondition shadowCondition) {
     // format that can pass Checkstyle
-    return shadowDetermineCondition.getSqlComments().stream().<PreciseHintShadowValue<Comparable<?>>>map(
+    return shadowCondition.getSqlComments().stream().<PreciseHintShadowValue<Comparable<?>>>map(
         each -> new PreciseHintShadowValue<>(tableName, shadowOperationType, each)).collect(Collectors.toList());
     // After being formatted by Spotless
-    return shadowDetermineCondition.getSqlComments().stream().<PreciseHintShadowValue<Comparable<?>>>map(
+    return shadowCondition.getSqlComments().stream().<PreciseHintShadowValue<Comparable<?>>>map(
            each -> new PreciseHintShadowValue<>(tableName, shadowOperationType, each)).collect(Collectors.toList());
 }
 ```

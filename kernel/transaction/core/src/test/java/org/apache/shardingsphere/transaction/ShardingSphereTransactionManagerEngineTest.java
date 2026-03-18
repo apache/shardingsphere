@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction;
 
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.fixture.ShardingSphereTransactionManagerFixture;
@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -36,7 +36,7 @@ class ShardingSphereTransactionManagerEngineTest {
     
     @Test
     void assertGetEngine() {
-        assertThat(transactionManagerEngine.getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
+        assertThat(transactionManagerEngine.getTransactionManager(TransactionType.XA), isA(ShardingSphereTransactionManagerFixture.class));
     }
     
     @Test

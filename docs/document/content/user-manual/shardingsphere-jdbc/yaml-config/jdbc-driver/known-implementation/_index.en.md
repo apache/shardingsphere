@@ -76,7 +76,9 @@ Discuss two situations,
 2. When neither the corresponding dynamic placeholder value nor the default value on the right side of `::` exists, 
    this attribute will be set to empty.
 
-#### none
+#### Single dynamic placeholder
+
+##### none
 
 The configuration file is `xxx.yaml`, and the configuration file format is consistent
 with [YAML configuration](../../../yaml-config).
@@ -88,7 +90,7 @@ Example：
 - `jdbc:shardingsphere:absolutepath:/path/to/config.yaml`
 - `jdbc:shardingsphere:absolutepath:/path/to/config.yaml?placeholder-type=none`
 
-#### environment
+##### environment
 
 When loading a configuration file containing environment variables,
 users need to set `placeholder-type` to `environment`, which is commonly used in Docker Image deployment scenarios.
@@ -126,7 +128,7 @@ Example:
 - `jdbc:shardingsphere:classpath:config.yaml?placeholder-type=environment`
 - `jdbc:shardingsphere:absolutepath:/path/to/config.yaml?placeholder-type=environment`
 
-#### system_props
+##### system_props
 
 When loading a configuration file containing system properties, users need to set `placeholder-type` to `system_props`.
 The configuration file is `xxx.yaml`, and the configuration file format is basically the same as [YAML configuration](../../../yaml-config).
@@ -192,6 +194,40 @@ Example:
 
 - `jdbc:shardingsphere:classpath:config.yaml?placeholder-type=system_props`
 - `jdbc:shardingsphere:absolutepath:/path/to/config.yaml?placeholder-type=system_props`
+
+#### multiple dynamic placeholders
+
+On top of a single dynamic placeholder, users can use multiple dynamic placeholders in a single line of YAML.
+When configuring the value of a YAML attribute, if part of the value of the YAML attribute needs to be replaced dynamically, you can implement this by configuring multiple dynamic placeholders.
+
+Assume the following set of environment variables or system properties exists,
+
+1. The existing environment variable or system property `FIXTURE_HOST` is `127.0.0.1`。
+2. The existing environment variable or system property `FIXTURE_PORT` is `3306`。
+3. The existing environment variable or system property `FIXTURE_DATABASE` is `test`。
+4. The existing environment variable or system property `FIXTURE_USERNAME` is `sa`。
+
+Then for the intercepted fragment of the following YAML file,
+
+```yaml
+ds_1:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  driverClassName: $${FIXTURE_DRIVER_CLASS_NAME::com.mysql.cj.jdbc.Driver}
+  jdbcUrl: jdbc:mysql://$${FIXTURE_HOST::}:$${FIXTURE_PORT::}/$${FIXTURE_DATABASE::}?sslMode=REQUIRED
+  username: $${FIXTURE_USERNAME::}
+  password: $${FIXTURE_PASSWORD::}
+```
+
+This YAML snippet will be parsed as,
+
+```yaml
+ds_1:
+  dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+  driverClassName: com.mysql.cj.jdbc.Driver
+  jdbcUrl: jdbc:mysql://127.0.0.1:3306/test?sslMode=REQUIRED
+  username: sa
+  password:
+```
 
 ## Other implementations
 

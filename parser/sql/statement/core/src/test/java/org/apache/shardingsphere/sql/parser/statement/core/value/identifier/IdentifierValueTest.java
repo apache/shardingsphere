@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.statement.core.value.identifier;
 
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class IdentifierValueTest {
@@ -43,14 +43,19 @@ class IdentifierValueTest {
     }
     
     @Test
-    void assertGetIdentifierValueWithBracket() {
+    void assertGetIdentifierValueWithReservedBracket() {
         String text = "ds_${[1,2]}.t_order";
-        assertThat(new IdentifierValue(text).getValue(), is("ds_${1,2}.t_order"));
+        assertThat(new IdentifierValue(text).getValue(), is("ds_${[1,2]}.t_order"));
     }
     
     @Test
-    void assertGetIdentifierValueWithReservedBracket() {
-        String text = "ds_${[1,2]}.t_order";
-        assertThat(new IdentifierValue(text, "[]").getValue(), is("ds_${[1,2]}.t_order"));
+    void assertGetValueWithQuoteCharactersWithNullValue() {
+        assertThat(new IdentifierValue(null).getValueWithQuoteCharacters(), is(""));
+    }
+    
+    @Test
+    void assertGetValueWithQuoteCharactersWithValue() {
+        String text = "[foo]";
+        assertThat(new IdentifierValue(text).getValueWithQuoteCharacters(), is("[foo]"));
     }
 }

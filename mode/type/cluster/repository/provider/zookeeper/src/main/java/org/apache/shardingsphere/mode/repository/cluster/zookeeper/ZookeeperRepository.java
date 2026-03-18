@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper;
 
 import com.google.common.base.Strings;
-import lombok.Getter;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
@@ -32,11 +31,12 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
+import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
-import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.ZookeeperExceptionHandler;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.exception.ZookeeperExceptionHandler;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.listener.SessionConnectionReconnectListener;
+import org.apache.shardingsphere.mode.repository.cluster.zookeeper.lock.ZookeeperDistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperProperties;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.props.ZookeeperPropertyKey;
 import org.apache.zookeeper.CreateMode;
@@ -50,9 +50,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -69,14 +69,10 @@ public final class ZookeeperRepository implements ClusterPersistRepository {
     
     private CuratorFramework client;
     
-    @Getter
-    private DistributedLockHolder distributedLockHolder;
-    
     @Override
     public void init(final ClusterPersistRepositoryConfiguration config, final ComputeNodeInstanceContext computeNodeInstanceContext) {
         ZookeeperProperties zookeeperProps = new ZookeeperProperties(config.getProps());
         client = buildCuratorClient(config, zookeeperProps);
-        distributedLockHolder = new DistributedLockHolder(getType(), client, zookeeperProps);
         client.getConnectionStateListenable().addListener(new SessionConnectionReconnectListener(computeNodeInstanceContext, this));
         initCuratorClient(zookeeperProps);
     }
@@ -180,7 +176,7 @@ public final class ZookeeperRepository implements ClusterPersistRepository {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            throw new ClusterPersistRepositoryException(ex);
+            throw new ClusterRepositoryPersistException(ex);
         }
     }
     
@@ -222,6 +218,11 @@ public final class ZookeeperRepository implements ClusterPersistRepository {
             // CHECKSTYLE:ON
         }
         return true;
+    }
+    
+    @Override
+    public Optional<DistributedLock> getDistributedLock(final String lockKey) {
+        return Optional.of(new ZookeeperDistributedLock(lockKey, client));
     }
     
     @Override
@@ -268,7 +269,7 @@ public final class ZookeeperRepository implements ClusterPersistRepository {
         if (null == cacheListener) {
             return;
         }
-        Optional.ofNullable(caches.get(key)).ifPresent(optional -> optional.listenable().removeListener(cacheListener));
+        Optional.ofNullable(caches.remove(key)).ifPresent(optional -> optional.listenable().removeListener(cacheListener));
     }
     
     @Override

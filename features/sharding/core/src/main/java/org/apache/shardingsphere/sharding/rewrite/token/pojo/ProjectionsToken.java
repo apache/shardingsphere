@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Attachable;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.RouteUnitAware;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.Attachable;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.RouteUnitAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 import java.util.Collection;
@@ -35,6 +35,11 @@ public final class ProjectionsToken extends SQLToken implements Attachable, Rout
     public ProjectionsToken(final int startIndex, final Map<RouteUnit, Collection<String>> projections) {
         super(startIndex);
         this.projections = projections;
+    }
+    
+    @Override
+    public int getStopIndex() {
+        return getStartIndex();
     }
     
     @Override

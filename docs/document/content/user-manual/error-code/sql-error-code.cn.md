@@ -18,7 +18,10 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 10001       | 42S02     | Schema '%s' does not exist.                                                         |
 | 10002       | 42S02     | Table or view '%s' does not exist.                                                  |
 | 10003       | 42S02     | Unknown column '%s' in '%s'.                                                        |
+| 10004       | 42S02     | Index '%s' does not exist.                                                          |
+| 10005       | 42S01     | Index '%s' already exists.                                                          |
 | 10010       | HY000     | Rule and storage meta data mismatched, reason is: %s.                               |
+| 10012       | HY000     | Load table meta data failed for database '%s' and tables '%s'.                      |
 | 10100       | HY000     | Can not %s storage units '%s'.                                                      |
 | 10101       | 42S02     | There is no storage unit in database '%s'.                                          |
 | 10102       | 44000     | Storage units '%s' do not exist in database '%s'.                                   |
@@ -35,13 +38,13 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 10210       | 42S02     | %s strategies '%s' do not exist.                                                    |
 | 10300       | HY000     | Invalid format for actual data node '%s'.                                           |
 | 10301       | 0A000     | Can not support 3-tier structure for actual data node '%s' with JDBC '%s'.          |
-| 10400       | 44000     | Algorithm '%s.'%s' initialization failed, reason is: %s.                            |
+| 10400       | 44000     | Algorithm '%s' initialization failed, reason is: %s.                                |
 | 10401       | 42S02     | '%s' algorithm on %s is required.                                                   |
 | 10402       | 42S02     | '%s' algorithm '%s' on %s is unregistered.                                          |
 | 10403       | 44000     | %s algorithms '%s' in database '%s' are still in used.                              |
 | 10404       | 44000     | Invalid %s algorithm configuration '%s'.                                            |
 | 10410       | 0A000     | Unsupported %s.%s with database type '%s'.                                          |
-| 10440       | HY000     | Algorithm '%s.%s' execute failed, reason is: %s.                                    |
+| 10440       | HY000     | Algorithm '%s' execute failed, reason is: %s.                                       |
 | 10500       | 44000     | Invalid single rule configuration, reason is: %s.                                   |
 | 10501       | 42S02     | Single table '%s' does not exist.                                                   |
 | 10502       | HY000     | Can not load table with database name '%s' and data source name '%s', reason is: %s |
@@ -56,18 +59,20 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 语法
 
-| Vendor Code | SQL State | 错误信息                                     |
-|-------------|-----------|------------------------------------------|
-| 12000       | 42000     | SQL String can not be NULL or empty.     |
-| 12010       | 44000     | Can not support variable '%s'.           |
-| 12011       | HY004     | Invalid variable value '%s'.             |
-| 12020       | HV008     | Column index '%d' is out of range.       |
-| 12021       | 42S02     | Can not find column label '%s'.          |
-| 12022       | HY000     | Column '%s' in %s is ambiguous.          |
-| 12100       | 42000     | You have an error in your SQL syntax: %s |
-| 12101       | 42000     | Can not accept SQL type '%s'.            |
-| 12200       | 42000     | Hint data source '%s' does not exist.    |
-| 12300       | 0A000     | DROP TABLE ... CASCADE is not supported. |
+| Vendor Code | SQL State | 错误信息                                                                                                                             |
+|-------------|-----------|----------------------------------------------------------------------------------------------------------------------------------|
+| 12000       | 42000     | SQL String can not be NULL or empty.                                                                                             |
+| 12010       | 44000     | Can not support variable '%s'.                                                                                                   |
+| 12011       | HY004     | Invalid variable value '%s'.                                                                                                     |
+| 12020       | HV008     | Column index '%d' is out of range.                                                                                               |
+| 12021       | 42S02     | Can not find column label '%s'.                                                                                                  |
+| 12022       | HY000     | Column '%s' in %s is ambiguous.                                                                                                  |
+| 12100       | 42000     | You have an error in your SQL syntax: %s                                                                                         |
+| 12101       | 42000     | Can not accept SQL type '%s'.                                                                                                    |
+| 12200       | 42000     | Hint data source '%s' does not exist.                                                                                            |
+| 12300       | 0A000     | DROP TABLE ... CASCADE is not supported.                                                                                         |
+| 12500       | 42000     | Not unique table/alias: '%s'.                                                                                                    |
+| 12600       | HY000     | In definition of view, derived table or common table expression, SELECT list and column names list have different column counts. |
 
 ### 连接
 
@@ -98,6 +103,13 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 14400       | 44000     | No application id within 'seata.conf' file.                                               |
 | 14401       | 25000     | Seata-AT transaction has been disabled.                                                   |
 
+### 锁
+
+| Vendor Code | SQL State | 错误信息                       |
+|-------------|-----------|----------------------------|
+| 15030       | HY000     | Cluster is already locked. |
+| 15031       | HY000     | Cluster is not locked.     |
+
 ### 集群
 
 | Vendor Code | SQL State | 错误信息                                                          |
@@ -105,9 +117,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 17000       | 44000     | Mode must be 'cluster'.                                       |
 | 17001       | HY000     | Worker ID assigned failed, which should be in [0, %s).        |
 | 17010       | HY000     | Cluster persist repository error, reason is: %s               |
+| 17011       | HY000     | Failed to reload meta data context.                           |
 | 17020       | HY000     | The cluster status is %s, can not support SQL statement '%s'. |
-| 17030       | HY000     | Cluster is already locked.                                    |
-| 17031       | HY000     | Cluster is not locked.                                        |
 | 17100       | 42S02     | Cluster persist repository configuration is required.         |
 
 ### 数据管道
@@ -121,10 +132,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 18103       | 42S02     | Can not get meta data for table '%s' when split by range.                      |
 | 18104       | HY000     | Can not split by unique key '%s' for table '%s'.                               |
 | 18105       | HY000     | Target table '%s' is not empty.                                                |
-| 18106       | 01007     | Source data source lacks '%s' privilege(s).                                    |
-| 18107       | HY000     | Source data source required '%s = %s', now is '%s'.                            |
-| 18108       | 42S02     | User '%s' does exist.                                                          |
-| 18109       | 08000     | Check privileges failed on source data source.                                 |
 | 18110       | HY000     | Importer job write data failed.                                                |
 | 18111       | 08000     | Get binlog position failed by job '%s'.                                        |
 | 18112       | HY000     | Can not find consistency check job of '%s'.                                    |
@@ -151,8 +158,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 20004       | 42S02     | Actual table '%s.%s' is not in table rule configuration.                                                                            |
 | 20005       | 42S02     | Can not find binding actual table, data source is '%s', logic table is '%s', other actual table is '%s'.                            |
 | 20006       | 44000     | Actual tables '%s' are in use.                                                                                                      |
-| 20007       | 42S01     | Index '%s' already exists.                                                                                                          |
-| 20008       | 42S02     | Index '%s' does not exist.                                                                                                          |
 | 20009       | 42S01     | View name has to bind to %s tables.                                                                                                 |
 | 20010       | 44000     | Invalid binding table configuration.                                                                                                |
 | 20011       | 44000     | Only allowed 0 or 1 sharding strategy configuration.                                                                                |
@@ -178,9 +183,9 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 20050       | HY000     | Sharding algorithm class '%s' should be implement '%s'.                                                                             |
 | 20051       | HY000     | Routed target '%s' does not exist, available targets are '%s'.                                                                      |
 | 20052       | 44000     | Inline sharding algorithms expression '%s' and sharding column '%s' do not match.                                                   |
-| 20053       | 44000     | Complex inline algorithm need %d sharing columns, but only found %d.                                                                |
-| 20054       | 44000     | No sharding database route info.                                                                                                    |
-| 20055       | 44000     | Some routed data sources do not belong to configured data sources. routed data sources '%s', configured data sources '%s'.          |
+| 20053       | 44000     | Complex inline algorithm need %d sharding columns, but only found %d.                                                               |
+| 20054       | 44000     | No sharding database route info, actual data source names: `%s`, sharding condition values: `%s`.                                   |
+| 20055       | 44000     | Some routed data sources do not belong to configured data sources. routed data sources '%s', configured data sources '%s', sharding condition values '%s'.          |
 | 20056       | 44000     | Please check your sharding conditions '%s' to avoid same record in table '%s' routing to multiple data nodes.                       |
 | 20057       | 44000     | Can not find routing table factor, data source '%s', actual table '%s'.                                                             |
 | 20060       | HY000     | Invalid %s strategy '%s', strategy does not match data nodes.                                                                       |
@@ -192,7 +197,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 |-------------|-----------|---------------------------------------------------------|
 | 20100       | 42000     | Unsupported SQL node conversion for SQL statement '%s'. |
 | 20101       | 42000     | SQL federation does not support SQL '%s'.               |
-| 20102       | 42S02     | SQL federation schema not found SQL '%s'.              |
+| 20102       | 42S02     | SQL federation schema '%s' not found in SQL '%s'.       |
 
 ### 读写分离
 
@@ -226,6 +231,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 21002       | 42S02     | Can not find logic encrypt column by '%s'.                                                   |
 | 21003       | 42S02     | Can not find encrypt column '%s' from table '%s'.                                            |
 | 21004       | HY000     | '%s' column's encrypt algorithm '%s' should support %s in database '%s'.                     |
+| 21005       | HY000     | Column '%s' of table '%s' is not configured with %s query algorithm.                         |
 | 21010       | 44000     | Altered column '%s' must use same encrypt algorithm with previous column '%s' in table '%s'. |
 | 21020       | 0A000     | The SQL clause '%s' is unsupported in encrypt feature.                                       |
 | 21030       | 22000     | Failed to decrypt the ciphertext '%s' in the column '%s' of table '%s'.                      |
@@ -243,12 +249,14 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ## 其他异常
 
-| Vendor Code | SQL State | 错误信息                            |
-|-------------|-----------|---------------------------------|
-| 30000       | HY000     | Unknown exception: %s           |
-| 30001       | 0A000     | Unsupported SQL operation: %s   |
-| 30002       | HY000     | Database protocol exception: %s |
-| 30003       | 0A000     | Unsupported command: %s         |
-| 30004       | HY000     | Server exception: %s            |
-| 30010       | HY000     | Can not find plugin class '%s'. |
-| 30020       | HY000     | File access failed, file is: %s |
+| Vendor Code | SQL State | 错误信息                                                 |
+|-------------|-----------|------------------------------------------------------|
+| 30000       | HY000     | Unknown exception: %s                                |
+| 30001       | 0A000     | Unsupported SQL operation: %s                        |
+| 30002       | HY000     | Database protocol exception: %s                      |
+| 30003       | 0A000     | Unsupported command: %s                              |
+| 30004       | HY000     | Server exception: %s                                 |
+| 30005       | HY000     | Underlying SQL state: %s, underlying error code: %s. |
+| 30010       | HY000     | Can not find plugin class '%s'.                      |
+| 30020       | HY000     | File access failed, file is: %s                      |
+| 30030       | HY000     | Unexpected tableless route engine.                   |

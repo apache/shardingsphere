@@ -30,7 +30,7 @@ public final class DefaultSQLTranslatorRuleConfigurationBuilder implements Defau
     
     @Override
     public SQLTranslatorRuleConfiguration build() {
-        return new SQLTranslatorRuleConfiguration("NATIVE", new Properties(), true);
+        return new SQLTranslatorRuleConfiguration(null, new Properties(), true);
     }
     
     @Override

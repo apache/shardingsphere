@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.state.ok;
 
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -27,8 +26,8 @@ import org.junit.jupiter.api.Test;
 import java.sql.Connection;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -39,7 +38,7 @@ class OKDriverStateTest {
     void assertGetConnection() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(TransactionRule.class, RETURNS_DEEP_STUBS))));
-        Connection actual = new OKDriverState().getConnection(DefaultDatabase.LOGIC_NAME, contextManager);
-        assertThat(actual, instanceOf(ShardingSphereConnection.class));
+        Connection actual = new OKDriverState().getConnection("foo_db", contextManager);
+        assertThat(actual, isA(ShardingSphereConnection.class));
     }
 }

@@ -28,7 +28,7 @@ public interface DriverExecutionUnit<T> extends SQLExecutionUnit {
     
     /**
      * Get storage resource.
-     * 
+     *
      * @return storage resource
      */
     T getStorageResource();

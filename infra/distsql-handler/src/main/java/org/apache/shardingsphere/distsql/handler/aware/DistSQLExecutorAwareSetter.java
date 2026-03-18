@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.distsql.handler.aware;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.distsql.statement.rql.rule.global.ShowGlobalRulesStatement;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.global.ShowGlobalRulesStatement;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.exception.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.ConnectionContextAware;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -41,14 +42,14 @@ public final class DistSQLExecutorAwareSetter {
     
     /**
      * Set aware context.
-     * 
+     *
      * @param contextManager context manager
      * @param database database
-     * @param connectionContext connection context
+     * @param distsqlConnectionContext DistSQL connection context
      * @param sqlStatement DistSQL statement
      */
     @SuppressWarnings("rawtypes")
-    public void set(final ContextManager contextManager, final ShardingSphereDatabase database, final DistSQLConnectionContext connectionContext, final DistSQLStatement sqlStatement) {
+    public void set(final ContextManager contextManager, final ShardingSphereDatabase database, final DistSQLConnectionContext distsqlConnectionContext, final DistSQLStatement sqlStatement) {
         if (executor instanceof DistSQLExecutorDatabaseAware) {
             ShardingSpherePreconditions.checkNotNull(database, NoDatabaseSelectedException::new);
             ((DistSQLExecutorDatabaseAware) executor).setDatabase(database);
@@ -60,7 +61,10 @@ public final class DistSQLExecutorAwareSetter {
             setRule((DistSQLExecutorRuleAware) executor, contextManager, database);
         }
         if (executor instanceof DistSQLExecutorConnectionContextAware) {
-            ((DistSQLExecutorConnectionContextAware) executor).setConnectionContext(connectionContext);
+            ((DistSQLExecutorConnectionContextAware) executor).setConnectionContext(distsqlConnectionContext);
+        }
+        if (executor instanceof ConnectionContextAware) {
+            ((ConnectionContextAware) executor).setConnectionContext(distsqlConnectionContext.getQueryContext().getConnectionContext());
         }
     }
     

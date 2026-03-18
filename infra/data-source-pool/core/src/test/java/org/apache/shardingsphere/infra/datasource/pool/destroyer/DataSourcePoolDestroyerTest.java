@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.destroyer;
 
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 

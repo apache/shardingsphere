@@ -22,27 +22,28 @@ ShowComputeNodes ::=
 
 ### Return Value Description
 
-| Columns       | Description   |
-|---------------|---------------|
-| instance_id   | instance id   |
-| instance_type | instance type |
-| host          | host          |
-| port          | port          |
-| status        | status        |
-| mode_type     | mode type     |
-| worker_id     | worker id     |
-| labels        | labels        |
-| version       | version       |
+| Columns       | Description      |
+|---------------|------------------|
+| instance_id   | instance id      |
+| instance_type | instance type    |
+| host          | host             |
+| port          | port             |
+| status        | status           |
+| mode_type     | mode type        |
+| worker_id     | worker id        |
+| labels        | labels           |
+| version       | version          |
+| database_name | database name (Only valid for JDBC) |
 
 ### Example
 
 ```sql
 mysql> SHOW COMPUTE NODES;
-+--------------------------------------+---------------+------------+------+--------+------------+-----------+--------+----------+
-| instance_id                          | instance_type | host       | port | status | mode_type  | worker_id | labels | version  |
-+--------------------------------------+---------------+------------+------+--------+------------+-----------+--------+----------+
-| 3e84d33e-cb97-42f2-b6ce-f78fea0ded89 | PROXY         | 127.0.0.1  | 3307 | OK     | Cluster    | -1        |        | 5.4.2    |
-+--------------------------------------+---------------+------------+------+--------+------------+-----------+--------+----------+
++--------------------------------------+---------------+------------+------+--------+------------+-----------+--------+----------+--------------+
+| instance_id                          | instance_type | host       | port | status | mode_type  | worker_id | labels | version  | database_name |
++--------------------------------------+---------------+------------+------+--------+------------+-----------+--------+----------+--------------+
+| 3e84d33e-cb97-42f2-b6ce-f78fea0ded89 | PROXY         | 127.0.0.1  | 3307 | OK     | Cluster    | -1        |        | 5.4.2    | logic_db      |
++--------------------------------------+---------------+------------+------+--------+------------+-----------+--------+----------+--------------+
 1 row in set (0.01 sec)
 ```
 

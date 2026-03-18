@@ -26,7 +26,7 @@ public interface SQLParser {
     
     /**
      * Parse SQL.
-     * 
+     *
      * @return AST node
      */
     ASTNode parse();

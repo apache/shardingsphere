@@ -28,4 +28,5 @@
     <commit sql-case-id="commit_work" />
     <commit sql-case-id="commit_write_batch" />
     <commit sql-case-id="commit_work_force" />
+    <commit sql-case-id="commit_sql92" />
 </sql-parser-test-cases>

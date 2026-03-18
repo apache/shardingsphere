@@ -1,0 +1,128 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+# ---- Adapter dimension ----
+adapter_proxy:
+  - 'proxy/backend/core/src/main/**'
+  - 'proxy/bootstrap/src/main/**'
+  - 'proxy/frontend/core/src/main/**'
+  - 'proxy/frontend/spi/src/main/**'
+  - 'kernel/global-clock/**/src/main/**'
+  - 'kernel/time-service/**/src/main/**'
+
+adapter_jdbc:
+  - 'jdbc/src/main/**'
+  - 'jdbc-dialect/**/src/main/**'
+
+# ---- Mode dimension ----
+mode_standalone:
+  - 'mode/type/standalone/**/src/main/**'
+
+mode_cluster:
+  - 'mode/type/cluster/**/src/main/**'
+
+mode_core:
+  - 'mode/core/src/main/**'
+  - 'mode/node/src/main/**'
+  - 'mode/spi/src/main/**'
+
+# ---- Database dimension ----
+database_mysql:
+  - 'database/**/mysql/**/src/main/**'
+  - 'features/**/mysql/**/src/main/**'
+  - 'infra/**/mysql/**/src/main/**'
+  - 'kernel/**/mysql/**/src/main/**'
+  - 'parser/**/mysql/**/src/main/**'
+  - 'proxy/**/mysql/**/src/main/**'
+
+database_postgresql:
+  - 'database/**/postgresql/**/src/main/**'
+  - 'features/**/postgresql/**/src/main/**'
+  - 'infra/**/postgresql/**/src/main/**'
+  - 'kernel/**/postgresql/**/src/main/**'
+  - 'parser/**/postgresql/**/src/main/**'
+  - 'proxy/**/postgresql/**/src/main/**'
+
+# ---- Feature / Scenario dimension ----
+feature_sharding:
+  - 'features/sharding/!(dialect)/**/src/main/**'
+
+feature_encrypt:
+  - 'features/encrypt/**/src/main/**'
+
+feature_readwrite_splitting:
+  - 'features/readwrite-splitting/**/src/main/**'
+
+feature_shadow:
+  - 'features/shadow/**/src/main/**'
+
+feature_mask:
+  - 'features/mask/**/src/main/**'
+
+feature_broadcast:
+  - 'features/broadcast/**/src/main/**'
+
+feature_distsql:
+  - 'features/**/distsql/**/src/main/**'
+  - 'kernel/!(data-pipeline)/distsql/**/src/main/**'
+  - 'parser/distsql/**/src/main/**'
+
+feature_sql_federation:
+  - 'kernel/sql-federation/**/src/main/**'
+
+# ---- Core / Infra (full fallback triggers) ----
+core_infra:
+  - 'infra/!(binder|rewrite|route)/**/src/main/**'
+  - 'infra/binder/core/src/main/**'
+  - 'infra/rewrite/core/src/main/**'
+  - 'infra/route/core/src/main/**'
+  - 'database/connector/core/src/main/**'
+  - 'database/exception/core/src/main/**'
+  - 'database/protocol/core/src/main/**'
+  - 'kernel/authority/**/src/main/**'
+  - 'kernel/single/**/src/main/**'
+  - 'kernel/sql-parser/**/src/main/**'
+  - 'kernel/sql-translator/**/src/main/**'
+  - 'kernel/transaction/**/src/main/**'
+  - 'parser/sql/engine/core/src/main/**'
+  - 'parser/sql/spi/src/main/**'
+  - 'parser/sql/statement/core/src/main/**'
+
+# ---- Test framework changes (full fallback triggers) ----
+test_framework:
+  - '.github/workflows/e2e-sql.yml'
+  - '.github/workflows/resources/filter/e2e-sql-filters.yml'
+  - '.github/workflows/resources/scripts/generate-e2e-sql-matrix.sh'
+  - '.github/workflows/resources/scripts/generate-remaining-matrix.sh'
+  - 'test/pom.xml'
+  - 'test/e2e/fixture/**'
+  - 'test/e2e/env/**'
+  - 'test/e2e/sql/**'
+
+# ---- POM changes (full fallback triggers) ----
+pom_changes:
+  - 'database/**/pom.xml'
+  - 'features/**/pom.xml'
+  - 'infra/**/pom.xml'
+  - 'jdbc/**/pom.xml'
+  - 'jdbc-dialect/**/pom.xml'
+  - 'kernel/**/pom.xml'
+  - 'mode/**/pom.xml'
+  - 'parser/**/pom.xml'
+  - 'proxy/**/pom.xml'
+  - 'test/**/pom.xml'
+  - 'pom.xml'

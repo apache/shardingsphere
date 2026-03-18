@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.segment.generic;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
@@ -26,11 +27,12 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.SQLSegment;
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public final class ParenthesesSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final boolean left;
+    private final String parentheses;
 }

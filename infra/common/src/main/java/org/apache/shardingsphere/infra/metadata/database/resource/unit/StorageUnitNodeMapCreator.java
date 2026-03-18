@@ -19,12 +19,12 @@ package org.apache.shardingsphere.infra.metadata.database.resource.unit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionPropertiesParser;
-import org.apache.shardingsphere.infra.database.core.exception.UnrecognizedDatabaseURLException;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.exception.UnrecognizedDatabaseURLException;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionPropertiesParser;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 
@@ -43,22 +43,24 @@ public final class StorageUnitNodeMapCreator {
      * Create storage unit node map.
      *
      * @param propsMap data source pool properties map
+     * @param isInstanceConnectionEnabled is instance connection enabled
      * @return storage unit node map
      */
-    public static Map<String, StorageNode> create(final Map<String, DataSourcePoolProperties> propsMap) {
-        return propsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> create(entry.getKey(), entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+    public static Map<String, StorageNode> create(final Map<String, DataSourcePoolProperties> propsMap, final boolean isInstanceConnectionEnabled) {
+        return propsMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey,
+                entry -> create(entry.getKey(), entry.getValue(), isInstanceConnectionEnabled), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private static StorageNode create(final String storageUnitName, final DataSourcePoolProperties props) {
+    private static StorageNode create(final String storageUnitName, final DataSourcePoolProperties props, final boolean isInstanceConnectionEnabled) {
         Map<String, Object> standardProps = props.getConnectionPropertySynonyms().getStandardProperties();
-        return create(storageUnitName, standardProps.get("url").toString(), standardProps.get("username").toString());
-    }
-    
-    private static StorageNode create(final String storageUnitName, final String url, final String username) {
-        boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().isInstanceConnectionAvailable();
+        String url = standardProps.get("url").toString();
+        String username = standardProps.get("username").toString();
+        boolean isInstanceConnectionAvailable = new DatabaseTypeRegistry(DatabaseTypeFactory.get(url)).getDialectDatabaseMetaData().getConnectionOption().isInstanceConnectionAvailable();
         try {
             ConnectionProperties connectionProps = DatabaseTypedSPILoader.getService(ConnectionPropertiesParser.class, DatabaseTypeFactory.get(url)).parse(url, username, null);
-            return isInstanceConnectionAvailable ? new StorageNode(connectionProps.getHostname(), connectionProps.getPort(), username) : new StorageNode(storageUnitName);
+            return isInstanceConnectionEnabled && isInstanceConnectionAvailable
+                    ? new StorageNode(connectionProps.getHostname(), connectionProps.getPort(), username)
+                    : new StorageNode(storageUnitName);
         } catch (final UnrecognizedDatabaseURLException ex) {
             return new StorageNode(storageUnitName);
         }

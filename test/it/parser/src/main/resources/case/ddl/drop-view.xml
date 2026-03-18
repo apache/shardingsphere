@@ -37,4 +37,24 @@
         <view name="order_view" start-index="17" stop-index="26" />
         <view name="kinds" start-index="10" stop-index="14" />
     </drop-view>
+
+    <drop-view sql-case-id="drop_view_basic">
+        <view name="sales_summary" start-index="10" stop-index="22" />
+    </drop-view>
+
+    <drop-view sql-case-id="drop_view_with_if_exists">
+        <view name="sales_summary" start-index="20" stop-index="32" />
+    </drop-view>
+
+    <drop-view sql-case-id="drop_view_with_db_name">
+        <view name="sales_summary" start-index="10" stop-index="26">
+            <owner name="db1" start-index="10" stop-index="12" />
+        </view>
+    </drop-view>
+
+    <drop-view sql-case-id="drop_view_with_if_exists_and_db_name">
+        <view name="sales_summary" start-index="20" stop-index="36">
+            <owner name="db1" start-index="20" stop-index="22" />
+        </view>
+    </drop-view>
 </sql-parser-test-cases>

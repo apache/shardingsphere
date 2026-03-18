@@ -25,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,47 +46,47 @@ class SubqueryRouteTest {
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_test", 1);
         hintManager.addTableShardingValue("t_hint_test", 1);
-        String sql = "select count(*) from t_hint_test where user_id = (select user_id from t_hint_test where user_id in (?,?,?)) ";
+        String sql = "SELECT COUNT(*) FROM t_hint_test WHERE user_id = (SELECT user_id FROM t_hint_test WHERE user_id IN (?,?,?)) ";
         ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 3, 5));
         hintManager.close();
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
                     Arguments.of("oneTableDifferentConditionWithFederation",
-                            "select (select max(id) from t_order b where b.user_id =? ) from t_order a where user_id = ? ", Arrays.asList(3, 2)),
+                            "SELECT (SELECT MAX(id) FROM t_order b WHERE b.user_id =? ) FROM t_order a WHERE user_id = ? ", Arrays.asList(3, 2)),
                     Arguments.of("oneTableSameConditionWithFederation",
-                            "select (select max(id) from t_order b where b.user_id = ? and b.user_id = a.user_id) from t_order a where user_id = ? ", Arrays.asList(1, 1)),
+                            "SELECT (SELECT MAX(id) FROM t_order b WHERE b.user_id = ? AND b.user_id = a.user_id) FROM t_order a WHERE user_id = ? ", Arrays.asList(1, 1)),
                     Arguments.of("bindingTableWithFederation",
-                            "select (select max(id) from t_order_item b where b.user_id = ?) from t_order a where user_id = ? ", Arrays.asList(1, 1)),
+                            "SELECT (SELECT MAX(id) FROM t_order_item b WHERE b.user_id = ?) FROM t_order a WHERE user_id = ? ", Arrays.asList(1, 1)),
                     Arguments.of("notShardingTable",
-                            "select (select max(id) from t_category b where b.id = ?) from t_category a where id = ? ", Arrays.asList(1, 1)),
+                            "SELECT (SELECT MAX(id) FROM t_category b WHERE b.id = ?) FROM t_category a WHERE id = ? ", Arrays.asList(1, 1)),
                     Arguments.of("bindingTableWithDifferentValueWithFederation",
-                            "select (select max(id) from t_order_item b where b.user_id = ? ) from t_order a where user_id = ? ", Arrays.asList(2, 3)),
+                            "SELECT (SELECT MAX(id) FROM t_order_item b WHERE b.user_id = ? ) FROM t_order a WHERE user_id = ? ", Arrays.asList(2, 3)),
                     Arguments.of("twoTableWithDifferentOperatorWithFederation",
-                            "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id = ? ", Arrays.asList(1, 2, 1)),
+                            "SELECT (SELECT MAX(id) FROM t_order_item b WHERE b.user_id in(?,?)) FROM t_order a WHERE user_id = ? ", Arrays.asList(1, 2, 1)),
                     Arguments.of("twoTableWithInWithFederation",
-                            "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id in(?,?) ", Arrays.asList(1, 2, 1, 3)),
+                            "SELECT (SELECT MAX(id) FROM t_order_item b WHERE b.user_id in(?,?)) FROM t_order a WHERE user_id in(?,?) ", Arrays.asList(1, 2, 1, 3)),
                     Arguments.of("subqueryInSubqueryError",
-                            "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
-                                    + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))",
+                            "SELECT (SELECT status FROM t_order b WHERE b.user_id =? AND status = (SELECT status FROM t_order b WHERE b.user_id =?)) as c FROM t_order a "
+                                    + "WHERE status = (SELECT status FROM t_order b WHERE b.user_id =? AND status = (SELECT status FROM t_order b WHERE b.user_id =?))",
                             Arrays.asList(11, 2, 1, 1)),
                     Arguments.of("subqueryInSubquery",
-                            "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
-                                    + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))",
+                            "SELECT (SELECT status FROM t_order b WHERE b.user_id =? AND status = (SELECT status FROM t_order b WHERE b.user_id =?)) as c FROM t_order a "
+                                    + "WHERE status = (SELECT status FROM t_order b WHERE b.user_id =? AND status = (SELECT status FROM t_order b WHERE b.user_id =?))",
                             Arrays.asList(1, 1, 1, 1)),
                     Arguments.of("subqueryInFromError",
-                            "select b.status from t_order b join (select user_id,status from t_order b where b.user_id =?) c on b.user_id = c.user_id where b.user_id =? ", Arrays.asList(11, 1)),
+                            "SELECT b.status FROM t_order b join (SELECT user_id,status FROM t_order b WHERE b.user_id =?) c ON b.user_id = c.user_id WHERE b.user_id =? ", Arrays.asList(11, 1)),
                     Arguments.of("subqueryInFrom",
-                            "select b.status from t_order b join (select user_id,status from t_order b where b.user_id =?) c on b.user_id = c.user_id where b.user_id =? ", Arrays.asList(1, 1)),
+                            "SELECT b.status FROM t_order b join (SELECT user_id,status FROM t_order b WHERE b.user_id =?) c ON b.user_id = c.user_id WHERE b.user_id =? ", Arrays.asList(1, 1)),
                     Arguments.of("subqueryForAggregation",
-                            "select count(*) from t_order where user_id = (select user_id from t_order where user_id =?) ", Collections.singletonList(1)),
+                            "SELECT count(*) FROM t_order WHERE user_id = (SELECT user_id FROM t_order WHERE user_id =?) ", Collections.singletonList(1)),
                     Arguments.of("subqueryForBinding",
-                            "select count(*) from t_order where user_id = (select user_id from t_order_item where user_id =?) ", Collections.singletonList(1)),
-                    Arguments.of("subqueryWithOneInstance", "select count(*) from t_order where user_id =?", Collections.singletonList(1)));
+                            "SELECT count(*) FROM t_order WHERE user_id = (SELECT user_id FROM t_order_item WHERE user_id =?) ", Collections.singletonList(1)),
+                    Arguments.of("subqueryWithOneInstance", "SELECT COUNT(*) FROM t_order WHERE user_id =?", Collections.singletonList(1)));
         }
     }
 }

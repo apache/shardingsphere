@@ -18,16 +18,19 @@
 package org.apache.shardingsphere.distsql.handler.engine.update;
 
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorAwareSetter;
+import org.apache.shardingsphere.distsql.handler.engine.DistSQLConnectionContext;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.database.DatabaseRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.global.GlobalRuleDefinitionExecuteEngine;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDefinitionExecutorFactory;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutorFactory;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorRequiredChecker;
 import org.apache.shardingsphere.distsql.handler.util.DatabaseNameUtils;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.RuleDefinitionStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.database.DatabaseRuleDefinitionStatement;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.global.GlobalRuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.rule.RuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.DatabaseRuleDefinitionStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.rule.global.GlobalRuleDefinitionStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -46,10 +49,14 @@ public final class DistSQLUpdateExecuteEngine {
     
     private final String databaseName;
     
-    public DistSQLUpdateExecuteEngine(final DistSQLStatement sqlStatement, final String currentDatabaseName, final ContextManager contextManager) {
+    private final DistSQLConnectionContext distsqlConnectionContext;
+    
+    public DistSQLUpdateExecuteEngine(final DistSQLStatement sqlStatement, final String currentDatabaseName,
+                                      final ContextManager contextManager, final DistSQLConnectionContext distsqlConnectionContext) {
         this.sqlStatement = sqlStatement;
         this.contextManager = contextManager;
         databaseName = DatabaseNameUtils.getDatabaseName(sqlStatement, currentDatabaseName);
+        this.distsqlConnectionContext = distsqlConnectionContext;
     }
     
     /**
@@ -67,21 +74,24 @@ public final class DistSQLUpdateExecuteEngine {
     
     @SuppressWarnings("rawtypes")
     private void executeRuleDefinitionUpdate() {
-        Optional<DatabaseRuleDefinitionExecutor> databaseExecutor = TypedSPILoader.findService(DatabaseRuleDefinitionExecutor.class, sqlStatement.getClass());
+        if (sqlStatement instanceof GlobalRuleDefinitionStatement) {
+            GlobalRuleDefinitionExecutor globalExecutor = GlobalRuleDefinitionExecutorFactory.newInstance(sqlStatement, contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData());
+            new GlobalRuleDefinitionExecuteEngine((GlobalRuleDefinitionStatement) sqlStatement, contextManager, globalExecutor).executeUpdate();
+            return;
+        }
+        ShardingSphereDatabase database = contextManager.getDatabase(databaseName);
+        Optional<DatabaseRuleDefinitionExecutor> databaseExecutor = DatabaseRuleDefinitionExecutorFactory.findInstance(sqlStatement, database);
         if (databaseExecutor.isPresent()) {
-            new DatabaseRuleDefinitionExecuteEngine((DatabaseRuleDefinitionStatement) sqlStatement, contextManager,
-                    contextManager.getDatabase(databaseName), databaseExecutor.get()).executeUpdate();
-        } else {
-            new GlobalRuleDefinitionExecuteEngine((GlobalRuleDefinitionStatement) sqlStatement,
-                    contextManager, TypedSPILoader.getService(GlobalRuleDefinitionExecutor.class, sqlStatement.getClass())).executeUpdate();
+            new DatabaseRuleDefinitionExecuteEngine((DatabaseRuleDefinitionStatement) sqlStatement, contextManager, database, databaseExecutor.get()).executeUpdate();
         }
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void executeNormalUpdate() throws SQLException {
-        DistSQLUpdateExecutor executor = TypedSPILoader.getService(DistSQLUpdateExecutor.class, sqlStatement.getClass());
+        Optional<AdvancedDistSQLUpdateExecutor> advancedExecutor = TypedSPILoader.findService(AdvancedDistSQLUpdateExecutor.class, sqlStatement.getClass());
+        DistSQLUpdateExecutor executor = advancedExecutor.isPresent() ? advancedExecutor.get() : TypedSPILoader.getService(DistSQLUpdateExecutor.class, sqlStatement.getClass());
         ShardingSphereDatabase database = null == databaseName ? null : contextManager.getDatabase(databaseName);
-        new DistSQLExecutorAwareSetter(executor).set(contextManager, database, null, sqlStatement);
+        new DistSQLExecutorAwareSetter(executor).set(contextManager, database, distsqlConnectionContext, sqlStatement);
         new DistSQLExecutorRequiredChecker(executor).check(sqlStatement, contextManager, database);
         executor.executeUpdate(sqlStatement, contextManager);
     }

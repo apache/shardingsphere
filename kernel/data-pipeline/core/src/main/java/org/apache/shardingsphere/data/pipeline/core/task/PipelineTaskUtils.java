@@ -19,17 +19,18 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannelCreator;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCancelingException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.inventory.InventoryDumperContext;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.PipelineSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.type.wrapper.SQLWrapperException;
 
+import java.sql.SQLException;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Pipeline task utilities.
@@ -38,14 +39,13 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class PipelineTaskUtils {
     
     /**
-     * Generate inventory task id.
+     * Generate inventory task ID.
      *
-     * @param inventoryDumperContext inventory dumper context
-     * @return inventory task id
+     * @param dumperContext inventory dumper context
+     * @return generated ID
      */
-    public static String generateInventoryTaskId(final InventoryDumperContext inventoryDumperContext) {
-        String result = String.format("%s.%s", inventoryDumperContext.getCommonContext().getDataSourceName(), inventoryDumperContext.getActualTableName());
-        return result + "#" + inventoryDumperContext.getShardingItem();
+    public static String generateInventoryTaskId(final InventoryDumperContext dumperContext) {
+        return String.format("%s.%s#%s", dumperContext.getCommonContext().getDataSourceName(), dumperContext.getActualTableName(), dumperContext.getShardingItem());
     }
     
     /**
@@ -65,26 +65,24 @@ public final class PipelineTaskUtils {
     }
     
     /**
-     * Create pipeline channel for inventory task.
+     * Wait future.
      *
-     * @param channelConfig pipeline channel configuration
-     * @param importerBatchSize importer batch size
-     * @param position ingest position
-     * @return created pipeline channel
+     * @param future future to wait
+     * @param <T> result type
+     * @return execution result
+     * @throws SQLWrapperException if the future execution fails
      */
-    public static PipelineChannel createInventoryChannel(final AlgorithmConfiguration channelConfig, final int importerBatchSize, final AtomicReference<IngestPosition> position) {
-        return TypedSPILoader.getService(PipelineChannelCreator.class, channelConfig.getType(), channelConfig.getProps()).newInstance(importerBatchSize, new InventoryTaskAckCallback(position));
-    }
-    
-    /**
-     * Create pipeline channel for incremental task.
-     *
-     * @param channelConfig pipeline channel configuration
-     * @param progress incremental task progress
-     * @return created pipeline channel
-     */
-    public static PipelineChannel createIncrementalChannel(final AlgorithmConfiguration channelConfig, final IncrementalTaskProgress progress) {
-        PipelineChannelCreator channelCreator = TypedSPILoader.getService(PipelineChannelCreator.class, channelConfig.getType(), channelConfig.getProps());
-        return channelCreator.newInstance(5, new IncrementalTaskAckCallback(progress));
+    public static <T> T waitFuture(final Future<T> future) {
+        try {
+            return future.get();
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new SQLWrapperException(new SQLException(ex));
+        } catch (final ExecutionException ex) {
+            if (ex.getCause() instanceof PipelineSQLException || ex.getCause() instanceof PipelineJobCancelingException) {
+                throw (PipelineSQLException) ex.getCause();
+            }
+            throw new SQLWrapperException(new SQLException(ex));
+        }
     }
 }

@@ -28,7 +28,7 @@ public interface TimestampService extends TypedSPI {
     
     /**
      * Get timestamp.
-     * 
+     *
      * @return timestamp
      */
     Timestamp getTimestamp();

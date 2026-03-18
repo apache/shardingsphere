@@ -22,11 +22,12 @@ import org.apache.shardingsphere.infra.merge.result.impl.stream.fixture.TestStre
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
+import java.io.Reader;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Calendar;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -62,10 +63,19 @@ class StreamMergedResultTest {
     @Test
     void assertGetInputStream() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
-        InputStream value = mock(InputStream.class);
-        when(queryResult.getInputStream(1, "Ascii")).thenReturn(value);
+        InputStream inputStream = mock(InputStream.class);
+        when(queryResult.getInputStream(1, "Ascii")).thenReturn(inputStream);
         streamMergedResult.setCurrentQueryResult(queryResult);
-        assertThat(streamMergedResult.getInputStream(1, "Ascii"), is(value));
+        assertThat(streamMergedResult.getInputStream(1, "Ascii"), is(inputStream));
+    }
+    
+    @Test
+    void assertGetCharacterStream() throws SQLException {
+        QueryResult queryResult = mock(QueryResult.class);
+        Reader reader = mock(Reader.class);
+        when(queryResult.getCharacterStream(1)).thenReturn(reader);
+        streamMergedResult.setCurrentQueryResult(queryResult);
+        assertThat(streamMergedResult.getCharacterStream(1), is(reader));
     }
     
     @Test

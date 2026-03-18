@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.node.config.proces
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.config.PipelineJobConfiguration;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
  * 
  * @param <T> type of pipeline job configuration
  */
+@SingletonSPI
 public interface JobConfigurationChangedProcessor<T extends PipelineJobConfiguration> extends TypedSPI {
     
     /**
@@ -39,7 +41,7 @@ public interface JobConfigurationChangedProcessor<T extends PipelineJobConfigura
     
     /**
      * Clean pipeline job.
-     * 
+     *
      * @param jobConfig pipeline job configuration
      */
     default void clean(final JobConfiguration jobConfig) {

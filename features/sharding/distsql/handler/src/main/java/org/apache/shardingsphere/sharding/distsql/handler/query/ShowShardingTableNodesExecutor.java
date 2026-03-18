@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import lombok.Setter;
+import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorDatabaseAware;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
-import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableNodesStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -36,9 +37,11 @@ import java.util.stream.Collectors;
  * Show sharding table nodes executor.
  */
 @Setter
-public final class ShowShardingTableNodesExecutor implements DistSQLQueryExecutor<ShowShardingTableNodesStatement>, DistSQLExecutorRuleAware<ShardingRule> {
+public final class ShowShardingTableNodesExecutor implements DistSQLQueryExecutor<ShowShardingTableNodesStatement>, DistSQLExecutorRuleAware<ShardingRule>, DistSQLExecutorDatabaseAware {
     
     private ShardingRule rule;
+    
+    private ShardingSphereDatabase database;
     
     @Override
     public Collection<String> getColumnNames(final ShowShardingTableNodesStatement sqlStatement) {
@@ -54,7 +57,7 @@ public final class ShowShardingTableNodesExecutor implements DistSQLQueryExecuto
     }
     
     private String getTableNodes(final ShardingTable shardingTable) {
-        return shardingTable.getActualDataNodes().stream().map(DataNode::format).collect(Collectors.joining(", "));
+        return shardingTable.getActualDataNodes().stream().map(each -> each.format(database.getProtocolType())).collect(Collectors.joining(", "));
     }
     
     @Override

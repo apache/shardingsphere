@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.driver.statement;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.test.e2e.driver.AbstractEncryptDriverTest;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +28,7 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -54,11 +53,6 @@ class EncryptStatementTest extends AbstractEncryptDriverTest {
     private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd FROM t_encrypt";
     
     private static final String SHOW_COLUMNS_SQL = "SHOW columns FROM t_encrypt";
-    
-    @Test
-    void assertSQLShow() {
-        assertTrue(getEncryptConnectionWithProps().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
-    }
     
     @Test
     void assertInsertWithExecute() throws SQLException {

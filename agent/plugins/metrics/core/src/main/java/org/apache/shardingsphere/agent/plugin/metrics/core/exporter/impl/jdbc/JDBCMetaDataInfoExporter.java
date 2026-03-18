@@ -17,19 +17,15 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.jdbc;
 
-import org.apache.shardingsphere.agent.plugin.core.util.AgentReflectionUtils;
-import org.apache.shardingsphere.agent.plugin.core.util.ShardingSphereDriverUtils;
+import org.apache.shardingsphere.agent.plugin.core.context.ShardingSphereDataSourceContext;
+import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContextHolder;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.GaugeMetricFamilyMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.exporter.MetricsExporter;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -38,20 +34,17 @@ import java.util.Optional;
  */
 public final class JDBCMetaDataInfoExporter implements MetricsExporter {
     
-    private final MetricConfiguration config = new MetricConfiguration("jdbc_meta_data_info",
-            MetricCollectorType.GAUGE_METRIC_FAMILY, "Meta data information of ShardingSphere-JDBC",
-            Arrays.asList("database", "type"), Collections.emptyMap());
+    private final MetricConfiguration config = new MetricConfiguration("jdbc_meta_data_info", MetricCollectorType.GAUGE_METRIC_FAMILY,
+            "Meta data information of ShardingSphere-JDBC",
+            Arrays.asList("driver_instance", "database", "type"));
     
     @Override
     public Optional<GaugeMetricFamilyMetricsCollector> export(final String pluginType) {
-        Map<String, ShardingSphereDataSource> dataSourceMap = ShardingSphereDriverUtils.findShardingSphereDataSources();
         GaugeMetricFamilyMetricsCollector result = MetricsCollectorRegistry.get(config, pluginType);
         result.cleanMetrics();
-        for (Entry<String, ShardingSphereDataSource> entry : dataSourceMap.entrySet()) {
-            ShardingSphereDataSource dataSource = entry.getValue();
-            String databaseName = AgentReflectionUtils.getFieldValue(dataSource, "databaseName");
-            ContextManager contextManager = AgentReflectionUtils.getFieldValue(dataSource, "contextManager");
-            result.addMetric(Arrays.asList(databaseName, "storage_unit_count"), contextManager.getStorageUnits(databaseName).size());
+        for (Entry<String, ShardingSphereDataSourceContext> entry : ShardingSphereDataSourceContextHolder.getShardingSphereDataSourceContexts().entrySet()) {
+            Optional.ofNullable(entry.getValue().getContextManager().getDatabase(entry.getValue().getDatabaseName()))
+                    .ifPresent(optional -> result.addMetric(Arrays.asList(entry.getKey(), optional.getName(), "storage_unit_count"), optional.getResourceMetaData().getStorageUnits().size()));
         }
         return Optional.of(result);
     }

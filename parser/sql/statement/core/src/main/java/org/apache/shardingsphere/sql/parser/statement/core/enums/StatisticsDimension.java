@@ -18,13 +18,9 @@
 package org.apache.shardingsphere.sql.parser.statement.core.enums;
 
 /**
- * Update statistics dimension enum.
+ * Update statistics dimension.
  */
 public enum StatisticsDimension {
     
-    ALL,
-    
-    COLUMNS,
-    
-    INDEX
+    ALL, COLUMNS, INDEX
 }

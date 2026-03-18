@@ -19,6 +19,6 @@
     <metadata table-name="t_order_details" data-nodes="tbl.t_order_details_${0..9}">
         <column name="id" type="integer" />
         <column name="description" type="varchar" />
-        <index name="t_order_details_index_t_order_details" column="id" unique="true" />
+        <index name="t_details_idx_t_order_details" column="id" unique="true" />
     </metadata>
 </dataset>

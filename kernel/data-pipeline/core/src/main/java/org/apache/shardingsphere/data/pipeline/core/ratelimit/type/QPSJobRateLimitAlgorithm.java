@@ -22,13 +22,14 @@ import com.google.common.util.concurrent.RateLimiter;
 import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperationType;
 import org.apache.shardingsphere.data.pipeline.core.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Properties;
 
 /**
  * QPS job rate limit algorithm.
  */
+@SuppressWarnings("UnstableApiUsage")
 public final class QPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
     private static final String QPS_KEY = "qps";
@@ -49,10 +50,9 @@ public final class QPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     
     @Override
     public void intercept(final PipelineSQLOperationType type, final Number data) {
-        if (type != PipelineSQLOperationType.SELECT) {
-            return;
+        if (type == PipelineSQLOperationType.SELECT) {
+            rateLimiter.acquire(null == data ? 1 : data.intValue());
         }
-        rateLimiter.acquire(null != data ? data.intValue() : 1);
     }
     
     @Override

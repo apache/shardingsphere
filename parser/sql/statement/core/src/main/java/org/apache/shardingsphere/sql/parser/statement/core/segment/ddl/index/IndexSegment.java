@@ -42,6 +42,8 @@ public final class IndexSegment implements SQLSegment, OwnerAvailable {
     
     private OwnerSegment owner;
     
+    private boolean uniqueKey;
+    
     @Override
     public Optional<OwnerSegment> getOwner() {
         return Optional.ofNullable(owner);

@@ -18,23 +18,25 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.insert;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class EncryptInsertValuesTokenGeneratorTest {
     
-    private final EncryptInsertValuesTokenGenerator generator = new EncryptInsertValuesTokenGenerator();
+    private EncryptInsertValuesTokenGenerator generator;
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(EncryptGeneratorFixtureBuilder.createEncryptRule());
+        generator = new EncryptInsertValuesTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule(), new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()));
     }
     
     @Test
@@ -45,15 +47,12 @@ class EncryptInsertValuesTokenGeneratorTest {
     @Test
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         generator.setPreviousSQLTokens(Collections.emptyList());
-        generator.setDatabaseName("db_schema");
         assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
     }
     
     @Test
     void assertGenerateSQLTokenFromPreviousSQLTokens() {
-        generator.setDatabaseName("db-001");
         generator.setPreviousSQLTokens(EncryptGeneratorFixtureBuilder.getPreviousSQLTokens());
-        generator.setDatabaseName("db_schema");
         assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
     }
 }

@@ -30,7 +30,7 @@ public final class ForceExecuteTemplate<T> {
     
     /**
      * Force execute.
-     * 
+     *
      * @param targets targets to be executed
      * @param callback force execute callback
      * @throws SQLException throw SQL exception after all targets are executed

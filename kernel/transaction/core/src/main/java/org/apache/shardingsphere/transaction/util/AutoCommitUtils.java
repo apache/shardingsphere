@@ -20,9 +20,9 @@ package org.apache.shardingsphere.transaction.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 /**
  * Auto commit utility class.
@@ -33,13 +33,14 @@ public final class AutoCommitUtils {
     /**
      * Judge whether to start a new transaction.
      *
-     * @param sqlStatement sqlStatement.
-     * @return need to open a new transaction.
+     * @param sqlStatement SQL statement
+     * @return need to start or not
      */
-    public static boolean needOpenTransaction(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof SelectStatement && !((SelectStatement) sqlStatement).getFrom().isPresent()) {
-            return false;
-        }
-        return sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement;
+    public static boolean isNeedStartTransaction(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof DDLStatement || sqlStatement instanceof DMLStatement && !isSelectWithoutFrom(sqlStatement);
+    }
+    
+    private static boolean isSelectWithoutFrom(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof SelectStatement && !((SelectStatement) sqlStatement).getFrom().isPresent();
     }
 }

@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class ShowStorageUnitsStatementTestCase extends DatabaseContainedTestCase {
     
-    @XmlAttribute(name = "usage-count")
-    private Integer usageCount;
+    @XmlAttribute(name = "like-pattern")
+    private String likePattern;
 }

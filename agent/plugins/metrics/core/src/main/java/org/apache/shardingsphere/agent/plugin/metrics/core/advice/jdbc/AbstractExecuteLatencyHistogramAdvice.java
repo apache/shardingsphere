@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.core.recorder.MethodTimeRecorder;
@@ -24,11 +25,9 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsColl
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.HistogramMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+import org.apache.shardingsphere.agent.plugin.metrics.core.util.HistogramBucketUtils;
 
-import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Abstract execute latency histogram advice for ShardingSphere-JDBC.
@@ -36,24 +35,15 @@ import java.util.Map;
 public abstract class AbstractExecuteLatencyHistogramAdvice extends AbstractInstanceMethodAdvice {
     
     private final MetricConfiguration config = new MetricConfiguration("jdbc_statement_execute_latency_millis", MetricCollectorType.HISTOGRAM,
-            "Statement execute latency millis histogram", Collections.singletonMap("buckets", getBuckets()));
-    
-    private Map<String, Object> getBuckets() {
-        Map<String, Object> result = new HashMap<>(4, 1F);
-        result.put("type", "exp");
-        result.put("start", 1);
-        result.put("factor", 2);
-        result.put("count", 13);
-        return result;
-    }
+            "Statement execute latency millis histogram", Collections.singletonMap("buckets", HistogramBucketUtils.getBucketsMap()));
     
     @Override
-    public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
+    public void beforeMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final String pluginType) {
         getMethodTimeRecorder().recordNow(method);
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
+    public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
         MetricsCollectorRegistry.<HistogramMetricsCollector>get(config, pluginType).observe(getMethodTimeRecorder().getElapsedTimeAndClean(method));
     }
     

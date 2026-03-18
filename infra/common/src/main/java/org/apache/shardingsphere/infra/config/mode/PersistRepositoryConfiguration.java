@@ -26,14 +26,14 @@ public interface PersistRepositoryConfiguration {
     
     /**
      * Get persist repository type.
-     * 
+     *
      * @return persist repository type
      */
     String getType();
     
     /**
      * Get persist repository properties.
-     * 
+     *
      * @return persist repository properties
      */
     Properties getProps();

@@ -1,0 +1,211 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.encodings.EncodingFactory"
+      },
+      "type": "org.firebirdsql.encodings.DefaultEncodingSet"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.impl.GDSFactory"
+      },
+      "type": "org.firebirdsql.gds.impl.jni.EmbeddedGDSFactoryPlugin"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.impl.GDSFactory"
+      },
+      "type": "org.firebirdsql.gds.impl.jni.NativeGDSFactoryPlugin"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.impl.GDSFactory"
+      },
+      "type": "org.firebirdsql.gds.impl.oo.OOGDSFactoryPlugin"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.impl.GDSFactory"
+      },
+      "type": "org.firebirdsql.gds.impl.wire.WireGDSFactoryPlugin"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.auth.legacy.LegacyAuthenticationPluginSpi"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.auth.srp.Srp224AuthenticationPluginSpi"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.auth.srp.Srp256AuthenticationPluginSpi"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.auth.srp.Srp384AuthenticationPluginSpi"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.auth.srp.Srp512AuthenticationPluginSpi"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.auth.ClientAuthBlock"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.auth.srp.SrpAuthenticationPluginSpi"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.version13.V13WireOperations"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.crypt.arc4.Arc4EncryptionPluginSpi",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.version13.V13WireOperations"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.crypt.chacha.ChaChaEncryptionPluginSpi"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.ProtocolCollection"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.version10.Version10Descriptor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.ProtocolCollection"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.version11.Version11Descriptor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.ProtocolCollection"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.version12.Version12Descriptor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.ProtocolCollection"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.version13.Version13Descriptor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.ProtocolCollection"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.version15.Version15Descriptor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.ProtocolCollection"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.version16.Version16Descriptor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.ng.wire.ProtocolCollection"
+      },
+      "type": "org.firebirdsql.gds.ng.wire.version18.Version18Descriptor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.jaybird.props.internal.UnregisteredDpbDefiner"
+      },
+      "type": "org.firebirdsql.jaybird.fb.constants.DpbItems",
+      "allPublicFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.jaybird.props.internal.UnregisteredDpbDefiner"
+      },
+      "type": "org.firebirdsql.jaybird.fb.constants.SpbItems",
+      "allPublicFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.jaybird.xca.FBManagedConnection"
+      },
+      "type": "org.firebirdsql.jaybird.xca.FBManagedConnection",
+      "fields": [
+        {
+          "name": "connectionHandle"
+        },
+        {
+          "name": "unnotifiedWarnings"
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.jaybird.xca.FBManagedConnectionFactory"
+      },
+      "type": "org.firebirdsql.jdbc.FBConnection",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.firebirdsql.jaybird.xca.FBManagedConnection"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.jdbc.FBConnection"
+      },
+      "type": "org.firebirdsql.jdbc.FBConnection",
+      "fields": [
+        {
+          "name": "savepointCounter"
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.encodings.EncodingFactory"
+      },
+      "glob": "META-INF/services/org.firebirdsql.*"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.MessageLoader"
+      },
+      "glob": "isc_error_*.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.gds.MessageLoader"
+      },
+      "glob": "org/firebirdsql/jaybird_error_*.properties"
+    }
+  ],
+  "bundles": [
+    {
+      "condition": {
+        "typeReached": "org.firebirdsql.jaybird.Version"
+      },
+      "name": "org.firebirdsql.jaybird.version"
+    }
+  ]
+}

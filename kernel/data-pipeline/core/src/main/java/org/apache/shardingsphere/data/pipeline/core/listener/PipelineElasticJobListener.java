@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public final class PipelineElasticJobListener implements ElasticJobListener {
     
-    // TODO ElasticJobListenerFactory.createListener return new class instance, it's the reason why static variables
+    // ElasticJobListenerFactory.createListener return new class instance, it's why static variable is used
     private static final Map<String, Long> RUNNING_JOBS = new ConcurrentHashMap<>();
     
     @Override

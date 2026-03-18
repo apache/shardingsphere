@@ -18,36 +18,49 @@
 package org.apache.shardingsphere.infra.util.yaml.constructor;
 
 import com.google.common.base.Preconditions;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcuts;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.Construct;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.MappingNode;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * ShardingSphere YAML constructor.
  */
-public class ShardingSphereYamlConstructor extends Constructor {
-    
-    private final Map<Class<?>, Construct> typeConstructs = new HashMap<>();
+public final class ShardingSphereYamlConstructor extends Constructor {
     
     private final Class<?> rootClass;
     
+    @SuppressWarnings("CollectionWithoutInitialCapacity")
     public ShardingSphereYamlConstructor(final Class<?> rootClass) {
         super(rootClass, createLoaderOptions());
-        ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlConstruct.class).forEach(each -> typeConstructs.put(each.getType(), each));
         Map<String, Class<?>> yamlShortcuts = new HashMap<>();
         ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlShortcuts.class).stream().map(ShardingSphereYamlShortcuts::getYamlShortcuts).forEach(yamlShortcuts::putAll);
         yamlShortcuts.forEach((key, value) -> addTypeDescription(new TypeDescription(value, key)));
         this.rootClass = rootClass;
     }
     
-    private static LoaderOptions createLoaderOptions() {
+    /**
+     * Create loader options.
+     *
+     * @return loader options
+     */
+    public static LoaderOptions createLoaderOptions() {
         LoaderOptions result = new LoaderOptions();
         result.setMaxAliasesForCollections(1000);
         result.setCodePointLimit(Integer.MAX_VALUE);
@@ -55,8 +68,48 @@ public class ShardingSphereYamlConstructor extends Constructor {
     }
     
     @Override
-    protected final Construct getConstructor(final Node node) {
-        return typeConstructs.getOrDefault(node.getType(), super.getConstructor(node));
+    protected Construct getConstructor(final Node node) {
+        Optional<ShardingSphereYamlConstruct> construct = TypedSPILoader.findService(ShardingSphereYamlConstruct.class, node.getType());
+        return construct.isPresent() ? construct.get() : super.getConstructor(node);
+    }
+    
+    @Override
+    public Object constructObject(final Node node) {
+        Object result = super.constructObject(node);
+        if (isMappingNode(node, result)) {
+            getPropertyUtils().getProperties(result.getClass()).stream().filter(Property::isWritable).forEach(each -> setEmptyCollectionIfNull(result, each));
+        }
+        return result;
+    }
+    
+    private static boolean isMappingNode(final Node node, final Object target) {
+        return null != target && node instanceof MappingNode && !(target instanceof Map) && !(target instanceof Collection);
+    }
+    
+    @SneakyThrows(Exception.class)
+    private void setEmptyCollectionIfNull(final Object target, final Property property) {
+        if (null == property.get(target)) {
+            property.set(target, getEmptyCollection(property.getType()));
+        }
+    }
+    
+    private Object getEmptyCollection(final Class<?> propertyType) {
+        if (Properties.class.isAssignableFrom(propertyType)) {
+            return new Properties();
+        }
+        if (Map.class.isAssignableFrom(propertyType)) {
+            return Collections.emptyMap();
+        }
+        if (Set.class.isAssignableFrom(propertyType)) {
+            return Collections.emptySet();
+        }
+        if (List.class.isAssignableFrom(propertyType)) {
+            return Collections.emptyList();
+        }
+        if (Collection.class.isAssignableFrom(propertyType)) {
+            return Collections.emptyList();
+        }
+        return null;
     }
     
     @Override

@@ -21,7 +21,7 @@ dataSources:
   passthrough:
     url: jdbc:mysql://mysql.passthrough.host:3306/passthrough?useSSL=false&characterEncoding=utf-8
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

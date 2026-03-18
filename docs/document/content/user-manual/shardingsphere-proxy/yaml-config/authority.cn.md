@@ -9,8 +9,8 @@ weight = 1
 
 得益于 ShardingSphere 的可插拔架构，Proxy 提供了两种级别的权限提供者，分别是：
 
-- `ALL_PERMITTED`：每个用户都拥有所有权限，无需专门授权；
-- `DATABASE_PERMITTED`：为用户授予指定逻辑库的权限，通过 `user-database-mappings` 进行定义。
+- `ALL_PERMITTED`：每个用户都拥有所有权限，无需专门授权；（将在未来版本中删除）
+- `DATABASE_PERMITTED`：为用户授予指定逻辑库的权限，通过 `user-database-mappings` 进行定义。（推荐使用）
 
 在配置 `authority` 时，管理员可根据需要选择使用哪一种权限提供者。
 
@@ -79,7 +79,7 @@ authority:
 
 ### 授权配置
 
-#### ALL_PERMITTED
+#### ALL_PERMITTED （将在未来版本中删除）
 
 ```yaml
 authority:
@@ -97,26 +97,25 @@ authority:
 - 未定义 `authenticators` 和 `authenticationMethodName`，Proxy 将根据前端协议自动选择;
 - 指定权限提供者为 `ALL_PERMITTED`。
 
-#### DATABASE_PERMITTED
+#### DATABASE_PERMITTED （推荐使用）
 
 ```yaml
 authority:
   users:
     - user: root@127.0.0.1
       password: root
+      admin: true
     - user: sharding
+      password: sharding
+    - user: test
       password: sharding
   privilege:
     type: DATABASE_PERMITTED
     props:
-      user-database-mappings: root@127.0.0.1=*, sharding@%=test_db, sharding@%=sharding_db
+      user-database-mappings: sharding@%=*, test@%=test_db, test@%=sharding_db
 ```
 
 说明：
-- 定义了两个用户：`root@127.0.0.1` 和 `sharding`；
+- 定义了一个超级用户 `root@127.0.0.1` 和两个普通用户：`sharding` 和 `test`；
 - 未定义 `authenticators` 和 `authenticationMethodName`，Proxy 将根据前端协议自动选择；
-- 指定权限提供者为 `DATABASE_PERMITTED`，并授权 `root@127.0.0.1` 用户访问所有逻辑库(`*`)，sharding 用户仅能访问 test_db 和 sharding_db。
-
-## 相关参考
-
-权限提供者具体实现可以参考 [权限提供者](/cn/user-manual/shardingsphere-proxy/yaml-config/authority/)。
+- 指定权限提供者为 `DATABASE_PERMITTED`，并授权 `sharding@%` 用户访问所有逻辑库(`*`)，test 用户仅能访问 test_db 和 sharding_db。

@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class ExpectedParentheses extends AbstractExpectedSQLSegment {
     
-    @XmlAttribute(name = "left")
-    private boolean left;
+    @XmlAttribute(name = "parentheses")
+    private String parentheses;
 }

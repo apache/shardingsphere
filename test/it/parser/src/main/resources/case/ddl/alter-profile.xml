@@ -28,4 +28,6 @@
     <alter-profile sql-case-id="alter_profile_limit_session_per_user" />
     <alter-profile sql-case-id="alter_profile_limit_password_file_time_password_grace_time" />
     <alter-profile sql-case-id="alter_profile_limit_idle_time_unlimited" />
+    <alter-profile sql-case-id="alter_profile_limit_password_rollover_time" />
+    <alter-profile sql-case-id="alter_profile_limit_inactive_account_time" />
 </sql-parser-test-cases>

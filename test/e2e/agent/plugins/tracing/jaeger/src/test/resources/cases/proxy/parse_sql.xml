@@ -16,10 +16,10 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case service-name="shardingsphere" span-name="/ShardingSphere/parseSQL/">
-        <tag-assertion key="component" value="ShardingSphere"/>
-        <tag-assertion key="span.kind" value="internal"/>
-        <tag-assertion key="db.statement" value="SELECT * FROM t_order"/>
+        <tag key="component" value="ShardingSphere" />
+        <tag key="span.kind" value="internal" />
+        <tag key="db.statement" value="SELECT * FROM t_order" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

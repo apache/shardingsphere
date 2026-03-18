@@ -20,21 +20,24 @@ package org.apache.shardingsphere.mask.config;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 class MaskRuleConfigurationTest {
     
     @Test
-    void assertIsEmpty() {
-        assertTrue(new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap()).isEmpty());
-    }
-    
-    @Test
-    void assertIsNotEmpty() {
-        assertFalse(new MaskRuleConfiguration(Collections.singleton(mock(MaskTableRuleConfiguration.class)), Collections.emptyMap()).isEmpty());
+    void assertGetLogicTableNames() {
+        Collection<String> actual = new MaskRuleConfiguration(Arrays.asList(
+                new MaskTableRuleConfiguration("foo_tbl", Collections.emptyList()), new MaskTableRuleConfiguration("bar_tbl", Collections.emptyList())), null).getLogicTableNames();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.contains("foo_tbl"));
+        assertTrue(actual.contains("bar_tbl"));
+        assertTrue(actual.contains("FOO_TBL"));
+        assertTrue(actual.contains("BAR_tbl"));
     }
 }

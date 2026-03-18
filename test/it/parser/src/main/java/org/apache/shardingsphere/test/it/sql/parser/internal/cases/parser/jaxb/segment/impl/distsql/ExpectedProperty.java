@@ -22,12 +22,14 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Expected property.
  */
 @Getter
 @Setter
+@XmlRootElement(name = "property")
 public final class ExpectedProperty extends AbstractExpectedIdentifierSQLSegment {
     
     @XmlAttribute

@@ -20,11 +20,12 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
+import org.apache.shardingsphere.sharding.exception.data.InvalidDatetimeFormatException;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,8 +35,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AutoIntervalShardingAlgorithmTest {
@@ -48,6 +50,12 @@ class AutoIntervalShardingAlgorithmTest {
     void setup() {
         shardingAlgorithm = (AutoIntervalShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "AUTO_INTERVAL",
                 PropertiesBuilder.build(new Property("datetime-lower", "2020-01-01 00:00:00"), new Property("datetime-upper", "2020-01-01 00:00:16"), new Property("sharding-seconds", "4")));
+    }
+    
+    @Test
+    void assertInitFailedWithInvalidDatetimeFormat() {
+        assertThrows(InvalidDatetimeFormatException.class,
+                () -> TypedSPILoader.getService(ShardingAlgorithm.class, "AUTO_INTERVAL", PropertiesBuilder.build(new Property("datetime-lower", "invalid"))));
     }
     
     @Test

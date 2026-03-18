@@ -44,7 +44,7 @@ public final class PluginLifecycleServiceManager {
     
     /**
      * Initialize all plugins.
-     * 
+     *
      * @param pluginConfigs plugin configuration map
      * @param pluginJars plugin jars
      * @param pluginClassLoader plugin class loader

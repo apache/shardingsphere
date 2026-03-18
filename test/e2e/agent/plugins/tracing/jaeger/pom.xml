@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-test-e2e-agent-plugins-tracing</artifactId>
-        <version>5.5.1-SNAPSHOT</version>
+        <version>5.5.4-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-test-e2e-agent-plugins-jaeger</artifactId>
     <name>${project.artifactId}</name>
@@ -29,7 +29,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-e2e-agent-plugins-common</artifactId>
+            <artifactId>shardingsphere-test-e2e-agent-engine</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>

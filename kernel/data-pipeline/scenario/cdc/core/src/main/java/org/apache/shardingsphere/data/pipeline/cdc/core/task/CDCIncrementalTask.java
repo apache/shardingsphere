@@ -20,14 +20,14 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.task;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.execute.PipelineExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.TaskExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
@@ -42,7 +42,7 @@ public final class CDCIncrementalTask implements PipelineTask {
     @Getter
     private final String taskId;
     
-    private final ExecuteEngine incrementalExecuteEngine;
+    private final PipelineExecuteEngine incrementalExecuteEngine;
     
     private final Dumper dumper;
     
@@ -69,9 +69,5 @@ public final class CDCIncrementalTask implements PipelineTask {
         if (null != importer) {
             importer.stop();
         }
-    }
-    
-    @Override
-    public void close() {
     }
 }

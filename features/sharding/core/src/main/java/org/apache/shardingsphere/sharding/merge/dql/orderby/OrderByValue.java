@@ -19,11 +19,11 @@ package org.apache.shardingsphere.sharding.merge.dql.orderby;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.context.segment.select.orderby.OrderByItem;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.exception.data.NotImplementComparableValueException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
@@ -118,7 +118,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
         int i = 0;
         for (OrderByItem each : orderByItems) {
             int result = CompareUtils.compareTo(orderValues.get(i), orderByValue.orderValues.get(i), each.getSegment().getOrderDirection(),
-                    each.getSegment().getNullsOrderType(selectStatementContext.getDatabaseType()), orderValuesCaseSensitive.get(i));
+                    each.getSegment().getNullsOrderType(selectStatementContext.getSqlStatement().getDatabaseType()), orderValuesCaseSensitive.get(i));
             if (0 != result) {
                 return result;
             }

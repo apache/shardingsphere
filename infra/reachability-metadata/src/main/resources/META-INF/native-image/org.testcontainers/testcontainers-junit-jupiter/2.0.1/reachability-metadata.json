@@ -1,0 +1,303 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.jdbc.ContainerDatabaseDriver"
+      },
+      "type": "org.testcontainers.containers.ClickHouseProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.jdbc.ContainerDatabaseDriver"
+      },
+      "type": "org.testcontainers.containers.MSSQLServerContainerProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.jdbc.ContainerDatabaseDriver"
+      },
+      "type": "org.testcontainers.containers.PgVectorContainerProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.jdbc.ContainerDatabaseDriver"
+      },
+      "type": "org.testcontainers.containers.PostgisContainerProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.jdbc.ContainerDatabaseDriver"
+      },
+      "type": "org.testcontainers.containers.PostgreSQLContainerProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.jdbc.ContainerDatabaseDriver"
+      },
+      "type": "org.testcontainers.containers.TimescaleDBContainerProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.DockerClientFactory"
+      },
+      "type": "org.testcontainers.dockerclient.DockerDesktopClientProviderStrategy"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.DockerClientFactory"
+      },
+      "type": "org.testcontainers.dockerclient.DockerMachineClientProviderStrategy"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.DockerClientFactory"
+      },
+      "type": "org.testcontainers.dockerclient.EnvironmentAndSystemPropertyClientProviderStrategy"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.DockerClientFactory"
+      },
+      "type": "org.testcontainers.dockerclient.NpipeSocketClientProviderStrategy"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.dockerclient.DockerClientProviderStrategy"
+      },
+      "type": "org.testcontainers.dockerclient.NpipeSocketClientProviderStrategy",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.DockerClientFactory"
+      },
+      "type": "org.testcontainers.dockerclient.RootlessDockerClientProviderStrategy"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.DockerClientFactory"
+      },
+      "type": "org.testcontainers.dockerclient.TestcontainersHostPropertyClientProviderStrategy"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.DockerClientFactory"
+      },
+      "type": "org.testcontainers.dockerclient.UnixSocketClientProviderStrategy"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.ext.Java7Support"
+      },
+      "type": "org.testcontainers.shaded.com.fasterxml.jackson.databind.ext.Java7SupportImpl"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.util.ClassUtil"
+      },
+      "type": "org.testcontainers.shaded.com.fasterxml.jackson.databind.ext.Java7SupportImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.dockerclient.DockerClientProviderStrategy"
+      },
+      "type": "org.testcontainers.shaded.com.github.dockerjava.core.DockerConfigFile",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.dockerclient.EnvironmentAndSystemPropertyClientProviderStrategy"
+      },
+      "type": "org.testcontainers.shaded.com.github.dockerjava.core.DockerConfigFile"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper"
+      },
+      "type": "org.testcontainers.shaded.com.github.dockerjava.core.DockerConfigFile",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.github.dockerjava.core.DefaultDockerClientConfig$Builder"
+      },
+      "type": "org.testcontainers.shaded.com.github.dockerjava.core.DockerConfigFile"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.github.dockerjava.core.DockerConfigFile"
+      },
+      "type": "org.testcontainers.shaded.com.github.dockerjava.core.DockerConfigFile"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.github.dockerjava.core.DefaultInvocationBuilder"
+      },
+      "type": "org.testcontainers.shaded.com.github.dockerjava.core.command.AbstrAsyncDockerCmd"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.containers.ExecInContainerPattern"
+      },
+      "type": "org.testcontainers.shaded.com.github.dockerjava.core.command.AbstrDockerCmd"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.containers.Network$NetworkImpl"
+      },
+      "type": "org.testcontainers.shaded.com.github.dockerjava.core.command.CreateNetworkCmdImpl"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.github.dockerjava.core.exec.CreateNetworkCmdExec"
+      },
+      "type": "org.testcontainers.shaded.com.github.dockerjava.core.command.CreateNetworkCmdImpl",
+      "methods": [
+        {
+          "name": "getAttachable",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCheckDuplicate",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDriver",
+          "parameterTypes": []
+        },
+        {
+          "name": "getEnableIPv6",
+          "parameterTypes": []
+        },
+        {
+          "name": "getInternal",
+          "parameterTypes": []
+        },
+        {
+          "name": "getIpam",
+          "parameterTypes": []
+        },
+        {
+          "name": "getLabels",
+          "parameterTypes": []
+        },
+        {
+          "name": "getName",
+          "parameterTypes": []
+        },
+        {
+          "name": "getOptions",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.containers.ExecInContainerPattern"
+      },
+      "type": "org.testcontainers.shaded.com.github.dockerjava.core.command.ExecCreateCmdImpl",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.github.dockerjava.core.command.ExecCreateCmdImpl"
+      },
+      "type": "org.testcontainers.shaded.com.github.dockerjava.core.command.ExecCreateCmdImpl"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.github.dockerjava.core.exec.ExecCreateCmdExec"
+      },
+      "type": "org.testcontainers.shaded.com.github.dockerjava.core.command.ExecCreateCmdImpl",
+      "methods": [
+        {
+          "name": "getContainerId",
+          "parameterTypes": []
+        },
+        {
+          "name": "getEnv",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPrivileged",
+          "parameterTypes": []
+        },
+        {
+          "name": "getUser",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWorkingDir",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.com.github.dockerjava.core.DefaultInvocationBuilder"
+      },
+      "type": "org.testcontainers.shaded.com.github.dockerjava.core.command.ExecStartCmdImpl",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.containers.GenericContainer"
+      },
+      "type": "org.testcontainers.shaded.org.awaitility.core.ConditionFactory$1"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.org.awaitility.core.ConditionFactory"
+      },
+      "type": "org.testcontainers.shaded.org.awaitility.core.ConditionFactory$1"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.org.awaitility.core.ConditionFactory$1"
+      },
+      "type": "org.testcontainers.shaded.org.awaitility.core.ConditionFactory$1"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.org.hamcrest.TypeSafeMatcher"
+      },
+      "type": "org.testcontainers.shaded.org.awaitility.core.ConditionFactory$1"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.shaded.org.hamcrest.internal.ReflectiveTypeFinder"
+      },
+      "type": "org.testcontainers.shaded.org.awaitility.core.ConditionFactory$1"
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.jdbc.ContainerDatabaseDriver"
+      },
+      "glob": "META-INF/services/org.testcontainers.**"
+    },
+    {
+      "condition": {
+        "typeReached": "org.testcontainers.utility.ClasspathScanner"
+      },
+      "glob": "testcontainers.properties"
+    }
+  ]
+}

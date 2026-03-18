@@ -1,0 +1,23 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "io.netty.channel.epoll.EpollChannelOption"
+      },
+      "type": "io.netty.channel.epoll.EpollChannelOption",
+      "fields": [
+        {
+          "name": "TCP_USER_TIMEOUT"
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "io.netty.util.Version"
+      },
+      "glob": "META-INF/io.netty.versions.properties"
+    }
+  ]
+}

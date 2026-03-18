@@ -20,153 +20,68 @@ package org.apache.shardingsphere.broadcast.route.engine;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.broadcast.route.engine.type.BroadcastRouteEngine;
-import org.apache.shardingsphere.broadcast.route.engine.type.broadcast.BroadcastDatabaseBroadcastRoutingEngine;
-import org.apache.shardingsphere.broadcast.route.engine.type.broadcast.BroadcastTableBroadcastRoutingEngine;
-import org.apache.shardingsphere.broadcast.route.engine.type.ignore.BroadcastIgnoreRoutingEngine;
-import org.apache.shardingsphere.broadcast.route.engine.type.unicast.BroadcastUnicastRoutingEngine;
-import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
+import org.apache.shardingsphere.broadcast.route.engine.type.broadcast.BroadcastDatabaseBroadcastRouteEngine;
+import org.apache.shardingsphere.broadcast.route.engine.type.broadcast.BroadcastTableBroadcastRouteEngine;
+import org.apache.shardingsphere.broadcast.route.engine.type.unicast.BroadcastUnicastRouteEngine;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.ddl.CloseStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.CursorAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.IndexAvailable;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dcl.DCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.statement.mysql.dal.MySQLUseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.CursorSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.DCLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 /**
  * Broadcast routing engine factory.
  */
+@HighFrequencyInvocation
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BroadcastRouteEngineFactory {
     
     /**
      * Create new instance of broadcast routing engine.
      *
-     * @param broadcastRule broadcast rule
-     * @param database database
      * @param queryContext query context
-     * @param connectionContext connection context
+     * @param broadcastTableNames broadcast table names
      * @return broadcast route engine
      */
-    public static BroadcastRouteEngine newInstance(final BroadcastRule broadcastRule, final ShardingSphereDatabase database, final QueryContext queryContext,
-                                                   final ConnectionContext connectionContext) {
+    public static BroadcastRouteEngine newInstance(final QueryContext queryContext, final Collection<String> broadcastTableNames) {
         SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof TCLStatement) {
-            return new BroadcastDatabaseBroadcastRoutingEngine();
-        }
         if (sqlStatement instanceof DDLStatement) {
-            if (sqlStatementContext instanceof CursorAvailable) {
-                return getCursorRouteEngine(broadcastRule, sqlStatementContext, connectionContext);
-            }
-            return getDDLRoutingEngine(broadcastRule, database, queryContext);
+            return getDDLRouteEngine(queryContext, broadcastTableNames, sqlStatementContext);
         }
         if (sqlStatement instanceof DALStatement) {
-            return getDALRoutingEngine(broadcastRule, queryContext);
+            return getDALRouteEngine(broadcastTableNames);
         }
         if (sqlStatement instanceof DCLStatement) {
-            return getDCLRoutingEngine(broadcastRule, queryContext);
+            return getDCLRouteEngine(broadcastTableNames);
         }
-        return getDQLRoutingEngine(broadcastRule, queryContext, connectionContext);
+        return getDMLRouteEngine(sqlStatementContext, queryContext.getConnectionContext(), broadcastTableNames);
     }
     
-    private static BroadcastRouteEngine getCursorRouteEngine(final BroadcastRule broadcastRule, final SQLStatementContext sqlStatementContext, final ConnectionContext connectionContext) {
-        if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
-            return new BroadcastDatabaseBroadcastRoutingEngine();
-        }
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
-                : Collections.emptyList();
-        return broadcastRule.isAllBroadcastTables(tableNames) ? new BroadcastUnicastRoutingEngine(sqlStatementContext, tableNames, connectionContext) : new BroadcastIgnoreRoutingEngine();
+    private static BroadcastRouteEngine getDDLRouteEngine(final QueryContext queryContext, final Collection<String> broadcastTableNames, final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext.getSqlStatement().getAttributes().findAttribute(CursorSQLStatementAttribute.class).isPresent()
+                ? new BroadcastUnicastRouteEngine(sqlStatementContext, broadcastTableNames, queryContext.getConnectionContext())
+                : new BroadcastTableBroadcastRouteEngine(broadcastTableNames);
     }
     
-    private static BroadcastRouteEngine getDDLRoutingEngine(final BroadcastRule broadcastRule, final ShardingSphereDatabase database, final QueryContext queryContext) {
-        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        Collection<String> tableNames = getTableNames(database, sqlStatementContext);
-        if (broadcastRule.isAllBroadcastTables(tableNames)) {
-            return new BroadcastTableBroadcastRoutingEngine(tableNames);
-        }
-        return new BroadcastIgnoreRoutingEngine();
+    private static BroadcastRouteEngine getDALRouteEngine(final Collection<String> broadcastTableNames) {
+        return new BroadcastTableBroadcastRouteEngine(broadcastTableNames);
     }
     
-    private static Collection<String> getTableNames(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable
-                ? ((TableAvailable) sqlStatementContext).getTablesContext().getSimpleTables().stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet())
-                : Collections.emptyList();
-        if (!tableNames.isEmpty()) {
-            return tableNames;
-        }
-        return sqlStatementContext instanceof IndexAvailable
-                ? getTableNames(database, sqlStatementContext.getDatabaseType(), ((IndexAvailable) sqlStatementContext).getIndexes())
-                : Collections.emptyList();
+    private static BroadcastRouteEngine getDCLRouteEngine(final Collection<String> broadcastTableNames) {
+        return new BroadcastTableBroadcastRouteEngine(broadcastTableNames);
     }
     
-    private static Collection<String> getTableNames(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<IndexSegment> indexes) {
-        Collection<String> result = new LinkedList<>();
-        for (QualifiedTable each : IndexMetaDataUtils.getTableNames(database, databaseType, indexes)) {
-            result.add(each.getTableName());
-        }
-        return result;
-    }
-    
-    private static BroadcastRouteEngine getDALRoutingEngine(final BroadcastRule broadcastRule, final QueryContext queryContext) {
-        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        if (sqlStatement instanceof MySQLUseStatement) {
-            return new BroadcastIgnoreRoutingEngine();
-        }
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
-        Collection<String> broadcastRuleTableNames = broadcastRule.getBroadcastRuleTableNames(tableNames);
-        if (broadcastRule.isAllBroadcastTables(broadcastRuleTableNames)) {
-            return new BroadcastTableBroadcastRoutingEngine(broadcastRuleTableNames);
-        }
-        return new BroadcastIgnoreRoutingEngine();
-    }
-    
-    private static BroadcastRouteEngine getDCLRoutingEngine(final BroadcastRule broadcastRule, final QueryContext queryContext) {
-        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
-        Collection<String> broadcastRuleTableNames = broadcastRule.getBroadcastRuleTableNames(tableNames);
-        if (isDCLForSingleTable(sqlStatementContext) && !broadcastRuleTableNames.isEmpty() || broadcastRule.isAllBroadcastTables(broadcastRuleTableNames)) {
-            return new BroadcastTableBroadcastRoutingEngine(broadcastRuleTableNames);
-        }
-        return new BroadcastIgnoreRoutingEngine();
-    }
-    
-    private static boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext instanceof TableAvailable) {
-            TableAvailable tableSegmentsAvailable = (TableAvailable) sqlStatementContext;
-            return 1 == tableSegmentsAvailable.getTablesContext().getSimpleTables().size()
-                    && !"*".equals(tableSegmentsAvailable.getTablesContext().getSimpleTables().iterator().next().getTableName().getIdentifier().getValue());
-        }
-        return false;
-    }
-    
-    private static BroadcastRouteEngine getDQLRoutingEngine(final BroadcastRule broadcastRule, final QueryContext queryContext, final ConnectionContext connectionContext) {
-        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
-        Collection<String> tableNames = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getTableNames() : Collections.emptyList();
-        if (broadcastRule.isAllBroadcastTables(tableNames)) {
-            return sqlStatementContext.getSqlStatement() instanceof SelectStatement
-                    ? new BroadcastUnicastRoutingEngine(sqlStatementContext, tableNames, connectionContext)
-                    : new BroadcastDatabaseBroadcastRoutingEngine();
-        }
-        return new BroadcastIgnoreRoutingEngine();
+    private static BroadcastRouteEngine getDMLRouteEngine(final SQLStatementContext sqlStatementContext, final ConnectionContext connectionContext, final Collection<String> broadcastTableNames) {
+        return sqlStatementContext.getSqlStatement() instanceof SelectStatement
+                ? new BroadcastUnicastRouteEngine(sqlStatementContext, broadcastTableNames, connectionContext)
+                : new BroadcastDatabaseBroadcastRouteEngine();
     }
 }

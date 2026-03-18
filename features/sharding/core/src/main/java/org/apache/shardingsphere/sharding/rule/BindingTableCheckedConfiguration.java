@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
@@ -36,6 +37,8 @@ public final class BindingTableCheckedConfiguration {
     private final Collection<String> dataSourceNames;
     
     private final Map<String, ShardingAlgorithm> shardingAlgorithms;
+    
+    private final Map<String, AlgorithmConfiguration> algorithmConfigs;
     
     private final Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups;
     

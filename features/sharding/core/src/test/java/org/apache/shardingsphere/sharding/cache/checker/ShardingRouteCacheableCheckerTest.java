@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.sharding.cache.checker;
 
 import org.apache.groovy.util.Maps;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -33,9 +33,13 @@ import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfiguration;
 import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsConfiguration;
@@ -44,11 +48,9 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReference
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.timeservice.config.TimestampServiceRuleConfiguration;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -56,25 +58,30 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.support.ParameterDeclarations;
 
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ShardingRouteCacheableCheckerTest {
     
     private static final String DATABASE_NAME = "sharding_db";
     
     private static final String SCHEMA_NAME = "public";
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
     @ParameterizedTest(name = "probably cacheable: {2}, SQL: {0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
@@ -107,8 +114,9 @@ class ShardingRouteCacheableCheckerTest {
         nonCacheableTableSharding.setTableShardingStrategy(new StandardShardingStrategyConfiguration("id", "table-inline"));
         ruleConfig.getTables().add(nonCacheableTableSharding);
         ruleConfig.setShardingCache(new ShardingCacheConfiguration(100, new ShardingCacheOptionsConfiguration(true, 0, 0)));
-        return new ShardingRule(ruleConfig, Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource()),
-                new ComputeNodeInstanceContext(mock(ComputeNodeInstance.class), props -> 0, null, null, null));
+        ComputeNodeInstanceContext instanceContext = new ComputeNodeInstanceContext(mock(ComputeNodeInstance.class), null, null);
+        instanceContext.init(props -> 0);
+        return new ShardingRule(ruleConfig, Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource()), instanceContext, Collections.emptyList());
     }
     
     private TimestampServiceRule createTimeServiceRule() {
@@ -116,73 +124,75 @@ class ShardingRouteCacheableCheckerTest {
     }
     
     private ShardingSphereDatabase createDatabase(final ShardingRule shardingRule, final TimestampServiceRule timestampServiceRule) {
-        ShardingSphereSchema schema = new ShardingSphereSchema();
-        schema.getTables().put("t_warehouse", new ShardingSphereTable("t_warehouse", Arrays.asList(
+        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA_NAME, mock(DatabaseType.class));
+        schema.putTable(new ShardingSphereTable("t_warehouse", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("warehouse_name", Types.VARCHAR, false, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        schema.getTables().put("t_order", new ShardingSphereTable("t_order", Arrays.asList(
+        schema.putTable(new ShardingSphereTable("t_order", Arrays.asList(
                 new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        schema.getTables().put("t_order_item", new ShardingSphereTable("t_order_item", Arrays.asList(
+        schema.putTable(new ShardingSphereTable("t_order_item", Arrays.asList(
                 new ShardingSphereColumn("warehouse_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("order_broadcast_table_id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        schema.getTables().put("t_non_sharding_table", new ShardingSphereTable("t_non_sharding_table", Collections.singleton(
+        schema.putTable(new ShardingSphereTable("t_non_sharding_table", Collections.singleton(
                 new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        schema.getTables().put("t_non_cacheable_database_sharding", new ShardingSphereTable("t_non_cacheable_database_sharding", Collections.singleton(
+        schema.putTable(new ShardingSphereTable("t_non_cacheable_database_sharding", Collections.singleton(
                 new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        schema.getTables().put("t_non_cacheable_table_sharding", new ShardingSphereTable("t_non_cacheable_table_sharding", Collections.singleton(
+        schema.putTable(new ShardingSphereTable("t_non_cacheable_table_sharding", Collections.singleton(
                 new ShardingSphereColumn("id", Types.INTEGER, false, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        return new ShardingSphereDatabase(DATABASE_NAME, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"),
-                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Arrays.asList(shardingRule, timestampServiceRule)),
-                Collections.singletonMap(SCHEMA_NAME, schema));
+        return new ShardingSphereDatabase(DATABASE_NAME, databaseType,
+                new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Arrays.asList(shardingRule, timestampServiceRule)), Collections.singleton(schema));
     }
     
     private QueryContext createQueryContext(final ShardingSphereDatabase database, final String sql, final List<Object> params) {
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(createShardingSphereMetaData(database), DATABASE_NAME, new HintValueContext()).bind(parse(sql), params);
-        return new QueryContext(sqlStatementContext, sql, params, new HintValueContext());
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(
+                new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class)),
+                DATABASE_NAME, new HintValueContext()).bind(parse(sql));
+        return new QueryContext(sqlStatementContext, sql, params, new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
     }
     
-    private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DATABASE_NAME, database), mock(ResourceMetaData.class),
-                mock(RuleMetaData.class), mock(ConfigurationProperties.class));
+    private ConnectionContext mockConnectionContext() {
+        ConnectionContext result = mock(ConnectionContext.class);
+        when(result.getCurrentDatabaseName()).thenReturn(Optional.of(DATABASE_NAME));
+        return result;
     }
     
     private SQLStatement parse(final String sql) {
-        CacheOption cacheOption = new CacheOption(0, 0L);
-        return new SQLStatementParserEngine(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), cacheOption, cacheOption).parse(sql, false);
+        SQLParserRule sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(0, 0L), new CacheOption(0, 0L)));
+        return sqlParserRule.getSQLParserEngine(databaseType).parse(sql, false);
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+        public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             Collection<? extends Arguments> probablyCacheableCases = Arrays.asList(
-                    Arguments.of("insert into t_warehouse (id) values (?)", Collections.singletonList(1), true, Collections.singletonList(0)),
-                    Arguments.of("select * from t_warehouse where id = ?", Collections.singletonList(1), true, Collections.singletonList(0)),
-                    Arguments.of("select * from t_warehouse where id in (?, ?, ?)", Arrays.asList(1, 2, 3), true, Arrays.asList(0, 1, 2)),
-                    Arguments.of("select * from t_warehouse where id between ? and ?", Arrays.asList(1, 10), true, Arrays.asList(0, 1)),
-                    Arguments.of("select * from t_warehouse where id between ? and ? limit ? offset ?", Arrays.asList(1, 10, 100, 50), true, Arrays.asList(0, 1)),
-                    Arguments.of("update t_warehouse set warehouse_name = ? where id = ?", Arrays.asList("foo", 1), true, Collections.singletonList(1)),
-                    Arguments.of("delete from t_warehouse where id = ?", Collections.singletonList(1), true, Collections.singletonList(0)));
+                    Arguments.of("INSERT INTO t_warehouse (id) VALUES (?)", Collections.singletonList(1), true, Collections.singletonList(0)),
+                    Arguments.of("SELECT * FROM t_warehouse WHERE id = ?", Collections.singletonList(1), true, Collections.singletonList(0)),
+                    Arguments.of("SELECT * FROM t_warehouse WHERE id in (?, ?, ?)", Arrays.asList(1, 2, 3), true, Arrays.asList(0, 1, 2)),
+                    Arguments.of("SELECT * FROM t_warehouse WHERE id BETWEEN ? AND ?", Arrays.asList(1, 10), true, Arrays.asList(0, 1)),
+                    Arguments.of("SELECT * FROM t_warehouse WHERE id BETWEEN ? AND ? LIMIT ? OFFSET ?", Arrays.asList(1, 10, 100, 50), true, Arrays.asList(0, 1)),
+                    Arguments.of("UPDATE t_warehouse SET warehouse_name = ? WHERE id = ?", Arrays.asList("foo", 1), true, Collections.singletonList(1)),
+                    Arguments.of("DELETE FROM t_warehouse WHERE id = ?", Collections.singletonList(1), true, Collections.singletonList(0)));
             Collection<? extends Arguments> nonCacheableCases = Arrays.asList(
-                    Arguments.of("create table t_warehouse (id int4 not null primary key)", Collections.emptyList(), false, Collections.emptyList()),
-                    Arguments.of("insert into t_warehouse (id) select warehouse_id from t_order", Collections.emptyList(), false, Collections.emptyList()),
-                    Arguments.of("insert into t_warehouse (id) values (?), (?)", Arrays.asList(1, 2), false, Collections.emptyList()),
-                    Arguments.of("insert into t_non_sharding_table (id) values (?)", Collections.singletonList(1), false, Collections.emptyList()),
-                    Arguments.of("insert into t_non_cacheable_database_sharding (id) values (?)", Collections.singletonList(1), false, Collections.emptyList()),
-                    Arguments.of("insert into t_non_cacheable_table_sharding (id) values (?)", Collections.singletonList(1), false, Collections.emptyList()),
-                    Arguments.of("insert into t_warehouse (id) values (now())", Collections.emptyList(), false, Collections.emptyList()),
-                    Arguments.of("select * from t_warehouse w join t_order o on w.id = o.warehouse_id where w.id = ?", Collections.singletonList(1), false, Collections.emptyList()),
-                    Arguments.of("update t_warehouse set warehouse_name = ? where id = (select max(warehouse_id) from t_order)", Collections.singletonList("foo"), false, Collections.emptyList()),
-                    Arguments.of("delete from t_order where warehouse_id in (1, 2, now())", Collections.emptyList(), false, Collections.emptyList()),
-                    Arguments.of("delete from t_order where warehouse_id between now() and now()", Collections.emptyList(), false, Collections.emptyList()),
-                    Arguments.of("delete from t_order o where o.warehouse_id in (select w.id from t_warehouse w)", Collections.emptyList(), false, Collections.emptyList()));
+                    Arguments.of("CREATE TABLE t_warehouse_for_create (id int4 not null primary key)", Collections.emptyList(), false, Collections.emptyList()),
+                    Arguments.of("INSERT INTO t_warehouse (id) SELECT warehouse_id FROM t_order", Collections.emptyList(), false, Collections.emptyList()),
+                    Arguments.of("INSERT INTO t_warehouse (id) VALUES (?), (?)", Arrays.asList(1, 2), false, Collections.emptyList()),
+                    Arguments.of("INSERT INTO t_non_sharding_table (id) VALUES (?)", Collections.singletonList(1), false, Collections.emptyList()),
+                    Arguments.of("INSERT INTO t_non_cacheable_database_sharding (id) VALUES (?)", Collections.singletonList(1), false, Collections.emptyList()),
+                    Arguments.of("INSERT INTO t_non_cacheable_table_sharding (id) VALUES (?)", Collections.singletonList(1), false, Collections.emptyList()),
+                    Arguments.of("INSERT INTO t_warehouse (id) VALUES (now())", Collections.emptyList(), false, Collections.emptyList()),
+                    Arguments.of("SELECT * FROM t_warehouse w JOIN t_order o on w.id = o.warehouse_id WHERE w.id = ?", Collections.singletonList(1), false, Collections.emptyList()),
+                    Arguments.of("UPDATE t_warehouse SET warehouse_name = ? WHERE id = (SELECT max(warehouse_id) FROM t_order)", Collections.singletonList("foo"), false, Collections.emptyList()),
+                    Arguments.of("DELETE FROM t_order WHERE warehouse_id in (1, 2, now())", Collections.emptyList(), false, Collections.emptyList()),
+                    Arguments.of("DELETE FROM t_order WHERE warehouse_id BETWEEN now() AND now()", Collections.emptyList(), false, Collections.emptyList()),
+                    Arguments.of("DELETE FROM t_order o WHERE o.warehouse_id IN (SELECT w.id FROM t_warehouse w)", Collections.emptyList(), false, Collections.emptyList()));
             return Stream.of(probablyCacheableCases.stream(), nonCacheableCases.stream()).flatMap(Function.identity());
         }
     }

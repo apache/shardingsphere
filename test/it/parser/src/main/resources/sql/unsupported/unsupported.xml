@@ -26,8 +26,18 @@
     <sql-case id="create_table_as_select" value="create table agg_data_2k as select g from generate_series(0, 1999) g;" db-types="PostgreSQL" />
     <sql-case id="create_temp_table" value="create temp table old_oids as select relname, oid as oldoid, relfilenode as oldfilenode from pg_class where relname like 'at_partitioned%'" db-types="PostgreSQL" />
     <sql-case id="select_case_when" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
+    <sql-case id="unsupported_select_json_value_on_error_for_doris" value="SELECT JSON_VALUE('{&quot;price&quot;: &quot;49.95&quot;}', '$.price' RETURNING DECIMAL(4,1) null on empty default 0 on error)" db-types="Doris" />
     <sql-case id="select_like" value="select conname, obj_description(oid, 'pg_constraint') as desc from pg_constraint where conname like 'at_partitioned%' order by conname" db-types="PostgreSQL" />
     <sql-case id="select_keyword" value="select relname,c.oid = oldoid as orig_oid,case relfilenode when 0 then 'none' when c.oid then 'own' when oldfilenode then 'orig' else 'OTHER' end as storage, obj_description(c.oid, 'pg_class') as desc from pg_class c left join old_oids using (relname) where relname like 'at_partitioned%' order by relname" db-types="PostgreSQL" />
+    <sql-case id="unsupported_date_literal_for_clickhouse" value="SELECT DATE '2024-01-01'" db-types="ClickHouse" />
+    <sql-case id="unsupported_merge_for_clickhouse" value="MERGE INTO t_order AS o USING t_order_item AS i ON o.order_id = i.order_id WHEN MATCHED THEN UPDATE SET status = 1" db-types="ClickHouse" />
+    <sql-case id="unsupported_create_table_for_clickhouse" value="CREATE TABLE t_order (order_id INT)" db-types="ClickHouse" />
+    <sql-case id="unsupported_commit_for_clickhouse" value="COMMIT" db-types="ClickHouse" />
+    <sql-case id="unsupported_grant_for_clickhouse" value="GRANT SELECT ON t_order TO user1" db-types="ClickHouse" />
+    <sql-case id="unsupported_show_tables_for_clickhouse" value="SHOW TABLES" db-types="ClickHouse" />
+    <sql-case id="unsupported_function_call_for_clickhouse" value="SELECT FUNCTION()" db-types="ClickHouse" />
+    <sql-case id="unsupported_lock_tables_for_clickhouse" value="LOCK TABLES t_order READ" db-types="ClickHouse" />
+    <sql-case id="unsupported_unlock_tables_for_clickhouse" value="UNLOCK TABLES" db-types="ClickHouse" />
     <sql-case id="unsupported_select_case_for_opengauss_13" value="select count(*) from partition_list_tab01 partition for ('20');" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_14" value="select count(*) from partition_list_tab partition for ('10');" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_15" value="select count(*) from partition_list_tab partition for ('20');" db-types="openGauss" />
@@ -262,8 +272,6 @@
     <sql-case id="unsupported_select_case_for_opengauss_438" value="select B'101' | as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_439" value="select B'101' # as result;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_440" value="select B'11110' # B'0000';" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_443" value="select extract(quarter from timestamp '2001-02-16 20:38:40') from sys_dummy;" db-types="openGauss" />
-    <sql-case id="unsupported_select_case_for_opengauss_444" value="select extract(week from timestamp '2001-02-16 20:38:40') from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_447" value="select atan(11 11) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_448" value="select atan(,) from sys_dummy;" db-types="openGauss" />
     <sql-case id="unsupported_select_case_for_opengauss_451" value="select $$the lexeme '    '  , contains spaces$$::tsvector@@ ','::tsquery  as result;" db-types="openGauss" />

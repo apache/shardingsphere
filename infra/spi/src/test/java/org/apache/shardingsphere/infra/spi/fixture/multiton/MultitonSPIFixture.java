@@ -17,5 +17,7 @@
 
 package org.apache.shardingsphere.infra.spi.fixture.multiton;
 
-public interface MultitonSPIFixture {
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+
+public interface MultitonSPIFixture extends ShardingSphereSPI {
 }

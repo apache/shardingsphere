@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.shadow.rule.builder;
 
-import org.apache.shardingsphere.infra.database.mysql.type.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
-import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
@@ -28,8 +25,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.mock;
 
 class ShadowRuleBuilderTest {
@@ -39,7 +36,6 @@ class ShadowRuleBuilderTest {
     void assertBuild() {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, "", new MySQLDatabaseType(), mock(ResourceMetaData.class), Collections.emptyList(),
-                mock(ComputeNodeInstanceContext.class)), instanceOf(ShadowRule.class));
+        assertThat(builder.build(ruleConfig, "", mock(), mock(), Collections.emptyList(), mock()), isA(ShadowRule.class));
     }
 }

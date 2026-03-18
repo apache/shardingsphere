@@ -22,17 +22,19 @@ import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineUnexp
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.core.ingest.record.NormalColumn;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DataRecordGroupEngineTest {
@@ -73,9 +75,9 @@ class DataRecordGroupEngineTest {
         assertThat(dataRecord.getTableName(), is("order"));
         assertThat(dataRecord.getActualTableName(), is("order_0"));
         assertThat(dataRecord.getCommitTime(), is(456L));
-        assertColumnsMatched(dataRecord.getColumn(0), new Column("id", null, 1, true, true));
-        assertColumnsMatched(dataRecord.getColumn(1), new Column("user_id", null, 10, true, false));
-        assertColumnsMatched(dataRecord.getColumn(2), new Column("total_price", null, 200, true, false));
+        assertColumnsMatched(dataRecord.getColumn(0), new NormalColumn("id", null, 1, true, true));
+        assertColumnsMatched(dataRecord.getColumn(1), new NormalColumn("user_id", null, 10, true, false));
+        assertColumnsMatched(dataRecord.getColumn(2), new NormalColumn("total_price", null, 200, true, false));
     }
     
     private void assertColumnsMatched(final Column actual, final Column expected) {
@@ -97,9 +99,9 @@ class DataRecordGroupEngineTest {
         assertThat(dataRecord.getTableName(), is("order"));
         assertThat(dataRecord.getActualTableName(), is("order_0"));
         assertThat(dataRecord.getCommitTime(), is(456L));
-        assertColumnsMatched(dataRecord.getColumn(0), new Column("id", null, 2, true, true));
-        assertColumnsMatched(dataRecord.getColumn(1), new Column("user_id", null, 10, true, false));
-        assertColumnsMatched(dataRecord.getColumn(2), new Column("total_price", null, 50, true, false));
+        assertColumnsMatched(dataRecord.getColumn(0), new NormalColumn("id", null, 2, true, true));
+        assertColumnsMatched(dataRecord.getColumn(1), new NormalColumn("user_id", null, 10, true, false));
+        assertColumnsMatched(dataRecord.getColumn(2), new NormalColumn("total_price", null, 50, true, false));
     }
     
     @Test
@@ -113,9 +115,9 @@ class DataRecordGroupEngineTest {
         assertThat(dataRecord.getTableName(), is("order"));
         assertThat(dataRecord.getActualTableName(), is("order_0"));
         assertThat(dataRecord.getCommitTime(), is(456L));
-        assertColumnsMatched(dataRecord.getColumn(0), new Column("id", 1, 1, false, true));
-        assertColumnsMatched(dataRecord.getColumn(1), new Column("user_id", 10, 10, false, false));
-        assertColumnsMatched(dataRecord.getColumn(2), new Column("total_price", 50, 200, true, false));
+        assertColumnsMatched(dataRecord.getColumn(0), new NormalColumn("id", 1, 1, false, true));
+        assertColumnsMatched(dataRecord.getColumn(1), new NormalColumn("user_id", 10, 10, false, false));
+        assertColumnsMatched(dataRecord.getColumn(2), new NormalColumn("total_price", 50, 200, true, false));
     }
     
     @Test
@@ -129,9 +131,9 @@ class DataRecordGroupEngineTest {
         assertThat(dataRecord.getTableName(), is("order"));
         assertThat(dataRecord.getActualTableName(), is("order_0"));
         assertThat(dataRecord.getCommitTime(), is(456L));
-        assertColumnsMatched(dataRecord.getColumn(0), new Column("id", 1, 2, true, true));
-        assertColumnsMatched(dataRecord.getColumn(1), new Column("user_id", 10, 10, false, false));
-        assertColumnsMatched(dataRecord.getColumn(2), new Column("total_price", 50, 200, true, false));
+        assertColumnsMatched(dataRecord.getColumn(0), new NormalColumn("id", 1, 2, true, true));
+        assertColumnsMatched(dataRecord.getColumn(1), new NormalColumn("user_id", 10, 10, false, false));
+        assertColumnsMatched(dataRecord.getColumn(2), new NormalColumn("total_price", 50, 200, true, false));
     }
     
     @Test
@@ -145,9 +147,9 @@ class DataRecordGroupEngineTest {
         assertThat(dataRecord.getTableName(), is("order"));
         assertThat(dataRecord.getActualTableName(), is("order_0"));
         assertThat(dataRecord.getCommitTime(), is(456L));
-        assertColumnsMatched(dataRecord.getColumn(0), new Column("id", 1, 2, true, true));
-        assertColumnsMatched(dataRecord.getColumn(1), new Column("user_id", 10, 10, false, false));
-        assertColumnsMatched(dataRecord.getColumn(2), new Column("total_price", 50, 200, true, false));
+        assertColumnsMatched(dataRecord.getColumn(0), new NormalColumn("id", 1, 2, true, true));
+        assertColumnsMatched(dataRecord.getColumn(1), new NormalColumn("user_id", 10, 10, false, false));
+        assertColumnsMatched(dataRecord.getColumn(2), new NormalColumn("total_price", 50, 200, true, false));
     }
     
     @Test
@@ -161,9 +163,9 @@ class DataRecordGroupEngineTest {
         assertThat(dataRecord.getTableName(), is("order"));
         assertThat(dataRecord.getActualTableName(), is("order_0"));
         assertThat(dataRecord.getCommitTime(), is(456L));
-        assertColumnsMatched(dataRecord.getColumn(0), new Column("id", 1, 3, true, true));
-        assertColumnsMatched(dataRecord.getColumn(1), new Column("user_id", 10, 10, false, false));
-        assertColumnsMatched(dataRecord.getColumn(2), new Column("total_price", 50, 50, false, false));
+        assertColumnsMatched(dataRecord.getColumn(0), new NormalColumn("id", 1, 3, true, true));
+        assertColumnsMatched(dataRecord.getColumn(1), new NormalColumn("user_id", 10, 10, false, false));
+        assertColumnsMatched(dataRecord.getColumn(2), new NormalColumn("total_price", 50, 50, false, false));
     }
     
     @Test
@@ -202,9 +204,9 @@ class DataRecordGroupEngineTest {
         assertThat(dataRecord.getTableName(), is("order"));
         assertThat(dataRecord.getActualTableName(), is("order_0"));
         assertThat(dataRecord.getCommitTime(), is(789L));
-        assertColumnsMatched(dataRecord.getColumn(0), new Column("id", 1, null, true, true));
-        assertColumnsMatched(dataRecord.getColumn(1), new Column("user_id", 10, null, true, false));
-        assertColumnsMatched(dataRecord.getColumn(2), new Column("total_price", 50, null, true, false));
+        assertColumnsMatched(dataRecord.getColumn(0), new NormalColumn("id", 1, null, true, true));
+        assertColumnsMatched(dataRecord.getColumn(1), new NormalColumn("user_id", 10, null, true, false));
+        assertColumnsMatched(dataRecord.getColumn(2), new NormalColumn("total_price", 50, null, true, false));
     }
     
     @Test
@@ -215,7 +217,15 @@ class DataRecordGroupEngineTest {
     }
     
     @Test
-    void assertGroup() {
+    void assertGroupOnTableHasNoUniqueKey() {
+        DataRecord dataRecord = new DataRecord(PipelineSQLOperationType.INSERT, "order", new IngestPlaceholderPosition(), 3);
+        dataRecord.setActualTableName("order_0");
+        List<DataRecord> dataRecords = Collections.singletonList(dataRecord);
+        assertThrows(IllegalArgumentException.class, () -> groupEngine.group(dataRecords));
+    }
+    
+    @Test
+    void assertGroupOnTableHasUniqueKey() {
         List<DataRecord> dataRecords = mockDataRecords();
         List<GroupedDataRecord> groupedDataRecords = groupEngine.group(dataRecords);
         assertThat(groupedDataRecords.size(), is(2));
@@ -246,9 +256,9 @@ class DataRecordGroupEngineTest {
         DataRecord result = new DataRecord(PipelineSQLOperationType.INSERT, tableName, new IngestPlaceholderPosition(), 3);
         result.setActualTableName("order_0");
         result.setCommitTime(123L);
-        result.addColumn(new Column("id", id, true, true));
-        result.addColumn(new Column("user_id", userId, true, false));
-        result.addColumn(new Column("total_price", totalPrice, true, false));
+        result.addColumn(new NormalColumn("id", id, true, true));
+        result.addColumn(new NormalColumn("user_id", userId, true, false));
+        result.addColumn(new NormalColumn("total_price", totalPrice, true, false));
         return result;
     }
     
@@ -268,9 +278,9 @@ class DataRecordGroupEngineTest {
         DataRecord result = new DataRecord(PipelineSQLOperationType.UPDATE, tableName, new IngestPlaceholderPosition(), 3);
         result.setActualTableName("order_0");
         result.setCommitTime(456L);
-        result.addColumn(new Column("id", oldId, id, !Objects.deepEquals(oldId, id), true));
-        result.addColumn(new Column("user_id", userId, userId, false, false));
-        result.addColumn(new Column("total_price", 50, totalPrice, 50 != totalPrice, false));
+        result.addColumn(new NormalColumn("id", oldId, id, !Objects.deepEquals(oldId, id), true));
+        result.addColumn(new NormalColumn("user_id", userId, userId, false, false));
+        result.addColumn(new NormalColumn("total_price", 50, totalPrice, 50 != totalPrice, false));
         return result;
     }
     
@@ -282,9 +292,9 @@ class DataRecordGroupEngineTest {
         DataRecord result = new DataRecord(PipelineSQLOperationType.DELETE, tableName, new IngestPlaceholderPosition(), 3);
         result.setActualTableName("order_0");
         result.setCommitTime(789L);
-        result.addColumn(new Column("id", id, null, true, true));
-        result.addColumn(new Column("user_id", userId, null, true, false));
-        result.addColumn(new Column("total_price", totalPrice, null, true, false));
+        result.addColumn(new NormalColumn("id", id, null, true, true));
+        result.addColumn(new NormalColumn("user_id", userId, null, true, false));
+        result.addColumn(new NormalColumn("total_price", totalPrice, null, true, false));
         return result;
     }
 }

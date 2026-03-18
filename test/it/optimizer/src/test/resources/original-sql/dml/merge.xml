@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="merge_into_table_using_table" value="MERGE INTO people_target USING people_source ON (people_target.person_id = people_source.person_id)" db-types="Oracle" />
+    <sql-case id="merge_into_table_using_subquery_alias" value="MERGE INTO bonuses D USING (SELECT employee_id, salary, department_id FROM employees WHERE department_id = 80) S ON (D.employee_id = S.employee_id)" db-types="Oracle" />
+    <sql-case id="merge_update_table" value="MERGE INTO people_target pt USING people_source ps ON (pt.person_id = ps.person_id) WHEN MATCHED THEN UPDATE SET pt.first_name = ps.first_name, pt.last_name = ps.last_name, pt.title = ps.title" db-types="Oracle" />
+    <sql-case id="merge_update_table_with_delete" value="MERGE INTO bonuses D USING (SELECT employee_id, salary, department_id FROM employees WHERE department_id = 80) S ON (D.employee_id = S.employee_id) WHEN MATCHED THEN UPDATE SET D.bonus = D.bonus + S.salary*.01 DELETE WHERE (S.salary > 8000)" db-types="Oracle" />
+    <sql-case id="merge_update_and_insert_table" value="MERGE INTO bonuses D    USING (SELECT employee_id, salary, department_id FROM hr.employees    WHERE department_id = 80) S    ON (D.employee_id = S.employee_id)    WHEN MATCHED THEN UPDATE SET D.bonus = D.bonus + S.salary*.01      DELETE WHERE (S.salary = 8000)    WHEN NOT MATCHED THEN INSERT (D.employee_id, D.bonus)      VALUES (S.employee_id, S.salary*.01)      WHERE (S.salary &lt;= 8000);"  db-types="Oracle" />
+    <sql-case id="merge_insert_and_update_table" value="MERGE INTO t_order t1
+                                                        USING (SELECT ? AS userId, ? AS orderId
+                                                               FROM DUAL) t2
+                                                        ON (t1.user_id = t2.userId AND t1.order_id = t2.orderId)
+                                                        WHEN NOT MATCHED THEN
+                                                            INSERT (order_id, user_id, status, merchant_id, remark, creation_date)
+                                                            VALUES (?, ?, ?, ?, ?, DATE '2017-08-08')
+                                                        WHEN MATCHED THEN
+                                                            UPDATE
+                                                            SET merchant_id = ?,
+                                                                remark      = ?,
+                                                                status      = ?;"  db-types="Oracle" />
+    <sql-case id="merge_into_select" value="MERGE INTO (SELECT * FROM bonuses WHERE department_id = 80) D USING (SELECT employee_id, salary, department_id FROM employees WHERE department_id = 80) S ON (D.employee_id = S.employee_id) WHEN MATCHED THEN UPDATE SET D.bonus = D.bonus + S.salary*.01 DELETE WHERE (S.salary > 8000)" db-types="Oracle" />
+    <sql-case id="merge_output_with_aaterisk" value="MERGE INTO people_target pt USING people_source ps ON (pt.person_id = ps.person_id) WHEN MATCHED THEN UPDATE SET first_name = ps.first_name, pt.last_name = ps.last_name, pt.title = ps.title OUTPUT deleted.*, $action, inserted.*" db-types="SQLServer" />
+</sql-cases>

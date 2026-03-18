@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.core.channel;
 
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
  * Pipeline channel creator.
  */
+@SingletonSPI
 public interface PipelineChannelCreator extends TypedSPI {
     
     /**

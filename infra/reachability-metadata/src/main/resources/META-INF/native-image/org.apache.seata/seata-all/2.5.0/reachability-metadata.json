@@ -1,0 +1,1530 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.ConfigurationFactory"
+      },
+      "type": "io.seata.config.ConfigurationProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.ConfigurationFactory"
+      },
+      "type": "io.seata.config.ExtConfigurationProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.core.rpc.netty.TmNettyRemotingClient"
+      },
+      "type": "io.seata.core.auth.AuthSigner"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.core.context.ContextCoreLoader$ContextCoreHolder"
+      },
+      "type": "io.seata.core.context.ContextCore"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.DefaultResourceManager"
+      },
+      "type": "io.seata.core.model.ResourceManager"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.tm.TransactionManagerHolder$SingletonHolder"
+      },
+      "type": "io.seata.core.model.TransactionManager"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.core.rpc.netty.AbstractNettyRemoting"
+      },
+      "type": "io.seata.core.rpc.hook.RpcHook"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"
+      },
+      "type": "io.seata.core.serializer.Serializer"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.discovery.registry.RegistryFactory"
+      },
+      "type": "io.seata.discovery.registry.RegistryProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.DefaultRMHandler"
+      },
+      "type": "io.seata.rm.AbstractRMHandler"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "io.seata.rm.datasource.exec.InsertExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoExecutorHolderFactory"
+      },
+      "type": "io.seata.rm.datasource.undo.UndoExecutorHolder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoLogManagerFactory"
+      },
+      "type": "io.seata.rm.datasource.undo.UndoLogManager"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoLogParserFactory"
+      },
+      "type": "io.seata.rm.datasource.undo.UndoLogParser"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
+      },
+      "type": "io.seata.rm.datasource.undo.parser.spi.JacksonSerializer"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.DefaultResourceManager"
+      },
+      "type": "io.seata.rm.tcc.TCCResourceManager",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.DefaultResourceManager"
+      },
+      "type": "io.seata.saga.rm.SagaResourceManager",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.sqlparser.EscapeHandlerFactory"
+      },
+      "type": "io.seata.sqlparser.EscapeHandler"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.sql.SQLVisitorFactory"
+      },
+      "type": "io.seata.sqlparser.SQLRecognizerFactory"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
+      },
+      "type": "io.seata.sqlparser.druid.SQLOperateRecognizerHolder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.sql.struct.TableMetaCacheFactory"
+      },
+      "type": "io.seata.sqlparser.struct.TableMetaCache"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.util.JdbcUtils"
+      },
+      "type": "io.seata.sqlparser.util.DbTypeParser"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.ConfigurationCache"
+      },
+      "type": "org.apache.seata.config.Configuration"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.ConfigurationFactory"
+      },
+      "type": "org.apache.seata.config.apollo.ApolloConfigurationProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.ConfigurationFactory"
+      },
+      "type": "org.apache.seata.config.consul.ConsulConfigurationProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.ConfigurationFactory"
+      },
+      "type": "org.apache.seata.config.custom.CustomConfigurationProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.ConfigurationFactory"
+      },
+      "type": "org.apache.seata.config.etcd3.EtcdConfigurationProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.FileConfigFactory"
+      },
+      "type": "org.apache.seata.config.file.SimpleFileConfig",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.io.File",
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.ConfigurationFactory"
+      },
+      "type": "org.apache.seata.config.nacos.NacosConfigurationProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.ConfigurationFactory"
+      },
+      "type": "org.apache.seata.config.springcloud.SpringCloudConfigurationProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.ConfigurationFactory"
+      },
+      "type": "org.apache.seata.config.zk.ZookeeperConfigurationProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.core.rpc.netty.TmNettyRemotingClient"
+      },
+      "type": "org.apache.seata.core.auth.DefaultAuthSigner",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.core.context.ContextCoreLoader$ContextCoreHolder"
+      },
+      "type": "org.apache.seata.core.context.FastThreadLocalContextCore",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.core.context.ContextCoreLoader$ContextCoreHolder"
+      },
+      "type": "org.apache.seata.core.context.ThreadLocalContextCore"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.core.rpc.netty.AbstractNettyRemoting"
+      },
+      "type": "org.apache.seata.core.rpc.hook.StatusRpcHook",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.core.rpc.netty.NettyClientBootstrap"
+      },
+      "type": "org.apache.seata.core.rpc.netty.AbstractNettyRemotingClient$ClientHandler",
+      "methods": [
+        {
+          "name": "channelInactive",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext"
+          ]
+        },
+        {
+          "name": "channelRead",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext",
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "channelWritabilityChanged",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext"
+          ]
+        },
+        {
+          "name": "close",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext",
+            "io.netty.channel.ChannelPromise"
+          ]
+        },
+        {
+          "name": "exceptionCaught",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext",
+            "java.lang.Throwable"
+          ]
+        },
+        {
+          "name": "userEventTriggered",
+          "parameterTypes": [
+            "io.netty.channel.ChannelHandlerContext",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.core.rpc.netty.NettyClientBootstrap$1"
+      },
+      "type": "org.apache.seata.core.rpc.netty.v1.ProtocolDecoderV1"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.core.rpc.netty.NettyClientBootstrap$1"
+      },
+      "type": "org.apache.seata.core.rpc.netty.v1.ProtocolEncoderV1"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.discovery.registry.RegistryFactory"
+      },
+      "type": "org.apache.seata.discovery.registry.FileRegistryProvider",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.discovery.registry.RegistryFactory"
+      },
+      "type": "org.apache.seata.discovery.registry.consul.ConsulRegistryProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.discovery.registry.RegistryFactory"
+      },
+      "type": "org.apache.seata.discovery.registry.custom.CustomRegistryProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.discovery.registry.RegistryFactory"
+      },
+      "type": "org.apache.seata.discovery.registry.etcd3.EtcdRegistryProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.discovery.registry.RegistryFactory"
+      },
+      "type": "org.apache.seata.discovery.registry.eureka.EurekaRegistryProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.discovery.registry.RegistryFactory"
+      },
+      "type": "org.apache.seata.discovery.registry.nacos.NacosRegistryProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.discovery.registry.RegistryFactory"
+      },
+      "type": "org.apache.seata.discovery.registry.namingserver.NamingserverRegistryProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.discovery.registry.RegistryFactory"
+      },
+      "type": "org.apache.seata.discovery.registry.raft.RaftRegistryProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.discovery.registry.RegistryFactory"
+      },
+      "type": "org.apache.seata.discovery.registry.redis.RedisRegistryProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.discovery.registry.RegistryFactory"
+      },
+      "type": "org.apache.seata.discovery.registry.sofa.SofaRegistryProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.discovery.registry.RegistryFactory"
+      },
+      "type": "org.apache.seata.discovery.registry.zk.ZookeeperRegistryProvider"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.DefaultRMHandler"
+      },
+      "type": "org.apache.seata.rm.RMHandlerAT",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.DefaultRMHandler"
+      },
+      "type": "org.apache.seata.rm.RMHandlerXA",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.DefaultResourceManager"
+      },
+      "type": "org.apache.seata.rm.datasource.DataSourceManager",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.exec.dm.DmInsertExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.exec.mariadb.MariadbInsertExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.exec.mysql.MySQLInsertExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.exec.oracle.OracleInsertExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.exec.polardbx.PolarDBXInsertExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.ExecuteTemplate"
+      },
+      "type": "org.apache.seata.rm.datasource.exec.postgresql.PostgresqlInsertExecutor",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.apache.seata.rm.datasource.StatementProxy",
+            "org.apache.seata.rm.datasource.exec.StatementCallback",
+            "org.apache.seata.sqlparser.SQLRecognizer"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.exec.sqlserver.SqlServerInsertExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.sqlparser.EscapeHandlerFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.handler.dm.DmEscapeHandler"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.sqlparser.EscapeHandlerFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.handler.mariadb.MariadbEscapeHandler"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.sqlparser.EscapeHandlerFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.handler.mysql.MySQLEscapeHandler"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.sqlparser.EscapeHandlerFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.handler.oracle.OracleEscapeHandler"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.sqlparser.EscapeHandlerFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.handler.polardbx.PolarDBXEscapeHandler"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.sqlparser.EscapeHandlerFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.handler.postgresql.PostgresqlEscapeHandler",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.sqlparser.EscapeHandlerFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.handler.sqlserver.SqlServerEscapeHandler"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Field"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy$LockRetryPolicy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Field"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Field",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.StatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Field"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Field"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$LockRetryPolicy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Field"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.BaseTransactionalExecutor"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Field"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.ExecuteTemplate"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Field"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.AbstractUndoLogManager"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Field"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Field",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getKeyType",
+          "parameterTypes": []
+        },
+        {
+          "name": "getName",
+          "parameterTypes": []
+        },
+        {
+          "name": "getType",
+          "parameterTypes": []
+        },
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        },
+        {
+          "name": "setKeyType",
+          "parameterTypes": [
+            "org.apache.seata.rm.datasource.sql.struct.KeyType"
+          ]
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setType",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "setValue",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.KeyType",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.KeyType",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Row"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy$LockRetryPolicy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Row"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Row",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.StatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Row"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Row"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$LockRetryPolicy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Row"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.BaseTransactionalExecutor"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Row"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.ExecuteTemplate"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Row"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.AbstractUndoLogManager"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Row"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.Row",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getFields",
+          "parameterTypes": []
+        },
+        {
+          "name": "setFields",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy$LockRetryPolicy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.StatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$LockRetryPolicy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.BaseTransactionalExecutor"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.ExecuteTemplate"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.AbstractUndoLogManager"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRows",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTableName",
+          "parameterTypes": []
+        },
+        {
+          "name": "setRows",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setTableName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords$EmptyTableRecords",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.TableRecords$EmptyTableRecords",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.sql.struct.TableMetaCacheFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.cache.DmTableMetaCache"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.sql.struct.TableMetaCacheFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.cache.MariadbTableMetaCache"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.sql.struct.TableMetaCacheFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.cache.MysqlTableMetaCache"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.sql.struct.TableMetaCacheFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.cache.OracleTableMetaCache"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.sql.struct.TableMetaCacheFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.cache.PolarDBXTableMetaCache"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.sql.struct.TableMetaCacheFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.cache.PostgresqlTableMetaCache",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.sql.struct.TableMetaCacheFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.sql.struct.cache.SqlServerTableMetaCache"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.BranchUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy$LockRetryPolicy"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.BranchUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.BranchUndoLog",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.StatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.BranchUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.BranchUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$LockRetryPolicy"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.BranchUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.BaseTransactionalExecutor"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.BranchUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.ExecuteTemplate"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.BranchUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.AbstractUndoLogManager"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.BranchUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.BranchUndoLog",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBranchId",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSqlUndoLogs",
+          "parameterTypes": []
+        },
+        {
+          "name": "getXid",
+          "parameterTypes": []
+        },
+        {
+          "name": "setBranchId",
+          "parameterTypes": [
+            "long"
+          ]
+        },
+        {
+          "name": "setSqlUndoLogs",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setXid",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.SQLUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.ConnectionProxy$LockRetryPolicy"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.SQLUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.SQLUndoLog",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.StatementProxy"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.SQLUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.SQLUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.AbstractDMLBaseExecutor$LockRetryPolicy"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.SQLUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.BaseTransactionalExecutor"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.SQLUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.exec.ExecuteTemplate"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.SQLUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.AbstractUndoLogManager"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.SQLUndoLog"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.SQLUndoLog",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getAfterImage",
+          "parameterTypes": []
+        },
+        {
+          "name": "getBeforeImage",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSqlType",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTableName",
+          "parameterTypes": []
+        },
+        {
+          "name": "setAfterImage",
+          "parameterTypes": [
+            "org.apache.seata.rm.datasource.sql.struct.TableRecords"
+          ]
+        },
+        {
+          "name": "setBeforeImage",
+          "parameterTypes": [
+            "org.apache.seata.rm.datasource.sql.struct.TableRecords"
+          ]
+        },
+        {
+          "name": "setSqlType",
+          "parameterTypes": [
+            "org.apache.seata.sqlparser.SQLType"
+          ]
+        },
+        {
+          "name": "setTableName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoExecutorHolderFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.dm.DmUndoExecutorHolder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoLogManagerFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.dm.DmUndoLogManager"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoExecutorHolderFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.mariadb.MariadbUndoExecutorHolder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoLogManagerFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.mariadb.MariadbUndoLogManager"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoExecutorHolderFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.mysql.MySQLUndoExecutorHolder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoLogManagerFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.mysql.MySQLUndoLogManager"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoExecutorHolderFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.oracle.OracleUndoExecutorHolder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoLogManagerFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.oracle.OracleUndoLogManager"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoLogParserFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.parser.FastjsonUndoLogParser"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoLogParserFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoLogParserFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.parser.KryoUndoLogParser"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoLogParserFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.parser.ProtostuffUndoLogParser"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoExecutorHolderFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.polardbx.PolarDBXUndoExecutorHolder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoLogManagerFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.polardbx.PolarDBXUndoLogManager"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoExecutorHolderFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.postgresql.PostgresqlUndoExecutorHolder",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoLogManagerFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.postgresql.PostgresqlUndoLogManager",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoExecutorHolderFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.sqlserver.SqlServerUndoExecutorHolder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.UndoLogManagerFactory"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.sqlserver.SqlServerUndoLogManager"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.DefaultResourceManager"
+      },
+      "type": "org.apache.seata.rm.datasource.xa.ResourceManagerXA",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.DefaultRMHandler"
+      },
+      "type": "org.apache.seata.rm.tcc.RMHandlerTCC",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.DefaultResourceManager"
+      },
+      "type": "org.apache.seata.rm.tcc.TCCResourceManager",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.DefaultRMHandler"
+      },
+      "type": "org.apache.seata.saga.rm.RMHandlerSaga",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.DefaultResourceManager"
+      },
+      "type": "org.apache.seata.saga.rm.SagaResourceManager",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.serializer.hessian.HessianSerializer"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.serializer.kryo.KryoSerializer"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.util.ReflectionUtil"
+      },
+      "type": "org.apache.seata.serializer.protobuf.ProtobufSerializer"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.serializer.seata.SeataSerializer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Byte"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.PreparedStatementProxy"
+      },
+      "type": "org.apache.seata.sqlparser.SQLType",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
+      },
+      "type": "org.apache.seata.sqlparser.SQLType",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.sqlparser.druid.DruidDelegatingDbTypeParser"
+      },
+      "type": "org.apache.seata.sqlparser.druid.DruidDbTypeParserImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.util.JdbcUtils"
+      },
+      "type": "org.apache.seata.sqlparser.druid.DruidDelegatingDbTypeParser",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.sql.SQLVisitorFactory"
+      },
+      "type": "org.apache.seata.sqlparser.druid.DruidDelegatingSQLRecognizerFactory",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.sqlparser.druid.DruidDelegatingSQLRecognizerFactory"
+      },
+      "type": "org.apache.seata.sqlparser.druid.DruidSQLRecognizerFactoryImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.sqlparser.druid.dm.DmOperateRecognizerHolder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.sqlparser.druid.mariadb.MariadbOperateRecognizerHolder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.sqlparser.druid.mysql.MySQLOperateRecognizerHolder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.sqlparser.druid.oracle.OracleOperateRecognizerHolder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.sqlparser.druid.polardbx.PolarDBXOperateRecognizerHolder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.sqlparser.druid.postgresql.PostgresqlOperateRecognizerHolder",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.sqlparser.druid.sqlserver.SqlServerOperateRecognizerHolder"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
+      },
+      "type": "org.apache.seata.sqlparser.struct.ColumnMeta",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
+      },
+      "type": "org.apache.seata.sqlparser.struct.IndexMeta",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
+      },
+      "type": "org.apache.seata.sqlparser.struct.IndexType",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.rm.datasource.undo.parser.JacksonUndoLogParser"
+      },
+      "type": "org.apache.seata.sqlparser.struct.TableMeta",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.tm.TransactionManagerHolder$SingletonHolder"
+      },
+      "type": "org.apache.seata.tm.DefaultTransactionManager",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
+      },
+      "type": "io.seata.config.file.FileConfig"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.rm.datasource.exec.oscar.OscarInsertExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.rm.datasource.exec.kingbase.KingbaseInsertExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.config.file.YamlFileConfig"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.core.rpc.netty.ChannelEventHandler"
+      },
+      "type": "org.apache.seata.core.rpc.netty.ChannelEventHandler",
+      "allPublicMethods": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.rm.datasource.exec.oceanbase.OceanBaseInsertExecutor"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.common.loader.EnhancedServiceLoader$InnerEnhancedServiceLoader"
+      },
+      "type": "org.apache.seata.rm.datasource.undo.parser.FuryUndoLogParser"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.ConfigurationCache"
+      },
+      "type": {
+        "proxy": [
+          "org.apache.seata.config.Configuration"
+        ]
+      }
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.ConfigurationFactory"
+      },
+      "glob": "META-INF/*/io.seata.*"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.ConfigurationFactory"
+      },
+      "glob": "META-INF/*/org.apache.seata.*"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.sqlparser.druid.DefaultDruidLoader"
+      },
+      "glob": "lib/sqlparser/druid.jar"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.seata.config.FileConfiguration"
+      },
+      "glob": "registry"
+    }
+  ]
+}

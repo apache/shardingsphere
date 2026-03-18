@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory;
 
-import org.apache.shardingsphere.infra.database.core.resultset.ResultSetMapper;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.resultset.ResultSetMapper;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 
 import java.sql.ResultSet;
@@ -41,7 +41,7 @@ public final class QueryResultDataRowLoader {
     
     /**
      * Load query result data row.
-     * 
+     *
      * @param columnCount column count
      * @param resultSet result set
      * @return query result data row

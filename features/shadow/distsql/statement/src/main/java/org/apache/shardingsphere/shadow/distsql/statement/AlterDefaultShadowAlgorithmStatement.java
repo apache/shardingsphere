@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.database.type.AlterRuleStatement;
+import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.type.AlterRuleStatement;
 import org.apache.shardingsphere.shadow.distsql.segment.ShadowAlgorithmSegment;
 
 /**

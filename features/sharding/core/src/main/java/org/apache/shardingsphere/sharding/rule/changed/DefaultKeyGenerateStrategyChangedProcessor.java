@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.sharding.rule.changed;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateStrategyConfigurationSwapper;
@@ -35,7 +33,7 @@ import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateS
 public final class DefaultKeyGenerateStrategyChangedProcessor implements RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, KeyGenerateStrategyConfiguration> {
     
     @Override
-    public KeyGenerateStrategyConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
+    public KeyGenerateStrategyConfiguration swapRuleItemConfiguration(final String itemName, final String yamlContent) {
         return new YamlKeyGenerateStrategyConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlKeyGenerateStrategyConfiguration.class));
     }
     
@@ -45,17 +43,17 @@ public final class DefaultKeyGenerateStrategyChangedProcessor implements RuleIte
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final KeyGenerateStrategyConfiguration toBeChangedItemConfig) {
+    public void changeRuleItemConfiguration(final String itemName, final ShardingRuleConfiguration currentRuleConfig, final KeyGenerateStrategyConfiguration toBeChangedItemConfig) {
         currentRuleConfig.setDefaultKeyGenerateStrategy(toBeChangedItemConfig);
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
+    public void dropRuleItemConfiguration(final String itemName, final ShardingRuleConfiguration currentRuleConfig) {
         currentRuleConfig.setDefaultKeyGenerateStrategy(null);
     }
     
     @Override
-    public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.DEFAULT_KEY_GENERATE_STRATEGY;
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("sharding", "default_key_generate_strategy");
     }
 }

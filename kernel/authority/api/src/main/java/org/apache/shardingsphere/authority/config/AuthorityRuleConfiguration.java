@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
 import java.util.Map;
@@ -33,7 +32,7 @@ import java.util.Map;
 @Getter
 public final class AuthorityRuleConfiguration implements GlobalRuleConfiguration {
     
-    private final Collection<ShardingSphereUser> users;
+    private final Collection<UserConfiguration> users;
     
     private final AlgorithmConfiguration privilegeProvider;
     

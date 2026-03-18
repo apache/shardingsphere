@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sqltranslator.distsql.parser.core;
 
-import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.AlterSQLTranslatorRuleContext;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStat
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.core.util.IdentifierValueUtils;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.sqltranslator.distsql.statement.updateable.AlterSQLTranslatorRuleStatement;
 
@@ -52,7 +52,7 @@ public final class SQLTranslatorDistSQLStatementVisitor extends SQLTranslatorDis
     
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
-        return new AlgorithmSegment(getIdentifierValue(ctx.algorithmTypeName()), getProperties(ctx.propertiesDefinition()));
+        return new AlgorithmSegment(IdentifierValueUtils.getValue(ctx.algorithmTypeName()), getProperties(ctx.propertiesDefinition()));
     }
     
     private Properties getProperties(final PropertiesDefinitionContext ctx) {
@@ -61,16 +61,12 @@ public final class SQLTranslatorDistSQLStatementVisitor extends SQLTranslatorDis
             return result;
         }
         for (PropertyContext each : ctx.properties().property()) {
-            result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
+            result.setProperty(QuoteCharacter.unwrapAndTrimText(each.key.getText()), QuoteCharacter.unwrapAndTrimText(each.value.getText()));
         }
         return result;
     }
     
     private Boolean isUseOriginalSQLWhenTranslatingFailed(final UseOriginalSQLDefinitionContext ctx) {
-        return null == ctx ? null : Boolean.valueOf(getIdentifierValue(ctx.useOriginalSQL()));
-    }
-    
-    private String getIdentifierValue(final ParseTree context) {
-        return null == context ? null : new IdentifierValue(context.getText()).getValue();
+        return null == ctx ? null : Boolean.valueOf(IdentifierValueUtils.getValue(ctx.useOriginalSQL()));
     }
 }

@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 
 /**
- * Direction type enum.
+ * Direction type.
  */
 @RequiredArgsConstructor
 @Getter
@@ -68,7 +68,7 @@ public enum DirectionType {
     
     /**
      * Is all direction type.
-     * 
+     *
      * @param directionType direction type
      * @return is all direction type or not
      */

@@ -1,8 +1,0 @@
-{
-  "resources":{
-  "includes":[{
-    "condition":{"typeReachable":"org.codehaus.groovy.reflection.GeneratedMetaMethod$DgmMethodRecord"},
-    "pattern":"\\QMETA-INF/dgminfo\\E"
-  }]},
-  "bundles":[]
-}

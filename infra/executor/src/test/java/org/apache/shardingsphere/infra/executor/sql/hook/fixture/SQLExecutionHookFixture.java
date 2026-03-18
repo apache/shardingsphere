@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.sql.hook.fixture;
 
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
 
 import java.util.Collection;
@@ -45,7 +45,7 @@ public final class SQLExecutionHookFixture implements SQLExecutionHook {
     
     /**
      * Contains action or not.
-     * 
+     *
      * @param action action
      * @return contains action or not
      */

@@ -17,6 +17,6 @@
 
 org.apache.shardingsphere.distsql.handler.executor.rql.resource.ShowStorageUnitExecutor
 org.apache.shardingsphere.distsql.handler.executor.rql.resource.ShowRulesUsedStorageUnitExecutor
-org.apache.shardingsphere.distsql.handler.executor.rql.resource.ShowLogicalTableExecutor
+org.apache.shardingsphere.distsql.handler.executor.rql.resource.ShowLogicalTablesExecutor
 org.apache.shardingsphere.distsql.handler.executor.rql.rule.RuleCountExecutor
 org.apache.shardingsphere.distsql.handler.executor.ral.plugin.ShowPluginsExecutor

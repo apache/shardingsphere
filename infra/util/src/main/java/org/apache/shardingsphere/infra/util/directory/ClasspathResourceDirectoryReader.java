@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.util.directory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -51,7 +50,6 @@ import java.util.stream.StreamSupport;
  * Classpath resource directory reader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
 public final class ClasspathResourceDirectoryReader {
     
     private static final Collection<String> JAR_URL_PROTOCOLS = new HashSet<>(Arrays.asList("jar", "war", "zip", "wsjar", "vfszip"));
@@ -81,22 +79,16 @@ public final class ClasspathResourceDirectoryReader {
         }
         if (JAR_URL_PROTOCOLS.contains(resourceUrl.getProtocol())) {
             JarFile jarFile = getJarFile(resourceUrl);
-            if (null == jarFile) {
-                return false;
-            }
-            return jarFile.getJarEntry(name).isDirectory();
-        } else {
-            return Files.isDirectory(Paths.get(resourceUrl.toURI()));
+            return null != jarFile && jarFile.getJarEntry(name).isDirectory();
         }
+        return Paths.get(resourceUrl.toURI()).toFile().isDirectory();
     }
     
     /**
      * Return a lazily populated Stream that contains the names of resources in the provided directory. The Stream is recursive, meaning it includes resources from all subdirectories as well.
-     * <p>The name of a resource directory is a /-separated path name</p>
-     * <p>When the {@code directory} parameter is a file, the method can still work.</p>
      *
      * @param directory directory
-     * @return resource iterator.
+     * @return resource iterator
      * @apiNote This method must be used within a try-with-resources statement or similar
      *         control structure to ensure that the stream's open resources are closed
      *         promptly after the stream's operations have completed.
@@ -107,12 +99,10 @@ public final class ClasspathResourceDirectoryReader {
     
     /**
      * Return a lazily populated Stream that contains the names of resources in the provided directory. The Stream is recursive, meaning it includes resources from all subdirectories as well.
-     * <p>The name of a resource directory is a /-separated path name</p>
-     * <p>When the {@code directory} parameter is a file, the method can still work.</p>
      *
      * @param classLoader class loader
      * @param directory directory
-     * @return resource iterator.
+     * @return resource iterator
      * @apiNote This method must be used within a try-with-resources statement or similar
      *         control structure to ensure that the stream's open resources are closed
      *         promptly after the stream's operations have completed.
@@ -120,9 +110,6 @@ public final class ClasspathResourceDirectoryReader {
     @SneakyThrows(IOException.class)
     public static Stream<String> read(final ClassLoader classLoader, final String directory) {
         Enumeration<URL> directoryUrlEnumeration = classLoader.getResources(directory);
-        if (null == directoryUrlEnumeration) {
-            return Stream.empty();
-        }
         return Collections.list(directoryUrlEnumeration).stream().flatMap(directoryUrl -> {
             if (JAR_URL_PROTOCOLS.contains(directoryUrl.getProtocol())) {
                 return readDirectoryInJar(directory, directoryUrl);
@@ -205,9 +192,9 @@ public final class ClasspathResourceDirectoryReader {
         }
     }
     
+    @SuppressWarnings("resource")
     private static Stream<String> loadFromDirectory(final String directory, final URL directoryUrl) throws URISyntaxException, IOException {
         Path directoryPath = Paths.get(directoryUrl.toURI());
-        // noinspection resource
         Stream<Path> walkStream = Files.find(directoryPath, Integer.MAX_VALUE, (path, basicFileAttributes) -> !basicFileAttributes.isDirectory(), FileVisitOption.FOLLOW_LINKS);
         return walkStream.map(path -> {
             StringBuilder stringBuilder = new StringBuilder();

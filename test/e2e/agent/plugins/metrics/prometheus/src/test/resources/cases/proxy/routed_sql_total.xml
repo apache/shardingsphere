@@ -16,11 +16,11 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case metric-name="routed_sql_total" metric-type="counter">
         <query-assertion metric="routed_sql_total" query="routed_sql_total{type='INSERT'}" />
         <query-assertion metric="routed_sql_total" query="routed_sql_total{type='SELECT'}" />
         <query-assertion metric="routed_sql_total" query="routed_sql_total{type='DELETE'}" />
         <query-assertion metric="routed_sql_total" query="routed_sql_total{type='UPDATE'}" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

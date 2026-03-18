@@ -23,11 +23,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.JdbcQueryPropertiesExtension;
-import org.apache.shardingsphere.infra.database.core.connector.url.JdbcUrlAppender;
-import org.apache.shardingsphere.infra.database.core.connector.url.StandardJdbcUrlParser;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.appender.JdbcUrlAppender;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.StandardJdbcUrlParser;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
@@ -65,7 +65,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         parameter = YamlEngine.marshal(rootConfig);
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeFactory.get(getJdbcUrl(props));
-        appendJdbcQueryProperties(databaseType);
+        appendJdbcQueryProperties();
         adjustDataSourcePoolProperties(rootConfig.getDataSources());
     }
     
@@ -88,7 +88,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
         return result.toString();
     }
     
-    private void appendJdbcQueryProperties(final DatabaseType databaseType) {
+    private void appendJdbcQueryProperties() {
         Optional<JdbcQueryPropertiesExtension> extension = DatabaseTypedSPILoader.findService(JdbcQueryPropertiesExtension.class, databaseType);
         if (!extension.isPresent()) {
             return;
@@ -138,7 +138,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
      */
     @Getter
     @Setter
-    private static class YamlParameterConfiguration implements YamlConfiguration {
+    private static final class YamlParameterConfiguration implements YamlConfiguration {
         
         private String databaseName;
         

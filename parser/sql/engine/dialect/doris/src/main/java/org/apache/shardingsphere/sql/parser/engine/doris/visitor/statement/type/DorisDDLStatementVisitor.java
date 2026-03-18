@@ -1,0 +1,1948 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.type;
+
+import com.google.common.base.Preconditions;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.misc.Interval;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AddColumnContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AddRollupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AddTableConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterAlgorithmOptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterCatalogContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterCheckContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterColocateGroupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterCommandsModifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterConstraintContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterConvertContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterDatabaseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterEventContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterInstanceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterListContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterListItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterLockOptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterLogfileGroupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterPartitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterProcedureContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterRenameTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterServerContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterStoragePolicyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTableDropContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTableOrderContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTablespaceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTablespaceInnodbContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterTablespaceNdbContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BeginStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BinlogDescriptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BuildIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelAlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelBuildIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CaseStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ChangeColumnContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ChannelDescriptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CharsetNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ColumnNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CompoundStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateDatabaseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateDefinitionClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateEncryptKeyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateEventContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateFileContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateStreamingJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLikeClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLogfileGroupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateProcedureContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateServerContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSyncJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateTableOptionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateTableOptionsContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateTablespaceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateTriggerContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DeallocateContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DistributedbyClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisDropFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisPartitionDescContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropDatabaseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropEncryptKeyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropEventContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropFileContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropLogfileGroupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropProcedureContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropRollupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropServerContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropTablespaceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropTriggerContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ExecuteStmtContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FieldDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FileNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FlowControlStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.FunctionNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IdentifierContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.IfStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.JobScheduleExpressionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.KeyListWithExpressionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.KeyPartContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.KeyPartWithExpressionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.KeyPartsContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.LoopStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ModifyColumnContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ModifyDistributionClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PartitionValueListContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PauseJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PauseSyncJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PlaceContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PrepareContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReferenceDefinitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameColumnContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenamePartitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameRollupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RepeatStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReplaceTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelTaskContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeSyncJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RollupItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RollupNameItemContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RoutineBodyContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.SimpleStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StandaloneAlterCommandsContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.StopSyncJobContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TableConstraintDefContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TableElementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TableNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.TruncateTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ValidStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.WhileStatementContext;
+import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.AlgorithmOption;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.LockTableOption;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.PartitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.CreateDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.charset.CharsetNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.colocategroup.ColocateGroupSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.DropColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.RenameColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.position.ColumnAfterPositionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.position.ColumnFirstPositionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.distribution.ModifyDistributionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.encryptkey.EncryptKeyNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.engine.EngineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.engine.ModifyEngineSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.feature.EnableFeatureSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.DropIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.BinlogDescriptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.ChannelDescriptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobCommentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobScheduleIntervalSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobScheduleSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.job.JobScheduleTimestampSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.AddPartitionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.ModifyPartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.PartitionValuesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.partition.RenamePartitionDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.policy.PolicyNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.AddRollupDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.DropRollupDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.OrderByColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RollupSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.RoutineBodySegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.ValidStatementSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.CreateTableOptionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.LockTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ModifyTableCommentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.RenameTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ReplaceTableDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.tablespace.TablespaceSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.view.ViewColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.SimpleExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.CommentSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.IntervalUnitSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateEncryptKeyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.CreateFileStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropEncryptKeyStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.ddl.DropFileStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DeallocateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.ExecuteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.PrepareStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.TruncateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.alter.CancelAlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.catalog.AlterCatalogStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.AlterDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.CreateDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.database.DropDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function.AlterFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.BuildIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CancelBuildIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.CreateIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.AlterProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.CreateProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.procedure.DropProcedureStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.server.AlterServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.server.CreateServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.server.DropServerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.DropTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.RenameTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.AlterTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.CreateTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tablespace.DropTablespaceStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.CreateTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.DropTriggerStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.util.SQLUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterColocateGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterStoragePolicyStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateStreamingJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropFunctionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCancelTaskStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisResumeSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisStopSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLAlterEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLCreateEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.event.MySQLDropEventStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.instance.MySQLAlterInstanceStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLAlterLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLCreateLogfileGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.ddl.logfile.MySQLDropLogfileGroupStatement;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+/**
+ * DDL statement visitor for Doris.
+ */
+public final class DorisDDLStatementVisitor extends DorisStatementVisitor implements DDLStatementVisitor {
+    
+    public DorisDDLStatementVisitor(final DatabaseType databaseType) {
+        super(databaseType);
+    }
+    
+    @Override
+    public ASTNode visitCreateView(final CreateViewContext ctx) {
+        CreateViewStatement result = new CreateViewStatement(getDatabaseType());
+        result.setReplaceView(null != ctx.REPLACE());
+        result.setView((SimpleTableSegment) visit(ctx.viewName()));
+        result.setViewDefinition(getOriginalText(ctx.select()));
+        result.setSelect((SelectStatement) visit(ctx.select()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterView(final AlterViewContext ctx) {
+        AlterViewStatement result = new AlterViewStatement(getDatabaseType());
+        result.setView((SimpleTableSegment) visit(ctx.viewName()));
+        if (null != ctx.columnNames()) {
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(ctx.columnNames());
+            for (ColumnSegment each : columns.getValue()) {
+                result.getColumns().add(new ViewColumnSegment(each.getStartIndex(), each.getStopIndex(), each, null));
+            }
+        }
+        if (null != ctx.viewColumnDefinitions()) {
+            CollectionValue<ViewColumnSegment> columns = (CollectionValue<ViewColumnSegment>) visit(ctx.viewColumnDefinitions());
+            result.getColumns().addAll(columns.getValue());
+        }
+        result.setViewDefinition(getOriginalText(ctx.select()));
+        result.setSelect((SelectStatement) visit(ctx.select()));
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitDropView(final DropViewContext ctx) {
+        return new DropViewStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue(), null != ctx.ifExists());
+    }
+    
+    @Override
+    public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
+        CreateDatabaseStatement result = new CreateDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifNotExists());
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterDatabase(final AlterDatabaseContext ctx) {
+        AlterDatabaseStatement result = new AlterDatabaseStatement(getDatabaseType());
+        if (null != ctx.databaseName()) {
+            result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
+        }
+        if (null != ctx.RENAME() && null != ctx.identifier()) {
+            result.setRenameDatabaseName(new IdentifierValue(ctx.identifier().getText()).getValue());
+        }
+        if (null != ctx.QUOTA() && null != ctx.NUMBER_()) {
+            if (null != ctx.DATA()) {
+                result.setQuotaType("DATA");
+            } else if (null != ctx.REPLICA()) {
+                result.setQuotaType("REPLICA");
+            } else if (null != ctx.TRANSACTION()) {
+                result.setQuotaType("TRANSACTION");
+            }
+            result.setQuotaValue(Long.parseLong(ctx.NUMBER_().getText()));
+        }
+        if (null != ctx.PROPERTIES() && null != ctx.properties()) {
+            PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.properties().getStart().getStartIndex(), ctx.properties().getStop().getStopIndex());
+            for (int i = 0; i < ctx.properties().property().size(); i++) {
+                String key = getPropertyKey(ctx.properties().property(i));
+                String value = SQLUtils.getExactlyValue(ctx.properties().property(i).literals().getText());
+                PropertySegment propertySegment = new PropertySegment(ctx.properties().property(i).getStart().getStartIndex(), ctx.properties().property(i).getStop().getStopIndex(), key, value);
+                propertiesSegment.getProperties().add(propertySegment);
+            }
+            result.setProperties(propertiesSegment);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
+        DropDatabaseStatement result = new DropDatabaseStatement(getDatabaseType(), new IdentifierValue(ctx.databaseName().getText()).getValue(), null != ctx.ifExists());
+        if (null != ctx.FORCE()) {
+            result.setForce(true);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterCatalog(final AlterCatalogContext ctx) {
+        AlterCatalogStatement result = new AlterCatalogStatement(getDatabaseType());
+        result.setCatalogName(new IdentifierValue(ctx.catalogName().getText()).getValue());
+        if (null != ctx.RENAME()) {
+            result.setNewCatalogName(new IdentifierValue(ctx.identifier().getText()).getValue());
+        }
+        if (null != ctx.PROPERTIES()) {
+            for (int i = 0; i < ctx.properties().property().size(); i++) {
+                String key = null != ctx.properties().property(i).SINGLE_QUOTED_TEXT()
+                        ? SQLUtils.getExactlyValue(ctx.properties().property(i).SINGLE_QUOTED_TEXT().getText())
+                        : SQLUtils.getExactlyValue(ctx.properties().property(i).identifier().getText());
+                String value = SQLUtils.getExactlyValue(ctx.properties().property(i).literals().getText());
+                result.getProperties().put(key, value);
+            }
+        }
+        if (null != ctx.COMMENT()) {
+            result.setComment(SQLUtils.getExactlyValue(ctx.string_().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitResumeJob(final ResumeJobContext ctx) {
+        String jobName = SQLUtils.getExactlyValue(ctx.stringLiterals().getText());
+        return new DorisResumeJobStatement(getDatabaseType(), jobName);
+    }
+    
+    @Override
+    public ASTNode visitAlterJob(final AlterJobContext ctx) {
+        DorisAlterJobStatement result = new DorisAlterJobStatement(getDatabaseType());
+        result.setJobName(new JobNameSegment(ctx.jobName().start.getStartIndex(), ctx.jobName().stop.getStopIndex(), (IdentifierValue) visit(ctx.jobName().identifier())));
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        if (null != ctx.insert()) {
+            result.setInsertStatement((InsertStatement) visit(ctx.insert()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitPauseJob(final PauseJobContext ctx) {
+        String jobName = SQLUtils.getExactlyValue(ctx.stringLiterals().getText());
+        return new DorisPauseJobStatement(getDatabaseType(), jobName);
+    }
+    
+    @Override
+    public ASTNode visitDropJob(final DropJobContext ctx) {
+        String jobName = SQLUtils.getExactlyValue(ctx.stringLiterals().getText());
+        return new DorisDropJobStatement(getDatabaseType(), jobName);
+    }
+    
+    @Override
+    public ASTNode visitResumeSyncJob(final ResumeSyncJobContext ctx) {
+        DorisResumeSyncJobStatement result = new DorisResumeSyncJobStatement(getDatabaseType());
+        JobNameSegment jobName = new JobNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.owner()) {
+            jobName.setOwner((OwnerSegment) visit(ctx.owner()));
+        }
+        result.setJobName(jobName);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitPauseSyncJob(final PauseSyncJobContext ctx) {
+        DorisPauseSyncJobStatement result = new DorisPauseSyncJobStatement(getDatabaseType());
+        JobNameSegment jobName = new JobNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.owner()) {
+            jobName.setOwner((OwnerSegment) visit(ctx.owner()));
+        }
+        result.setJobName(jobName);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitStopSyncJob(final StopSyncJobContext ctx) {
+        DorisStopSyncJobStatement result = new DorisStopSyncJobStatement(getDatabaseType());
+        JobNameSegment jobName = new JobNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.owner()) {
+            jobName.setOwner((OwnerSegment) visit(ctx.owner()));
+        }
+        result.setJobName(jobName);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateSyncJob(final CreateSyncJobContext ctx) {
+        DorisCreateSyncJobStatement result = new DorisCreateSyncJobStatement(getDatabaseType());
+        JobNameSegment jobName = new JobNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.owner()) {
+            jobName.setOwner((OwnerSegment) visit(ctx.owner()));
+        }
+        result.setJobName(jobName);
+        for (ChannelDescriptionContext each : ctx.channelDescription()) {
+            result.getChannelDescriptions().add((ChannelDescriptionSegment) visit(each));
+        }
+        result.setBinlogDescription((BinlogDescriptionSegment) visit(ctx.binlogDescription()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitChannelDescription(final ChannelDescriptionContext ctx) {
+        SimpleTableSegment sourceTable = (SimpleTableSegment) visit(ctx.tableName(0));
+        SimpleTableSegment targetTable = (SimpleTableSegment) visit(ctx.tableName(1));
+        ChannelDescriptionSegment result = new ChannelDescriptionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), sourceTable, targetTable);
+        if (null != ctx.columnNames()) {
+            for (ColumnNameContext each : ctx.columnNames().columnName()) {
+                result.getColumnNames().add(((ColumnSegment) visit(each)).getIdentifier().getValue());
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitBinlogDescription(final BinlogDescriptionContext ctx) {
+        BinlogDescriptionSegment result = new BinlogDescriptionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.properties().start.getStartIndex(), ctx.properties().stop.getStopIndex());
+        for (PropertyContext each : ctx.properties().property()) {
+            propertiesSegment.getProperties().add(createPropertySegment(each));
+        }
+        result.setProperties(propertiesSegment);
+        return result;
+    }
+    
+    private PropertySegment createPropertySegment(final PropertyContext ctx) {
+        String key = getPropertyKey(ctx);
+        String value = SQLUtils.getExactlyValue(ctx.literals().getText());
+        return new PropertySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), key, value);
+    }
+    
+    @Override
+    public ASTNode visitCreateJob(final CreateJobContext ctx) {
+        DorisCreateJobStatement result = new DorisCreateJobStatement(getDatabaseType());
+        result.setJobName(new JobNameSegment(ctx.jobName().start.getStartIndex(), ctx.jobName().stop.getStopIndex(), (IdentifierValue) visit(ctx.jobName().identifier())));
+        result.setSchedule(createJobScheduleSegment(ctx.jobScheduleExpression()));
+        if (null != ctx.COMMENT() && null != ctx.string_()) {
+            result.setComment(new JobCommentSegment(ctx.COMMENT().getSymbol().getStartIndex(), ctx.string_().stop.getStopIndex(), SQLUtils.getExactlyValue(ctx.string_().getText())));
+        }
+        result.setInsertStatement((InsertStatement) visit(ctx.insert()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateStreamingJob(final CreateStreamingJobContext ctx) {
+        DorisCreateStreamingJobStatement result = new DorisCreateStreamingJobStatement(getDatabaseType());
+        result.setJobName(new JobNameSegment(ctx.jobName().start.getStartIndex(), ctx.jobName().stop.getStopIndex(), (IdentifierValue) visit(ctx.jobName().identifier())));
+        if (null != ctx.COMMENT() && null != ctx.string_()) {
+            result.setComment(new JobCommentSegment(ctx.COMMENT().getSymbol().getStartIndex(), ctx.string_().stop.getStopIndex(), SQLUtils.getExactlyValue(ctx.string_().getText())));
+        }
+        if (null != ctx.jobProps) {
+            result.setJobProperties(extractPropertiesSegmentFromPropertiesContext(ctx.jobProps));
+        }
+        if (null != ctx.streamingSourceType()) {
+            result.setSourceType(ctx.streamingSourceType().getText().toUpperCase());
+            result.setSourceProperties(extractPropertiesSegmentFromPropertiesContext(ctx.sourceProps));
+            result.setTargetDatabase(new IdentifierValue(ctx.databaseName().getText()).getValue());
+            if (null != ctx.targetProps) {
+                result.setTargetProperties(extractPropertiesSegmentFromPropertiesContext(ctx.targetProps));
+            }
+        }
+        if (null != ctx.insert()) {
+            result.setInsertStatement((InsertStatement) visit(ctx.insert()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCancelTask(final CancelTaskContext ctx) {
+        String jobName = SQLUtils.getExactlyValue(ctx.stringLiterals().getText());
+        long taskId = Long.parseLong(ctx.numberLiterals().getText());
+        return new DorisCancelTaskStatement(getDatabaseType(), jobName, taskId);
+    }
+    
+    private JobScheduleSegment createJobScheduleSegment(final JobScheduleExpressionContext ctx) {
+        boolean everySchedule = null == ctx.AT();
+        JobScheduleSegment result = new JobScheduleSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), everySchedule);
+        if (!everySchedule) {
+            result.setAtTimestamp(
+                    new JobScheduleTimestampSegment(ctx.timestampValue(0).start.getStartIndex(), ctx.timestampValue(0).stop.getStopIndex(), SQLUtils.getExactlyValue(ctx.timestampValue(0).getText())));
+        } else {
+            result.setInterval(new JobScheduleIntervalSegment(ctx.intervalValue().start.getStartIndex(), ctx.intervalValue().stop.getStopIndex(), Long.parseLong(ctx.intervalValue().expr().getText()),
+                    ctx.intervalValue().intervalUnit().getText()));
+            if (null != ctx.STARTS()) {
+                result.setStartsTimestamp(new JobScheduleTimestampSegment(ctx.timestampValue(0).start.getStartIndex(), ctx.timestampValue(0).stop.getStopIndex(),
+                        SQLUtils.getExactlyValue(ctx.timestampValue(0).getText())));
+            }
+            if (null != ctx.ENDS()) {
+                int endsTimestampIndex = null != ctx.STARTS() ? 1 : 0;
+                result.setEndsTimestamp(new JobScheduleTimestampSegment(ctx.timestampValue(endsTimestampIndex).start.getStartIndex(), ctx.timestampValue(endsTimestampIndex).stop.getStopIndex(),
+                        SQLUtils.getExactlyValue(ctx.timestampValue(endsTimestampIndex).getText())));
+            }
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitCreateTable(final CreateTableContext ctx) {
+        Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+        Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
+        if (null != ctx.createDefinitionClause()) {
+            CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
+            for (CreateDefinitionSegment each : createDefinitions.getValue()) {
+                if (each instanceof ColumnDefinitionSegment) {
+                    columnDefinitions.add((ColumnDefinitionSegment) each);
+                } else if (each instanceof ConstraintDefinitionSegment) {
+                    constraintDefinitions.add((ConstraintDefinitionSegment) each);
+                }
+            }
+        }
+        SimpleTableSegment likeTable = null;
+        Collection<RollupSegment> rollups = new LinkedList<>();
+        if (null != ctx.createLikeClause()) {
+            likeTable = (SimpleTableSegment) visit(ctx.createLikeClause());
+            for (IdentifierContext each : ctx.createLikeClause().identifier()) {
+                rollups.add(new RollupSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(each.getText())));
+            }
+        }
+        CreateTableOptionSegment createTableOption = null;
+        if (null != ctx.createTableOptions()) {
+            createTableOption = (CreateTableOptionSegment) visit(ctx.createTableOptions());
+        }
+        SelectStatement selectStatement = null;
+        // DORIS ADDED BEGIN
+        if (null != ctx.duplicateAsQueryExpression()) {
+            selectStatement = (SelectStatement) visit(ctx.duplicateAsQueryExpression().select());
+        }
+        // DORIS ADDED END
+        return CreateTableStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .ifNotExists(null != ctx.ifNotExists())
+                .likeTable(likeTable)
+                .createTableOption(createTableOption)
+                .selectStatement(selectStatement)
+                .columnDefinitions(columnDefinitions)
+                .constraintDefinitions(constraintDefinitions)
+                .rollups(rollups)
+                .build();
+    }
+    
+    @Override
+    public ASTNode visitCreateTableOptions(final CreateTableOptionsContext ctx) {
+        CreateTableOptionSegment result = new CreateTableOptionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (CreateTableOptionContext each : ctx.createTableOption()) {
+            if (null != each.engineRef()) {
+                result.setEngine((EngineSegment) visit(each.engineRef()));
+            } else if (null != each.COMMENT()) {
+                result.setCommentSegment(new CommentSegment(each.string_().getText(), each.string_().getStart().getStartIndex(), each.string_().getStop().getStopIndex()));
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateDefinitionClause(final CreateDefinitionClauseContext ctx) {
+        CollectionValue<CreateDefinitionSegment> result = new CollectionValue<>();
+        for (TableElementContext each : ctx.tableElementList().tableElement()) {
+            if (null != each.columnDefinition()) {
+                result.getValue().add((ColumnDefinitionSegment) visit(each.columnDefinition()));
+            }
+            if (null != each.tableConstraintDef()) {
+                result.getValue().add((ConstraintDefinitionSegment) visit(each.tableConstraintDef()));
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateLikeClause(final CreateLikeClauseContext ctx) {
+        return visit(ctx.tableName());
+    }
+    
+    @Override
+    public ASTNode visitCreateFile(final CreateFileContext ctx) {
+        CreateFileStatement result = new CreateFileStatement(getDatabaseType());
+        result.setFileName(getFileName(ctx.fileName()));
+        if (null != ctx.databaseName()) {
+            result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDropFile(final DropFileContext ctx) {
+        DropFileStatement result = new DropFileStatement(getDatabaseType());
+        result.setFileName(getFileName(ctx.fileName()));
+        if (null != ctx.databaseName()) {
+            result.setDatabaseName(new IdentifierValue(ctx.databaseName().getText()).getValue());
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
+    }
+    
+    private String getFileName(final FileNameContext ctx) {
+        if (null != ctx.identifier()) {
+            return new IdentifierValue(ctx.identifier().getText()).getValue();
+        }
+        if (null != ctx.SINGLE_QUOTED_TEXT()) {
+            return SQLUtils.getExactlyValue(ctx.SINGLE_QUOTED_TEXT().getText());
+        }
+        return SQLUtils.getExactlyValue(ctx.DOUBLE_QUOTED_TEXT().getText());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitAlterTable(final AlterTableContext ctx) {
+        AlterTableStatement.AlterTableStatementBuilder result = AlterTableStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.standaloneAlterTableAction() && null != ctx.standaloneAlterTableAction().standaloneAlterCommands()) {
+            processStandaloneAlterCommands(result, ctx.standaloneAlterTableAction().standaloneAlterCommands());
+            return result.build();
+        }
+        if (null == ctx.alterTableActions() || null == ctx.alterTableActions().alterCommandList() || null == ctx.alterTableActions().alterCommandList().alterList()) {
+            return result.build();
+        }
+        for (AlterDefinitionSegment each : ((CollectionValue<AlterDefinitionSegment>) visit(ctx.alterTableActions().alterCommandList().alterList())).getValue()) {
+            setAlterDefinition(result, each);
+        }
+        return result.build();
+    }
+    
+    private void processStandaloneAlterCommands(final AlterTableStatement.AlterTableStatementBuilder statement, final StandaloneAlterCommandsContext ctx) {
+        if (null != ctx.alterPartition()) {
+            AlterDefinitionSegment alterDefinition = (AlterDefinitionSegment) visit(ctx.alterPartition());
+            if (null != alterDefinition) {
+                setAlterDefinition(statement, alterDefinition);
+            }
+        }
+        if (null != ctx.SET() && null != ctx.properties()) {
+            PropertiesSegment properties = extractPropertiesSegmentFromPropertiesContext(ctx.properties());
+            statement.setPropertiesDefinition(properties);
+        }
+        if (null != ctx.ENABLE() && null != ctx.FEATURE() && null != ctx.string_()) {
+            int stopIndex = ctx.string_().getStop().getStopIndex();
+            if (null != ctx.WITH() && null != ctx.PROPERTIES() && null != ctx.properties()) {
+                stopIndex = ctx.RP_().getSymbol().getStopIndex();
+            }
+            EnableFeatureSegment enableFeatureSegment = new EnableFeatureSegment(ctx.ENABLE().getSymbol().getStartIndex(), stopIndex, ctx.string_().getText());
+            if (null != ctx.WITH() && null != ctx.PROPERTIES() && null != ctx.properties()) {
+                enableFeatureSegment.setProperties(extractPropertiesSegmentFromPropertiesContext(ctx.properties()));
+            }
+            statement.enableFeatureDefinition(enableFeatureSegment);
+        }
+        if (null != ctx.modifyDistributionClause()) {
+            ModifyDistributionSegment modifyDistributionSegment = (ModifyDistributionSegment) visit(ctx.modifyDistributionClause());
+            statement.modifyDistributionDefinition(modifyDistributionSegment);
+        }
+        if (null != ctx.MODIFY() && null != ctx.COMMENT() && null != ctx.string_()) {
+            ModifyTableCommentSegment modifyTableCommentSegment =
+                    new ModifyTableCommentSegment(ctx.MODIFY().getSymbol().getStartIndex(), ctx.string_().getStop().getStopIndex(), ctx.string_().getText());
+            statement.modifyTableCommentDefinition(modifyTableCommentSegment);
+        }
+        if (null != ctx.ENGINE() && null != ctx.identifier()) {
+            ModifyEngineSegment modifyEngineSegment = new ModifyEngineSegment(ctx.ENGINE().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), ctx.identifier().getText());
+            if (null != ctx.properties()) {
+                modifyEngineSegment.setProperties(extractPropertiesSegmentFromPropertiesContext(ctx.properties()));
+            }
+            statement.modifyEngineDefinition(modifyEngineSegment);
+        }
+    }
+    
+    @Override
+    public ASTNode visitDistributedbyClause(final DistributedbyClauseContext ctx) {
+        ModifyDistributionSegment result = new ModifyDistributionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.columnName()) {
+            result.getColumns().add((ColumnSegment) visit(ctx.columnName()));
+        }
+        if (null != ctx.NUMBER_()) {
+            result.setBuckets(Integer.parseInt(ctx.NUMBER_().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitModifyDistributionClause(final ModifyDistributionClauseContext ctx) {
+        ModifyDistributionSegment result = new ModifyDistributionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        if (null != ctx.columnNames()) {
+            for (ColumnNameContext each : ctx.columnNames().columnName()) {
+                result.getColumns().add((ColumnSegment) visit(each));
+            }
+        }
+        if (null != ctx.NUMBER_()) {
+            result.setBuckets(Integer.parseInt(ctx.NUMBER_().getText()));
+        }
+        if (null != ctx.AUTO()) {
+            result.setAutoBuckets(true);
+        }
+        return result;
+    }
+    
+    private void setAlterDefinition(final AlterTableStatement.AlterTableStatementBuilder alterTableStatement, final AlterDefinitionSegment alterDefinitionSegment) {
+        if (alterDefinitionSegment instanceof AddColumnDefinitionSegment) {
+            alterTableStatement.addColumnDefinition((AddColumnDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof ModifyColumnDefinitionSegment) {
+            alterTableStatement.modifyColumnDefinition((ModifyColumnDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof ChangeColumnDefinitionSegment) {
+            alterTableStatement.changeColumnDefinition((ChangeColumnDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof DropColumnDefinitionSegment) {
+            alterTableStatement.dropColumnDefinition((DropColumnDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof AddConstraintDefinitionSegment) {
+            alterTableStatement.addConstraintDefinition((AddConstraintDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof DropConstraintDefinitionSegment) {
+            alterTableStatement.dropConstraintDefinition((DropConstraintDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof RenameTableDefinitionSegment) {
+            alterTableStatement.renameTable(((RenameTableDefinitionSegment) alterDefinitionSegment).getRenameTable());
+        } else if (alterDefinitionSegment instanceof ReplaceTableDefinitionSegment) {
+            alterTableStatement.replaceTable((ReplaceTableDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof ConvertTableDefinitionSegment) {
+            alterTableStatement.convertTableDefinition((ConvertTableDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof DropIndexDefinitionSegment) {
+            alterTableStatement.dropIndexDefinition((DropIndexDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof RenameIndexDefinitionSegment) {
+            alterTableStatement.renameIndexDefinition((RenameIndexDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof RenameColumnSegment) {
+            alterTableStatement.renameColumnDefinition((RenameColumnSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof AddRollupDefinitionSegment) {
+            alterTableStatement.addRollupDefinition((AddRollupDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof DropRollupDefinitionSegment) {
+            alterTableStatement.dropRollupDefinition((DropRollupDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof RenameRollupDefinitionSegment) {
+            alterTableStatement.renameRollupDefinition((RenameRollupDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof OrderByColumnDefinitionSegment) {
+            alterTableStatement.orderByColumnDefinition((OrderByColumnDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof RenamePartitionDefinitionSegment) {
+            alterTableStatement.renamePartitionDefinition((RenamePartitionDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof AddPartitionDefinitionSegment) {
+            alterTableStatement.addPartitionDefinition((AddPartitionDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof AddPartitionsSegment) {
+            alterTableStatement.addPartitionsSegment((AddPartitionsSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof ModifyPartitionDefinitionSegment) {
+            alterTableStatement.modifyPartitionDefinition((ModifyPartitionDefinitionSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof AlgorithmTypeSegment) {
+            alterTableStatement.algorithmSegment((AlgorithmTypeSegment) alterDefinitionSegment);
+        } else if (alterDefinitionSegment instanceof LockTableSegment) {
+            alterTableStatement.lockTableSegment((LockTableSegment) alterDefinitionSegment);
+        }
+    }
+    
+    private ColumnDefinitionSegment generateColumnDefinitionSegment(final ColumnSegment column, final FieldDefinitionContext ctx) {
+        DataTypeSegment dataTypeSegment = (DataTypeSegment) visit(ctx.dataType());
+        boolean isPrimaryKey = ctx.columnAttribute().stream().anyMatch(each -> null != each.KEY() && null == each.UNIQUE());
+        boolean isAutoIncrement = ctx.columnAttribute().stream().anyMatch(each -> null != each.AUTO_INCREMENT());
+        boolean isNotNull = ctx.columnAttribute().stream().anyMatch(each -> null != each.NOT() && null != each.NULL());
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(column.getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, isNotNull, getText(ctx));
+        result.setAutoIncrement(isAutoIncrement);
+        if (null != ctx.dorisColumnAggType()) {
+            result.setAggType(ctx.dorisColumnAggType().getText());
+        }
+        ctx.columnAttribute().stream().filter(each -> null != each.COMMENT() && null != each.string_()).findFirst()
+                .ifPresent(each -> result.setComment(SQLUtils.getExactlyValue(each.string_().getText())));
+        return result;
+    }
+    
+    private String getText(final ParserRuleContext ctx) {
+        return ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+    }
+    
+    @Override
+    public ASTNode visitAlterConstraint(final AlterConstraintContext ctx) {
+        return new ModifyConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintSegment) visit(ctx.constraintName()));
+    }
+    
+    @Override
+    public ASTNode visitAlterList(final AlterListContext ctx) {
+        CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
+        if (ctx.alterListItem().isEmpty()) {
+            return result;
+        }
+        result.getValue().addAll(getAlterDefinitionSegments(ctx));
+        for (AlterCommandsModifierContext each : ctx.alterCommandsModifier()) {
+            if (null != each.alterAlgorithmOption()) {
+                result.getValue().add((AlgorithmTypeSegment) visit(each));
+            } else if (null != each.alterLockOption()) {
+                result.getValue().add((LockTableSegment) visit(each));
+            }
+        }
+        return result;
+    }
+    
+    private Collection<AlterDefinitionSegment> getAlterDefinitionSegments(final AlterListContext ctx) {
+        Collection<AlterDefinitionSegment> result = new LinkedList<>();
+        for (AlterListItemContext each : ctx.alterListItem()) {
+            if (each instanceof AddRollupContext) {
+                result.addAll(((CollectionValue<AddRollupDefinitionSegment>) visit(each)).getValue());
+            } else if (each instanceof DropRollupContext) {
+                result.addAll(((CollectionValue<DropRollupDefinitionSegment>) visit(each)).getValue());
+            } else {
+                getAlterDefinitionSegment(ctx, each).ifPresent(result::add);
+            }
+        }
+        return result;
+    }
+    
+    private Optional<AlterDefinitionSegment> getAlterDefinitionSegment(final AlterListContext alterListContext, final AlterListItemContext alterListItemContext) {
+        if (alterListItemContext instanceof AddColumnContext) {
+            return Optional.of((AddColumnDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof AlterConstraintContext || alterListItemContext instanceof AlterCheckContext) {
+            return Optional.of((AlterDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof ChangeColumnContext) {
+            return Optional.of(generateModifyColumnDefinitionSegment((ChangeColumnContext) alterListItemContext));
+        }
+        if (alterListItemContext instanceof ModifyColumnContext) {
+            return Optional.of(generateModifyColumnDefinitionSegment((ModifyColumnContext) alterListItemContext));
+        }
+        if (alterListItemContext instanceof AlterTableDropContext) {
+            return getDropItemDefinitionSegment(alterListContext, (AlterTableDropContext) alterListItemContext);
+        }
+        if (alterListItemContext instanceof AddTableConstraintContext) {
+            return Optional.of((AddConstraintDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof AlterRenameTableContext) {
+            return Optional.of((RenameTableDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof ReplaceTableContext) {
+            return Optional.of((ReplaceTableDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof AlterConvertContext) {
+            return Optional.of((ConvertTableDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof RenameColumnContext) {
+            return Optional.of((RenameColumnSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof RenameIndexContext) {
+            return Optional.of((RenameIndexDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof RenameRollupContext) {
+            return Optional.of((RenameRollupDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof AlterTableOrderContext) {
+            return Optional.of((OrderByColumnDefinitionSegment) visit(alterListItemContext));
+        }
+        if (alterListItemContext instanceof RenamePartitionContext) {
+            return Optional.of((RenamePartitionDefinitionSegment) visit(alterListItemContext));
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<AlterDefinitionSegment> getDropItemDefinitionSegment(final AlterListContext alterListContext, final AlterTableDropContext alterTableDrop) {
+        if (null != alterTableDrop.CHECK() || null != alterTableDrop.CONSTRAINT()) {
+            ConstraintSegment constraint = new ConstraintSegment(alterTableDrop.identifier(0).getStart().getStartIndex(), alterTableDrop.identifier(0).getStop().getStopIndex(),
+                    (IdentifierValue) visit(alterTableDrop.identifier(0)));
+            return Optional.of(new DropConstraintDefinitionSegment(alterListContext.getStart().getStartIndex(), alterListContext.getStop().getStopIndex(), constraint));
+        }
+        if (null == alterTableDrop.KEY() && null == alterTableDrop.keyOrIndex()) {
+            ColumnSegment column = new ColumnSegment(alterTableDrop.columnInternalRef.start.getStartIndex(), alterTableDrop.columnInternalRef.stop.getStopIndex(),
+                    (IdentifierValue) visit(alterTableDrop.columnInternalRef));
+            DropColumnDefinitionSegment dropColumnSegment =
+                    new DropColumnDefinitionSegment(alterTableDrop.getStart().getStartIndex(), alterTableDrop.getStop().getStopIndex(), Collections.singleton(column));
+            if (null != alterTableDrop.fromRollup) {
+                int startIndex = alterTableDrop.fromRollup.getStart().getStartIndex();
+                int stopIndex = alterTableDrop.fromRollup.getStop().getStopIndex();
+                IdentifierValue identifierValue = (IdentifierValue) visit(alterTableDrop.fromRollup);
+                dropColumnSegment.setRollupIndex(new IndexSegment(startIndex, stopIndex, new IndexNameSegment(startIndex, stopIndex, identifierValue)));
+            }
+            if (null != alterTableDrop.propertiesClause()) {
+                dropColumnSegment.setProperties(extractPropertiesSegment(alterTableDrop.propertiesClause()));
+            }
+            return Optional.of(dropColumnSegment);
+        }
+        if (null != alterTableDrop.keyOrIndex()) {
+            return Optional.of(
+                    new DropIndexDefinitionSegment(alterListContext.getStart().getStartIndex(), alterListContext.getStop().getStopIndex(), (IndexSegment) visit(alterTableDrop.indexName())));
+        }
+        return Optional.empty();
+    }
+    
+    @Override
+    public ASTNode visitAlterAlgorithmOption(final AlterAlgorithmOptionContext ctx) {
+        AlgorithmOption algorithmOption = null;
+        if (null != ctx.INSTANT()) {
+            algorithmOption = AlgorithmOption.INSTANT;
+        } else if (null != ctx.DEFAULT()) {
+            algorithmOption = AlgorithmOption.DEFAULT;
+        } else if (null != ctx.INPLACE()) {
+            algorithmOption = AlgorithmOption.INPLACE;
+        } else if (null != ctx.COPY()) {
+            algorithmOption = AlgorithmOption.COPY;
+        }
+        return new AlgorithmTypeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), algorithmOption);
+    }
+    
+    @Override
+    public ASTNode visitAlterLockOption(final AlterLockOptionContext ctx) {
+        LockTableOption lockOption = null;
+        if (null != ctx.DEFAULT()) {
+            lockOption = LockTableOption.DEFAULT;
+        } else if (null != ctx.NONE()) {
+            lockOption = LockTableOption.NONE;
+        } else if (null != ctx.SHARED()) {
+            lockOption = LockTableOption.SHARED;
+        } else if (null != ctx.EXCLUSIVE()) {
+            lockOption = LockTableOption.EXCLUSIVE;
+        }
+        return new LockTableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), lockOption);
+    }
+    
+    @Override
+    public ASTNode visitAlterConvert(final AlterConvertContext ctx) {
+        ConvertTableDefinitionSegment result = new ConvertTableDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (CharsetNameSegment) visit(ctx.charsetName()));
+        if (null != ctx.collateClause()) {
+            result.setCollateValue((SimpleExpressionSegment) visit(ctx.collateClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCharsetName(final CharsetNameContext ctx) {
+        return new CharsetNameSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.getText());
+    }
+    
+    @Override
+    public ASTNode visitAddTableConstraint(final AddTableConstraintContext ctx) {
+        return new AddConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintDefinitionSegment) visit(ctx.tableConstraintDef()));
+    }
+    
+    @Override
+    public ASTNode visitAlterCheck(final AlterCheckContext ctx) {
+        return new ModifyConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ConstraintSegment) visit(ctx.constraintName()));
+    }
+    
+    @Override
+    public ASTNode visitAlterRenameTable(final AlterRenameTableContext ctx) {
+        RenameTableDefinitionSegment result = new RenameTableDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setRenameTable((SimpleTableSegment) visit(ctx.tableName()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitReplaceTable(final ReplaceTableContext ctx) {
+        ReplaceTableDefinitionSegment result = new ReplaceTableDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setReplaceTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRenameTable(final RenameTableContext ctx) {
+        Collection<RenameTableDefinitionSegment> renameTables = new LinkedList<>();
+        for (int i = 0, len = ctx.tableName().size(); i < len; i += 2) {
+            TableNameContext tableName = ctx.tableName(i);
+            TableNameContext renameTableName = ctx.tableName(i + 1);
+            renameTables.add(createRenameTableDefinitionSegment(tableName, renameTableName));
+        }
+        return new RenameTableStatement(getDatabaseType(), renameTables);
+    }
+    
+    private RenameTableDefinitionSegment createRenameTableDefinitionSegment(final TableNameContext tableName, final TableNameContext renameTableName) {
+        RenameTableDefinitionSegment result = new RenameTableDefinitionSegment(tableName.start.getStartIndex(), renameTableName.stop.getStopIndex());
+        result.setTable((SimpleTableSegment) visit(tableName));
+        result.setRenameTable((SimpleTableSegment) visit(renameTableName));
+        return result;
+    }
+    
+    private ModifyColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ModifyColumnContext ctx) {
+        ColumnSegment column = new ColumnSegment(ctx.columnInternalRef.start.getStartIndex(), ctx.columnInternalRef.stop.getStopIndex(), (IdentifierValue) visit(ctx.columnInternalRef));
+        ColumnDefinitionSegment columnDefinition;
+        if (null != ctx.fieldDefinition()) {
+            columnDefinition = generateColumnDefinitionSegment(column, ctx.fieldDefinition());
+        } else {
+            columnDefinition = new ColumnDefinitionSegment(ctx.columnInternalRef.start.getStartIndex(), ctx.getStop().getStopIndex(), column, null, false, false, getText(ctx));
+            if (null != ctx.string_()) {
+                columnDefinition.setComment(SQLUtils.getExactlyValue(ctx.string_().getText()));
+            }
+        }
+        ModifyColumnDefinitionSegment result = new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
+        if (null != ctx.place()) {
+            result.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
+        }
+        if (null != ctx.fromRollup) {
+            int startIndex = ctx.fromRollup.getStart().getStartIndex();
+            int stopIndex = ctx.fromRollup.getStop().getStopIndex();
+            IdentifierValue identifierValue = (IdentifierValue) visit(ctx.fromRollup);
+            result.setRollupIndex(new IndexSegment(startIndex, stopIndex, new IndexNameSegment(startIndex, stopIndex, identifierValue)));
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
+    }
+    
+    private ChangeColumnDefinitionSegment generateModifyColumnDefinitionSegment(final ChangeColumnContext ctx) {
+        ChangeColumnDefinitionSegment result = new ChangeColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ColumnDefinitionSegment) visit(ctx.columnDefinition()));
+        result.setPreviousColumn(new ColumnSegment(ctx.columnInternalRef.getStart().getStartIndex(), ctx.columnInternalRef.getStop().getStopIndex(),
+                new IdentifierValue(ctx.columnInternalRef.getText())));
+        if (null != ctx.place()) {
+            result.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAddColumn(final AddColumnContext ctx) {
+        Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+        if (null != ctx.columnDefinition()) {
+            columnDefinitions.add((ColumnDefinitionSegment) visit(ctx.columnDefinition()));
+        }
+        if (null != ctx.tableElementList()) {
+            for (TableElementContext each : ctx.tableElementList().tableElement()) {
+                if (null != each.columnDefinition()) {
+                    columnDefinitions.add((ColumnDefinitionSegment) visit(each.columnDefinition()));
+                }
+            }
+        }
+        AddColumnDefinitionSegment result = new AddColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinitions);
+        if (null != ctx.place()) {
+            Preconditions.checkState(1 == columnDefinitions.size());
+            result.setColumnPosition((ColumnPositionSegment) visit(ctx.place()));
+        }
+        if (null != ctx.identifier()) {
+            int startIndex = ctx.identifier().getStart().getStartIndex();
+            int stopIndex = ctx.identifier().getStop().getStopIndex();
+            IdentifierValue identifierValue = (IdentifierValue) visit(ctx.identifier());
+            result.setRollupIndex(new IndexSegment(startIndex, stopIndex, new IndexNameSegment(startIndex, stopIndex, identifierValue)));
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterTableOrder(final AlterTableOrderContext ctx) {
+        OrderByColumnDefinitionSegment result = new OrderByColumnDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        for (int i = 0; i < ctx.alterOrderList().columnRef().size(); i++) {
+            result.getColumns().add((ColumnSegment) visit(ctx.alterOrderList().columnRef(i)));
+        }
+        if (null != ctx.identifier()) {
+            int startIndex = ctx.identifier().getStart().getStartIndex();
+            int stopIndex = ctx.identifier().getStop().getStopIndex();
+            IdentifierValue identifierValue = (IdentifierValue) visit(ctx.identifier());
+            result.setFromIndex(new IndexSegment(startIndex, stopIndex, new IndexNameSegment(startIndex, stopIndex, identifierValue)));
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRenameColumn(final RenameColumnContext ctx) {
+        ColumnSegment oldColumnSegment = (ColumnSegment) visit(ctx.oldColumn());
+        ColumnSegment newColumnSegment = (ColumnSegment) visit(ctx.newColumn());
+        return new RenameColumnSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), oldColumnSegment, newColumnSegment);
+    }
+    
+    @Override
+    public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
+        ColumnSegment column = new ColumnSegment(ctx.column_name.start.getStartIndex(), ctx.column_name.stop.getStopIndex(), (IdentifierValue) visit(ctx.column_name));
+        DataTypeSegment dataTypeSegment = (DataTypeSegment) visit(ctx.fieldDefinition().dataType());
+        boolean isPrimaryKey = ctx.fieldDefinition().columnAttribute().stream().anyMatch(each -> null != each.KEY() && null == each.UNIQUE());
+        boolean isAutoIncrement = ctx.fieldDefinition().columnAttribute().stream().anyMatch(each -> null != each.AUTO_INCREMENT());
+        boolean isNotNull = ctx.fieldDefinition().columnAttribute().stream().anyMatch(each -> null != each.NOT() && null != each.NULL());
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, isNotNull, getText(ctx));
+        result.getReferencedTables().addAll(getReferencedTables(ctx));
+        result.setAutoIncrement(isAutoIncrement);
+        if (null != ctx.fieldDefinition().dorisColumnAggType()) {
+            result.setAggType(ctx.fieldDefinition().dorisColumnAggType().getText());
+        }
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> getReferencedTables(final ColumnDefinitionContext ctx) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        if (null != ctx.referenceDefinition()) {
+            result.add((SimpleTableSegment) visit(ctx.referenceDefinition()));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public ASTNode visitTableConstraintDef(final TableConstraintDefContext ctx) {
+        ConstraintDefinitionSegment result = new ConstraintDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        if (null != ctx.constraintClause() && null != ctx.constraintClause().constraintName()) {
+            result.setConstraintName((ConstraintSegment) visit(ctx.constraintClause().constraintName()));
+        }
+        if (null != ctx.KEY() && null != ctx.PRIMARY()) {
+            result.setPrimaryKey(true);
+            result.getPrimaryKeyColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
+            return result;
+        }
+        if (null != ctx.FOREIGN()) {
+            result.setReferencedTable((SimpleTableSegment) visit(ctx.referenceDefinition()));
+            return result;
+        }
+        if (null != ctx.UNIQUE()) {
+            result.setUniqueKey(true);
+            result.getIndexColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
+            if (null != ctx.indexName()) {
+                result.setIndexName((IndexSegment) visit(ctx.indexName()));
+            }
+            return result;
+        }
+        if (null != ctx.checkConstraint()) {
+            return result;
+        }
+        result.getIndexColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
+        if (null != ctx.indexName()) {
+            result.setIndexName((IndexSegment) visit(ctx.indexName()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitKeyListWithExpression(final KeyListWithExpressionContext ctx) {
+        CollectionValue<ColumnSegment> result = new CollectionValue<>();
+        for (KeyPartWithExpressionContext each : ctx.keyPartWithExpression()) {
+            if (null != each.keyPart()) {
+                result.getValue().add((ColumnSegment) visit(each.keyPart().columnName()));
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitReferenceDefinition(final ReferenceDefinitionContext ctx) {
+        return visit(ctx.tableName());
+    }
+    
+    @Override
+    public ASTNode visitPlace(final PlaceContext ctx) {
+        ColumnSegment columnName = null;
+        if (null != ctx.columnName()) {
+            columnName = (ColumnSegment) visit(ctx.columnName());
+        }
+        return null == ctx.columnName()
+                ? new ColumnFirstPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName)
+                : new ColumnAfterPositionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnName);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitDropTable(final DropTableContext ctx) {
+        return new DropTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue(), null != ctx.ifExists(), false);
+    }
+    
+    @Override
+    public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
+        Collection<PartitionSegment> partitions = null == ctx.partitionNames()
+                ? Collections.emptyList()
+                : ctx.partitionNames().identifier().stream()
+                        .map(each -> new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each))).collect(Collectors.toList());
+        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())), partitions);
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
+        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
+        String comment = null == ctx.commentClause() || null == ctx.commentClause().literals() ? null : SQLUtils.getExactlyValue(ctx.commentClause().literals().getText());
+        AlgorithmTypeSegment algorithmType = null;
+        LockTableSegment lockTable = null;
+        if (null != ctx.algorithmOptionAndLockOption()) {
+            if (null != ctx.algorithmOptionAndLockOption().alterAlgorithmOption()) {
+                algorithmType = (AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption());
+            }
+            if (null != ctx.algorithmOptionAndLockOption().alterLockOption()) {
+                lockTable = (LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption());
+            }
+        }
+        CreateIndexStatement result = CreateIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .ifNotExists(null != ctx.ifNotExists())
+                .index(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName))
+                .columns(((CollectionValue) visit(ctx.keyListWithExpression())).getValue())
+                .indexType(null == ctx.dorisIndexTypeClause() ? null : ctx.dorisIndexTypeClause().getStop().getText())
+                .properties(null == ctx.propertiesClause() ? null : extractPropertiesSegment(ctx.propertiesClause()))
+                .comment(comment)
+                .algorithmType(algorithmType)
+                .lockTable(lockTable)
+                .build();
+        if (null != ctx.commentClause() && null != ctx.commentClause().literals()) {
+            result.getComments().add(new CommentSegment(comment, ctx.commentClause().literals().getStart().getStartIndex(), ctx.commentClause().literals().getStop().getStopIndex()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDropIndex(final DropIndexContext ctx) {
+        AlgorithmTypeSegment algorithmType = null;
+        LockTableSegment lockTable = null;
+        if (null != ctx.algorithmOptionAndLockOption()) {
+            if (null != ctx.algorithmOptionAndLockOption().alterAlgorithmOption()) {
+                algorithmType = (AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption());
+            }
+            if (null != ctx.algorithmOptionAndLockOption().alterLockOption()) {
+                lockTable = (LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption());
+            }
+        }
+        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
+        return DropIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .ifExists(null != ctx.ifExists())
+                .indexes(Collections.singleton(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName)))
+                .simpleTable((SimpleTableSegment) visit(ctx.tableName()))
+                .algorithmType(algorithmType)
+                .lockTable(lockTable)
+                .build();
+    }
+    
+    @Override
+    public ASTNode visitRenameIndex(final RenameIndexContext ctx) {
+        IndexSegment indexNameSegment = (IndexSegment) visitIndexName(ctx.indexName(0));
+        IndexSegment renameIndexName = (IndexSegment) visitIndexName(ctx.indexName(1));
+        return new RenameIndexDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), indexNameSegment, renameIndexName);
+    }
+    
+    @Override
+    public ASTNode visitBuildIndex(final BuildIndexContext ctx) {
+        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
+        Collection<PartitionSegment> partitions = null == ctx.partitionNames()
+                ? Collections.emptyList()
+                : ctx.partitionNames().identifier().stream()
+                        .map(each -> new PartitionSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), (IdentifierValue) visit(each))).collect(Collectors.toList());
+        return new BuildIndexStatement(
+                getDatabaseType(), new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName), (SimpleTableSegment) visit(ctx.tableName()), partitions);
+    }
+    
+    @Override
+    public ASTNode visitCancelBuildIndex(final CancelBuildIndexContext ctx) {
+        return new CancelBuildIndexStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()),
+                null == ctx.jobIdList() ? Collections.emptyList() : ctx.jobIdList().jobId().stream().map(RuleContext::getText).collect(Collectors.toList()));
+    }
+    
+    @Override
+    public ASTNode visitCancelAlterTable(final CancelAlterTableContext ctx) {
+        String alterType = null;
+        if (null != ctx.COLUMN()) {
+            alterType = "COLUMN";
+        } else if (null != ctx.MATERIALIZED()) {
+            alterType = "MATERIALIZED VIEW";
+        } else if (null != ctx.ROLLUP()) {
+            alterType = "ROLLUP";
+        }
+        return new CancelAlterTableStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()),
+                alterType, null == ctx.jobIdList() ? Collections.emptyList() : ctx.jobIdList().jobId().stream().map(RuleContext::getText).collect(Collectors.toList()));
+    }
+    
+    @Override
+    public ASTNode visitAddRollup(final AddRollupContext ctx) {
+        CollectionValue<AddRollupDefinitionSegment> result = new CollectionValue<>();
+        for (RollupItemContext each : ctx.rollupItem()) {
+            RollupSegment rollupSegment = new RollupSegment(each.rollupName.getStart().getStartIndex(), each.rollupName.getStop().getStopIndex(), (IdentifierValue) visit(each.rollupName));
+            AddRollupDefinitionSegment addRollupDefinitionSegment = new AddRollupDefinitionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), rollupSegment);
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(each.columnNames());
+            addRollupDefinitionSegment.getColumns().addAll(columns.getValue());
+            if (null != each.fromIndexName) {
+                addRollupDefinitionSegment.setFromIndex((IndexSegment) visit(each.fromIndexName));
+            }
+            if (null != each.propertiesClause()) {
+                addRollupDefinitionSegment.setProperties(extractPropertiesSegment(each.propertiesClause()));
+            }
+            result.getValue().add(addRollupDefinitionSegment);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDropRollup(final DropRollupContext ctx) {
+        CollectionValue<DropRollupDefinitionSegment> result = new CollectionValue<>();
+        for (RollupNameItemContext each : ctx.rollupNameItem()) {
+            RollupSegment rollupSegment = new RollupSegment(each.rollupName.getStart().getStartIndex(), each.rollupName.getStop().getStopIndex(), (IdentifierValue) visit(each.rollupName));
+            DropRollupDefinitionSegment dropRollupDefinitionSegment = new DropRollupDefinitionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), rollupSegment);
+            if (null != each.propertiesClause()) {
+                dropRollupDefinitionSegment.setProperties(extractPropertiesSegment(each.propertiesClause()));
+            }
+            result.getValue().add(dropRollupDefinitionSegment);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitRenameRollup(final RenameRollupContext ctx) {
+        RollupSegment oldRollupSegment = new RollupSegment(ctx.oldRollupName.getStart().getStartIndex(), ctx.oldRollupName.getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.oldRollupName));
+        RollupSegment newRollupSegment = new RollupSegment(ctx.newRollupName.getStart().getStartIndex(), ctx.newRollupName.getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.newRollupName));
+        return new RenameRollupDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), oldRollupSegment, newRollupSegment);
+    }
+    
+    @Override
+    public ASTNode visitRenamePartition(final RenamePartitionContext ctx) {
+        PartitionSegment oldPartitionSegment = new PartitionSegment(ctx.oldPartitionName.getStart().getStartIndex(), ctx.oldPartitionName.getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.oldPartitionName));
+        PartitionSegment newPartitionSegment = new PartitionSegment(ctx.newPartitionName.getStart().getStartIndex(), ctx.newPartitionName.getStop().getStopIndex(),
+                (IdentifierValue) visit(ctx.newPartitionName));
+        return new RenamePartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), oldPartitionSegment, newPartitionSegment);
+    }
+    
+    @Override
+    public ASTNode visitAlterPartition(final AlterPartitionContext ctx) {
+        if (null != ctx.ADD() && null != ctx.PARTITION() && null != ctx.partitionName() && null != ctx.dorisPartitionDesc()) {
+            return visitAddPartitionDoris(ctx);
+        }
+        if (null != ctx.ADD() && null != ctx.PARTITIONS() && null != ctx.FROM() && null != ctx.TO() && null != ctx.INTERVAL()) {
+            return visitAddPartitionsDoris(ctx);
+        }
+        if (null != ctx.MODIFY() && null != ctx.PARTITION()) {
+            return visitModifyPartitionDoris(ctx);
+        }
+        return null;
+    }
+    
+    private AddPartitionDefinitionSegment visitAddPartitionDoris(final AlterPartitionContext ctx) {
+        PartitionSegment partitionSegment =
+                new PartitionSegment(ctx.partitionName().start.getStartIndex(), ctx.partitionName().stop.getStopIndex(), (IdentifierValue) visit(ctx.partitionName().identifier()));
+        AddPartitionDefinitionSegment result = new AddPartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), partitionSegment);
+        if (null != ctx.dorisPartitionDesc()) {
+            result.setPartitionValues((PartitionValuesSegment) visit(ctx.dorisPartitionDesc()));
+        }
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        } else if (null != ctx.properties()) {
+            PropertiesSegment propertiesSegment = new PropertiesSegment(ctx.properties().start.getStartIndex(), ctx.properties().stop.getStopIndex());
+            for (PropertyContext each : ctx.properties().property()) {
+                propertiesSegment.getProperties().add(createPropertySegment(each));
+            }
+            result.setProperties(propertiesSegment);
+        }
+        if (null != ctx.distributedbyClause()) {
+            DistributedbyClauseContext distCtx = ctx.distributedbyClause();
+            result.setDistributedColumn((ColumnSegment) visit(distCtx.columnName()));
+            result.setBuckets(Integer.parseInt(distCtx.NUMBER_().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitDorisPartitionDesc(final DorisPartitionDescContext ctx) {
+        if (null != ctx.VALUES() && null != ctx.LESS() && null != ctx.THAN()) {
+            PartitionValuesSegment result = new PartitionValuesSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PartitionValuesSegment.PartitionValuesType.VALUES_LESS_THAN);
+            if (null != ctx.MAXVALUE()) {
+                result.setMaxValue(true);
+            } else if (!ctx.partitionValueList().isEmpty()) {
+                PartitionValueListContext valueListCtx = ctx.partitionValueList(0);
+                for (int i = 0; i < valueListCtx.expr().size(); i++) {
+                    result.getValues().add((ExpressionSegment) visit(valueListCtx.expr(i)));
+                }
+            }
+            return result;
+        }
+        if (null != ctx.VALUES() && null != ctx.LBT_()) {
+            PartitionValuesSegment result = new PartitionValuesSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), PartitionValuesSegment.PartitionValuesType.VALUES_RANGE);
+            for (PartitionValueListContext each : ctx.partitionValueList()) {
+                for (int i = 0; i < each.expr().size(); i++) {
+                    result.getValues().add((ExpressionSegment) visit(each.expr(i)));
+                }
+            }
+            return result;
+        }
+        return null;
+    }
+    
+    private AddPartitionsSegment visitAddPartitionsDoris(final AlterPartitionContext ctx) {
+        ExpressionSegment fromValue = (ExpressionSegment) visit(ctx.expr(0));
+        ExpressionSegment toValue = (ExpressionSegment) visit(ctx.expr(1));
+        ExpressionSegment intervalValue = (ExpressionSegment) visit(ctx.expr(2));
+        AddPartitionsSegment result = new AddPartitionsSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), fromValue, toValue, intervalValue);
+        if (null != ctx.intervalUnit()) {
+            int startIndex = ctx.intervalUnit().getStart().getStartIndex();
+            int stopIndex = ctx.intervalUnit().getStop().getStopIndex();
+            IdentifierValue identifier = new IdentifierValue(ctx.intervalUnit().getText());
+            result.setIntervalUnit(new IntervalUnitSegment(startIndex, stopIndex, identifier));
+        }
+        return result;
+    }
+    
+    private ModifyPartitionDefinitionSegment visitModifyPartitionDoris(final AlterPartitionContext ctx) {
+        PropertiesSegment properties = new PropertiesSegment(ctx.properties().start.getStartIndex(), ctx.properties().stop.getStopIndex());
+        for (PropertyContext each : ctx.properties().property()) {
+            properties.getProperties().add(createPropertySegment(each));
+        }
+        if (null != ctx.ASTERISK_()) {
+            return new ModifyPartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), properties, true);
+        }
+        ModifyPartitionDefinitionSegment result = new ModifyPartitionDefinitionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), properties, false);
+        if (null != ctx.identifier() && ctx.identifierList() == null) {
+            PartitionSegment partition = new PartitionSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+            result.getPartitions().add(partition);
+        } else if (null != ctx.identifierList()) {
+            for (IdentifierContext each : ctx.identifierList().identifier()) {
+                PartitionSegment partition = new PartitionSegment(each.start.getStartIndex(), each.stop.getStopIndex(), (IdentifierValue) visit(each));
+                result.getPartitions().add(partition);
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterStoragePolicy(final AlterStoragePolicyContext ctx) {
+        IdentifierValue identifier = (IdentifierValue) visit(ctx.identifier());
+        PolicyNameSegment policyNameSegment = new PolicyNameSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), identifier);
+        PropertiesSegment propertiesSegment = extractPropertiesSegment(ctx.propertiesClause());
+        return new DorisAlterStoragePolicyStatement(getDatabaseType(), policyNameSegment, propertiesSegment);
+    }
+    
+    @Override
+    public ASTNode visitAlterColocateGroup(final AlterColocateGroupContext ctx) {
+        IdentifierValue groupIdentifier = (IdentifierValue) visit(ctx.identifier());
+        ColocateGroupSegment groupSegment = new ColocateGroupSegment(ctx.identifier().getStart().getStartIndex(), ctx.identifier().getStop().getStopIndex(), groupIdentifier);
+        if (null != ctx.databaseName()) {
+            groupSegment
+                    .setOwner(new OwnerSegment(ctx.databaseName().getStart().getStartIndex(), ctx.databaseName().getStop().getStopIndex(), (IdentifierValue) visit(ctx.databaseName().identifier())));
+        }
+        PropertiesSegment propertiesSegment = extractPropertiesSegmentFromPropertiesContext(ctx.properties());
+        return new DorisAlterColocateGroupStatement(getDatabaseType(), groupSegment, propertiesSegment);
+    }
+    
+    private PropertiesSegment extractPropertiesSegment(final PropertiesClauseContext ctx) {
+        PropertiesSegment result = new PropertiesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (PropertyContext each : ctx.properties().property()) {
+            String key = getPropertyKey(each);
+            String value = getPropertyValue(each);
+            PropertySegment propertySegment = new PropertySegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), key, value);
+            result.getProperties().add(propertySegment);
+        }
+        return result;
+    }
+    
+    private PropertiesSegment extractPropertiesSegmentFromPropertiesContext(final PropertiesContext ctx) {
+        PropertiesSegment result = new PropertiesSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
+        for (PropertyContext each : ctx.property()) {
+            String key = getPropertyKey(each);
+            String value = getPropertyValue(each);
+            PropertySegment propertySegment = new PropertySegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), key, value);
+            result.getProperties().add(propertySegment);
+        }
+        return result;
+    }
+    
+    private String getPropertyValue(final PropertyContext ctx) {
+        return SQLUtils.getExactlyValue(ctx.literals().getText());
+    }
+    
+    @Override
+    public ASTNode visitKeyParts(final KeyPartsContext ctx) {
+        CollectionValue<ColumnSegment> result = new CollectionValue<>();
+        List<KeyPartContext> keyParts = ctx.keyPart();
+        for (KeyPartContext each : keyParts) {
+            if (null != each.columnName()) {
+                result.getValue().add((ColumnSegment) visit(each.columnName()));
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateProcedure(final CreateProcedureContext ctx) {
+        CreateProcedureStatement result = new CreateProcedureStatement(getDatabaseType());
+        result.setProcedureName((FunctionNameSegment) visit(ctx.functionName()));
+        result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitFunctionName(final FunctionNameContext ctx) {
+        FunctionNameSegment result = new FunctionNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), (IdentifierValue) visit(ctx.identifier()));
+        if (null != ctx.owner()) {
+            result.setOwner((OwnerSegment) visit(ctx.owner()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterProcedure(final AlterProcedureContext ctx) {
+        return new AlterProcedureStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitDropProcedure(final DropProcedureContext ctx) {
+        return new DropProcedureStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
+        RoutineBodySegment routineBody = null == ctx.routineBody() ? null : (RoutineBodySegment) visit(ctx.routineBody());
+        DorisCreateFunctionStatement result = new DorisCreateFunctionStatement(getDatabaseType(), (FunctionNameSegment) visit(ctx.functionName()), routineBody);
+        if (null == routineBody) {
+            if (null != ctx.GLOBAL()) {
+                result.setGlobal(true);
+            }
+            if (null != ctx.AGGREGATE()) {
+                result.setFunctionType(DorisCreateFunctionStatement.FunctionType.AGGREGATE);
+            } else if (null != ctx.TABLES()) {
+                result.setFunctionType(DorisCreateFunctionStatement.FunctionType.TABLES);
+            } else if (null != ctx.ALIAS()) {
+                result.setFunctionType(DorisCreateFunctionStatement.FunctionType.ALIAS);
+            }
+            int dataTypeCount = ctx.dataType().size();
+            int parameterCount = dataTypeCount;
+            if (null != ctx.INTERMEDIATE()) {
+                parameterCount--;
+            }
+            if (null != ctx.RETURNS()) {
+                parameterCount--;
+            }
+            for (int i = 0; i < parameterCount; i++) {
+                result.getParameterDataTypes().add((DataTypeSegment) visit(ctx.dataType(i)));
+            }
+            if (null != ctx.RETURNS()) {
+                result.setReturnType((DataTypeSegment) visit(ctx.dataType(parameterCount)));
+            }
+            if (null != ctx.INTERMEDIATE()) {
+                int intermediateTypeIndex = dataTypeCount - 1;
+                result.setIntermediateType((DataTypeSegment) visit(ctx.dataType(intermediateTypeIndex)));
+            }
+            if (null != ctx.PARAMETER()) {
+                for (int i = 0; i < ctx.identifier().size(); i++) {
+                    result.getWithParameters().add((IdentifierValue) visit(ctx.identifier(i)));
+                }
+            }
+            if (null != ctx.expr()) {
+                result.setAliasExpression((ExpressionSegment) visit(ctx.expr()));
+            }
+            if (null != ctx.PROPERTIES()) {
+                fillCreateFunctionProperties(ctx, result);
+            }
+        } else {
+            int paramIndex = 0;
+            for (int i = 0; i < ctx.dataType().size(); i++) {
+                DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType(i));
+                if (i == ctx.dataType().size() - 1 && null != ctx.RETURNS()) {
+                    result.setReturnType(dataType);
+                } else if (paramIndex < ctx.identifier().size()) {
+                    IdentifierValue paramName = (IdentifierValue) visit(ctx.identifier(paramIndex));
+                    result.getNamedParameters().put(paramName, dataType);
+                    paramIndex++;
+                }
+            }
+        }
+        return result;
+    }
+    
+    private void fillCreateFunctionProperties(final CreateFunctionContext ctx, final DorisCreateFunctionStatement statement) {
+        for (int i = 0; i < ctx.properties().property().size(); i++) {
+            String key = getPropertyKey(ctx.properties().property(i));
+            String value = SQLUtils.getExactlyValue(ctx.properties().property(i).literals().getText());
+            statement.getProperties().put(key, value);
+        }
+    }
+    
+    private String getPropertyKey(final PropertyContext property) {
+        if (null != property.SINGLE_QUOTED_TEXT()) {
+            return SQLUtils.getExactlyValue(property.SINGLE_QUOTED_TEXT().getText());
+        }
+        if (null != property.DOUBLE_QUOTED_TEXT()) {
+            return SQLUtils.getExactlyValue(property.DOUBLE_QUOTED_TEXT().getText());
+        }
+        return SQLUtils.getExactlyValue(property.identifier().getText());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitRoutineBody(final RoutineBodyContext ctx) {
+        RoutineBodySegment result = new RoutineBodySegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        CollectionValue<ValidStatementSegment> validStatements = null == ctx.simpleStatement()
+                ? (CollectionValue<ValidStatementSegment>) visit(ctx.compoundStatement())
+                : (CollectionValue<ValidStatementSegment>) visit(ctx.simpleStatement());
+        result.getValidStatements().addAll(validStatements.getValue());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitSimpleStatement(final SimpleStatementContext ctx) {
+        return visit(ctx.validStatement());
+    }
+    
+    @Override
+    public ASTNode visitCompoundStatement(final CompoundStatementContext ctx) {
+        return visit(ctx.beginStatement());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitBeginStatement(final BeginStatementContext ctx) {
+        CollectionValue<ValidStatementSegment> result = new CollectionValue<>();
+        for (ValidStatementContext each : ctx.validStatement()) {
+            result.combine((CollectionValue<ValidStatementSegment>) visit(each));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitValidStatement(final ValidStatementContext ctx) {
+        CollectionValue<ValidStatementSegment> result = new CollectionValue<>();
+        ValidStatementSegment validStatement = createValidStatementSegment(ctx);
+        if (null != validStatement.getSqlStatement()) {
+            result.getValue().add(validStatement);
+        }
+        if (null != ctx.beginStatement()) {
+            result.combine((CollectionValue<ValidStatementSegment>) visit(ctx.beginStatement()));
+        }
+        if (null != ctx.flowControlStatement()) {
+            result.combine((CollectionValue<ValidStatementSegment>) visit(ctx.flowControlStatement()));
+        }
+        return result;
+    }
+    
+    private ValidStatementSegment createValidStatementSegment(final ValidStatementContext ctx) {
+        ValidStatementSegment result = new ValidStatementSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        SQLStatement sqlStatement = null;
+        if (null != ctx.createTable()) {
+            sqlStatement = (CreateTableStatement) visit(ctx.createTable());
+        } else if (null != ctx.alterTable()) {
+            sqlStatement = (AlterTableStatement) visit(ctx.alterTable());
+        } else if (null != ctx.dropTable()) {
+            sqlStatement = (DropTableStatement) visit(ctx.dropTable());
+        } else if (null != ctx.truncateTable()) {
+            sqlStatement = (TruncateStatement) visit(ctx.truncateTable());
+        } else if (null != ctx.insert()) {
+            sqlStatement = (InsertStatement) visit(ctx.insert());
+        } else if (null != ctx.replace()) {
+            sqlStatement = (InsertStatement) visit(ctx.replace());
+        } else if (null != ctx.update()) {
+            sqlStatement = (UpdateStatement) visit(ctx.update());
+        } else if (null != ctx.delete()) {
+            sqlStatement = (DeleteStatement) visit(ctx.delete());
+        } else if (null != ctx.select()) {
+            sqlStatement = (SelectStatement) visit(ctx.select());
+        }
+        result.setSqlStatement(sqlStatement);
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitFlowControlStatement(final FlowControlStatementContext ctx) {
+        CollectionValue<ValidStatementSegment> result = new CollectionValue<>();
+        if (null != ctx.caseStatement()) {
+            result.combine((CollectionValue<ValidStatementSegment>) visit(ctx.caseStatement()));
+        }
+        if (null != ctx.ifStatement()) {
+            result.combine((CollectionValue<ValidStatementSegment>) visit(ctx.ifStatement()));
+        }
+        if (null != ctx.loopStatement()) {
+            result.combine((CollectionValue<ValidStatementSegment>) visit(ctx.loopStatement()));
+        }
+        if (null != ctx.repeatStatement()) {
+            result.combine((CollectionValue<ValidStatementSegment>) visit(ctx.repeatStatement()));
+        }
+        if (null != ctx.whileStatement()) {
+            result.combine((CollectionValue<ValidStatementSegment>) visit(ctx.whileStatement()));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitCaseStatement(final CaseStatementContext ctx) {
+        CollectionValue<ValidStatementSegment> result = new CollectionValue<>();
+        for (ValidStatementContext each : ctx.validStatement()) {
+            result.combine((CollectionValue<ValidStatementSegment>) visit(each));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitIfStatement(final IfStatementContext ctx) {
+        CollectionValue<ValidStatementSegment> result = new CollectionValue<>();
+        for (ValidStatementContext each : ctx.validStatement()) {
+            result.combine((CollectionValue<ValidStatementSegment>) visit(each));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitLoopStatement(final LoopStatementContext ctx) {
+        CollectionValue<ValidStatementSegment> result = new CollectionValue<>();
+        for (ValidStatementContext each : ctx.validStatement()) {
+            result.combine((CollectionValue<ValidStatementSegment>) visit(each));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitRepeatStatement(final RepeatStatementContext ctx) {
+        CollectionValue<ValidStatementSegment> result = new CollectionValue<>();
+        for (ValidStatementContext each : ctx.validStatement()) {
+            result.combine((CollectionValue<ValidStatementSegment>) visit(each));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public ASTNode visitWhileStatement(final WhileStatementContext ctx) {
+        CollectionValue<ValidStatementSegment> result = new CollectionValue<>();
+        for (ValidStatementContext each : ctx.validStatement()) {
+            result.combine((CollectionValue<ValidStatementSegment>) visit(each));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAlterFunction(final AlterFunctionContext ctx) {
+        return new AlterFunctionStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitDorisDropFunction(final DorisDropFunctionContext ctx) {
+        DorisDropFunctionStatement result = new DorisDropFunctionStatement(getDatabaseType());
+        result.setGlobal(null != ctx.GLOBAL());
+        result.setFunctionName((FunctionNameSegment) visit(ctx.functionName()));
+        for (int i = 0; i < ctx.dataType().size(); i++) {
+            result.getParameterDataTypes().add((DataTypeSegment) visit(ctx.dataType(i)));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateEvent(final CreateEventContext ctx) {
+        return new MySQLCreateEventStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitAlterEvent(final AlterEventContext ctx) {
+        return new MySQLAlterEventStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitDropEvent(final DropEventContext ctx) {
+        return new MySQLDropEventStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitAlterInstance(final AlterInstanceContext ctx) {
+        return new MySQLAlterInstanceStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateLogfileGroup(final CreateLogfileGroupContext ctx) {
+        return new MySQLCreateLogfileGroupStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitAlterLogfileGroup(final AlterLogfileGroupContext ctx) {
+        return new MySQLAlterLogfileGroupStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitDropLogfileGroup(final DropLogfileGroupContext ctx) {
+        return new MySQLDropLogfileGroupStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateServer(final CreateServerContext ctx) {
+        return new CreateServerStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitAlterServer(final AlterServerContext ctx) {
+        return new AlterServerStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitDropServer(final DropServerContext ctx) {
+        return new DropServerStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateTrigger(final CreateTriggerContext ctx) {
+        return new CreateTriggerStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitDropTrigger(final DropTriggerContext ctx) {
+        return new DropTriggerStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateTablespace(final CreateTablespaceContext ctx) {
+        return new CreateTablespaceStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitAlterTablespace(final AlterTablespaceContext ctx) {
+        if (null != ctx.alterTablespaceInnodb()) {
+            return visit(ctx.alterTablespaceInnodb());
+        } else {
+            return visit(ctx.alterTablespaceNdb());
+        }
+    }
+    
+    @Override
+    public ASTNode visitAlterTablespaceInnodb(final AlterTablespaceInnodbContext ctx) {
+        return new AlterTablespaceStatement(
+                getDatabaseType(), null == ctx.tablespace ? null : createTablespaceSegment(ctx.tablespace), null == ctx.renameTablespace ? null : createTablespaceSegment(ctx.renameTablespace));
+    }
+    
+    @Override
+    public ASTNode visitAlterTablespaceNdb(final AlterTablespaceNdbContext ctx) {
+        return new AlterTablespaceStatement(
+                getDatabaseType(), null == ctx.tablespace ? null : createTablespaceSegment(ctx.tablespace), null == ctx.renameTableSpace ? null : createTablespaceSegment(ctx.renameTableSpace));
+    }
+    
+    private TablespaceSegment createTablespaceSegment(final IdentifierContext ctx) {
+        return new TablespaceSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (IdentifierValue) visit(ctx));
+    }
+    
+    @Override
+    public ASTNode visitDropTablespace(final DropTablespaceContext ctx) {
+        return new DropTablespaceStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitPrepare(final PrepareContext ctx) {
+        return PrepareStatement.builder().databaseType(getDatabaseType()).build();
+    }
+    
+    @Override
+    public ASTNode visitExecuteStmt(final ExecuteStmtContext ctx) {
+        return new ExecuteStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitDeallocate(final DeallocateContext ctx) {
+        return new DeallocateStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
+        return new CreateMaterializedViewStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitCreateEncryptKey(final CreateEncryptKeyContext ctx) {
+        return new CreateEncryptKeyStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitDropEncryptKey(final DropEncryptKeyContext ctx) {
+        EncryptKeyNameSegment keyName =
+                new EncryptKeyNameSegment(ctx.encryptKeyName().start.getStartIndex(), ctx.encryptKeyName().stop.getStopIndex(), (IdentifierValue) visit(ctx.encryptKeyName().identifier()));
+        if (null != ctx.encryptKeyName().owner()) {
+            keyName.setOwner((OwnerSegment) visit(ctx.encryptKeyName().owner()));
+        }
+        return new DropEncryptKeyStatement(getDatabaseType(), null != ctx.ifExists(), keyName);
+    }
+}

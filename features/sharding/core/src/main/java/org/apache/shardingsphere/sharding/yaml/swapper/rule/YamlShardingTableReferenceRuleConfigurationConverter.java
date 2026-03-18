@@ -34,7 +34,7 @@ public final class YamlShardingTableReferenceRuleConfigurationConverter {
     
     /**
      * Convert to YAML String configuration.
-     * 
+     *
      * @param data to be converted
      * @return String configuration
      */
@@ -44,7 +44,7 @@ public final class YamlShardingTableReferenceRuleConfigurationConverter {
     
     /**
      * Convert from YAML configuration to object.
-     * 
+     *
      * @param referenceConfig reference config
      * @return converted object
      */

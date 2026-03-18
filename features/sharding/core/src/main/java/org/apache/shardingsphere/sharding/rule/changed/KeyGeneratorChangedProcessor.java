@@ -18,46 +18,34 @@
 package org.apache.shardingsphere.sharding.rule.changed;
 
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterNamedRuleItemEvent;
-import org.apache.shardingsphere.infra.rule.event.rule.alter.AlterRuleItemEvent;
-import org.apache.shardingsphere.infra.rule.event.rule.drop.DropNamedRuleItemEvent;
-import org.apache.shardingsphere.infra.rule.event.rule.drop.DropRuleItemEvent;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.mode.spi.RuleItemConfigurationChangedProcessor;
+import org.apache.shardingsphere.infra.algorithm.core.processor.AlgorithmChangedProcessor;
+import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.metadata.nodepath.ShardingRuleNodePathProvider;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+
+import java.util.Map;
 
 /**
  * Key generator changed processor.
  */
-public final class KeyGeneratorChangedProcessor implements RuleItemConfigurationChangedProcessor<ShardingRuleConfiguration, AlgorithmConfiguration> {
+public final class KeyGeneratorChangedProcessor extends AlgorithmChangedProcessor<ShardingRuleConfiguration> {
     
-    @Override
-    public AlgorithmConfiguration swapRuleItemConfiguration(final AlterRuleItemEvent event, final String yamlContent) {
-        return new YamlAlgorithmConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlAlgorithmConfiguration.class));
+    public KeyGeneratorChangedProcessor() {
+        super(ShardingRule.class);
     }
     
     @Override
-    public ShardingRuleConfiguration findRuleConfiguration(final ShardingSphereDatabase database) {
-        return database.getRuleMetaData().findSingleRule(ShardingRule.class).map(ShardingRule::getConfiguration).orElseGet(ShardingRuleConfiguration::new);
+    protected ShardingRuleConfiguration createEmptyRuleConfiguration() {
+        return new ShardingRuleConfiguration();
     }
     
     @Override
-    public void changeRuleItemConfiguration(final AlterRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig, final AlgorithmConfiguration toBeChangedItemConfig) {
-        currentRuleConfig.getKeyGenerators().put(((AlterNamedRuleItemEvent) event).getItemName(), toBeChangedItemConfig);
+    protected Map<String, AlgorithmConfiguration> getAlgorithmConfigurations(final ShardingRuleConfiguration currentRuleConfig) {
+        return currentRuleConfig.getKeyGenerators();
     }
     
     @Override
-    public void dropRuleItemConfiguration(final DropRuleItemEvent event, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getKeyGenerators().remove(((DropNamedRuleItemEvent) event).getItemName());
-    }
-    
-    @Override
-    public String getType() {
-        return ShardingRuleNodePathProvider.RULE_TYPE + "." + ShardingRuleNodePathProvider.KEY_GENERATORS;
+    public RuleChangedItemType getType() {
+        return new RuleChangedItemType("sharding", "key_generators");
     }
 }

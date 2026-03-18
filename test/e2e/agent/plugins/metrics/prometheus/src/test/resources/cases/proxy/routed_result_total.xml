@@ -16,11 +16,11 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case metric-name="routed_result_total" metric-type="counter">
         <query-assertion metric="routed_result_total" query="routed_result_total{object='data_source', name='ds_0'}" />
         <query-assertion metric="routed_result_total" query="routed_result_total{object='data_source', name='ds_1'}" />
         <query-assertion metric="routed_result_total" query="routed_result_total{object='table', name='t_order_0'}" />
         <query-assertion metric="routed_result_total" query="routed_result_total{object='table', name='t_order_1'}" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

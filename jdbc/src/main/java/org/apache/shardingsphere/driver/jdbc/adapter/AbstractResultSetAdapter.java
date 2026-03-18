@@ -68,23 +68,12 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
         ShardingSphereConnection connection = statement instanceof ShardingSpherePreparedStatement
                 ? ((ShardingSpherePreparedStatement) statement).getConnection()
                 : ((ShardingSphereStatement) statement).getConnection();
-        return connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName());
+        return connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getCurrentDatabaseName());
     }
     
     @Override
     public final int findColumn(final String columnLabel) throws SQLException {
         return resultSets.get(0).findColumn(columnLabel);
-    }
-    
-    @Override
-    public final void close() throws SQLException {
-        closed = true;
-        forceExecuteTemplate.execute(resultSets, ResultSet::close);
-    }
-    
-    @Override
-    public final boolean isClosed() {
-        return closed;
     }
     
     @Override
@@ -125,5 +114,16 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     @Override
     public final void clearWarnings() throws SQLException {
         forceExecuteTemplate.execute(resultSets, ResultSet::clearWarnings);
+    }
+    
+    @Override
+    public final boolean isClosed() {
+        return closed;
+    }
+    
+    @Override
+    public final void close() throws SQLException {
+        closed = true;
+        forceExecuteTemplate.execute(resultSets, ResultSet::close);
     }
 }

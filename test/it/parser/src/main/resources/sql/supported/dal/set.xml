@@ -17,8 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="set_user_variable" value="SET @drop = IF(@have_ndb = 0, @drop_cmd, 'SET @dummy = 0')" db-types="MySQL" />
-    <sql-case id="set_parameter_equal" value="SET configuration_parameter = 'value'" db-types="PostgreSQL,openGauss, MySQL" />
+    <sql-case id="set_user_variable" value="SET @drop = IF(@have_ndb = 0, @drop_cmd, 'SET @dummy = 0')" db-types="MySQL,Doris" />
+    <sql-case id="set_parameter_equal" value="SET configuration_parameter = 'value'" db-types="PostgreSQL,openGauss, MySQL,Doris" />
     <sql-case id="set_parameter_equal_number" value="SET extra_float_digits = 3" db-types="PostgreSQL,openGauss, MySQL" />
     <sql-case id="set_parameter_equal_session_mysql" value="SET SESSION configuration_parameter = 'value'" db-types="MySQL" />
     <sql-case id="set_parameter_equal_at_at_session_mysql" value="SET @@SESSION.configuration_parameter = 'value'" db-types="MySQL" />
@@ -39,10 +39,17 @@
     <sql-case id="set_parameter_equal_boolean" value="SET extra_float_digits = true" db-types="PostgreSQL,openGauss" />
     <sql-case id="set_parameter_equal_list" value="SET extra_float_digits = 1,2,3" db-types="PostgreSQL,openGauss" />
     <sql-case id="set_parameter_equal_number_with_signal" value="SET extra_float_digits = -10.5" db-types="PostgreSQL,openGauss" />
-    <sql-case id="set_names" value="SET NAMES 'utf8' COLLATE 'utf8_general_ci'" db-types="MySQL" />
-    <sql-case id="set_resource_group" value="SET RESOURCE GROUP rg" db-types="MySQL" />
+    <sql-case id="set_names" value="SET NAMES 'utf8' COLLATE 'utf8_general_ci'" db-types="MySQL,Doris" />
+    <sql-case id="set_character_set_doris" value="SET CHARACTER SET utf8mb4" db-types="Doris" />
+    <sql-case id="set_resource_group" value="SET RESOURCE GROUP rg" db-types="MySQL,Doris" />
     <sql-case id="set_charset_mysql" value="SET NAMES 'utf8'" db-types="MySQL" />
     <sql-case id="set_charset_postgresql" value="SET NAMES 'UTF8'" db-types="PostgreSQL" />
     <sql-case id="set_client_encoding" value="SET CLIENT_ENCODING TO 'UTF8'" db-types="PostgreSQL" />
+    <sql-case id="set_quoted_identifier_sqlserver" value="SET QUOTED_IDENTIFIER ON" db-types="SQLServer" />
+    <sql-case id="set_textsize_sqlserver" value="SET TEXTSIZE 2048" db-types="SQLServer" />
     <sql-case id="set_session_authorization" value="SET SESSION AUTHORIZATION user1 PASSWORD 'password'" db-types="openGauss" />
+    <sql-case id="set_persist_system_variable_doris" value="SET PERSIST max_connections = 200" db-types="Doris" />
+    <sql-case id="set_persist_only_system_variable_doris" value="SET PERSIST_ONLY time_zone = '+08:00'" db-types="Doris" />
+    <sql-case id="set_mysql_version_comment" value="/*! SET GLOBAL max_connections=123 */" db-types="MySQL" />
+    <sql-case id="set_mysql_version_comment_with_version" value="/*!80029 SET GLOBAL max_connections=456 */" db-types="MySQL" />
 </sql-cases>

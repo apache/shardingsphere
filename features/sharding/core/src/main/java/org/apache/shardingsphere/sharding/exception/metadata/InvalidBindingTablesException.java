@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.exception.metadata;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
@@ -27,7 +27,7 @@ public final class InvalidBindingTablesException extends ShardingSQLException {
     
     private static final long serialVersionUID = 6913516240331555395L;
     
-    public InvalidBindingTablesException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 10, "Invalid binding table configuration.");
+    public InvalidBindingTablesException(final String message) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 10, message);
     }
 }

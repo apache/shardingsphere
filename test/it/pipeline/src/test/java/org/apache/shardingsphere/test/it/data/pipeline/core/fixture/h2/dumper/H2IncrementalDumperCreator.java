@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture.h2.dumper;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumperContext;
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumper;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.CreateIncrementalDumperParameter;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.DialectIncrementalDumperCreator;
+import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental.IncrementalDumper;
 
 import static org.mockito.Mockito.mock;
 
@@ -32,8 +29,7 @@ import static org.mockito.Mockito.mock;
 public final class H2IncrementalDumperCreator implements DialectIncrementalDumperCreator {
     
     @Override
-    public IncrementalDumper createIncrementalDumper(final IncrementalDumperContext context, final IngestPosition position,
-                                                     final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
+    public IncrementalDumper create(final CreateIncrementalDumperParameter param) {
         return mock(IncrementalDumper.class);
     }
     

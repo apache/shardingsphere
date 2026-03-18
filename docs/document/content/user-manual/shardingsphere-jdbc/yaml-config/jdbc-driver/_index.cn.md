@@ -36,11 +36,11 @@ ShardingSphere-JDBC 提供了 JDBC 驱动，可以仅通过配置变更即可使
 
 ```java
 Class.forName("org.apache.shardingsphere.driver.ShardingSphereDriver");
-String jdbcUrl = "jdbc:shardingsphere:classpath:config.yaml";
+String standardJdbcUrl = "jdbc:shardingsphere:classpath:config.yaml";
 
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (
-        Connection conn = DriverManager.getConnection(jdbcUrl);
+        Connection conn = DriverManager.getConnection(standardJdbcUrl);
         PreparedStatement ps = conn.prepareStatement(sql)) {
     ps.setInt(1, 10);
     ps.setInt(2, 1000);
@@ -56,12 +56,12 @@ try (
 
 ```java
 String driverClassName = "org.apache.shardingsphere.driver.ShardingSphereDriver";
-String jdbcUrl = "jdbc:shardingsphere:classpath:config.yaml";
+String standardJdbcUrl = "jdbc:shardingsphere:classpath:config.yaml";
 
 // 以 HikariCP 为例 
 HikariDataSource dataSource = new HikariDataSource();
 dataSource.setDriverClassName(driverClassName);
-dataSource.setJdbcUrl(jdbcUrl);
+dataSource.setJdbcUrl(standardJdbcUrl);
 
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
 try (

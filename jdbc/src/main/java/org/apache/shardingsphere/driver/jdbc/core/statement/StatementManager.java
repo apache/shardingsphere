@@ -19,8 +19,8 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
@@ -50,9 +50,9 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
     }
     
     @Override
-    public Statement createStorageResource(final ExecutionUnit executionUnit, final Connection connection, final ConnectionMode connectionMode, final StatementOption option,
-                                           final DatabaseType databaseType) throws SQLException {
-        CacheKey cacheKey = new CacheKey(executionUnit, connectionMode);
+    public Statement createStorageResource(final ExecutionUnit executionUnit, final Connection connection, final int connectionOffset,
+                                           final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
+        CacheKey cacheKey = new CacheKey(executionUnit, connectionMode, connectionOffset);
         Statement result = cachedStatements.get(cacheKey);
         if (null == result || result.getConnection().isClosed() || result.isClosed()) {
             Optional.ofNullable(result).ifPresent(optional -> cachedStatements.remove(cacheKey));
@@ -113,5 +113,7 @@ public final class StatementManager implements ExecutorJDBCStatementManager, Aut
         private final ExecutionUnit executionUnit;
         
         private final ConnectionMode connectionMode;
+        
+        private final int connectionOffset;
     }
 }

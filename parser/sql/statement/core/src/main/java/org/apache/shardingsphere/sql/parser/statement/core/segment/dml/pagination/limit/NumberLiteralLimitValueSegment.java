@@ -26,9 +26,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 @Getter
 public final class NumberLiteralLimitValueSegment extends LimitValueSegment implements NumberLiteralPaginationValueSegment {
     
-    private final long value;
+    private final Long value;
     
-    public NumberLiteralLimitValueSegment(final int startIndex, final int stopIndex, final long value) {
+    public NumberLiteralLimitValueSegment(final int startIndex, final int stopIndex, final Long value) {
         super(startIndex, stopIndex);
         this.value = value;
     }

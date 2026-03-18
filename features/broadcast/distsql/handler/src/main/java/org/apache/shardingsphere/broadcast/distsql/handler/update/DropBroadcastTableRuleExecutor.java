@@ -22,10 +22,10 @@ import lombok.Setter;
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
 import org.apache.shardingsphere.broadcast.distsql.statement.DropBroadcastTableRuleStatement;
 import org.apache.shardingsphere.broadcast.rule.BroadcastRule;
-import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.DatabaseRuleDropExecutor;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
+import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.database.type.DatabaseRuleDropExecutor;
 import org.apache.shardingsphere.distsql.handler.required.DistSQLExecutorCurrentRuleRequired;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
@@ -47,14 +47,14 @@ public final class DropBroadcastTableRuleExecutor implements DatabaseRuleDropExe
     @Override
     public void checkBeforeUpdate(final DropBroadcastTableRuleStatement sqlStatement) {
         if (!sqlStatement.isIfExists()) {
-            checkBroadcastTableRuleExist(sqlStatement);
+            checkBroadcastTableExist(sqlStatement);
         }
     }
     
-    private void checkBroadcastTableRuleExist(final DropBroadcastTableRuleStatement sqlStatement) {
-        Collection<String> currentRules = new CaseInsensitiveSet<>(rule.getConfiguration().getTables());
-        Collection<String> notExistedRules = sqlStatement.getTables().stream().filter(each -> !currentRules.contains(each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkMustEmpty(notExistedRules, () -> new MissingRequiredRuleException("Broadcast", database.getName(), notExistedRules));
+    private void checkBroadcastTableExist(final DropBroadcastTableRuleStatement sqlStatement) {
+        Collection<String> currentTableNames = new CaseInsensitiveSet<>(rule.getConfiguration().getTables());
+        Collection<String> notExistedTableNames = sqlStatement.getTables().stream().filter(each -> !currentTableNames.contains(each)).collect(Collectors.toList());
+        ShardingSpherePreconditions.checkMustEmpty(notExistedTableNames, () -> new MissingRequiredRuleException("Broadcast", database.getName(), notExistedTableNames));
     }
     
     @Override

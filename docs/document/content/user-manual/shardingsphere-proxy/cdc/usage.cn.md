@@ -203,7 +203,7 @@ public final class Bootstrap {
 
 > CDCClient.await 是阻塞主线程，非必需的步骤，用其他方式也可以，只要保证 CDC 线程一直在工作就行。
 
-如果需要更复杂数据消费的实现，例如写入到数据库，可以参考 [DataSourceRecordConsumer](https://github.com/apache/shardingsphere/blob/master/test/e2e/operation/pipeline/src/test/java/org/apache/shardingsphere/test/e2e/data/pipeline/cases/cdc/DataSourceRecordConsumer.java)
+如果需要更复杂数据消费的实现，例如写入到数据库，可以参考 `DataSourceRecordConsumer.java`。
 
 #### 写入数据
 

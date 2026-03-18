@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.generator.impl;
 
-import org.apache.shardingsphere.sharding.route.engine.condition.Column;
+import org.apache.shardingsphere.infra.metadata.database.schema.HashColumn;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.generator.ConditionValueGenerator;
@@ -39,10 +39,13 @@ import java.util.Optional;
 public final class ConditionValueInOperatorGenerator implements ConditionValueGenerator<InExpression> {
     
     @Override
-    public Optional<ShardingConditionValue> generate(final InExpression predicate, final Column column, final List<Object> params, final TimestampServiceRule timestampServiceRule) {
-        List<Comparable<?>> shardingConditionValues = new LinkedList<>();
+    public Optional<ShardingConditionValue> generate(final InExpression predicate, final HashColumn column, final List<Object> params, final TimestampServiceRule timestampServiceRule) {
+        if (predicate.isNot()) {
+            return Optional.empty();
+        }
         Collection<ExpressionSegment> expressionSegments = predicate.getExpressionList();
         List<Integer> parameterMarkerIndexes = new ArrayList<>(expressionSegments.size());
+        List<Comparable<?>> shardingConditionValues = new LinkedList<>();
         for (ExpressionSegment each : expressionSegments) {
             ConditionValue conditionValue = new ConditionValue(each, params);
             Optional<Comparable<?>> value = conditionValue.getValue();

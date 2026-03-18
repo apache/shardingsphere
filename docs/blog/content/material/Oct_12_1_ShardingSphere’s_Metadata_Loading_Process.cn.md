@@ -147,7 +147,7 @@ public final class ShardingSphereSchema {
         tables.forEach((key, value) -> this.tables.put(key.toLowerCase(), value));
     }
 ~~~
-和 schema 的概念契合，一个 shcema 含有若干个表。`ShardingSphereSchema` 的属性是一个 map 结构，key 为 `tableName`，value 是表名对应表的元数据。主要是通过构造函数完成初始化。所以，还是重点对于表元数据的加载，下面我们从入口跟进。
+和 schema 的概念契合，一个 schema 含有若干个表。`ShardingSphereSchema` 的属性是一个 map 结构，key 为 `tableName`，value 是表名对应表的元数据。主要是通过构造函数完成初始化。所以，还是重点对于表元数据的加载，下面我们从入口跟进。
 
 整个元数据加载的核心入口在 `org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder#build` 中。在 build 中主要是通过配置的规则，组装和加载相对应的元数据，核心代码如下：
 

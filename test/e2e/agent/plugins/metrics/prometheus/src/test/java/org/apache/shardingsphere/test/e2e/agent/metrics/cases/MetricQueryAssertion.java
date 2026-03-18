@@ -27,20 +27,17 @@ import javax.xml.bind.annotation.XmlAttribute;
 /**
  * Metric query assertion.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-@XmlAccessorType(XmlAccessType.FIELD)
 public final class MetricQueryAssertion {
     
-    @XmlAttribute(name = "metric")
+    @XmlAttribute(required = true)
     private String metric;
     
-    @XmlAttribute(name = "query")
+    @XmlAttribute(required = true)
     private String query;
     
-    @XmlAttribute(name = "value")
-    private int value;
-    
-    @XmlAttribute(name = "shouldAssertValue")
-    private boolean shouldAssertValue;
+    @XmlAttribute
+    private Integer value;
 }

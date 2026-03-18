@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @Getter
 public final class JobDataNodeLine {
     
-    // Need sequential collection
     private final List<JobDataNodeEntry> entries;
     
     /**
@@ -40,21 +39,14 @@ public final class JobDataNodeLine {
      * @return marshaled text, format: entry1|entry2, e.g. t_order:ds_0.t_order_0,ds_0.t_order_1|t_order_item:ds_0.t_order_item_0,ds_0.t_order_item_1
      */
     public String marshal() {
-        StringBuilder result = new StringBuilder();
-        for (JobDataNodeEntry each : entries) {
-            result.append(each.marshal()).append('|');
-        }
-        if (!entries.isEmpty()) {
-            result.setLength(result.length() - 1);
-        }
-        return result.toString();
+        return entries.stream().map(JobDataNodeEntry::marshal).collect(Collectors.joining("|"));
     }
     
     /**
      * Unmarshal from text.
      *
-     * @param text marshalled line
-     * @return line
+     * @param text marshaled line
+     * @return unmarshalled job data node line
      */
     public static JobDataNodeLine unmarshal(final String text) {
         return new JobDataNodeLine(Splitter.on('|').omitEmptyStrings().splitToList(text).stream().map(JobDataNodeEntry::unmarshal).collect(Collectors.toList()));

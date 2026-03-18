@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.core.advice;
 
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.core.advice.AbstractInstanceMethodAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
-
-import java.lang.reflect.Method;
 
 /**
  * Tracing root span advice.
@@ -33,21 +32,21 @@ public abstract class TracingRootSpanAdvice<T> extends AbstractInstanceMethodAdv
     protected static final String OPERATION_NAME = "/ShardingSphere/rootInvoke/";
     
     @Override
-    public final void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
+    public final void beforeMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final String pluginType) {
         RootSpanContext.set(createRootSpan(target, method, args));
     }
     
-    protected abstract T createRootSpan(TargetAdviceObject target, Method method, Object[] args);
+    protected abstract T createRootSpan(TargetAdviceObject target, TargetAdviceMethod method, Object[] args);
     
     @Override
-    public final void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
+    public final void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
         finishRootSpan(RootSpanContext.get(), target);
     }
     
     protected abstract void finishRootSpan(T rootSpan, TargetAdviceObject target);
     
     @Override
-    public final void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
+    public final void onThrowing(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Throwable throwable, final String pluginType) {
         recordException(RootSpanContext.get(), target, throwable);
     }
     

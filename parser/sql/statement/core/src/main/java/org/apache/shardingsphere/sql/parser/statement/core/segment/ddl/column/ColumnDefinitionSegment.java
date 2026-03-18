@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Column definition segment.
@@ -50,8 +51,40 @@ public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
     
     private final boolean notNull;
     
+    private final String text;
+    
     private final Collection<SimpleTableSegment> referencedTables = new LinkedList<>();
     
     @Setter
     private boolean isRef;
+    
+    @Setter
+    private String charsetName;
+    
+    @Setter
+    private String collateName;
+    
+    @Setter
+    private String comment;
+    
+    @Setter
+    private String aggType;
+    
+    /**
+     * Get charset name.
+     *
+     * @return charset name
+     */
+    public Optional<String> getCharsetName() {
+        return Optional.ofNullable(charsetName);
+    }
+    
+    /**
+     * Get collate name.
+     *
+     * @return collate name
+     */
+    public Optional<String> getCollateName() {
+        return Optional.ofNullable(collateName);
+    }
 }

@@ -21,21 +21,21 @@ import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.spi.PrivilegeProvider;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * All permitted privilege provider.
+ *
+ * @deprecated Use DatabasePermittedPrivilegeProvider instead.
  */
+@Deprecated
 public final class AllPermittedPrivilegeProvider implements PrivilegeProvider {
     
     @Override
-    public Map<Grantee, ShardingSpherePrivileges> build(final AuthorityRuleConfiguration ruleConfig) {
-        return ruleConfig.getUsers().stream().collect(Collectors.toMap(ShardingSphereUser::getGrantee, each -> new AllPermittedPrivileges()));
+    public ShardingSpherePrivileges build(final AuthorityRuleConfiguration ruleConfig, final Grantee grantee) {
+        return new AllPermittedPrivileges();
     }
     
     @Override

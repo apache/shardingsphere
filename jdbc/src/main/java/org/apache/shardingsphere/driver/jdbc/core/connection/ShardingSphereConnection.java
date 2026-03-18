@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.exception.ConnectionClosedException;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractConnectionAdapter;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
@@ -26,12 +28,11 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePrepar
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.DatabaseMetaData;
@@ -41,7 +42,9 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
 
 /**
  * ShardingSphere connection.
@@ -54,7 +57,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private final ForceExecuteTemplate<StatementManager> forceExecuteTemplate = new ForceExecuteTemplate<>();
     
     @Getter
-    private final String databaseName;
+    private final String currentDatabaseName;
     
     @Getter
     private final ContextManager contextManager;
@@ -62,8 +65,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Getter
     private final DriverDatabaseConnectionManager databaseConnectionManager;
     
-    @Getter
-    private final Collection<StatementManager> statementManagers = new CopyOnWriteArrayList<>();
+    private final Collection<StatementManager> statementManagers = new ConcurrentLinkedQueue<>();
     
     @Getter
     private final String processId;
@@ -76,11 +78,11 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     private volatile boolean closed;
     
-    public ShardingSphereConnection(final String databaseName, final ContextManager contextManager) {
-        this.databaseName = databaseName;
+    public ShardingSphereConnection(final String currentDatabaseName, final ContextManager contextManager) {
+        this.currentDatabaseName = currentDatabaseName;
         this.contextManager = contextManager;
-        databaseConnectionManager = new DriverDatabaseConnectionManager(databaseName, contextManager);
-        processId = processEngine.connect(databaseName);
+        databaseConnectionManager = new DriverDatabaseConnectionManager(currentDatabaseName, contextManager);
+        processId = processEngine.connect(currentDatabaseName);
     }
     
     /**
@@ -168,20 +170,20 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             return;
         }
         if (!autoCommit && !transactionContext.isInTransaction()) {
-            transactionContext.beginTransaction(String.valueOf(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType()));
+            transactionContext.beginTransaction(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType().name(),
+                    databaseConnectionManager.getConnectionTransaction().getDistributedTransactionManager());
         }
     }
     
     private void processDistributedTransaction() throws SQLException {
-        switch (databaseConnectionManager.getConnectionTransaction().getDistributedTransactionOperationType(autoCommit)) {
-            case BEGIN:
-                databaseConnectionManager.begin();
-                break;
-            case COMMIT:
-                databaseConnectionManager.commit();
-                break;
-            default:
-                break;
+        Optional<DistributedTransactionOperationType> operationType = databaseConnectionManager.getConnectionTransaction().getDistributedTransactionOperationType(autoCommit);
+        if (!operationType.isPresent()) {
+            return;
+        }
+        if (DistributedTransactionOperationType.BEGIN == operationType.get()) {
+            databaseConnectionManager.begin();
+        } else {
+            databaseConnectionManager.commit();
         }
     }
     
@@ -234,8 +236,8 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     }
     
     private boolean isSchemaSupportedDatabaseType() {
-        DatabaseType databaseType = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getProtocolType();
-        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getDefaultSchema().isPresent();
+        DatabaseType databaseType = contextManager.getMetaDataContexts().getMetaData().getDatabase(currentDatabaseName).getProtocolType();
+        return new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema().isPresent();
     }
     
     @SuppressWarnings("MagicConstant")
@@ -261,6 +263,24 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         databaseConnectionManager.setReadOnly(readOnly);
     }
     
+    /*
+     * This is just to avoid the Warning in <a href="https://github.com/brettwooldridge/HikariCP/issues/2196">brettwooldridge/HikariCP#2196</a>. ShardingSphere does not propagate this property to the
+     * real JDBC Driver. `0` is actually the default value of {@link java.net.Socket#getSoTimeout()}.
+     */
+    @Override
+    public int getNetworkTimeout() {
+        return 0;
+    }
+    
+    /*
+     * This is just to avoid the Warning in <a href="https://github.com/brettwooldridge/HikariCP/issues/2196">brettwooldridge/HikariCP#2196</a>. ShardingSphere does not propagate this property to the
+     * real JDBC Driver.
+     */
+    @Override
+    public void setNetworkTimeout(final Executor executor, final int milliseconds) throws SQLException {
+        ShardingSpherePreconditions.checkState(0 <= milliseconds, () -> new SQLException("Network timeout must be a value greater than or equal to 0."));
+    }
+    
     @Override
     public boolean isValid(final int timeout) throws SQLException {
         return databaseConnectionManager.isValid(timeout);
@@ -268,8 +288,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Override
     public String getSchema() {
-        // TODO return databaseName for now in getSchema(), the same as before
-        return databaseName;
+        return currentDatabaseName;
     }
     
     @Override
@@ -279,7 +298,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     
     @Override
     public void close() throws SQLException {
-        if (databaseConnectionManager.getConnectionTransaction().isInTransaction(databaseConnectionManager.getConnectionContext().getTransactionContext())) {
+        if (databaseConnectionManager.getConnectionTransaction().isInDistributedTransaction(databaseConnectionManager.getConnectionContext().getTransactionContext())) {
             databaseConnectionManager.getConnectionTransaction().rollback();
         }
         closed = true;
@@ -290,5 +309,23 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             statementManagers.clear();
             databaseConnectionManager.close();
         }
+    }
+    
+    /**
+     * Register statement manager.
+     *
+     * @param statementManager statement manager to be registered
+     */
+    public void registerStatementManager(final StatementManager statementManager) {
+        statementManagers.add(statementManager);
+    }
+    
+    /**
+     * Unregister statement manager.
+     *
+     * @param statementManager statement manager to be unregistered
+     */
+    public void unregisterStatementManager(final StatementManager statementManager) {
+        statementManagers.remove(statementManager);
     }
 }

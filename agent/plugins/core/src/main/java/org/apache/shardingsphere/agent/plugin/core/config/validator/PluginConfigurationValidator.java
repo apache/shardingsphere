@@ -30,7 +30,7 @@ public final class PluginConfigurationValidator {
     
     /**
      * Validate host and port.
-     * 
+     *
      * @param type plugin type 
      * @param pluginConfig to be validated plugin configuration
      */
@@ -41,7 +41,7 @@ public final class PluginConfigurationValidator {
     
     /**
      * Validate host.
-     * 
+     *
      * @param type plugin type
      * @param pluginConfig to be validated plugin configuration
      */
@@ -51,7 +51,7 @@ public final class PluginConfigurationValidator {
     
     /**
      * Validate port.
-     * 
+     *
      * @param type plugin type
      * @param pluginConfig to be validated plugin configuration
      */

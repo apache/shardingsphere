@@ -16,8 +16,8 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case metric-name="build_info" metric-type="gauge">
         <query-assertion metric="build_info" query="build_info{name='ShardingSphere'}" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

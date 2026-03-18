@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.infra.util.yaml.shortcuts;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+
 import java.util.Map;
 
 /**
  * ShardingSphere YAML shortcuts.
  */
-public interface ShardingSphereYamlShortcuts {
+@SingletonSPI
+public interface ShardingSphereYamlShortcuts extends ShardingSphereSPI {
     
     /**
      * Get YAML shortcuts.

@@ -17,9 +17,9 @@
 
 rules:
 - !SQL_PARSER
+  parseTreeCache:
+    initialCapacity: 512
+    maximumSize: 2048
   sqlStatementCache:
     initialCapacity: 256
     maximumSize: 4096
-  parseTreeCache:
-    initialCapacity: 128
-    maximumSize: 1024

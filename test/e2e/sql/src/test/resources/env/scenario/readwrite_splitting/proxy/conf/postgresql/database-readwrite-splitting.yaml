@@ -21,7 +21,7 @@ dataSources:
   write_ds:
     url: jdbc:postgresql://postgresql.readwrite_splitting.host:5432/write_ds
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -30,7 +30,7 @@ dataSources:
   read_0:
     url: jdbc:postgresql://postgresql.readwrite_splitting.host:5432/read_0
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000
@@ -39,7 +39,7 @@ dataSources:
   read_1:
     url: jdbc:postgresql://postgresql.readwrite_splitting.host:5432/read_1
     username: test_user
-    password: Test@123
+    password: Test@9876
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

@@ -19,11 +19,14 @@ package org.apache.shardingsphere.sharding.cache.checker.algorithm;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.sharding.algorithm.sharding.mod.HashModShardingAlgorithm;
+import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
+import org.apache.shardingsphere.sharding.algorithm.sharding.range.BoundaryBasedRangeShardingAlgorithm;
+import org.apache.shardingsphere.sharding.algorithm.sharding.range.VolumeBasedRangeShardingAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 
 /**
  * Cacheable sharding algorithm checker.
@@ -31,15 +34,8 @@ import java.util.HashSet;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CacheableShardingAlgorithmChecker {
     
-    private static final Collection<Class<? extends ShardingAlgorithm>> CACHEABLE_SHARDING_ALGORITHM_CLASSES;
-    
-    static {
-        Collection<Class<? extends ShardingAlgorithm>> result = new HashSet<>();
-        for (CacheableShardingAlgorithmClassProvider each : ShardingSphereServiceLoader.getServiceInstances(CacheableShardingAlgorithmClassProvider.class)) {
-            result.addAll(each.getCacheableShardingAlgorithmClasses());
-        }
-        CACHEABLE_SHARDING_ALGORITHM_CLASSES = result;
-    }
+    private static final Collection<Class<? extends ShardingAlgorithm>> CACHEABLE_SHARDING_ALGORITHM_CLASSES = Arrays.asList(
+            ModShardingAlgorithm.class, HashModShardingAlgorithm.class, VolumeBasedRangeShardingAlgorithm.class, BoundaryBasedRangeShardingAlgorithm.class);
     
     /**
      * Check if sharding algorithm is cacheable.

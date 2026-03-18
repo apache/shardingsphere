@@ -24,4 +24,6 @@
     <sql-case id="alter_procedure_set_param" value="ALTER PROCEDURE check_password(text) SET search_path = admin,pg_temp" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_procedure_reset_param" value="ALTER PROCEDURE check_password(text) RESET search_path" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_procedure_for_oracle" value="ALTER PROCEDURE hr.remove_emp COMPILE" db-types="Oracle" />
+    <sql-case id="alter_procedure_mysql" value="ALTER PROCEDURE proc1" db-types="MySQL" />
+    <sql-case id="alter_procedure_doris" value="ALTER PROCEDURE doris_proc_control" db-types="Doris" />
 </sql-cases>

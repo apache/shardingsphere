@@ -25,11 +25,11 @@ import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.con
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.yaml.config.YamlPipelineWriteConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.yaml.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -54,14 +54,14 @@ class YamlPipelineProcessConfigurationSwapperTest {
     }
     
     private YamlPipelineProcessConfiguration createYamlConfiguration() {
-        YamlPipelineReadConfiguration yamlReadConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
+        YamlPipelineReadConfiguration yamlReadConfig = new YamlPipelineReadConfiguration();
         YamlAlgorithmConfiguration yamlReadRateLimiterConfig = new YamlAlgorithmConfiguration();
         yamlReadRateLimiterConfig.setType("INPUT");
         yamlReadRateLimiterConfig.setProps(PropertiesBuilder.build(new Property("batch-size", "1000"), new Property("qps", "500")));
         yamlReadConfig.setRateLimiter(yamlReadRateLimiterConfig);
         YamlPipelineProcessConfiguration result = new YamlPipelineProcessConfiguration();
         result.setRead(yamlReadConfig);
-        YamlPipelineWriteConfiguration yamlWriteConfig = YamlPipelineWriteConfiguration.buildWithDefaultValue();
+        YamlPipelineWriteConfiguration yamlWriteConfig = new YamlPipelineWriteConfiguration();
         YamlAlgorithmConfiguration yamlWriteRateLimiterConfig = new YamlAlgorithmConfiguration();
         yamlWriteRateLimiterConfig.setType("OUTPUT");
         yamlWriteRateLimiterConfig.setProps(PropertiesBuilder.build(new Property("batch-size", "1000"), new Property("tps", "2000")));

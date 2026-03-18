@@ -1,0 +1,10 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "org.apache.commons.logging.LogAdapter"
+      },
+      "type": "org.apache.logging.log4j.spi.ExtendedLogger"
+    }
+  ]
+}

@@ -36,6 +36,7 @@ import io.netty.handler.logging.LoggingHandler;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.netty.ServerHandlerInitializer;
@@ -53,6 +54,8 @@ public final class ShardingSphereProxy {
     private final EventLoopGroup bossGroup;
     
     private final EventLoopGroup workerGroup;
+    
+    private boolean isClosed;
     
     public ShardingSphereProxy() {
         bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
@@ -101,7 +104,15 @@ public final class ShardingSphereProxy {
         });
     }
     
-    private List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
+    /**
+     * Start ShardingSphere-Proxy.
+     *
+     * @param port port
+     * @param addresses addresses
+     * @return ChannelFuture list
+     * @throws InterruptedException interrupted exception
+     */
+    public List<ChannelFuture> startInternal(final int port, final List<String> addresses) throws InterruptedException {
         ServerBootstrap bootstrap = new ServerBootstrap();
         initServerBootstrap(bootstrap);
         List<ChannelFuture> result = new ArrayList<>(addresses.size());
@@ -119,6 +130,8 @@ public final class ShardingSphereProxy {
     
     private void accept(final List<ChannelFuture> futures) throws InterruptedException {
         log.info("ShardingSphere-Proxy {} mode started successfully", ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getModeConfiguration().getType());
+        ProxyInstanceMetaData instanceMetaData = (ProxyInstanceMetaData) ProxyContext.getInstance().getContextManager().getComputeNodeInstanceContext().getInstance().getMetaData();
+        log.info("Instance id: {}, IP: {}, port: {}", instanceMetaData.getId(), instanceMetaData.getIp(), instanceMetaData.getPort());
         for (ChannelFuture each : futures) {
             each.channel().closeFuture().sync();
         }
@@ -146,9 +159,17 @@ public final class ShardingSphereProxy {
                 .childHandler(new ServerHandlerInitializer(FrontDatabaseProtocolTypeFactory.getDatabaseType()));
     }
     
-    private void close() {
+    /**
+     * Close ShardingSphere-Proxy.
+     */
+    public synchronized void close() {
+        if (isClosed) {
+            return;
+        }
         bossGroup.shutdownGracefully();
         workerGroup.shutdownGracefully();
         BackendExecutorContext.getInstance().getExecutorEngine().close();
+        ProxyContext.getInstance().getContextManager().close();
+        isClosed = true;
     }
 }

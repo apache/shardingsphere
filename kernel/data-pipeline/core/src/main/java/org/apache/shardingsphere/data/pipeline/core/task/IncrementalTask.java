@@ -20,7 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.task;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.execute.PipelineExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.execute.PipelineLifecycleRunnable;
 import org.apache.shardingsphere.data.pipeline.core.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.core.task.progress.IncrementalTaskProgress;
@@ -39,7 +40,7 @@ public final class IncrementalTask implements PipelineTask {
     @Getter
     private final String taskId;
     
-    private final ExecuteEngine incrementalExecuteEngine;
+    private final PipelineExecuteEngine incrementalExecuteEngine;
     
     private final Dumper dumper;
     
@@ -62,12 +63,6 @@ public final class IncrementalTask implements PipelineTask {
     @Override
     public void stop() {
         dumper.stop();
-        for (Importer each : importers) {
-            each.stop();
-        }
-    }
-    
-    @Override
-    public void close() {
+        importers.forEach(PipelineLifecycleRunnable::stop);
     }
 }

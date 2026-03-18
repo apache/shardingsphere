@@ -19,17 +19,18 @@ package org.apache.shardingsphere.transaction.xa;
 
 import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.database.connector.core.checker.DialectDatabasePrivilegeChecker;
+import org.apache.shardingsphere.database.connector.core.checker.PrivilegeCheckType;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.exception.ServiceProviderNotFoundException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.exception.TransactionTimeoutException;
-import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributionTransactionManager;
+import org.apache.shardingsphere.transaction.spi.ShardingSphereDistributedTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
-import org.apache.shardingsphere.transaction.xa.jta.datasource.checker.XATransactionPrivilegeChecker;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import javax.sql.DataSource;
@@ -50,7 +51,7 @@ import java.util.Properties;
 /**
  * ShardingSphere Transaction manager for XA.
  */
-public final class XAShardingSphereTransactionManager implements ShardingSphereDistributionTransactionManager {
+public final class XAShardingSphereTransactionManager implements ShardingSphereDistributedTransactionManager {
     
     private final Map<String, XATransactionDataSource> cachedDataSources = new CaseInsensitiveMap<>();
     
@@ -59,7 +60,8 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereD
     @Override
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
-            DatabaseTypedSPILoader.findService(XATransactionPrivilegeChecker.class, databaseTypes.get(entry.getKey())).ifPresent(optional -> optional.check(entry.getValue()));
+            DatabaseTypedSPILoader.findService(DialectDatabasePrivilegeChecker.class, databaseTypes.get(entry.getKey()))
+                    .ifPresent(optional -> optional.check(entry.getValue(), PrivilegeCheckType.XA));
         }
         xaTransactionManagerProvider = TypedSPILoader.getService(XATransactionManagerProvider.class, providerType);
         xaTransactionManagerProvider.init();
@@ -133,17 +135,6 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereD
     }
     
     @Override
-    public void close() {
-        for (XATransactionDataSource each : cachedDataSources.values()) {
-            each.close();
-        }
-        cachedDataSources.clear();
-        if (null != xaTransactionManagerProvider) {
-            xaTransactionManagerProvider.close();
-        }
-    }
-    
-    @Override
     public boolean containsProviderType(final String providerType) {
         try {
             TypedSPILoader.checkService(XATransactionManagerProvider.class, providerType, new Properties());
@@ -152,6 +143,17 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereD
             return false;
         }
         
+    }
+    
+    @Override
+    public void close() {
+        for (XATransactionDataSource each : cachedDataSources.values()) {
+            each.close();
+        }
+        cachedDataSources.clear();
+        if (null != xaTransactionManagerProvider) {
+            xaTransactionManagerProvider.close();
+        }
     }
     
     @Override

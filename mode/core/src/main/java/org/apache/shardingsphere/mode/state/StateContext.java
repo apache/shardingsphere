@@ -17,40 +17,34 @@
 
 package org.apache.shardingsphere.mode.state;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * State context.
  */
-@Slf4j
 public final class StateContext {
     
-    private final AtomicReference<ClusterState> clusterState = new AtomicReference<>(ClusterState.OK);
+    private final AtomicReference<ShardingSphereState> state;
     
-    public StateContext(final ClusterState repositoryClusterState) {
-        if (clusterState.get() != repositoryClusterState) {
-            switchClusterState(repositoryClusterState);
-        }
+    public StateContext(final ShardingSphereState state) {
+        this.state = new AtomicReference<>(state);
     }
     
     /**
-     * Get cluster state.
-     * 
-     * @return cluster state
+     * Get state.
+     *
+     * @return state
      */
-    public ClusterState getClusterState() {
-        return clusterState.get();
+    public ShardingSphereState getState() {
+        return state.get();
     }
     
     /**
-     * Switch cluster state.
-     * 
-     * @param state to be switched cluster state
+     * Switch state.
+     *
+     * @param state to be switched state
      */
-    public void switchClusterState(final ClusterState state) {
-        clusterState.set(state);
+    public void switchState(final ShardingSphereState state) {
+        this.state.set(state);
     }
 }

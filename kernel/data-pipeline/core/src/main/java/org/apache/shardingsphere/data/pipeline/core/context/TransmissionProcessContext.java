@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.context;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.execute.PipelineExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.config.PipelineReadConfiguration;
@@ -44,39 +44,39 @@ public final class TransmissionProcessContext implements PipelineProcessContext 
     @Getter
     private final JobRateLimitAlgorithm writeRateLimitAlgorithm;
     
-    private final PipelineLazyInitializer<ExecuteEngine> inventoryDumperExecuteEngineLazyInitializer;
+    private final PipelineLazyInitializer<PipelineExecuteEngine> inventoryDumperExecuteEngineLazyInitializer;
     
-    private final PipelineLazyInitializer<ExecuteEngine> inventoryImporterExecuteEngineLazyInitializer;
+    private final PipelineLazyInitializer<PipelineExecuteEngine> inventoryImporterExecuteEngineLazyInitializer;
     
-    private final PipelineLazyInitializer<ExecuteEngine> incrementalExecuteEngineLazyInitializer;
+    private final PipelineLazyInitializer<PipelineExecuteEngine> incrementalExecuteEngineLazyInitializer;
     
     public TransmissionProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
-        processConfiguration = PipelineProcessConfigurationUtils.convertWithDefaultValue(originalProcessConfig);
+        processConfiguration = PipelineProcessConfigurationUtils.fillInDefaultValue(originalProcessConfig);
         PipelineReadConfiguration readConfig = processConfiguration.getRead();
         AlgorithmConfiguration readRateLimiter = readConfig.getRateLimiter();
         readRateLimitAlgorithm = null == readRateLimiter ? null : TypedSPILoader.getService(JobRateLimitAlgorithm.class, readRateLimiter.getType(), readRateLimiter.getProps());
         PipelineWriteConfiguration writeConfig = processConfiguration.getWrite();
         AlgorithmConfiguration writeRateLimiter = writeConfig.getRateLimiter();
         writeRateLimitAlgorithm = null == writeRateLimiter ? null : TypedSPILoader.getService(JobRateLimitAlgorithm.class, writeRateLimiter.getType(), writeRateLimiter.getProps());
-        inventoryDumperExecuteEngineLazyInitializer = new PipelineLazyInitializer<ExecuteEngine>() {
+        inventoryDumperExecuteEngineLazyInitializer = new PipelineLazyInitializer<PipelineExecuteEngine>() {
             
             @Override
-            protected ExecuteEngine doInitialize() {
-                return ExecuteEngine.newFixedThreadInstance(readConfig.getWorkerThread(), "Inventory-" + jobId);
+            protected PipelineExecuteEngine doInitialize() {
+                return PipelineExecuteEngine.newFixedThreadInstance(readConfig.getWorkerThread(), "Inventory-" + jobId);
             }
         };
-        inventoryImporterExecuteEngineLazyInitializer = new PipelineLazyInitializer<ExecuteEngine>() {
+        inventoryImporterExecuteEngineLazyInitializer = new PipelineLazyInitializer<PipelineExecuteEngine>() {
             
             @Override
-            protected ExecuteEngine doInitialize() {
-                return ExecuteEngine.newFixedThreadInstance(writeConfig.getWorkerThread(), "Importer-" + jobId);
+            protected PipelineExecuteEngine doInitialize() {
+                return PipelineExecuteEngine.newFixedThreadInstance(writeConfig.getWorkerThread(), "Importer-" + jobId);
             }
         };
-        incrementalExecuteEngineLazyInitializer = new PipelineLazyInitializer<ExecuteEngine>() {
+        incrementalExecuteEngineLazyInitializer = new PipelineLazyInitializer<PipelineExecuteEngine>() {
             
             @Override
-            protected ExecuteEngine doInitialize() {
-                return ExecuteEngine.newCachedThreadInstance("Incremental-" + jobId);
+            protected PipelineExecuteEngine doInitialize() {
+                return PipelineExecuteEngine.newCachedThreadInstance("Incremental-" + jobId);
             }
         };
     }
@@ -87,7 +87,7 @@ public final class TransmissionProcessContext implements PipelineProcessContext 
      * @return inventory dumper execute engine
      */
     @SneakyThrows(ConcurrentException.class)
-    public ExecuteEngine getInventoryDumperExecuteEngine() {
+    public PipelineExecuteEngine getInventoryDumperExecuteEngine() {
         return inventoryDumperExecuteEngineLazyInitializer.get();
     }
     
@@ -97,7 +97,7 @@ public final class TransmissionProcessContext implements PipelineProcessContext 
      * @return inventory importer execute engine
      */
     @SneakyThrows(ConcurrentException.class)
-    public ExecuteEngine getInventoryImporterExecuteEngine() {
+    public PipelineExecuteEngine getInventoryImporterExecuteEngine() {
         return inventoryImporterExecuteEngineLazyInitializer.get();
     }
     
@@ -107,7 +107,7 @@ public final class TransmissionProcessContext implements PipelineProcessContext 
      * @return incremental execute engine
      */
     @SneakyThrows(ConcurrentException.class)
-    public ExecuteEngine getIncrementalExecuteEngine() {
+    public PipelineExecuteEngine getIncrementalExecuteEngine() {
         return incrementalExecuteEngineLazyInitializer.get();
     }
     
@@ -118,7 +118,7 @@ public final class TransmissionProcessContext implements PipelineProcessContext 
         shutdownExecuteEngine(incrementalExecuteEngineLazyInitializer);
     }
     
-    private void shutdownExecuteEngine(final PipelineLazyInitializer<ExecuteEngine> lazyInitializer) throws ConcurrentException {
+    private void shutdownExecuteEngine(final PipelineLazyInitializer<PipelineExecuteEngine> lazyInitializer) throws ConcurrentException {
         if (lazyInitializer.isInitialized()) {
             lazyInitializer.get().shutdown();
         }

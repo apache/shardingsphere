@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.algorithm.core.exception;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Invalid algorithm configuration exception.
@@ -33,5 +33,9 @@ public final class InvalidAlgorithmConfigurationException extends AlgorithmDefin
     
     public InvalidAlgorithmConfigurationException(final String algorithmType) {
         super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Invalid %s algorithm configuration.", algorithmType);
+    }
+    
+    public InvalidAlgorithmConfigurationException(final String algorithmType, final String algorithm, final String message) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 4, "Invalid %s algorithm configuration '%s'. %s.", algorithmType, algorithm, message);
     }
 }

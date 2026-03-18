@@ -26,7 +26,7 @@ public enum TransactionType {
     
     /**
      * Judge whether distributed transaction.
-     * 
+     *
      * @param transactionType transaction type
      * @return is distributed transaction or not
      */

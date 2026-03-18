@@ -40,7 +40,7 @@ public final class SQLCaseAssertContext {
     
     /**
      * Get message text.
-     * 
+     *
      * @param failureMessage failure message
      * @return got message text
      */

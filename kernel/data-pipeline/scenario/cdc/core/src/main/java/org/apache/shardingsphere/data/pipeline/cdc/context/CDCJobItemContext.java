@@ -22,15 +22,15 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
-import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.config.CDCJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.cdc.config.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.TransmissionProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSource;
 import org.apache.shardingsphere.data.pipeline.core.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.TransmissionJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineSink;
@@ -75,10 +75,10 @@ public final class CDCJobItemContext implements TransmissionJobItemContext {
     
     private final AtomicLong inventoryRecordsCount = new AtomicLong(0L);
     
-    private final LazyInitializer<PipelineDataSourceWrapper> sourceDataSourceLazyInitializer = new LazyInitializer<PipelineDataSourceWrapper>() {
+    private final LazyInitializer<PipelineDataSource> sourceDataSourceLazyInitializer = new LazyInitializer<PipelineDataSource>() {
         
         @Override
-        protected PipelineDataSourceWrapper initialize() {
+        protected PipelineDataSource initialize() {
             return dataSourceManager.getDataSource(taskConfig.getDumperContext().getCommonContext().getDataSourceConfig());
         }
     };
@@ -117,8 +117,8 @@ public final class CDCJobItemContext implements TransmissionJobItemContext {
     }
     
     @Override
-    public void onProgressUpdated(final PipelineJobProgressUpdatedParameter param) {
-        processedRecordsCount.addAndGet(param.getProcessedRecordsCount());
+    public void onProgressUpdated(final PipelineJobUpdateProgress updateProgress) {
+        processedRecordsCount.addAndGet(updateProgress.getProcessedRecordsCount());
         PipelineJobProgressPersistService.notifyPersist(jobConfig.getJobId(), shardingItem);
     }
     
@@ -128,7 +128,7 @@ public final class CDCJobItemContext implements TransmissionJobItemContext {
      * @return source data source
      */
     @SneakyThrows(ConcurrentException.class)
-    public PipelineDataSourceWrapper getSourceDataSource() {
+    public PipelineDataSource getSourceDataSource() {
         return sourceDataSourceLazyInitializer.get();
     }
     

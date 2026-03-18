@@ -34,7 +34,7 @@ public interface YamlRuleConfigurationSwapper<Y extends YamlRuleConfiguration, T
     
     /**
      * Get YAML rule tag name.
-     * 
+     *
      * @return YAML rule tag name
      */
     String getRuleTagName();

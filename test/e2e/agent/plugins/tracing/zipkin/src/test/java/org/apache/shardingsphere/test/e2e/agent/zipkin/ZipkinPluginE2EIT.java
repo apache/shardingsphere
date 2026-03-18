@@ -17,40 +17,36 @@
 
 package org.apache.shardingsphere.test.e2e.agent.zipkin;
 
-import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
-import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.SpanAssert;
-import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.IntegrationTestCasesLoader;
-import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.SpanTestCase;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.AgentE2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.engine.framework.AgentE2ETestActionExtension;
+import org.apache.shardingsphere.test.e2e.agent.engine.framework.AgentE2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.agent.zipkin.asserts.ZipkinSpanAssert;
+import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.ZipkinE2ETestCase;
+import org.apache.shardingsphere.test.e2e.agent.zipkin.cases.ZipkinE2ETestCases;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
-import java.util.stream.Stream;
-
-@ExtendWith(AgentTestActionExtension.class)
+@ExtendWith(AgentE2ETestActionExtension.class)
 class ZipkinPluginE2EIT {
     
     @EnabledIf("isEnabled")
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertWithAgent(final SpanTestCase spanTestCase) {
-        SpanAssert.assertIs(E2ETestEnvironment.getInstance().getZipKinHttpUrl(), spanTestCase);
+    void assertTraceAgent(final ZipkinE2ETestCase testCase) {
+        ZipkinSpanAssert.assertIs(AgentE2ETestEnvironment.getInstance().getAgentPluginURL(), testCase);
     }
     
     private static boolean isEnabled() {
-        return E2ETestEnvironment.getInstance().containsTestParameter();
+        return AgentE2ETestConfiguration.getInstance().containsTestParameter();
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider extends AgentE2ETestCaseArgumentsProvider {
         
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+        private TestCaseArgumentsProvider() {
+            super(ZipkinE2ETestCases.class);
         }
     }
 }

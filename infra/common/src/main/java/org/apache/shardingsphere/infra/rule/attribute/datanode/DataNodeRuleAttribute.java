@@ -38,7 +38,7 @@ public interface DataNodeRuleAttribute extends RuleAttribute {
     
     /**
      * Get data nodes by table name.
-     * 
+     *
      * @param tableName table name
      * @return data nodes
      */
@@ -54,7 +54,7 @@ public interface DataNodeRuleAttribute extends RuleAttribute {
     
     /**
      * Is need accumulate.
-     * 
+     *
      * @param tables table names
      * @return need accumulate
      */
@@ -76,4 +76,11 @@ public interface DataNodeRuleAttribute extends RuleAttribute {
      * @return actual table name
      */
     Optional<String> findActualTableByCatalog(String catalog, String logicTable);
+    
+    /**
+     * Whether replica based distribution.
+     *
+     * @return is replica based distribution or not
+     */
+    boolean isReplicaBasedDistribution();
 }

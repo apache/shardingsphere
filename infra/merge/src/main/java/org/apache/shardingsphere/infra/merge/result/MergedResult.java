@@ -29,7 +29,7 @@ public interface MergedResult {
     
     /**
      * Iterate next data.
-     * 
+     *
      * @return has next data
      * @throws SQLException SQL exception
      */
@@ -54,7 +54,7 @@ public interface MergedResult {
      * @return calendar value
      * @throws SQLException SQL exception
      */
-    Object getCalendarValue(int columnIndex, Class<?> type, Calendar calendar) throws SQLException;
+    Object getCalendarValue(int columnIndex, Class<?> type, @SuppressWarnings("UseOfObsoleteDateTimeApi") Calendar calendar) throws SQLException;
     
     /**
      * Get InputStream.
@@ -77,7 +77,7 @@ public interface MergedResult {
     
     /**
      * Judge ResultSet is null or not.
-     * 
+     *
      * @return ResultSet is null or not
      * @throws SQLException SQL exception
      */

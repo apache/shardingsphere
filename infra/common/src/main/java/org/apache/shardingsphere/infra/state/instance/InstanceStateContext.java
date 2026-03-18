@@ -31,7 +31,7 @@ public final class InstanceStateContext {
     
     /**
      * Switch state.
-     * 
+     *
      * @param state state to be switched
      */
     public void switchState(final InstanceState state) {
@@ -55,7 +55,7 @@ public final class InstanceStateContext {
     
     /**
      * Get current state.
-     * 
+     *
      * @return current state
      */
     public InstanceState getCurrentState() {

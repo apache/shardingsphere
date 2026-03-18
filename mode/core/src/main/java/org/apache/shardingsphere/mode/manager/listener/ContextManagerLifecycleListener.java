@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.listener;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -24,7 +25,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
  * Context manager lifecycle listener.
  */
 @SingletonSPI
-public interface ContextManagerLifecycleListener {
+public interface ContextManagerLifecycleListener extends ShardingSphereSPI {
     
     /**
      * Callback on initialized.
@@ -38,6 +39,5 @@ public interface ContextManagerLifecycleListener {
      *
      * @param contextManager context manager
      */
-    default void onDestroyed(ContextManager contextManager) {
-    }
+    void onDestroyed(ContextManager contextManager);
 }

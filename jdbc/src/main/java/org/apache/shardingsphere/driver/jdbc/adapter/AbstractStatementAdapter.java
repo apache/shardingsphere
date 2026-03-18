@@ -19,14 +19,19 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.driver.jdbc.adapter.executor.ForceExecuteTemplate;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLWarning;
@@ -36,6 +41,7 @@ import java.util.Collection;
 /**
  * Adapter for {@code Statement}.
  */
+@Slf4j
 @Getter
 public abstract class AbstractStatementAdapter extends WrapperAdapter implements Statement {
     
@@ -48,15 +54,29 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     
     private int fetchDirection;
     
-    private boolean closed;
+    private int maxRows;
     
     private boolean closeOnCompletion;
     
+    private boolean closed;
+    
+    protected final void handleAutoCommitBeforeExecution(final SQLStatement sqlStatement, final ShardingSphereConnection connection) throws SQLException {
+        if (AutoCommitUtils.isNeedStartTransaction(sqlStatement)) {
+            connection.beginTransactionIfNeededWhenAutoCommitFalse();
+        }
+    }
+    
+    protected final void handleAutoCommitAfterExecution(final ShardingSphereConnection connection) throws SQLException {
+        if (connection.getAutoCommit()) {
+            connection.getDatabaseConnectionManager().clearCachedConnections();
+        }
+    }
+    
     protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData) {
-        if (connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction()) {
-            DatabaseType databaseType = metaData.getDatabase(connection.getDatabaseName()).getProtocolType();
+        if (connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()) {
+            DatabaseType databaseType = metaData.getDatabase(connection.getCurrentDatabaseName()).getProtocolType();
             DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-            if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
+            if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
                 connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().setExceptionOccur(true);
             }
         }
@@ -107,12 +127,13 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     // TODO Confirm MaxRows for multiple databases is need special handle. eg: 10 statements maybe MaxRows / 10
     @Override
     public final int getMaxRows() throws SQLException {
-        return getRoutedStatements().isEmpty() ? -1 : getRoutedStatements().iterator().next().getMaxRows();
+        return getRoutedStatements().isEmpty() ? maxRows : getRoutedStatements().iterator().next().getMaxRows();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setMaxRows(final int max) throws SQLException {
+        maxRows = max;
         getMethodInvocationRecorder().record("setMaxRows", statement -> statement.setMaxRows(max));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setMaxRows(max));
     }
@@ -179,6 +200,28 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     }
     
     @Override
+    public final boolean isCloseOnCompletion() {
+        return closeOnCompletion;
+    }
+    
+    @Override
+    public final void closeOnCompletion() {
+        closeOnCompletion = true;
+    }
+    
+    @Override
+    public final void setCursorName(final String name) throws SQLException {
+        ShardingSpherePreconditions.checkState(1 == getRoutedStatements().size(), () -> new SQLFeatureNotSupportedException("setCursorName"));
+        getRoutedStatements().iterator().next().setCursorName(name);
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public final void cancel() throws SQLException {
+        forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::cancel);
+    }
+    
+    @Override
     public final SQLWarning getWarnings() {
         return null;
     }
@@ -188,46 +231,76 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     }
     
     @Override
-    public void closeOnCompletion() {
-        closeOnCompletion = true;
-    }
-    
-    @Override
-    public boolean isCloseOnCompletion() {
-        return closeOnCompletion;
-    }
-    
-    @Override
-    public void setCursorName(final String name) throws SQLException {
-        if (isTransparent()) {
-            getRoutedStatements().iterator().next().setCursorName(name);
-        } else {
-            throw new SQLFeatureNotSupportedException("setCursorName");
-        }
-    }
-    
-    private boolean isTransparent() {
-        return 1 == getRoutedStatements().size();
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
-    public final void cancel() throws SQLException {
-        forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::cancel);
-    }
-    
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
     public final void close() throws SQLException {
         closed = true;
         try {
-            forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::close);
-            closeExecutor();
-            if (null != getStatementManager()) {
-                getStatementManager().close();
-            }
+            safeCloseRoutedStatements();
+            safeCloseExecutor();
+            safeCloseAndUnregisterStatementManager();
         } finally {
             getRoutedStatements().clear();
+        }
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void safeCloseRoutedStatements() {
+        try {
+            forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::close);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("Close routed statements failed", ex);
+        }
+    }
+    
+    private void safeCloseExecutor() {
+        try {
+            closeExecutor();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("Close executor failed", ex);
+        }
+    }
+    
+    private void safeCloseAndUnregisterStatementManager() {
+        StatementManager statementManager = getStatementManager();
+        if (null == statementManager) {
+            return;
+        }
+        safeCloseStatementManager(statementManager);
+        try {
+            Connection connection = getConnection();
+            if (!(connection instanceof ShardingSphereConnection)) {
+                return;
+            }
+            ShardingSphereConnection logicalConnection = (ShardingSphereConnection) connection;
+            logicalConnection.unregisterStatementManager(statementManager);
+            safeHandleAutoCommitAfterExecution(logicalConnection);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("Close and unregister statement manager failed", ex);
+        }
+    }
+    
+    private void safeCloseStatementManager(final StatementManager statementManager) {
+        try {
+            statementManager.close();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("Close manager failed", ex);
+        }
+    }
+    
+    private void safeHandleAutoCommitAfterExecution(final ShardingSphereConnection logicalConnection) {
+        try {
+            handleAutoCommitAfterExecution(logicalConnection);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("Handle auto commit after execution failed", ex);
         }
     }
     

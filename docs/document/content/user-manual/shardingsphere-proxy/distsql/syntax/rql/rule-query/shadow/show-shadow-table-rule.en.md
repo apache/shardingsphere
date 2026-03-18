@@ -12,7 +12,7 @@ The `SHOW SHADOW TABLE RULES` syntax is used to query shadow table rules for spe
 {{< tabs >}}
 {{% tab name="Grammar" %}}
 ```sql
-ShowEncryptRule::=
+ShowShadowTableRule::=
   'SHOW' 'SHADOW' 'TABLE' 'RULES' ('FROM' databaseName)?
 
 databaseName ::=

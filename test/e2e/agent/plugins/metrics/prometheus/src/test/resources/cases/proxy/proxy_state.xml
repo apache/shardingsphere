@@ -16,8 +16,8 @@
   ~ limitations under the License.
   -->
 
-<integration-test-cases>
+<e2e-test-cases>
     <test-case metric-name="proxy_state" metric-type="gauge">
-        <query-assertion metric="proxy_state" query="proxy_state{}" value="0" shouldAssertValue="true"/>
+        <query-assertion metric="proxy_state" query="proxy_state{}" value="0" />
     </test-case>
-</integration-test-cases>
+</e2e-test-cases>

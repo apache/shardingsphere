@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mask.distsql.handler.provider.MaskRuleConfigurationToDistSQLConverter
+org.apache.shardingsphere.mask.distsql.handler.converter.MaskRuleConfigurationToDistSQLConverter

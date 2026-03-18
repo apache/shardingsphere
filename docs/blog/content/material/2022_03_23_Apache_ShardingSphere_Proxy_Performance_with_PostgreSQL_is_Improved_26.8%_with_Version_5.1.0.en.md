@@ -145,7 +145,7 @@ The testing results above may be related to aarch64 and JDK, but the stream itse
 There are many cases of avoiding unnecessary logic repetitive calls:
 
 - hashCode calculation
-The ShardingSphere class `org.apache.shardingsphere.sharding.route.engine.condition.Column` implements the `equals` and `hashCode` methods:
+The ShardingSphere class `org.apache.shardingsphere.sharding.route.engine.condition.QualifiedColumn` implements the `equals` and `hashCode` methods:
 
 ```java
 @RequiredArgsConstructor

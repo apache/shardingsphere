@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.exception.generic;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class UnsupportedSQLOperationExceptionTest {

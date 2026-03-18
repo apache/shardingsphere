@@ -36,7 +36,6 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriv
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 
 import java.sql.Connection;
@@ -64,24 +63,24 @@ public final class DriverExecuteBatchExecutor {
     private ExecutionContext executionContext;
     
     public DriverExecuteBatchExecutor(final ShardingSphereConnection connection, final ShardingSphereMetaData metaData, final StatementOption statementOption, final StatementManager statementManager,
-                                      final ShardingSphereDatabase database) {
+                                      final ShardingSphereDatabase usedDatabase) {
         this.connection = connection;
         this.metaData = metaData;
         JDBCExecutor jdbcExecutor = new JDBCExecutor(connection.getContextManager().getExecutorEngine(), connection.getDatabaseConnectionManager().getConnectionContext());
-        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(database, jdbcExecutor, connection.getProcessId());
-        prepareEngine = createDriverExecutionPrepareEngine(statementOption, statementManager, database);
+        batchPreparedStatementExecutor = new BatchPreparedStatementExecutor(usedDatabase, jdbcExecutor, connection.getProcessId());
+        prepareEngine = createDriverExecutionPrepareEngine(statementOption, statementManager, usedDatabase, metaData);
     }
     
     private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final StatementOption statementOption, final StatementManager statementManager,
-                                                                                                           final ShardingSphereDatabase database) {
+                                                                                                           final ShardingSphereDatabase database, final ShardingSphereMetaData metaData) {
         int maxConnectionsSizePerQuery = connection.getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT, maxConnectionsSizePerQuery, connection.getDatabaseConnectionManager(), statementManager, statementOption,
-                database.getRuleMetaData().getRules(), database.getResourceMetaData().getStorageUnits());
+                database.getRuleMetaData().getRules(), metaData);
     }
     
     /**
      * Add batch.
-     * 
+     *
      * @param queryContext query context
      * @param database database
      */
@@ -91,14 +90,13 @@ public final class DriverExecuteBatchExecutor {
     }
     
     private ExecutionContext createExecutionContext(final QueryContext queryContext, final ShardingSphereDatabase database) {
-        RuleMetaData globalRuleMetaData = metaData.getGlobalRuleMetaData();
-        SQLAuditEngine.audit(queryContext, globalRuleMetaData, database);
-        return new KernelProcessor().generateExecutionContext(queryContext, database, globalRuleMetaData, metaData.getProps(), connection.getDatabaseConnectionManager().getConnectionContext());
+        SQLAuditEngine.audit(queryContext, database);
+        return new KernelProcessor().generateExecutionContext(queryContext, metaData.getGlobalRuleMetaData(), metaData.getProps());
     }
     
     /**
      * Execute batch.
-     * 
+     *
      * @param database database
      * @param sqlStatementContext SQL statement context
      * @param generatedValues generated values
@@ -142,7 +140,7 @@ public final class DriverExecuteBatchExecutor {
             executionUnits.add(executionUnit);
         }
         batchExecutor.init(prepareEngine
-                .prepare(database.getName(), executionContext.getRouteContext(), executionUnits, new ExecutionGroupReportContext(connection.getProcessId(), database.getName())));
+                .prepare(database.getName(), executionContext, executionUnits, new ExecutionGroupReportContext(connection.getProcessId(), database.getName())));
         setBatchParameters(replayCallback);
     }
     

@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.sql.parser.statement.core.enums;
 
 /**
- * Update statistics scan unit enum.
+ * Update statistics scan unit.
  */
 public enum ScanUnit {
     
-    ROWS,
-    
-    PERCENT
+    ROWS, PERCENT
 }

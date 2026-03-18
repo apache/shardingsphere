@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.transaction.base.seata.at;
 
-import io.seata.tm.api.GlobalTransaction;
+import org.apache.seata.tm.api.GlobalTransaction;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

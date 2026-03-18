@@ -19,7 +19,7 @@
 # 
 # Here you can configure the rules for the proxy.
 # This example is configuration of encrypt rule.
-# 
+#
 ######################################################################################################
 #
 #databaseName: encrypt_db
@@ -51,6 +51,7 @@
 #      type: AES
 #      props:
 #        aes-key-value: 123456abc
+#        digest-algorithm-name: SHA-1
 #  tables:
 #    t_encrypt:
 #      columns:
@@ -98,6 +99,7 @@
 #      type: AES
 #      props:
 #        aes-key-value: 123456abc
+#        digest-algorithm-name: SHA-1
 #  tables:
 #    t_encrypt:
 #      columns:

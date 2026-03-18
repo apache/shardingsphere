@@ -23,13 +23,14 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 <#if mode=="standalone">
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 <#else>
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 </#if>
 <#if feature?contains("sharding")>
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
@@ -42,22 +43,22 @@ import org.apache.shardingsphere.readwritesplitting.config.ReadwriteSplittingRul
 import org.apache.shardingsphere.readwritesplitting.config.rule.ReadwriteSplittingDataSourceGroupRuleConfiguration;
 </#if>
 <#if feature?contains("encrypt")>
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 </#if>
 <#if feature?contains("shadow")>
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 </#if>
 <#if feature?contains("mask")>
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;    
@@ -78,6 +79,8 @@ import java.util.Properties;
 
 public final class Configuration {
     
+    <#assign repository = repository!'JDBC'>
+    
     private static final String HOST = "${host}";
     
     private static final int PORT = ${port};
@@ -92,13 +95,13 @@ public final class Configuration {
     
     private static ModeConfiguration createModeConfiguration() {
     <#if mode=="cluster-zookeeper">
-        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance-sharding-data-source", "localhost:2181", new Properties()));
+        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("ZooKeeper", "${namespace}", "localhost:2181", new Properties()));
     </#if>
     <#if mode=="cluster-etcd">
-        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("etcd", "governance-sharding-data-source", "localhost:2379", new Properties()));
+        return new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("etcd", "${namespace}", "localhost:2379", new Properties()));
     </#if>
     <#if mode=="standalone">
-        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("JDBC", new Properties()));
+        return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("${repository}", new Properties()));
     </#if> 
     }
     
@@ -125,6 +128,7 @@ public final class Configuration {
     
     private Collection<RuleConfiguration> createRuleConfiguration() {
         Collection<RuleConfiguration> result = new LinkedList<>();
+        result.add(createSingleRuleConfiguration());
     <#if transaction!="local">
         result.add(createTransactionRuleConfiguration());
     </#if>
@@ -145,7 +149,7 @@ public final class Configuration {
     <#if feature?contains("mask")>
         result.add(createMaskRuleConfiguration());
     </#if>
-        return result; 
+        return result;
     }
 <#list feature?split(",") as item>
     <#include "${item}.ftl">
@@ -162,7 +166,11 @@ public final class Configuration {
      </#if>
      }
     </#if>
-    
+
+    private SingleRuleConfiguration createSingleRuleConfiguration() {
+        return new SingleRuleConfiguration(Collections.singletonList("*.*"), null);
+    }
+
     private Properties createProperties() {
         Properties result = new Properties();
         result.setProperty(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true");

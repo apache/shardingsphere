@@ -7,13 +7,13 @@ chapter = true
 
 ## JDBC
 
-### [JDBC] 引入 `shardingsphere-transaction-xa-core` 后，如何避免 spring-boot 自动加载默认的 JtaTransactionManager？
+### 引入 `shardingsphere-transaction-xa-core` 后，如何避免 spring-boot 自动加载默认的 JtaTransactionManager？
 
 回答:
 
 1. 需要在 spring-boot 的引导类中添加 `@SpringBootApplication(exclude = JtaAutoConfiguration.class)`。
 
-### [JDBC] Oracle 表名、字段名配置大小写在加载 `metadata` 元数据时结果不正确？
+### Oracle 表名、字段名配置大小写在加载 `metadata` 元数据时结果不正确？
 
 回答：
 需要注意，Oracle 表名和字段名，默认元数据都是大写，除非建表语句中带双引号，如 `CREATE TABLE "TableName"("Id" number)` 元数据为双引号中内容，可参考以下 SQL 查看元数据的具体情况：
@@ -37,7 +37,7 @@ ShardingSphere 查询元数据关键 SQL:
  }
 ```
 
-### [JDBC] 使用 MySQL XA 事务时报 `SQLException: Unable to unwrap to interface com.mysql.jdbc.Connection` 异常
+### 使用 MySQL XA 事务时报 `SQLException: Unable to unwrap to interface com.mysql.jdbc.Connection` 异常
 
 回答：
 
@@ -62,7 +62,7 @@ Caused by: java.sql.SQLException: Unable to unwrap to interface com.mysql.jdbc.C
 
 ## Proxy
 
-### [Proxy] Windows 环境下，运行 ShardingSphere-Proxy，找不到或无法加载主类 org.apache.shardingsphere.proxy.Bootstrap，如何解决？
+### Windows 环境下，运行 ShardingSphere-Proxy，找不到或无法加载主类 org.apache.shardingsphere.proxy.Bootstrap，如何解决？
 
 回答：
 
@@ -73,7 +73,7 @@ Caused by: java.sql.SQLException: Unable to unwrap to interface com.mysql.jdbc.C
 tar zxvf apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
 ``` 
 
-### [Proxy] 在使用 ShardingSphere-Proxy 的时候，如何动态在添加新的逻辑库？
+### 在使用 ShardingSphere-Proxy 的时候，如何动态在添加新的逻辑库？
 
 回答：
 
@@ -88,7 +88,7 @@ CREATE DATABASE sharding_db;
 DROP DATABASE sharding_db;
 ```
 
-### [Proxy] 在使用 ShardingSphere-Proxy 时，怎么使用合适的工具连接到 ShardingSphere-Proxy？
+### 在使用 ShardingSphere-Proxy 时，怎么使用合适的工具连接到 ShardingSphere-Proxy？
 
 回答：
 
@@ -98,7 +98,7 @@ DROP DATABASE sharding_db;
    - DataGrip：2020.1、2021.1（使用 IDEA/DataGrip 时打开 `introspect using JDBC metadata` 选项）。
    - MySQLWorkBench：8.0.25。
 
-### [Proxy] 使用第三方数据库工具连接 ShardingSphere-Proxy 时，如果 ShardingSphere-Proxy 没有创建 Database 或者没有注册 Storage Unit，连接失败？
+### 使用第三方数据库工具连接 ShardingSphere-Proxy 时，如果 ShardingSphere-Proxy 没有创建 Database 或者没有注册 Storage Unit，连接失败？
 
 回答：
 
@@ -108,26 +108,32 @@ DROP DATABASE sharding_db;
 
 ## 分片
 
-### [分片] Cloud not resolve placeholder ... in string value ... 异常的解决方法?
+### Cloud not resolve placeholder ... in string value ... 异常的解决方法?
 
 回答：
 
 使用 `InlineExpressionParser` SPI 的默认实现的行表达式标识符可以使用 `${...}` 或 `$->{...}`，但前者与 Spring 本身的属性文件占位符冲突，因此在 Spring 环境中使用行表达式标识符建议使用 `$->{...}`。
 
-### [分片] inline 表达式返回结果为何出现浮点数？
+### inline 表达式返回结果为何出现浮点数？
 
 回答：
 
 Java的整数相除结果是整数，但是对于 inline 表达式中的 Groovy 语法则不同，整数相除结果是浮点数。
 想获得除法整数结果需要将 A/B 改为 A.intdiv(B)。
 
-### [分片] 如果只有部分数据库分库分表，是否需要将不分库分表的表也配置在分片规则中？
+### 如果只有部分数据库分库分表，是否需要将不分库分表的表也配置在分片规则中？
 
 回答：
 
 不分库分表的表在 ShardingSphere 中叫做单表，可以使用 [LOAD 语句](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/rule-definition/single-table/load-single-table/)或者 [SINGLE 规则](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/single/)配置需要加载的单表。
 
-### [分片] 指定了泛型为 Long 的 `SingleKeyTableShardingAlgorithm`，遇到 `ClassCastException: Integer can not cast to Long`?
+### 为什么绑定表中包含数字结尾的表名时会提示配置无效？
+
+回答：
+
+绑定表校验会把真实表名末尾的数字当作逻辑表的分片后缀（如 `t_order_0`），再据此对齐其它表。如果业务表名本身就以数字结尾（例如 `AllPatientsV1`），这些数字会被误判为分片后缀，最终抛出 `Invalid binding table configuration`。请为分片后缀保留额外的分隔符（例如 `AllPatientsV_1`、`table_${0..1}`），或者不要为此类表启用绑定表。
+
+### 指定了泛型为 Long 的 `SingleKeyTableShardingAlgorithm`，遇到 `ClassCastException: Integer can not cast to Long`?
 
 回答：
 
@@ -139,7 +145,7 @@ Java的整数相除结果是整数，但是对于 inline 表达式中的 Groovy 
 
 实现 `doSharding` 方法时，不建议指定方法声明中 `Comparable` 具体的类型，而是在 `doSharding` 方法实现中对类型进行转换，可以参考 `ModShardingAlgorithm#doSharding` 方法
 
-### [分片]  ShardingSphere 提供的默认分布式自增主键策略为什么是不连续的，且尾数大多为偶数？
+### ShardingSphere 提供的默认分布式自增主键策略为什么是不连续的，且尾数大多为偶数？
 
 回答：
 
@@ -147,7 +153,7 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 而 snowflake 算法的最后 4 位是在同一毫秒内的访问递增值。因此，如果毫秒内并发度不高，最后 4 位为零的几率则很大。因此并发度不高的应用生成偶数主键的几率会更高。
 在 3.1.0 版本中，尾数大多为偶数的问题已彻底解决，参见：https://github.com/apache/shardingsphere/issues/1617
 
-### [分片] 如何在 inline 分表策略时，允许执行范围查询操作（BETWEEN AND、\>、\<、\>=、\<=）？
+### 如何在 inline 分表策略时，允许执行范围查询操作（BETWEEN AND、\>、\<、\>=、\<=）？
 
 回答：
 
@@ -156,7 +162,7 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 - 4.x 版本：`allow.range.query.with.inline.sharding` 设置为 true 即可（默认为 false）。
 - 5.x 版本：在 InlineShardingStrategy 中将 `allow-range-query-with-inline-sharding` 设置为 true 即可（默认为 false）。
 
-### [分片] 为什么我实现了 `KeyGenerateAlgorithm` 接口，也配置了 Type，但是自定义的分布式主键依然不生效？
+### 为什么我实现了 `KeyGenerateAlgorithm` 接口，也配置了 Type，但是自定义的分布式主键依然不生效？
 
 回答：
 
@@ -164,7 +170,7 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 具体的 SPI 使用方式，请大家自行搜索。
 与分布式主键 `KeyGenerateAlgorithm` 接口相同，其他 ShardingSphere 的扩展功能也需要用相同的方式注入才能生效。
 
-### [分片] ShardingSphere 除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
+### ShardingSphere 除了支持自带的分布式自增主键之外，还能否支持原生的自增主键？
 
 回答：
 
@@ -174,14 +180,14 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 
 ## 单表
 
-### [单表] Table or view `%s` does not exist. 异常如何解决？
+### Table or view `%s` does not exist. 异常如何解决？
 
 回答：
 
 在 ShardingSphere 5.4.0 之前的版本，单表采用了自动加载的方式，这种方式在实际使用中存在诸多问题：
 
 1. 逻辑库中注册大量数据源后，自动加载的单表数量过多会导致 ShardingSphere-Proxy/JDBC 启动变慢；
-2. 用户通过 DistSQL 方式使用时，通过会按照：**注册存储单元 -> 创建分片、加密、读写分离等规则 -> 创建表**的顺序进行操作。由于单表自动加载机制的存在，会导致操作过程中多次访问数据库进行加载，并且在多个规则混合使用时会导致单表元数据的错乱；
+2. 用户通过 DistSQL 方式使用时，通常会按照：**注册存储单元 -> 创建分片、加密、读写分离等规则 -> 创建表**的顺序进行操作。由于单表自动加载机制的存在，会导致操作过程中多次访问数据库进行加载，并且在多个规则混合使用时会导致单表元数据的错乱；
 3. 自动加载全部数据源中的单表，用户无法排除不想被 ShardingSphere 管理的单表或废弃表。
 
 为了解决以上问题，从 ShardingSphere 5.4.0 版本开始，调整了单表的加载方式，用户需要通过 YAML 配置或者 DistSQL 的方式手动加载数据库中的单表。
@@ -219,7 +225,7 @@ LOAD SINGLE TABLE *.*;
 
 ## DistSQL
 
-### [DistSQL] 使用 DistSQL 添加数据源时，如何设置自定义的 JDBC 连接参数或连接池属性？
+### 使用 DistSQL 添加数据源时，如何设置自定义的 JDBC 连接参数或连接池属性？
 
 回答：
 
@@ -227,14 +233,14 @@ LOAD SINGLE TABLE *.*;
 2. ShardingSphere 预置了必要的连接池参数，如 `maxPoolSize`、`idleTimeout` 等。如需增加或覆盖参数配置，请在 `dataSource` 中通过 `PROPERTIES` 指定。
 3. 以上规则请参考 [相关介绍](/cn/user-manual/shardingsphere-proxy/distsql/syntax/rdl/storage-unit-definition/)。
 
-### [DistSQL] 使用 `DistSQL` 删除 `storage unit` 时，出现 `Storage unit [xxx] is still used by [SingleRule]`。
+### 使用 `DistSQL` 删除 `storage unit` 时，出现 `Storage unit [xxx] is still used by [SingleRule]`。
 
 回答：
 
 1. 被规则引用的 `storage unit` 将无法被删除。
 2. 若 `storage unit` 只被 `single rule` 引用，且用户确认可以忽略该限制，则可以添加可选参数 ignore single tables 进行强制删除。
 
-### [DistSQL] 使用 `DistSQL` 添加数据源时，出现 `Failed to get driver instance for jdbcURL=xxx`。
+### 使用 `DistSQL` 添加数据源时，出现 `Failed to get driver instance for jdbcURL=xxx`。
 
 回答：
 
@@ -242,15 +248,15 @@ ShardingSphere-Proxy 在部署过程中没有添加 jdbc 驱动，需要将 jdbc
 
 ## 其他
 
-### [其他] 如果 SQL 在 ShardingSphere 中执行不正确，该如何调试？
+### 如果 SQL 在 ShardingSphere 中执行不正确，该如何调试？
 
 回答：
 
 在 ShardingSphere-Proxy 以及 ShardingSphere-JDBC 1.5.0 版本之后提供了 `sql.show` 的配置，可以将解析上下文和改写后的 SQL 以及最终路由至的数据源的细节信息全部打印至 info 日志。
 `sql.show` 配置默认关闭，如果需要请通过配置开启。
-> 注意：5.x版本以后，`sql.show` 参数调整为 `sql-show`。
+> 注意：5.x 版本以后，`sql.show` 参数调整为 `sql-show`。
 
-### [其他] 阅读源码时为什么会出现编译错误? IDEA 不索引生成的代码？
+### 阅读源码时为什么会出现编译错误? IDEA 不索引生成的代码？
 
 回答：
 
@@ -262,7 +268,7 @@ ShardingSphere 使用 lombok 实现极简代码。关于更多使用和安装细
 生成的代码例如 `org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser` 等 Java 文件由于较大，默认配置的 IDEA 可能不会索引该文件。
 可以调整 IDEA 的属性：`idea.max.intellisense.filesize=10000`。
 
-### [其他] 使用 SQLSever 和 PostgreSQL 时，聚合列不加别名会抛异常？
+### 使用 SQLSever 和 PostgreSQL 时，聚合列不加别名会抛异常？
 
 回答：
 
@@ -276,7 +282,7 @@ SQLServer 获取到的列为空字符串和(2)，PostgreSQL 获取到的列为�
 SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM tablexxx;
 ```
 
-### [其他] Oracle 数据库使用 Timestamp 类型的 Order By 语句抛出异常提示 “Order by value must implements Comparable”?
+### Oracle 数据库使用 Timestamp 类型的 Order By 语句抛出异常提示 “Order by value must implements Comparable”?
 
 回答：
 
@@ -296,7 +302,7 @@ SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM tablexxx;
         return result;
     }
 ```
-使用了 resultSet.getObject(int index) 方法，针对 TimeStamp oracle 会根据 oracle.jdbc.J2EE13Compliant 属性判断返回 java.sql.TimeStamp 还是自定义 oralce.sql.TIMESTAMP
+使用了 resultSet.getObject(int index) 方法，针对 TimeStamp oracle 会根据 oracle.jdbc.J2EE13Compliant 属性判断返回 java.sql.TimeStamp 还是自定义 oracle.sql.TIMESTAMP
 详见 ojdbc 源码 oracle.jdbc.driver.TimestampAccessor#getObject(int var1) 方法:
 ```java
     Object getObject(int var1) throws SQLException {
@@ -324,7 +330,7 @@ SELECT SUM(num) AS sum_num, SUM(num2) AS sum_num2 FROM tablexxx;
     }
 ```
 
-### [其他] Windows 环境下，通过 Git 克隆 ShardingSphere 源码时为什么提示文件名过长，如何解决？
+### Windows 环境下，通过 Git 克隆 ShardingSphere 源码时为什么提示文件名过长，如何解决？
 
 回答：
 
@@ -341,13 +347,13 @@ git config --global core.longpaths true
 https://docs.microsoft.com/zh-cn/windows/desktop/FileIO/naming-a-file
 https://ourcodeworld.com/articles/read/109/how-to-solve-filename-too-long-error-in-git-powershell-and-github-application-for-windows
 
-### [其他] Type is required 异常的解决方法?
+### Type is required 异常的解决方法?
 
 回答：
 
 ShardingSphere 中很多功能实现类的加载方式是通过 SPI 注入的方式完成的，如分布式主键，注册中心等；这些功能通过配置中 type 类型来寻找对应的 SPI 实现，因此必须在配置文件中指定类型。
 
-### [其他] 服务启动时如何加快 `metadata` 加载速度？
+### 服务启动时如何加快 `metadata` 加载速度？
 
 回答：
 
@@ -356,14 +362,14 @@ ShardingSphere 中很多功能实现类的加载方式是通过 SPI 注入的方
 - 配置项 `max.connections.size.per.query`（默认值为1）调高（版本 >= 3.0.0.M3 且低于 5.0.0）。
 - 配置项 `max-connections-size-per-query`（默认值为1）调高（版本 >= 5.0.0）。
 
-### [其他] ANTLR 插件在 src 同级目录下生成代码，容易误提交，如何避免？
+### ANTLR 插件在 src 同级目录下生成代码，容易误提交，如何避免？
 
 回答：
 
 进入 [Settings -> Languages & Frameworks -> ANTLR v4 default project settings](jetbrains://idea/settings?name=Languages+%26+Frameworks--ANTLR+v4+default+project+settings) 配置生成代码的输出目录为 `target/gen`，如图：
 ![Configure ANTLR plugin](https://shardingsphere.apache.org/document/current/img/faq/configure-antlr-plugin.png)
 
-### [其他] 使用 `Proxool` 时分库结果不正确？
+### 使用 `Proxool` 时分库结果不正确？
 
 回答：
 

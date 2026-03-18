@@ -18,17 +18,15 @@
 package org.apache.shardingsphere.readwritesplitting.rule.attribute;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDataSource;
 import org.apache.shardingsphere.infra.rule.attribute.datasource.StaticDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.state.datasource.DataSourceState;
-import org.apache.shardingsphere.mode.event.node.QualifiedDataSourceDeletedEvent;
+import org.apache.shardingsphere.readwritesplitting.deliver.QualifiedDataSourceDeletedEvent;
 import org.apache.shardingsphere.readwritesplitting.exception.logic.ReadwriteSplittingDataSourceRuleNotFoundException;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceGroupRule;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -43,15 +41,6 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
     private final Map<String, ReadwriteSplittingDataSourceGroupRule> dataSourceGroupRules;
     
     private final ComputeNodeInstanceContext computeNodeInstanceContext;
-    
-    @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>(dataSourceGroupRules.size(), 1F);
-        for (Entry<String, ReadwriteSplittingDataSourceGroupRule> entry : dataSourceGroupRules.entrySet()) {
-            result.put(entry.getValue().getName(), entry.getValue().getReadwriteSplittingGroup().getAllDataSources());
-        }
-        return result;
-    }
     
     @Override
     public void updateStatus(final QualifiedDataSource qualifiedDataSource, final DataSourceState status) {
@@ -71,15 +60,15 @@ public final class ReadwriteSplittingStaticDataSourceRuleAttribute implements St
         deleteStorageNodeDataSources(dataSourceGroupRules.get(groupName));
     }
     
-    private void deleteStorageNodeDataSources(final ReadwriteSplittingDataSourceGroupRule rule) {
-        rule.getReadwriteSplittingGroup().getReadDataSources()
-                .forEach(each -> computeNodeInstanceContext.getEventBusContext().post(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource(databaseName, rule.getName(), each))));
-    }
-    
     @Override
     public void cleanStorageNodeDataSources() {
         for (Entry<String, ReadwriteSplittingDataSourceGroupRule> entry : dataSourceGroupRules.entrySet()) {
             deleteStorageNodeDataSources(entry.getValue());
         }
+    }
+    
+    private void deleteStorageNodeDataSources(final ReadwriteSplittingDataSourceGroupRule rule) {
+        rule.getReadwriteSplittingGroup().getReadDataSources().forEach(each -> computeNodeInstanceContext.getEventBusContext()
+                .post(new QualifiedDataSourceDeletedEvent(new QualifiedDataSource(databaseName, rule.getName(), each))));
     }
 }

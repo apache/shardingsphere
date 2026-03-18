@@ -39,23 +39,23 @@ public final class PipelineContextKey {
     }
     
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (null == o || getClass() != o.getClass()) {
+        if (null == obj || getClass() != obj.getClass()) {
             return false;
         }
-        final PipelineContextKey that = (PipelineContextKey) o;
+        PipelineContextKey that = (PipelineContextKey) obj;
         return instanceType == that.instanceType && Objects.equals(filterDatabaseName(this), filterDatabaseName(that));
-    }
-    
-    private String filterDatabaseName(final PipelineContextKey contextKey) {
-        return InstanceType.PROXY == contextKey.getInstanceType() ? "" : contextKey.getDatabaseName();
     }
     
     @Override
     public int hashCode() {
         return Objects.hash(instanceType, filterDatabaseName(this));
+    }
+    
+    private String filterDatabaseName(final PipelineContextKey contextKey) {
+        return InstanceType.PROXY == contextKey.getInstanceType() ? "" : contextKey.getDatabaseName();
     }
 }

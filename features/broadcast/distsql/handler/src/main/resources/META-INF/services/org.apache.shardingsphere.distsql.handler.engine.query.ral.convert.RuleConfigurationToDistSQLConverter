@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.broadcast.distsql.handler.provider.BroadcastRuleConfigurationToDistSQLConverter
+org.apache.shardingsphere.broadcast.distsql.handler.converter.BroadcastRuleConfigurationToDistSQLConverter

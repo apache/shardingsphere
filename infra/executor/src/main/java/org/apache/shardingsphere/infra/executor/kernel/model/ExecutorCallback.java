@@ -30,7 +30,7 @@ public interface ExecutorCallback<I, O> {
     
     /**
      * Execute.
-     * 
+     *
      * @param inputs input values
      * @param isTrunkThread is execution in trunk thread
      * @param processId process ID

@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token;
 
-import org.apache.shardingsphere.infra.binder.context.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.SQLTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.SQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.AggregationDistinctTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.DistinctProjectionPrefixTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingAggregationDistinctTokenGenerator;
+import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingDistinctProjectionPrefixTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingRemoveTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ShardingTableTokenGenerator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -34,9 +34,9 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import java.util.Collection;
 import java.util.Iterator;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -54,38 +54,36 @@ class ShardingTokenGenerateBuilderTest {
     }
     
     @Test
-    void assertGetSQLTokenGenerators() throws Exception {
+    void assertGetSQLTokenGenerators() throws ReflectiveOperationException {
         when(routeContext.containsTableSharding()).thenReturn(true);
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getProjectionsContext().getAggregationProjections().isEmpty()).thenReturn(false);
+        when(sqlStatementContext.getSqlStatement().getAttributes()).thenReturn(new SQLStatementAttributes());
         ShardingTokenGenerateBuilder shardingTokenGenerateBuilder = new ShardingTokenGenerateBuilder(shardingRule, routeContext, sqlStatementContext);
         Collection<SQLTokenGenerator> sqlTokenGenerators = shardingTokenGenerateBuilder.getSQLTokenGenerators();
         assertThat(sqlTokenGenerators.size(), is(4));
         Iterator<SQLTokenGenerator> iterator = sqlTokenGenerators.iterator();
         SQLTokenGenerator tableTokenGenerator = iterator.next();
-        assertThat(tableTokenGenerator, instanceOf(ShardingTableTokenGenerator.class));
+        assertThat(tableTokenGenerator, isA(ShardingTableTokenGenerator.class));
         assertSqlTokenGenerator(tableTokenGenerator);
         SQLTokenGenerator distinctProjectionPrefixTokenGenerator = iterator.next();
-        assertThat(distinctProjectionPrefixTokenGenerator, instanceOf(DistinctProjectionPrefixTokenGenerator.class));
+        assertThat(distinctProjectionPrefixTokenGenerator, isA(ShardingDistinctProjectionPrefixTokenGenerator.class));
         assertSqlTokenGenerator(distinctProjectionPrefixTokenGenerator);
         SQLTokenGenerator aggregationDistinctTokenGenerator = iterator.next();
-        assertThat(aggregationDistinctTokenGenerator, instanceOf(AggregationDistinctTokenGenerator.class));
+        assertThat(aggregationDistinctTokenGenerator, isA(ShardingAggregationDistinctTokenGenerator.class));
         assertSqlTokenGenerator(aggregationDistinctTokenGenerator);
         SQLTokenGenerator shardingRemoveTokenGenerator = iterator.next();
-        assertThat(shardingRemoveTokenGenerator, instanceOf(ShardingRemoveTokenGenerator.class));
+        assertThat(shardingRemoveTokenGenerator, isA(ShardingRemoveTokenGenerator.class));
         assertSqlTokenGenerator(shardingRemoveTokenGenerator);
     }
     
-    private void assertSqlTokenGenerator(final SQLTokenGenerator sqlTokenGenerator) throws Exception {
-        if (sqlTokenGenerator instanceof ShardingRuleAware) {
-            assertField(sqlTokenGenerator, shardingRule, "shardingRule");
-        }
+    private void assertSqlTokenGenerator(final SQLTokenGenerator sqlTokenGenerator) throws ReflectiveOperationException {
         if (sqlTokenGenerator instanceof RouteContextAware) {
             assertField(sqlTokenGenerator, routeContext, "routeContext");
         }
     }
     
-    private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) throws Exception {
+    private void assertField(final SQLTokenGenerator sqlTokenGenerator, final Object filedInstance, final String fieldName) throws ReflectiveOperationException {
         assertThat(Plugins.getMemberAccessor().get(sqlTokenGenerator.getClass().getDeclaredField(fieldName), sqlTokenGenerator), is(filedInstance));
     }
 }

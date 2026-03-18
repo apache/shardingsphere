@@ -23,6 +23,11 @@ Hint 的主要使用场景：
 ### 规则配置
 
 Hint 分片算法需要用户实现 `org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm` 接口。
+`org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm` 存在两个内置实现为，
+
+- `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
+- `org.apache.shardingsphere.sharding.algorithm.sharding.classbased.ClassBasedShardingAlgorithm`
+
 Apache ShardingSphere 在进行路由时，将会从 HintManager 中获取分片值进行路由操作。
 
 参考配置如下：
@@ -35,10 +40,22 @@ rules:
       actualDataNodes: demo_ds_${0..1}.t_order_${0..1}
       databaseStrategy:
         hint:
-          algorithmClassName: xxx.xxx.xxx.HintXXXAlgorithm
+          shardingColumn: order_id
+          shardingAlgorithmName: hint_class_based
       tableStrategy:
         hint:
-          algorithmClassName: xxx.xxx.xxx.HintXXXAlgorithm
+          shardingColumn: order_id
+          shardingAlgorithmName: hint_inline
+  shardingAlgorithms:
+    hint_class_based:
+      type: CLASS_BASED
+      props:
+        strategy: STANDARD
+        algorithmClassName: xxx.xxx.xxx.HintXXXAlgorithm
+    hint_inline:
+      type: HINT_INLINE
+      props:
+        algorithm-expression: t_order_$->{value % 4}
   defaultTableStrategy:
     none:
   defaultKeyGenerateStrategy:

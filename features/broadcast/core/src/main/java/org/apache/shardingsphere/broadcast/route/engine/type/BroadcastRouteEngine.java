@@ -28,9 +28,8 @@ public interface BroadcastRouteEngine {
     /**
      * Route.
      *
-     * @param routeContext route context
-     * @param broadcastRule broadcast rule
+     * @param rule broadcast rule
      * @return route context
      */
-    RouteContext route(RouteContext routeContext, BroadcastRule broadcastRule);
+    RouteContext route(BroadcastRule rule);
 }

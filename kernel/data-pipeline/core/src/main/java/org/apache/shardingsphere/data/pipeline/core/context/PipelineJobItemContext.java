@@ -89,7 +89,7 @@ public interface PipelineJobItemContext {
     
     /**
      * Convert to pipeline job item progress.
-     * 
+     *
      * @return converted pipeline job item progress
      */
     PipelineJobItemProgress toProgress();

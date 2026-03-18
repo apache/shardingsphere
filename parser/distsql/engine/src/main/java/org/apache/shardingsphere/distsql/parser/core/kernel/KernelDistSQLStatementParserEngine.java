@@ -19,9 +19,9 @@ package org.apache.shardingsphere.distsql.parser.core.kernel;
 
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
+import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.engine.core.SQLParserFactory;
+import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 
 /**

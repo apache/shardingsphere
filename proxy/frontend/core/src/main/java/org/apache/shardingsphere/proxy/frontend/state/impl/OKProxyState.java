@@ -42,7 +42,8 @@ public final class OKProxyState implements ProxyState {
     }
     
     private ExecutorService determineSuitableExecutorService(final ConnectionSession connectionSession) {
-        return requireOccupyThreadForConnection(connectionSession) ? ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId())
+        return requireOccupyThreadForConnection(connectionSession)
+                ? ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId())
                 : UserExecutorGroup.getInstance().getExecutorService();
     }
     

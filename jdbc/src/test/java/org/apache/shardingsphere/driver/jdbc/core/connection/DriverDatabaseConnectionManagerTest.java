@@ -18,26 +18,16 @@
 package org.apache.shardingsphere.driver.jdbc.core.connection;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
-import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
+import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -49,8 +39,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -58,28 +48,22 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(DataSourcePoolCreator.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
 class DriverDatabaseConnectionManagerTest {
     
     private DriverDatabaseConnectionManager databaseConnectionManager;
     
     @BeforeEach
     void setUp() throws SQLException {
-        databaseConnectionManager = new DriverDatabaseConnectionManager(DefaultDatabase.LOGIC_NAME, mockContextManager());
+        databaseConnectionManager = new DriverDatabaseConnectionManager("foo_db", mockContextManager());
     }
     
     private ContextManager mockContextManager() throws SQLException {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Map<String, StorageUnit> storageUnits = mockStorageUnits();
-        when(result.getStorageUnits(DefaultDatabase.LOGIC_NAME)).thenReturn(storageUnits);
-        MetaDataPersistService persistService = mockMetaDataPersistService();
-        when(result.getPersistServiceFacade().getMetaDataPersistService()).thenReturn(persistService);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
-                new RuleMetaData(Arrays.asList(mock(AuthorityRule.class, RETURNS_DEEP_STUBS), mock(TransactionRule.class, RETURNS_DEEP_STUBS))));
-        when(result.getComputeNodeInstanceContext().getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(
-                Collections.singletonMap("foo_id", new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_version")));
+        when(result.getStorageUnits("foo_db")).thenReturn(storageUnits);
+        MetaDataPersistFacade persistFacade = mockMetaDataPersistFacade();
+        when(result.getPersistServiceFacade().getMetaDataFacade()).thenReturn(persistFacade);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new RuleMetaData(Collections.singleton(mock(TransactionRule.class, RETURNS_DEEP_STUBS))));
         return result;
     }
     
@@ -87,7 +71,7 @@ class DriverDatabaseConnectionManagerTest {
         Map<String, StorageUnit> result = new HashMap<>(2, 1F);
         result.put("ds", mockStorageUnit(new MockedDataSource()));
         DataSource invalidDataSource = mock(DataSource.class);
-        when(invalidDataSource.getConnection()).thenThrow(new SQLException(""));
+        when(invalidDataSource.getConnection()).thenThrow(new SQLException("Mock invalid data source"));
         result.put("invalid_ds", mockStorageUnit(invalidDataSource));
         return result;
     }
@@ -98,10 +82,10 @@ class DriverDatabaseConnectionManagerTest {
         return result;
     }
     
-    private MetaDataPersistService mockMetaDataPersistService() {
-        MetaDataPersistService result = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        when(result.getDataSourceUnitService().load(DefaultDatabase.LOGIC_NAME))
-                .thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new DataSourcePoolProperties(HikariDataSource.class.getName(), createProperties())));
+    private MetaDataPersistFacade mockMetaDataPersistFacade() {
+        MetaDataPersistFacade result = mock(MetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
+        when(result.getDataSourceUnitService().load("foo_db"))
+                .thenReturn(Collections.singletonMap("foo_db", new DataSourcePoolProperties(HikariDataSource.class.getName(), createProperties())));
         return result;
     }
     
@@ -116,12 +100,12 @@ class DriverDatabaseConnectionManagerTest {
     @Test
     void assertGetRandomPhysicalDataSourceNameFromContextManager() {
         String actual = databaseConnectionManager.getRandomPhysicalDataSourceName();
-        assertTrue(Arrays.asList(DefaultDatabase.LOGIC_NAME, "ds", "invalid_ds").contains(actual));
+        assertTrue(Arrays.asList("foo_db", "ds", "invalid_ds").contains(actual));
     }
     
     @Test
     void assertGetRandomPhysicalDataSourceNameFromCache() throws SQLException {
-        databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
         assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
         assertThat(databaseConnectionManager.getRandomPhysicalDataSourceName(), is("ds"));
@@ -129,53 +113,54 @@ class DriverDatabaseConnectionManagerTest {
     
     @Test
     void assertGetConnection() throws SQLException {
-        assertThat(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY),
-                is(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
+        assertThat(databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY),
+                is(databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
     }
     
     @Test
     void assertGetConnectionWithConnectionOffset() throws SQLException {
-        assertThat(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY),
-                is(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
-        assertThat(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 1, 1, ConnectionMode.MEMORY_STRICTLY),
-                is(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 1, 1, ConnectionMode.MEMORY_STRICTLY)));
-        assertThat(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY),
-                not(databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 1, 1, ConnectionMode.MEMORY_STRICTLY)));
+        assertThat(databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY),
+                is(databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY)));
+        assertThat(databaseConnectionManager.getConnections("foo_db", "ds", 1, 1, ConnectionMode.MEMORY_STRICTLY),
+                is(databaseConnectionManager.getConnections("foo_db", "ds", 1, 1, ConnectionMode.MEMORY_STRICTLY)));
+        assertThat(databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY),
+                not(databaseConnectionManager.getConnections("foo_db", "ds", 1, 1, ConnectionMode.MEMORY_STRICTLY)));
     }
     
     @Test
     void assertGetConnectionsWhenAllInCache() throws SQLException {
-        Connection expected = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
-        List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.CONNECTION_STRICTLY);
+        Connection expected = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY).get(0);
+        List<Connection> actual = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.CONNECTION_STRICTLY);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(expected));
     }
     
     @Test
     void assertGetConnectionsWhenEmptyCache() throws SQLException {
-        List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actual = databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(1));
     }
     
     @Test
     void assertGetConnectionsWhenPartInCacheWithMemoryStrictlyMode() throws SQLException {
-        databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
-        List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 3, ConnectionMode.MEMORY_STRICTLY);
+        databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actual = databaseConnectionManager.getConnections("foo_db", "ds", 0, 3, ConnectionMode.MEMORY_STRICTLY);
         assertThat(actual.size(), is(3));
     }
     
     @Test
     void assertGetConnectionsWhenPartInCacheWithConnectionStrictlyMode() throws SQLException {
-        databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
-        List<Connection> actual = databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "ds", 0, 3, ConnectionMode.CONNECTION_STRICTLY);
+        databaseConnectionManager.getConnections("foo_db", "ds", 0, 1, ConnectionMode.MEMORY_STRICTLY);
+        List<Connection> actual = databaseConnectionManager.getConnections("foo_db", "ds", 0, 3, ConnectionMode.CONNECTION_STRICTLY);
         assertThat(actual.size(), is(3));
     }
     
     @Test
     void assertGetConnectionsWhenConnectionCreateFailed() {
-        SQLException ex = assertThrows(SQLException.class, () -> databaseConnectionManager.getConnections(DefaultDatabase.LOGIC_NAME, "invalid_ds", 0, 3, ConnectionMode.CONNECTION_STRICTLY));
+        SQLException ex = assertThrows(SQLException.class, () -> databaseConnectionManager.getConnections("foo_db", "invalid_ds", 0, 3, ConnectionMode.CONNECTION_STRICTLY));
         assertThat(ex.getMessage(), is("Can not get 3 connections one time, partition succeed connection(0) have released. "
-                + "Please consider increasing the 'maxPoolSize' of the data sources or decreasing the 'max-connections-size-per-query' in properties."));
+                + "Please consider increasing the 'maxPoolSize' of the data sources or decreasing the 'max-connections-size-per-query' in properties." + System.lineSeparator()
+                + "More details: java.sql.SQLException: Mock invalid data source"));
     }
     
     @Test

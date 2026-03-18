@@ -19,12 +19,8 @@ package org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.engine.
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.engine.update.rdl.rule.spi.global.GlobalRuleDefinitionExecutor;
-import org.apache.shardingsphere.distsql.statement.rdl.rule.global.GlobalRuleDefinitionStatement;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.distsql.statement.type.rdl.rule.global.GlobalRuleDefinitionStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-
-import java.util.Collection;
 
 /**
  * Global rule definition execute engine.
@@ -44,18 +40,7 @@ public final class GlobalRuleDefinitionExecuteEngine {
      */
     @SuppressWarnings("unchecked")
     public void executeUpdate() {
-        ShardingSphereRule rule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(executor.getRuleClass());
-        executor.setRule(rule);
         executor.checkBeforeUpdate(sqlStatement);
-        contextManager.getPersistServiceFacade().getMetaDataManagerPersistService().alterGlobalRuleConfiguration(processUpdate(sqlStatement, rule));
-    }
-    
-    @SuppressWarnings("unchecked")
-    private RuleConfiguration processUpdate(final GlobalRuleDefinitionStatement sqlStatement, final ShardingSphereRule rule) {
-        RuleConfiguration result = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
-        Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
-        ruleConfigs.remove(rule.getConfiguration());
-        ruleConfigs.add(result);
-        return result;
+        contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService().alterGlobalRuleConfiguration(executor.buildToBeAlteredRuleConfiguration(sqlStatement));
     }
 }

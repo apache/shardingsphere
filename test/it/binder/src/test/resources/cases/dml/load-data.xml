@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <load-data sql-case-id="load_data_into_table_with_schema_name">
+        <table name="t_order" start-index="45" stop-index="60">
+            <owner name="foo_db_1" start-index="45" stop-index="52"/>
+            <table-bound>
+                <original-database name="foo_db_1"/>
+                <original-schema name="foo_db_1"/>
+            </table-bound>
+        </table>
+    </load-data>
+    <load-data sql-case-id="doris_load_data_into_table_with_schema_name">
+        <table name="t_order" start-index="45" stop-index="60">
+            <owner name="foo_db_1" start-index="45" stop-index="52"/>
+            <table-bound>
+                <original-database name="foo_db_1"/>
+                <original-schema name="foo_db_1"/>
+            </table-bound>
+        </table>
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_fields_binder" local="true">
+        <file-name value="testData" start-index="23" stop-index="32" />
+        <table name="t_order" start-index="45" stop-index="60">
+            <owner name="foo_db_1" start-index="45" stop-index="52"/>
+            <table-bound>
+                <original-database name="foo_db_1"/>
+                <original-schema name="foo_db_1"/>
+            </table-bound>
+        </table>
+        <partition name="p1" start-index="73" stop-index="74" />
+        <column-separator value="," start-index="99" stop-index="101" />
+        <line-delimiter value="\n" start-index="123" stop-index="126" />
+        <ignore-lines number="2" unit="ROWS" start-index="128" stop-index="140" />
+        <column name="k1" start-index="143" stop-index="144" />
+        <column name="k2" start-index="147" stop-index="148" />
+        <property key="timeout" value="100" start-index="163" stop-index="177" />
+    </load-data>
+</sql-parser-test-cases>

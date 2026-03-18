@@ -38,7 +38,7 @@ public final class SQLCasesRegistry {
     
     /**
      * Get instance.
-     * 
+     *
      * @return got instance
      */
     public static SQLCasesRegistry getInstance() {

@@ -23,15 +23,14 @@ import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Context;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceMethod;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.core.advice.TracingJDBCExecutorCallbackAdvice;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
-import org.apache.shardingsphere.infra.database.core.connector.ConnectionProperties;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.jdbcurl.parser.ConnectionProperties;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-
-import java.lang.reflect.Method;
 
 /**
  * OpenTelemetry JDBC executor callback advice executor.
@@ -43,7 +42,9 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
                                      final ConnectionProperties connectionProps, final DatabaseType databaseType) {
         Tracer tracer = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME);
         SpanBuilder spanBuilder = tracer.spanBuilder(OPERATION_NAME);
-        spanBuilder.setParent(Context.current().with(parentSpan));
+        if (null != parentSpan) {
+            spanBuilder.setParent(Context.current().with(parentSpan));
+        }
         spanBuilder.setAttribute(AttributeConstants.COMPONENT, AttributeConstants.COMPONENT_NAME);
         spanBuilder.setAttribute(AttributeConstants.DB_TYPE, databaseType.getType());
         spanBuilder.setAttribute(AttributeConstants.DB_INSTANCE, executionUnit.getExecutionUnit().getDataSourceName())
@@ -56,16 +57,20 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     }
     
     @Override
-    public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
+    public void afterMethod(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Object result, final String pluginType) {
         Span span = (Span) target.getAttachment();
-        span.setStatus(StatusCode.OK);
-        span.end();
+        if (null != span) {
+            span.setStatus(StatusCode.OK);
+            span.end();
+        }
     }
     
     @Override
-    public void onThrowing(final TargetAdviceObject target, final Method method, final Object[] args, final Throwable throwable, final String pluginType) {
+    public void onThrowing(final TargetAdviceObject target, final TargetAdviceMethod method, final Object[] args, final Throwable throwable, final String pluginType) {
         Span span = (Span) target.getAttachment();
-        span.setStatus(StatusCode.ERROR).recordException(throwable);
-        span.end();
+        if (null != span) {
+            span.setStatus(StatusCode.ERROR).recordException(throwable);
+            span.end();
+        }
     }
 }

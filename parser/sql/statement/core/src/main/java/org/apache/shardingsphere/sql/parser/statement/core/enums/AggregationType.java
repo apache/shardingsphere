@@ -20,15 +20,15 @@ package org.apache.shardingsphere.sql.parser.statement.core.enums;
 import java.util.Arrays;
 
 /**
- * Aggregation function enum.
+ * Aggregation type.
  */
 public enum AggregationType {
     
-    MAX, MIN, SUM, COUNT, AVG, BIT_XOR, GROUP_CONCAT;
+    MAX, MIN, SUM, COUNT, AVG, BIT_XOR, GROUP_CONCAT, PRODUCT;
     
     /**
      * Is aggregation type.
-     * 
+     *
      * @param aggregationType aggregation type
      * @return is aggregation type or not
      */

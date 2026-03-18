@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -72,7 +72,7 @@ class AbstractPipelineLifecycleRunnableTest {
         assertThat(executor.runBlockingCount.get(), is(0));
     }
     
-    private static class FixturePipelineLifecycleRunnable extends AbstractPipelineLifecycleRunnable {
+    private static final class FixturePipelineLifecycleRunnable extends AbstractPipelineLifecycleRunnable {
         
         private final AtomicInteger runBlockingCount = new AtomicInteger();
         

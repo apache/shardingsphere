@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.standalone;
 
-import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
 /**
  * Standalone persist repository.

@@ -17,14 +17,14 @@
   -->
 
 <databases>
-    <database>encrypt_ds_0</database>
-    <database>encrypt_ds_1</database>
-    <database>encrypt_ds_2</database>
-    <database>encrypt_ds_3</database>
-    <database>encrypt_ds_4</database>
-    <database>encrypt_ds_5</database>
-    <database>encrypt_ds_6</database>
-    <database>encrypt_ds_7</database>
-    <database>encrypt_ds_8</database>
-    <database>encrypt_ds_9</database>
+    <database name="encrypt_ds_0" />
+    <database name="encrypt_ds_1" />
+    <database name="encrypt_ds_2" />
+    <database name="encrypt_ds_3" />
+    <database name="encrypt_ds_4" />
+    <database name="encrypt_ds_5" />
+    <database name="encrypt_ds_6" />
+    <database name="encrypt_ds_7" />
+    <database name="encrypt_ds_8" />
+    <database name="encrypt_ds_9" />
 </databases>

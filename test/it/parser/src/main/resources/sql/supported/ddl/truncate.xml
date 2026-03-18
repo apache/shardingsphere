@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="truncate_table" value="TRUNCATE TABLE t_log" db-types="H2,MySQL,PostgreSQL,openGauss,Oracle,SQLServer" />
+    <sql-case id="truncate_table" value="TRUNCATE TABLE t_log" db-types="H2,MySQL,PostgreSQL,openGauss,Oracle,SQLServer,Doris" />
     <sql-case id="truncate_table_only" value="TRUNCATE TABLE ONLY t_log" db-types="PostgreSQL,openGauss" />
     <sql-case id="truncate_table_with_space" value="    TRUNCATE TABLE
         t_order    " db-types="MySQL" />
@@ -33,4 +33,15 @@
     <sql-case id="truncate_table_with_drop_all_storage" value="TRUNCATE TABLE t_log DROP STORAGE" db-types="Oracle" />
     <sql-case id="truncate_table_with_reuse_all_storage" value="TRUNCATE TABLE t_log REUSE STORAGE" db-types="Oracle" />
     <sql-case id="truncate_table_with_cascade" value="TRUNCATE TABLE t_log CASCADE" db-types="Oracle" />
+    <sql-case id="truncate_tablename" value="TRUNCATE test_table" db-types="Hive" />
+    <sql-case id="truncate_with_db_tablename" value="TRUNCATE test_tb.t_log" db-types="Hive" />
+    <sql-case id="truncate_table_tablename" value="TRUNCATE TABLE test_table" db-types="Hive" />
+    <sql-case id="truncate_with_table_db_tablename" value="TRUNCATE TABLE test_tb.t_log" db-types="Hive" />
+    <sql-case id="truncate_tablename_with_partition" value="TRUNCATE test_table PARTITION (dt='2025-01-01')" db-types="Hive" />
+    <sql-case id="truncate_table_tablename_with_partition" value="TRUNCATE TABLE test_table PARTITION (dt='2025-01-01')" db-types="Hive" />
+    <sql-case id="truncate_db_tablename_with_partition" value="TRUNCATE test_tb.test_table PARTITION (dt='2025-01-01')" db-types="Hive" />
+    <sql-case id="truncate_table_db_tablename_with_partition" value="TRUNCATE TABLE test_tb.test_table PARTITION (dt='2025-01-01')" db-types="Hive" />
+    <sql-case id="truncate_table_with_partition_doris" value="TRUNCATE TABLE tbl PARTITION(p1, p2)" db-types="Doris" />
+    <sql-case id="truncate_table_with_db_and_partition_doris" value="TRUNCATE TABLE example_db.tbl PARTITION(p1, p2, p3)" db-types="Doris" />
+    <sql-case id="truncate_table_with_single_partition_doris" value="TRUNCATE TABLE tbl PARTITION(p1)" db-types="Doris" />
 </sql-cases>

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="insert_into_values1" value="INSERT INTO test_nested VALUES(1)" db-types="MySQL" />
+    <sql-case id="insert_into_values2" value="insert into emp_table values(1,'John',1000.00,'Architect')" db-types="Oracle" />
+    <sql-case id="insert_into_values3" value="insert into emp_table values(2,'Robert',900.00,'Developer')" db-types="Oracle" />
+    <sql-case id="insert_into_values4" value="insert into emp_table values(3,'James',2000.00,'Director')" db-types="Oracle" />
+    <sql-case id="insert_into_values5" value="insert into dept values(1,'Sales','500 Oracle pkwy','Redwood S','CA','94065')" db-types="Oracle" />
+    <sql-case id="insert_into_values6" value="insert into dept values(2,'ST','400 Oracle Pkwy','Redwood S','CA','94065')" db-types="Oracle" />
+    <sql-case id="insert_into_values7" value="insert into dept values(3,'Apps','300 Oracle pkwy','Redwood S','CA','94065');" db-types="Oracle" />
+    <sql-case id="insert_with_all_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?)" />
+    <sql-case id="insert_with_historical_type_cast_syntax" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?::int4, ?::text)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="insert_with_now_function" value="INSERT INTO t_order_item (item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', now())" db-types="MySQL" />
+    <sql-case id="insert_without_parameters" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert')" />
+    <sql-case id="insert_with_special_characters" value="INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, 'insert')" db-types="MySQL" />
+    <sql-case id="insert_with_special_syntax" value="INSERT /*+ index(field1) */ INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') RETURNING order_id, *, t_order.*, user_id u, t_order.status as s, 'OK' result" db-types="PostgreSQL,openGauss" />
+    <sql-case id="insert_with_all_placeholders_for_table_identifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?)" />
+    <sql-case id="insert_without_columns_with_all_placeholders" value="INSERT INTO t_order VALUES (?, ?, ?)" />
+    <sql-case id="insert_set_with_all_placeholders" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = ?" db-types="MySQL" />
+    <sql-case id="insert_duplicate_key_update" value="INSERT INTO t_order SET b='11', a=0 AS n ON DUPLICATE KEY UPDATE b=n.a, a=n.b" db-types="MySQL" />
+    <sql-case id="insert_with_underscore_charset" value="INSERT INTO t_order VALUES(_utf16 0x1EC2), (_utf16 0x1EC3), (_utf16 0x1EC5), (_utf16 0x1EC0), (_utf16 0x1EC7), (_Utf16 0x1EBF)" db-types="MySQL" />
+    <sql-case id="insert_set_with_all_placeholders_for_table_identifier" value="INSERT INTO t_order SET t_order.order_id = ?, t_order.user_id = ?, t_order.status = ?" db-types="MySQL" />
+    <sql-case id="insert_with_partial_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, 'insert')" />
+    <sql-case id="insert_set_with_partial_placeholders" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = 'insert'" db-types="MySQL" />
+    <sql-case id="insert_with_generate_key_column" value="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', '2017-08-08')" />
+    <sql-case id="insert_set_with_generate_key_column" value="INSERT INTO t_order_item SET item_id = ?, order_id = ?, user_id = ?, status = 'insert', creation_date='2017-08-08'" db-types="MySQL" />
+    <sql-case id="insert_without_generate_key_column" value="INSERT INTO t_order_item(order_id, user_id, status, creation_date) VALUES (?, ?, 'insert', '2017-08-08')" />
+    <sql-case id="insert_without_columns_and_with_generate_key_column" value="INSERT INTO t_order_item VALUES(?, ?, ?, 'insert', '2017-08-08')" />
+    <sql-case id="insert_without_columns_and_without_generate_key_column" value="INSERT INTO t_order_item VALUES(?, ?, 'insert', '2017-08-08')" />
+    <sql-case id="insert_set_without_generate_key_column" value="INSERT INTO t_order_item SET order_id = ?, user_id = ?, status = 'insert', creation_date='2017-08-08'" db-types="MySQL" />
+    <sql-case id="insert_with_batch" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?), (?, ?, ?)" db-types="MySQL, SQLServer, PostgreSQL,openGauss" />
+    <sql-case id="insert_with_batch_and_irregular_parameters" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, 1, 'insert'), (?, ?, ?)" db-types="MySQL, SQLServer, PostgreSQL,openGauss" />
+    <sql-case id="insert_with_batch_and_composite_expression" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, SUBSTR(?, 1)), (?, ?, SUBSTR(?, 1))" db-types="H2,MySQL" />
+    <sql-case id="insert_with_batch_and_with_generate_key_column" value="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) values (?, ?, ?, 'insert', '2017-08-08'), (?, ?, ?, 'insert', '2017-08-08')" db-types="MySQL, SQLServer, PostgreSQL,openGauss" />
+    <sql-case id="insert_with_batch_and_without_generate_key_column" value="INSERT INTO t_order_item(order_id, user_id, status, creation_date) values (?, ?, 'insert', '2017-08-08'), (?, ?, 'insert', '2017-08-08')" db-types="MySQL, SQLServer, PostgreSQL,openGauss" />
+    <sql-case id="insert_on_duplicate_key_update" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL,openGauss" />
+    <sql-case id="insert_on_duplicate_key_update_with_placeholders" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE status = ?" db-types="MySQL,openGauss" />
+    <sql-case id="insert_on_duplicate_key_update_with_placeholders_postgres" value="INSERT INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) ON CONFLICT (order_id) DO UPDATE SET status = ?" db-types="PostgreSQL" />
+    <sql-case id="insert_on_duplicate_key_update_with_complicated_expression" value="INSERT INTO emp(order_id,emp_id,age,salary) VALUES (?,?,?,?) ON DUPLICATE KEY UPDATE salary = VALUES(salary)+VALUES(salary)*0.2" db-types="MySQL" />
+    <sql-case id="insert_with_multiple_values" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert'), (2, 2, 'insert2')" db-types="MySQL" />
+    <sql-case id="insert_on_duplicate_key_update_with_table_identifier" value="INSERT INTO t_order (t_order.order_id, t_order.user_id, t_order.status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE t_order.status = VALUES(t_order.status)" db-types="MySQL" />
+    <sql-case id="insert_with_geography" value="INSERT INTO t_order(user_id, order_id, start_point,rule) VALUES (?, ?, ST_GeographyFromText('SRID=4326;POINT(100 200)'), ?::jsonb)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="insert_with_one_auto_increment_column" value="INSERT INTO t_auto_increment_table VALUES()" db-types="MySQL" />
+    <sql-case id="insert_with_double_value" value="INSERT INTO t_double_test(col1) VALUES(1.22)" db-types="MySQL" />
+    <sql-case id="insert_with_null_value" value="INSERT INTO t_null_value_test(col1) VALUES(null)" db-types="MySQL" />
+    <sql-case id="insert_with_blob_value" value="INSERT INTO t_blob_value_test(col1) VALUES(_BINARY'This is a binary value.')" db-types="MySQL" />
+    <sql-case id="insert_with_function" value="INSERT INTO t_order(present_date, order_id, user_id) VALUES (curdate(), ?, ?)" db-types="MySQL" />
+    <sql-case id="insert_with_unix_timestamp_function" value="INSERT INTO t_order(status, order_id, user_id) VALUES (unix_timestamp(?), ?, ?)" db-types="MySQL" />
+    <sql-case id="insert_with_aggregation_function_column_name" value="INSERT INTO t_order (order_id, user_id, count) VALUES (?, ?, ?)" db-types="SQLServer" />
+    <sql-case id="insert_with_str_to_date" value="INSERT INTO t_order(present_date, order_id, user_id) VALUES (str_to_date(?, '%Y-%m-%d'), ?, ?)" db-types="MySQL" />
+    <sql-case id="insert_on_duplicate_key_update_with_base64_aes_encrypt" value="INSERT INTO t_order SET order_id = ?, user_id = ?, status = convert(to_base64(aes_encrypt(?, 'key')) USING utf8) ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
+    <sql-case id="insert_all_with_all_placeholders" value="INSERT ALL INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) INTO t_order (order_id, user_id, status) VALUES (?, ?, ?) SELECT * FROM dual" db-types="Oracle" />
+    <sql-case id="insert_with_str_date_add" value="INSERT INTO t_order(present_date, order_id, user_id) VALUES (date_add(now(),interval ? second), ?, ?)" db-types="MySQL" />
+    <sql-case id="insert_select_with_all_columns" value="INSERT INTO t_order (order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="insert_select_without_columns" value="INSERT INTO t_order SELECT order_id, user_id, status FROM t_order WHERE order_id = ?" db-types="MySQL,PostgreSQL,openGauss" />
+    <sql-case id="insert_select_with_generate_key_column" value="INSERT INTO t_order_item(item_id, order_id, user_id, status, creation_date) SELECT item_id, order_id, user_id, 'insert', '2017-08-08' FROM t_order_item WHERE item_id = ?" db-types="MySQL" />
+    <sql-case id="insert_select_without_generate_key_column" value="INSERT INTO t_order_item(order_id, user_id, status, creation_date) SELECT order_id, user_id, 'insert', '2017-08-08' FROM t_order_item WHERE order_id = ?" db-types="MySQL" />
+    <sql-case id="insert_select_on_duplicate_key_update" value="INSERT INTO t_order(order_id, user_id, status) SELECT order_id, user_id, status FROM t_order WHERE order_id = ? ON DUPLICATE KEY UPDATE status = VALUES(status)" db-types="MySQL" />
+    <sql-case id="insert_with_emoji_value" value="INSERT INTO t_emoji_test(col1) VALUES('test😀')" db-types="MySQL" />
+    <sql-case id="insert_with_digit_literals_value" value="INSERT INTO digit_literals_value_test(col1, col2) VALUES(x'1234', x'')" db-types="MySQL" />
+    <sql-case id="insert_with_with_clause" value="WITH cte (order_id, user_id) AS (SELECT order_id, user_id FROM t_order) INSERT INTO t_order (order_id, user_id) SELECT order_id, user_id FROM cte" db-types="SQLServer" />
+    <sql-case id="insert_without_columns_with_with_clause" value="WITH cte AS (SELECT order_id, user_id FROM t_order) INSERT INTO t_order (order_id, user_id) SELECT order_id, user_id FROM cte" db-types="SQLServer" />
+    <sql-case id="insert_without_into_keyword" value="INSERT t_order (order_id, user_id, status) VALUES (?, ?, ?)" db-types="MySQL,SQLServer" />
+    <sql-case id="insert_with_default_values" value="INSERT INTO t_order (order_id, user_id, status) DEFAULT VALUES" db-types="SQLServer" />
+    <sql-case id="insert_without_columns_with_default_values" value="INSERT INTO t_order DEFAULT VALUES" db-types="SQLServer" />
+    <sql-case id="insert_with_top" value="INSERT TOP(10) t_order (order_id, user_id) SELECT order_id, user_id FROM t_order" db-types="SQLServer" />
+    <sql-case id="insert_with_top_percent" value="INSERT TOP(10) PERCENT t_order (order_id, user_id) SELECT order_id, user_id FROM t_order" db-types="SQLServer" />
+    <sql-case id="insert_with_uuid_column" value="insert into t_order (id,uuid) values (?, ?)" db-types="PostgreSQL,openGauss" />
+    <sql-case id="insert_with_output_clause" value="INSERT INTO t_order (order_id, user_id) OUTPUT INSERTED.order_id, INSERTED.user_id INTO @MyTableVar (temp_order_id, temp_user_id) VALUES (?, ?)" db-types="SQLServer" />
+    <sql-case id="insert_with_output_clause_without_output_table_columns" value="INSERT INTO t_order (order_id, user_id) OUTPUT INSERTED.order_id, INSERTED.user_id INTO @MyTableVar VALUES (?, ?)" db-types="SQLServer" />
+    <sql-case id="insert_with_output_clause_without_output_table" value="INSERT INTO t_order (order_id, user_id) OUTPUT INSERTED.order_id, INSERTED.user_id VALUES (?, ?)" db-types="SQLServer" />
+    <sql-case id="insert_with_output_clause_column_shorthand" value="INSERT INTO t_order (order_id, user_id) OUTPUT INSERTED.* VALUES (?, ?)" db-types="SQLServer" />
+    <sql-case id="insert_without_columns" value="INSERT INTO departments VALUES (280, 'Recreation', 121, 1700)" db-types="Oracle" />
+    <sql-case id="insert_with_dml_table_expr_select" value="INSERT INTO (SELECT employee_id, last_name, email, hire_date, job_id, salary, commission_pct FROM employees) VALUES (207, 'Gregory', 'pgregory@example.com', sysdate, 'PU_CLERK', 1.2E3, NULL)" db-types="Oracle" />
+    <sql-case id="insert_with_select_subquery" value="INSERT INTO bonuses SELECT employee_id, salary*1.1 FROM employees WHERE commission_pct > 0.25" db-types="Oracle" />
+    <sql-case id="insert_with_multitable_element" value="INSERT ALL INTO sales (prod_id, cust_id, time_id, amount) VALUES (product_id, customer_id, weekly_start_date, sales_sun) INTO sales (prod_id, cust_id, time_id, amount) VALUES (product_id, customer_id, sales_mon, weekly_start_date+1) SELECT product_id, customer_id, weekly_start_date, sales_sun, sales_mon FROM sales_input_table" db-types="Oracle" />
+    <sql-case id="insert_all_with_multi_table_with_conditional_when" value="INSERT ALL WHEN order_total &lt;= 100000 THEN INTO small_orders WHEN order_total > 1000000 AND order_total &lt;= 200000 THEN INTO medium_orders WHEN order_total > 200000 THEN INTO large_orders SELECT order_id, order_total, sales_rep_id, customer_id FROM orders" db-types="Oracle" />
+    <sql-case id="insert_all_with_multi_table_with_conditional_when_with_conditional_else" value="INSERT ALL WHEN order_total &lt;= 100000 THEN INTO small_orders WHEN order_total > 100000 AND order_total &lt;= 200000 THEN INTO medium_orders ELSE INTO large_orders SELECT order_id, order_total, sales_rep_id, customer_id FROM orders" db-types="Oracle" />
+    <sql-case id="insert_with_rank_column" value="INSERT INTO sales (rank) VALUES (1)" db-types="Oracle" />
+    <sql-case id="insert_with_schema" value="INSERT INTO db1.t_order VALUES (1,2,3)" />
+    <sql-case id="insert_on_duplicate_key_update_nothing" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') ON DUPLICATE KEY UPDATE NOTHING" db-types="openGauss" />
+    <sql-case id="insert_on_duplicate_key_update_multi_column" value="INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, 'insert') ON DUPLICATE KEY UPDATE user_id = user_id + 1, status='update'" db-types="MySQL,openGauss" />
+    <sql-case id="insert_with_negative_value" value="insert into t_order (order_id, user_id, status) values (?, ?, ?)" />
+    <sql-case id="insert_datetime_literals" value="INSERT INTO date_tab VALUES ( TIMESTAMP'1999-12-01 10:00:00', TIMESTAMP'1999-12-01 10:00:00', TIMESTAMP'1999-12-01 10:00:00');" db-types="Oracle" />
+    <sql-case id="insert_with_content_keyword" value="INSERT INTO SYS_MQ_MSG (ID, CONTENT) VALUES (1, 'test');" db-types="Oracle" />
+    <sql-case id="insert_with_connect_by_and_prior" value="Insert Into t (c1,c2,c3,c4,c5) select c1,c2,regexp_substr(c3, '[^,]+', 1, l) c3,c4,c5 from t where id=1 connect by l &lt;= regexp_count(c3, ',') + 1 and ID = prior ID and prior dbms_random.value is not null;" db-types="Oracle" />
+    <sql-case id="insert_with_national_character_set" value="INSERT INTO customers VALUES (1000, TO_NCHAR('John Smith'),N'500 Oracle Parkway',sysdate);" db-types="Oracle" />
+    <sql-case id="insert_with_oracle_datetime_type" value="INSERT INTO t_order (create_date, create_timestamp, create_interval_year, create_interval_day) VALUES (TO_DATE('2009', 'YYYY'), TO_DATE('2009', 'YYYY'), (TO_DATE('2009', 'YYYY') - TO_DATE('2009', 'YYYY')) year to MONTH, (TO_DATE('2009', 'YYYY') - TO_DATE('2009', 'YYYY')) DAY TO SECOND);" db-types="Oracle" />
+    <sql-case id="insert_all_into" value="INSERT ALL INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (1,'2','3','4','5') INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (2,'2','3','4','5') INTO T_MASK(ID,EMAIL,NAME,PHONE,ADDRESS) VALUES (3,'2','3','4','5') SELECT 1 FROM DUAL" db-types="Oracle" />
+    <sql-case id="insert_with_nchar_1" value="INSERT INTO dbo.T1 VALUES (1, N'Natalia')" db-types="SQLServer"/>
+    <sql-case id="insert_with_nchar_2" value="INSERT INTO dbo.T1 VALUES (2, N'Mark')" db-types="SQLServer"/>
+    <sql-case id="insert_with_nchar_3" value="INSERT INTO dbo.T1 VALUES (3, N'Randolph')" db-types="SQLServer"/>
+    <sql-case id="insert_with_nchar_4" value="INSERT @table1 (c2, is_transient) VALUES (N'sample durable', 0)" db-types="SQLServer"/>
+    <sql-case id="insert_with_nchar_5" value="INSERT @table1 (c2, is_transient) VALUES (N'sample non-durable', 1)" db-types="SQLServer"/>
+    <sql-case id="insert_with_batch_nchar" value="INSERT INTO TestSchema.Employees (Name, Location) VALUES (N'Jared',  N'Australia'), (N'Nikita', N'India'), (N'Tom', N'Germany')" db-types="SQLServer"/>
+    <sql-case id="insert_with_data_base_name" value="INSERT INTO AdventureWorks2022.dbo.VariableTest(Col1) VALUES('$(tablename)')" db-types="SQLServer"/>
+    <sql-case id="insert_with_exec" value="INSERT INTO iris_rx_data (&quot;Sepal.Length&quot;, &quot;Sepal.Width&quot;, &quot;Petal.Length&quot;, &quot;Petal.Width&quot; , &quot;Species&quot;) EXECUTE sp_execute_external_script @language = N'R' , @script = N'iris_data &lt;- iris'" db-types="SQLServer"/>
+    <sql-case id="insert_with_db_schema_name" value="INSERT INTO ContosoWarehouse.dbo.Affiliation SELECT * FROM My_Lakehouse.dbo.Affiliation" db-types="SQLServer"/>
+    <sql-case id="insert_into_temp_table" value="INSERT INTO #NonExistentTable values (10)" db-types="SQLServer"/>
+    <sql-case id="insert_into_temp_table_with_null_value" value="INSERT INTO #SampleTempTable VALUES (10, null)" db-types="SQLServer"/>
+    <sql-case id="insert_into_temp_table_with_all_null_value" value="INSERT INTO #SampleTempTable VALUES (null, null)" db-types="SQLServer"/>
+    <sql-case id="insert_with_exec_mtcars" value="INSERT INTO dbo.MTCars EXEC sp_execute_external_script @language = N'R', @script = N'MTCars &lt;- mtcars' , @input_data_1 = N'', @output_data_1_name = N'MTCars'" db-types="SQLServer"/>
+    <sql-case id="insert_with_exec_model" value="INSERT INTO GLM_models(model) EXEC generate_GLM" db-types="SQLServer"/>
+    <sql-case id="insert_with_table_hint" value="INSERT INTO cci_target WITH (TABLOCK) SELECT TOP 300000 * FROM staging" db-types="SQLServer"/>
+    <sql-case id="insert_sales_with_nchar" value="INSERT INTO sales VALUES (N'Canada', N'British Columbia', 300)" db-types="SQLServer"/>
+    <sql-case id="insert_sales_with_nchar_2" value="INSERT INTO sales VALUES (N'United States', N'Montana', 100)" db-types="SQLServer"/>
+    <sql-case id="insert_sales_with_nchar_3" value="INSERT INTO sales VALUES (N'Canada', N'Alberta', 100)" db-types="SQLServer"/>
+    <sql-case id="insert_with_currency_value" value="INSERT INTO [HR].[Employees]([SSN], [FirstName], [LastName], [Salary]) VALUES ('795-73-9838', N'Catherine', N'Abel', $31692)" db-types="SQLServer"/>
+    <sql-case id="insert_with_select_from_open_row_1" value="INSERT INTO myTable(FileName, FileType, Document) SELECT 'Text1.txt' AS FileName, '.txt' AS FileType, * FROM OPENROWSET(BULK N'C:\Text1.txt', SINGLE_BLOB) AS Document" db-types="SQLServer"/>
+    <sql-case id="insert_with_select_from_open_row_2" value="INSERT INTO achievements with (TABLOCK) (id, description) SELECT * FROM OPENROWSET(BULK 'csv/achievements.csv', DATA_SOURCE = 'MyAzureBlobStorage', FORMAT ='CSV', FORMATFILE='csv/achievements-c.xml', FORMATFILE_DATA_SOURCE = 'MyAzureBlobStorage') AS DataFile" db-types="SQLServer"/>
+    <sql-case id="insert_into_table_get_date" value="INSERT INTO #Test VALUES (N'OC', N'Ounces', GETDATE())" db-types="SQLServer"/>
+    <sql-case id="insert_into_table_from_table" value="INSERT INTO #Test SELECT * FROM Production.UnitMeasure" db-types="SQLServer"/>
+    <sql-case id="insert_into_production_location" value="INSERT INTO AdventureWorks2022.Production.Location(Name, CostRate, Availability, ModifiedDate) VALUES (NEWID(), .5, 5.2, GETDATE())" db-types="SQLServer"/>
+    <sql-case id="insert_with_exec_prediction_results" value="INSERT INTO prediction_results (tipped_Pred,payment_type,tipped,passenger_count,trip_distance,trip_time_in_secs,direct_distance) EXECUTE [predict_per_partition]" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table" value="INSERT INTO #SampleTempTable VALUES (null, 'hello')" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table_2" value="INSERT INTO #SampleTempTable VALUES (10, null)" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table_3" value="INSERT INTO #SampleTempTable VALUES (17, 'abc')" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table_4" value="INSERT INTO #SampleTempTable VALUES (17, 'yes')" db-types="SQLServer"/>
+    <sql-case id="insert_into_sample_temp_table_5" value="INSERT INTO #MyTempTable VALUES (1)" db-types="SQLServer"/>
+    <sql-case id="insert_with_table_t" value="INSERT INTO #t VALUES (99)" db-types="SQLServer"/>
+    <sql-case id="insert_with_table_test" value="INSERT INTO ##test VALUES (1, 1)" db-types="SQLServer"/>
+    <sql-case id="insert_into_with_select_number" value="INSERT INTO #test SELECT 1" db-types="SQLServer"/>
+    <sql-case id="insert_into_player_with_compress_function" value="INSERT INTO player ( name,surname,info) VALUES (N'Ovidiu', N'Cracium',COMPRESS(N'{&quot;sport&quot;:&quot;Tennis&quot;,&quot;age&quot;: 28,&quot;rank&quot;:1,&quot;points&quot;:15258, &quot;turn&quot;:17}'))" db-types="SQLServer"/>
+    <sql-case id="insert_into_tmp_with_exec" value="INSERT INTO #temp (id, job_name, job_id, dynamic_filter_login,dynamic_filter_hostname, dynamic_snapshot_location,frequency_type, frequency_interval, frequency_subday_type,frequency_subday_interval, frequency_relative_interval, frequency_recurrence_factor, active_start_date, active_end_date, active_start_time,active_end_time) EXEC sp_helpdynamicsnapshot_job" db-types="SQLServer"/>
+    <sql-case id="insert_into_player_with_compress_function_2" value="INSERT INTO player (name,surname,info) VALUES (N'Michael',N'Raheem',COMPRESS(@info))" db-types="SQLServer"/>
+    <sql-case id="insert_with_currency_value_2" value="INSERT INTO [HR].[Employees]([SSN], [FirstName], [LastName], [Salary]) VALUES ('990-00-6818', N'Kim', N'Abercrombie', $55415)" db-types="SQLServer"/>
+    <sql-case id="insert_with_cross_database_values" value="INSERT [SourceDatabase].[dbo].[SourceTable] VALUES (1, N'Bob'),(2, N'Susan')" db-types="SQLServer"/>
+    <sql-case id="insert_with_cross_database_select" value="INSERT [DestinationDatabase].[dbo].[DestTable_InMem] SELECT * FROM [SourceDatabase].[dbo].[SourceTable]" db-types="SQLServer"/>
+    <sql-case id="insert_with_select_with_table_hint_no_with_keyword" value="INSERT INTO #tmpdbs ([dbid], [dbname], [isdone]) SELECT database_id, name, 0 FROM master.sys.databases (NOLOCK) WHERE is_read_only = 0 AND state = 0" db-types="SQLServer"/>
+    <sql-case id="insert_with_open_query_function_limit" value="INSERT OPENQUERY (MyLinkServer, 'SELECT Name, GroupName FROM AdventureWorks2022.HumanResources.Department') VALUES ('Environmental Impact', 'Engineering')" db-types="SQLServer"/>
+    <sql-case id="insert_with_hint_and_open_row_set_function" value="INSERT INTO HumanResources.Department WITH (IGNORE_TRIGGERS) (Name, GroupName) SELECT b.Name, b.GroupName FROM OPENROWSET (BULK 'C:SQLFilesDepartmentData.txt', FORMATFILE = 'C:SQLFilesBulkloadFormatFile.xml', ROWS_PER_BATCH = 15000)AS b" db-types="SQLServer"/>
+    <sql-case id="insert_with_xlock_hint" value="INSERT INTO Production.Location WITH (XLOCK) (Name, CostRate, Availability) VALUES ( N'Final Inventory', 15.00, 80.00)" db-types="SQLServer"/>
+    <sql-case id="insert_with_output_input" value="INSERT Production.ScrapReason OUTPUT INSERTED.ScrapReasonID, INSERTED.Name, INSERTED.ModifiedDate INTO @MyTableVar VALUES (N'Operator error', GETDATE())" db-types="SQLServer"/>
+    <sql-case id="insert_into_with_multi_nchar" value="INSERT INTO Production.UnitMeasure VALUES (N'FT2', N'Square Feet ', '20080923'), (N'Y', N'Yards', '20080923'), (N'Y3', N'Cubic Yards', '20080923')" db-types="SQLServer"/>
+    <sql-case id="insert_into_with_select_with_merge" value="INSERT INTO Production.ZeroInventory (DeletedProductID, RemovedOnDate) SELECT ProductID, GETDATE() FROM (MERGE Production.ProductInventory AS pi USING (SELECT ProductID, SUM(OrderQty) FROM Sales.SalesOrderDetail AS sod JOIN Sales.SalesOrderHeader AS soh ON sod.SalesOrderID = soh.SalesOrderID AND soh.OrderDate = '20070401' GROUP BY ProductID) AS src (ProductID, OrderQty) ON (pi.ProductID = src.ProductID) WHEN MATCHED AND pi.Quantity - src.OrderQty &lt;= 0 THEN DELETE WHEN MATCHED THEN UPDATE SET pi.Quantity = pi.Quantity - src.OrderQty OUTPUT $action, deleted.ProductID) AS Changes (Action, ProductID) WHERE Action = 'DELETE'" db-types="SQLServer"/>
+    <sql-case id="insert_into_with_conflict_action_do_nothing" value="INSERT INTO sj_event(event_id) VALUES (?) ON CONFLICT(event_id) DO NOTHING" db-types="PostgreSQL"/>
+    <sql-case id="insert_on_duplicate_key_with_column_aliases" value="INSERT INTO t SET a=9,b=5 AS new(m,n) ON DUPLICATE KEY UPDATE a=m+n" db-types="MySQL"/>
+    <sql-case id="insert_with_aes_encrypt" value="INSERT INTO t_order_item(item_id,encrypt) VALUES (1,AES_ENCRYPT('text','key_str'))" db-types="MySQL" />
+    <sql-case id="insert_on_duplicate_key_update_with_values" value="INSERT INTO table (a,b,c) VALUES (1,2,3),(4,5,6) ON DUPLICATE KEY UPDATE c=VALUES(a)+VALUES(b);" db-types="MySQL" />
+    <sql-case id="insert_returning_expressions" value="INSERT INTO t2 (id) VALUES (2),(3) RETURNING id,t&amp;t" db-types="MySQL,Firebird" />
+    <sql-case id="insert_with_geom_collection_function" value="INSERT INTO t1 VALUES (GEOMCOLLECTION(POINT(0, 0)))" db-types="MySQL" />
+    <sql-case id="insert_select_with_brackets" value="insert into t_order (order_id) (select order_id from t_order_item)" db-types="MySQL" />
+    <sql-case id="insert_into_four_level_naming" value="INSERT INTO MyLinkServer.AdventureWorks2022.HumanResources.Department (Name, GroupName) VALUES (N'Public Relations', N'Executive General and Administration');" db-types="SQLServer"/>
+    <sql-case id="insert_with_opendatasource_function" value="INSERT INTO OPENDATASOURCE('SQLNCLI', 'Data Source= &lt;server_name&gt;; Integrated Security=SSPI').AdventureWorks2022.HumanResources.Department (Name, GroupName) VALUES (N'Standards and Methods', 'Quality Assurance')" db-types="SQLServer"/>
+</sql-cases>

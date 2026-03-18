@@ -19,7 +19,7 @@ name: Nightly - Build
 
 on:
   schedule:
-    - cron: '0 16 */1 * *'  # once a day. UTC time
+    - cron: '0 16 * * *' # Once a day. UTC time
   workflow_dispatch:
     inputs:
       commit-id:
@@ -27,17 +27,25 @@ on:
         type: string
         description: 'Commit ID to build. Default is the latest commit on the default branch.'
 
+concurrency:
+  group: nightly-build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -DskipITs -DskipTests -Dspotless.apply.skip=true
   HUB: ghcr.io/apache/shardingsphere
   PROXY: ghcr.io/apache/shardingsphere-proxy
   PROXY_NATIVE: ghcr.io/apache/shardingsphere-proxy-native
+  AGENT: ghcr.io/apache/shardingsphere-agent
 
 jobs:
   global-environment:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
-
+  
   upload-to-nightlies:
     if: github.repository == 'apache/shardingsphere'
     name: Upload to Nightly Builds
@@ -45,31 +53,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/cache@v4
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: 11
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Build Project
         run: |
-          ./mvnw -B clean install -Prelease
-      - uses: burnett01/rsync-deployments@5.2
+          ./mvnw -B clean install -Prelease,default-dep
+      - name: Upload Proxy Tarball Artifact
+        uses: actions/upload-artifact@v6
         with:
-          switches: -avzr
+          name: proxy-tarball-${{ github.run_id }}
           path: distribution/proxy/target/apache-shardingsphere-*.tar.gz
-          remote_path: ${{ secrets.NIGHTLIES_RSYNC_PATH }}/shardingsphere
-          remote_host: ${{ secrets.NIGHTLIES_RSYNC_HOST }}
-          remote_port: ${{ secrets.NIGHTLIES_RSYNC_PORT }}
-          remote_user: ${{ secrets.NIGHTLIES_RSYNC_USER }}
-          remote_key: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
-
+          if-no-files-found: error
+          retention-days: 7
+  
   build-proxy-image:
     if: github.repository == 'apache/shardingsphere'
     name: Build Proxy Image
@@ -80,20 +78,12 @@ jobs:
       packages: write
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
         with:
           ref: ${{ inputs.commit-id }}
-      - uses: actions/setup-java@v4
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
-          java-version: 11
-      - uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Login Container Registry
         uses: docker/login-action@v3
         with:
@@ -103,8 +93,8 @@ jobs:
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
       - name: Push Docker Image
-        run: ./mvnw -am -pl distribution/proxy -B -Prelease,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.sha }} clean install
-
+        run: ./mvnw -am -pl distribution/proxy -B -Prelease,default-dep,docker.buildx.push -DskipTests -Dproxy.image.repository=${{ env.PROXY }} -Dproxy.image.tag=${{ github.run_id }} clean install
+  
   build-proxy-native-image:
     if: github.repository == 'apache/shardingsphere'
     name: Build Proxy Native Image
@@ -113,23 +103,50 @@ jobs:
     permissions:
       contents: read
       packages: write
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ 'ubuntu-latest', 'ubuntu-24.04-arm' ]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.1
         with:
           ref: ${{ inputs.commit-id }}
-      - uses: graalvm/setup-graalvm@v1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          java-version: '21.0.2'
-          distribution: 'graalvm-community'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/cache@v4
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+      - uses: docker/login-action@v3
         with:
-          path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-${{ github.sha }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-cache-
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+          registry: ${{ env.HUB }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push dynamic linked Docker Image by x64 or arm64
+        run: |
+          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }} "-DskipTests" clean package
+      - name: Push mostly static linked Docker Image by x64
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }}-mostly "-Dproxy.native.dockerfile=Dockerfile-linux-mostly" "-DskipTests" clean package
+      - name: Push fully static linked Docker Image by x64
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          ./mvnw -am -pl distribution/proxy-native -T1C "-Pdocker.push.native.linux" -Dproxy.native.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.native.image.tag=${{ github.run_id }}-static "-Dproxy.native.dockerfile=Dockerfile-linux-static" "-DskipTests" clean package
+
+  build-agent-image:
+    if: github.repository == 'apache/shardingsphere'
+    name: Build Agent Image
+    needs: global-environment
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6.0.1
+        with:
+          ref: ${{ inputs.commit-id }}
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - uses: docker/login-action@v3
         with:
           registry: ${{ env.HUB }}
@@ -137,37 +154,30 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Docker Image
         run: |
-          ./mvnw -am -pl distribution/proxy-native -Prelease.native,docker.buildx.push.native -B -T1C -DskipTests -Dproxy.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.image.tag=${{ github.sha }} clean package
-
+          ./mvnw -am -pl distribution/agent -Prelease,default-dep,docker.buildx.push -B -T1C -DskipTests -Dagent.image.repository=${{ env.AGENT }} -Dagent.image.tag=${{ github.run_id }} clean package
+  
   build-cache:
-    if: ${{ needs.global-environment.outputs.GLOBAL_IS_NIGHTLY_JOB_EXECUTABLE == 'true' }}
-    name: Build Project
+    if: github.repository == 'apache/shardingsphere'
+    name: Build Project Cache
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
-          java-version: 11
-      - uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
       - name: Build with Maven
-        run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
-
+        run: ./mvnw clean install -B -ntp -T1C -DskipTests
+  
   generate-and-test-examples:
     name: Example-${{ matrix.feature }}-${{ matrix.framework }}-${{ matrix.mode }}-${{ matrix.transaction }}
     if: github.repository == 'apache/shardingsphere'
-    needs: build-cache
+    needs: [ build-cache, global-environment ]
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
-      max-parallel: 20
+      max-parallel: 15
       fail-fast: false
       matrix:
         feature: [ sharding, readwrite-splitting, encrypt, shadow, mask ]
@@ -200,40 +210,45 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
       zookeeper:
-        image: zookeeper:3.6.3
+        image: zookeeper:3.8.5-jre-17
+        env:
+          JMXDISABLE: "true"
         ports:
           - 2181:2181
         options: --health-cmd="echo ruok | nc localhost 2181" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          distribution: 'temurin'
-          java-version: 11
-      - uses: actions/cache@v4
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+      - uses: docker/setup-docker-action@v4
         with:
-          path: ~/.m2/repository
-          key: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-maven-third-party-
-      - name: Prepare Environments
-        run: sh .github/workflows/resources/scripts/nightly-build-example/init-mysql-container.sh
+          version: v28.0.4
+          set-host: true
       - name: Build with Maven
         run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
       - name: Generate Examples
-        run: ./mvnw -B clean install -f examples/shardingsphere-jdbc-example-generator/pom.xml -Pexample-generator -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
+        run: ./mvnw -B install -f examples/shardingsphere-jdbc-example-generator/pom.xml -Pexample-generator -Dmodes=${{ matrix.mode }} -Dtransactions=${{ matrix.transaction }} -Dfeatures=${{ matrix.feature }} -Dframeworks=${{ matrix.framework }}
+      - name: Prepare Environments
+        run: |
+          INIT_SQL_PATH="examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/init.sql"
+          if [ -f "$INIT_SQL_PATH" ]; then
+            echo "Executing generated init.sql for feature: ${{ matrix.feature }}"
+            sh .github/workflows/resources/scripts/nightly-build-example/init-mysql-container.sh "$INIT_SQL_PATH"
+          else
+            echo "Warning: init.sql not found at $INIT_SQL_PATH"
+            exit 1
+          fi
       - name: Test Examples
         run : ./mvnw -B test -f examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}/pom.xml -Pexample-generator -Dexec.cleanupDaemonThreads=false
       - name: Package Examples
         run: |
           cd examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/
           tar -czvf ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz ${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}
-      - uses: burnett01/rsync-deployments@5.2
+      - name: Upload Generated Example Artifact
+        uses: actions/upload-artifact@v6
         with:
-          switches: -avzr
+          name: example-${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}--${{ github.run_id }}
           path: examples/shardingsphere-jdbc-example-generator/target/generated-sources/shardingsphere-jdbc-sample/${{ matrix.feature }}--${{ matrix.framework }}--${{ matrix.mode }}--${{ matrix.transaction }}.tar.gz
-          remote_path: ${{ secrets.NIGHTLIES_RSYNC_PATH }}/shardingsphere/examples
-          remote_host: ${{ secrets.NIGHTLIES_RSYNC_HOST }}
-          remote_port: ${{ secrets.NIGHTLIES_RSYNC_PORT }}
-          remote_user: ${{ secrets.NIGHTLIES_RSYNC_USER }}
-          remote_key: ${{ secrets.NIGHTLIES_RSYNC_KEY }}
+          if-no-files-found: error
+          retention-days: 7

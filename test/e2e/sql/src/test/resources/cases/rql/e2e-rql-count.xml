@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<e2e-test-cases>
+    <!-- TODO add db,tbl,dbtbl_with_readwrite_splitting,encrypt,encrypt_and_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt scenario when use standard table -->
+    <test-case sql="COUNT SINGLE TABLE" scenario-types="sharding_and_encrypt">
+        <assertion expected-data-file="count_single_table.xml" />
+    </test-case>
+    
+    <test-case sql="COUNT SHARDING RULE;" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-file="count_sharding_rule.xml" />
+    </test-case>
+    
+    <test-case sql="COUNT READWRITE_SPLITTING RULE;" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-file="count_readwrite_splitting_rule.xml" />
+    </test-case>
+    
+    <test-case sql="COUNT ENCRYPT RULE;" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-file="count_encrypt_rule.xml" />
+    </test-case>
+    
+    <test-case sql="COUNT SHADOW RULE;" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-file="count_shadow_rule.xml" />
+    </test-case>
+    
+    <test-case sql="COUNT MASK RULE;" scenario-types="db,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,mask,mask_encrypt,mask_encrypt_sharding,mask_sharding">
+        <assertion expected-data-file="count_mask_rule.xml" />
+    </test-case>
+</e2e-test-cases>

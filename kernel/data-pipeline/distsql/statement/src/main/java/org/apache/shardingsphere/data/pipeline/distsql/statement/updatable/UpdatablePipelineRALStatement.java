@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.distsql.statement.updatable;
 
 import org.apache.shardingsphere.data.pipeline.distsql.statement.PipelineRALStatement;
-import org.apache.shardingsphere.distsql.statement.ral.updatable.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.statement.type.ral.updatable.UpdatableRALStatement;
 
 /**
  * Updatable pipeline RAL statement.

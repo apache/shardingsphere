@@ -18,18 +18,19 @@
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
 import lombok.Setter;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInsertValue;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInsertValuesToken;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.OptionalSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.RouteContextAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.InsertValuesToken;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInsertValue;
+import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingInsertValuesToken;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertValuesToken;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,6 +40,7 @@ import java.util.List;
 /**
  * Insert values token generator for sharding.
  */
+@HighFrequencyInvocation
 @Setter
 public final class ShardingInsertValuesTokenGenerator implements OptionalSQLTokenGenerator<InsertStatementContext>, RouteContextAware {
     
@@ -53,12 +55,10 @@ public final class ShardingInsertValuesTokenGenerator implements OptionalSQLToke
     public InsertValuesToken generateSQLToken(final InsertStatementContext insertStatementContext) {
         Collection<InsertValuesSegment> insertValuesSegments = insertStatementContext.getSqlStatement().getValues();
         InsertValuesToken result = new ShardingInsertValuesToken(getStartIndex(insertValuesSegments), getStopIndex(insertValuesSegments));
-        Iterator<Collection<DataNode>> originalDataNodesIterator = null == routeContext || routeContext.getOriginalDataNodes().isEmpty()
-                ? null
-                : routeContext.getOriginalDataNodes().iterator();
+        Iterator<Collection<DataNode>> dataNodesIterator = routeContext.getOriginalDataNodes().isEmpty() ? Collections.emptyIterator() : routeContext.getOriginalDataNodes().iterator();
         for (InsertValueContext each : insertStatementContext.getInsertValueContexts()) {
             List<ExpressionSegment> expressionSegments = each.getValueExpressions();
-            Collection<DataNode> dataNodes = null == originalDataNodesIterator ? Collections.emptyList() : originalDataNodesIterator.next();
+            Collection<DataNode> dataNodes = dataNodesIterator.hasNext() ? dataNodesIterator.next() : Collections.emptyList();
             result.getInsertValues().add(new ShardingInsertValue(expressionSegments, dataNodes));
         }
         return result;

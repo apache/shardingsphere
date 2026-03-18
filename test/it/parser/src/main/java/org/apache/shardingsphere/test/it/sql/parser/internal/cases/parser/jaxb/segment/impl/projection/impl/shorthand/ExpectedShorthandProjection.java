@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjection;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjections;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.table.ExpectedOwner;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -34,4 +35,7 @@ public final class ExpectedShorthandProjection extends AbstractExpectedSQLSegmen
     
     @XmlElement
     private ExpectedOwner owner;
+    
+    @XmlElement(name = "actual-projections")
+    private final ExpectedProjections actualProjections = new ExpectedProjections();
 }

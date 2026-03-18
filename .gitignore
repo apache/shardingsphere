@@ -53,6 +53,23 @@ gen/
 .profiler/
 
 # hugo ignore
-public/
+blog/public/
+community/public/
+document/public/
 .hugo_build.lock
 *.html-e
+
+# codex ignore
+.codex/log/
+.codex/sessions/
+.codex/tmp/
+.codex/prompts/
+.codex/shell_snapshots/
+.codex/*.sqlite
+.codex/*.sqlite-shm
+.codex/*.sqlite-wal
+.codex/history.jsonl
+.codex/auth.json
+.codex/models_cache.json
+.codex/version.json
+.codex/.personality_migration

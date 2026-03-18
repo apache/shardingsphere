@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-distribution</artifactId>
-        <version>5.5.1-SNAPSHOT</version>
+        <version>5.5.4-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-src-distribution</artifactId>
     <packaging>pom</packaging>
@@ -31,6 +31,7 @@
         <profile>
             <id>release</id>
             <properties>
+                <remoteresources.skip>false</remoteresources.skip>
                 <maven.javadoc.skip>false</maven.javadoc.skip>
                 <checkstyle.skip>false</checkstyle.skip>
                 <rat.skip>false</rat.skip>

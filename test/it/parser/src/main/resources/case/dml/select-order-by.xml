@@ -32,6 +32,21 @@
         </order-by>
     </select>
 
+    <select sql-case-id="select_order_by_asc_and_index_desc_sql92">
+        <from>
+            <simple-table name="t_order" alias="o" start-index="14" stop-index="22" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <order-by>
+            <column-item name="order_id" start-index="33" stop-index="42">
+                <owner name="o" start-index="33" stop-index="33" />
+            </column-item>
+            <index-item index="2" order-direction="DESC" start-index="45" stop-index="45" />
+        </order-by>
+    </select>
+
     <select sql-case-id="select_order_by_desc_and_index_asc">
         <from>
             <join-table join-type="COMMA">
@@ -396,6 +411,19 @@
                     </binary-operation-expression>
                 </expr>
             </expression-item>
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_order_by_position_oracle">
+        <from>
+            <simple-table name="t_order" start-index="30" stop-index="36" />
+        </from>
+        <projections start-index="7" stop-index="23">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+            <column-projection name="user_id" start-index="17" stop-index="23" />
+        </projections>
+        <order-by>
+            <index-item index="1" order-direction="ASC" start-index="47" stop-index="47" />
         </order-by>
     </select>
 </sql-parser-test-cases>

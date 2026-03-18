@@ -28,9 +28,10 @@ public interface InstanceMetaDataBuilder extends TypedSPI {
     
     /**
      * Build instance meta data.
-     * 
+     *
      * @param port port
+     * @param databaseName database name
      * @return built instance meta data
      */
-    InstanceMetaData build(int port);
+    InstanceMetaData build(int port, String databaseName);
 }

@@ -16,22 +16,6 @@
   -->
 
 <command>
-    <alter-migration-rule>
-        ALTER MIGRATION RULE (
-        READ(
-        WORKER_THREAD=20,
-        BATCH_SIZE=1000,
-        SHARDING_SIZE=10000000,
-        RATE_LIMITER (TYPE(NAME='QPS',PROPERTIES('qps'='500')))
-        ),
-        WRITE(
-        WORKER_THREAD=20,
-        BATCH_SIZE=1000,
-        RATE_LIMITER (TYPE(NAME='TPS',PROPERTIES('tps'='2000')))
-        ),
-        STREAM_CHANNEL (TYPE(NAME='MEMORY',PROPERTIES('block-queue-size'='2000')))
-        );
-    </alter-migration-rule>
     
     <register-migration-source-storage-unit-template>
         REGISTER MIGRATION SOURCE STORAGE UNIT ds_0 (
@@ -63,7 +47,7 @@
     
     <create-target-order-table-encrypt-rule>
         CREATE ENCRYPT RULE t_order (
-        COLUMNS((NAME=status, CIPHER=status,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))))))
+        COLUMNS((NAME=status, CIPHER=status,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))))))
     </create-target-order-table-encrypt-rule>
     
     <create-target-order-table-rule>

@@ -12,7 +12,7 @@ Please refer to [Release Guide](/en/involved/release/shardingsphere/).
 
 **1. Set settings.xml**
 
-Add the following template to `~/.m2/settings.xml`, all the passwords need to be filled in after encryption. 
+Add the following template to `~/.m2/settings.xml`, all the passwords need to be filled in after encryption.
 For encryption settings, please see [here](http://maven.apache.org/guides/mini/guide-encryption.html).
 
 ```xml
@@ -40,7 +40,7 @@ https://github.com/apache/shardingsphere-elasticjob-ui/blob/master/RELEASE-NOTES
 
 **3. Create Release Branch**
 
-Suppose ElasticJob-UI source codes downloaded from github is under `~/elasticjob-ui/` directory and the version to be released is `${RELEASE.VERSION}`. 
+Suppose ElasticJob-UI source codes downloaded from github is under `~/elasticjob-ui/` directory and the version to be released is `${RELEASE.VERSION}`.
 Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
 
 ```shell
@@ -119,7 +119,7 @@ cd ~/ss_svn/dev/shardingsphere
 
 **2. Add gpg Public Key**
 
-Only the account in its first deployment needs to add that. 
+Only the account in its first deployment needs to add that.
 It is alright for `KEYS` to only include the public key of the deployed account.
 
 ```shell
@@ -174,7 +174,7 @@ shasum -c apache-shardingsphere-elasticjob-${RELEASE.VERSION}-cloud-ui-bin.tar.g
 
 **Check gpg Signature**
 
-First, import releaser's public key. 
+First, import releaser's public key.
 Import KEYS from SVN repository to local. (The releaser does not need to import again; the checking assistant needs to import it, with the user name filled as the releaser's. )
 
 ```shell
@@ -245,8 +245,8 @@ to check the following items:
 
 **Vote procedure**
 
-1. ShardingSphere community vote: send the vote e-mail to `dev@shardingsphere.apache.org`. 
-PMC needs to check the rightness of the version according to the document before they vote. 
+1. ShardingSphere community vote: send the vote e-mail to `dev@shardingsphere.apache.org`.
+PMC needs to check the rightness of the version according to the document before they vote.
 After at least 72 hours and with at least 3 `+1 PMC member` votes, it can come to the next stage of the vote.
 
 2. Announce the vote result: send the result vote e-mail to `dev@shardingsphere.apache.org`.
@@ -294,13 +294,13 @@ The vote will be open for at least 72 hours or until necessary number of votes a
 
 Please vote accordingly:
 
-[ ] +1 approve 
+[ ] +1 approve
 
 [ ] +0 no opinion
- 
+
 [ ] -1 disapprove with the reason
 
-PMC vote is +1 binding, all others is +1 non-binding.
+PMC vote is "+1 binding", all others is "+1 non-binding".
 
 Checklist for reference:
 
@@ -328,7 +328,7 @@ Title：
 Body:
 
 ```
-We’ve received 3 +1 binding votes and one +1 non-binding vote:
+We’ve received 3 "+1 binding" votes and one "+1 non-binding" vote:
 
 +1 binding, xxx
 +1 binding, xxx
@@ -336,7 +336,7 @@ We’ve received 3 +1 binding votes and one +1 non-binding vote:
 
 +1 non-binding, xxx
 
-Thank you everyone for taking the time to review the release and help us. 
+Thank you everyone for taking the time to review the release and help us.
 I will process to publish the release and send ANNOUNCE.
 
 ```

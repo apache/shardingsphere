@@ -17,57 +17,53 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.generator.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.binder.context.aware.CursorDefinitionAware;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.binder.context.statement.type.ddl.CursorHeldSQLStatementContext;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.aware.RouteContextAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ShardingTableToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 /**
  * Sharding table token generator.
  */
+@HighFrequencyInvocation
+@RequiredArgsConstructor
 @Setter
-public final class ShardingTableTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware, RouteContextAware {
+public final class ShardingTableTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, RouteContextAware {
     
-    private ShardingRule shardingRule;
+    private final ShardingRule rule;
     
     private RouteContext routeContext;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        return !(sqlStatementContext instanceof CursorDefinitionAware) && (isAllBindingTables(sqlStatementContext) || routeContext.containsTableSharding());
+        return !(sqlStatementContext instanceof CursorHeldSQLStatementContext) && (isAllBindingTables(sqlStatementContext) || routeContext.containsTableSharding());
     }
     
     private boolean isAllBindingTables(final SQLStatementContext sqlStatementContext) {
-        Collection<String> shardingLogicTableNames = sqlStatementContext instanceof TableAvailable
-                ? shardingRule.getShardingLogicTableNames(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())
-                : Collections.emptyList();
-        return shardingLogicTableNames.size() > 1 && shardingRule.isAllBindingTables(shardingLogicTableNames);
+        Collection<String> shardingLogicTableNames = rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames());
+        return shardingLogicTableNames.size() > 1 && rule.isAllConfigBindingTables(shardingLogicTableNames);
     }
     
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext instanceof TableAvailable ? generateSQLTokens((TableAvailable) sqlStatementContext) : Collections.emptyList();
-    }
-    
-    private Collection<SQLToken> generateSQLTokens(final TableAvailable sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
         for (SimpleTableSegment each : sqlStatementContext.getTablesContext().getSimpleTables()) {
-            TableNameSegment tableName = each.getTableName();
-            if (shardingRule.findShardingTable(tableName.getIdentifier().getValue()).isPresent()) {
-                result.add(new ShardingTableToken(tableName.getStartIndex(), tableName.getStopIndex(), tableName.getIdentifier(), (SQLStatementContext) sqlStatementContext, shardingRule));
+            TableNameSegment tableNameSegment = each.getTableName();
+            if (rule.findShardingTable(tableNameSegment.getIdentifier().getValue()).isPresent()) {
+                result.add(
+                        new ShardingTableToken(tableNameSegment.getStartIndex(), tableNameSegment.getStopIndex(), tableNameSegment.getIdentifier(), sqlStatementContext, rule));
             }
         }
         return result;

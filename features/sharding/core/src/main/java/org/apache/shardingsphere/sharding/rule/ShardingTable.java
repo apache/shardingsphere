@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,8 +25,8 @@ import lombok.ToString;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtils;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
@@ -33,21 +34,20 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
+import org.apache.shardingsphere.sharding.constant.ShardingTableConstants;
 import org.apache.shardingsphere.sharding.exception.metadata.DataNodeGenerateException;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredDataNodesException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -56,10 +56,6 @@ import java.util.stream.Collectors;
 @Getter
 @ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualDataSourceNames", "dataSourceDataNode", "tableDataNode"})
 public final class ShardingTable {
-    
-    private static final Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile("\\d+$");
-    
-    private static final char DEFAULT_PADDING_CHAR = '0';
     
     private final String logicTable;
     
@@ -106,7 +102,7 @@ public final class ShardingTable {
     
     public ShardingTable(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable();
-        List<String> dataNodes = InlineExpressionParserFactory.newInstance(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
+        Collection<String> dataNodes = InlineExpressionParserFactory.newInstance(tableRuleConfig.getActualDataNodes()).splitAndEvaluate();
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1F);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
@@ -140,45 +136,45 @@ public final class ShardingTable {
     }
     
     private DataNodeInfo createDataSourceDataNode(final Collection<DataNode> actualDataNodes) {
-        String prefix = DATA_NODE_SUFFIX_PATTERN.matcher(actualDataNodes.iterator().next().getDataSourceName()).replaceAll("");
+        String prefix = ShardingTableConstants.DATA_NODE_SUFFIX_PATTERN.matcher(actualDataNodes.iterator().next().getDataSourceName()).replaceAll("");
         int suffixMinLength = actualDataNodes.stream().map(each -> each.getDataSourceName().length() - prefix.length()).min(Comparator.comparing(Integer::intValue)).orElse(1);
-        return new DataNodeInfo(prefix, suffixMinLength, DEFAULT_PADDING_CHAR);
+        return new DataNodeInfo(prefix, suffixMinLength, ShardingTableConstants.DEFAULT_PADDING_CHAR);
     }
     
     private DataNodeInfo createTableDataNode(final Collection<DataNode> actualDataNodes) {
         String tableName = actualDataNodes.iterator().next().getTableName();
-        String prefix = tableName.startsWith(logicTable) ? logicTable + DATA_NODE_SUFFIX_PATTERN.matcher(tableName.substring(logicTable.length())).replaceAll("")
-                : DATA_NODE_SUFFIX_PATTERN.matcher(tableName).replaceAll("");
+        String prefix = tableName.startsWith(logicTable) ? logicTable + ShardingTableConstants.DATA_NODE_SUFFIX_PATTERN.matcher(tableName.substring(logicTable.length())).replaceAll("")
+                : ShardingTableConstants.DATA_NODE_SUFFIX_PATTERN.matcher(tableName).replaceAll("");
         int suffixMinLength = actualDataNodes.stream().map(each -> each.getTableName().length() - prefix.length()).min(Comparator.comparing(Integer::intValue)).orElse(1);
-        return new DataNodeInfo(prefix, suffixMinLength, DEFAULT_PADDING_CHAR);
+        return new DataNodeInfo(prefix, suffixMinLength, ShardingTableConstants.DEFAULT_PADDING_CHAR);
     }
     
     private List<String> getDataNodes(final ShardingAutoTableRuleConfiguration tableRuleConfig, final ShardingAutoTableAlgorithm shardingAlgorithm, final Collection<String> dataSourceNames) {
         if (null == tableShardingStrategyConfig) {
-            return new LinkedList<>();
+            return new ArrayList<>();
         }
-        List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new LinkedList<>(dataSourceNames)
+        List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new ArrayList<>(dataSourceNames)
                 : InlineExpressionParserFactory.newInstance(tableRuleConfig.getActualDataSources()).splitAndEvaluate();
-        return DataNodeUtils.getFormatDataNodes(shardingAlgorithm.getAutoTablesAmount(), logicTable, dataSources);
+        return DataNodeUtils.getFormattedDataNodes(shardingAlgorithm.getAutoTablesAmount(), logicTable, dataSources);
     }
     
     private Set<String> getActualTables() {
-        return actualDataNodes.stream().map(DataNode::getTableName).collect(Collectors.toCollection(() -> new TreeSet<>(String.CASE_INSENSITIVE_ORDER)));
+        return actualDataNodes.stream().map(DataNode::getTableName).collect(Collectors.toCollection(CaseInsensitiveSet::new));
     }
     
     private void addActualTable(final String datasourceName, final String tableName) {
         dataSourceToTablesMap.computeIfAbsent(datasourceName, key -> new LinkedHashSet<>()).add(tableName);
     }
     
-    private boolean isEmptyDataNodes(final List<String> dataNodes) {
+    private boolean isEmptyDataNodes(final Collection<String> dataNodes) {
         return null == dataNodes || dataNodes.isEmpty();
     }
     
     private List<DataNode> generateDataNodes(final String logicTable, final Collection<String> dataSourceNames) {
-        List<DataNode> result = new LinkedList<>();
+        List<DataNode> result = new ArrayList<>(dataSourceNames.size());
         int index = 0;
         for (String each : dataSourceNames) {
-            DataNode dataNode = new DataNode(each, logicTable);
+            DataNode dataNode = new DataNode(each, (String) null, logicTable);
             result.add(dataNode);
             dataNodeIndexMap.put(dataNode, index);
             actualDataSourceNames.add(each);
@@ -188,8 +184,8 @@ public final class ShardingTable {
         return result;
     }
     
-    private List<DataNode> generateDataNodes(final List<String> actualDataNodes, final Collection<String> dataSourceNames) {
-        List<DataNode> result = new LinkedList<>();
+    private List<DataNode> generateDataNodes(final Collection<String> actualDataNodes, final Collection<String> dataSourceNames) {
+        List<DataNode> result = new ArrayList<>(actualDataNodes.size());
         int index = 0;
         for (String each : actualDataNodes) {
             DataNode dataNode = new DataNode(each);
@@ -215,15 +211,6 @@ public final class ShardingTable {
     }
     
     /**
-     * Get actual data source names.
-     *
-     * @return actual data source names
-     */
-    public Collection<String> getActualDataSourceNames() {
-        return actualDataSourceNames;
-    }
-    
-    /**
      * Get actual table names via target data source name.
      *
      * @param targetDataSource target data source name
@@ -235,18 +222,18 @@ public final class ShardingTable {
     
     /**
      * Find actual table index.
-     * 
+     *
      * @param dataSourceName data source name
      * @param actualTableName actual table name
      * @return actual table index
      */
     public int findActualTableIndex(final String dataSourceName, final String actualTableName) {
-        return dataNodeIndexMap.getOrDefault(new DataNode(dataSourceName, actualTableName), -1);
+        return dataNodeIndexMap.getOrDefault(new DataNode(dataSourceName, (String) null, actualTableName), -1);
     }
     
     /**
      * Is existed.
-     * 
+     *
      * @param actualTableName actual table name
      * @return is existed or not
      */
@@ -254,7 +241,7 @@ public final class ShardingTable {
         return actualTables.contains(actualTableName);
     }
     
-    private void checkRule(final List<String> dataNodes) {
+    private void checkRule(final Collection<String> dataNodes) {
         ShardingSpherePreconditions.checkState(!isEmptyDataNodes(dataNodes) || null == tableShardingStrategyConfig || tableShardingStrategyConfig instanceof NoneShardingStrategyConfiguration,
                 () -> new MissingRequiredDataNodesException(logicTable));
     }

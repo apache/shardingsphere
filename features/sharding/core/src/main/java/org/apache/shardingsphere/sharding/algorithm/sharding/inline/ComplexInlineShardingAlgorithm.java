@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
+import org.apache.shardingsphere.infra.expr.entry.InlineExpressionParserFactory;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.exception.algorithm.MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException;
@@ -43,7 +43,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     
     private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
     
-    private static final String SHARING_COLUMNS_KEY = "sharding-columns";
+    private static final String SHARDING_COLUMNS_KEY = "sharding-columns";
     
     private static final String ALLOW_RANGE_QUERY_KEY = "allow-range-query-with-inline-sharding";
     
@@ -67,7 +67,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     }
     
     private Collection<String> getShardingColumns(final Properties props) {
-        String shardingColumns = props.getProperty(SHARING_COLUMNS_KEY, "");
+        String shardingColumns = props.getProperty(SHARDING_COLUMNS_KEY, "");
         return shardingColumns.isEmpty() ? Collections.emptyList() : Arrays.asList(shardingColumns.split(","));
     }
     

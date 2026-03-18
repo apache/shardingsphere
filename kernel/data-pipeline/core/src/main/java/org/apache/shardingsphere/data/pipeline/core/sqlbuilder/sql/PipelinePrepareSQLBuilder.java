@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql;
 
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.dialect.DialectPipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.segment.PipelineSQLSegmentBuilder;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 
 import java.util.Optional;
 
@@ -73,12 +73,13 @@ public final class PipelinePrepareSQLBuilder {
     /**
      * Build estimated count SQL.
      *
+     * @param catalogName catalog name
      * @param schemaName schema name
      * @param tableName table name
      * @return estimated count SQL
      */
-    public Optional<String> buildEstimatedCountSQL(final String schemaName, final String tableName) {
-        return dialectSQLBuilder.buildEstimatedCountSQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
+    public Optional<String> buildEstimatedCountSQL(final String catalogName, final String schemaName, final String tableName) {
+        return dialectSQLBuilder.buildEstimatedCountSQL(catalogName, sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
     }
     
     /**
@@ -103,5 +104,20 @@ public final class PipelinePrepareSQLBuilder {
      */
     public String buildCheckEmptyTableSQL(final String schemaName, final String tableName) {
         return dialectSQLBuilder.buildCheckEmptyTableSQL(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName));
+    }
+    
+    /**
+     * Build split by unique key ranged SQL.
+     *
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param uniqueKey unique key
+     * @param hasLowerBound has lower bound
+     * @return split SQL
+     */
+    public String buildSplitByUniqueKeyRangedSQL(final String schemaName, final String tableName, final String uniqueKey, final boolean hasLowerBound) {
+        String escapedUniqueKey = sqlSegmentBuilder.getEscapedIdentifier(uniqueKey);
+        String subQueryClause = dialectSQLBuilder.buildSplitByUniqueKeyRangedSubqueryClause(sqlSegmentBuilder.getQualifiedTableName(schemaName, tableName), escapedUniqueKey, hasLowerBound);
+        return String.format("SELECT MAX(%s), COUNT(1), MIN(%s) FROM (%s) t", escapedUniqueKey, escapedUniqueKey, subQueryClause);
     }
 }

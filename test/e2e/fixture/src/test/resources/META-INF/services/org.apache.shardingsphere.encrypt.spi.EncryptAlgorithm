@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.e2e.fixture.ITEncryptLikeAlgorithmFixture
+org.apache.shardingsphere.test.e2e.fixture.E2EEncryptLikeAlgorithmFixture

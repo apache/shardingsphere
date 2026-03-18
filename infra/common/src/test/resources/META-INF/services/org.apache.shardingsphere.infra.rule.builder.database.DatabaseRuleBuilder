@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.infra.rule.builder.fixture.FixtureDatabaseRuleBuilder
+org.apache.shardingsphere.infra.rule.builder.fixture.ToggleFixtureDatabaseRuleBuilder

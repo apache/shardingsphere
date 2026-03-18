@@ -28,7 +28,7 @@ public interface ShardingAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Get algorithm structure.
-     * 
+     *
      * @param dataNodePrefix data node prefix
      * @param shardingColumn sharding column
      * @return algorithm structure

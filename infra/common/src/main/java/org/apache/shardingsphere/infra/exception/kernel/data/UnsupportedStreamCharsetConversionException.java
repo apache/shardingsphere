@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.exception.kernel.data;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.DataSQLException;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.DataSQLException;
 
 /**
  * Unsupported stream charset conversion exception.

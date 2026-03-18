@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 
 import java.util.List;
@@ -32,16 +33,6 @@ import java.util.List;
 public final class DataNodeUtils {
     
     /**
-     * Format data node as string with schema.
-     *
-     * @param dataNode data node
-     * @return formatted data node
-     */
-    public static String formatWithSchema(final DataNode dataNode) {
-        return dataNode.getDataSourceName() + (null != dataNode.getSchemaName() ? "." + dataNode.getSchemaName() : "") + "." + dataNode.getTableName();
-    }
-    
-    /**
      * Parse data node from text.
      *
      * @param text data node text
@@ -50,14 +41,7 @@ public final class DataNodeUtils {
      */
     public static DataNode parseWithSchema(final String text) {
         List<String> segments = Splitter.on(".").splitToList(text);
-        boolean hasSchema = 3 == segments.size();
-        if (!(2 == segments.size() || hasSchema)) {
-            throw new InvalidDataNodeFormatException(text);
-        }
-        DataNode result = new DataNode(segments.get(0), segments.get(segments.size() - 1));
-        if (hasSchema) {
-            result.setSchemaName(segments.get(1));
-        }
-        return result;
+        ShardingSpherePreconditions.checkState(2 == segments.size() || 3 == segments.size(), () -> new InvalidDataNodeFormatException(text));
+        return 3 == segments.size() ? new DataNode(segments.get(0), segments.get(1), segments.get(2)) : new DataNode(segments.get(0), (String) null, segments.get(segments.size() - 1));
     }
 }

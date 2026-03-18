@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-# After `ShardingSphereURLManager.getContent`, this file should be equivalent to `foo-driver-fixture.yaml` in the same folder.
+# After `ShardingSphereURLManager.getContent`, this file should be equivalent to `driver-fixture-h2-mysql.yaml` in the same folder.
 databaseName: foo_driver_fixture_db
 
 dataSources:

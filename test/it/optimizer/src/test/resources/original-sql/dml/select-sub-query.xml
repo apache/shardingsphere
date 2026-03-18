@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="select_with_lateral" value="SELECT 1 FROM t1, LATERAL (SELECT DISTINCT t1.x) AS dt1, LATERAL (SELECT DISTINCT dt1.x) AS dt2 WHERE dt1.x = dt2.x" db-types="MySQL" />
+    <sql-case id="select_sub_query_with_project" value="SELECT order_id, (SELECT 1) AS num FROM t_order" db-types="MySQL, PostgreSQL,openGauss, SQLServer" />
+    <sql-case id="select_sub_query_with_table" value="SELECT t.* FROM (SELECT * FROM t_order WHERE order_id IN (?, ?)) t" />
+    <sql-case id="select_with_equal_subquery" value="SELECT * FROM t_order WHERE user_id = (SELECT user_id FROM t_order_item WHERE id = 10)" db-types="MySQL, PostgreSQL,openGauss" />
+    <sql-case id="select_with_any_subquery" value="SELECT * FROM employees WHERE salary = ANY (SELECT salary FROM employees WHERE department_id = 30) ORDER BY employee_id;" db-types="Oracle" />
+    <sql-case id="select_with_in_subquery" value="SELECT * FROM t_order WHERE user_id IN (SELECT user_id FROM t_order_item WHERE id IN (10, 11))" db-types="MySQL, PostgreSQL,openGauss" />
+    <sql-case id="select_with_between_subquery" value="SELECT * FROM t_order WHERE user_id BETWEEN (SELECT user_id FROM t_order_item WHERE order_id = 10) AND ?" db-types="MySQL, PostgreSQL,openGauss" />
+    <sql-case id="select_with_exists_sub_query_with_project" value="SELECT EXISTS (SELECT 1 FROM t_order)" db-types="MySQL, PostgreSQL,openGauss" />
+    <sql-case id="select_with_join_table_subquery" value="SELECT t_order_federate.order_id, t_order_federate.user_id, u.user_id FROM t_order_federate, (SELECT * FROM t_user_info) as u WHERE t_order_federate.user_id = u.user_id" db-types="MySQL, PostgreSQL,openGauss, SQLServer, SQL92" />
+    <sql-case id="select_with_projection_subquery" value="SELECT t_order_federate.order_id, t_order_federate.user_id, (SELECT COUNT(user_id) FROM t_user_info) FROM t_order_federate" />
+    <sql-case id="select_with_projection_subquery_and_multiple_parameters" value="SELECT t_order_federate.order_id, t_order_federate.user_id, (SELECT CONCAT(order_id, user_id) FROM t_user_info) FROM t_order_federate" />
+    <sql-case id="select_with_in_subquery_condition" value="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE user_id IN (SELECT * FROM t_user_info)" />
+    <sql-case id="select_with_between_and_subquery_condition" value="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE information = 'before') AND (SELECT user_id FROM t_user_info WHERE information = 'after')" />
+    <sql-case id="select_with_exist_subquery_condition" value="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)" db-types="MySQL, PostgreSQL,openGauss" />
+    <sql-case id="select_with_not_exist_subquery_condition" value="SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate WHERE NOT EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)" db-types="MySQL" />
+    <sql-case id="select_with_exist_string_split_subquery" value="SELECT ProductId, Name, Tags FROM Product WHERE EXISTS (SELECT * FROM STRING_SPLIT(Tags, ',') WHERE value IN ('clothing', 'road'))" db-types="SQLServer"/>
+    <sql-case id="select_sub_query_with_cast_function" value="SELECT [T1_1].[BusinessEntityID] AS [BusinessEntityID], [T1_1].[rowguid] AS [rowguid], [T1_1].[ModifiedDate] AS [ModifiedDate] FROM  (SELECT [T2_1].[BusinessEntityID] AS [BusinessEntityID], [T2_1].[rowguid] AS [rowguid], [T2_1].[ModifiedDate] AS [ModifiedDate] FROM [AdventureWorks2022].[Person].[BusinessEntity] AS T2_1 WHERE ([T2_1].[BusinessEntityID] = CAST ((17907) AS INT))) AS T1_1" db-types="SQLServer"/>
+    <sql-case id="select_sub_query_with_inner_join" value="SELECT [T1_1].[BusinessEntityID] AS [BusinessEntityID], [T1_1].[AddressID] AS [AddressID] FROM (SELECT [T2_2].[BusinessEntityID] AS [BusinessEntityID], [T2_1].[AddressID] AS [AddressID] FROM [AdventureWorks2022].[Person].[BusinessEntityAddress] AS T2_1 INNER JOIN [AdventureWorks2022].[Person].[BusinessEntity] AS T2_2 ON ([T2_1].[BusinessEntityID] = [T2_2].[BusinessEntityID])) AS T1_1" db-types="SQLServer"/>
+    <sql-case id="select_sub_query_with_sum" value="SELECT [T1_1].[col] AS [col] FROM (SELECT SUM([T2_1].[Quantity]) AS [col] FROM [AdventureWorks2022].[Production].[ProductInventory] AS T2_1) AS T1_1" db-types="SQLServer"/>
+    <sql-case id="select_sub_query_with_rownumber" value="SELECT * FROM (SELECT col1, ROW_NUMBER () OVER (PARTITION by col1 ORDER BY col1) rn FROM tab1 WHERE col1='XYZ') WHERE rn = 1" db-types="SQLServer"/>
+</sql-cases>

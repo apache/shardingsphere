@@ -3,7 +3,7 @@ title = "Session Management"
 weight = 7
 +++
 
-ShardingSphere supports session management. You can view the current session or kill the session through the SQL of the native database. At present, this function is only available when the storage node is MySQL. MySQL `SHOW PROCESSLIST` and `KILL` commands are supported.
+ShardingSphere supports session management. You can view the current session or terminate the SQL executed in the session through the SQL of the native database. At present, this function is only available when the storage node is MySQL. MySQL `SHOW PROCESSLIST` and `KILL QUERY` commands are supported.
 
 ## Usage
 ### View Session
@@ -24,14 +24,15 @@ mysql> show processlist;
 
 Simulates the output of native MySQL, but the `Id` field is a special random string.
 
-### Kill Session
+### KILL THE SQL IN THE SESSION
 
-The user determines whether the `KILL` statement needs to be executed according to the results returned by `SHOW PROCESSLIST`. ShardingSphere cancels the SQL being executed according to the ID in the `KILL` statement.
+The user determines whether the `KILL QUERY` statement needs to be executed according to the results returned by `SHOW PROCESSLIST`. ShardingSphere cancels the SQL being executed according to the ID in the `KILL QUERY` statement.
 
 ```sql
-mysql> kill 05ede3bd584fd4a429dcaac382be2973;
+-- Cancel the SQL statement currently executing in the specified session.
+mysql> KILL QUERY 05ede3bd584fd4a429dcaac382be2973;
 Query OK, 0 rows affected (0.04 sec)
 
-mysql> show processlist;
+mysql> SHOW PROCESSLIST;
 Empty set (0.02 sec)
 ```

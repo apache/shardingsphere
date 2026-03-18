@@ -17,43 +17,39 @@
 
 package org.apache.shardingsphere.test.e2e.agent.file;
 
-import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
-import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
-import org.apache.shardingsphere.test.e2e.agent.file.asserts.ContentAssert;
-import org.apache.shardingsphere.test.e2e.agent.file.cases.IntegrationTestCasesLoader;
-import org.apache.shardingsphere.test.e2e.agent.file.cases.LogTestCase;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.props.AgentE2ETestConfiguration;
+import org.apache.shardingsphere.test.e2e.agent.engine.env.AgentE2ETestEnvironment;
+import org.apache.shardingsphere.test.e2e.agent.engine.framework.AgentE2ETestActionExtension;
+import org.apache.shardingsphere.test.e2e.agent.engine.framework.AgentE2ETestCaseArgumentsProvider;
+import org.apache.shardingsphere.test.e2e.agent.file.asserts.LogContentAssert;
+import org.apache.shardingsphere.test.e2e.agent.file.cases.LogE2ETestCase;
+import org.apache.shardingsphere.test.e2e.agent.file.cases.LogE2ETestCases;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@ExtendWith(AgentTestActionExtension.class)
+@ExtendWith(AgentE2ETestActionExtension.class)
 class FilePluginE2EIT {
     
     @EnabledIf("isEnabled")
     @ParameterizedTest
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertWithAgent(final LogTestCase testCase) {
-        assertFalse(E2ETestEnvironment.getInstance().getActualLogs().isEmpty(), "The actual log is empty");
-        ContentAssert.assertIs(E2ETestEnvironment.getInstance().getActualLogs(), testCase.getLogRegex());
+    void assertLogAgent(final LogE2ETestCase testCase) {
+        assertFalse(AgentE2ETestEnvironment.getInstance().getContainerLogs().isEmpty(), "The actual log is empty");
+        LogContentAssert.assertIs(AgentE2ETestEnvironment.getInstance().getContainerLogs(), testCase.getLogRegex());
     }
     
     private static boolean isEnabled() {
-        return E2ETestEnvironment.getInstance().containsTestParameter();
+        return AgentE2ETestConfiguration.getInstance().containsTestParameter();
     }
     
-    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+    private static final class TestCaseArgumentsProvider extends AgentE2ETestCaseArgumentsProvider {
         
-        @Override
-        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return IntegrationTestCasesLoader.getInstance().loadIntegrationTestCases(E2ETestEnvironment.getInstance().getAdapter()).stream().map(Arguments::of);
+        private TestCaseArgumentsProvider() {
+            super(LogE2ETestCases.class);
         }
     }
 }

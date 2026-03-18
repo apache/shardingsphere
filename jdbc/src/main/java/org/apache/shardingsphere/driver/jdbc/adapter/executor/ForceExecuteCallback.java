@@ -28,7 +28,7 @@ public interface ForceExecuteCallback<T> {
     
     /**
      * Execute.
-     * 
+     *
      * @param target target to be executed 
      * @throws SQLException SQL exception
      */

@@ -30,7 +30,7 @@ public interface StandardShardingAlgorithm<T extends Comparable<?>> extends Shar
     
     /**
      * Sharding.
-     * 
+     *
      * @param availableTargetNames available data sources or table names
      * @param shardingValue sharding value
      * @return sharding result for data source or table name

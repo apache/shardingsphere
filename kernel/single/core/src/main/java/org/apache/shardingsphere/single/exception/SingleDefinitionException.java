@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.single.exception;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.SQLState;
-import org.apache.shardingsphere.infra.exception.core.external.sql.type.kernel.category.MetaDataSQLException;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
  * Single definition exception.
@@ -32,6 +32,10 @@ public abstract class SingleDefinitionException extends MetaDataSQLException {
     
     protected SingleDefinitionException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, getErrorCode(errorCode), reason, messageArgs);
+    }
+    
+    protected SingleDefinitionException(final SQLState sqlState, final int errorCode, final Exception cause, final String reason, final Object... messageArgs) {
+        super(sqlState, getErrorCode(errorCode), cause, reason, messageArgs);
     }
     
     private static int getErrorCode(final int errorCode) {

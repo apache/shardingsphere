@@ -44,7 +44,7 @@ public final class MultiTableConditionalIntoSegment implements SQLSegment {
     
     /**
      * Get else segment.
-     * 
+     *
      * @return else segment
      */
     public Optional<MultiTableConditionalIntoElseSegment> getElseSegment() {

@@ -17,26 +17,26 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
+import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Data node.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 @ToString
 public final class DataNode {
     
@@ -46,10 +46,9 @@ public final class DataNode {
     
     private final String dataSourceName;
     
-    private final String tableName;
+    private final String schemaName;
     
-    // TODO add final for schemaName
-    private String schemaName;
+    private final String tableName;
     
     /**
      * Constructs a data node with well-formatted string.
@@ -57,17 +56,12 @@ public final class DataNode {
      * @param dataNode string of data node. use {@code .} to split data source name and table name.
      */
     public DataNode(final String dataNode) {
-        // TODO remove duplicated splitting?
-        boolean isIncludeInstance = isActualDataNodesIncludedDataSourceInstance(dataNode);
-        if (!isIncludeInstance && !isValidDataNode(dataNode, 2)) {
-            throw new InvalidDataNodeFormatException(dataNode);
-        }
-        if (isIncludeInstance && !isValidDataNode(dataNode, 3)) {
-            throw new InvalidDataNodeFormatException(dataNode);
-        }
+        validateDataNodeFormat(dataNode);
         List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
-        dataSourceName = isIncludeInstance ? segments.get(0) + DELIMITER + segments.get(1) : segments.get(0);
-        tableName = segments.get(isIncludeInstance ? 2 : 1);
+        boolean isIncludeSchema = 3 == segments.size();
+        dataSourceName = segments.get(0);
+        schemaName = isIncludeSchema ? segments.get(1) : null;
+        tableName = segments.get(isIncludeSchema ? 2 : 1);
     }
     
     /**
@@ -75,40 +69,67 @@ public final class DataNode {
      *
      * @param databaseName database name
      * @param databaseType database type
-     * @param dataNode string of data node. use {@code .} to split data source name and table name
+     * @param dataNode data node use {@code .} to split schema name and table name
      */
     public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
         ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER), () -> new InvalidDataNodeFormatException(dataNode));
-        boolean containsSchema = isValidDataNode(dataNode, 3);
-        List<String> segments = Splitter.on(DELIMITER).splitToList(dataNode);
+        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        boolean containsSchema = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() && isValidDataNode(dataNode, 3);
+        List<String> segments = Splitter.on(DELIMITER).limit(containsSchema ? 3 : 2).splitToList(dataNode);
         dataSourceName = segments.get(0);
-        schemaName = getSchemaName(databaseName, databaseType, containsSchema, segments);
+        schemaName = getSchemaName(databaseName, dialectDatabaseMetaData, containsSchema, segments);
         tableName = containsSchema ? segments.get(2).toLowerCase() : segments.get(1).toLowerCase();
     }
     
-    private String getSchemaName(final String databaseName, final DatabaseType databaseType, final boolean containsSchema, final List<String> segments) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        if (dialectDatabaseMetaData.getDefaultSchema().isPresent()) {
-            return containsSchema ? segments.get(1) : ASTERISK;
+    private String getSchemaName(final String databaseName, final DialectDatabaseMetaData dialectDatabaseMetaData, final boolean containsSchema, final List<String> segments) {
+        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().map(optional -> containsSchema ? segments.get(1) : ASTERISK).orElse(databaseName);
+    }
+    
+    private boolean isValidDataNode(final String dataNodeStr, final int tier) {
+        if (hasInvalidDelimiterStructure(dataNodeStr)) {
+            return false;
         }
-        return databaseName;
+        List<String> segments = Splitter.on(DELIMITER).splitToList(dataNodeStr);
+        return isAnySegmentIsEmptyOrContainsOnlyWhitespace(tier, segments);
     }
     
-    private boolean isValidDataNode(final String dataNodeStr, final Integer tier) {
-        return dataNodeStr.contains(DELIMITER) && tier == Splitter.on(DELIMITER).omitEmptyStrings().splitToList(dataNodeStr).size();
+    private boolean hasInvalidDelimiterStructure(final String dataNodeStr) {
+        return !dataNodeStr.contains(DELIMITER) || hasLeadingOrTrailingDelimiter(dataNodeStr) || hasConsecutiveDelimiters(dataNodeStr) || hasWhitespaceAroundDelimiters(dataNodeStr);
     }
     
-    private boolean isActualDataNodesIncludedDataSourceInstance(final String actualDataNodes) {
-        return isValidDataNode(actualDataNodes, 3);
+    private boolean hasLeadingOrTrailingDelimiter(final String dataNodeStr) {
+        return dataNodeStr.startsWith(DELIMITER) || dataNodeStr.endsWith(DELIMITER);
+    }
+    
+    private boolean hasConsecutiveDelimiters(final String dataNodeStr) {
+        return dataNodeStr.contains(DELIMITER + DELIMITER);
+    }
+    
+    private boolean hasWhitespaceAroundDelimiters(final String dataNodeStr) {
+        return dataNodeStr.contains(" " + DELIMITER) || dataNodeStr.contains(DELIMITER + " ");
+    }
+    
+    private boolean isAnySegmentIsEmptyOrContainsOnlyWhitespace(final int tier, final List<String> segments) {
+        return segments.stream().noneMatch(each -> each.trim().isEmpty()) && tier == segments.size();
     }
     
     /**
-     * Format data node as string.
+     * Validates the data node format based on its structure.
+     *
+     * @param dataNode the data node string to validate
+     * @throws InvalidDataNodeFormatException if the format is invalid
+     */
+    private void validateDataNodeFormat(final String dataNode) {
+        ShardingSpherePreconditions.checkState(isValidDataNode(dataNode, 2) || isValidDataNode(dataNode, 3), () -> new InvalidDataNodeFormatException(dataNode));
+    }
+    
+    /**
+     * Format data node as string with schema.
      *
      * @return formatted data node
      */
     public String format() {
-        return dataSourceName + DELIMITER + tableName;
+        return null == schemaName ? formatWithoutSchema() : formatWithSchema();
     }
     
     /**
@@ -118,8 +139,19 @@ public final class DataNode {
      * @return formatted data node
      */
     public String format(final DatabaseType databaseType) {
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getDefaultSchema().isPresent() ? dataSourceName + DELIMITER + schemaName + DELIMITER + tableName : dataSourceName + DELIMITER + tableName;
+        return shouldIncludeSchema(databaseType) ? formatWithSchema() : formatWithoutSchema();
+    }
+    
+    private boolean shouldIncludeSchema(final DatabaseType databaseType) {
+        return null != schemaName && new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().getDefaultSchema().isPresent();
+    }
+    
+    private String formatWithSchema() {
+        return String.join(DELIMITER, dataSourceName, schemaName, tableName);
+    }
+    
+    private String formatWithoutSchema() {
+        return String.join(DELIMITER, dataSourceName, tableName);
     }
     
     @Override
@@ -131,13 +163,14 @@ public final class DataNode {
             return false;
         }
         DataNode dataNode = (DataNode) object;
-        return Objects.equal(dataSourceName.toUpperCase(), dataNode.dataSourceName.toUpperCase())
-                && Objects.equal(tableName.toUpperCase(), dataNode.tableName.toUpperCase())
-                && Objects.equal(null == schemaName ? null : schemaName.toUpperCase(), null == dataNode.schemaName ? null : dataNode.schemaName.toUpperCase());
+        return Objects.equal(Optional.ofNullable(dataSourceName).map(CaseInsensitiveString::of).orElse(null), Optional.ofNullable(dataNode.dataSourceName).map(CaseInsensitiveString::of).orElse(null))
+                && Objects.equal(Optional.ofNullable(tableName).map(CaseInsensitiveString::of).orElse(null), Optional.ofNullable(dataNode.tableName).map(CaseInsensitiveString::of).orElse(null))
+                && Objects.equal(Optional.ofNullable(schemaName).map(CaseInsensitiveString::of).orElse(null), Optional.ofNullable(dataNode.schemaName).map(CaseInsensitiveString::of).orElse(null));
     }
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(dataSourceName.toUpperCase(), tableName.toUpperCase(), null == schemaName ? null : schemaName.toUpperCase());
+        return Objects.hashCode(Optional.ofNullable(dataSourceName).map(CaseInsensitiveString::of).orElse(null), Optional.ofNullable(tableName).map(CaseInsensitiveString::of).orElse(null),
+                Optional.ofNullable(schemaName).map(CaseInsensitiveString::of).orElse(null));
     }
 }

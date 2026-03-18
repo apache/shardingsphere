@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.driver.state.circuit;
 
 import org.apache.shardingsphere.driver.state.circuit.connection.CircuitBreakerConnection;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -33,7 +32,7 @@ class CircuitBreakDriverStateTest {
     
     @Test
     void assertGetConnection() {
-        Connection actual = new CircuitBreakDriverState().getConnection(DefaultDatabase.LOGIC_NAME, mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        assertThat(actual, instanceOf(CircuitBreakerConnection.class));
+        Connection actual = new CircuitBreakDriverState().getConnection("foo_db", mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        assertThat(actual, isA(CircuitBreakerConnection.class));
     }
 }

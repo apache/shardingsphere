@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.group.DataRecordGroupEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.record.group.GroupedDataRecord;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.PipelineJobUpdateProgress;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.sql.PipelineImportSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -41,9 +41,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -73,17 +73,32 @@ public final class PipelineDataSourceSink implements PipelineSink {
     }
     
     @Override
-    public PipelineJobProgressUpdatedParameter write(final String ackId, final Collection<Record> records) {
+    public PipelineJobUpdateProgress write(final String ackId, final Collection<Record> records) {
         List<DataRecord> dataRecords = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).collect(Collectors.toList());
         if (dataRecords.isEmpty()) {
-            return new PipelineJobProgressUpdatedParameter(0);
+            return new PipelineJobUpdateProgress(0);
+        }
+        if (dataRecords.iterator().next().getUniqueKeyValue().isEmpty()) {
+            sequentialWrite(dataRecords);
+            return new PipelineJobUpdateProgress(dataRecords.size());
         }
         for (GroupedDataRecord each : groupEngine.group(dataRecords)) {
             batchWrite(each.getDeleteDataRecords());
             batchWrite(each.getInsertDataRecords());
             batchWrite(each.getUpdateDataRecords());
         }
-        return new PipelineJobProgressUpdatedParameter((int) dataRecords.stream().filter(each -> PipelineSQLOperationType.INSERT == each.getType()).count());
+        return new PipelineJobUpdateProgress((int) dataRecords.stream().filter(each -> PipelineSQLOperationType.INSERT == each.getType()).count());
+    }
+    
+    private void sequentialWrite(final List<DataRecord> buffer) {
+        // TODO It's better to use transaction, but delete operation may not take effect on PostgreSQL sometimes
+        try {
+            for (DataRecord each : buffer) {
+                doWrite(Collections.singletonList(each), true);
+            }
+        } catch (final SQLException ex) {
+            throw new PipelineImporterJobWriteException(ex);
+        }
     }
     
     @SuppressWarnings("BusyWait")
@@ -185,7 +200,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
     }
     
     private void executeUpdate(final Connection connection, final DataRecord dataRecord) throws SQLException {
-        Set<String> shardingColumns = importerConfig.getShardingColumns(dataRecord.getTableName());
+        Collection<String> shardingColumns = importerConfig.getShardingColumns(dataRecord.getTableName());
         List<Column> conditionColumns = RecordUtils.extractConditionColumns(dataRecord, shardingColumns);
         List<Column> setColumns = dataRecord.getColumns().stream().filter(Column::isUpdated).collect(Collectors.toList());
         String sql = importSQLBuilder.buildUpdateSQL(importerConfig.findSchemaName(dataRecord.getTableName()).orElse(null), dataRecord, conditionColumns);
@@ -206,7 +221,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
             // TODO if table without unique key the conditionColumns before values is null, so update will fail at PostgreSQL
             int updateCount = preparedStatement.executeUpdate();
             if (1 != updateCount) {
-                log.warn("execute update failed, update count: {}, sql: {}, set columns: {}, sharding columns: {}, condition columns: {}",
+                log.warn("Update failed, update count: {}, sql: {}, set columns: {}, sharding columns: {}, condition columns: {}",
                         updateCount, sql, setColumns, JsonUtils.toJsonString(shardingColumns), JsonUtils.toJsonString(conditionColumns));
             }
         } catch (final SQLException ex) {
@@ -231,7 +246,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
         }
     }
     
-    private void executeBatchDelete(final Connection connection, final Collection<DataRecord> dataRecords, final Set<String> shardingColumns) throws SQLException {
+    private void executeBatchDelete(final Connection connection, final Collection<DataRecord> dataRecords, final Collection<String> shardingColumns) throws SQLException {
         DataRecord dataRecord = dataRecords.iterator().next();
         String deleteSQL = importSQLBuilder.buildDeleteSQL(importerConfig.findSchemaName(dataRecord.getTableName()).orElse(null), dataRecord,
                 RecordUtils.extractConditionColumns(dataRecord, shardingColumns));

@@ -20,11 +20,11 @@ package org.apache.shardingsphere.driver.api.yaml;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.DefaultDatabase;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.yaml.YamlJDBCConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.database.core.DefaultDatabase;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
@@ -47,7 +47,7 @@ public final class YamlShardingSphereDataSourceFactory {
     
     /**
      * Create ShardingSphere data source.
-     * 
+     *
      * @param yamlFile YAML file for rule configurations
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
@@ -60,7 +60,7 @@ public final class YamlShardingSphereDataSourceFactory {
     
     /**
      * Create ShardingSphere data source.
-     * 
+     *
      * @param yamlBytes YAML bytes for rule configurations
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
@@ -73,7 +73,7 @@ public final class YamlShardingSphereDataSourceFactory {
     
     /**
      * Create ShardingSphere data source.
-     * 
+     *
      * @param dataSourceMap data source map
      * @param yamlFile YAML file for rule configurations
      * @return ShardingSphere data source
@@ -86,7 +86,7 @@ public final class YamlShardingSphereDataSourceFactory {
     
     /**
      * Create ShardingSphere data source.
-     * 
+     *
      * @param dataSource data source
      * @param yamlFile YAML file for rule configurations
      * @return ShardingSphere data source
@@ -99,7 +99,7 @@ public final class YamlShardingSphereDataSourceFactory {
     
     /**
      * Create ShardingSphere data source.
-     * 
+     *
      * @param dataSourceMap data source map
      * @param yamlBytes YAML bytes for rule configurations
      * @return ShardingSphere data source
@@ -112,7 +112,7 @@ public final class YamlShardingSphereDataSourceFactory {
     
     /**
      * Create ShardingSphere data source.
-     * 
+     *
      * @param dataSource data source
      * @param yamlBytes YAML bytes for rule configurations
      * @return ShardingSphere data source

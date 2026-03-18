@@ -28,7 +28,7 @@ public interface ValueASTNode<T> extends ASTNode {
     
     /**
      * Get value.
-     * 
+     *
      * @return value
      */
     T getValue();

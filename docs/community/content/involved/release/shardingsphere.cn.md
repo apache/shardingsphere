@@ -16,10 +16,12 @@ chapter = true
 
 ### 2. 确认 Release Note
 
-Release Note 需提供中文/英文两种版本，确认中英文描述是否明确，并按以下标签进行分类：
+确认 Release Note 中的内容完整，描述准确，并按以下标签进行分类：
 
-1. 新功能
+1. CVE
+1. 元数据存储变更
 1. API 变更
+1. 新功能
 1. 功能增强
 1. 漏洞修复
 
@@ -47,9 +49,9 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 
 ### 6. 发起发布讨论
 
-1. 创建 [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) 并在讨论内容中列出 Release Note，并 **明确具体代码冻结日期** ；
+1. 创建 [GitHub Issue](https://github.com/apache/shardingsphere/issues)，在 Issue 内容中列出 Release Note，并 **明确具体代码冻结日期** ；
 1. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中链接 GitHub Discussion，并 **明确具体代码冻结日期** ；
-1. 关注 Discussion 与邮件列表，确认社区开发者对 Release Note 没有任何疑问。
+1. 关注 Issue 与邮件列表，确认社区开发者对 Release Note 没有任何疑问。
 
 ## GPG 设置
 
@@ -104,7 +106,7 @@ Please specify how long the key should be valid.
      <n>w = key expires in n weeks
      <n>m = key expires in n months
      <n>y = key expires in n years
-Key is valid for? (0) 
+Key is valid for? (0)
 Key does not expire at all
 Is this correct? (y/N) y
 
@@ -233,10 +235,10 @@ export GPG_TTY=$(tty)
 ```
 
 ```shell
-./mvnw release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
+./mvnw release:prepare -P-dev,release,all -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
 ```
 
--Prelease：选择 release 的 profile，这个 profile 会打包所有源码、jar 文件以及 ShardingSphere-Proxy 的可执行二进制包。
+-P-dev,release,all：选择 release 的 profile，这个 profile 会打包默认依赖源码、jar 文件以及 ShardingSphere-Proxy 的可执行二进制包。
 
 -DautoVersionSubmodules=true：作用是发布过程中版本号只需要输入一次，不必为每个子模块都输入一次。
 
@@ -251,7 +253,7 @@ export GPG_TTY=$(tty)
 ```
 
 ```shell
-./mvnw release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github 用户名}
+./mvnw release:prepare -P-dev,release,all -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github 用户名}
 ```
 
 和上一步演练的命令基本相同，去掉了 -DdryRun=true 参数。
@@ -270,7 +272,7 @@ git push origin ${RELEASE.VERSION}
 使用稳定的网络环境，本过程可能持续`1`个小时以上。
 
 ```shell
-./mvnw release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DlocalCheckout=true -Dusername=${Github 用户名}
+./mvnw release:perform -Prelease,-dev,all -Darguments="-DskipTests" -DautoVersionSubmodules=true -DlocalCheckout=true -Dusername=${Github 用户名}
 ```
 
 -DlocalCheckout=true：从本地 checkout 代替从远程仓库拉取代码。
@@ -477,13 +479,13 @@ The vote will be open for at least 72 hours or until necessary number of votes a
 
 Please vote accordingly:
 
-[ ] +1 approve 
+[ ] +1 approve
 
 [ ] +0 no opinion
- 
+
 [ ] -1 disapprove with the reason
 
-PMC vote is +1 binding, all others is +1 non-binding.
+PMC vote is "+1 binding", all others is "+1 non-binding".
 
 Checklist for reference:
 
@@ -500,7 +502,7 @@ Checklist for reference:
 [ ] No compiled archives bundled in source archive.
 ```
 
-> 注意：`Release Commit ID` 使用发布分支上与 `prepare release ${RELEASE.VERSION}` 日志对应的 commit id。 
+> 注意：`Release Commit ID` 使用发布分支上与 `prepare release ${RELEASE.VERSION}` 日志对应的 commit id。
 
 2. 宣布投票结果模板：
 
@@ -513,7 +515,7 @@ Checklist for reference:
 正文：
 
 ```
-We’ve received 3 +1 binding votes and one +1 non-binding vote:
+We’ve received 3 "+1 binding" votes and one "+1 non-binding" vote:
 
 +1 binding, xxx
 +1 binding, xxx
@@ -521,7 +523,7 @@ We’ve received 3 +1 binding votes and one +1 non-binding vote:
 
 +1 non-binding, xxx
 
-Thank you everyone for taking the time to review the release and help us. 
+Thank you everyone for taking the time to review the release and help us.
 I will process to publish the release and send ANNOUNCE.
 ```
 
@@ -568,12 +570,34 @@ docker login
 ```shell
 cd ~/shardingsphere
 git checkout ${RELEASE.VERSION}
-./mvnw -pl distribution/proxy -B -Prelease,docker.buildx.push clean package
+./mvnw -pl distribution/proxy -B -P-dev,release,all,docker.buildx.push clean package
 ```
 
 3.4 确认发布成功
 
 查看 [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-proxy/) 是否有发布的镜像，确保镜像同时支持 `linux/amd64` 和 `linux/arm64`。
+
+```shell
+docker logout
+```
+
+3.5 登录 GitHub Packages Container Registry
+
+```shell
+docker login ghcr.io/apache/shardingsphere
+```
+
+3.6 构建并推送 ShardingSphere Agent Docker image
+
+```shell
+cd ~/shardingsphere
+git checkout ${RELEASE.VERSION}
+./mvnw -am -pl distribution/agent -P-dev,release,all,docker.buildx.push -T 1C -DskipTests clean package
+```
+
+3.7 确认发布成功
+
+查看 [GitHub Packages](https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-agent) 是否有发布的镜像，确保镜像同时支持 `linux/amd64` 和 `linux/arm64`。
 
 ```shell
 docker logout

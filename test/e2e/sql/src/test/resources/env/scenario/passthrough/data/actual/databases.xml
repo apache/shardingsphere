@@ -17,5 +17,5 @@
   -->
 
 <databases>
-    <database>passthrough</database>
+    <database name="passthrough" />
 </databases>

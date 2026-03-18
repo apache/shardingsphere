@@ -31,9 +31,9 @@ public interface HintShadowAlgorithm<T extends Comparable<?>> extends ShadowAlgo
     /**
      * Is need shadow.
      *
-     * @param relatedShadowTables related shadow tables
+     * @param shadowTableNames shadow table names
      * @param hintShadowValue hint value of shadow
      * @return is need shadow or not
      */
-    boolean isShadow(Collection<String> relatedShadowTables, PreciseHintShadowValue<T> hintShadowValue);
+    boolean isShadow(Collection<String> shadowTableNames, PreciseHintShadowValue<T> hintShadowValue);
 }

@@ -36,7 +36,7 @@ public interface GaugeMetricFamilyMetricsCollector extends MetricsCollector {
     
     /**
      * Get raw metric family object.
-     * 
+     *
      * @return raw metric family object
      */
     Object getRawMetricFamilyObject();

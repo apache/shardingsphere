@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shadow.distsql.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.distsql.statement.rql.rule.database.ShowDatabaseRulesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowDatabaseRulesStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 
 /**
  * Show shadow table rules statement.
@@ -29,8 +29,8 @@ public final class ShowShadowTableRulesStatement extends ShowDatabaseRulesStatem
     
     private final String tableName;
     
-    public ShowShadowTableRulesStatement(final DatabaseSegment database, final String tableName) {
-        super(database);
+    public ShowShadowTableRulesStatement(final FromDatabaseSegment fromDatabase, final String tableName) {
+        super(fromDatabase);
         this.tableName = tableName;
     }
 }

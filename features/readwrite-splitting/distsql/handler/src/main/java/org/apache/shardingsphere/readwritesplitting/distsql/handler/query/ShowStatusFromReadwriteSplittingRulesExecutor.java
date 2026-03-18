@@ -42,7 +42,7 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Dist
     
     @Override
     public Collection<String> getColumnNames(final ShowStatusFromReadwriteSplittingRulesStatement sqlStatement) {
-        return Arrays.asList("storage_unit", "status");
+        return Arrays.asList("name", "storage_unit", "status");
     }
     
     @Override
@@ -62,11 +62,11 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Dist
     
     private Collection<LocalDataQueryResultRow> buildRows(final ReadwriteSplittingDataSourceGroupRule dataSourceGroupRule) {
         return dataSourceGroupRule.getReadwriteSplittingGroup().getReadDataSources().stream()
-                .map(each -> buildRow(each, dataSourceGroupRule.getDisabledDataSourceNames().contains(each))).collect(Collectors.toList());
+                .map(each -> buildRow(dataSourceGroupRule.getName(), each, dataSourceGroupRule.getDisabledDataSourceNames().contains(each))).collect(Collectors.toList());
     }
     
-    private LocalDataQueryResultRow buildRow(final String dataSourceName, final boolean disabled) {
-        return new LocalDataQueryResultRow(dataSourceName, disabled ? DataSourceState.DISABLED : DataSourceState.ENABLED);
+    private LocalDataQueryResultRow buildRow(final String ruleName, final String dataSourceName, final boolean disabled) {
+        return new LocalDataQueryResultRow(ruleName, dataSourceName, disabled ? DataSourceState.DISABLED : DataSourceState.ENABLED);
     }
     
     @Override

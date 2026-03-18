@@ -21,14 +21,19 @@ import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfigurat
 import org.apache.shardingsphere.mask.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.config.rule.MaskTableRuleConfiguration;
+import org.apache.shardingsphere.mask.constant.MaskOrder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Properties;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class MaskRuleTest {
     
@@ -40,19 +45,69 @@ class MaskRuleTest {
     }
     
     private MaskRuleConfiguration createMaskRuleConfiguration() {
-        MaskColumnRuleConfiguration maskColumnRuleConfig = new MaskColumnRuleConfiguration("user_id", "t_mask_user_id_md5");
-        MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("t_mask", Collections.singleton(maskColumnRuleConfig));
+        MaskColumnRuleConfiguration maskColumnRuleConfig = new MaskColumnRuleConfiguration("foo_id", "t_mask_foo_id_md5");
+        MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("foo_tbl", Collections.singleton(maskColumnRuleConfig));
         AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("md5", new Properties());
-        return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.singletonMap("t_mask_user_id_md5", algorithmConfig));
+        return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.singletonMap("t_mask_foo_id_md5", algorithmConfig));
     }
     
     @Test
     void assertFindMaskTableWhenTableNameExists() {
-        assertTrue(maskRule.findMaskTable("t_mask").isPresent());
+        assertTrue(maskRule.findMaskTable("foo_tbl").isPresent());
     }
     
     @Test
     void assertFindMaskTableWhenTableNameDoesNotExist() {
         assertFalse(maskRule.findMaskTable("non_existent_table").isPresent());
+    }
+    
+    @Test
+    void assertUpdateConfiguration() {
+        MaskRuleConfiguration toBeUpdatedRuleConfig = mock(MaskRuleConfiguration.class);
+        maskRule.updateConfiguration(toBeUpdatedRuleConfig);
+        assertThat(maskRule.getConfiguration(), is(toBeUpdatedRuleConfig));
+    }
+    
+    @Test
+    void assertPartialUpdateWithToBeAddedTables() {
+        maskRule.partialUpdate(createPartialAddTablesMaskRuleConfiguration());
+        assertTrue(maskRule.findMaskTable("bar_tbl").isPresent());
+    }
+    
+    private MaskRuleConfiguration createPartialAddTablesMaskRuleConfiguration() {
+        MaskColumnRuleConfiguration maskColumnRuleConfig = new MaskColumnRuleConfiguration("bar_id", "t_mask_bar_id_md5");
+        MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("bar_tbl", Collections.singleton(maskColumnRuleConfig));
+        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("md5", new Properties());
+        return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.singletonMap("t_mask_bar_id_md5", algorithmConfig));
+    }
+    
+    @Test
+    void assertPartialUpdateWithToBeRemovedTables() {
+        maskRule.partialUpdate(createPartialRemoveTablesMaskRuleConfiguration());
+        assertFalse(maskRule.findMaskTable("foo_tbl").isPresent());
+    }
+    
+    private MaskRuleConfiguration createPartialRemoveTablesMaskRuleConfiguration() {
+        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("md5", new Properties());
+        return new MaskRuleConfiguration(Collections.emptyList(), Collections.singletonMap("t_mask_bar_id_md5", algorithmConfig));
+    }
+    
+    @Test
+    void assertPartialUpdateWithToBeRemovedAlgorithms() {
+        maskRule.partialUpdate(createPartialRemovedAlgorithmsMaskRuleConfiguration());
+        Optional<MaskTable> table = maskRule.findMaskTable("foo_tbl");
+        assertTrue(table.isPresent());
+        assertFalse(table.get().findAlgorithm("t_mask_foo_id_md5").isPresent());
+    }
+    
+    private MaskRuleConfiguration createPartialRemovedAlgorithmsMaskRuleConfiguration() {
+        MaskColumnRuleConfiguration maskColumnRuleConfig = new MaskColumnRuleConfiguration("foo_id", "t_mask_foo_id_md5");
+        MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("foo_tbl", Collections.singleton(maskColumnRuleConfig));
+        return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.emptyMap());
+    }
+    
+    @Test
+    void assertGetOrder() {
+        assertThat(maskRule.getOrder(), is(MaskOrder.ORDER));
     }
 }

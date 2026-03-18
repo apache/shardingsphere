@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.constant.PipelineSQLOperatio
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.type.placeholder.IngestPlaceholderPosition;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class DataRecordTest {
@@ -29,18 +29,18 @@ class DataRecordTest {
     @Test
     void assertGetKey() {
         DataRecord beforeDataRecord = new DataRecord(PipelineSQLOperationType.UPDATE, "foo_tbl", new IngestPlaceholderPosition(), 1);
-        beforeDataRecord.addColumn(new Column("id", 1, true, true));
+        beforeDataRecord.addColumn(new NormalColumn("id", 1, true, true));
         DataRecord afterDataRecord = new DataRecord(PipelineSQLOperationType.UPDATE, "foo_tbl", new IngestPlaceholderPosition(), 1);
-        afterDataRecord.addColumn(new Column("id", 2, 1, true, true));
+        afterDataRecord.addColumn(new NormalColumn("id", 2, 1, true, true));
         assertThat(beforeDataRecord.getKey(), is(afterDataRecord.getKey()));
     }
     
     @Test
     void assertGetOldKey() {
         DataRecord beforeDataRecord = new DataRecord(PipelineSQLOperationType.DELETE, "foo_tbl", new IngestPlaceholderPosition(), 1);
-        beforeDataRecord.addColumn(new Column("id", 1, 2, true, true));
+        beforeDataRecord.addColumn(new NormalColumn("id", 1, 2, true, true));
         DataRecord afterDataRecord = new DataRecord(PipelineSQLOperationType.DELETE, "foo_tbl", new IngestPlaceholderPosition(), 1);
-        afterDataRecord.addColumn(new Column("id", 1, 3, true, true));
+        afterDataRecord.addColumn(new NormalColumn("id", 1, 3, true, true));
         assertThat(beforeDataRecord.getOldKey(), is(afterDataRecord.getOldKey()));
     }
 }

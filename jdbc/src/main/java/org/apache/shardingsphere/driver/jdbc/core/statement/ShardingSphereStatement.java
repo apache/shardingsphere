@@ -19,24 +19,24 @@ package org.apache.shardingsphere.driver.jdbc.core.statement;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.keygen.DialectGeneratedKeyOption;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.exception.core.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.driver.executor.callback.add.StatementAddCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.execute.StatementExecuteUpdateCallback;
-import org.apache.shardingsphere.driver.executor.engine.DriverExecutorFacade;
 import org.apache.shardingsphere.driver.executor.engine.batch.statement.BatchStatementExecutor;
+import org.apache.shardingsphere.driver.executor.engine.facade.DriverExecutorFacade;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractStatementAdapter;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultSet;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
 import org.apache.shardingsphere.infra.binder.context.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.context.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.context.type.TableAvailable;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
-import org.apache.shardingsphere.infra.database.core.keygen.GeneratedKeyColumnProvider;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPILoader;
-import org.apache.shardingsphere.infra.exception.core.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.exception.dialect.SQLExceptionTransformEngine;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.EmptySQLException;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
@@ -48,7 +48,6 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttri
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
-import org.apache.shardingsphere.transaction.util.AutoCommitUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -81,9 +80,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private final List<Statement> statements;
     
-    private String databaseName;
+    private String usedDatabaseName;
     
-    private SQLStatementContext sqlStatementContext;
+    private QueryContext queryContext;
     
     private boolean returnGeneratedKeys;
     
@@ -102,11 +101,11 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         metaData = connection.getContextManager().getMetaDataContexts().getMetaData();
         statementOption = new StatementOption(resultSetType, resultSetConcurrency, resultSetHoldability);
         statementManager = new StatementManager();
-        connection.getStatementManagers().add(statementManager);
-        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.STATEMENT);
+        connection.registerStatementManager(statementManager);
+        driverExecutorFacade = new DriverExecutorFacade(connection, statementOption, statementManager, JDBCDriverType.STATEMENT, metaData.getDatabase(connection.getCurrentDatabaseName()));
         batchStatementExecutor = new BatchStatementExecutor(this);
         statements = new LinkedList<>();
-        databaseName = connection.getDatabaseName();
+        usedDatabaseName = connection.getCurrentDatabaseName();
     }
     
     @Override
@@ -114,16 +113,16 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         QueryContext queryContext = createQueryContext(sql);
         try {
             prepareExecute(queryContext);
-            ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-            currentResultSet = driverExecutorFacade.executeQuery(database, queryContext, this, null,
+            ShardingSphereDatabase usedDatabase = metaData.getDatabase(usedDatabaseName);
+            currentResultSet = driverExecutorFacade.executeQuery(usedDatabase, metaData, queryContext, this, null,
                     (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), this::replay);
             return currentResultSet;
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final RuntimeException | SQLException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaData);
             currentResultSet = null;
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(databaseName).getProtocolType());
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(usedDatabaseName).getProtocolType());
         }
     }
     
@@ -132,10 +131,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             return executeUpdate(sql, (actualSQL, statement) -> statement.executeUpdate(actualSQL));
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final RuntimeException | SQLException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaData);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(databaseName).getProtocolType());
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(usedDatabaseName).getProtocolType());
         }
     }
     
@@ -148,10 +147,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             return executeUpdate(sql, (actualSQL, statement) -> statement.executeUpdate(actualSQL, autoGeneratedKeys));
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final RuntimeException | SQLException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaData);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(databaseName).getProtocolType());
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(usedDatabaseName).getProtocolType());
         }
     }
     
@@ -161,10 +160,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             return executeUpdate(sql, (actualSQL, statement) -> statement.executeUpdate(actualSQL, columnIndexes));
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final RuntimeException | SQLException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaData);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(databaseName).getProtocolType());
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(usedDatabaseName).getProtocolType());
         }
     }
     
@@ -174,10 +173,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         try {
             return executeUpdate(sql, (actualSQL, statement) -> statement.executeUpdate(actualSQL, columnNames));
             // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
+        } catch (final RuntimeException | SQLException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaData);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(databaseName).getProtocolType());
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(usedDatabaseName).getProtocolType());
         }
     }
     
@@ -185,8 +184,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         currentResultSet = null;
         QueryContext queryContext = createQueryContext(sql);
         prepareExecute(queryContext);
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        return driverExecutorFacade.executeUpdate(database, queryContext,
+        ShardingSphereDatabase usedDatabase = metaData.getDatabase(usedDatabaseName);
+        return driverExecutorFacade.executeUpdate(usedDatabase, metaData, queryContext,
                 updateCallback, (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), this::replay);
     }
     
@@ -198,7 +197,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         } catch (final SQLException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaData);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(databaseName).getProtocolType());
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(usedDatabaseName).getProtocolType());
         }
     }
     
@@ -213,7 +212,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         } catch (final SQLException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaData);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(databaseName).getProtocolType());
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(usedDatabaseName).getProtocolType());
         }
     }
     
@@ -226,7 +225,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         } catch (final SQLException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaData);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(databaseName).getProtocolType());
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(usedDatabaseName).getProtocolType());
         }
     }
     
@@ -239,7 +238,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         } catch (final SQLException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaData);
-            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(databaseName).getProtocolType());
+            throw SQLExceptionTransformEngine.toSQLException(ex, metaData.getDatabase(usedDatabaseName).getProtocolType());
         }
     }
     
@@ -247,33 +246,29 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         currentResultSet = null;
         QueryContext queryContext = createQueryContext(sql);
         prepareExecute(queryContext);
-        ShardingSphereDatabase database = metaData.getDatabase(databaseName);
-        return driverExecutorFacade.execute(database, queryContext, statementExecuteCallback,
+        ShardingSphereDatabase usedDatabase = metaData.getDatabase(usedDatabaseName);
+        return driverExecutorFacade.execute(usedDatabase, metaData, queryContext, statementExecuteCallback,
                 (StatementAddCallback<Statement>) (statements, parameterSets) -> this.statements.addAll(statements), this::replay);
     }
     
     private QueryContext createQueryContext(final String originSQL) throws SQLException {
         ShardingSpherePreconditions.checkNotEmpty(originSQL, () -> new EmptySQLException().toSQLException());
-        SQLParserRule sqlParserRule = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         HintValueContext hintValueContext = SQLHintUtils.extractHint(originSQL);
         String sql = SQLHintUtils.removeHint(originSQL);
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(metaData.getDatabase(databaseName).getProtocolType()).parse(sql, false);
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, databaseName, hintValueContext).bind(sqlStatement, Collections.emptyList());
-        return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
+        ShardingSphereDatabase currentDatabase = metaData.getDatabase(usedDatabaseName);
+        DatabaseType databaseType = currentDatabase.getProtocolType();
+        SQLStatement sqlStatement = metaData.getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getSQLParserEngine(databaseType).parse(sql, false);
+        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, connection.getCurrentDatabaseName(), hintValueContext).bind(sqlStatement);
+        return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext, connection.getDatabaseConnectionManager().getConnectionContext(), metaData);
     }
     
     private void prepareExecute(final QueryContext queryContext) throws SQLException {
-        handleAutoCommit(queryContext.getSqlStatementContext().getSqlStatement());
-        databaseName = queryContext.getDatabaseNameFromSQLStatement().orElse(connection.getDatabaseName());
-        connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabase(databaseName);
-        sqlStatementContext = queryContext.getSqlStatementContext();
+        handleAutoCommitBeforeExecution(queryContext.getSqlStatementContext().getSqlStatement(), connection);
+        this.queryContext = queryContext;
+        ShardingSpherePreconditions.checkNotNull(this.queryContext, () -> new IllegalStateException("Query context can not be null"));
+        usedDatabaseName = queryContext.getSqlStatementContext().getTablesContext().getDatabaseName().orElse(connection.getCurrentDatabaseName());
+        connection.getDatabaseConnectionManager().getConnectionContext().setCurrentDatabaseName(connection.getCurrentDatabaseName());
         clearStatements();
-    }
-    
-    private void handleAutoCommit(final SQLStatement sqlStatement) throws SQLException {
-        if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
-            connection.beginTransactionIfNeededWhenAutoCommitFalse();
-        }
     }
     
     private void clearStatements() throws SQLException {
@@ -290,7 +285,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     @Override
-    public void addBatch(final String sql) throws SQLException {
+    public void addBatch(final String sql) {
         batchStatementExecutor.addBatch(sql);
     }
     
@@ -309,7 +304,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (null != currentResultSet) {
             return currentResultSet;
         }
-        driverExecutorFacade.getResultSet(metaData.getDatabase(databaseName), sqlStatementContext, this, statements).ifPresent(optional -> currentResultSet = optional);
+        driverExecutorFacade.getResultSet(metaData.getDatabase(usedDatabaseName), queryContext, this, statements).ifPresent(optional -> currentResultSet = optional);
         return currentResultSet;
     }
     
@@ -332,11 +327,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     @Override
     public boolean isAccumulate() {
-        if (!(sqlStatementContext instanceof TableAvailable)) {
-            return false;
-        }
-        for (DataNodeRuleAttribute each : metaData.getDatabase(databaseName).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
-            if (each.isNeedAccumulate(((TableAvailable) sqlStatementContext).getTablesContext().getTableNames())) {
+        for (DataNodeRuleAttribute each : metaData.getDatabase(usedDatabaseName).getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)) {
+            if (each.isNeedAccumulate(queryContext.getSqlStatementContext().getTablesContext().getTableNames())) {
                 return true;
             }
         }
@@ -354,24 +346,27 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (returnGeneratedKeys && generatedKey.isPresent() && !generatedKey.get().getGeneratedValues().isEmpty()) {
             return new GeneratedKeysResultSet(getGeneratedKeysColumnName(generatedKey.get().getColumnName()), generatedKey.get().getGeneratedValues().iterator(), this);
         }
+        String columnName = generatedKey.map(GeneratedKeyContext::getColumnName).orElse(null);
+        String generatedKeysColumnName = getGeneratedKeysColumnName(columnName);
         Collection<Comparable<?>> generatedValues = new LinkedList<>();
         for (Statement each : statements) {
             ResultSet resultSet = each.getGeneratedKeys();
             while (resultSet.next()) {
-                generatedValues.add((Comparable<?>) resultSet.getObject(1));
+                generatedValues.add(GeneratedValueUtils.getGeneratedValue(resultSet, generatedKeysColumnName, columnName));
             }
         }
-        String columnName = generatedKey.map(GeneratedKeyContext::getColumnName).orElse(null);
-        return new GeneratedKeysResultSet(getGeneratedKeysColumnName(columnName), generatedValues.iterator(), this);
+        return new GeneratedKeysResultSet(generatedKeysColumnName, generatedValues.iterator(), this);
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey() {
+        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         return sqlStatementContext instanceof InsertStatementContext ? ((InsertStatementContext) sqlStatementContext).getGeneratedKeyContext() : Optional.empty();
     }
     
     private String getGeneratedKeysColumnName(final String columnName) {
-        return DatabaseTypedSPILoader.findService(GeneratedKeyColumnProvider.class, metaData.getDatabase(databaseName).getProtocolType())
-                .map(GeneratedKeyColumnProvider::getColumnName).orElse(columnName);
+        Optional<DialectGeneratedKeyOption> generatedKeyOption =
+                new DatabaseTypeRegistry(metaData.getDatabase(usedDatabaseName).getProtocolType()).getDialectDatabaseMetaData().getGeneratedKeyOption();
+        return generatedKeyOption.isPresent() ? generatedKeyOption.get().getColumnName() : columnName;
     }
     
     @Override

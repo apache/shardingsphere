@@ -17,25 +17,27 @@
 
 package org.apache.shardingsphere.infra.url.core.arg;
 
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class URLArgumentPlaceholderTypeFactoryTest {
     
     @Test
     void assertValueOfWithValidQueryProperties() {
-        assertThat(URLArgumentPlaceholderTypeFactory.valueOf(PropertiesBuilder.build(new Property("placeholder-type", "environment"))), is(URLArgumentPlaceholderType.ENVIRONMENT));
+        Properties props = new Properties();
+        props.setProperty("placeholder-type", "environment");
+        assertThat(URLArgumentPlaceholderTypeFactory.valueOf(props), is(URLArgumentPlaceholderType.ENVIRONMENT));
     }
     
     @Test
     void assertValueOfWithInvalidQueryProperties() {
-        assertThat(URLArgumentPlaceholderTypeFactory.valueOf(PropertiesBuilder.build(new Property("placeholder-type", "invalid"))), is(URLArgumentPlaceholderType.NONE));
+        Properties props = new Properties();
+        props.setProperty("placeholder-type", "invalid");
+        assertThat(URLArgumentPlaceholderTypeFactory.valueOf(props), is(URLArgumentPlaceholderType.NONE));
     }
     
     @Test

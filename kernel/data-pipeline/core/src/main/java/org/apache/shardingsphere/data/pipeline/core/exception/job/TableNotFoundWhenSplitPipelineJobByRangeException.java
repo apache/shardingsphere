@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.exception.job;
 
-import org.apache.shardingsphere.infra.exception.core.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
  * Table not found when split pipeline job by range exception.
@@ -27,6 +27,6 @@ public final class TableNotFoundWhenSplitPipelineJobByRangeException extends Pip
     private static final long serialVersionUID = -8509592086832334026L;
     
     public TableNotFoundWhenSplitPipelineJobByRangeException(final String tableName) {
-        super(XOpenSQLState.NOT_FOUND, 3, "Can not get meta data for table '%s' when split by range.", tableName);
+        super(XOpenSQLState.NOT_FOUND, 3, String.format("Can not get meta data for table '%s' when split by range.", tableName));
     }
 }

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.cache.ShardingCache;
 import org.apache.shardingsphere.sharding.cache.checker.ShardingRouteCacheableCheckResult;
@@ -30,6 +29,7 @@ import org.apache.shardingsphere.sharding.cache.route.cache.ShardingRouteCacheVa
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,13 +46,12 @@ public final class CachedShardingSQLRouter {
      * @param globalRuleMetaData global rule meta data
      * @param database database
      * @param shardingCache sharding cache
+     * @param tableNames table names
      * @param props configuration properties
-     * @param connectionContext connection context
      * @return route context
      */
     public Optional<RouteContext> loadRouteContext(final OriginSQLRouter originSQLRouter, final QueryContext queryContext, final RuleMetaData globalRuleMetaData,
-                                                   final ShardingSphereDatabase database, final ShardingCache shardingCache, final ConfigurationProperties props,
-                                                   final ConnectionContext connectionContext) {
+                                                   final ShardingSphereDatabase database, final ShardingCache shardingCache, final Collection<String> tableNames, final ConfigurationProperties props) {
         if (queryContext.getSql().length() > shardingCache.getConfiguration().getAllowedMaxSqlLength()) {
             return Optional.empty();
         }
@@ -69,8 +68,7 @@ public final class CachedShardingSQLRouter {
         }
         Optional<RouteContext> cachedResult = shardingCache.getRouteCache().get(new ShardingRouteCacheKey(queryContext.getSql(), shardingConditionParams))
                 .flatMap(ShardingRouteCacheValue::getCachedRouteContext);
-        RouteContext result = cachedResult.orElseGet(
-                () -> originSQLRouter.createRouteContext(queryContext, globalRuleMetaData, database, shardingCache.getShardingRule(), props, connectionContext));
+        RouteContext result = cachedResult.orElseGet(() -> originSQLRouter.createRouteContext(queryContext, globalRuleMetaData, database, shardingCache.getShardingRule(), tableNames, props));
         if (!cachedResult.isPresent() && hitOneShardOnly(result)) {
             shardingCache.getRouteCache().put(new ShardingRouteCacheKey(queryContext.getSql(), shardingConditionParams), new ShardingRouteCacheValue(result));
         }
@@ -92,11 +90,11 @@ public final class CachedShardingSQLRouter {
          * @param globalRuleMetaData global rule meta data
          * @param database database
          * @param rule rule
+         * @param tableNames table names
          * @param props configuration properties
-         * @param connectionContext connection context
          * @return route context
          */
-        RouteContext createRouteContext(QueryContext queryContext, RuleMetaData globalRuleMetaData, ShardingSphereDatabase database, ShardingRule rule,
-                                        ConfigurationProperties props, ConnectionContext connectionContext);
+        RouteContext createRouteContext(QueryContext queryContext, RuleMetaData globalRuleMetaData, ShardingSphereDatabase database, ShardingRule rule, Collection<String> tableNames,
+                                        ConfigurationProperties props);
     }
 }

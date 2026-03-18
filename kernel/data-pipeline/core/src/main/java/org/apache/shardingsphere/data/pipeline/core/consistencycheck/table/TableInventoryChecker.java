@@ -20,10 +20,21 @@ package org.apache.shardingsphere.data.pipeline.core.consistencycheck.table;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.PipelineCancellable;
 import org.apache.shardingsphere.data.pipeline.core.consistencycheck.result.TableDataConsistencyCheckResult;
 
+import java.util.Optional;
+
 /**
  * Table inventory checker.
  */
 public interface TableInventoryChecker extends PipelineCancellable {
+    
+    /**
+     * Pre-check for table inventory data.
+     *
+     * @return check result
+     */
+    default Optional<TableDataConsistencyCheckResult> preCheck() {
+        return Optional.empty();
+    }
     
     /**
      * Data consistency check for single table inventory data.

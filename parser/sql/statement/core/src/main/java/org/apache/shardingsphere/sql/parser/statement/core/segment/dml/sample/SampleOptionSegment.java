@@ -28,9 +28,9 @@ import java.util.List;
 /**
  * Update statistics sample option segment.
  */
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
 public final class SampleOptionSegment implements SQLSegment {
     
     private int startIndex;

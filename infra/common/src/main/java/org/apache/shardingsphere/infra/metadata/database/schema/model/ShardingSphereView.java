@@ -17,24 +17,19 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 /**
  * ShardingSphere view.
  */
+@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
 @ToString
 public final class ShardingSphereView {
     
     private final String name;
     
     private final String viewDefinition;
-    
-    public ShardingSphereView(final String name, final String viewDefinition) {
-        this.name = name;
-        this.viewDefinition = viewDefinition;
-    }
 }

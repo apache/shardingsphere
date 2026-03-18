@@ -26,6 +26,9 @@ class DirectionTypeTest {
     
     @Test
     void assertIsAggregationType() {
+        assertTrue(DirectionType.isAllDirectionType(DirectionType.ALL));
+        assertTrue(DirectionType.isAllDirectionType(DirectionType.FORWARD_ALL));
+        assertTrue(DirectionType.isAllDirectionType(DirectionType.BACKWARD_ALL));
         assertFalse(DirectionType.isAllDirectionType(DirectionType.NEXT));
         assertFalse(DirectionType.isAllDirectionType(DirectionType.PRIOR));
         assertFalse(DirectionType.isAllDirectionType(DirectionType.FIRST));
@@ -33,12 +36,45 @@ class DirectionTypeTest {
         assertFalse(DirectionType.isAllDirectionType(DirectionType.ABSOLUTE_COUNT));
         assertFalse(DirectionType.isAllDirectionType(DirectionType.RELATIVE_COUNT));
         assertFalse(DirectionType.isAllDirectionType(DirectionType.COUNT));
-        assertTrue(DirectionType.isAllDirectionType(DirectionType.ALL));
         assertFalse(DirectionType.isAllDirectionType(DirectionType.FORWARD));
         assertFalse(DirectionType.isAllDirectionType(DirectionType.FORWARD_COUNT));
-        assertTrue(DirectionType.isAllDirectionType(DirectionType.FORWARD_ALL));
         assertFalse(DirectionType.isAllDirectionType(DirectionType.BACKWARD));
         assertFalse(DirectionType.isAllDirectionType(DirectionType.BACKWARD_COUNT));
-        assertTrue(DirectionType.isAllDirectionType(DirectionType.BACKWARD_ALL));
+    }
+    
+    @Test
+    void assertIsForwardCountDirectionType() {
+        assertTrue(DirectionType.isForwardCountDirectionType(DirectionType.NEXT));
+        assertTrue(DirectionType.isForwardCountDirectionType(DirectionType.COUNT));
+        assertTrue(DirectionType.isForwardCountDirectionType(DirectionType.FORWARD));
+        assertTrue(DirectionType.isForwardCountDirectionType(DirectionType.FORWARD_COUNT));
+        assertFalse(DirectionType.isForwardCountDirectionType(DirectionType.PRIOR));
+        assertFalse(DirectionType.isForwardCountDirectionType(DirectionType.FIRST));
+        assertFalse(DirectionType.isForwardCountDirectionType(DirectionType.LAST));
+        assertFalse(DirectionType.isForwardCountDirectionType(DirectionType.ABSOLUTE_COUNT));
+        assertFalse(DirectionType.isForwardCountDirectionType(DirectionType.RELATIVE_COUNT));
+        assertFalse(DirectionType.isForwardCountDirectionType(DirectionType.ALL));
+        assertFalse(DirectionType.isForwardCountDirectionType(DirectionType.FORWARD_ALL));
+        assertFalse(DirectionType.isForwardCountDirectionType(DirectionType.BACKWARD));
+        assertFalse(DirectionType.isForwardCountDirectionType(DirectionType.BACKWARD_COUNT));
+        assertFalse(DirectionType.isForwardCountDirectionType(DirectionType.BACKWARD_ALL));
+    }
+    
+    @Test
+    void assertIsBackwardCountDirectionType() {
+        assertTrue(DirectionType.isBackwardCountDirectionType(DirectionType.PRIOR));
+        assertTrue(DirectionType.isBackwardCountDirectionType(DirectionType.BACKWARD));
+        assertTrue(DirectionType.isBackwardCountDirectionType(DirectionType.BACKWARD_COUNT));
+        assertFalse(DirectionType.isBackwardCountDirectionType(DirectionType.NEXT));
+        assertFalse(DirectionType.isBackwardCountDirectionType(DirectionType.FIRST));
+        assertFalse(DirectionType.isBackwardCountDirectionType(DirectionType.LAST));
+        assertFalse(DirectionType.isBackwardCountDirectionType(DirectionType.ABSOLUTE_COUNT));
+        assertFalse(DirectionType.isBackwardCountDirectionType(DirectionType.RELATIVE_COUNT));
+        assertFalse(DirectionType.isBackwardCountDirectionType(DirectionType.COUNT));
+        assertFalse(DirectionType.isBackwardCountDirectionType(DirectionType.ALL));
+        assertFalse(DirectionType.isBackwardCountDirectionType(DirectionType.FORWARD));
+        assertFalse(DirectionType.isBackwardCountDirectionType(DirectionType.FORWARD_COUNT));
+        assertFalse(DirectionType.isBackwardCountDirectionType(DirectionType.FORWARD_ALL));
+        assertFalse(DirectionType.isBackwardCountDirectionType(DirectionType.FORWARD_ALL));
     }
 }

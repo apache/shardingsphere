@@ -17,10 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper.incremental;
 
-import org.apache.shardingsphere.data.pipeline.core.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.core.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.infra.database.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 /**
@@ -32,11 +29,8 @@ public interface DialectIncrementalDumperCreator extends DatabaseTypedSPI {
     /**
      * Create incremental dumper.
      *
-     * @param context incremental dumper context
-     * @param position position
-     * @param channel channel
-     * @param metaDataLoader meta data loader
+     * @param param create incremental dumper parameter
      * @return incremental dumper
      */
-    IncrementalDumper createIncrementalDumper(IncrementalDumperContext context, IngestPosition position, PipelineChannel channel, PipelineTableMetaDataLoader metaDataLoader);
+    IncrementalDumper create(CreateIncrementalDumperParameter param);
 }

@@ -17,6 +17,7 @@
   -->
 
 <sql-cases>
+    <sql-case id="alter_database_mysql_simple" value="ALTER DATABASE test_db" db-types="MySQL" />
     <sql-case id="alter_database_enable_block_change_tracking" value="ALTER DATABASE ENABLE BLOCK CHANGE TRACKING" db-types="Oracle" />
     <sql-case id="alter_database_add_logffile_group_size_m_blocksize_reuse" value="ALTER DATABASE orcl ADD LOGFILE GROUP 4 ('/u01/logs/orcl/redo04a.log','/u01/logs/orcl/redo04b.log') SIZE 100M BLOCKSIZE 512 REUSE" db-types="Oracle" />
     <sql-case id="alter_database_add_logfile_group_size_k_reuse" value="ALTER DATABASE payable ADD LOGFILE GROUP 3 ('diska:log3.log', 'diskb:log3.log') SIZE 50K REUSE" db-types="Oracle" />
@@ -87,4 +88,20 @@
     <sql-case id="alter_database_set_options" value="ALTER DATABASE db1 SET CHANGE_TRACKING = ON (AUTO_CLEANUP = ON, CHANGE_RETENTION = 2 DAYS)" db-types="SQLServer" />
     <sql-case id="alter_database_enable_block_change_tracking_using_file" value="ALTER DATABASE ENABLE BLOCK CHANGE TRACKING USING FILE 'new_location'" db-types="Oracle" />
     <sql-case id="alter_database_backup_controlfile_to" value="ALTER DATABASE BACKUP CONTROLFILE TO '/oracle/dbs/cf_backup.f'" db-types="Oracle" />
+    <sql-case id="alter_database_set_dbproperties" value="ALTER DATABASE test_db SET DBPROPERTIES ('create_date'='2025-7-12');" db-types="Hive" />
+    <sql-case id="alter_schema_set_dbproperties" value="ALTER SCHEMA test_db SET DBPROPERTIES ('create_date'='2025-7-2');" db-types="Hive" />
+    <sql-case id="alter_database_set_owner_user" value="ALTER DATABASE test_db SET OWNER USER developer;" db-types="Hive" />
+    <sql-case id="alter_database_set_owner_role" value="ALTER DATABASE test_db SET OWNER ROLE admin_role;" db-types="Hive" />
+    <sql-case id="alter_schema_set_owner_user" value="ALTER DATABASE test_db SET OWNER USER developer;" db-types="Hive" />
+    <sql-case id="alter_schema_set_owner_role" value="ALTER SCHEMA test_db SET OWNER ROLE admin_role;" db-types="Hive" />
+    <sql-case id="alter_database_set_location" value="ALTER DATABASE test_db SET LOCATION 'hdfs://namenode:8020/user/hive/warehouse/new_test_db';" db-types="Hive" />
+    <sql-case id="alter_schema_set_location" value="ALTER SCHEMA test_db SET LOCATION 'hdfs://namenode:8020/user/hive/warehouse/another_location';" db-types="Hive" />
+    <sql-case id="alter_database_set_managedlocation" value="ALTER DATABASE test_db SET MANAGEDLOCATION 'hdfs://namenode:8020/user/hive/managed/test_db';" db-types="Hive" />
+    <sql-case id="alter_schema_set_managedlocation" value="ALTER SCHEMA test_db SET MANAGEDLOCATION 'hdfs://namenode:8020/user/hive/managed/another_test_db';" db-types="Hive" />
+    <sql-case id="alter_database_set_lc_messages" value="ALTER DATABASE &quot;regression&quot; SET lc_messages TO 'C'" db-types="PostgreSQL" />
+    <sql-case id="alter_database_set_data_quota" value="ALTER DATABASE example_db SET DATA QUOTA 10995116277760" db-types="Doris" />
+    <sql-case id="alter_database_set_replica_quota" value="ALTER DATABASE test_db SET REPLICA QUOTA 1024" db-types="Doris" />
+    <sql-case id="alter_database_set_transaction_quota" value="ALTER DATABASE prod_db SET TRANSACTION QUOTA 1000" db-types="Doris" />
+    <sql-case id="alter_database_rename_doris" value="ALTER DATABASE old_db RENAME new_db" db-types="Doris" />
+    <sql-case id="alter_database_set_properties" value="ALTER DATABASE example_db SET PROPERTIES (&quot;key1&quot; = &quot;value1&quot;, &quot;key2&quot; = &quot;value2&quot;)" db-types="Doris" />
 </sql-cases>

@@ -17,65 +17,30 @@
 
 package org.apache.shardingsphere.single.util;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Splitter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.database.core.metadata.database.DialectDatabaseMetaData;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.single.constant.SingleTableConstants;
 
-import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
- * Single table load utils.
+ * Single table load utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SingleTableLoadUtils {
     
     private static final String DELIMITER = ",";
-    
-    /**
-     * Get aggregated data source map.
-     * 
-     * @param dataSourceMap data source map
-     * @param builtRules built rules
-     * @return aggregated data source map
-     */
-    public static Map<String, DataSource> getAggregatedDataSourceMap(final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSourceMap);
-        for (ShardingSphereRule each : builtRules) {
-            Optional<DataSourceMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
-            if (ruleAttribute.isPresent()) {
-                result = getAggregatedDataSourceMap(result, ruleAttribute.get());
-            }
-        }
-        return result;
-    }
-    
-    private static Map<String, DataSource> getAggregatedDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceMapperRuleAttribute ruleAttribute) {
-        Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, Collection<String>> entry : ruleAttribute.getDataSourceMapper().entrySet()) {
-            for (String each : entry.getValue()) {
-                if (dataSourceMap.containsKey(each)) {
-                    result.putIfAbsent(entry.getKey(), dataSourceMap.remove(each));
-                }
-            }
-        }
-        result.putAll(dataSourceMap);
-        return result;
-    }
     
     /**
      * Get excluded tables.
@@ -84,7 +49,7 @@ public final class SingleTableLoadUtils {
      * @return excluded tables
      */
     public static Collection<String> getExcludedTables(final Collection<ShardingSphereRule> builtRules) {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        Collection<String> result = new CaseInsensitiveSet<>();
         for (ShardingSphereRule each : builtRules) {
             Optional<TableMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(TableMapperRuleAttribute.class);
             if (ruleAttribute.isPresent()) {
@@ -102,16 +67,15 @@ public final class SingleTableLoadUtils {
      * @return feature required single tables
      */
     public static Collection<String> getFeatureRequiredSingleTables(final Collection<ShardingSphereRule> builtRules) {
-        Collection<String> result = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+        Collection<String> result = new CaseInsensitiveSet<>();
         for (ShardingSphereRule each : builtRules) {
             Optional<TableMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(TableMapperRuleAttribute.class);
             if (!ruleAttribute.isPresent()) {
                 continue;
             }
-            if (ruleAttribute.get().getEnhancedTableNames().isEmpty() || !ruleAttribute.get().getDistributedTableNames().isEmpty()) {
-                continue;
+            if (!ruleAttribute.get().getEnhancedTableNames().isEmpty() && ruleAttribute.get().getDistributedTableNames().isEmpty()) {
+                result.addAll(ruleAttribute.get().getEnhancedTableNames());
             }
-            result.addAll(ruleAttribute.get().getEnhancedTableNames());
         }
         return result;
     }
@@ -139,15 +103,11 @@ public final class SingleTableLoadUtils {
      *
      * @param databaseName database name
      * @param databaseType database type
-     * @param tables tables in configuration
+     * @param dataNodes data nodes
      * @return data nodes
      */
-    public static Collection<DataNode> convertToDataNodes(final String databaseName, final DatabaseType databaseType, final Collection<String> tables) {
-        Collection<DataNode> result = new LinkedHashSet<>(tables.size(), 1F);
-        for (String each : tables) {
-            result.add(new DataNode(databaseName, databaseType, each));
-        }
-        return result;
+    public static Collection<DataNode> convertToDataNodes(final String databaseName, final DatabaseType databaseType, final Collection<String> dataNodes) {
+        return dataNodes.stream().map(each -> new DataNode(databaseName, databaseType, each)).collect(Collectors.toCollection(() -> new LinkedHashSet<>(dataNodes.size(), 1F)));
     }
     
     /**
@@ -158,7 +118,7 @@ public final class SingleTableLoadUtils {
      */
     public static String getAllTablesNodeStr(final DatabaseType databaseType) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getDefaultSchema().isPresent() ? SingleTableConstants.ALL_SCHEMA_TABLES : SingleTableConstants.ALL_TABLES;
+        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? SingleTableConstants.ALL_SCHEMA_TABLES : SingleTableConstants.ALL_TABLES;
     }
     
     /**
@@ -171,7 +131,7 @@ public final class SingleTableLoadUtils {
      */
     public static String getAllTablesNodeStrFromDataSource(final DatabaseType databaseType, final String dataSourceName, final String schemaName) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getDefaultSchema().isPresent()
+        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()
                 ? formatDataNode(dataSourceName, schemaName, SingleTableConstants.ASTERISK)
                 : formatDataNode(dataSourceName, SingleTableConstants.ASTERISK);
     }
@@ -187,7 +147,7 @@ public final class SingleTableLoadUtils {
      */
     public static String getDataNodeString(final DatabaseType databaseType, final String dataSourceName, final String schemaName, final String tableName) {
         DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
-        return dialectDatabaseMetaData.getDefaultSchema().isPresent() ? formatDataNode(dataSourceName, schemaName, tableName) : formatDataNode(dataSourceName, tableName);
+        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent() ? formatDataNode(dataSourceName, schemaName, tableName) : formatDataNode(dataSourceName, tableName);
     }
     
     private static String formatDataNode(final String dataSourceName, final String tableName) {

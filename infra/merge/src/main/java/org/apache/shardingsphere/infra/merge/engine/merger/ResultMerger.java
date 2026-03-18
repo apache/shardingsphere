@@ -33,7 +33,7 @@ public interface ResultMerger {
     
     /**
      * Merge query results.
-     * 
+     *
      * @param queryResults query results
      * @param sqlStatementContext SQL statement context
      * @param database database

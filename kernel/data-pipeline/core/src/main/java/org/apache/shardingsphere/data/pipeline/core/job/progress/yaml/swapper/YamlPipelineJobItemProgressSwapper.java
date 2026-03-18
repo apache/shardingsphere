@@ -31,7 +31,7 @@ public interface YamlPipelineJobItemProgressSwapper<Y extends YamlPipelineJobIte
     
     /**
      * Get YAML pipeline job item progress configuration class.
-     * 
+     *
      * @return YAML pipeline job item progress configuration class
      */
     Class<Y> getYamlProgressClass();

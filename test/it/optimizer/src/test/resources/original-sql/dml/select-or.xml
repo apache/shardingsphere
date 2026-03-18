@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="select_or_with_same_sharding_columns" value="SELECT * FROM t_order WHERE order_id = ? OR order_id = ?" />
+    <sql-case id="select_or_with_different_sharding_columns" value="SELECT * FROM t_order WHERE order_id = ? OR user_id = ?" />
+    <sql-case id="select_or_with_none_sharding_columns" value="SELECT * FROM t_order WHERE order_id = ? OR status = ?" />
+    <sql-case id="select_or_mix_and_for_simple_pattern" value="SELECT * FROM t_order WHERE (order_id = ? OR status = ?) AND user_id = ?" />
+    <sql-case id="select_or_mix_and_for_complex_pattern" value="SELECT * FROM t_order WHERE ((status = ? AND (order_id = ? OR (order_id = ?)) AND (user_id = ? OR (user_id = ?))))" />
+    <sql-case id="select_or_mix_and_with_binding_tables" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id WHERE (o.order_id = ? OR o.order_id = ?) AND o.user_id = ?" />
+    <sql-case id="select_or_mix_and_with_binding_and_broadcast_tables" value="SELECT i.* FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id JOIN t_broadcast_table c ON o.status = c.status WHERE (o.order_id = ? OR o.order_id = ?) AND o.user_id = ? AND o.status = ?" />
+</sql-cases>

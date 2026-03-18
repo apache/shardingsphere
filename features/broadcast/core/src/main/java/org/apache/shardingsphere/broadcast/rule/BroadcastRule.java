@@ -20,20 +20,21 @@ package org.apache.shardingsphere.broadcast.rule;
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
 import org.apache.shardingsphere.broadcast.config.BroadcastRuleConfiguration;
+import org.apache.shardingsphere.broadcast.constant.BroadcastOrder;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastDataNodeRuleAttribute;
 import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastTableNamesRuleAttribute;
+import org.apache.shardingsphere.broadcast.rule.attribute.BroadcastUnregisterStorageUnitRuleAttribute;
+import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
+import org.apache.shardingsphere.infra.metadata.database.resource.PhysicalDataSourceAggregator;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
-import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.aggregate.AggregatedDataSourceRuleAttribute;
 import org.apache.shardingsphere.infra.rule.scope.DatabaseRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Broadcast rule.
@@ -43,70 +44,41 @@ public final class BroadcastRule implements DatabaseRule {
     
     private final BroadcastRuleConfiguration configuration;
     
-    private final String databaseName;
+    private final Collection<String> dataSourceNames;
     
     private final Collection<String> tables;
     
-    private final Collection<String> dataSourceNames;
-    
     private final RuleAttributes attributes;
     
-    public BroadcastRule(final BroadcastRuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
-        configuration = config;
-        this.databaseName = databaseName;
-        dataSourceNames = getAggregatedDataSourceNames(dataSources, builtRules);
-        tables = createBroadcastTables(config.getTables());
-        attributes = new RuleAttributes(new BroadcastDataNodeRuleAttribute(dataSourceNames, tables), new BroadcastTableNamesRuleAttribute(tables));
-    }
-    
-    private Collection<String> getAggregatedDataSourceNames(final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
-        Collection<String> result = new LinkedList<>(dataSources.keySet());
-        for (ShardingSphereRule each : builtRules) {
-            Optional<DataSourceMapperRuleAttribute> ruleAttribute = each.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class);
-            if (ruleAttribute.isPresent()) {
-                result = getAggregatedDataSourceNames(result, ruleAttribute.get());
-            }
-        }
-        return result;
-    }
-    
-    private Collection<String> getAggregatedDataSourceNames(final Collection<String> dataSourceNames, final DataSourceMapperRuleAttribute ruleAttribute) {
-        Collection<String> result = new LinkedList<>();
-        for (Entry<String, Collection<String>> entry : ruleAttribute.getDataSourceMapper().entrySet()) {
-            for (String each : entry.getValue()) {
-                if (dataSourceNames.contains(each)) {
-                    dataSourceNames.remove(each);
-                    if (!result.contains(entry.getKey())) {
-                        result.add(entry.getKey());
-                    }
-                }
-            }
-        }
-        result.addAll(dataSourceNames);
-        return result;
-    }
-    
-    private Collection<String> createBroadcastTables(final Collection<String> broadcastTables) {
-        return new CaseInsensitiveSet<>(broadcastTables);
+    public BroadcastRule(final BroadcastRuleConfiguration ruleConfig, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
+        configuration = ruleConfig;
+        Map<String, DataSource> aggregatedDataSources = new RuleMetaData(builtRules).findAttribute(AggregatedDataSourceRuleAttribute.class)
+                .map(AggregatedDataSourceRuleAttribute::getAggregatedDataSources).orElseGet(() -> PhysicalDataSourceAggregator.getAggregatedDataSources(dataSources, builtRules));
+        dataSourceNames = new CaseInsensitiveSet<>(aggregatedDataSources.keySet());
+        tables = new CaseInsensitiveSet<>(ruleConfig.getTables());
+        attributes = new RuleAttributes(new BroadcastDataNodeRuleAttribute(dataSourceNames, tables),
+                new BroadcastTableNamesRuleAttribute(tables), new AggregatedDataSourceRuleAttribute(aggregatedDataSources), new BroadcastUnregisterStorageUnitRuleAttribute());
     }
     
     /**
-     * Get broadcast rule table names.
-     * 
-     * @param logicTableNames logic table names
-     * @return broadcast rule table names.
-     */
-    public Collection<String> getBroadcastRuleTableNames(final Collection<String> logicTableNames) {
-        return logicTableNames.stream().filter(tables::contains).collect(Collectors.toSet());
-    }
-    
-    /**
-     * Judge whether logic table is all broadcast tables or not.
+     * Get broadcast table names.
      *
-     * @param logicTableNames logic table names
-     * @return whether logic table is all broadcast tables or not
+     * @param logicTableNames all logic table names
+     * @return broadcast table names
      */
-    public boolean isAllBroadcastTables(final Collection<String> logicTableNames) {
-        return !logicTableNames.isEmpty() && tables.containsAll(logicTableNames);
+    @HighFrequencyInvocation
+    public Collection<String> getBroadcastTableNames(final Collection<String> logicTableNames) {
+        Collection<String> result = new CaseInsensitiveSet<>();
+        for (String each : logicTableNames) {
+            if (tables.contains(each)) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public int getOrder() {
+        return BroadcastOrder.ORDER;
     }
 }

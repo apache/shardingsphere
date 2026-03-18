@@ -94,7 +94,7 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
     
     /**
      * Get alias segment.
-     * 
+     *
      * @return alias segment
      */
     public Optional<AliasSegment> getAliasSegment() {
@@ -103,7 +103,7 @@ public final class SimpleTableSegment implements TableSegment, OwnerAvailable {
     
     /**
      * Get pivot segment.
-     * 
+     *
      * @return pivot segment
      */
     public Optional<PivotSegment> getPivot() {
