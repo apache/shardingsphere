@@ -27,11 +27,14 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
@@ -143,6 +146,28 @@ class InsertStatementBinderTest {
         assertThat(actual.getTable().get().getTableName(), not(insertStatement.getTable().get().getTableName()));
         assertInsertColumns(actual.getDerivedInsertColumns());
         assertInsertSelect(actual);
+    }
+    
+    @Test
+    void assertBindInsertValuesSubqueryExpression() {
+        ProjectionsSegment projections = new ProjectionsSegment(8, 14);
+        projections.getProjections().add(new ColumnProjectionSegment(new ColumnSegment(8, 14, new IdentifierValue("status"))));
+        ColumnSegment predicateColumn = new ColumnSegment(34, 41, new IdentifierValue("order_id"));
+        BinaryOperationExpression predicate = new BinaryOperationExpression(34, 48, predicateColumn, new LiteralExpressionSegment(45, 48, 1000), "=", "order_id = 1000");
+        SelectStatement subquerySelect = SelectStatement.builder().databaseType(databaseType).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(22, 28, new IdentifierValue("t_order"))))
+                .where(new WhereSegment(34, 48, predicate)).build();
+        SubqueryExpressionSegment subqueryExpression = new SubqueryExpressionSegment(new SubquerySegment(0, 49, subquerySelect, "(SELECT status FROM t_order WHERE order_id = 1000)"));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
+                .insertColumns(new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("status")))))
+                .values(Collections.singletonList(new InsertValuesSegment(0, 49, Collections.singletonList(subqueryExpression)))).build();
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), insertStatement));
+        SubqueryExpressionSegment actualSubqueryExpression = (SubqueryExpressionSegment) actual.getValues().iterator().next().getValues().iterator().next();
+        ProjectionSegment projectionSegment = actualSubqueryExpression.getSubquery().getSelect().getProjections().getProjections().iterator().next();
+        assertThat(((ColumnProjectionSegment) projectionSegment).getColumn().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        BinaryOperationExpression actualPredicate = (BinaryOperationExpression) actualSubqueryExpression.getSubquery().getSelect().getWhere().get().getExpr();
+        assertThat(((ColumnSegment) actualPredicate.getLeft()).getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
     }
     
     private static void assertInsertSelect(final InsertStatement actual) {
