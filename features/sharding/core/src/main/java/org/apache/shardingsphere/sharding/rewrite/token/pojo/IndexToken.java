@@ -76,7 +76,7 @@ public final class IndexToken extends SQLToken implements Substitutable, RouteUn
         }
         Map<String, String> logicAndActualTables = ShardingTokenUtils.getLogicAndActualTableMap(routeUnit, sqlStatementContext, rule);
         String actualTableName = logicTableName.map(logicAndActualTables::get).orElseGet(() -> logicAndActualTables.isEmpty() ? null : logicAndActualTables.values().iterator().next());
-        return IndexMetaDataUtils.getActualIndexName(identifier.getValue(), actualTableName);
+        return IndexMetaDataUtils.getActualIndexName(identifier.getValue(), actualTableName, sqlStatementContext.getSqlStatement().getDatabaseType());
     }
     
     private Optional<String> findLogicTableNameFromMetaData(final String logicIndexName) {

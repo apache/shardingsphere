@@ -40,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.in
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
@@ -85,7 +86,7 @@ public final class PipelineDDLDecorator {
         SQLStatementContext sqlStatementContext = parseSQL(databaseName, parserEngine, sql);
         Map<SQLSegment, String> replaceMap = new TreeMap<>(Comparator.comparing(SQLSegment::getStartIndex));
         if (sqlStatementContext.getSqlStatement() instanceof CreateTableStatement) {
-            appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
+            appendFromIndexAndConstraint(replaceMap, databaseName, targetTableName, sqlStatementContext);
             appendFromTable(replaceMap, targetTableName, sqlStatementContext);
         }
         if (sqlStatementContext.getSqlStatement() instanceof CommentStatement) {
@@ -93,10 +94,10 @@ public final class PipelineDDLDecorator {
         }
         if (sqlStatementContext.getSqlStatement() instanceof CreateIndexStatement) {
             appendFromTable(replaceMap, targetTableName, sqlStatementContext);
-            appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
+            appendFromIndexAndConstraint(replaceMap, databaseName, targetTableName, sqlStatementContext);
         }
         if (sqlStatementContext.getSqlStatement() instanceof AlterTableStatement) {
-            appendFromIndexAndConstraint(replaceMap, targetTableName, sqlStatementContext);
+            appendFromIndexAndConstraint(replaceMap, databaseName, targetTableName, sqlStatementContext);
             appendFromTable(replaceMap, targetTableName, sqlStatementContext);
         }
         return doDecorateActualTable(replaceMap, sql);
@@ -106,15 +107,18 @@ public final class PipelineDDLDecorator {
         return SQLStatementContextFactory.newInstance(metaData, parserEngine.parse(sql, true), currentDatabaseName);
     }
     
-    private void appendFromIndexAndConstraint(final Map<SQLSegment, String> replaceMap, final String targetTableName, final SQLStatementContext sqlStatementContext) {
+    private void appendFromIndexAndConstraint(
+            final Map<SQLSegment, String> replaceMap, final String databaseName, final String targetTableName, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()) {
             return;
         }
         TableNameSegment tableNameSegment = sqlStatementContext.getTablesContext().getSimpleTables().iterator().next().getTableName();
         if (!tableNameSegment.getIdentifier().getValue().equals(targetTableName)) {
             SQLStatementAttributes attributes = sqlStatementContext.getSqlStatement().getAttributes();
+            Collection<String> candidateLogicIndexNames = findCandidateLogicIndexNames(databaseName, targetTableName);
             for (IndexSegment each : attributes.findAttribute(IndexSQLStatementAttribute.class).map(IndexSQLStatementAttribute::getIndexes).orElse(Collections.emptyList())) {
-                String logicIndexName = IndexMetaDataUtils.getGeneratedLogicIndexName(each.getIndexName().getIdentifier().getValue(), tableNameSegment.getIdentifier().getValue());
+                String logicIndexName = IndexMetaDataUtils.findGeneratedLogicIndexName(
+                        each.getIndexName().getIdentifier().getValue(), tableNameSegment.getIdentifier().getValue(), candidateLogicIndexNames).orElse(each.getIndexName().getIdentifier().getValue());
                 replaceMap.put(each.getIndexName(), logicIndexName);
             }
             for (ConstraintSegment each : attributes.findAttribute(ConstraintSQLStatementAttribute.class).map(ConstraintSQLStatementAttribute::getConstraints).orElse(Collections.emptyList())) {
@@ -122,6 +126,18 @@ public final class PipelineDDLDecorator {
                 replaceMap.put(each, logicConstraint);
             }
         }
+    }
+
+    private Collection<String> findCandidateLogicIndexNames(final String databaseName, final String targetTableName) {
+        if (Strings.isNullOrEmpty(databaseName) || null == metaData.getDatabase(databaseName)) {
+            return Collections.emptyList();
+        }
+        return metaData.getDatabase(databaseName).getAllSchemas().stream()
+                .filter(each -> each.containsTable(targetTableName))
+                .findFirst()
+                .map(optional -> optional.getTable(targetTableName).getAllIndexes())
+                .map(indexes -> indexes.stream().map(each -> each.getName()).collect(java.util.stream.Collectors.toList()))
+                .orElseGet(Collections::emptyList);
     }
     
     private void appendFromTable(final Map<SQLSegment, String> replaceMap, final String targetTableName, final SQLStatementContext sqlStatementContext) {
