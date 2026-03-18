@@ -78,4 +78,75 @@
             <row-count value="1" start-index="73" stop-index="73" />
         </limit>
     </update>
+    <update sql-case-id="update_with_timestampadd_microsecond">
+        <table start-index="7" stop-index="13">
+            <simple-table name="t_order" start-index="7" stop-index="13">
+                <table-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                </table-bound>
+            </simple-table>
+        </table>
+        <set start-index="15" stop-index="77">
+            <assignment start-index="19" stop-index="77">
+                <column name="creation_date" start-index="19" stop-index="31">
+                    <column-bound>
+                        <original-database name="foo_db_1" />
+                        <original-schema name="foo_db_1" />
+                        <original-table name="t_order" />
+                        <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                        <table-source-type name="PHYSICAL_TABLE"/>
+                    </column-bound>
+                </column>
+                <assignment-value>
+                    <function function-name="TIMESTAMPADD" text="TIMESTAMPADD(MICROSECOND, ?, creation_date)" start-index="35" stop-index="77">
+                        <parameter>
+                            <interval-unit-expression start-index="48" stop-index="58">
+                                <interval-unit>MICROSECOND</interval-unit>
+                            </interval-unit-expression>
+                        </parameter>
+                        <parameter>
+                            <parameter-marker-expression parameter-index="0" start-index="61" stop-index="61" />
+                        </parameter>
+                        <parameter>
+                            <column name="creation_date" start-index="64" stop-index="76">
+                                <column-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                    <original-table name="t_order" />
+                                    <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
+                                </column-bound>
+                            </column>
+                        </parameter>
+                    </function>
+                </assignment-value>
+            </assignment>
+        </set>
+        <where start-index="79" stop-index="96">
+            <expr>
+                <binary-operation-expression start-index="85" stop-index="96">
+                    <left>
+                        <column name="order_id" start-index="85" stop-index="92">
+                            <column-bound>
+                                <original-database name="foo_db_1" />
+                                <original-schema name="foo_db_1" />
+                                <original-table name="t_order" />
+                                <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
+                                <table-source-type name="PHYSICAL_TABLE"/>
+                            </column-bound>
+                        </column>
+                    </left>
+                    <operator>=</operator>
+                    <right>
+                        <parameter-marker-expression parameter-index="1" start-index="96" stop-index="96" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </where>
+        <parameters>
+            <parameter-marker-expression parameter-index="0" start-index="61" stop-index="61" />
+            <parameter-marker-expression parameter-index="1" start-index="96" stop-index="96" />
+        </parameters>
+    </update>
 </sql-parser-test-cases>
