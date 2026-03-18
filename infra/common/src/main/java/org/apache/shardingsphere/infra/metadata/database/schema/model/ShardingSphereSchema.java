@@ -30,10 +30,11 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere schema.
@@ -45,12 +46,6 @@ public final class ShardingSphereSchema {
     
     @Getter
     private final DatabaseType protocolType;
-    
-    @Getter(AccessLevel.NONE)
-    private final Map<String, ShardingSphereTable> tables = new ConcurrentHashMap<>();
-    
-    @Getter(AccessLevel.NONE)
-    private final Map<String, ShardingSphereView> views = new ConcurrentHashMap<>();
     
     @Getter(AccessLevel.NONE)
     private DatabaseIdentifierContext identifierContext;
@@ -75,7 +70,8 @@ public final class ShardingSphereSchema {
         identifierContext = DatabaseIdentifierContextFactory.createDefault();
         tableIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.TABLE);
         viewIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.VIEW);
-        rebuildIdentifierIndexes();
+        tableIndex.rebuild(Collections.emptyMap());
+        viewIndex.rebuild(Collections.emptyMap());
     }
     
     /**
@@ -90,10 +86,11 @@ public final class ShardingSphereSchema {
      */
     public ShardingSphereSchema(final String name, final DatabaseType protocolType, final Collection<ShardingSphereTable> tables, final Collection<ShardingSphereView> views) {
         this(name, protocolType);
-        tables.forEach(each -> this.tables.put(each.getName(), each));
-        views.forEach(each -> this.views.put(each.getName(), each));
-        this.tables.values().forEach(this::attachTableIdentifierContext);
-        rebuildIdentifierIndexes();
+        Map<String, ShardingSphereTable> tableMap = createTableMap(tables);
+        Map<String, ShardingSphereView> viewMap = createViewMap(views);
+        tableMap.values().forEach(this::attachTableIdentifierContext);
+        tableIndex.rebuild(tableMap);
+        viewIndex.rebuild(viewMap);
     }
     
     /**
@@ -102,7 +99,7 @@ public final class ShardingSphereSchema {
      * @return all tables
      */
     public Collection<ShardingSphereTable> getAllTables() {
-        return tables.values();
+        return tableIndex.getAll();
     }
     
     /**
@@ -162,8 +159,7 @@ public final class ShardingSphereSchema {
      */
     public void putTable(final ShardingSphereTable table) {
         attachTableIdentifierContext(table);
-        tables.put(table.getName(), table);
-        rebuildTableIndex();
+        tableIndex.put(table.getName(), table);
     }
     
     /**
@@ -176,8 +172,7 @@ public final class ShardingSphereSchema {
         if (null == table) {
             return;
         }
-        tables.remove(table.getName());
-        rebuildTableIndex();
+        tableIndex.remove(table.getName());
     }
     
     /**
@@ -186,7 +181,7 @@ public final class ShardingSphereSchema {
      * @return all views
      */
     public Collection<ShardingSphereView> getAllViews() {
-        return views.values();
+        return viewIndex.getAll();
     }
     
     /**
@@ -245,8 +240,7 @@ public final class ShardingSphereSchema {
      * @param view view
      */
     public void putView(final ShardingSphereView view) {
-        views.put(view.getName(), view);
-        rebuildViewIndex();
+        viewIndex.put(view.getName(), view);
     }
     
     /**
@@ -259,8 +253,7 @@ public final class ShardingSphereSchema {
         if (null == view) {
             return;
         }
-        views.remove(view.getName());
-        rebuildViewIndex();
+        viewIndex.remove(view.getName());
     }
     
     /**
@@ -269,11 +262,14 @@ public final class ShardingSphereSchema {
      * @param identifierContext database identifier context
      */
     public void attachIdentifierContext(final DatabaseIdentifierContext identifierContext) {
+        final Collection<ShardingSphereTable> tables = new LinkedList<>(tableIndex.getAll());
+        final Collection<ShardingSphereView> views = new LinkedList<>(viewIndex.getAll());
         this.identifierContext = identifierContext;
         tableIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.TABLE);
         viewIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.VIEW);
-        tables.values().forEach(this::attachTableIdentifierContext);
-        rebuildIdentifierIndexes();
+        tables.forEach(this::attachTableIdentifierContext);
+        tableIndex.rebuild(createTableMap(tables));
+        viewIndex.rebuild(createViewMap(views));
     }
     
     /**
@@ -313,23 +309,20 @@ public final class ShardingSphereSchema {
      * @return empty schema or not
      */
     public boolean isEmpty() {
-        return tables.isEmpty() && views.isEmpty();
-    }
-    
-    private void rebuildIdentifierIndexes() {
-        rebuildTableIndex();
-        rebuildViewIndex();
-    }
-    
-    private void rebuildTableIndex() {
-        tableIndex.rebuild(new LinkedHashMap<>(tables));
-    }
-    
-    private void rebuildViewIndex() {
-        viewIndex.rebuild(new LinkedHashMap<>(views));
+        return tableIndex.isEmpty() && viewIndex.isEmpty();
     }
     
     private void attachTableIdentifierContext(final ShardingSphereTable table) {
         table.attachIdentifierContext(identifierContext);
+    }
+    
+    private Map<String, ShardingSphereTable> createTableMap(final Collection<ShardingSphereTable> tables) {
+        return tables.stream().collect(Collectors.toMap(ShardingSphereTable::getName, each -> each, (oldValue, currentValue) -> currentValue,
+                () -> new LinkedHashMap<>(tables.size(), 1F)));
+    }
+    
+    private Map<String, ShardingSphereView> createViewMap(final Collection<ShardingSphereView> views) {
+        return views.stream().collect(Collectors.toMap(ShardingSphereView::getName, each -> each, (oldValue, currentValue) -> currentValue,
+                () -> new LinkedHashMap<>(views.size(), 1F)));
     }
 }

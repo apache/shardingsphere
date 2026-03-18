@@ -112,15 +112,8 @@ class ShardingSphereDatabaseTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("new_schema", databaseType);
         database.addSchema(schema);
-        Map<String, ShardingSphereSchema> actualSchemas = getSchemas(database);
-        assertThat(actualSchemas.size(), is(1));
-        assertThat(actualSchemas.get("new_schema"), is(schema));
-    }
-    
-    @SneakyThrows(ReflectiveOperationException.class)
-    @SuppressWarnings("unchecked")
-    private Map<String, ShardingSphereSchema> getSchemas(final ShardingSphereDatabase database) {
-        return (Map<String, ShardingSphereSchema>) Plugins.getMemberAccessor().get(ShardingSphereDatabase.class.getDeclaredField("schemas"), database);
+        assertThat(database.getAllSchemas().size(), is(1));
+        assertThat(database.getSchema("new_schema"), is(schema));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -129,7 +122,7 @@ class ShardingSphereDatabaseTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
                 "foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType)));
         database.dropSchema(schemaName);
-        assertThat(getSchemas(database).containsKey("foo_schema"), is(expectedSchemaRetained));
+        assertThat(database.containsSchema("foo_schema"), is(expectedSchemaRetained));
     }
     
     @ParameterizedTest(name = "{0}")
