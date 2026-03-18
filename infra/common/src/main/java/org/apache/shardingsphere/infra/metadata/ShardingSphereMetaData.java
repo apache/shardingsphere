@@ -42,11 +42,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -54,9 +53,6 @@ import java.util.stream.Collectors;
  */
 @Getter
 public final class ShardingSphereMetaData implements AutoCloseable {
-    
-    @Getter(AccessLevel.NONE)
-    private final Map<String, ShardingSphereDatabase> databases;
     
     @Getter(AccessLevel.NONE)
     private final DatabaseIdentifierContext identifierContext;
@@ -108,7 +104,6 @@ public final class ShardingSphereMetaData implements AutoCloseable {
     private ShardingSphereMetaData(final Collection<ShardingSphereDatabase> databases, final ResourceMetaData globalResourceMetaData,
                                    final RuleMetaData globalRuleMetaData, final ConfigurationProperties props, final DatabaseType protocolType,
                                    final DatabaseIdentifierContext identifierContext) {
-        this.databases = new ConcurrentHashMap<>(databases.stream().collect(Collectors.toMap(ShardingSphereDatabase::getName, each -> each)));
         this.globalResourceMetaData = globalResourceMetaData;
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
@@ -116,7 +111,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
         this.protocolType = protocolType;
         this.identifierContext = identifierContext;
         databaseIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.DATABASE);
-        rebuildDatabaseIndex();
+        databaseIndex.rebuild(new LinkedHashMap<>(databases.stream().collect(Collectors.toMap(ShardingSphereDatabase::getName, each -> each))));
     }
     
     /**
@@ -125,7 +120,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @return all databases
      */
     public Collection<ShardingSphereDatabase> getAllDatabases() {
-        return databases.values();
+        return databaseIndex.getAll();
     }
     
     /**
@@ -187,9 +182,8 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      */
     public void addDatabase(final String databaseName, final DatabaseType protocolType, final ConfigurationProperties props) {
         ShardingSphereDatabase database = ShardingSphereDatabaseFactory.create(databaseName, protocolType, props);
-        databases.put(database.getName(), database);
-        rebuildDatabaseIndex();
-        globalRuleMetaData.getRules().forEach(each -> ((GlobalRule) each).refresh(databases.values(), GlobalRuleChangedType.DATABASE_CHANGED));
+        databaseIndex.put(database.getName(), database);
+        globalRuleMetaData.getRules().forEach(each -> ((GlobalRule) each).refresh(getAllDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
     }
     
     /**
@@ -198,8 +192,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @param database database
      */
     public void putDatabase(final ShardingSphereDatabase database) {
-        databases.put(database.getName(), database);
-        rebuildDatabaseIndex();
+        databaseIndex.put(database.getName(), database);
     }
     
     /**
@@ -212,14 +205,13 @@ public final class ShardingSphereMetaData implements AutoCloseable {
         if (null == database) {
             return;
         }
-        databases.remove(database.getName());
-        rebuildDatabaseIndex();
+        databaseIndex.remove(database.getName());
         cleanResources(database);
     }
     
     @SneakyThrows(Exception.class)
     private void cleanResources(final ShardingSphereDatabase database) {
-        globalRuleMetaData.getRules().forEach(each -> ((GlobalRule) each).refresh(databases.values(), GlobalRuleChangedType.DATABASE_CHANGED));
+        globalRuleMetaData.getRules().forEach(each -> ((GlobalRule) each).refresh(getAllDatabases(), GlobalRuleChangedType.DATABASE_CHANGED));
         for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
             if (each instanceof AutoCloseable) {
                 ((AutoCloseable) each).close();
@@ -252,9 +244,5 @@ public final class ShardingSphereMetaData implements AutoCloseable {
     
     private static DatabaseType resolveProtocolType(final Collection<ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         return databases.isEmpty() ? DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), getProps(props)) : databases.iterator().next().getProtocolType();
-    }
-    
-    private void rebuildDatabaseIndex() {
-        databaseIndex.rebuild(databases);
     }
 }

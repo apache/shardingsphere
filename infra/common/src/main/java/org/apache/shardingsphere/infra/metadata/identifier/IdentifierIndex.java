@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
@@ -37,6 +38,7 @@ import java.util.Optional;
  *
  * @param <T> metadata object type
  */
+@RequiredArgsConstructor
 public final class IdentifierIndex<T> {
     
     private final DatabaseIdentifierContext databaseIdentifierContext;
@@ -45,18 +47,12 @@ public final class IdentifierIndex<T> {
     
     private volatile Snapshot<T> snapshot = Snapshot.empty();
     
-    public IdentifierIndex(final DatabaseIdentifierContext databaseIdentifierContext, final IdentifierScope identifierScope) {
-        this.databaseIdentifierContext = Objects.requireNonNull(databaseIdentifierContext, "databaseIdentifierContext cannot be null.");
-        this.identifierScope = Objects.requireNonNull(identifierScope, "identifierScope cannot be null.");
-    }
-    
     /**
      * Rebuild identifier index by actual names.
      *
      * @param values actual name and metadata object map
      */
     public synchronized void rebuild(final Map<String, T> values) {
-        Objects.requireNonNull(values, "values cannot be null.");
         Map<String, T> newExactValues = new LinkedHashMap<>(values.size(), 1F);
         Map<String, Collection<String>> newNormalizedIdentifiers = new LinkedHashMap<>(values.size(), 1F);
         IdentifierCaseRule rule = databaseIdentifierContext.getRule(identifierScope);
@@ -64,7 +60,81 @@ public final class IdentifierIndex<T> {
             newExactValues.put(entry.getKey(), entry.getValue());
             addNormalizedIdentifier(newNormalizedIdentifiers, rule, entry.getKey());
         }
-        snapshot = new Snapshot<>(Collections.unmodifiableMap(newExactValues), Collections.unmodifiableMap(newNormalizedIdentifiers));
+        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers);
+    }
+    
+    /**
+     * Get all metadata objects.
+     *
+     * @return all metadata objects
+     */
+    public Collection<T> getAll() {
+        return snapshot.getExactValues().values();
+    }
+    
+    /**
+     * Get all actual names.
+     *
+     * @return all actual names
+     */
+    public Collection<String> getAllNames() {
+        return snapshot.getExactValues().keySet();
+    }
+    
+    /**
+     * Put metadata object by actual name.
+     *
+     * @param name actual name
+     * @param value metadata object
+     */
+    public synchronized void put(final String name, final T value) {
+        Snapshot<T> currentSnapshot = snapshot;
+        Map<String, T> newExactValues = new LinkedHashMap<>(currentSnapshot.getExactValues());
+        Map<String, Collection<String>> newNormalizedIdentifiers = copyNormalizedIdentifiers(currentSnapshot.getNormalizedIdentifiers());
+        IdentifierCaseRule rule = databaseIdentifierContext.getRule(identifierScope);
+        if (newExactValues.containsKey(name)) {
+            removeNormalizedIdentifier(newNormalizedIdentifiers, rule, name);
+        }
+        newExactValues.put(name, value);
+        addNormalizedIdentifier(newNormalizedIdentifiers, rule, name);
+        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers);
+    }
+    
+    /**
+     * Remove metadata object by actual name.
+     *
+     * @param name actual name
+     * @return removed metadata object
+     */
+    public synchronized T remove(final String name) {
+        Snapshot<T> currentSnapshot = snapshot;
+        if (!currentSnapshot.getExactValues().containsKey(name)) {
+            return null;
+        }
+        Map<String, T> newExactValues = new LinkedHashMap<>(currentSnapshot.getExactValues());
+        Map<String, Collection<String>> newNormalizedIdentifiers = copyNormalizedIdentifiers(currentSnapshot.getNormalizedIdentifiers());
+        T result = newExactValues.remove(name);
+        removeNormalizedIdentifier(newNormalizedIdentifiers, databaseIdentifierContext.getRule(identifierScope), name);
+        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers);
+        return result;
+    }
+    
+    /**
+     * Judge whether identifier index is empty or not.
+     *
+     * @return identifier index is empty or not
+     */
+    public boolean isEmpty() {
+        return snapshot.getExactValues().isEmpty();
+    }
+    
+    /**
+     * Get size of identifier index.
+     *
+     * @return size of identifier index
+     */
+    public int size() {
+        return snapshot.getExactValues().size();
     }
     
     /**
@@ -116,6 +186,34 @@ public final class IdentifierIndex<T> {
     private void addNormalizedIdentifier(final Map<String, Collection<String>> values, final IdentifierCaseRule rule, final String name) {
         String normalizedName = rule.normalize(name);
         values.computeIfAbsent(normalizedName, key -> new LinkedList<>()).add(name);
+    }
+    
+    private void removeNormalizedIdentifier(final Map<String, Collection<String>> values, final IdentifierCaseRule rule, final String name) {
+        String normalizedName = rule.normalize(name);
+        Collection<String> candidateIdentifiers = values.get(normalizedName);
+        if (null == candidateIdentifiers) {
+            return;
+        }
+        candidateIdentifiers.remove(name);
+        if (candidateIdentifiers.isEmpty()) {
+            values.remove(normalizedName);
+        }
+    }
+    
+    private Map<String, Collection<String>> copyNormalizedIdentifiers(final Map<String, Collection<String>> values) {
+        Map<String, Collection<String>> result = new LinkedHashMap<>(values.size(), 1F);
+        for (Entry<String, Collection<String>> entry : values.entrySet()) {
+            result.put(entry.getKey(), new LinkedList<>(entry.getValue()));
+        }
+        return result;
+    }
+    
+    private Snapshot<T> createSnapshot(final Map<String, T> exactValues, final Map<String, Collection<String>> normalizedIdentifiers) {
+        Map<String, Collection<String>> immutableNormalizedIdentifiers = new LinkedHashMap<>(normalizedIdentifiers.size(), 1F);
+        for (Entry<String, Collection<String>> entry : normalizedIdentifiers.entrySet()) {
+            immutableNormalizedIdentifiers.put(entry.getKey(), Collections.unmodifiableCollection(new LinkedList<>(entry.getValue())));
+        }
+        return new Snapshot<>(Collections.unmodifiableMap(new LinkedHashMap<>(exactValues)), Collections.unmodifiableMap(immutableNormalizedIdentifiers));
     }
     
     private static final class Snapshot<T> {
