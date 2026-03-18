@@ -94,7 +94,39 @@ class TableRefreshUtilsIdentifierTest {
                 new ConfigurationProperties(props)), is("Foo_Tbl"));
     }
     
+    @Test
+    void assertGetTableLoadCandidateNameUsesNormalizedRule() {
+        assertThat(TableRefreshUtils.getTableLoadCandidateName(createDatabase(), new IdentifierValue("Foo_Tbl"),
+                new ConfigurationProperties(new Properties())), is("foo_tbl"));
+    }
+    
+    @Test
+    void assertGetTableLoadCandidateNameUsesSensitiveRule() {
+        Properties props = new Properties();
+        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
+        assertThat(TableRefreshUtils.getTableLoadCandidateName(createDatabase(), new IdentifierValue("Foo_Tbl"),
+                new ConfigurationProperties(props)), is("Foo_Tbl"));
+    }
+    
+    @Test
+    void assertGetViewLoadCandidateNameUsesNormalizedRule() {
+        assertThat(TableRefreshUtils.getViewLoadCandidateName(createDatabase(), new IdentifierValue("Foo_View"),
+                new ConfigurationProperties(new Properties())), is("foo_view"));
+    }
+    
+    @Test
+    void assertGetViewLoadCandidateNameUsesSensitiveRule() {
+        Properties props = new Properties();
+        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
+        assertThat(TableRefreshUtils.getViewLoadCandidateName(createDatabase(), new IdentifierValue("Foo_View"),
+                new ConfigurationProperties(props)), is("Foo_View"));
+    }
+    
     private ShardingSphereDatabase createDatabase() {
+        return createDatabase(databaseType);
+    }
+    
+    private ShardingSphereDatabase createDatabase(final DatabaseType databaseType) {
         ShardingSphereSchema schema = new ShardingSphereSchema("Foo_Schema", databaseType,
                 Arrays.asList(new ShardingSphereTable("Foo_Tbl",
                         Arrays.asList(new ShardingSphereColumn("Order_ID", 0, false, false, false, true, false, true),

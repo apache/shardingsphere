@@ -30,12 +30,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -44,48 +46,65 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AlterTablePushDownMetaDataRefresherTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    private static final String LOGIC_DATA_SOURCE_NAME = "logic_ds";
+    
+    private static final String SCHEMA_NAME = "PUBLIC";
+    
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
     
     @Test
     void assertRefreshRenameTableUsesActualDroppedName() throws SQLException {
-        AtomicReference<String> loadedTableName = new AtomicReference<>();
+        JdbcDataSource dataSource = createDataSource("rename_table");
+        executeUpdate(dataSource, "CREATE TABLE \"Foo_New_Tbl\" (id INT)");
         PushDownMetaDataManagerPersistServiceFixture persistService = new PushDownMetaDataManagerPersistServiceFixture();
-        AlterTablePushDownMetaDataRefresher refresher = new AlterTablePushDownMetaDataRefresher((database, logicDataSourceName, schemaName, tableName, props) -> {
-            loadedTableName.set(tableName);
-            return new ShardingSphereTable("Foo_New_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        });
+        ShardingSphereDatabase database = createDatabase(dataSource, "Foo_Old_Tbl");
         AlterTableStatement sqlStatement = AlterTableStatement.builder().databaseType(databaseType)
-                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_old_tbl"))))
-                .renameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_new_tbl")))).build();
-        ShardingSphereDatabase database = createDatabase();
-        refresher.refresh(persistService, database, "logic_ds", "Foo_Schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-        assertThat(loadedTableName.get(), is("foo_new_tbl"));
-        assertThat(persistService.getAlteredTableSchemaName(), is("Foo_Schema"));
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("\"Foo_Old_Tbl\""))))
+                .renameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("\"Foo_New_Tbl\"")))).build();
+        new AlterTablePushDownMetaDataRefresher().refresh(persistService, database, LOGIC_DATA_SOURCE_NAME, SCHEMA_NAME,
+                databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
+        assertThat(persistService.getAlteredTableSchemaName(), is(SCHEMA_NAME));
         assertThat(persistService.getAlteredTables().iterator().next().getName(), is("Foo_New_Tbl"));
         assertThat(persistService.getDroppedTableNames(), contains("Foo_Old_Tbl"));
     }
     
     @Test
     void assertRefreshAlterTableWithoutRenameUsesLoadedTable() throws SQLException {
-        AtomicReference<String> loadedTableName = new AtomicReference<>();
+        JdbcDataSource dataSource = createDataSource("alter_table");
+        executeUpdate(dataSource, "CREATE TABLE \"Foo_Old_Tbl\" (id INT)");
         PushDownMetaDataManagerPersistServiceFixture persistService = new PushDownMetaDataManagerPersistServiceFixture();
-        AlterTablePushDownMetaDataRefresher refresher = new AlterTablePushDownMetaDataRefresher((database, logicDataSourceName, schemaName, tableName, props) -> {
-            loadedTableName.set(tableName);
-            return new ShardingSphereTable("Foo_Old_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        });
+        ShardingSphereDatabase database = createDatabase(dataSource, "Foo_Old_Tbl");
         AlterTableStatement sqlStatement = AlterTableStatement.builder().databaseType(databaseType)
-                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_old_tbl")))).build();
-        refresher.refresh(persistService, createDatabase(), "logic_ds", "Foo_Schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-        assertThat(loadedTableName.get(), is("foo_old_tbl"));
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("\"Foo_Old_Tbl\"")))).build();
+        new AlterTablePushDownMetaDataRefresher().refresh(persistService, database, LOGIC_DATA_SOURCE_NAME, SCHEMA_NAME,
+                databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
+        assertThat(persistService.getAlteredTableSchemaName(), is(SCHEMA_NAME));
         assertThat(persistService.getAlteredTables().iterator().next().getName(), is("Foo_Old_Tbl"));
         assertTrue(persistService.getDroppedTableNames().isEmpty());
     }
     
-    private ShardingSphereDatabase createDatabase() {
-        ShardingSphereSchema schema = new ShardingSphereSchema("Foo_Schema", databaseType,
-                Collections.singleton(new ShardingSphereTable("Foo_Old_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())),
-                Collections.emptyList());
-        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()),
+    private ShardingSphereDatabase createDatabase(final JdbcDataSource dataSource, final String currentTableName) {
+        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA_NAME, databaseType,
+                Collections.singleton(new ShardingSphereTable(currentTableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.singletonMap(LOGIC_DATA_SOURCE_NAME, dataSource)),
                 new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
+    }
+    
+    private JdbcDataSource createDataSource(final String databaseName) {
+        JdbcDataSource result = new JdbcDataSource();
+        result.setURL("jdbc:h2:mem:" + databaseName + ";DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");
+        result.setUser("sa");
+        result.setPassword("");
+        return result;
+    }
+    
+    private void executeUpdate(final JdbcDataSource dataSource, final String... sqls) throws SQLException {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            for (String each : sqls) {
+                statement.execute(each);
+            }
+        }
     }
 }

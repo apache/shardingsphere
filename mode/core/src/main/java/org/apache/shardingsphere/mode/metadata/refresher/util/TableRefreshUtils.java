@@ -70,6 +70,30 @@ public final class TableRefreshUtils {
     }
     
     /**
+     * Get table load candidate name.
+     *
+     * @param database database
+     * @param tableIdentifierValue table identifier value
+     * @param props configuration properties
+     * @return table load candidate name
+     */
+    public static String getTableLoadCandidateName(final ShardingSphereDatabase database, final IdentifierValue tableIdentifierValue, final ConfigurationProperties props) {
+        return getLoadCandidateName(database, tableIdentifierValue, IdentifierScope.TABLE, props);
+    }
+    
+    /**
+     * Get view load candidate name.
+     *
+     * @param database database
+     * @param viewIdentifierValue view identifier value
+     * @param props configuration properties
+     * @return view load candidate name
+     */
+    public static String getViewLoadCandidateName(final ShardingSphereDatabase database, final IdentifierValue viewIdentifierValue, final ConfigurationProperties props) {
+        return getLoadCandidateName(database, viewIdentifierValue, IdentifierScope.VIEW, props);
+    }
+    
+    /**
      * Get actual table name.
      *
      * @param database database
@@ -268,6 +292,14 @@ public final class TableRefreshUtils {
     
     private static String joinDataNodeSegments(final String... segments) {
         return Joiner.on(".").join(segments);
+    }
+    
+    private static String getLoadCandidateName(final ShardingSphereDatabase database, final IdentifierValue identifierValue, final IdentifierScope scope, final ConfigurationProperties props) {
+        DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(database.getProtocolType(), database.getResourceMetaData(), props);
+        IdentifierCaseRule rule = identifierContext.getRule(scope);
+        return QuoteCharacter.NONE == identifierValue.getQuoteCharacter() && LookupMode.NORMALIZED == rule.getLookupMode(identifierValue.getQuoteCharacter())
+                ? rule.normalize(identifierValue.getValue())
+                : identifierValue.getValue();
     }
     
     private static String getActualObjectName(final ShardingSphereDatabase database, final String schemaName,
