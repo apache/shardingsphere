@@ -30,8 +30,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simp
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.interval.IntervalUnitExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
+import org.apache.shardingsphere.sql.parser.engine.api.SQLParserEngine;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -49,6 +54,48 @@ import static org.mockito.Mockito.when;
 class UpdateStatementBinderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
+    
+    /**
+     * Regression test for Issue #32977: MICROSECOND keyword should not be treated as column name.
+     *
+     * <p>This test verifies that when parsing an UPDATE statement with TIMESTAMPADD(MICROSECOND, ?, ...),
+     * the MICROSECOND keyword is correctly parsed as IntervalUnitExpression instead of being treated as a column,
+     * which would cause ColumnNotFoundException during SQL bind.</p>
+     *
+     * @see <a href="https://github.com/apache/shardingsphere/issues/32977">Issue #32977</a>
+     */
+    @Test
+    void assertBindWithTimestampAddMicrosecond() {
+        // Issue #32977: Test UPDATE with TIMESTAMPADD(MICROSECOND, ?, ...)
+        String sql = "UPDATE shedlock SET lock_until = TIMESTAMPADD(MICROSECOND, ?, UTC_TIMESTAMP(3)) WHERE name = ?";
+        
+        // Parse SQL using MySQL parser
+        DatabaseType mysqlType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
+        SQLParserEngine parserEngine = sqlParserRule.getSQLParserEngine(mysqlType);
+        UpdateStatement updateStatement = (UpdateStatement) parserEngine.parse(sql, false);
+        
+        // Bind SQL statement
+        UpdateStatement actual = new UpdateStatementBinder().bind(
+                updateStatement, 
+                new SQLStatementBinderContext(createShedlockMetaData(), "foo_db", new HintValueContext(), updateStatement));
+        
+        // Verify bind succeeded without ColumnNotFoundException
+        assertThat(actual, not(updateStatement));
+        assertThat(actual.getTable(), isA(SimpleTableSegment.class));
+        assertTrue(actual.getSetAssignment().isPresent());
+        
+        // Verify TIMESTAMPADD function parameters
+        FunctionSegment timestampAddFunction = (FunctionSegment) actual.getSetAssignment().get().getAssignments().iterator().next().getValue();
+        assertThat(timestampAddFunction.getFunctionName(), is("TIMESTAMPADD"));
+        assertThat(timestampAddFunction.getParameters().size(), is(3));
+        
+        // Verify MICROSECOND is parsed as IntervalUnitExpression, not ColumnSegment
+        assertThat(timestampAddFunction.getParameters().get(0), isA(IntervalUnitExpression.class));
+        IntervalUnitExpression intervalUnit = (IntervalUnitExpression) timestampAddFunction.getParameters().get(0);
+        assertThat(intervalUnit.getIntervalUnit().name(), is("MICROSECOND"));
+    }
     
     @Test
     void assertBind() {
@@ -84,6 +131,21 @@ class UpdateStatementBinderTest {
         when(result.containsDatabase("foo_db")).thenReturn(true);
         when(result.getDatabase("foo_db").containsSchema("foo_db")).thenReturn(true);
         when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("t_order")).thenReturn(true);
+        return result;
+    }
+    
+    private ShardingSphereMetaData createShedlockMetaData() {
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        when(schema.getTable("shedlock").getAllColumns()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("name", Types.VARCHAR, true, false, false, true, false, false),
+                new ShardingSphereColumn("lock_until", Types.TIMESTAMP, false, false, false, false, false, false),
+                new ShardingSphereColumn("locked_at", Types.TIMESTAMP, false, false, false, false, false, false),
+                new ShardingSphereColumn("locked_by", Types.VARCHAR, false, false, false, false, false, false)));
+        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+        when(result.getDatabase("foo_db").getSchema("foo_db")).thenReturn(schema);
+        when(result.containsDatabase("foo_db")).thenReturn(true);
+        when(result.getDatabase("foo_db").containsSchema("foo_db")).thenReturn(true);
+        when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("shedlock")).thenReturn(true);
         return result;
     }
 }
