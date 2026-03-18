@@ -215,9 +215,6 @@ public final class TableRefreshUtils {
      */
     public static Optional<String> findActualTableNameByIndex(final ShardingSphereDatabase database, final String schemaName,
                                                               final IdentifierValue indexIdentifierValue, final ConfigurationProperties props) {
-        if (null == indexIdentifierValue || null == indexIdentifierValue.getValue()) {
-            return Optional.empty();
-        }
         DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(database.getProtocolType(), database.getResourceMetaData(), props);
         IdentifierCaseRule rule = identifierContext.getRule(IdentifierScope.INDEX);
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
@@ -305,9 +302,6 @@ public final class TableRefreshUtils {
     private static String getActualObjectName(final ShardingSphereDatabase database, final String schemaName,
                                               final IdentifierValue objectIdentifierValue, final ConfigurationProperties props,
                                               final IdentifierScope scope, final Function<ShardingSphereSchema, java.util.stream.Stream<String>> actualNameStream) {
-        if (null == objectIdentifierValue || null == objectIdentifierValue.getValue()) {
-            return null;
-        }
         DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(database.getProtocolType(), database.getResourceMetaData(), props);
         IdentifierCaseRule rule = identifierContext.getRule(scope);
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
@@ -327,9 +321,6 @@ public final class TableRefreshUtils {
     private static <T> String getActualObjectName(final ShardingSphereDatabase database, final String schemaName, final String tableName,
                                                   final IdentifierValue objectIdentifierValue, final ConfigurationProperties props, final IdentifierScope scope,
                                                   final Function<ShardingSphereTable, Collection<T>> actualObjects, final Function<T, String> actualNameMapper) {
-        if (null == objectIdentifierValue || null == objectIdentifierValue.getValue()) {
-            return null;
-        }
         DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(database.getProtocolType(), database.getResourceMetaData(), props);
         IdentifierCaseRule rule = identifierContext.getRule(scope);
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);

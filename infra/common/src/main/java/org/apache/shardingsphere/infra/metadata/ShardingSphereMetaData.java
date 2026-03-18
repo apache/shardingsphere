@@ -135,9 +135,6 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @return found database
      */
     private Optional<ShardingSphereDatabase> findDatabase(final IdentifierValue databaseName) {
-        if (null == databaseName || null == databaseName.getValue()) {
-            return Optional.empty();
-        }
         return databaseIndex.find(databaseName);
     }
     
@@ -148,7 +145,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @return contains database from meta data or not
      */
     public boolean containsDatabase(final String databaseName) {
-        return null != databaseName && containsDatabase(new IdentifierValue(databaseName, QuoteCharacter.NONE));
+        return containsDatabase(new IdentifierValue(databaseName, QuoteCharacter.NONE));
     }
     
     /**
@@ -168,7 +165,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @return meta data database
      */
     public ShardingSphereDatabase getDatabase(final String databaseName) {
-        return null == databaseName ? null : getDatabase(new IdentifierValue(databaseName, QuoteCharacter.NONE));
+        return getDatabase(new IdentifierValue(databaseName, QuoteCharacter.NONE));
     }
     
     /**
@@ -211,9 +208,6 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @param databaseName database name
      */
     public void dropDatabase(final String databaseName) {
-        if (null == databaseName) {
-            return;
-        }
         ShardingSphereDatabase database = getDatabase(databaseName);
         if (null == database) {
             return;

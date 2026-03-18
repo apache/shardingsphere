@@ -145,7 +145,7 @@ public final class ShardingSphereDatabase {
      * @return contains schema from database or not
      */
     public boolean containsSchema(final String schemaName) {
-        return null != schemaName && containsSchema(new IdentifierValue(schemaName, QuoteCharacter.NONE));
+        return containsSchema(new IdentifierValue(schemaName, QuoteCharacter.NONE));
     }
     
     /**
@@ -165,7 +165,7 @@ public final class ShardingSphereDatabase {
      * @return schema
      */
     public ShardingSphereSchema getSchema(final String schemaName) {
-        return null == schemaName ? null : getSchema(new IdentifierValue(schemaName, QuoteCharacter.NONE));
+        return getSchema(new IdentifierValue(schemaName, QuoteCharacter.NONE));
     }
     
     /**
@@ -195,9 +195,6 @@ public final class ShardingSphereDatabase {
      * @param schemaName schema name
      */
     public void dropSchema(final String schemaName) {
-        if (null == schemaName) {
-            return;
-        }
         ShardingSphereSchema schema = getSchema(schemaName);
         if (null == schema) {
             return;
