@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.AmbiguousIdenti
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -42,9 +43,7 @@ public final class IdentifierIndex<T> {
     
     private final IdentifierScope identifierScope;
     
-    private final Map<String, T> exactValues = new LinkedHashMap<>();
-    
-    private final Map<String, Collection<String>> normalizedIdentifiers = new LinkedHashMap<>();
+    private volatile Snapshot<T> snapshot = Snapshot.empty();
     
     public IdentifierIndex(final DatabaseIdentifierContext databaseIdentifierContext, final IdentifierScope identifierScope) {
         this.databaseIdentifierContext = Objects.requireNonNull(databaseIdentifierContext, "databaseIdentifierContext cannot be null.");
@@ -65,10 +64,7 @@ public final class IdentifierIndex<T> {
             newExactValues.put(entry.getKey(), entry.getValue());
             addNormalizedIdentifier(newNormalizedIdentifiers, rule, entry.getKey());
         }
-        exactValues.clear();
-        exactValues.putAll(newExactValues);
-        normalizedIdentifiers.clear();
-        normalizedIdentifiers.putAll(newNormalizedIdentifiers);
+        snapshot = new Snapshot<>(Collections.unmodifiableMap(newExactValues), Collections.unmodifiableMap(newNormalizedIdentifiers));
     }
     
     /**
@@ -77,42 +73,75 @@ public final class IdentifierIndex<T> {
      * @param identifierValue identifier value
      * @return matched metadata object
      */
-    public synchronized Optional<T> find(final IdentifierValue identifierValue) {
+    public Optional<T> find(final IdentifierValue identifierValue) {
         Objects.requireNonNull(identifierValue, "identifierValue cannot be null.");
+        Snapshot<T> currentSnapshot = snapshot;
         IdentifierCaseRule rule = databaseIdentifierContext.getRule(identifierScope);
         if (LookupMode.EXACT == rule.getLookupMode(identifierValue.getQuoteCharacter())) {
-            return Optional.ofNullable(exactValues.get(identifierValue.getValue()));
+            return Optional.ofNullable(currentSnapshot.getExactValues().get(identifierValue.getValue()));
         }
-        return findByNormalizedIdentifier(rule, identifierValue);
+        return findByNormalizedIdentifier(currentSnapshot, rule, identifierValue);
     }
     
-    private Optional<T> findByNormalizedIdentifier(final IdentifierCaseRule rule, final IdentifierValue identifierValue) {
-        Collection<String> candidateIdentifiers = normalizedIdentifiers.get(rule.normalize(identifierValue.getValue()));
+    private Optional<T> findByNormalizedIdentifier(final Snapshot<T> currentSnapshot, final IdentifierCaseRule rule, final IdentifierValue identifierValue) {
+        Collection<String> candidateIdentifiers = currentSnapshot.getNormalizedIdentifiers().get(rule.normalize(identifierValue.getValue()));
         if (null == candidateIdentifiers) {
             return Optional.empty();
         }
-        Collection<String> actualMatchedIdentifiers = getActualMatchedIdentifiers(rule, candidateIdentifiers, identifierValue);
-        if (actualMatchedIdentifiers.isEmpty()) {
+        String matchedIdentifier = null;
+        Collection<String> ambiguousIdentifiers = null;
+        for (String each : candidateIdentifiers) {
+            if (!rule.matches(each, identifierValue.getValue(), identifierValue.getQuoteCharacter())) {
+                continue;
+            }
+            if (null == matchedIdentifier) {
+                matchedIdentifier = each;
+                continue;
+            }
+            if (null == ambiguousIdentifiers) {
+                ambiguousIdentifiers = new LinkedList<>();
+                ambiguousIdentifiers.add(matchedIdentifier);
+            }
+            ambiguousIdentifiers.add(each);
+        }
+        if (null == matchedIdentifier) {
             return Optional.empty();
         }
-        if (1 == actualMatchedIdentifiers.size()) {
-            return Optional.ofNullable(exactValues.get(actualMatchedIdentifiers.iterator().next()));
+        if (null == ambiguousIdentifiers) {
+            return Optional.ofNullable(currentSnapshot.getExactValues().get(matchedIdentifier));
         }
-        throw new AmbiguousIdentifierException(identifierValue.getValue(), actualMatchedIdentifiers);
-    }
-    
-    private Collection<String> getActualMatchedIdentifiers(final IdentifierCaseRule rule, final Collection<String> candidateIdentifiers, final IdentifierValue identifierValue) {
-        Collection<String> result = new LinkedList<>();
-        for (String each : candidateIdentifiers) {
-            if (rule.matches(each, identifierValue.getValue(), identifierValue.getQuoteCharacter())) {
-                result.add(each);
-            }
-        }
-        return result;
+        throw new AmbiguousIdentifierException(identifierValue.getValue(), ambiguousIdentifiers);
     }
     
     private void addNormalizedIdentifier(final Map<String, Collection<String>> values, final IdentifierCaseRule rule, final String name) {
         String normalizedName = rule.normalize(name);
         values.computeIfAbsent(normalizedName, key -> new LinkedList<>()).add(name);
+    }
+    
+    private static final class Snapshot<T> {
+        
+        private static final Snapshot<?> EMPTY = new Snapshot<>(Collections.emptyMap(), Collections.emptyMap());
+        
+        private final Map<String, T> exactValues;
+        
+        private final Map<String, Collection<String>> normalizedIdentifiers;
+        
+        private Snapshot(final Map<String, T> exactValues, final Map<String, Collection<String>> normalizedIdentifiers) {
+            this.exactValues = exactValues;
+            this.normalizedIdentifiers = normalizedIdentifiers;
+        }
+        
+        @SuppressWarnings("unchecked")
+        private static <T> Snapshot<T> empty() {
+            return (Snapshot<T>) EMPTY;
+        }
+        
+        private Map<String, T> getExactValues() {
+            return exactValues;
+        }
+        
+        private Map<String, Collection<String>> getNormalizedIdentifiers() {
+            return normalizedIdentifiers;
+        }
     }
 }

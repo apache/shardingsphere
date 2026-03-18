@@ -112,9 +112,6 @@ public final class ShardingSphereSchema {
      * @return table
      */
     private Optional<ShardingSphereTable> findTable(final IdentifierValue tableName) {
-        if (null == tableName || null == tableName.getValue()) {
-            return Optional.empty();
-        }
         return tableIndex.find(tableName);
     }
     
@@ -125,7 +122,7 @@ public final class ShardingSphereSchema {
      * @return contains table or not
      */
     public boolean containsTable(final String tableName) {
-        return null != tableName && containsTable(new IdentifierValue(tableName, QuoteCharacter.NONE));
+        return containsTable(new IdentifierValue(tableName, QuoteCharacter.NONE));
     }
     
     /**
@@ -145,7 +142,7 @@ public final class ShardingSphereSchema {
      * @return table
      */
     public ShardingSphereTable getTable(final String tableName) {
-        return null == tableName ? null : getTable(new IdentifierValue(tableName, QuoteCharacter.NONE));
+        return getTable(new IdentifierValue(tableName, QuoteCharacter.NONE));
     }
     
     /**
@@ -175,9 +172,6 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      */
     public void removeTable(final String tableName) {
-        if (null == tableName) {
-            return;
-        }
         ShardingSphereTable table = getTable(tableName);
         if (null == table) {
             return;
@@ -202,9 +196,6 @@ public final class ShardingSphereSchema {
      * @return view
      */
     private Optional<ShardingSphereView> findView(final IdentifierValue viewName) {
-        if (null == viewName || null == viewName.getValue()) {
-            return Optional.empty();
-        }
         return viewIndex.find(viewName);
     }
     
@@ -215,7 +206,7 @@ public final class ShardingSphereSchema {
      * @return contains view or not
      */
     public boolean containsView(final String viewName) {
-        return null != viewName && containsView(new IdentifierValue(viewName, QuoteCharacter.NONE));
+        return containsView(new IdentifierValue(viewName, QuoteCharacter.NONE));
     }
     
     /**
@@ -235,7 +226,7 @@ public final class ShardingSphereSchema {
      * @return view
      */
     public ShardingSphereView getView(final String viewName) {
-        return null == viewName ? null : getView(new IdentifierValue(viewName, QuoteCharacter.NONE));
+        return getView(new IdentifierValue(viewName, QuoteCharacter.NONE));
     }
     
     /**
@@ -264,9 +255,6 @@ public final class ShardingSphereSchema {
      * @param viewName view name
      */
     public void removeView(final String viewName) {
-        if (null == viewName) {
-            return;
-        }
         ShardingSphereView view = getView(viewName);
         if (null == view) {
             return;
