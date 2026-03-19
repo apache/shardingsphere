@@ -46,8 +46,8 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         } else {
             tableName = getLogicTableName(database, actualTableName);
             ShardingSphereSchema schema = database.getSchema(schemaName);
-            primaryKey = null != schema
-                    && Optional.ofNullable(schema.getTable(tableName)).map(optional -> optional.getColumn(columnName)).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
+            primaryKey = isPrimaryKey(schema, tableName, columnName)
+                    || isPrimaryKey(schema, tableName, queryResultMetaData.getColumnName(columnIndex));
         }
         int columnType = queryResultMetaData.getColumnType(columnIndex);
         String columnTypeName = queryResultMetaData.getColumnTypeName(columnIndex);
@@ -67,6 +67,11 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
             }
         }
         return actualTableName;
+    }
+    
+    private boolean isPrimaryKey(final ShardingSphereSchema schema, final String tableName, final String columnName) {
+        return null != schema && null != columnName
+                && Optional.ofNullable(schema.getTable(tableName)).map(optional -> optional.getColumn(columnName)).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
     }
     
     @Override
