@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy.keygen;
+package org.apache.shardingsphere.infra.config.keygen;
 
 /**
  * Key generate strategies configuration.
