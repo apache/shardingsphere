@@ -53,10 +53,10 @@ public final class MetaDataImportExecutor {
      * @param exportedMetaData exported metadata
      */
     public void importClusterConfigurations(final ExportedMetaData exportedMetaData) {
-        Map<String, YamlProxyDatabaseConfiguration> databaseConfigs = getYamlProxyDatabaseConfigurations(exportedMetaData);
-        YamlProxyServerConfiguration yamlServerConfig = getYamlServerConfig(exportedMetaData);
+        Map<String, YamlProxyDatabaseConfiguration> yamlDatabaseConfigs = getYamlProxyDatabaseConfigurations(exportedMetaData);
+        YamlProxyServerConfiguration yamlServerConfig = getYamlServerConfiguration(exportedMetaData);
         importServerConfiguration(yamlServerConfig);
-        importDatabaseConfigurations(databaseConfigs.values());
+        importDatabaseConfigurations(yamlDatabaseConfigs.values());
     }
     
     private void importServerConfiguration(final YamlProxyServerConfiguration yamlServerConfig) {
@@ -83,7 +83,7 @@ public final class MetaDataImportExecutor {
                 Collectors.toMap(Entry::getKey, entry -> YamlEngine.unmarshal(entry.getValue(), YamlProxyDatabaseConfiguration.class), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
-    private YamlProxyServerConfiguration getYamlServerConfig(final ExportedMetaData exportedMetaData) {
+    private YamlProxyServerConfiguration getYamlServerConfiguration(final ExportedMetaData exportedMetaData) {
         return YamlEngine.unmarshal(exportedMetaData.getRules() + System.lineSeparator() + exportedMetaData.getProps(), YamlProxyServerConfiguration.class);
     }
     
