@@ -50,9 +50,6 @@ public final class ShardingSphereTable {
     
     private final String name;
     
-    @Getter(AccessLevel.NONE)
-    private final Map<String, ShardingSphereColumn> columns;
-    
     private final List<ShardingSphereIdentifier> columnNames = new ArrayList<>();
     
     private final List<String> primaryKeyColumns = new ArrayList<>();
@@ -108,9 +105,8 @@ public final class ShardingSphereTable {
         columnIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.COLUMN);
         indexIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.INDEX);
         constraintIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.CONSTRAINT);
-        this.columns = createColumns(columns);
         this.type = type;
-        columnIndex.rebuild(new LinkedHashMap<>(this.columns));
+        columnIndex.rebuild(createColumns(columns));
         indexIdentifierIndex.rebuild(createIndexes(indexes));
         constraintIdentifierIndex.rebuild(createConstraints(constraints));
     }
@@ -206,7 +202,7 @@ public final class ShardingSphereTable {
      * @return columns
      */
     public Collection<ShardingSphereColumn> getAllColumns() {
-        return columns.values();
+        return columnIndex.getAll();
     }
     
     /**
@@ -216,10 +212,10 @@ public final class ShardingSphereTable {
      * @return found column names
      */
     public Collection<String> findColumnNamesIfNotExistedFrom(final Collection<String> columnNames) {
-        if (columnNames.size() == columns.size()) {
+        if (columnNames.size() == columnIndex.size()) {
             return Collections.emptyList();
         }
-        Collection<String> result = new LinkedHashSet<>(columns.keySet());
+        Collection<String> result = new LinkedHashSet<>(columnIndex.getAllNames());
         for (String each : columnNames) {
             ShardingSphereColumn column = getColumn(each);
             if (null != column) {
@@ -384,15 +380,20 @@ public final class ShardingSphereTable {
      * @param identifierContext database identifier context
      */
     public void attachIdentifierContext(final DatabaseIdentifierContext identifierContext) {
+        final Collection<ShardingSphereColumn> columns = new LinkedList<>(columnIndex.getAll());
         final Collection<ShardingSphereIndex> indexes = new LinkedList<>(indexIdentifierIndex.getAll());
         final Collection<ShardingSphereConstraint> constraints = new LinkedList<>(constraintIdentifierIndex.getAll());
         this.identifierContext = identifierContext;
         columnIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.COLUMN);
         indexIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.INDEX);
         constraintIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.CONSTRAINT);
-        columnIndex.rebuild(new LinkedHashMap<>(columns));
+        columnIndex.rebuild(createColumnMap(columns));
         indexIdentifierIndex.rebuild(createIndexes(indexes));
         constraintIdentifierIndex.rebuild(createConstraints(constraints));
     }
     
+    private Map<String, ShardingSphereColumn> createColumnMap(final Collection<ShardingSphereColumn> columns) {
+        return columns.stream()
+                .collect(Collectors.toMap(ShardingSphereColumn::getName, each -> each, (oldValue, currentValue) -> oldValue, () -> new LinkedHashMap<>(columns.size(), 1F)));
+    }
 }
