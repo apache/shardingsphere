@@ -56,7 +56,6 @@
             <artifactId>HikariCP</artifactId>
         </dependency>
         
-        <!-- Keep SLF4J API before hive-jdbc-standalone to avoid loading Hive's embedded legacy SLF4J classes first. -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
