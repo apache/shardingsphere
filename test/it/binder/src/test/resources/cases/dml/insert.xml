@@ -298,4 +298,86 @@
             </assignment>
         </set>
     </insert>
+    
+    <insert sql-case-id="insert_with_encrypt_function">
+        <table name="t_user" start-index="12" stop-index="18">
+            <table-bound>
+                <original-database name="foo_db_1" />
+                <original-schema name="foo_db_1" />
+            </table-bound>
+        </table>
+        <columns start-index="20" stop-index="50">
+            <column name="user_id" start-index="21" stop-index="27">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_user" />
+                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column>
+            <column name="user_name" start-index="30" stop-index="38">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_user" />
+                    <original-column name="user_name" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column>
+            <column name="email" start-index="41" stop-index="45">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_user" />
+                    <original-column name="email" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column>
+            <column name="password" start-index="48" stop-index="55">
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_user" />
+                    <original-column name="password" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column>
+        </columns>
+        <values start-index="64" stop-index="132">
+            <value start-index="72" stop-index="72">
+                <parameter-marker-expression parameter-index="0" start-index="72" stop-index="72" />
+            </value>
+            <value start-index="75" stop-index="75">
+                <parameter-marker-expression parameter-index="1" start-index="75" stop-index="75" />
+            </value>
+            <value start-index="78" stop-index="78">
+                <parameter-marker-expression parameter-index="2" start-index="78" stop-index="78" />
+            </value>
+            <value start-index="81" stop-index="130">
+                <function function-name="AES_ENCRYPT" start-index="81" stop-index="130">
+                    <parameter start-index="93" stop-index="120">
+                        <function function-name="CAST" start-index="93" stop-index="120">
+                            <parameter start-index="98" stop-index="98">
+                                <parameter-marker-expression parameter-index="3" start-index="98" stop-index="98" />
+                            </parameter>
+                            <data-type start-index="100" stop-index="120">
+                                <decimal-data-type precision="16" scale="2" start-index="100" stop-index="120" />
+                            </data-type>
+                        </function>
+                    </parameter>
+                    <parameter start-index="123" stop-index="123">
+                        <parameter-marker-expression parameter-index="4" start-index="123" stop-index="123" />
+                    </parameter>
+                </function>
+            </value>
+        </values>
+        <parameters>
+            <parameter-marker-expression parameter-index="0" start-index="72" stop-index="72" />
+            <parameter-marker-expression parameter-index="1" start-index="75" stop-index="75" />
+            <parameter-marker-expression parameter-index="2" start-index="78" stop-index="78" />
+            <parameter-marker-expression parameter-index="3" start-index="98" stop-index="98" />
+            <parameter-marker-expression parameter-index="4" start-index="123" stop-index="123" />
+        </parameters>
+    </insert>
 </sql-parser-test-cases>
