@@ -26,7 +26,9 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
@@ -37,17 +39,25 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
 import java.util.stream.Stream;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class DatabaseIdentifierContextFactoryTest {
     
     private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private static final DatabaseType MYSQL_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     @Test
     void assertCreateDefault() {
@@ -118,7 +128,12 @@ class DatabaseIdentifierContextFactoryTest {
                 Arguments.of("empty storage units keep explicit sensitive rules", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
                 Arguments.of("first data source path keeps explicit sensitive rules", DATABASE_TYPE, createResourceMetaDataWithFirstDataSource(),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false));
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
+                Arguments.of("storage type overrides protocol type for oracle backend", MYSQL_DATABASE_TYPE, createResourceMetaDataWithStorageUrls("jdbc:oracle:thin:@localhost:1521:xe"),
+                        new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "T_ORDER", "t_order", true),
+                Arguments.of("mixed storage trunk types fallback to insensitive rules", MYSQL_DATABASE_TYPE,
+                        createResourceMetaDataWithStorageUrls("jdbc:mysql://localhost:3306/foo_db", "jdbc:oracle:thin:@localhost:1521:xe"),
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.NORMALIZED, "Foo", "foo", true));
     }
     
     private static Stream<Arguments> refreshWithProtocolTypeAndPropsArguments() {
@@ -138,7 +153,12 @@ class DatabaseIdentifierContextFactoryTest {
                 Arguments.of("empty storage units refresh to exact lookup", DATABASE_TYPE, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()),
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
                 Arguments.of("first data source path refreshes to exact lookup", DATABASE_TYPE, createResourceMetaDataWithFirstDataSource(),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false));
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
+                Arguments.of("refresh uses oracle storage type when protocol type is mysql", MYSQL_DATABASE_TYPE, createResourceMetaDataWithStorageUrls("jdbc:oracle:thin:@localhost:1521:xe"),
+                        new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "T_ORDER", "t_order", true),
+                Arguments.of("refresh falls back to insensitive rules for mixed storage types", MYSQL_DATABASE_TYPE,
+                        createResourceMetaDataWithStorageUrls("jdbc:mysql://localhost:3306/foo_db", "jdbc:oracle:thin:@localhost:1521:xe"),
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.NORMALIZED, "Foo", "foo", true));
     }
     
     private static ConfigurationProperties createConfigurationProperties(final MetadataIdentifierCaseSensitivity caseSensitivity) {
@@ -146,10 +166,67 @@ class DatabaseIdentifierContextFactoryTest {
     }
     
     private static ResourceMetaData createResourceMetaDataWithFirstDataSource() {
-        ResourceMetaData result = mock(ResourceMetaData.class);
-        StorageUnit storageUnit = mock(StorageUnit.class);
-        when(storageUnit.getDataSource()).thenReturn(mock(DataSource.class));
-        when(result.getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
-        return result;
+        return createResourceMetaDataWithStorageUrls("jdbc:mysql://localhost:3306/foo_db");
+    }
+    
+    private static ResourceMetaData createResourceMetaDataWithStorageUrls(final String... urls) {
+        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(urls.length, 1F);
+        for (int i = 0; i < urls.length; i++) {
+            storageUnits.put("ds_" + i, createStorageUnit("ds_" + i, urls[i]));
+        }
+        return new ResourceMetaData(Collections.emptyMap(), storageUnits);
+    }
+    
+    private static StorageUnit createStorageUnit(final String name, final String url) {
+        Map<String, Object> props = new LinkedHashMap<>(2, 1F);
+        props.put("url", url);
+        props.put("username", "root");
+        return new StorageUnit(new StorageNode(name), new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", props), new FixtureDataSource());
+    }
+    
+    private static final class FixtureDataSource implements DataSource {
+        
+        @Override
+        public Connection getConnection() throws SQLException {
+            throw new SQLFeatureNotSupportedException("Not supported in fixture.");
+        }
+        
+        @Override
+        public Connection getConnection(final String username, final String password) throws SQLException {
+            throw new SQLFeatureNotSupportedException("Not supported in fixture.");
+        }
+        
+        @Override
+        public PrintWriter getLogWriter() {
+            return null;
+        }
+        
+        @Override
+        public void setLogWriter(final PrintWriter out) {
+        }
+        
+        @Override
+        public void setLoginTimeout(final int seconds) {
+        }
+        
+        @Override
+        public int getLoginTimeout() {
+            return 0;
+        }
+        
+        @Override
+        public Logger getParentLogger() {
+            return Logger.getGlobal();
+        }
+        
+        @Override
+        public <T> T unwrap(final Class<T> iface) throws SQLException {
+            throw new SQLFeatureNotSupportedException("Not supported in fixture.");
+        }
+        
+        @Override
+        public boolean isWrapperFor(final Class<?> iface) {
+            return false;
+        }
     }
 }

@@ -19,12 +19,17 @@ package org.apache.shardingsphere.infra.metadata.identifier;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 
 import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -62,7 +67,7 @@ public final class DatabaseIdentifierContextFactory {
      * @return identifier context
      */
     public static DatabaseIdentifierContext create(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final ConfigurationProperties props) {
-        return create(protocolType, getProps(props), getFirstDataSource(resourceMetaData));
+        return new DatabaseIdentifierContext(createRuleSet(protocolType, resourceMetaData, getProps(props)));
     }
     
     private static DatabaseIdentifierContext create(final DatabaseType protocolType, final ConfigurationProperties props, final DataSource dataSource) {
@@ -89,7 +94,7 @@ public final class DatabaseIdentifierContextFactory {
      * @param props configuration properties
      */
     public static void refresh(final DatabaseIdentifierContext identifierContext, final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final ConfigurationProperties props) {
-        identifierContext.refresh(new IdentifierCaseRuleResolver().resolve(protocolType, getProps(props), getFirstDataSource(resourceMetaData)));
+        identifierContext.refresh(createRuleSet(protocolType, resourceMetaData, getProps(props)));
     }
     
     private static ConfigurationProperties getProps(final ConfigurationProperties props) {
@@ -101,5 +106,38 @@ public final class DatabaseIdentifierContextFactory {
             return null;
         }
         return resourceMetaData.getStorageUnits().values().iterator().next().getDataSource();
+    }
+    
+    private static IdentifierCaseRuleSet createRuleSet(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final ConfigurationProperties props) {
+        if (hasMixedIdentifierRuleDatabaseTypes(resourceMetaData)) {
+            return IdentifierCaseRuleSets.newInsensitiveRuleSet();
+        }
+        DatabaseType resolvedDatabaseType = getIdentifierRuleDatabaseType(resourceMetaData).orElse(protocolType);
+        return new IdentifierCaseRuleResolver().resolve(resolvedDatabaseType, props, getFirstDataSource(resourceMetaData));
+    }
+    
+    private static Optional<DatabaseType> getIdentifierRuleDatabaseType(final ResourceMetaData resourceMetaData) {
+        if (null == resourceMetaData || null == resourceMetaData.getStorageUnits() || resourceMetaData.getStorageUnits().isEmpty()) {
+            return Optional.empty();
+        }
+        Collection<DatabaseType> storageDatabaseTypes = new LinkedHashSet<>(resourceMetaData.getStorageUnits().size(), 1F);
+        for (StorageUnit each : resourceMetaData.getStorageUnits().values()) {
+            storageDatabaseTypes.add(each.getStorageType());
+        }
+        return storageDatabaseTypes.stream().findFirst();
+    }
+    
+    private static boolean hasMixedIdentifierRuleDatabaseTypes(final ResourceMetaData resourceMetaData) {
+        if (null == resourceMetaData || null == resourceMetaData.getStorageUnits() || resourceMetaData.getStorageUnits().isEmpty()) {
+            return false;
+        }
+        Collection<DatabaseType> storageDatabaseTypes = new LinkedHashSet<>(resourceMetaData.getStorageUnits().size(), 1F);
+        for (StorageUnit each : resourceMetaData.getStorageUnits().values()) {
+            storageDatabaseTypes.add(each.getStorageType());
+            if (1 < storageDatabaseTypes.size()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
