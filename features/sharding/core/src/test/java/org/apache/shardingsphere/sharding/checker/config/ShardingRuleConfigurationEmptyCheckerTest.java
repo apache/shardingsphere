@@ -105,7 +105,8 @@ class ShardingRuleConfigurationEmptyCheckerTest {
     @Test
     void assertIsNotEmptyWithKeyGenerateStrategies() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getKeyGenerateStrategies().put("foo_key_generate_strategy", new ColumnKeyGenerateStrategiesRuleConfiguration());
+        ruleConfig.getKeyGenerateStrategies().put("foo_key_generate_strategy",
+                new ColumnKeyGenerateStrategiesRuleConfiguration("foo_algo", "foo_tbl", "foo_col"));
         assertFalse(checker.isEmpty(ruleConfig));
     }
     

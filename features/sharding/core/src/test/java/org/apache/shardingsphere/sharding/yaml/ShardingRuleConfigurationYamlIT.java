@@ -163,17 +163,10 @@ class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     }
     
     private static KeyGenerateStrategiesConfiguration createColumnKeyGenerateStrategyRuleConfiguration() {
-        ColumnKeyGenerateStrategiesRuleConfiguration result = new ColumnKeyGenerateStrategiesRuleConfiguration();
-        result.setKeyGeneratorName("snowflake");
-        result.setLogicTable("t_order");
-        result.setKeyGenerateColumn("id");
-        return result;
+        return new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order", "id");
     }
     
     private static KeyGenerateStrategiesConfiguration createSequenceKeyGenerateStrategyRuleConfiguration() {
-        SequenceKeyGenerateStrategiesRuleConfiguration result = new SequenceKeyGenerateStrategiesRuleConfiguration();
-        result.setKeyGeneratorName("snowflake");
-        result.setKeyGenerateSequence("sequence_name");
-        return result;
+        return new SequenceKeyGenerateStrategiesRuleConfiguration("snowflake", "sequence_name");
     }
 }

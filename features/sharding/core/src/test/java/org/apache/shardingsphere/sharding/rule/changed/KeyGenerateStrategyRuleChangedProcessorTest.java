@@ -79,10 +79,7 @@ class KeyGenerateStrategyRuleChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        ColumnKeyGenerateStrategiesRuleConfiguration toBeChangedItemConfig = new ColumnKeyGenerateStrategiesRuleConfiguration();
-        toBeChangedItemConfig.setKeyGeneratorName("foo_algo");
-        toBeChangedItemConfig.setLogicTable("foo_tbl");
-        toBeChangedItemConfig.setKeyGenerateColumn("foo_col");
+        ColumnKeyGenerateStrategiesRuleConfiguration toBeChangedItemConfig = new ColumnKeyGenerateStrategiesRuleConfiguration("foo_algo", "foo_tbl", "foo_col");
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         processor.changeRuleItemConfiguration("foo_strategy", currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getKeyGenerateStrategies().size(), is(1));
@@ -92,7 +89,7 @@ class KeyGenerateStrategyRuleChangedProcessorTest {
     @Test
     void assertDropRuleItemConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        currentRuleConfig.getKeyGenerateStrategies().put("foo_strategy", new ColumnKeyGenerateStrategiesRuleConfiguration());
+        currentRuleConfig.getKeyGenerateStrategies().put("foo_strategy", new ColumnKeyGenerateStrategiesRuleConfiguration("foo_algo", "foo_tbl", "foo_col"));
         processor.dropRuleItemConfiguration("foo_strategy", currentRuleConfig);
         assertTrue(currentRuleConfig.getKeyGenerateStrategies().isEmpty());
     }
