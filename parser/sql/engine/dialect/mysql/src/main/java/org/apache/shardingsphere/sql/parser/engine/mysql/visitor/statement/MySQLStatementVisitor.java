@@ -1719,11 +1719,12 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder().databaseType(databaseType);
+        if (null != ctx.withClause()) {
+            result.with((WithSegment) visit(ctx.withClause()));
+        }
         TableSegment tableSegment = (TableSegment) visit(ctx.tableReferences());
-        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder()
-                .databaseType(databaseType)
-                .table(tableSegment)
-                .setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+        result.table(tableSegment).setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.where((WhereSegment) visit(ctx.whereClause()));
         }
@@ -1732,9 +1733,6 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         if (null != ctx.limitClause()) {
             result.limit((LimitSegment) visit(ctx.limitClause()));
-        }
-        if (null != ctx.withClause()) {
-            result.with((WithSegment) visit(ctx.withClause()));
         }
         UpdateStatement updateStatement = result.build();
         updateStatement.addParameterMarkers(getParameterMarkerSegments());
@@ -1785,6 +1783,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder().databaseType(databaseType);
+        if (null != ctx.withClause()) {
+            result.with((WithSegment) visit(ctx.withClause()));
+        }
         if (null != ctx.multipleTablesClause()) {
             result.table((TableSegment) visit(ctx.multipleTablesClause()));
         } else {
@@ -1801,9 +1802,6 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         if (null != ctx.returningClause()) {
             result.returning((ReturningSegment) visit(ctx.returningClause()));
-        }
-        if (null != ctx.withClause()) {
-            result.with((WithSegment) visit(ctx.withClause()));
         }
         DeleteStatement deleteStatement = result.build();
         deleteStatement.addParameterMarkers(getParameterMarkerSegments());
