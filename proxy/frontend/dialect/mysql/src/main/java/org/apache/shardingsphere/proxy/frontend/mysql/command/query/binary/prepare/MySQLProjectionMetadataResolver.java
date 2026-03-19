@@ -65,9 +65,8 @@ public final class MySQLProjectionMetadataResolver {
      * @return column definition packets
      * @throws SQLException SQL exception
      */
-    public static Collection<MySQLPacket> resolveProjectionPackets(
-            final ConnectionSession connectionSession, final MySQLServerPreparedStatement preparedStatement,
-            final SelectStatementContext selectStatementContext, final int characterSet) throws SQLException {
+    public static Collection<MySQLPacket> resolveProjectionPackets(final ConnectionSession connectionSession, final MySQLServerPreparedStatement preparedStatement,
+                                                                   final SelectStatementContext selectStatementContext, final int characterSet) throws SQLException {
         try (PreparedStatement actualPreparedStatement = MySQLPreparedStatementMetadataFactory.load(connectionSession, preparedStatement)) {
             ResultSetMetaData resultSetMetaData = actualPreparedStatement.getMetaData();
             if (null == resultSetMetaData) {
