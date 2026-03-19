@@ -74,16 +74,15 @@ class DataSourcePoolPropertiesValidatorTest {
     
     @Test
     void assertValidateWithValidHikariDataSource() {
-        assertTrue(DataSourcePoolPropertiesValidator
-                .validate(Collections.singletonMap("foo_ds", new DataSourcePoolProperties(HikariDataSource.class.getName(), createHikariDataSourceProperties(MOCKED_URL))), Collections.emptySet())
-                .isEmpty());
+        assertTrue(DataSourcePoolPropertiesValidator.validate(
+                Collections.singletonMap("foo_ds", new DataSourcePoolProperties(HikariDataSource.class.getName(), createHikariDataSourceProperties(MOCKED_URL))), Collections.emptySet()).isEmpty());
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("validateWithMockedDataSourcePrivilegesArguments")
     void assertValidateWithMockedDataSourcePrivileges(final String name, final Collection<PrivilegeCheckType> expectedPrivileges) {
-        final Map<String, Object> props = createMockedDataSourceProperties();
-        assertTrue(DataSourcePoolPropertiesValidator.validate(Collections.singletonMap("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), props)), expectedPrivileges).isEmpty());
+        assertTrue(DataSourcePoolPropertiesValidator.validate(
+                Collections.singletonMap("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), createMockedDataSourceProperties())), expectedPrivileges).isEmpty());
     }
     
     @Test
@@ -93,8 +92,8 @@ class DataSourcePoolPropertiesValidatorTest {
         doThrow(new IllegalArgumentException("mock invalid properties")).when(validator).validate(dataSourcePoolProperties);
         try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class, CALLS_REAL_METHODS)) {
             typedSPILoader.when(() -> TypedSPILoader.findService(DataSourcePoolPropertiesContentValidator.class, HikariDataSource.class.getName())).thenReturn(Optional.of(validator));
-            Map<String, Exception> actual = DataSourcePoolPropertiesValidator.validate(Collections.singletonMap("foo_ds", dataSourcePoolProperties), Collections.emptySet());
-            assertInvalidDataSource(actual, "Invalid data source `foo_ds`, error message is: mock invalid properties");
+            assertInvalidDataSource(DataSourcePoolPropertiesValidator.validate(
+                    Collections.singletonMap("foo_ds", dataSourcePoolProperties), Collections.emptySet()), "Invalid data source `foo_ds`, error message is: mock invalid properties");
         }
     }
     
@@ -112,8 +111,8 @@ class DataSourcePoolPropertiesValidatorTest {
         DataSourcePoolProperties dataSourcePoolProperties = new DataSourcePoolProperties(MockedDataSource.class.getName(), props);
         try (MockedStatic<DataSourcePoolCreator> dataSourcePoolCreator = mockStatic(DataSourcePoolCreator.class)) {
             dataSourcePoolCreator.when(() -> DataSourcePoolCreator.create(dataSourcePoolProperties)).thenThrow(new IllegalStateException("mock create failure"));
-            Map<String, Exception> actual = DataSourcePoolPropertiesValidator.validate(Collections.singletonMap("foo_ds", dataSourcePoolProperties), Collections.emptySet());
-            assertInvalidDataSource(actual, "Invalid data source `foo_ds`, error message is: mock create failure");
+            assertInvalidDataSource(DataSourcePoolPropertiesValidator.validate(Collections.singletonMap("foo_ds", dataSourcePoolProperties), Collections.emptySet()),
+                    "Invalid data source `foo_ds`, error message is: mock create failure");
         }
     }
     
@@ -142,7 +141,7 @@ class DataSourcePoolPropertiesValidatorTest {
     @Test
     void assertValidateWithNullConnection() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
-        final Map<String, Object> props = createMockedDataSourceProperties();
+        Map<String, Object> props = createMockedDataSourceProperties();
         DataSourcePoolProperties dataSourcePoolProperties = new DataSourcePoolProperties(MockedDataSource.class.getName(), props);
         when(dataSource.getConnection()).thenReturn(null);
         try (MockedStatic<DataSourcePoolCreator> dataSourcePoolCreator = mockStatic(DataSourcePoolCreator.class)) {
@@ -160,7 +159,7 @@ class DataSourcePoolPropertiesValidatorTest {
                 MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
             databaseTypeFactory.when(() -> DatabaseTypeFactory.get(MOCKED_URL)).thenReturn(databaseType);
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectDatabasePrivilegeChecker.class, databaseType)).thenReturn(Optional.of(checker));
-            final Map<String, Object> props = createMockedDataSourceProperties();
+            Map<String, Object> props = createMockedDataSourceProperties();
             assertTrue(DataSourcePoolPropertiesValidator.validate(Collections.singletonMap("foo_ds", new DataSourcePoolProperties(MockedDataSource.class.getName(), props)),
                     Arrays.asList(PrivilegeCheckType.SELECT, PrivilegeCheckType.XA)).isEmpty());
             verify(checker).check(any(DataSource.class), eq(PrivilegeCheckType.SELECT));
