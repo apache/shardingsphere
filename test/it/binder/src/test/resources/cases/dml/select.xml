@@ -1422,12 +1422,7 @@
                     <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
                     <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
-                <owner name="t1" start-index="7" stop-index="8">
-                    <table-bound>
-                        <original-database name="foo_db_1" />
-                        <original-schema name="foo_db_1" />
-                    </table-bound>
-                </owner>
+                <owner name="t1" start-index="7" stop-index="8"/>
             </column-projection>
             <column-projection name="user_name" start-index="19" stop-index="30">
                 <column-bound>
@@ -1437,14 +1432,9 @@
                     <original-column name="user_name" start-delimiter="`" end-delimiter="`" />
                     <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
-                <owner name="t1" start-index="19" stop-index="20">
-                    <table-bound>
-                        <original-database name="foo_db_1" />
-                        <original-schema name="foo_db_1" />
-                    </table-bound>
-                </owner>
+                <owner name="t1" start-index="19" stop-index="20"/>
             </column-projection>
-            <column-projection name="order_id" start-index="33" stop-index="43">
+            <column-projection name="order_id" start-index="32" stop-index="41">
                 <column-bound>
                     <original-database name="foo_db_1" />
                     <original-schema name="foo_db_1" />
@@ -1452,14 +1442,9 @@
                     <original-column name="order_id" start-delimiter="`" end-delimiter="`" />
                     <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
-                <owner name="t2" start-index="33" stop-index="34">
-                    <table-bound>
-                        <original-database name="foo_db_1" />
-                        <original-schema name="foo_db_1" />
-                    </table-bound>
-                </owner>
+                <owner name="t2" start-index="32" stop-index="33"/>
             </column-projection>
-            <column-projection name="creation_date" start-index="46" stop-index="61">
+            <column-projection name="creation_date" start-index="50" stop-index="63">
                 <column-bound>
                     <original-database name="foo_db_1" />
                     <original-schema name="foo_db_1" />
@@ -1467,18 +1452,13 @@
                     <original-column name="creation_date" start-delimiter="`" end-delimiter="`" />
                     <table-source-type name="PHYSICAL_TABLE"/>
                 </column-bound>
-                <owner name="t2" start-index="46" stop-index="47">
-                    <table-bound>
-                        <original-database name="foo_db_1" />
-                        <original-schema name="foo_db_1" />
-                    </table-bound>
-                </owner>
+                <owner name="t2" start-index="50" stop-index="51"/>
             </column-projection>
         </projections>
-        <from start-index="68" stop-index="124">
+        <from>
             <join-table join-type="LEFT">
                 <left>
-                    <simple-table alias="t1" name="t_user" start-index="68" stop-index="76">
+                    <simple-table name="t_order" alias="t1" start-index="67" stop-index="75">
                         <table-bound>
                             <original-database name="foo_db_1" />
                             <original-schema name="foo_db_1" />
@@ -1486,7 +1466,7 @@
                     </simple-table>
                 </left>
                 <right>
-                    <simple-table alias="t2" name="t_order" start-index="88" stop-index="97">
+                    <simple-table name="t_order" alias="t2" start-index="88" stop-index="97">
                         <table-bound>
                             <original-database name="foo_db_1" />
                             <original-schema name="foo_db_1" />
@@ -1504,12 +1484,7 @@
                                     <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
                                     <table-source-type name="PHYSICAL_TABLE"/>
                                 </column-bound>
-                                <owner name="t1" start-index="102" stop-index="103">
-                                    <table-bound>
-                                        <original-database name="foo_db_1" />
-                                        <original-schema name="foo_db_1" />
-                                    </table-bound>
-                                </owner>
+                                <owner name="t1" start-index="102" stop-index="103"/>
                             </column>
                         </left>
                         <operator>=</operator>
@@ -1522,12 +1497,7 @@
                                     <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
                                     <table-source-type name="PHYSICAL_TABLE"/>
                                 </column-bound>
-                                <owner name="t2" start-index="115" stop-index="116">
-                                    <table-bound>
-                                        <original-database name="foo_db_1" />
-                                        <original-schema name="foo_db_1" />
-                                    </table-bound>
-                                </owner>
+                                <owner name="t2" start-index="115" stop-index="116"/>
                             </column>
                         </right>
                     </binary-operation-expression>
@@ -1546,12 +1516,7 @@
                                 <original-column name="user_name" start-delimiter="`" end-delimiter="`" />
                                 <table-source-type name="PHYSICAL_TABLE"/>
                             </column-bound>
-                            <owner name="t1" start-index="132" stop-index="133">
-                                <table-bound>
-                                    <original-database name="foo_db_1" />
-                                    <original-schema name="foo_db_1" />
-                                </table-bound>
-                            </owner>
+                            <owner name="t1" start-index="132" stop-index="133"/>
                         </column>
                     </left>
                     <operator>=</operator>
@@ -1564,5 +1529,77 @@
         <parameters>
             <parameter-marker-expression parameter-index="0" start-index="147" stop-index="147" />
         </parameters>
+    </select>
+    
+    <select sql-case-id="select_with_left_join_having_outer_column">
+        <projections start-index="7" stop-index="23">
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="7" stop-index="14" alias="count">
+                <parameter>
+                    <literal-expression value="*" start-index="13" stop-index="13" />
+                </parameter>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <join-table join-type="LEFT">
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="30" stop-index="38">
+                        <table-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                        </table-bound>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="t_user" alias="u" start-index="50" stop-index="57">
+                        <table-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                        </table-bound>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="62" stop-index="82">
+                        <left>
+                            <column name="user_id" start-index="62" stop-index="70">
+                                <owner name="o" start-index="62" stop-index="62"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="user_id" start-index="74" stop-index="82">
+                                <owner name="u" start-index="74" stop-index="74"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <group-by>
+            <column-item name="user_id" start-index="93" stop-index="101">
+                <owner name="u" start-index="93" stop-index="93"/>
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_user" />
+                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column-item>
+        </group-by>
+        <having start-index="103" stop-index="130">
+            <expr>
+                <binary-operation-expression start-index="110" stop-index="130">
+                    <left>
+                        <column name="user_id" start-index="110" stop-index="118">
+                            <owner name="u" start-index="110" stop-index="110"/>
+                        </column>
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="NOT NULL" start-index="123" stop-index="130" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
     </select>
 </sql-parser-test-cases>
