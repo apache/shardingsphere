@@ -27,10 +27,10 @@ import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheOptionsC
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableReferenceRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.ColumnKeyGenerateStrategiesRuleConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategiesConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.SequenceKeyGenerateStrategiesRuleConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.impl.SequenceKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.HintShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
@@ -163,17 +163,10 @@ class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     }
     
     private static KeyGenerateStrategiesConfiguration createColumnKeyGenerateStrategyRuleConfiguration() {
-        ColumnKeyGenerateStrategiesRuleConfiguration result = new ColumnKeyGenerateStrategiesRuleConfiguration();
-        result.setKeyGeneratorName("snowflake");
-        result.setLogicTable("t_order");
-        result.setKeyGenerateColumn("id");
-        return result;
+        return new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order", "id");
     }
     
     private static KeyGenerateStrategiesConfiguration createSequenceKeyGenerateStrategyRuleConfiguration() {
-        SequenceKeyGenerateStrategiesRuleConfiguration result = new SequenceKeyGenerateStrategiesRuleConfiguration();
-        result.setKeyGeneratorName("snowflake");
-        result.setKeyGenerateSequence("sequence_name");
-        return result;
+        return new SequenceKeyGenerateStrategiesRuleConfiguration("snowflake", "sequence_name");
     }
 }

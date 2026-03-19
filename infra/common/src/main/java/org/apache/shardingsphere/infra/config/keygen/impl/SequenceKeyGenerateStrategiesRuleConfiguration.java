@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy.keygen;
+package org.apache.shardingsphere.infra.config.keygen.impl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
 
 /**
  * Sequence key generate strategies rule configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class SequenceKeyGenerateStrategiesRuleConfiguration implements KeyGenerateStrategiesConfiguration {
     
-    private String keyGeneratorName;
+    private final String keyGeneratorName;
     
-    private String keyGenerateSequence;
+    private final String keyGenerateSequence;
     
     @Override
     public String getKeyGenerateType() {
