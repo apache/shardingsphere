@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -59,12 +60,6 @@ public final class ShardingSphereTable {
     private final List<String> visibleColumns = new ArrayList<>();
     
     private final Map<String, Integer> visibleColumnAndIndexMap = new CaseInsensitiveMap<>();
-    
-    @Getter(AccessLevel.NONE)
-    private final Map<String, ShardingSphereIndex> indexes;
-    
-    @Getter(AccessLevel.NONE)
-    private final Map<String, ShardingSphereConstraint> constraints;
     
     @Getter(AccessLevel.NONE)
     private DatabaseIdentifierContext identifierContext;
@@ -114,10 +109,10 @@ public final class ShardingSphereTable {
         indexIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.INDEX);
         constraintIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.CONSTRAINT);
         this.columns = createColumns(columns);
-        this.indexes = createIndexes(indexes);
-        this.constraints = createConstraints(constraints);
         this.type = type;
-        rebuildIdentifierIndexes();
+        columnIndex.rebuild(new LinkedHashMap<>(this.columns));
+        indexIdentifierIndex.rebuild(createIndexes(indexes));
+        constraintIdentifierIndex.rebuild(createConstraints(constraints));
     }
     
     private Map<String, ShardingSphereColumn> createColumns(final Collection<ShardingSphereColumn> columns) {
@@ -346,7 +341,7 @@ public final class ShardingSphereTable {
      * @return indexes
      */
     public Collection<ShardingSphereIndex> getAllIndexes() {
-        return indexes.values();
+        return indexIdentifierIndex.getAll();
     }
     
     /**
@@ -355,8 +350,7 @@ public final class ShardingSphereTable {
      * @param index index
      */
     public void putIndex(final ShardingSphereIndex index) {
-        indexes.put(index.getName(), index);
-        rebuildIndexIdentifierIndex();
+        indexIdentifierIndex.put(index.getName(), index);
     }
     
     /**
@@ -372,8 +366,7 @@ public final class ShardingSphereTable {
         if (null == index) {
             return;
         }
-        indexes.remove(index.getName());
-        rebuildIndexIdentifierIndex();
+        indexIdentifierIndex.remove(index.getName());
     }
     
     /**
@@ -382,7 +375,7 @@ public final class ShardingSphereTable {
      * @return constraint
      */
     public Collection<ShardingSphereConstraint> getAllConstraints() {
-        return constraints.values();
+        return constraintIdentifierIndex.getAll();
     }
     
     /**
@@ -391,28 +384,15 @@ public final class ShardingSphereTable {
      * @param identifierContext database identifier context
      */
     public void attachIdentifierContext(final DatabaseIdentifierContext identifierContext) {
+        final Collection<ShardingSphereIndex> indexes = new LinkedList<>(indexIdentifierIndex.getAll());
+        final Collection<ShardingSphereConstraint> constraints = new LinkedList<>(constraintIdentifierIndex.getAll());
         this.identifierContext = identifierContext;
         columnIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.COLUMN);
         indexIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.INDEX);
         constraintIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.CONSTRAINT);
-        rebuildIdentifierIndexes();
-    }
-    
-    private void rebuildIdentifierIndexes() {
-        rebuildColumnIndex();
-        rebuildIndexIdentifierIndex();
-        rebuildConstraintIdentifierIndex();
-    }
-    
-    private void rebuildColumnIndex() {
         columnIndex.rebuild(new LinkedHashMap<>(columns));
+        indexIdentifierIndex.rebuild(createIndexes(indexes));
+        constraintIdentifierIndex.rebuild(createConstraints(constraints));
     }
     
-    private void rebuildIndexIdentifierIndex() {
-        indexIdentifierIndex.rebuild(new LinkedHashMap<>(indexes));
-    }
-    
-    private void rebuildConstraintIdentifierIndex() {
-        constraintIdentifierIndex.rebuild(new LinkedHashMap<>(constraints));
-    }
 }
