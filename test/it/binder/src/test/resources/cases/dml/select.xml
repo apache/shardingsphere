@@ -1350,6 +1350,78 @@
         </order-by>
     </select>
     
+    <select sql-case-id="select_with_left_join_having_outer_column">
+        <projections start-index="7" stop-index="23">
+            <aggregation-projection type="COUNT" expression="COUNT(*)" start-index="7" stop-index="14" alias="count">
+                <parameter>
+                    <literal-expression value="*" start-index="13" stop-index="13" />
+                </parameter>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <join-table join-type="LEFT">
+                <left>
+                    <simple-table name="t_order" alias="o" start-index="30" stop-index="38">
+                        <table-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                        </table-bound>
+                    </simple-table>
+                </left>
+                <right>
+                    <simple-table name="t_user" alias="u" start-index="50" stop-index="57">
+                        <table-bound>
+                            <original-database name="foo_db_1" />
+                            <original-schema name="foo_db_1" />
+                        </table-bound>
+                    </simple-table>
+                </right>
+                <on-condition>
+                    <binary-operation-expression start-index="62" stop-index="82">
+                        <left>
+                            <column name="user_id" start-index="62" stop-index="70">
+                                <owner name="o" start-index="62" stop-index="62"/>
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <column name="user_id" start-index="74" stop-index="82">
+                                <owner name="u" start-index="74" stop-index="74"/>
+                            </column>
+                        </right>
+                    </binary-operation-expression>
+                </on-condition>
+            </join-table>
+        </from>
+        <group-by>
+            <column-item name="user_id" start-index="93" stop-index="101">
+                <owner name="u" start-index="93" stop-index="93"/>
+                <column-bound>
+                    <original-database name="foo_db_1" />
+                    <original-schema name="foo_db_1" />
+                    <original-table name="t_user" />
+                    <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                    <table-source-type name="PHYSICAL_TABLE"/>
+                </column-bound>
+            </column-item>
+        </group-by>
+        <having start-index="103" stop-index="130">
+            <expr>
+                <binary-operation-expression start-index="110" stop-index="130">
+                    <left>
+                        <column name="user_id" start-index="110" stop-index="118">
+                            <owner name="u" start-index="110" stop-index="110"/>
+                        </column>
+                    </left>
+                    <operator>IS</operator>
+                    <right>
+                        <literal-expression value="NOT NULL" start-index="123" stop-index="130" />
+                    </right>
+                </binary-operation-expression>
+            </expr>
+        </having>
+    </select>
+    
     <select sql-case-id="select_with_outer_join_operator">
         <from start-index="23" stop-index="47">
             <join-table join-type="COMMA" start-index="23" stop-index="47">
