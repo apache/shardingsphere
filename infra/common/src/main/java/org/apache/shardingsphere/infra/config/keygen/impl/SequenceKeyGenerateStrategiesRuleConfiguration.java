@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy.keygen;
+package org.apache.shardingsphere.infra.config.keygen.impl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
 
 /**
- * Column key generate strategies configuration.
+ * Sequence key generate strategies rule configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ColumnKeyGenerateStrategiesRuleConfiguration implements KeyGenerateStrategiesConfiguration {
+public final class SequenceKeyGenerateStrategiesRuleConfiguration implements KeyGenerateStrategiesConfiguration {
     
-    private String keyGeneratorName;
+    private final String keyGeneratorName;
     
-    private String logicTable;
-    
-    private String keyGenerateColumn;
+    private final String keyGenerateSequence;
     
     @Override
     public String getKeyGenerateType() {
-        return "column";
+        return "sequence";
     }
 }

@@ -27,10 +27,10 @@ import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.ColumnKeyGenerateStrategiesRuleConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategiesConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.SequenceKeyGenerateStrategiesRuleConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.impl.SequenceKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -188,17 +188,10 @@ class ShardingRuleConfigurationCheckerTest {
     }
     
     private KeyGenerateStrategiesConfiguration createColumnKeyGenerateStrategyRuleConfiguration(final String keyGeneratorName) {
-        ColumnKeyGenerateStrategiesRuleConfiguration result = new ColumnKeyGenerateStrategiesRuleConfiguration();
-        result.setKeyGeneratorName(keyGeneratorName);
-        result.setLogicTable("foo_tbl");
-        result.setKeyGenerateColumn("foo_col");
-        return result;
+        return new ColumnKeyGenerateStrategiesRuleConfiguration(keyGeneratorName, "foo_tbl", "foo_col");
     }
     
     private KeyGenerateStrategiesConfiguration createSequenceKeyGenerateStrategyRuleConfiguration(final String keyGeneratorName) {
-        SequenceKeyGenerateStrategiesRuleConfiguration result = new SequenceKeyGenerateStrategiesRuleConfiguration();
-        result.setKeyGeneratorName(keyGeneratorName);
-        result.setKeyGenerateSequence("foo_sequence");
-        return result;
+        return new SequenceKeyGenerateStrategiesRuleConfiguration(keyGeneratorName, "foo_sequence");
     }
 }

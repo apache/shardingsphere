@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.spi.rule.RuleChangedItemType;
 import org.apache.shardingsphere.mode.spi.rule.RuleItemConfigurationChangedProcessor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.ColumnKeyGenerateStrategiesRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategiesConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyRuleConfiguration;
 import org.hamcrest.CoreMatchers;
@@ -79,10 +79,7 @@ class KeyGenerateStrategyRuleChangedProcessorTest {
     
     @Test
     void assertChangeRuleItemConfiguration() {
-        ColumnKeyGenerateStrategiesRuleConfiguration toBeChangedItemConfig = new ColumnKeyGenerateStrategiesRuleConfiguration();
-        toBeChangedItemConfig.setKeyGeneratorName("foo_algo");
-        toBeChangedItemConfig.setLogicTable("foo_tbl");
-        toBeChangedItemConfig.setKeyGenerateColumn("foo_col");
+        ColumnKeyGenerateStrategiesRuleConfiguration toBeChangedItemConfig = new ColumnKeyGenerateStrategiesRuleConfiguration("foo_algo", "foo_tbl", "foo_col");
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         processor.changeRuleItemConfiguration("foo_strategy", currentRuleConfig, toBeChangedItemConfig);
         assertThat(currentRuleConfig.getKeyGenerateStrategies().size(), is(1));
@@ -92,7 +89,7 @@ class KeyGenerateStrategyRuleChangedProcessorTest {
     @Test
     void assertDropRuleItemConfiguration() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        currentRuleConfig.getKeyGenerateStrategies().put("foo_strategy", new ColumnKeyGenerateStrategiesRuleConfiguration());
+        currentRuleConfig.getKeyGenerateStrategies().put("foo_strategy", new ColumnKeyGenerateStrategiesRuleConfiguration("foo_algo", "foo_tbl", "foo_col"));
         processor.dropRuleItemConfiguration("foo_strategy", currentRuleConfig);
         assertTrue(currentRuleConfig.getKeyGenerateStrategies().isEmpty());
     }

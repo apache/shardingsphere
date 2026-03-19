@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy.keygen;
+package org.apache.shardingsphere.infra.exception.kernel.metadata;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.exception.external.sql.type.kernel.category.MetaDataSQLException;
 
 /**
- * Sequence key generate strategies rule configuration.
+ * Prepared statement metadata resolution exception.
  */
-@Getter
-@Setter
-public final class SequenceKeyGenerateStrategiesRuleConfiguration implements KeyGenerateStrategiesConfiguration {
+public final class PreparedStatementMetadataResolutionException extends MetaDataSQLException {
     
-    private String keyGeneratorName;
+    private static final long serialVersionUID = -2700384641437115231L;
     
-    private String keyGenerateSequence;
-    
-    @Override
-    public String getKeyGenerateType() {
-        return "sequence";
+    public PreparedStatementMetadataResolutionException(final String reason) {
+        super(XOpenSQLState.GENERAL_ERROR, 24, "Can not resolve prepared statement metadata because %s.", reason);
     }
 }
