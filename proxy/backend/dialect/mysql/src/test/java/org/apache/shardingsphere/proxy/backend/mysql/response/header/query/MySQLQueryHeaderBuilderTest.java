@@ -66,6 +66,13 @@ class MySQLQueryHeaderBuilderTest {
     }
     
     @Test
+    void assertBuildWithAliasColumnAndOriginalPrimaryKey() throws SQLException {
+        QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
+        QueryHeader actual = new MySQLQueryHeaderBuilder().build(queryResultMetaData, createDatabase(), "order_id_alias", "order_id_alias", 1);
+        assertTrue(actual.isPrimaryKey());
+    }
+    
+    @Test
     void assertBuildWithNullDatabase() throws SQLException {
         QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
         QueryHeader actual = new MySQLQueryHeaderBuilder().build(queryResultMetaData, null, queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1);
