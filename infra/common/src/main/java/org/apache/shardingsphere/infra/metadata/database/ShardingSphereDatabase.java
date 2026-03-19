@@ -46,7 +46,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -62,9 +61,6 @@ public final class ShardingSphereDatabase {
     private final ResourceMetaData resourceMetaData;
     
     private final RuleMetaData ruleMetaData;
-    
-    @Getter(AccessLevel.NONE)
-    private final Map<String, ShardingSphereSchema> schemas;
     
     @Getter(AccessLevel.NONE)
     private final DatabaseIdentifierContext identifierContext;
@@ -114,9 +110,9 @@ public final class ShardingSphereDatabase {
         this.ruleMetaData = ruleMetaData;
         this.identifierContext = identifierContext;
         schemaIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.SCHEMA);
-        this.schemas = new ConcurrentHashMap<>(schemas.stream().collect(Collectors.toMap(ShardingSphereSchema::getName, each -> each)));
-        this.schemas.values().forEach(this::attachSchemaIdentifierContext);
-        rebuildSchemaIndex();
+        Map<String, ShardingSphereSchema> schemaMap = createSchemaMap(schemas);
+        schemaMap.values().forEach(this::attachSchemaIdentifierContext);
+        schemaIndex.rebuild(schemaMap);
     }
     
     /**
@@ -125,7 +121,7 @@ public final class ShardingSphereDatabase {
      * @return all schemas
      */
     public Collection<ShardingSphereSchema> getAllSchemas() {
-        return schemas.values();
+        return schemaIndex.getAll();
     }
     
     /**
@@ -185,8 +181,7 @@ public final class ShardingSphereDatabase {
      */
     public void addSchema(final ShardingSphereSchema schema) {
         attachSchemaIdentifierContext(schema);
-        schemas.put(schema.getName(), schema);
-        rebuildSchemaIndex();
+        schemaIndex.put(schema.getName(), schema);
     }
     
     /**
@@ -199,8 +194,7 @@ public final class ShardingSphereDatabase {
         if (null == schema) {
             return;
         }
-        schemas.remove(schema.getName());
-        rebuildSchemaIndex();
+        schemaIndex.remove(schema.getName());
     }
     
     /**
@@ -259,8 +253,12 @@ public final class ShardingSphereDatabase {
      */
     public synchronized void refreshIdentifierContext(final ConfigurationProperties props) {
         DatabaseIdentifierContextFactory.refresh(identifierContext, protocolType, resourceMetaData, props);
-        schemas.values().forEach(this::attachSchemaIdentifierContext);
-        rebuildSchemaIndex();
+        Map<String, ShardingSphereSchema> schemaMap = new LinkedHashMap<>(schemaIndex.size(), 1F);
+        schemaIndex.getAll().forEach(each -> {
+            attachSchemaIdentifierContext(each);
+            schemaMap.put(each.getName(), each);
+        });
+        schemaIndex.rebuild(schemaMap);
     }
     
     /**
@@ -280,11 +278,12 @@ public final class ShardingSphereDatabase {
         return decorator.get().decorate(name, dataSources, ruleMetaData.getRules(), ruleConfig);
     }
     
-    private void rebuildSchemaIndex() {
-        schemaIndex.rebuild(new LinkedHashMap<>(schemas));
-    }
-    
     private void attachSchemaIdentifierContext(final ShardingSphereSchema schema) {
         schema.attachIdentifierContext(identifierContext);
+    }
+    
+    private Map<String, ShardingSphereSchema> createSchemaMap(final Collection<ShardingSphereSchema> schemas) {
+        return schemas.stream().collect(Collectors.toMap(ShardingSphereSchema::getName, each -> each, (oldValue, currentValue) -> currentValue,
+                () -> new LinkedHashMap<>(schemas.size(), 1F)));
     }
 }
