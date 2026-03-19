@@ -29,7 +29,10 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
@@ -45,6 +48,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -53,9 +57,13 @@ import static org.mockito.Mockito.when;
 class ColumnSegmentBinderTest {
     
     private SQLStatementBinderContext createBinderContext() {
+        return createBinderContext("MySQL");
+    }
+    
+    private SQLStatementBinderContext createBinderContext(final String databaseType) {
         SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
-        return new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
+        when(selectStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, databaseType));
+        return new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement, Collections.emptyList());
     }
     
     @Test
@@ -178,5 +186,39 @@ class ColumnSegmentBinderTest {
         assertThat(actual.getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_schema"));
         assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
         assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("order_id"));
+    }
+    @Test
+    void assertBindFromFunctionProjection() {
+        ColumnSegment boundOrderStatusColumn = new ColumnSegment(0, 0, new IdentifierValue("status"));
+        boundOrderStatusColumn.setColumnBoundInfo(
+                new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")), new IdentifierValue("t_order"), new IdentifierValue("status"),
+                        TableSourceType.PHYSICAL_TABLE));
+        FunctionSegment functionSegment = new FunctionSegment(0, 0, "ifnull", "ifnull(status, 0)");
+        functionSegment.getParameters().add(boundOrderStatusColumn);
+        ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 0, "ifnull(status, 0) as status", functionSegment);
+        expressionProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("status")));
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        tableBinderContexts.put(CaseInsensitiveString.of("t_order"), new SimpleTableSegmentBinderContext(Collections.singleton(expressionProjectionSegment), TableSourceType.PHYSICAL_TABLE));
+        SQLStatementBinderContext binderContext = createBinderContext();
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("status"));
+        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("t_order")));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.PROJECTION, binderContext, LinkedHashMultimap.create(), tableBinderContexts);
+        assertNotNull(actual.getColumnBoundInfo());
+        assertNull(actual.getOtherUsingColumnBoundInfo());
+        assertThat(actual.getColumnBoundInfo().getOriginalDatabase().getValue(), is("foo_db"));
+        assertThat(actual.getColumnBoundInfo().getOriginalSchema().getValue(), is("foo_db"));
+        assertThat(actual.getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actual.getColumnBoundInfo().getOriginalColumn().getValue(), is("status"));
+    }
+    
+    @Test
+    void assertBindExcludedColumnInSetAssignment() {
+        ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
+        columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("EXCLUDED")));
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT, createBinderContext("PostgreSQL"),
+                LinkedHashMultimap.create(), LinkedHashMultimap.create());
+        assertSame(columnSegment, actual);
+        assertTrue(actual.getOwner().isPresent());
+        assertThat(actual.getOwner().get().getIdentifier().getValue(), is("EXCLUDED"));
     }
 }

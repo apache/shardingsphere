@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Colu
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
@@ -54,6 +55,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -62,6 +64,8 @@ import static org.mockito.Mockito.when;
 class InsertStatementBinderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final DatabaseType postgreSQLDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
     @Test
     void assertBindInsertValues() {
@@ -188,6 +192,33 @@ class InsertStatementBinderTest {
                 "foo_db", new HintValueContext(), insertStatement));
         assertTrue(actual.getOnDuplicateKeyColumns().isPresent());
         assertThat(actual.getOnDuplicateKeyColumns().get().getColumns().iterator().next().getColumns().iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+    }
+    
+    @Test
+    void assertBindInsertValuesWithOnDuplicateKeyColumnsAndExcludedValue() {
+        ColumnSegment excludedUserIdColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
+        excludedUserIdColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("EXCLUDED")));
+        ColumnAssignmentSegment onDuplicateAssignment = new ColumnAssignmentSegment(0, 0,
+                Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("user_id"))), excludedUserIdColumn);
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(postgreSQLDatabaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
+                .insertColumns(new InsertColumnsSegment(0, 0, Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("order_id")),
+                        new ColumnSegment(0, 0, new IdentifierValue("user_id")), new ColumnSegment(0, 0, new IdentifierValue("status")))))
+                .values(Collections.singletonList(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
+                        new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK")))))
+                .onDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(onDuplicateAssignment)))
+                .build();
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(),
+                "foo_db", new HintValueContext(), insertStatement, Collections.emptyList()));
+        assertTrue(actual.getOnDuplicateKeyColumns().isPresent());
+        ColumnAssignmentSegment actualAssignment = actual.getOnDuplicateKeyColumns().get().getColumns().iterator().next();
+        assertThat(actualAssignment.getColumns().iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
+        assertThat(actualAssignment.getValue(), isA(ColumnSegment.class));
+        ColumnSegment actualValue = (ColumnSegment) actualAssignment.getValue();
+        assertSame(excludedUserIdColumn, actualValue);
+        assertTrue(actualValue.getOwner().isPresent());
+        assertThat(actualValue.getOwner().get().getIdentifier().getValue(), is("EXCLUDED"));
+        assertThat(actualValue.getIdentifier().getValue(), is("user_id"));
     }
     
     private static void assertInsertSelect(final InsertStatement actual) {
