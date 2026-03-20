@@ -61,6 +61,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ColumnSegmentBinder {
     
+    private static final String EXCLUDED_TABLE_NAME = "excluded";
+    
     private static final Map<SegmentType, String> SEGMENT_TYPE_MESSAGES = Maps.of(SegmentType.PROJECTION, "field list", SegmentType.JOIN_ON, "on clause", SegmentType.JOIN_USING, "from clause",
             SegmentType.PREDICATE, "where clause", SegmentType.HAVING, "having clause", SegmentType.ORDER_BY, "order clause", SegmentType.GROUP_BY, "group statement", SegmentType.INSERT_COLUMNS,
             "field list");
@@ -80,6 +82,9 @@ public final class ColumnSegmentBinder {
     public static ColumnSegment bind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
+        if (isExcludedColumn(segment, parentSegmentType)) {
+            return segment;
+        }
         if (isUnparenthesizedFunction(segment, binderContext)) {
             return segment;
         }
@@ -91,6 +96,10 @@ public final class ColumnSegmentBinder {
         segment.getOwner().ifPresent(optional -> result.setOwner(bindOwnerTableContext(optional, inputColumnSegment.orElse(null))));
         result.setColumnBoundInfo(createColumnSegmentBoundInfo(segment, inputColumnSegment.orElse(null), columnSegmentInfo.getTableSourceType()));
         return result;
+    }
+    
+    private static boolean isExcludedColumn(final ColumnSegment segment, final SegmentType parentSegmentType) {
+        return SegmentType.SET_ASSIGNMENT == parentSegmentType && segment.getOwner().isPresent() && EXCLUDED_TABLE_NAME.equalsIgnoreCase(segment.getOwner().get().getIdentifier().getValue());
     }
     
     private static ColumnSegment copy(final ColumnSegment segment) {
