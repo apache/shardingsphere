@@ -61,6 +61,9 @@ class CreateViewPushDownMetaDataRefresherTest {
                 databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         assertThat(persistService.getAlteredTableSchemaName(), is(SCHEMA_NAME));
         assertThat(persistService.getAlteredTables().iterator().next().getName(), is("Foo_View"));
+        assertThat(persistService.getAlteredViewSchemaName(), is(SCHEMA_NAME));
+        assertThat(persistService.getAlteredViews().iterator().next().getName(), is("Foo_View"));
+        assertThat(persistService.getAlteredViews().iterator().next().getViewDefinition(), is(sqlStatement.getViewDefinition()));
     }
     
     private JdbcDataSource createDataSource(final String databaseName) {
