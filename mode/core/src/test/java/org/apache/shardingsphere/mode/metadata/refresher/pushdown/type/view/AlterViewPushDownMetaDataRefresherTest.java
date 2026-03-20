@@ -65,7 +65,11 @@ class AlterViewPushDownMetaDataRefresherTest {
                 databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         assertThat(persistService.getAlteredTableSchemaName(), is(SCHEMA_NAME));
         assertThat(persistService.getAlteredTables().iterator().next().getName(), is("Foo_New_View"));
+        assertThat(persistService.getAlteredViewSchemaName(), is(SCHEMA_NAME));
+        assertThat(persistService.getAlteredViews().iterator().next().getName(), is("Foo_New_View"));
+        assertThat(persistService.getAlteredViews().iterator().next().getViewDefinition(), is("SELECT 1"));
         assertThat(persistService.getDroppedTableNames(), contains("Foo_Old_View"));
+        assertThat(persistService.getDroppedViewNames(), contains("Foo_Old_View"));
     }
     
     @Test
@@ -81,7 +85,11 @@ class AlterViewPushDownMetaDataRefresherTest {
                 databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         assertThat(persistService.getAlteredTableSchemaName(), is(SCHEMA_NAME));
         assertThat(persistService.getAlteredTables().iterator().next().getName(), is("Foo_Old_View"));
+        assertThat(persistService.getAlteredViewSchemaName(), is(SCHEMA_NAME));
+        assertThat(persistService.getAlteredViews().iterator().next().getName(), is("Foo_Old_View"));
+        assertThat(persistService.getAlteredViews().iterator().next().getViewDefinition(), is("SELECT 1"));
         assertTrue(persistService.getDroppedTableNames().isEmpty());
+        assertTrue(persistService.getDroppedViewNames().isEmpty());
     }
     
     private ShardingSphereDatabase createDatabase(final JdbcDataSource dataSource, final String currentViewName) {

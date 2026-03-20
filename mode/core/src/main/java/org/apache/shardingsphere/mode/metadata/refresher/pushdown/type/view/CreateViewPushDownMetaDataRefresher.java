@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
@@ -40,6 +41,7 @@ public final class CreateViewPushDownMetaDataRefresher implements PushDownMetaDa
                         final String schemaName, final DatabaseType databaseType, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         ShardingSphereTable actualViewMetaData = metaDataLoader.loadCreatedView(database, logicDataSourceName, schemaName, sqlStatement.getView().getTableName().getIdentifier(), props);
         metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(actualViewMetaData));
+        metaDataManagerPersistService.alterViews(database, schemaName, Collections.singleton(new ShardingSphereView(actualViewMetaData.getName(), sqlStatement.getViewDefinition())));
     }
     
     @Override

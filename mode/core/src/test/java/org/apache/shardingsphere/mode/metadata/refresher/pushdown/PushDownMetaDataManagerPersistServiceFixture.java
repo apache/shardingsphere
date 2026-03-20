@@ -42,6 +42,10 @@ public final class PushDownMetaDataManagerPersistServiceFixture implements MetaD
     
     private Collection<ShardingSphereTable> alteredTables = new LinkedList<>();
     
+    private String alteredViewSchemaName;
+    
+    private Collection<ShardingSphereView> alteredViews = new LinkedList<>();
+    
     private String droppedTableSchemaName;
     
     private Collection<String> droppedTableNames = new LinkedList<>();
@@ -95,7 +99,8 @@ public final class PushDownMetaDataManagerPersistServiceFixture implements MetaD
     
     @Override
     public void alterViews(final ShardingSphereDatabase database, final String schemaName, final Collection<ShardingSphereView> alteredViews) {
-        throw new UnsupportedOperationException();
+        alteredViewSchemaName = schemaName;
+        this.alteredViews = new LinkedList<>(alteredViews);
     }
     
     @Override
