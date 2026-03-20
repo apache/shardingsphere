@@ -145,6 +145,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginP
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyKeyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCleanTrashContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CleanAllProfileContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PlanReplayerPlayContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaStatusContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaVersionContext;
@@ -230,6 +232,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Nu
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCleanTrashStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCleanAllProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisPlanReplayerPlayStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaVersionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCopyTabletStatement;
@@ -1262,6 +1266,16 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
             ctx.string_().forEach(each -> result.getBackends().add(SQLUtils.getExactlyValue(each.getText())));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitCleanAllProfile(final CleanAllProfileContext ctx) {
+        return new DorisCleanAllProfileStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitPlanReplayerPlay(final PlanReplayerPlayContext ctx) {
+        return new DorisPlanReplayerPlayStatement(getDatabaseType(), SQLUtils.getExactlyValue(ctx.DOUBLE_QUOTED_TEXT().getText()));
     }
     
     @Override
