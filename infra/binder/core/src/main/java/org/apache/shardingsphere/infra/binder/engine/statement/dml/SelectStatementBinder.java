@@ -21,8 +21,8 @@ import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.engine.segment.dml.combine.CombineSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.combine.CombineSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.WindowItemSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.TableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
@@ -78,7 +78,7 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         CombineSegment boundCombine = sqlStatement.getCombine().map(optional -> CombineSegmentBinder.bind(optional, binderContext, outerTableBinderContexts)).orElse(null);
         LockSegment boundLock = sqlStatement.getLock().map(optional -> LockSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
-        Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts = createCurrentTableBinderContexts(binderContext, boundProjections);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts = createCurrentTableBinderContexts(sqlStatement, binderContext, boundProjections);
         GroupBySegment boundGroupBy =
                 sqlStatement.getGroupBy().map(optional -> GroupBySegmentBinder.bind(optional, binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         OrderBySegment boundOrderBy =
@@ -89,11 +89,13 @@ public final class SelectStatementBinder implements SQLStatementBinder<SelectSta
         return copy(sqlStatement, boundWith, boundFrom.orElse(null), boundProjections, boundWhere, boundCombine, boundLock, boundGroupBy, boundOrderBy, boundHaving, boundWindow);
     }
     
-    private Multimap<CaseInsensitiveString, TableSegmentBinderContext> createCurrentTableBinderContexts(final SQLStatementBinderContext binderContext, final ProjectionsSegment boundProjections) {
+    private Multimap<CaseInsensitiveString, TableSegmentBinderContext> createCurrentTableBinderContexts(final SelectStatement sqlStatement, final SQLStatementBinderContext binderContext,
+                                                                                                        final ProjectionsSegment boundProjections) {
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> result = LinkedHashMultimap.create();
+        TableSourceType tableSourceType = sqlStatement.getCombine().isPresent() ? TableSourceType.TEMPORARY_TABLE : TableSourceType.MIXED_TABLE;
         Collection<ProjectionSegment> subqueryProjections = SubqueryTableBindUtils.createSubqueryProjections(
-                boundProjections.getProjections(), new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType(), TableSourceType.MIXED_TABLE);
-        result.put(CaseInsensitiveString.of(""), new SimpleTableSegmentBinderContext(subqueryProjections, TableSourceType.MIXED_TABLE));
+                boundProjections.getProjections(), new IdentifierValue(""), binderContext.getSqlStatement().getDatabaseType(), tableSourceType);
+        result.put(CaseInsensitiveString.of(""), new SimpleTableSegmentBinderContext(subqueryProjections, tableSourceType));
         return result;
     }
     
