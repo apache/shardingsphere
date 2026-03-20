@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignmen
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.InsertColumnsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -66,7 +67,9 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
                 .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         Collection<InsertValuesSegment> boundValues = bindInsertValues(sqlStatement, binderContext, tableBinderContexts, outerTableBinderContexts);
         SubquerySegment boundInsertSelect = sqlStatement.getInsertSelect().map(optional -> SubquerySegmentBinder.bind(optional, binderContext, tableBinderContexts)).orElse(null);
-        InsertStatement result = copy(sqlStatement, boundWith, boundTable, boundInsertColumns, boundSetAssignment, boundInsertSelect, boundValues);
+        OnDuplicateKeyColumnsSegment boundOnDuplicateKeyColumns = sqlStatement.getOnDuplicateKeyColumns()
+                .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
+        InsertStatement result = copy(sqlStatement, boundWith, boundTable, boundInsertColumns, boundSetAssignment, boundInsertSelect, boundOnDuplicateKeyColumns, boundValues);
         if (!sqlStatement.getInsertColumns().isPresent() || sqlStatement.getInsertColumns().get().getColumns().isEmpty()) {
             tableBinderContexts.values().forEach(each -> result.getDerivedInsertColumns().addAll(getVisibleColumns(each.getProjectionSegments())));
         }
@@ -89,9 +92,10 @@ public final class InsertStatementBinder implements SQLStatementBinder<InsertSta
     
     private InsertStatement copy(final InsertStatement sqlStatement, final WithSegment boundWith, final SimpleTableSegment boundTable,
                                  final InsertColumnsSegment boundInsertColumns, final SetAssignmentSegment boundSetAssignment, final SubquerySegment boundInsertSelect,
+                                 final OnDuplicateKeyColumnsSegment boundOnDuplicateKeyColumns,
                                  final Collection<InsertValuesSegment> boundValues) {
         InsertStatement result = InsertStatement.builder().databaseType(sqlStatement.getDatabaseType()).table(boundTable).insertColumns(boundInsertColumns)
-                .insertSelect(boundInsertSelect).setAssignment(boundSetAssignment).onDuplicateKeyColumns(sqlStatement.getOnDuplicateKeyColumns().orElse(null))
+                .insertSelect(boundInsertSelect).setAssignment(boundSetAssignment).onDuplicateKeyColumns(boundOnDuplicateKeyColumns)
                 .valueReference(sqlStatement.getValueReference().orElse(null)).returning(sqlStatement.getReturning().orElse(null))
                 .output(sqlStatement.getOutput().orElse(null)).with(boundWith).multiTableInsertType(sqlStatement.getMultiTableInsertType().orElse(null))
                 .multiTableInsertInto(sqlStatement.getMultiTableInsertInto().orElse(null)).multiTableConditionalInto(sqlStatement.getMultiTableConditionalInto().orElse(null))
