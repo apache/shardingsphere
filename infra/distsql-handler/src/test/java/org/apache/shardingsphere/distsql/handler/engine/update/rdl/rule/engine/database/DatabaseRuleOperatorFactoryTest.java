@@ -34,8 +34,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
@@ -43,7 +43,7 @@ class DatabaseRuleOperatorFactoryTest {
     
     private final ContextManager contextManager = mock(ContextManager.class);
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings("rawtypes")
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertNewInstanceWithSupportedExecutorArguments")
     void assertNewInstanceWithSupportedExecutor(final String name, final DatabaseRuleDefinitionExecutor executor, final Class expectedOperatorType) {
