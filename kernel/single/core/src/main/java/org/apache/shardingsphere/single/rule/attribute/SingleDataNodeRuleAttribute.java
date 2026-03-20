@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttri
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map.Entry;
 import java.util.Map;
 import java.util.Optional;
 
@@ -41,7 +42,15 @@ public final class SingleDataNodeRuleAttribute implements DataNodeRuleAttribute 
     
     @Override
     public Collection<DataNode> getDataNodesByTableName(final String tableName) {
-        return tableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
+        if (tableDataNodes.containsKey(tableName)) {
+            return tableDataNodes.get(tableName);
+        }
+        for (Entry<String, Collection<DataNode>> entry : tableDataNodes.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(tableName)) {
+                return entry.getValue();
+            }
+        }
+        return Collections.emptyList();
     }
     
     @Override

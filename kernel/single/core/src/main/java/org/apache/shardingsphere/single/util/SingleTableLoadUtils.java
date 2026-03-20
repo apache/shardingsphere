@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttri
 import org.apache.shardingsphere.single.constant.SingleTableConstants;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -107,7 +108,7 @@ public final class SingleTableLoadUtils {
      * @return data nodes
      */
     public static Collection<DataNode> convertToDataNodes(final String databaseName, final DatabaseType databaseType, final Collection<String> dataNodes) {
-        return dataNodes.stream().map(each -> new DataNode(databaseName, databaseType, each)).collect(Collectors.toCollection(() -> new LinkedHashSet<>(dataNodes.size(), 1F)));
+        return dataNodes.stream().map(each -> new DataNode(databaseName, databaseType, each)).collect(Collectors.toCollection(LinkedList::new));
     }
     
     /**

@@ -147,6 +147,15 @@ class SingleTableDataNodeLoaderTest {
     }
     
     @Test
+    void assertLoadWithDataSourceMapPreservesCaseSensitiveTableNames() throws SQLException {
+        Map<String, DataSource> localDataSourceMap = new LinkedHashMap<>(1, 1F);
+        localDataSourceMap.put("foo_ds", mockDataSource("foo_ds", Arrays.asList("Test3", "test3")));
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", localDataSourceMap, Collections.emptyList());
+        assertTrue(actual.containsKey("Test3"));
+        assertTrue(actual.containsKey("test3"));
+    }
+    
+    @Test
     void assertLoadSchemaTableNames() {
         Map<String, Collection<String>> actual = SingleTableDataNodeLoader.loadSchemaTableNames("foo_db", databaseType, dataSourceMap.get("foo_ds"), "foo_ds", Collections.singleton("foo_tbl2"));
         assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(Collections.singleton("foo_db"))));
