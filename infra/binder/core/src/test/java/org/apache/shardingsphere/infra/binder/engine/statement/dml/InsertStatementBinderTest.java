@@ -183,10 +183,8 @@ class InsertStatementBinderTest {
                         new ColumnSegment(0, 0, new IdentifierValue("user_id")), new ColumnSegment(0, 0, new IdentifierValue("status")))))
                 .values(Collections.singletonList(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
                         new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK")))))
-                .onDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(onDuplicateAssignment)))
-                .build();
-        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(),
-                "foo_db", new HintValueContext(), insertStatement));
+                .onDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(onDuplicateAssignment))).build();
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), insertStatement));
         assertTrue(actual.getOnDuplicateKeyColumns().isPresent());
         assertThat(actual.getOnDuplicateKeyColumns().get().getColumns().iterator().next().getColumns().iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
     }
@@ -195,18 +193,15 @@ class InsertStatementBinderTest {
     void assertBindInsertValuesWithOnDuplicateKeyColumnsAndExcludedValue() {
         ColumnSegment excludedUserIdColumn = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
         excludedUserIdColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("EXCLUDED")));
-        ColumnAssignmentSegment onDuplicateAssignment = new ColumnAssignmentSegment(0, 0,
-                Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("user_id"))), excludedUserIdColumn);
+        ColumnAssignmentSegment onDuplicateAssignment = new ColumnAssignmentSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("user_id"))), excludedUserIdColumn);
         InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
                 .insertColumns(new InsertColumnsSegment(0, 0, Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("order_id")),
                         new ColumnSegment(0, 0, new IdentifierValue("user_id")), new ColumnSegment(0, 0, new IdentifierValue("status")))))
                 .values(Collections.singletonList(new InsertValuesSegment(0, 0, Arrays.asList(new LiteralExpressionSegment(0, 0, 1),
                         new LiteralExpressionSegment(0, 0, 1), new LiteralExpressionSegment(0, 0, "OK")))))
-                .onDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(onDuplicateAssignment)))
-                .build();
-        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(),
-                "foo_db", new HintValueContext(), insertStatement));
+                .onDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(onDuplicateAssignment))).build();
+        InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), insertStatement));
         assertTrue(actual.getOnDuplicateKeyColumns().isPresent());
         ColumnAssignmentSegment actualAssignment = actual.getOnDuplicateKeyColumns().get().getColumns().iterator().next();
         assertThat(actualAssignment.getColumns().iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
