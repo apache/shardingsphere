@@ -55,7 +55,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -213,7 +212,7 @@ class InsertStatementBinderTest {
         assertThat(actualAssignment.getColumns().iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
         assertThat(actualAssignment.getValue(), isA(ColumnSegment.class));
         ColumnSegment actualValue = (ColumnSegment) actualAssignment.getValue();
-        assertSame(excludedUserIdColumn, actualValue);
+        assertThat(excludedUserIdColumn, is(actualValue));
         assertTrue(actualValue.getOwner().isPresent());
         assertThat(actualValue.getOwner().get().getIdentifier().getValue(), is("EXCLUDED"));
         assertThat(actualValue.getIdentifier().getValue(), is("user_id"));

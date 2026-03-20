@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.typ
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinde
 import org.apache.shardingsphere.infra.exception.kernel.syntax.AmbiguousColumnException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -35,17 +37,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -54,12 +53,8 @@ import static org.mockito.Mockito.when;
 class ColumnSegmentBinderTest {
     
     private SQLStatementBinderContext createBinderContext() {
-        return createBinderContext("MySQL");
-    }
-    
-    private SQLStatementBinderContext createBinderContext(final String databaseType) {
         SelectStatement selectStatement = mock(SelectStatement.class);
-        when(selectStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, databaseType));
+        when(selectStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         return new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
     }
     
@@ -187,11 +182,13 @@ class ColumnSegmentBinderTest {
     
     @Test
     void assertBindExcludedColumnInSetAssignment() {
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
+        SQLStatementBinderContext bindContext = new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
         columnSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("EXCLUDED")));
-        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT, createBinderContext("PostgreSQL"),
-                LinkedHashMultimap.create(), LinkedHashMultimap.create());
-        assertSame(columnSegment, actual);
+        ColumnSegment actual = ColumnSegmentBinder.bind(columnSegment, SegmentType.SET_ASSIGNMENT, bindContext, LinkedHashMultimap.create(), LinkedHashMultimap.create());
+        assertThat(columnSegment, is(actual));
         assertTrue(actual.getOwner().isPresent());
         assertThat(actual.getOwner().get().getIdentifier().getValue(), is("EXCLUDED"));
     }
