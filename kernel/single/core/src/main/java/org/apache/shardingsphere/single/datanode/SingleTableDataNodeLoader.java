@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.single.datanode;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.type.SchemaMetaDataLoader;
@@ -85,14 +84,14 @@ public final class SingleTableDataNodeLoader {
      * @return single table data node map
      */
     public static Map<String, Collection<DataNode>> load(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> excludedTables) {
-        Map<String, Collection<DataNode>> result = new ConcurrentHashMap<>();
+        Map<String, Collection<DataNode>> result = new LinkedHashMap<>(dataSourceMap.size(), 1F);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             Map<String, Collection<DataNode>> dataNodeMap = load(databaseName, DatabaseTypeEngine.getStorageType(entry.getValue()), entry.getKey(), entry.getValue(), excludedTables);
             for (Entry<String, Collection<DataNode>> each : dataNodeMap.entrySet()) {
                 Collection<DataNode> addedDataNodes = each.getValue();
-                Collection<DataNode> existDataNodes = result.getOrDefault(each.getKey().toLowerCase(), new LinkedHashSet<>(addedDataNodes.size(), 1F));
+                Collection<DataNode> existDataNodes = result.getOrDefault(each.getKey(), new LinkedHashSet<>(addedDataNodes.size(), 1F));
                 existDataNodes.addAll(addedDataNodes);
-                result.putIfAbsent(each.getKey().toLowerCase(), existDataNodes);
+                result.putIfAbsent(each.getKey(), existDataNodes);
             }
         }
         return result;
@@ -101,7 +100,7 @@ public final class SingleTableDataNodeLoader {
     private static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType storageType, final String dataSourceName,
                                                           final DataSource dataSource, final Collection<String> excludedTables) {
         Map<String, Collection<String>> schemaTableNames = loadSchemaTableNames(databaseName, storageType, dataSource, dataSourceName, excludedTables);
-        Map<String, Collection<DataNode>> result = new CaseInsensitiveMap<>();
+        Map<String, Collection<DataNode>> result = new LinkedHashMap<>(schemaTableNames.size(), 1F);
         for (Entry<String, Collection<String>> entry : schemaTableNames.entrySet()) {
             for (String each : entry.getValue()) {
                 Collection<DataNode> dataNodes = result.getOrDefault(each, new LinkedList<>());
@@ -144,7 +143,7 @@ public final class SingleTableDataNodeLoader {
             if (null == configuredTablesForSchema) {
                 continue;
             }
-            if (configuredTablesForSchema.contains(SingleTableConstants.ASTERISK) || configuredTablesForSchema.contains(each.getTableName().toLowerCase())) {
+            if (configuredTablesForSchema.contains(SingleTableConstants.ASTERISK) || configuredTablesForSchema.contains(each.getTableName())) {
                 result.add(each);
             }
         }

@@ -75,7 +75,7 @@ class SingleRouteEngineTest {
     @Test
     void assertRouteInSameDataSource() throws SQLException {
         SingleRouteEngine engine = new SingleRouteEngine(Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item")), null, mock());
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", databaseType, createDataSourceMap(), Collections.emptyList());
         singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order", Collections.singleton(new DataNode("ds_0", "foo_db", "t_order")));
         singleRule.getAttributes().getAttribute(DataNodeRuleAttribute.class).getAllDataNodes().put("t_order_item", Collections.singleton(new DataNode("ds_0", "foo_db", "t_order_item")));
         RouteContext routeContext = new RouteContext();
@@ -97,7 +97,7 @@ class SingleRouteEngineTest {
     void assertRouteWithoutSingleRule() throws SQLException {
         CreateTableStatement sqlStatement = CreateTableStatement.builder().databaseType(databaseType).build();
         SingleRouteEngine engine = new SingleRouteEngine(Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item")), sqlStatement, mock());
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), "foo_db", databaseType, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         assertThat(routeContext.getOriginalDataNodes().size(), is(0));
         engine.route(routeContext, singleRule);
@@ -114,7 +114,7 @@ class SingleRouteEngineTest {
     void assertRouteWithDefaultSingleRule() throws SQLException {
         CreateTableStatement sqlStatement = CreateTableStatement.builder().databaseType(databaseType).build();
         SingleRouteEngine engine = new SingleRouteEngine(Arrays.asList(new QualifiedTable("foo_db", "t_order"), new QualifiedTable("foo_db", "t_order_item")), sqlStatement, mock());
-        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), "foo_db", mock(), createDataSourceMap(), Collections.emptyList());
+        SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(Collections.emptyList(), "ds_0"), "foo_db", databaseType, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         assertThat(routeContext.getRouteUnits().size(), is(0));
         engine.route(routeContext, singleRule);
