@@ -78,7 +78,7 @@ public final class DataNode {
         List<String> segments = Splitter.on(DELIMITER).limit(containsSchema ? 3 : 2).splitToList(dataNode);
         dataSourceName = segments.get(0);
         schemaName = getSchemaName(databaseName, dialectDatabaseMetaData, containsSchema, segments);
-        tableName = containsSchema ? segments.get(2).toLowerCase() : segments.get(1).toLowerCase();
+        tableName = containsSchema ? segments.get(2) : segments.get(1);
     }
     
     private String getSchemaName(final String databaseName, final DialectDatabaseMetaData dialectDatabaseMetaData, final boolean containsSchema, final List<String> segments) {

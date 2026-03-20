@@ -135,6 +135,19 @@ class SingleMutableDataNodeRuleAttributeTest {
     }
     
     @Test
+    void assertFindTableDataNodesWithCaseSensitiveTables() {
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(new LinkedList<>(Arrays.asList("foo_ds.public.Test3", "foo_ds.public.test3")), null);
+        Map<String, Collection<DataNode>> singleTableDataNodes = new LinkedHashMap<>(2, 1F);
+        singleTableDataNodes.put("Test3", new LinkedHashSet<>(Collections.singleton(new DataNode("foo_ds", "public", "Test3"))));
+        singleTableDataNodes.put("test3", new LinkedHashSet<>(Collections.singleton(new DataNode("foo_ds", "public", "test3"))));
+        SingleTableMapperRuleAttribute tableMapperRuleAttribute = new SingleTableMapperRuleAttribute(singleTableDataNodes.values());
+        SingleMutableDataNodeRuleAttribute ruleAttribute = createRuleAttribute(ruleConfig, Collections.singleton("foo_ds"), singleTableDataNodes, tableMapperRuleAttribute);
+        Collection<DataNode> actual = ruleAttribute.findTableDataNodes("Test3");
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next().getTableName(), is("Test3"));
+    }
+    
+    @Test
     void assertReloadRule() {
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(new LinkedList<>(Collections.emptyList()), null);
         Map<String, Collection<DataNode>> singleTableDataNodes = createSingleTableDataNodes(Collections.emptyList());

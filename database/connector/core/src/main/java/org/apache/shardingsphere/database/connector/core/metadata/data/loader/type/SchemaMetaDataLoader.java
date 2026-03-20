@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.data.loader.type;
 
-import com.cedarsoftware.util.CaseInsensitiveMap;
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderConnection;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
@@ -32,6 +30,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -76,7 +76,7 @@ public final class SchemaMetaDataLoader {
     public Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DataSource dataSource, final Collection<String> excludedTables) throws SQLException {
         try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(databaseType, dataSource.getConnection())) {
             Collection<String> schemaNames = loadSchemaNames(connection);
-            Map<String, Collection<String>> result = new CaseInsensitiveMap<>(schemaNames.size(), 1F);
+            Map<String, Collection<String>> result = new LinkedHashMap<>(schemaNames.size(), 1F);
             for (String each : schemaNames) {
                 String schemaName = schemaOption.getDefaultSchema().isPresent() ? each : databaseName;
                 result.put(schemaName, loadTableNames(connection, each, excludedTables));
@@ -110,7 +110,7 @@ public final class SchemaMetaDataLoader {
     }
     
     private Collection<String> loadTableNames(final Connection connection, final String schemaName, final Collection<String> excludedTables) throws SQLException {
-        Collection<String> result = new CaseInsensitiveSet<>();
+        Collection<String> result = new LinkedHashSet<>();
         String[] tableTypes = new String[]{TABLE_TYPE, PARTITIONED_TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE};
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, null, tableTypes)) {
             while (resultSet.next()) {

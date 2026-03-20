@@ -20,6 +20,7 @@ package org.apache.shardingsphere.single.rule.attribute;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -33,6 +34,14 @@ class SingleTableMapperRuleAttributeTest {
     @Test
     void assertGetLogicTableMapper() {
         assertThat(new LinkedList<>(ruleAttribute.getLogicTableNames()), is(Collections.singletonList("foo_tbl")));
+    }
+    
+    @Test
+    void assertGetLogicTableMapperWithCaseSensitiveTables() {
+        SingleTableMapperRuleAttribute actual = new SingleTableMapperRuleAttribute(Arrays.asList(
+                Collections.singleton(new DataNode("foo_ds", "public", "Test3")),
+                Collections.singleton(new DataNode("foo_ds", "public", "test3"))));
+        assertThat(new LinkedList<>(actual.getLogicTableNames()), is(Arrays.asList("Test3", "test3")));
     }
     
     @Test
