@@ -99,9 +99,7 @@ public final class ColumnSegmentBinder {
     }
     
     private static boolean isExcludedColumn(final ColumnSegment segment, final SegmentType parentSegmentType) {
-        return SegmentType.SET_ASSIGNMENT == parentSegmentType
-                && segment.getOwner().isPresent()
-                && EXCLUDED_TABLE_NAME.equalsIgnoreCase(segment.getOwner().get().getIdentifier().getValue());
+        return SegmentType.SET_ASSIGNMENT == parentSegmentType && segment.getOwner().isPresent() && EXCLUDED_TABLE_NAME.equalsIgnoreCase(segment.getOwner().get().getIdentifier().getValue());
     }
     
     private static ColumnSegment copy(final ColumnSegment segment) {
