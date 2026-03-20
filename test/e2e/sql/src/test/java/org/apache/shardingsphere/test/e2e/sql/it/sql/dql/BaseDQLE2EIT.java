@@ -53,8 +53,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -72,13 +72,19 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
     
     protected final void init(final AssertionTestParameter testParam, final SQLE2EITContext context) throws IOException, JAXBException {
         fillDataOnlyOnce(testParam);
-        expectedDataSource = null == context.getAssertion().getExpectedDataSourceName() || 1 == getEnvironmentEngine().getExpectedDataSourceMap().size()
-                ? getFirstExpectedDataSource(getEnvironmentEngine().getExpectedDataSourceMap().values())
-                : getEnvironmentEngine().getExpectedDataSourceMap().get(context.getAssertion().getExpectedDataSourceName());
+        expectedDataSource = getExpectedDataSource(testParam, context);
         useXMLAsExpectedDataset = null != context.getAssertion().getExpectedDataFile();
         if (0 != testParam.getTestCaseContext().getTestCase().getDelayAssertionSeconds()) {
             Awaitility.await().atMost(Duration.ofMinutes(5L)).pollDelay(testParam.getTestCaseContext().getTestCase().getDelayAssertionSeconds(), TimeUnit.SECONDS).until(() -> true);
         }
+    }
+    
+    private DataSource getExpectedDataSource(final AssertionTestParameter testParam, final SQLE2EITContext context) {
+        if (null != context.getAssertion().getExpectedDataSourceName() && 1 != getEnvironmentEngine().getExpectedDataSourceMap().size()) {
+            return getEnvironmentEngine().getExpectedDataSourceMap().get(context.getAssertion().getExpectedDataSourceName());
+        }
+        DataSource result = getEnvironmentEngine().getExpectedDataSourceMap().get(testParam.getScenario());
+        return null == result ? getFirstExpectedDataSource(getEnvironmentEngine().getExpectedDataSourceMap().values()) : result;
     }
     
     private void fillDataOnlyOnce(final AssertionTestParameter testParam) throws IOException, JAXBException {
@@ -171,8 +177,7 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
         assertThat("Size of actual result set is different with size of expected data set rows.", rowCount, is(expected.size()));
     }
     
-    private void assertRow(final ResultSet actualResultSet, final ResultSetMetaData actualMetaData,
-                           final ResultSet expectedResultSet, final ResultSetMetaData expectedMetaData) throws SQLException {
+    private void assertRow(final ResultSet actualResultSet, final ResultSetMetaData actualMetaData, final ResultSet expectedResultSet, final ResultSetMetaData expectedMetaData) throws SQLException {
         for (int i = 0; i < actualMetaData.getColumnCount(); i++) {
             try {
                 assertThat(actualResultSet.getObject(i + 1), is(expectedResultSet.getObject(i + 1)));
@@ -187,12 +192,8 @@ public abstract class BaseDQLE2EIT implements SQLE2EIT {
                     // TODO Since mysql 8.0.23, for the DATETIME type, the mysql driver returns the LocalDateTime type, but the proxy returns the Timestamp type.
                     assertThat(((Timestamp) actualValue).toLocalDateTime(), is(expectedValue));
                 } else if (Types.TIMESTAMP == actualMetaData.getColumnType(i + 1) || Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1)) {
-                    Object convertedActualValue = Types.TIMESTAMP == actualMetaData.getColumnType(i + 1)
-                            ? formatTimestamp(actualResultSet.getTimestamp(i + 1))
-                            : actualValue;
-                    Object convertedExpectedValue = Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1)
-                            ? formatTimestamp(expectedResultSet.getTimestamp(i + 1))
-                            : expectedValue;
+                    Object convertedActualValue = Types.TIMESTAMP == actualMetaData.getColumnType(i + 1) ? formatTimestamp(actualResultSet.getTimestamp(i + 1)) : actualValue;
+                    Object convertedExpectedValue = Types.TIMESTAMP == expectedMetaData.getColumnType(i + 1) ? formatTimestamp(expectedResultSet.getTimestamp(i + 1)) : expectedValue;
                     assertThat(String.valueOf(convertedActualValue), is(String.valueOf(convertedExpectedValue)));
                 } else if (expectedValue instanceof Clob) {
                     assertThat(String.valueOf(actualValue), is(((Clob) expectedValue).getSubString(1, (int) ((Clob) expectedValue).length())));
