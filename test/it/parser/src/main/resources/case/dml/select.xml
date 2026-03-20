@@ -10470,6 +10470,15 @@
             <simple-table name="t_replayer" start-index="21" stop-index="30" />
         </from>
     </select>
+    
+    <select sql-case-id="select_play_as_quoted_identifier_doris">
+        <projections start-index="7" stop-index="12">
+            <column-projection name="play" start-index="7" stop-index="12" start-delimiter="`" end-delimiter="`" />
+        </projections>
+        <from start-index="19" stop-index="24">
+            <simple-table name="t_play" start-index="19" stop-index="24" />
+        </from>
+    </select>
 
     <select sql-case-id="select_with_nvl_function_and_interval_hour" parameters="1">
         <projections start-index="7" stop-index="7">
