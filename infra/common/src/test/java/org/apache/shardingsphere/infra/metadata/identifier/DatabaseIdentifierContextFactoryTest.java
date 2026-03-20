@@ -111,6 +111,27 @@ class DatabaseIdentifierContextFactoryTest {
         assertThat(actualRule.matches(actualIdentifier, logicIdentifier, QuoteCharacter.NONE), is(expectedMatched));
     }
     
+    @Test
+    void assertCreateUsesProtocolRuleForSchemaAndStorageRuleForTable() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE,
+                createResourceMetaDataWithStorageUrls("jdbc:oracle:thin:@localhost:1521:xe"), new ConfigurationProperties(new Properties()));
+        IdentifierCaseRule actualSchemaRule = actual.getRule(IdentifierScope.SCHEMA);
+        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        assertTrue(actualSchemaRule.matches("test_db", "TEST_DB", QuoteCharacter.NONE));
+        assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertRefreshUsesProtocolRuleForSchemaAndStorageRuleForTable() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, createResourceMetaDataWithStorageUrls("jdbc:oracle:thin:@localhost:1521:xe"),
+                new ConfigurationProperties(new Properties()));
+        IdentifierCaseRule actualSchemaRule = actual.getRule(IdentifierScope.SCHEMA);
+        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        assertTrue(actualSchemaRule.matches("test_db", "TEST_DB", QuoteCharacter.NONE));
+        assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
+    }
+    
     private static Stream<Arguments> createWithProtocolTypeAndPropsArguments() {
         return Stream.of(
                 Arguments.of("null protocol type and null props use insensitive rules", null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
