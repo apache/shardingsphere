@@ -211,99 +211,93 @@ class ShardingStandardRouteEngineTest {
                                                                           final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
         return new ShardingStandardRouteEngine(logicTableName, shardingConditions, sqlStatementContext, hintValueContext, new ConfigurationProperties(new Properties()));
     }
-
+    
     @Test
     void assertRouteByRelevantAndIrrelevantConditionsPreventsFullRouteExplosion() {
         ShardingRule shardingRule = ShardingRouteEngineFixtureBuilder.createBasedShardingRule();
-
+        
         ShardingCondition relevantCondition = new ShardingCondition();
         relevantCondition.getValues().add(new ListShardingConditionValue<>("order_id", "t_order", Collections.singletonList(1)));
         relevantCondition.getValues().add(new ListShardingConditionValue<>("user_id", "t_order", Collections.singletonList(1)));
-
+        
         ShardingCondition irrelevantCondition = new ShardingCondition();
         irrelevantCondition.getValues().add(new ListShardingConditionValue<>("user_id", "t_hint_test", Collections.singletonList(1)));
-
+        
         List<ShardingCondition> conditionList = new ArrayList<>();
         conditionList.add(relevantCondition);
         conditionList.add(irrelevantCondition);
-
+        
         ShardingConditions mixedConditions = new ShardingConditions(
-          conditionList,
-          mock(SQLStatementContext.class, RETURNS_DEEP_STUBS),
-          shardingRule
-        );
-
+                conditionList,
+                mock(SQLStatementContext.class, RETURNS_DEEP_STUBS),
+                shardingRule);
+        
         ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine(
-          "t_order",
-          mixedConditions,
-          mock(SQLStatementContext.class, RETURNS_DEEP_STUBS),
-          new HintValueContext()
-        );
-
+                "t_order",
+                mixedConditions,
+                mock(SQLStatementContext.class, RETURNS_DEEP_STUBS),
+                new HintValueContext());
+        
         RouteContext routeContext = routeEngine.route(shardingRule);
-
+        
         assertThat(routeContext.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = routeContext.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getActualName(), is("ds_1"));
         assertThat(routeUnit.getTableMappers().iterator().next().getActualName(), is("t_order_1"));
     }
-
+    
     @Test
     void assertSubqueryRoutingDoesNotTriggerFullRouteExplosion() {
         ShardingRule shardingRule = ShardingRouteEngineFixtureBuilder.createBasedShardingRule();
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-
+        
         List<ShardingCondition> shardingConditions = new ArrayList<>();
-
+        
         ShardingCondition relevantCondition = new ShardingCondition();
         relevantCondition.getValues().add(new ListShardingConditionValue<>("order_id", "t_order", Collections.singletonList(1)));
         relevantCondition.getValues().add(new ListShardingConditionValue<>("user_id", "t_order", Collections.singletonList(1)));
         shardingConditions.add(relevantCondition);
-
+        
         ShardingCondition irrelevantCondition = new ShardingCondition();
         irrelevantCondition.getValues().add(new ListShardingConditionValue<>("user_id", "t_hint_test", Collections.singletonList(100)));
         shardingConditions.add(irrelevantCondition);
-
+        
         ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine(
-          "t_order",
-          new ShardingConditions(shardingConditions, sqlStatementContext, shardingRule),
-          sqlStatementContext,
-          new HintValueContext()
-        );
-
+                "t_order",
+                new ShardingConditions(shardingConditions, sqlStatementContext, shardingRule),
+                sqlStatementContext,
+                new HintValueContext());
+        
         RouteContext routeContext = routeEngine.route(shardingRule);
-
+        
         assertThat(routeContext.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = routeContext.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getActualName(), is("ds_1"));
         assertThat(routeUnit.getTableMappers().iterator().next().getActualName(), is("t_order_1"));
     }
-
+    
     @Test
     void assertRouteFallsBackToFullRouteWhenNoRelevantCondition() {
         ShardingRule shardingRule = ShardingRouteEngineFixtureBuilder.createBasedShardingRule();
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-
+        
         ShardingCondition irrelevantCondition = new ShardingCondition();
         irrelevantCondition.getValues().add(
-          new ListShardingConditionValue<>("user_id", "t_hint_test", Collections.singletonList(1))
-        );
-
+                new ListShardingConditionValue<>("user_id", "t_hint_test", Collections.singletonList(1)));
+        
         ShardingConditions shardingConditions = new ShardingConditions(
-          Collections.singletonList(irrelevantCondition),
-          sqlStatementContext,
-          shardingRule
-        );
-
+                Collections.singletonList(irrelevantCondition),
+                sqlStatementContext,
+                shardingRule);
+        
         ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine(
-          "t_order",
-          shardingConditions,
-          sqlStatementContext,
-          new HintValueContext()
-        );
-
+                "t_order",
+                shardingConditions,
+                sqlStatementContext,
+                new HintValueContext());
+        
         RouteContext routeContext = routeEngine.route(shardingRule);
-
+        
         assertThat(routeContext.getRouteUnits().size(), is(4));
     }
 }
