@@ -2026,6 +2026,16 @@ PHASE
     : P H A S E
     ;
 
+// DORIS ADDED BEGIN
+PLAN
+    : P L A N
+    ;
+
+PLAY
+    : P L A Y
+    ;
+// DORIS ADDED END
+
 PLUGIN
     : P L U G I N
     ;
@@ -2275,6 +2285,12 @@ REPEATABLE
 REPLACE
     : R E P L A C E
     ;
+
+// DORIS ADDED BEGIN
+REPLAYER
+    : R E P L A Y E R
+    ;
+// DORIS ADDED END
 
 REPLICA
     : R E P L I C A

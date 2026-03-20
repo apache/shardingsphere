@@ -404,6 +404,9 @@ identifierKeywordsUnambiguous
     | PATH
     | PAUSE
     | PHASE
+    // DORIS ADDED BEGIN
+    | PLAN
+    // DORIS ADDED END
     | PLUGINS
     | PLUGIN_DIR
     | PLUGIN
@@ -442,6 +445,9 @@ identifierKeywordsUnambiguous
     | REORGANIZE
     | REPEATABLE
     | REPLACE_IF_NOT_NULL
+    // DORIS ADDED BEGIN
+    | REPLAYER
+    // DORIS ADDED END
     | REPLICATE_DO_DB
     | REPLICATE_DO_TABLE
     | REPLICATE_IGNORE_DB

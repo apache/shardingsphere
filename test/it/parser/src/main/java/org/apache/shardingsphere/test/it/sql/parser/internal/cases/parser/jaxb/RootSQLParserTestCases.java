@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCleanTrashStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCleanAllProfileStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisPlanReplayerPlayStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCopyTabletStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaStatusStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaVersionStatementTestCase;
@@ -790,6 +792,12 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "admin-clean-trash")
     private final List<DorisAdminCleanTrashStatementTestCase> adminCleanTrashTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "clean-all-profile")
+    private final List<DorisCleanAllProfileStatementTestCase> cleanAllProfileTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "plan-replayer-play")
+    private final List<DorisPlanReplayerPlayStatementTestCase> planReplayerPlayTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-trash")
     private final List<DorisShowTrashStatementTestCase> showTrashTestCases = new LinkedList<>();
