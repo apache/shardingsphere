@@ -21,7 +21,10 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
+import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
+import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -29,8 +32,16 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
+import javax.sql.DataSource;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -42,6 +53,8 @@ class ShardingSphereDatabaseIdentifierTest {
     private final DatabaseType postgreSQLDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
     private final DatabaseType oracleDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
+    private final DatabaseType mySQLDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     @Test
     void assertContainsSchemaByString() {
@@ -72,6 +85,16 @@ class ShardingSphereDatabaseIdentifierTest {
     @Test
     void assertContainsSchemaWithOracleRule() {
         assertTrue(createDatabase(oracleDatabaseType, "FOO_SCHEMA").containsSchema("foo_schema"));
+    }
+    
+    @Test
+    void assertContainsProtocolDefaultSchemaWithOracleStorageRule() {
+        ShardingSphereSchema schema = new ShardingSphereSchema("test_db", mySQLDatabaseType,
+                Collections.singleton(new ShardingSphereTable("T_ORDER", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())), Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase("test_db", mySQLDatabaseType, createOracleResourceMetaData(),
+                new RuleMetaData(Collections.emptyList()), Collections.singleton(schema), new ConfigurationProperties(new Properties()));
+        assertTrue(database.containsSchema("TEST_DB"));
+        assertTrue(database.getSchema("test_db").containsTable("t_order"));
     }
     
     @Test
@@ -135,5 +158,60 @@ class ShardingSphereDatabaseIdentifierTest {
     
     private ResourceMetaData createResourceMetaData() {
         return new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap());
+    }
+    
+    private ResourceMetaData createOracleResourceMetaData() {
+        Map<String, Object> props = new LinkedHashMap<>(2, 1F);
+        props.put("url", "jdbc:oracle:thin:@localhost:1521:xe");
+        props.put("username", "root");
+        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(1, 1F);
+        storageUnits.put("ds_0", new StorageUnit(new StorageNode("ds_0"), new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", props), new FixtureDataSource()));
+        return new ResourceMetaData(Collections.emptyMap(), storageUnits);
+    }
+    
+    private static final class FixtureDataSource implements DataSource {
+        
+        @Override
+        public Connection getConnection() throws SQLException {
+            throw new SQLFeatureNotSupportedException("Not supported in fixture.");
+        }
+        
+        @Override
+        public Connection getConnection(final String username, final String password) throws SQLException {
+            throw new SQLFeatureNotSupportedException("Not supported in fixture.");
+        }
+        
+        @Override
+        public PrintWriter getLogWriter() {
+            return null;
+        }
+        
+        @Override
+        public void setLogWriter(final PrintWriter out) {
+        }
+        
+        @Override
+        public void setLoginTimeout(final int seconds) {
+        }
+        
+        @Override
+        public int getLoginTimeout() {
+            return 0;
+        }
+        
+        @Override
+        public Logger getParentLogger() {
+            return Logger.getGlobal();
+        }
+        
+        @Override
+        public <T> T unwrap(final Class<T> iface) throws SQLException {
+            throw new SQLFeatureNotSupportedException("Not supported in fixture.");
+        }
+        
+        @Override
+        public boolean isWrapperFor(final Class<?> iface) {
+            return false;
+        }
     }
 }
