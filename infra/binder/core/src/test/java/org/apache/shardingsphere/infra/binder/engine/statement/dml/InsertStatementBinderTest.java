@@ -65,8 +65,6 @@ class InsertStatementBinderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    private final DatabaseType postgreSQLDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-    
     @Test
     void assertBindInsertValues() {
         InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
@@ -200,7 +198,7 @@ class InsertStatementBinderTest {
         excludedUserIdColumn.setOwner(new OwnerSegment(0, 0, new IdentifierValue("EXCLUDED")));
         ColumnAssignmentSegment onDuplicateAssignment = new ColumnAssignmentSegment(0, 0,
                 Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("user_id"))), excludedUserIdColumn);
-        InsertStatement insertStatement = InsertStatement.builder().databaseType(postgreSQLDatabaseType)
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
                 .insertColumns(new InsertColumnsSegment(0, 0, Arrays.asList(new ColumnSegment(0, 0, new IdentifierValue("order_id")),
                         new ColumnSegment(0, 0, new IdentifierValue("user_id")), new ColumnSegment(0, 0, new IdentifierValue("status")))))
@@ -209,7 +207,7 @@ class InsertStatementBinderTest {
                 .onDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.singletonList(onDuplicateAssignment)))
                 .build();
         InsertStatement actual = new InsertStatementBinder().bind(insertStatement, new SQLStatementBinderContext(createMetaData(),
-                "foo_db", new HintValueContext(), insertStatement, Collections.emptyList()));
+                "foo_db", new HintValueContext(), insertStatement));
         assertTrue(actual.getOnDuplicateKeyColumns().isPresent());
         ColumnAssignmentSegment actualAssignment = actual.getOnDuplicateKeyColumns().get().getColumns().iterator().next();
         assertThat(actualAssignment.getColumns().iterator().next().getColumnBoundInfo().getOriginalTable().getValue(), is("t_order"));
