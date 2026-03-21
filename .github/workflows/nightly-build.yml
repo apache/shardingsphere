@@ -221,10 +221,7 @@ jobs:
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
-      - uses: docker/setup-docker-action@v4
-        with:
-          version: v28.0.4
-          set-host: true
+          enable-docker-setup: 'true'
       - name: Build with Maven
         run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
       - name: Generate Examples
