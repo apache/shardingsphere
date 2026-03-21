@@ -41,9 +41,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class IndexTokenTest {
-
+    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-
+    
     @Test
     void assertToStringWithNotShardingTable() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
@@ -52,7 +52,7 @@ class IndexTokenTest {
         IndexToken indexToken = new IndexToken(0, 0, new IdentifierValue("foo_idx"), selectStatementContext, mock(ShardingRule.class), mockSchema());
         assertThat(indexToken.toString(mockRouteUnit()), is("foo_idx"));
     }
-
+    
     @Test
     void assertToStringWithShardingTable() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
@@ -63,7 +63,7 @@ class IndexTokenTest {
         IndexToken indexToken = new IndexToken(0, 0, new IdentifierValue("foo_idx"), selectStatementContext, rule, mockSchema());
         assertThat(indexToken.toString(mockRouteUnit()), is(IndexMetaDataUtils.getActualIndexName("foo_idx", "foo_tbl_0", databaseType)));
     }
-
+    
     @Test
     void assertToStringWithShardingTableAndGeneratedIndex() {
         CreateIndexStatement sqlStatement = CreateIndexStatement.builder().databaseType(databaseType).build();
@@ -71,7 +71,7 @@ class IndexTokenTest {
         IndexToken indexToken = new IndexToken(0, 0, new IdentifierValue("bar_idx"), sqlStatementContext, mock(ShardingRule.class), mockSchema());
         assertThat(indexToken.toString(mockRouteUnit()), is(" " + IndexMetaDataUtils.getActualIndexName("bar_idx", "foo_tbl_0", databaseType) + " "));
     }
-
+    
     @Test
     void assertToStringWithLongGeneratedIndex() {
         CreateIndexStatement sqlStatement = CreateIndexStatement.builder().databaseType(databaseType).build();
@@ -80,7 +80,7 @@ class IndexTokenTest {
         IndexToken indexToken = new IndexToken(0, 0, new IdentifierValue(logicIndexName), sqlStatementContext, mock(ShardingRule.class), mockSchema());
         assertThat(indexToken.toString(mockRouteUnit()), is(" " + IndexMetaDataUtils.getActualIndexName(logicIndexName, "foo_tbl_0", databaseType) + " "));
     }
-
+    
     private ShardingSphereSchema mockSchema() {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
         ShardingSphereTable table1 = mock(ShardingSphereTable.class);
@@ -92,7 +92,7 @@ class IndexTokenTest {
         when(result.getTable("foo_tbl").containsIndex("foo_idx")).thenReturn(true);
         return result;
     }
-
+    
     private RouteUnit mockRouteUnit() {
         RouteUnit result = mock(RouteUnit.class);
         when(result.getTableMappers()).thenReturn(Collections.singleton(new RouteMapper("foo_tbl", "foo_tbl_0")));

@@ -37,14 +37,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ShardingIndexReviserTest {
-
+    
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-
+    
     @Test
     void assertReviseWithEmptyActualDataNode() {
         assertThat(new ShardingIndexReviser(mock(ShardingTable.class)).revise("foo_tbl", new IndexMetaData("foo_idx"), mock(ShardingRule.class)), is(Optional.empty()));
     }
-
+    
     @Test
     void assertReviseWithHashedActualIndexName() {
         Optional<IndexMetaData> actual = new ShardingIndexReviser(mockShardingTable())
@@ -54,7 +54,7 @@ class ShardingIndexReviserTest {
         assertThat(actual.get().getName(), is("named_index_boundary_case_abcdefghijklmnopqrstuvwxyz"));
         assertThat(actual.get().getColumns().size(), is(1));
     }
-
+    
     @Test
     void assertReviseWithLegacyActualIndexName() {
         Optional<IndexMetaData> actual = new ShardingIndexReviser(mockShardingTable())
@@ -62,7 +62,7 @@ class ShardingIndexReviserTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("foo_idx"));
     }
-
+    
     @Test
     void assertReviseWithLegacyActualIndexNameForSecondActualTable() {
         Optional<IndexMetaData> actual = new ShardingIndexReviser(mockShardingTable())
@@ -70,7 +70,7 @@ class ShardingIndexReviserTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("foo_idx"));
     }
-
+    
     @Test
     void assertReviseWithTruncatedAnonymousActualIndexName() {
         String logicIndexName = "very_long_status_column_name_for_sharding_rewrite_validation_account_identifier_idx";
@@ -80,7 +80,7 @@ class ShardingIndexReviserTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is(logicIndexName));
     }
-
+    
     private static ShardingTable mockShardingTable() {
         ShardingTable result = mock(ShardingTable.class);
         when(result.getActualDataNodes()).thenReturn(Arrays.asList(new DataNode("foo_schema", (String) null, "tbl_0"), new DataNode("foo_schema", (String) null, "tbl_1")));

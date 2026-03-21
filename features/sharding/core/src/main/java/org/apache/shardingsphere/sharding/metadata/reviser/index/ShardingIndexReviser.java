@@ -32,9 +32,9 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
-
+    
     private final ShardingTable shardingTable;
-
+    
     @Override
     public Optional<IndexMetaData> revise(final String tableName, final IndexMetaData originalMetaData, final ShardingRule rule) {
         if (shardingTable.getActualDataNodes().isEmpty()) {
@@ -53,7 +53,7 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
         result.setUnique(originalMetaData.isUnique());
         return Optional.of(result);
     }
-
+    
     private String getGeneratedAnonymousIndexName(final IndexMetaData originalMetaData) {
         return originalMetaData.getColumns().stream().map(each -> each + "_").collect(Collectors.joining("", "", "idx"));
     }
