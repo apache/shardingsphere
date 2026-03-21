@@ -108,7 +108,7 @@ public final class PipelineDDLDecorator {
     }
     
     private void appendFromIndexAndConstraint(
-            final Map<SQLSegment, String> replaceMap, final String databaseName, final String targetTableName, final SQLStatementContext sqlStatementContext) {
+                                              final Map<SQLSegment, String> replaceMap, final String databaseName, final String targetTableName, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext.getTablesContext().getSimpleTables().isEmpty()) {
             return;
         }
@@ -127,7 +127,7 @@ public final class PipelineDDLDecorator {
             }
         }
     }
-
+    
     private Collection<String> findCandidateLogicIndexNames(final String databaseName, final String targetTableName) {
         if (Strings.isNullOrEmpty(databaseName) || null == metaData.getDatabase(databaseName)) {
             return Collections.emptyList();
