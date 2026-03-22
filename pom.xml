@@ -43,6 +43,7 @@
         
         <module>features</module>
         <module>agent</module>
+        <module>mcp</module>
         
         <module>test</module>
         

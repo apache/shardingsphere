@@ -1,0 +1,250 @@
+# ShardingSphere MCP
+
+ShardingSphere MCP 为 Apache ShardingSphere 提供独立运行的 Model Context Protocol runtime。
+这份文档按第一次上手成功为目标编排：先构建发行包，再启动内置的 demo runtime，初始化一个会话，并通过 HTTP 验证 discovery 和 query 行为。
+其他说明会补充如何把 demo runtime 替换成真实 JDBC 部署。
+
+## Quick Start
+
+### 前置条件
+
+- `JAVA_HOME` 或 `PATH` 中可用的 JDK 17
+- 仓库根目录下的 Maven Wrapper
+- 包含 `curl`、`find`、`mktemp`、`sed`、`tr` 的类 Unix Shell
+
+### 1. 构建独立发行包
+
+```bash
+./mvnw -pl distribution/mcp -am -DskipTests package
+```
+
+解析发行包目录：
+
+```bash
+DIST_DIR=$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | sed -n '1p')
+echo "${DIST_DIR}"
+```
+
+预期结果：
+
+- 命令会打印出一个非空的发行包目录。
+- 该目录下包含 `bin/`、`conf/` 和 `lib/`。
+
+### 2. 启动 MCP runtime
+
+```bash
+cd "${DIST_DIR}"
+bin/start.sh
+```
+
+说明：
+
+- `bin/start.sh` 会以前台方式运行。请保持这个终端不退出，并在第二个终端执行下面的 `curl` 命令。
+- 发行包运行时会读取 `conf/mcp.yaml` 和 `conf/logback.xml`。
+- 默认 HTTP 端点是 `http://127.0.0.1:8088/mcp`。
+- 日志会写到 `logs/` 目录。
+- 内置 demo runtime 同时启用 HTTP 和 STDIO，这份 quick start 只演示 HTTP 入口。
+- `bin/start.sh` 启动前会校验配置文件、运行时依赖和 Java 环境，并自动创建 `data/`、`logs/`、`ext-lib/` 目录，然后切到发行包根目录启动，确保相对路径可用。
+- 如果启动成功，进程会保持前台运行；如果立刻退出，优先查看终端报错和 `logs/mcp.log`。
+- 内置 demo runtime 会暴露一个名为 `logic_db` 的逻辑库，底层使用发行包自带的 H2 驱动和 `data/mcp-demo` 中的种子数据。
+
+默认配置如下：
+
+```yaml
+server:
+  bindHost: 127.0.0.1
+  port: 8088
+  endpointPath: /mcp
+
+transport:
+  http:
+    enabled: true
+  stdio:
+    enabled: true
+
+runtime:
+  props:
+    databaseName: logic_db
+    databaseType: H2
+    jdbcUrl: "jdbc:h2:file:./data/mcp-demo;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+    driverClassName: org.h2.Driver
+    schemaPattern: public
+    defaultSchema: public
+    supportsCrossSchemaSql: true
+    supportsExplainAnalyze: false
+```
+
+### 3. 初始化一个 MCP 会话
+
+在第二个终端执行：
+
+```bash
+INIT_HEADERS=$(mktemp)
+curl -sS -D "${INIT_HEADERS}" -o /dev/null http://127.0.0.1:8088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  --data '{"jsonrpc":"2.0","id":"init-1","method":"initialize","params":{"capabilities":{},"clientInfo":{"name":"curl-demo","version":"1.0.0"}}}'
+SESSION_ID=$(sed -n 's/^[Mm][Cc][Pp]-[Ss]ession-[Ii][Dd]: //p' "${INIT_HEADERS}" | tr -d '\r')
+PROTOCOL_VERSION=$(sed -n 's/^[Mm][Cc][Pp]-[Pp]rotocol-[Vv]ersion: //p' "${INIT_HEADERS}" | tr -d '\r')
+rm -f "${INIT_HEADERS}"
+printf 'SESSION_ID=%s\nPROTOCOL_VERSION=%s\n' "${SESSION_ID}" "${PROTOCOL_VERSION}"
+```
+
+预期结果：
+
+- 命令会打印出一个非空的会话 ID，以及一个非空的协议版本。
+- initialize 响应会协商协议版本，并通过 `MCP-Protocol-Version` 响应头返回。
+
+### 4. 验证 discovery 和 query
+
+```bash
+curl -sS http://127.0.0.1:8088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"list_tables","arguments":{"database":"logic_db","schema":"public"}}}'
+```
+
+预期结果：
+
+- 响应类型是 `text/event-stream`。
+- JSON 负载位于 `data:` 行，其中会包含 `orders`、`order_items`、`active_orders`。
+
+```bash
+curl -sS http://127.0.0.1:8088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{"jsonrpc":"2.0","id":"tool-2","method":"tools/call","params":{"name":"execute_query","arguments":{"database":"logic_db","schema":"public","sql":"SELECT status FROM orders ORDER BY order_id","max_rows":10}}}'
+```
+
+预期结果：
+
+- 响应类型是 `text/event-stream`。
+- JSON 负载位于 `data:` 行，其中 `result_kind` 为 `result_set`。
+
+完成后，可使用下方的 DELETE 示例关闭会话。
+
+## 附加 HTTP 验证
+
+### 读取 `shardingsphere://capabilities`
+
+```bash
+curl -sS http://127.0.0.1:8088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{"jsonrpc":"2.0","id":"resource-1","method":"resources/read","params":{"uri":"shardingsphere://capabilities"}}'
+```
+
+预期结果：
+
+- 响应类型是 `text/event-stream`。
+- `data:` 行中会包含 `shardingsphere://capabilities` 对应的 resource 内容。
+
+### 可选：打开 SSE 流
+
+只有在你想直接观察长连接事件流时才需要这一步：
+
+```bash
+curl -N http://127.0.0.1:8088/mcp \
+  -H 'Accept: text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}"
+```
+
+说明：
+
+- 这个命令会一直阻塞，直到你用 `Ctrl+C` 手动停止。
+- 建议单独开一个终端观察，不要和其他 follow-up 请求混用。
+
+### 关闭会话
+
+```bash
+curl -sS -D - -o /dev/null \
+  -X DELETE http://127.0.0.1:8088/mcp \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}"
+```
+
+预期结果：
+
+- 响应状态码是 `200`。
+
+## 使用 STDIO
+
+当前的 STDIO 支持主要面向本地 Java 集成和 smoke test。
+发行包会启用同一套 runtime，但它不会额外暴露独立的交互式文本 Shell。
+
+### 只启用 STDIO 启动
+
+如果你想在关闭 HTTP 的情况下验证发行包，可以创建一个专用配置文件，例如 `conf/mcp-stdio.yaml`：
+
+```yaml
+server:
+  bindHost: 127.0.0.1
+  port: 8088
+  endpointPath: /mcp
+
+transport:
+  http:
+    enabled: false
+  stdio:
+    enabled: true
+```
+
+然后使用这个配置文件启动：
+
+```bash
+bin/start.sh conf/mcp-stdio.yaml
+```
+
+说明：
+
+- 进程仍然会以前台方式运行。
+- 如果 `transport.http.enabled` 和 `transport.stdio.enabled` 同时为 `false`，启动会因 `At least one transport must be enabled.` 失败。
+- 默认 `conf/logback.xml` 会把日志写到 stdout 和 `logs/mcp.log`，因此 `bin/start.sh` 目前不是可以直接给外部客户端使用的 JSON-RPC-over-STDIO Shell。
+
+### 在 Java 中集成
+
+如果是本地嵌入调用，可以直接使用 `StdioMCPServer`：
+
+```java
+MCPSessionManager sessionManager = new MCPSessionManager();
+StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, new MCPRuntimeContext(sessionManager));
+stdioMCPServer.start();
+String sessionId = stdioMCPServer.initializeSession();
+ToolDispatchResult result = stdioMCPServer.invokeMetadataTool(sessionId, metadataCatalog,
+        new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, ""));
+stdioMCPServer.closeSession(sessionId);
+```
+
+如果调用方还提供了 query execution runtime，可以继续使用 `executeQuery(sessionId, executionRequest)`。
+
+参考：
+
+- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioMCPServer.java`
+- `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/server/StdioTransportIntegrationTest.java`
+
+## Runtime 说明
+
+- 发行包里的 `conf/mcp.yaml` 现在默认内置一段 demo JDBC runtime 配置，所以第一次启动就能验证非空 metadata 和真实 query 执行。
+- 如果要接真实部署，请把 `runtime` 段替换成你自己的逻辑库映射和 JDBC 连接属性。
+- 如果目标数据库的驱动没有随发行包提供，请先把对应 jar 放到 `ext-lib/`，再执行 `bin/start.sh`。
+- 如果只需要本地 HTTP 调试，保留 `transport.http.enabled: true`，并在不需要 STDIO 时把 `transport.stdio.enabled` 设为 `false`。
+- 如果要做本地进程内集成，保留 `transport.stdio.enabled: true`。发行包会启动同一套 STDIO runtime，但目前不会额外暴露独立的文本 Shell。
+- 如果 HTTP 端点要暴露到 localhost 之外，建议放在受信网络、上游网关或反向代理之后。
+- 如果要使用自定义配置文件启动，可以执行 `bin/start.sh /path/to/mcp.yaml`。
+- 如果要调整 JVM 参数，可以使用 `JAVA_OPTS`，例如 `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`。
+
+## 开发参考
+
+- `mcp/core`：capability、metadata、session、audit、execute-query 契约
+- `mcp/bootstrap`：基于 MCP Java SDK 的 bootstrap、HTTP / STDIO transport 与 runtime wiring
+- `distribution/mcp`：独立打包、启动脚本、配置、Dockerfile
+- `test/e2e/mcp`：端到端契约验证
+
+如果要做本地调试或更完整的语义验证，优先参考 `mcp/bootstrap` 下的集成测试和 `test/e2e/mcp` 下的 E2E 用例。

@@ -1,0 +1,198 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.protocol;
+
+import lombok.Getter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+/**
+ * Unified response model for the MCP {@code execute_query} tool.
+ */
+@Getter
+public final class ExecuteQueryResponse {
+    
+    private final ResultKind resultKind;
+    
+    private final List<ColumnDefinition> columns;
+    
+    private final List<List<Object>> rows;
+    
+    private final int affectedRows;
+    
+    private final String statementType;
+    
+    private final String status;
+    
+    private final String message;
+    
+    private final boolean truncated;
+    
+    private final Optional<ErrorDetail> error;
+    
+    private ExecuteQueryResponse(final ResultKind resultKind, final List<ColumnDefinition> columns, final List<List<Object>> rows, final int affectedRows,
+                                 final String statementType, final String status, final String message, final boolean truncated, final Optional<ErrorDetail> error) {
+        this.resultKind = Objects.requireNonNull(resultKind, "resultKind cannot be null");
+        this.columns = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(columns, "columns cannot be null")));
+        this.rows = toImmutableRows(rows);
+        this.affectedRows = affectedRows;
+        this.statementType = Objects.requireNonNull(statementType, "statementType cannot be null");
+        this.status = Objects.requireNonNull(status, "status cannot be null");
+        this.message = Objects.requireNonNull(message, "message cannot be null");
+        this.truncated = truncated;
+        this.error = Objects.requireNonNull(error, "error cannot be null");
+    }
+    
+    /**
+     * Create a result-set response.
+     *
+     * @param columns column definitions
+     * @param rows result rows
+     * @param truncated truncation flag
+     * @return result-set response
+     */
+    public static ExecuteQueryResponse resultSet(final List<ColumnDefinition> columns, final List<List<Object>> rows, final boolean truncated) {
+        return new ExecuteQueryResponse(ResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated, Optional.empty());
+    }
+    
+    /**
+     * Create an update-count response.
+     *
+     * @param statementType statement type
+     * @param affectedRows affected row count
+     * @return update-count response
+     */
+    public static ExecuteQueryResponse updateCount(final String statementType, final int affectedRows) {
+        return new ExecuteQueryResponse(ResultKind.UPDATE_COUNT, Collections.emptyList(), Collections.emptyList(), affectedRows,
+                Objects.requireNonNull(statementType, "statementType cannot be null"), "OK", "", false, Optional.empty());
+    }
+    
+    /**
+     * Create a statement acknowledgement response.
+     *
+     * @param statementType statement type
+     * @param message acknowledgement message
+     * @return acknowledgement response
+     */
+    public static ExecuteQueryResponse statementAck(final String statementType, final String message) {
+        return new ExecuteQueryResponse(ResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
+                Objects.requireNonNull(statementType, "statementType cannot be null"), "OK", Objects.requireNonNull(message, "message cannot be null"), false, Optional.empty());
+    }
+    
+    /**
+     * Create an error response.
+     *
+     * @param errorCode unified error code
+     * @param message error message
+     * @return error response
+     */
+    public static ExecuteQueryResponse error(final ErrorCode errorCode, final String message) {
+        ErrorDetail errorDetail = new ErrorDetail(errorCode, message);
+        return new ExecuteQueryResponse(ResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
+                "ERROR", "ERROR", errorDetail.getMessage(), false, Optional.of(errorDetail));
+    }
+    
+    /**
+     * Determine whether the response completed successfully.
+     *
+     * @return {@code true} when no unified error is attached
+     */
+    public boolean isSuccessful() {
+        return !error.isPresent();
+    }
+    
+    private static List<List<Object>> toImmutableRows(final List<List<Object>> rows) {
+        List<List<Object>> result = new ArrayList<>(Objects.requireNonNull(rows, "rows cannot be null").size());
+        for (List<Object> each : rows) {
+            result.add(Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(each, "row cannot be null"))));
+        }
+        return Collections.unmodifiableList(result);
+    }
+    
+    /**
+     * Unified result kinds for {@code execute_query}.
+     */
+    public enum ResultKind {
+        
+        RESULT_SET, UPDATE_COUNT, STATEMENT_ACK
+    }
+    
+    /**
+     * Unified error code family for MCP V1.
+     */
+    public enum ErrorCode {
+        
+        INVALID_REQUEST, NOT_FOUND, UNSUPPORTED, CONFLICT, TIMEOUT, UNAVAILABLE, TRANSACTION_STATE_ERROR, QUERY_FAILED
+    }
+    
+    /**
+     * Column metadata definition for result sets.
+     */
+    @Getter
+    public static final class ColumnDefinition {
+        
+        private final String columnName;
+        
+        private final String logicalType;
+        
+        private final String nativeType;
+        
+        private final boolean nullable;
+        
+        /**
+         * Construct a column definition.
+         *
+         * @param columnName column name
+         * @param logicalType logical type
+         * @param nativeType native type
+         * @param nullable nullable flag
+         */
+        public ColumnDefinition(final String columnName, final String logicalType, final String nativeType, final boolean nullable) {
+            this.columnName = Objects.requireNonNull(columnName, "columnName cannot be null");
+            this.logicalType = Objects.requireNonNull(logicalType, "logicalType cannot be null");
+            this.nativeType = Objects.requireNonNull(nativeType, "nativeType cannot be null");
+            this.nullable = nullable;
+        }
+    }
+    
+    /**
+     * Unified error detail payload.
+     */
+    @Getter
+    public static final class ErrorDetail {
+        
+        private final ErrorCode errorCode;
+        
+        private final String message;
+        
+        /**
+         * Construct an error detail.
+         *
+         * @param errorCode unified error code
+         * @param message error message
+         */
+        public ErrorDetail(final ErrorCode errorCode, final String message) {
+            this.errorCode = Objects.requireNonNull(errorCode, "errorCode cannot be null");
+            this.message = Objects.requireNonNull(message, "message cannot be null");
+        }
+    }
+}

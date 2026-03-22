@@ -1,0 +1,74 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.audit;
+
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ErrorCode;
+import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class AuditRecorderTest {
+    
+    @Test
+    void assertRecordResourceRead() {
+        AuditRecorder auditRecorder = new AuditRecorder();
+        
+        AuditRecorder.AuditRecord actual = auditRecorder.recordResourceRead("session-1", "logic_db", "shardingsphere://databases", true, Optional.empty(), "QUERY");
+        
+        assertThat(actual.getOperationClass(), is(AuditRecorder.OperationClass.RESOURCE_READ));
+        assertTrue(actual.isSuccess());
+        assertThat(actual.getOperationDigest().length(), is(64));
+    }
+    
+    @Test
+    void assertRecordMetadataTool() {
+        AuditRecorder auditRecorder = new AuditRecorder();
+        
+        AuditRecorder.AuditRecord actual = auditRecorder.recordMetadataTool("session-1", "logic_db", "list_tables", false,
+                Optional.of(ErrorCode.INVALID_REQUEST), "QUERY");
+        
+        assertThat(actual.getOperationClass(), is(AuditRecorder.OperationClass.METADATA_TOOL));
+        assertFalse(actual.isSuccess());
+        assertTrue(actual.getErrorCode().isPresent());
+    }
+    
+    @Test
+    void assertRecordQueryExecution() {
+        AuditRecorder auditRecorder = new AuditRecorder();
+        
+        AuditRecorder.AuditRecord actual = auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", true, Optional.empty(), "QUERY");
+        
+        assertThat(actual.getOperationClass(), is(AuditRecorder.OperationClass.QUERY_EXECUTION));
+        assertThat(actual.getDatabase(), is("logic_db"));
+    }
+    
+    @Test
+    void assertSnapshot() {
+        AuditRecorder auditRecorder = new AuditRecorder();
+        auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", true, Optional.empty(), "QUERY");
+        
+        int actual = auditRecorder.snapshot().size();
+        
+        assertThat(actual, is(1));
+    }
+}

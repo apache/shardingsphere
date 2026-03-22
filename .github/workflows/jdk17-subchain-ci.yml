@@ -1,0 +1,124 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: JDK 17 Subchain - CI
+
+on:
+  pull_request:
+    branches: [ master ]
+    paths:
+      - '.github/workflows/jdk17-subchain-ci.yml'
+      - 'pom.xml'
+      - 'mcp/**'
+      - 'distribution/pom.xml'
+      - 'distribution/mcp/**'
+      - 'test/e2e/pom.xml'
+      - 'test/e2e/mcp/**'
+  workflow_dispatch:
+
+concurrency:
+  group: jdk17-subchain-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
+
+jobs:
+  global-environment:
+    name: Import Global Environment
+    uses: ./.github/workflows/required-reusable.yml
+
+  jdk17-subchain-ci:
+    name: JDK 17 Subchain - CI
+    if: github.repository == 'apache/shardingsphere'
+    needs: global-environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          java-version: '17'
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+          cache-suffix: 'mcp'
+      - name: Run JDK 17 Subchain Tests
+        run: ./mvnw -pl mcp,test/e2e/mcp -am test -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
+      - name: Package JDK 17 Subchain Distribution
+        run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
+      - name: Run JDK 17 Subchain Distribution Smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          INIT_BODY='{"jsonrpc":"2.0","id":"ci-init","method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"ci-smoke","version":"1.0.0"}}}'
+          TOOL_BODY='{"jsonrpc":"2.0","id":"ci-tool","method":"tools/call","params":{"name":"get_capabilities","arguments":{}}}'
+          DISTRIBUTION_HOME=$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | head -n 1)
+          if [[ -z "${DISTRIBUTION_HOME}" ]]; then
+            echo "Packaged MCP distribution was not found." 1>&2
+            exit 1
+          fi
+          "${DISTRIBUTION_HOME}/bin/start.sh" >"${RUNNER_TEMP}/mcp-smoke.log" 2>&1 &
+          SERVER_PID=$!
+          cleanup() {
+            if kill -0 "${SERVER_PID}" >/dev/null 2>&1; then
+              kill "${SERVER_PID}" >/dev/null 2>&1 || true
+              wait "${SERVER_PID}" || true
+            fi
+          }
+          trap cleanup EXIT
+          for _ in {1..20}; do
+            if curl -sS -D "${RUNNER_TEMP}/mcp-init.headers" -o "${RUNNER_TEMP}/mcp-init.body" \
+              -H 'X-Trusted-Identity: ci_user' \
+              -H 'Content-Type: application/json' \
+              -H 'Accept: application/json, text/event-stream' \
+              --data "${INIT_BODY}" \
+              -X POST http://127.0.0.1:8088/mcp; then
+              break
+            fi
+            sleep 1
+          done
+          SESSION_ID=$(awk 'tolower($1) == "mcp-session-id:" {print $2}' "${RUNNER_TEMP}/mcp-init.headers" | tr -d '\r')
+          PROTOCOL_VERSION=$(awk 'tolower($1) == "mcp-protocol-version:" {print $2}' "${RUNNER_TEMP}/mcp-init.headers" | tr -d '\r')
+          INIT_STATUS=$(awk 'BEGIN {status=""} /^HTTP/ {status=$2} END {print status}' "${RUNNER_TEMP}/mcp-init.headers")
+          test -n "${SESSION_ID}"
+          test "${PROTOCOL_VERSION}" = "2025-11-25"
+          test "${INIT_STATUS}" = "200"
+          TOOL_STATUS=$(curl -sS -o "${RUNNER_TEMP}/mcp-tool.body" -w '%{http_code}' \
+            -H 'X-Trusted-Identity: ci_user' \
+            -H 'Content-Type: application/json' \
+            -H 'Accept: application/json, text/event-stream' \
+            -H "MCP-Session-Id: ${SESSION_ID}" \
+            -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+            --data "${TOOL_BODY}" \
+            -X POST http://127.0.0.1:8088/mcp)
+          test "${TOOL_STATUS}" = "200"
+          grep -q 'supportedTools' "${RUNNER_TEMP}/mcp-tool.body"
+          UNAUTH_DELETE_STATUS=$(curl -sS -o "${RUNNER_TEMP}/mcp-delete-unauth.body" -w '%{http_code}' \
+            -H "MCP-Session-Id: ${SESSION_ID}" \
+            -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+            -X DELETE http://127.0.0.1:8088/mcp)
+          test "${UNAUTH_DELETE_STATUS}" = "401"
+          DELETE_STATUS=$(curl -sS -o "${RUNNER_TEMP}/mcp-delete.body" -w '%{http_code}' \
+            -H 'X-Trusted-Identity: ci_user' \
+            -H "MCP-Session-Id: ${SESSION_ID}" \
+            -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+            -X DELETE http://127.0.0.1:8088/mcp)
+          test "${DELETE_STATUS}" = "200"
+      - name: Build JDK 17 Subchain Docker Image
+        run: docker build -f distribution/mcp/Dockerfile -t shardingsphere-mcp-ci:local .

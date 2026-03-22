@@ -1,0 +1,18 @@
+.git/
+.github/
+.idea/
+.vscode/
+.codex/
+# Keep build outputs out of most images, but allow the packaged MCP runtime
+# because its Dockerfile assembles from the distribution directory.
+**/target/
+!distribution/mcp/target/
+distribution/mcp/target/*
+!distribution/mcp/target/apache-shardingsphere-mcp-*/
+!distribution/mcp/target/apache-shardingsphere-mcp-*/**
+**/*.iml
+logs/
+specs/
+*.log
+.DS_Store
+Thumbs.db
