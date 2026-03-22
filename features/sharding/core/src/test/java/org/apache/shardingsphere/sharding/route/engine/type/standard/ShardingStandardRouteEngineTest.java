@@ -43,6 +43,7 @@ import java.util.Properties;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -229,7 +230,6 @@ class ShardingStandardRouteEngineTest {
         conditionList.add(relevantCondition);
         conditionList.add(irrelevantCondition);
         
-        // Moved declaration closer to usage
         ShardingRule shardingRule = ShardingRouteEngineFixtureBuilder.createBasedShardingRule();
         ShardingConditions mixedConditions = new ShardingConditions(
                 conditionList,
@@ -330,7 +330,7 @@ class ShardingStandardRouteEngineTest {
         assertThat(routeUnit.getDataSourceMapper().getActualName(), is("ds_1"));
         boolean hasOrder1 = routeUnit.getTableMappers().stream()
                 .anyMatch(mapper -> "t_order_1".equals(mapper.getActualName()));
-        assertThat(hasOrder1, is(true));
+        assertTrue(hasOrder1);
     }
     
     @Test

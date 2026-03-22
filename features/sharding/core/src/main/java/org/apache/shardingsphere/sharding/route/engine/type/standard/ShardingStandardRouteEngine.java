@@ -179,11 +179,9 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
         
         Collection<DataNode> result = new LinkedHashSet<>();
         for (ShardingCondition each : relevantConditions) {
-            // Extract the raw condition values
             List<ShardingConditionValue> databaseShardingValues = getDatabaseShardingValues(shardingRule, databaseShardingStrategy, each);
             List<ShardingConditionValue> tableShardingValues = getTableShardingValues(shardingRule, tableShardingStrategy, each);
             
-            // Route with the rewritten condition values
             Collection<DataNode> dataNodes = route0(shardingTable, databaseShardingStrategy, databaseShardingValues, tableShardingStrategy, tableShardingValues);
             
             result.addAll(dataNodes);

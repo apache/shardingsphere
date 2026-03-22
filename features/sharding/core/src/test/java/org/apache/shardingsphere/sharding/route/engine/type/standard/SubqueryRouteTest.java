@@ -55,6 +55,15 @@ class SubqueryRouteTest {
         hintManager.close();
     }
     
+    @Test
+    void assertSubqueryRoutingDoesNotExplode() {
+        String sql = "SELECT * FROM t_order WHERE user_id IN (SELECT user_id FROM t_order_item WHERE user_id = ?)";
+        
+        RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, Collections.singletonList(1));
+        
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+    }
+    
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
@@ -92,14 +101,5 @@ class SubqueryRouteTest {
                             "SELECT count(*) FROM t_order WHERE user_id = (SELECT user_id FROM t_order_item WHERE user_id =?) ", Collections.singletonList(1)),
                     Arguments.of("subqueryWithOneInstance", "SELECT COUNT(*) FROM t_order WHERE user_id =?", Collections.singletonList(1)));
         }
-    }
-    
-    @Test
-    void assertSubqueryRoutingDoesNotExplode() {
-        String sql = "SELECT * FROM t_order WHERE user_id IN (SELECT user_id FROM t_order_item WHERE user_id = ?)";
-        
-        RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, Collections.singletonList(1));
-        
-        assertThat(routeContext.getRouteUnits().size(), is(1));
     }
 }
