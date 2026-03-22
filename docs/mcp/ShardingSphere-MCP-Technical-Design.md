@@ -15,21 +15,17 @@
 - 发布模块：
   - `distribution/mcp`
   - `artifactId`：`shardingsphere-mcp-distribution`
-- 协议层使用官方 MCP Java SDK，V1 默认技术选型为：
-  - `mcp-core`
-  - `mcp-json-jackson2`
-- 运行层不采用 Spring AI，HTTP 服务承载采用：
-  - 官方 SDK 的 Servlet 支撑
-  - Embedded Tomcat 11
+- 协议层与运行层采用仓库内自管 MCP 领域模型与 bootstrap 适配层，HTTP 服务承载采用：
+  - `mcp/bootstrap` 中局部引入的 MCP Java SDK
+  - embedded Tomcat 11
 - 本地调试采用：
   - STDIO
-- 同时通过 JDK 17 子链路 + 专用 profile + 专用 CI + 独立 distribution 与当前主仓库 Java 8 主线共存。
+- 同时通过 JDK 17 子链路 + 常规 reactor 模块接入 + JDK 17 子链路 CI + 独立 distribution 与当前主仓库主线共存。
 
 ## 3. 背景
 - 根据前期 PRD，ShardingSphere MCP 要解决的不是“把 MCP 跑起来”，而是形成正式的数据库统一 AI/Agent 接入面，覆盖：
   - 统一 metadata 发现
   - 统一 capability 声明
-  - 统一 access policy 声明
   - 统一 SQL 执行入口 `execute_query`
   - 统一错误模型
   - 统一事务与 `savepoint` 能力边界
@@ -45,23 +41,21 @@
     - `proxy`
     - `proxy-native`
   - 见 `distribution/pom.xml`（line 30）
-  - 官方 MCP Java SDK 当前要求 Java 17+
-  - 来源：官方 Java SDK README
+  - MCP 子链路当前实现固定在 Java 17
 - 因此，技术方案必须同时满足：
   - MCP 进入主仓库
   - 不破坏根工程 Java 8 默认构建
   - 保持与现有 distribution 结构一致
-  - 覆盖 PRD 中定义的 `capability / access policy / execute_query / transaction semantics`
+  - 覆盖 PRD 中定义的 `capability / execute_query / transaction semantics`
 
 ## 4. 目标
 - 本方案目标如下：
   - 将 MCP 作为 ShardingSphere 的正式接入子系统落地。
-  - 使用官方 MCP Java SDK，而不是自研协议层。
+- `mcp/core` 继续使用仓库内自管 runtime 与领域模型，`mcp/bootstrap` 局部引入 MCP Java SDK。
   - 在不推动全仓升级到 JDK 17 的前提下，引入 MCP 子链路的 Java 17 能力。
   - 形成独立部署、独立运行、独立发布的 MCP 服务。
   - 支撑 PRD 中定义的：
     - `capability`
-    - `access policy`
     - `execute_query`
     - `transaction matrix`
     - `audit`
@@ -85,17 +79,15 @@
 - 根工程当前 Jakarta BOM 为 8.0.0，`pom.xml`（line 102）
 - 根 distribution 当前是默认构建链的一部分，`pom.xml`（line 49）
 
-### 6.2 官方 SDK 约束
+### 6.2 运行时约束
 - 截至 2026-03-21：
-  - 官方 MCP Java SDK 为 Java 17+
-  - `mcp-core` 提供协议核心能力
-  - README 中列有 STDIO 与 Servlet 方向支撑
-- 来源：官方 Java SDK README
+  - MCP 子链路实现固定为 Java 17
+  - Streamable HTTP 与 STDIO 双 transport 由仓库内 runtime 提供
 
 ### 6.3 HTTP Runtime 约束
-- Tomcat 11 要求 Java 17 或更高版本
-- 来源：Tomcat 11 Migration Guide
-- 因此 Tomcat 11 与 Servlet 6 相关依赖必须严格限制在 MCP 子链路中。
+- HTTP listener 由 `mcp/bootstrap` 局部引入的 embedded Tomcat 承载
+- MCP Java SDK 只允许出现在 `mcp/bootstrap`
+- 不引入 Spring runtime
 
 ### 6.4 合规约束
 - 官方 Java SDK 使用 MIT 许可
@@ -104,15 +96,16 @@
 
 ## 7. 关键设计决策
 
-### 7.1 MCP 进入主仓库，但不是根默认模块
+### 7.1 MCP 进入主仓库并沿用常规模块接入
 - 最终决策：
   - `mcp` 放在主仓库根目录下
   - 作为独立代码子项目存在
-  - 不进入根 `pom.xml` 默认 `<modules>`
-  - 通过专用 `mcp` profile 启用
+  - 直接进入根 `pom.xml` 默认 `<modules>`
+  - 不再通过独立 `mcp` profile 启用
 - 原因：
   - 保持统一版本、统一仓库、统一演进
-  - 又不破坏根工程 Java 8 默认构建链
+  - 与 JDBC、Proxy、agent 保持一致的模块管理方式
+  - 打包、测试和发布链路不再依赖额外 profile
 
 ### 7.2 `distribution/mcp` 放在根 distribution 下
 - 最终决策：
@@ -123,18 +116,16 @@
   - 更符合仓库发布与 release 组织方式
   - 与 `distribution/proxy`、`distribution/jdbc` 的模式一致
 
-### 7.3 `mcp` 和 `distribution/mcp` 同时走 profile
+### 7.3 `mcp` 和 `distribution/mcp` 直接进入默认 modules
 - 最终决策：
-  - 根 `pom.xml` 增加 profile：`mcp`
-  - 将 `mcp` 加入构建链
-  - `distribution/pom.xml` 增加同名 profile：`mcp`
-  - 将 `distribution/mcp` 加入 distribution 构建链
-  - 两个 profile 均不默认激活
+  - 根 `pom.xml` 直接加入 `mcp`
+  - `distribution/pom.xml` 直接加入 `distribution/mcp`
+  - `test/e2e/pom.xml` 直接加入 `test/e2e/mcp`
+  - JDK 17 子链路 CI 继续保留独立 lane
 - 原因：
-  - 只有这样才能同时满足：
-    - MCP 代码模块可构建
-    - MCP distribution 可构建
-    - 根工程默认构建仍保持 Java 8 语义
+  - 这样可以让 MCP 与 JDBC、Proxy、agent 保持一致的模块接入方式
+  - 打包、测试和发布链路不再依赖额外 profile
+  - Java 17 约束仍局部收敛在 MCP 子模块
 
 ### 7.4 不使用 Spring AI
 - 最终决策：
@@ -145,34 +136,34 @@
   - 主仓库当前不是 Spring 工程
   - 引入 Spring AI 会扩大技术栈侵入与长期维护成本
 
-### 7.5 SDK 默认选型
+### 7.5 Runtime 默认选型
 - 最终决策：
-  - 使用 `mcp-core`
-  - 使用 `mcp-json-jackson2`
+  - `mcp/core` 继续使用仓库内自管 protocol DTO 与领域模型
+  - `mcp/bootstrap` 使用 MCP Java SDK 的 Jackson 2 适配与 Streamable HTTP transport
 - 不采用：
-  - `mcp`
-  - `mcp-json-jackson3`
+  - 让 `mcp/core` 直接依赖 SDK 类型
+  - Spring AI / Spring Boot runtime
 - 原因：
-  - `mcp` 聚合包会带入 Jackson 3
-  - Jackson 3 与主仓库 Jackson 2.x 路线割裂更大
-  - `mcp-core + mcp-json-jackson2` 是当前最稳妥组合
+  - 用最小边界复用官方协议实现
+  - 保持 ShardingSphere 领域模型与外部 SDK 解耦
+  - 通过根工程 Jackson 版本管理保证 2.16.1 一致性
 
-### 7.6 JSON 兜底方案
+### 7.6 JSON 处理策略
 - 最终决策：
-  - V1 默认：`mcp-core + mcp-json-jackson2`
-  - 兜底方案：`mcp-core + 自定义 McpJsonMapperSupplier`
+  - transport JSON 编解码通过 MCP Java SDK 的 Jackson 2 适配完成
+  - Jackson 版本继续受根工程 `2.16.1` 约束
+  - 业务对象继续使用仓库内 DTO
 - 原因：
-  - 这样文档不会把 JSON 方案写死成唯一不可退的技术选型
-  - 保留未来依赖收缩空间
+  - 降低协议序列化样板代码
+  - 避免引入与主仓库不一致的 Jackson 版本
 
 ### 7.7 HTTP 服务承载
 - 最终决策：
-  - 使用官方 SDK Servlet 支撑
-  - 使用 Embedded Tomcat 11
+  - 使用 embedded Tomcat 11 承载 MCP Java SDK 的 Streamable HTTP servlet
 - 原因：
-  - 不引 Spring
-  - 运行时成熟
-  - 与 Java 17 路线匹配
+  - 只在 bootstrap 层引入最小 servlet 容器
+  - 与官方 Streamable HTTP servlet transport 对齐
+  - 仍然不把运行时依赖扩散到主仓库其他模块
 
 ### 7.8 HTTP 会话与事务状态
 - 最终决策：
@@ -207,7 +198,6 @@ shardingsphere
 #### `mcp/core`
 - MCP 公共对象模型
 - capability 组装
-- access policy 组装
 - metadata discovery facade
 - execute_query facade
 - session / transaction facade
@@ -219,7 +209,6 @@ shardingsphere
 - MCP server 启动入口
 - HTTP / STDIO transport 装配
 - 配置加载
-- auth SPI 接入
 - tools / resources 注册
 - 生命周期管理
 
@@ -259,97 +248,126 @@ shardingsphere
 
 ## 9. 构建与发布模型
 
-### 9.1 总体策略
-- 采用“代码模块与发布模块共同走专用 profile / 专用 CI”的方案：
-  - 根工程默认构建链不包含 `mcp`
-  - 根 distribution 默认构建链不包含 `distribution/mcp`
-  - 激活 `mcp` profile 后同时启用：
-    - `mcp`
-    - `distribution/mcp`
+### 9.1 Operator Rollout Notes
 
-### 9.2 推荐 profile 组织
+#### 9.1.1 Distribution Layout
+- `distribution/mcp` 在 `package` 阶段输出：
+  - `apache-shardingsphere-mcp-<version>/bin`
+  - `apache-shardingsphere-mcp-<version>/conf`
+  - `apache-shardingsphere-mcp-<version>/lib`
+  - `apache-shardingsphere-mcp-<version>/logs`
+- `bin/start.sh` 仅面向发布目录启动，避免把源码树调试逻辑混入发布入口
+
+#### 9.1.2 Runtime Assets
+- 默认配置模板：
+  - `distribution/mcp/src/main/resources/conf/mcp.yaml`
+- 默认容器入口：
+  - `distribution/mcp/Dockerfile`
+- 默认本地启动脚本：
+  - `distribution/mcp/src/main/bin/start.sh`
+
+#### 9.1.3 Validation Flow
+- 运维侧推荐的最小验证顺序：
+  1. `./mvnw -pl mcp -am test -DskipITs -Dspotless.skip=true`
+  2. `./mvnw -pl distribution/mcp -am -DskipTests package`
+  3. `./mvnw -pl test/e2e/mcp -am test -Dsurefire.failIfNoSpecifiedTests=false`
+  4. `sh distribution/mcp/target/apache-shardingsphere-mcp-<version>/bin/start.sh`
+- 验证重点：
+  - `/mcp` Streamable HTTP 会话初始化与关闭
+  - STDIO 本地调试入口
+  - metadata discovery
+  - `execute_query`
+  - 审计与变化可见性
+
+#### 9.1.4 Rollback Guidance
+- 如需回滚：
+  - 停止 MCP 独立进程或容器
+  - 回退 `mcp`、`distribution/mcp` 与 `test/e2e/mcp` 子链路代码
+  - 同时回退根 `pom.xml`、`distribution/pom.xml` 与 `test/e2e/pom.xml` 中对 MCP 模块的聚合变更
+- 本方案不修改 Proxy/JDBC 运行链，因此回滚边界限定在 MCP 子链路及其 reactor 聚合改动。
+
+### 9.2 总体策略
+- 采用“与 JDBC、Proxy、agent 一致的常规模块接入 + JDK 17 子链路 CI”的方案：
+  - 根工程默认构建链直接包含 `mcp`
+  - 根 distribution 默认构建链直接包含 `distribution/mcp`
+  - 根 `test/e2e` 默认构建链直接包含 `test/e2e/mcp`
+  - MCP 继续保留 JDK 17 子链路 CI lane，但不依赖独立 Maven profile
+
+### 9.3 模块接入方式
 
 #### 根 `pom.xml`
-- 增加 `mcp` profile
-- 在 profile 内加入：
+- 直接在 `<modules>` 中加入：
   - `<module>mcp</module>`
 
 #### `distribution/pom.xml`
-- 增加同名 `mcp` profile
-- 在 profile 内加入：
+- 直接在 `<modules>` 中加入：
   - `<module>mcp</module>`
 
-### 9.3 构建链
+#### `test/e2e/pom.xml`
+- 直接在 `<modules>` 中加入：
+  - `<module>mcp</module>`
+
+### 9.4 构建链
 
 #### 默认构建链
-- 面向当前主仓库 Java 8 模块
-- 不感知 MCP
+- 默认 reactor 直接包含 `mcp`、`distribution/mcp` 与 `test/e2e/mcp`
+- 需要为 MCP 子模块提供 JDK 17 编译环境
+- Java 17 相关依赖与编译参数局部收敛在 MCP 子链路
 
 #### MCP 构建链
 - 固定 JDK 17
 - 构建：
   - `mcp/core`
   - `mcp/bootstrap`
+  - `test/e2e/mcp`
   - `distribution/mcp`
 
-### 9.4 JDK 17 隔离策略
+### 9.5 JDK 17 隔离策略
 - 推荐：
   - Maven Toolchains
   - `mcp/pom.xml` 明确 `maven.compiler.release=17`
-  - MCP 专用 CI lane 固定 JDK 17
+  - JDK 17 子链路 CI lane 固定 JDK 17
 
-### 9.5 依赖管理隔离
+### 9.6 依赖管理隔离
 - 必须遵守：
-  - 不把 MCP BOM 引入根工程 `dependencyManagement`
-  - 不把 Tomcat / Servlet / Reactor / Jackson 2.20.x 扩散到主仓库主线
+  - 不把额外 MCP SDK 或 HTTP 容器依赖引入根工程 `dependencyManagement`
   - MCP 子链路内部独立管理依赖版本
+  - MCP Java SDK transitive Jackson 版本必须服从根工程 Jackson `2.16.1`
 
-### 9.6 为什么 `distribution/mcp` 必须也隔离
+### 9.7 为什么 `distribution/mcp` 仍需局部隔离
 - 因为 `distribution/mcp` 依赖的是 Java 17 的 `mcp/bootstrap`。
-- 如果只隔离 `mcp` 代码模块、不隔离 `distribution/mcp`，根 distribution 默认构建链仍会被 Java 17 依赖拖进来，和当前 Java 8 主线冲突。
+- 现在 `distribution/mcp` 已进入默认构建链，因此必须把 Java 17 约束局部收敛在 MCP 子链路内部，而不是重新引入独立 profile。
 
 ## 10. 技术选型明细
 
 ### 10.1 协议与 JSON
 - 默认采用：
-  - `io.modelcontextprotocol.sdk:mcp-core`
-  - `io.modelcontextprotocol.sdk:mcp-json-jackson2`
+  - `mcp/core` 仓库内 protocol DTO
+  - `mcp/bootstrap` 中的 MCP Java SDK transport facade
+  - `mcp-json-jackson2` 与仓库统一 Jackson 2.16.1
 - 不采用：
-  - `io.modelcontextprotocol.sdk:mcp`
-  - `io.modelcontextprotocol.sdk:mcp-json-jackson3`
-- 兜底路线：
-  - `mcp-core + 自定义 McpJsonMapperSupplier`
+  - 让 SDK 类型进入 `mcp/core`
+  - 外部 JSON bridge
 
 ### 10.2 HTTP Runtime
 - 采用：
-  - 官方 SDK Servlet 支撑
-  - Embedded Tomcat 11
+  - embedded Tomcat 11
+  - MCP Java SDK `HttpServletStreamableServerTransportProvider`
 - 约束：
-  - Tomcat 11 及相关 Servlet 6 依赖只出现在：
+  - 运行时实现只出现在：
     - `mcp/bootstrap`
     - `distribution/mcp`
   - 不进入根工程统一依赖管理
-  - 不复用根工程当前 Jakarta 8 BOM
 
 ### 10.3 本地调试
 - 采用：
   - STDIO
 
-### 10.4 认证接入
-- 不引入 Spring Security。
-- 使用高层 SPI：
-  - Identity Provider SPI
-  - Auth Context Resolver SPI
-- V1 推荐两种模式：
-  - Trusted Gateway 模式
-  - Static API Key 模式
-
-### 10.5 联调工具
+### 10.4 联调工具
 - 推荐：
-  - 官方 MCP Inspector
-  - 本地 STDIO 模式
+  - 本地 STDIO 集成测试路径
   - HTTP 冒烟联调
-  - capability / transaction / access policy 专项联调
+  - capability / transaction 专项联调
 
 ## 11. 总体架构
 
@@ -362,9 +380,8 @@ flowchart TB
     E --> F["Metadata / Governance / Execution"]
     F --> G["Underlying Databases"]
 
-    H["Identity / Auth SPI"] --> C
-    I["Audit / Metrics / Logging"] --> C
-    I --> D
+    H["Audit / Metrics / Logging"] --> C
+    H --> D
 ```
 
 ### 11.1 分层职责
@@ -387,21 +404,18 @@ flowchart TB
 - 统一提供：
   - metadata discovery
   - capability
-  - access policy
   - execute_query
   - transaction / savepoint handling
 
 #### ShardingSphere Integration Layer
-- 适配 metadata、parser、mode、authority、kernel 等核心能力
+- 适配 metadata、parser、mode、kernel 与相关治理模块能力
 - 屏蔽内核模块差异
 - 不向内核泄露 MCP 概念
 
-## 12. Capability 与 Access Policy 设计
+## 12. Capability 设计
 
 ### 12.1 基本原则
-- 必须始终区分：
-  - capability = 客观能力边界
-  - access policy = 当前身份允许边界
+- capability = 客观能力边界
 
 ### 12.2 服务级 Capability
 - 服务级 capability 只描述协议公共能力，例如：
@@ -425,18 +439,7 @@ flowchart TB
   - `explain_analyze_result_behavior`
   - `explain_analyze_transaction_behavior`
 
-### 12.4 Access Policy
-- Access Policy 至少覆盖：
-  - `allowed_databases`
-  - `allowed_schemas`
-  - `allowed_objects`
-  - `allowed_statement_classes`
-  - `max_rows`
-  - `max_timeout_ms`
-  - `transaction_policy`
-  - `advanced_statement_policy`
-
-### 12.5 Optional Object Types
+### 12.4 Optional Object Types
 - V1 强制统一对象基线：
   - `database`
   - `schema`
@@ -444,7 +447,6 @@ flowchart TB
   - `view`
   - `column`
   - `capability`
-  - `access policy`
 - V1 可选对象：
   - `index`
 - 规则：
@@ -458,13 +460,12 @@ flowchart TB
 - 它不是 SQL 透传接口，而是统一执行与治理入口。
 
 ### 13.2 高层处理阶段
-- 统一划分为 6 个阶段：
+- 统一划分为 5 个阶段：
   1. 请求合法性校验
   2. MCP 会话与事务状态校验
-  3. access policy 校验
-  4. capability 校验
-  5. ShardingSphere parse / route / execute 适配
-  6. 统一结果与错误映射
+  3. capability 校验
+  4. ShardingSphere parse / route / execute 适配
+  5. 统一结果与错误映射
 
 ### 13.3 Statement Class 统一分类
 - `select`
@@ -482,12 +483,9 @@ flowchart TB
 
 ### 13.5 统一错误模型
 - `invalid_request`
-- `unauthorized`
-- `policy_denied`
 - `not_found`
 - `unsupported`
 - `conflict`
-- `timeout`
 - `unavailable`
 - `transaction_state_error`
 - `query_failed`
@@ -496,11 +494,10 @@ flowchart TB
 
 ### 14.1 会话模型
 - 每个 MCP 会话绑定：
-  - identity
   - 当前 database 上下文
   - 当前事务状态
   - `savepoint` 状态
-  - 当前 policy 上下文
+  - 审计使用的 session_id
 
 ### 14.2 HTTP 会话策略
 - 由于 PRD 已定义事务与 `savepoint` 语义，HTTP 路径必须维护逻辑 MCP 会话。
@@ -543,41 +540,16 @@ flowchart TB
   - 验收标准的技术来源
   - 支持矩阵维护的统一资产
 
-## 15. 安全、治理与审计设计
+## 15. 运行边界与审计设计
 
-### 15.1 认证
-- 不绑定 Spring Security。
-- 使用：
-  - Identity Provider SPI
-  - Auth Context Resolver SPI
-- V1 推荐：
-  - Trusted Gateway 模式
-  - Static API Key 模式
+### 15.1 运行边界
+- V1 内置 runtime 聚焦 session 协商、会话状态维护与运行边界校验。
+- follow-up production runtime 路径通过 `runtime.props` 显式装配真实 metadata 与执行适配，不再允许默认空 `MetadataCatalog` / 空 `DatabaseRuntime` 作为成功启动路径。
+- HTTP 服务如需对外暴露，应放在受信网络、上游网关、反向代理或其他网络边界之后。
 
-### 15.2 授权
-- 授权分两层：
-  - 对象级权限
-  - statement class 权限
-- 高级语句规则：
-  - CREATE 按 database / schema 权限
-  - ALTER / DROP / TRUNCATE 按目标对象权限
-  - GRANT / REVOKE 按 database 级权限与治理策略
-  - `EXPLAIN ANALYZE` 同时校验：
-    - explain analyze 权限
-    - 底层目标语句对应权限
-
-### 15.3 治理
-- V1 统一支持：
-  - `max_rows`
-  - `timeout_ms`
-  - `policy_denied`
-  - `transaction policy`
-  - `advanced statement policy`
-  - `audit switch`
-
-### 15.4 审计基线
+### 15.2 审计基线
 - 统一输出：
-  - identity
+  - session_id
   - database
   - operation_class
   - operation_digest
@@ -600,16 +572,22 @@ flowchart TB
 ### 16.2 调试模型
 - 本地 STDIO 模式
 - 特点：
-  - 适合 Inspector
-  - 适合 IDE / 本地 Agent 联调
+  - 适合 IDE / 本地 Agent 的进程内联调
   - 不作为生产主模型
+  - distribution 默认仍启用 STDIO，但定位保持为本地集成辅助入口，而不是额外的交互式文本 Shell
+
+### 16.2.1 默认发行包启动面
+- distribution 默认同时启用 HTTP 与 STDIO。
+- 默认 `conf/mcp.yaml` 内置一段 demo JDBC runtime，用于首次启动时验证非空 metadata 和真实 `execute_query` 行为。
+- 真实部署需要替换 `runtime` 段为目标逻辑库与 JDBC 连接属性；如需额外 JDBC 驱动，可放入发行包根目录下的 `ext-lib/`。
 
 ### 16.3 推荐集群拓扑
 - MCP 服务集群
 - 前置 L7 网关
 - sticky session 打开
 - 每个实例维护本地会话状态
-- metadata / governance 来源共享
+- metadata 来源共享
+- 外部接入边界由前置网关或网络边界承担
 
 ### 16.4 为什么不嵌入 Proxy
 - 因为：
@@ -651,7 +629,7 @@ sequenceDiagram
 
     C->>M: list_tables / list_views / search_metadata
     M->>F: metadata discovery
-    F->>S: metadata + policy 查询
+    F->>S: metadata 查询
     S-->>F: 可访问对象
     F-->>M: 统一对象结果
     M-->>C: MCP tool response
@@ -662,13 +640,10 @@ sequenceDiagram
 sequenceDiagram
     participant C as Client
     participant M as MCP Server
-    participant P as Policy/Session Facade
     participant E as ExecuteQuery Facade
     participant S as ShardingSphere Core
 
     C->>M: execute_query(database, sql)
-    M->>P: 校验 identity / policy / tx state / capability
-    P-->>M: allow or reject
     M->>E: 执行统一 SQL 请求
     E->>S: parse / route / execute
     S-->>E: raw result
@@ -692,15 +667,14 @@ apache-shardingsphere-mcp-<version>/
 ├── conf/
 ├── lib/
 ├── logs/
-└── LICENSE / NOTICE / README
+└── LICENSE / NOTICE / README.md
 ```
 
 ### 18.3 配置分层
-- 配置分为四类：
+- 当前 V1 打包模板直接暴露三类配置：
   - 服务配置
-  - 暴露配置
-  - 治理配置
-  - 接入配置
+  - transport 配置
+- 更细粒度的暴露/治理配置保留为后续演进项，不在当前 `mcp.yaml` 模板中展开。
 
 ### 18.4 容器化要求
 - V1 应提供：
@@ -710,10 +684,11 @@ apache-shardingsphere-mcp-<version>/
   - 独立配置挂载约定
 
 ### 18.5 可观测性
-- 建议默认具备：
-  - readiness / liveness
-  - 服务日志
-  - 审计日志
+- 当前 V1 打包运行时默认具备：
+  - 服务日志目录
+  - `conf/logback.xml` 日志配置
+  - 审计相关代码路径
+- `readiness / liveness` 属于后续运行时增强项，当前 standalone runtime 未直接提供。
   - capability 快照
   - tool 调用统计
   - 会话统计
@@ -722,18 +697,20 @@ apache-shardingsphere-mcp-<version>/
 
 ### 19.1 依赖策略
 - V1 默认采用：
-  - `mcp-core`
-  - `mcp-json-jackson2`
+  - `mcp/core`
+  - `mcp/bootstrap`
+- `mcp/bootstrap` 局部采用：
+  - MCP Java SDK
+  - embedded Tomcat
 - 不采用：
-  - `mcp`
-  - `mcp-json-jackson3`
+  - SDK 类型扩散到 `mcp/core`
+  - Spring runtime
 
 ### 19.2 依赖管理边界
 - 以下依赖仅允许出现在 MCP 子链路：
-  - Jackson 2.20.x
-  - Reactor
-  - Servlet 6
-  - Embedded Tomcat 11
+  - MCP Java SDK
+  - embedded Tomcat runtime 代码
+  - MCP 子链路局部测试依赖
 - 不得：
   - 进入根工程统一依赖管理
   - 覆盖根工程现有依赖版本
@@ -749,24 +726,21 @@ apache-shardingsphere-mcp-<version>/
 
 ### 20.1 JDK 双基线风险
 - 风险：
-  - 根工程 Java 8
+  - 主仓库常规构建环境与 MCP 的 Java 17 需求并存
   - MCP Java 17
 - 缓解：
-  - `mcp` 与 `distribution/mcp` 一起走专用 profile / CI
-  - Maven Toolchains
-  - 不进入默认构建链
+  - `mcp`、`distribution/mcp` 与 `test/e2e/mcp` 直接进入默认 reactor
+  - MCP 子模块局部声明 Java 17
+  - JDK 17 子链路 CI 固定 JDK 17
 
 ### 20.2 依赖冲突风险
 - 风险：
-  - Jackson
-  - Reactor
-  - Servlet API
-  - Tomcat 11 / Jakarta 6 依赖
+  - MCP 子链路局部运行时依赖
+  - JDK 17 runtime 边界
 - 缓解：
   - MCP 子链路内部独立管理
-  - 不引根 BOM
+  - 不引额外根 BOM
   - 不让依赖外溢到主仓库主线
-  - 必要时回退到自定义 JSON mapper 方案
 
 ### 20.3 数据库能力差异风险
 - 风险：
@@ -797,17 +771,16 @@ apache-shardingsphere-mcp-<version>/
   - 建立 MCP 专用 JDK 17 构建链
 - 阶段 2：协议公共面
   - 完成 resources / tools 框架
-  - 完成 capability / access policy 组装链
+  - 完成 capability 组装链
   - 完成统一 error model
 - 阶段 3：执行与治理
   - 完成 `execute_query`
   - 完成事务能力矩阵
-  - 完成 audit 和 policy 治理链路
+  - 完成 audit 治理链路
 - 阶段 4：部署与联调
   - 完成 HTTP 服务化部署
   - 完成 STDIO 本地调试
-  - 完成 Inspector 联调
-  - 完成 capability / transaction / policy 验证
+  - 完成 capability / transaction 验证
 
 ## 22. 验收标准
 - 技术验收建议至少覆盖：
@@ -815,7 +788,7 @@ apache-shardingsphere-mcp-<version>/
   - `distribution/mcp` 是否作为根 distribution 正式发布模块存在
   - 是否未反向污染主仓库 Java 8 主线
   - 是否使用官方 SDK 而非自研协议实现
-  - capability / access policy 是否实现分层清晰
+  - capability 是否实现分层清晰
   - `execute_query` 是否成为统一执行入口
   - 事务能力矩阵是否显式维护
   - HTTP 会话与事务语义是否闭合
@@ -825,5 +798,5 @@ apache-shardingsphere-mcp-<version>/
 - 最终方案可以压缩成四句话：
   - MCP 进入 ShardingSphere 主仓库，但代码模块与发布模块分层组织。
   - 代码模块位于 `mcp/core` 与 `mcp/bootstrap`，发布模块位于根 `distribution/mcp`，`artifactId` 为 `shardingsphere-mcp-distribution`。
-  - 协议层采用官方 MCP Java SDK，V1 默认选用 `mcp-core + mcp-json-jackson2`，运行层采用官方 Servlet support + Embedded Tomcat 11，STDIO 用于本地调试。
-  - MCP 子链路通过 JDK 17、专用 profile、专用 CI 和独立 distribution 与主仓库 Java 8 主线共存。
+  - `mcp/core` 继续自管领域模型，`mcp/bootstrap` 局部使用 MCP Java SDK 与 embedded Tomcat 承载 Streamable HTTP，STDIO 用于本地调试。
+  - MCP 子链路通过 JDK 17、常规 reactor 模块接入、JDK 17 子链路 CI 和独立 distribution 与主仓库主线共存。

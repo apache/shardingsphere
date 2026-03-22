@@ -12,13 +12,13 @@
 - 它对下屏蔽多种数据库在对象暴露、SQL 执行、结果模型、错误语义和治理边界上的差异。
 
 ### 一句话定义
-- 上层只需接入一个 ShardingSphere MCP 服务，即可用一致方式访问多种数据库的结构信息、权限边界和 SQL 执行能力。
+- 上层只需接入一个 ShardingSphere MCP 服务，即可用一致方式访问多种数据库的结构信息、可用对象范围和 SQL 执行能力。
 
 ## 2. 背景与问题
 - 当前数据库接入主要存在以下问题：
 - 不同数据库 MCP 的资源命名、工具定义、返回结构和能力边界不一致。
 - 上层 Agent 需要分别适配多种数据库，接入成本高。
-- 企业希望统一数据库访问的权限、审计、超时、结果限制和策略控制。
+- 企业希望统一数据库访问的对象暴露、审计、超时和结果限制。
 - 即使同样是列库、查结构、执行 SQL，不同数据库的行为、错误和结果表达也不一致。
 - ShardingSphere 具备统一接入多种数据库的能力，因此适合作为统一 MCP 出口。
 
@@ -26,10 +26,10 @@
 - 统一不同数据库的 MCP 接入方式。
 - 统一数据库对象发现与元数据读取能力。
 - 统一 SQL 执行工具和执行结果模型。
-- 统一错误语义、权限边界、事务语义和治理策略。
-- 统一能力声明与访问策略表达。
+- 统一错误语义、运行边界和事务语义。
+- 统一能力声明表达。
 - 降低 Agent 对多种数据库 MCP 的适配成本。
-- 让结构变化和权限变化能在分钟级反映到 MCP 出口。
+- 让结构变化和 DCL 变化能在分钟级反映到 MCP 出口。
 
 ## 4. 非目标
 - 不负责自然语言理解、SQL 自动生成和问答体验。
@@ -71,7 +71,7 @@
 - Agent 统一发现多个数据库中的可访问对象。
 - Agent 统一读取表结构、字段、视图等元数据。
 - Agent 在不同数据库下使用同一套工具执行 SQL。
-- 平台统一施加权限、审计、超时、结果限制和策略控制。
+- 平台统一承接审计、超时和结果限制要求。
 - 数据库结构变化后，Agent 在分钟级看到 MCP 资源更新。
 - MCP 会话内通过事务控制语句管理事务边界。
 
@@ -96,7 +96,6 @@
 - `view`
 - `column`
 - `capability`
-- `access policy`
 
 ### 9.2 V1 可选公共对象
 - `index`
@@ -121,7 +120,6 @@
 - `column`：从属于某个表或视图。
 - `index`：从属于某个表，仅在当前 `database` 支持时暴露。
 - `capability`：描述服务级或数据库级能力边界的声明对象。
-- `access policy`：描述当前身份在数据库范围内的访问边界和执行策略。
 
 ### 统一约束
 - 每次 SQL 执行必须命中一个且仅一个 `database`。
@@ -149,12 +147,9 @@
 - `shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}`
 - `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes`
 - `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}`
-- `shardingsphere://access-policies`
-- `shardingsphere://access-policies/{database}`
 
 ### 资源原则
 - 资源只表达稳定、可读取、可理解的数据库结构和治理信息。
-- 资源内容必须体现当前身份的可访问范围。
 - 凡列为 V1 公共对象者，必须在 `resources` 和 / 或 `tools` 中有正式承载路径。
 - 当当前 `database` 的 `supported_object_types` 不包含 `index` 时，`index` 相关 `resources` 统一返回 `unsupported`。
 
@@ -171,7 +166,6 @@
 - `describe_table`
 - `describe_view`
 - `get_capabilities`
-- `get_access_policy`
 - `execute_query`
 
 ### 工具定义
@@ -185,7 +179,6 @@
 - `describe_table(database, schema, table)`
 - `describe_view(database, schema, view)`
 - `get_capabilities(database?)`
-- `get_access_policy(database?)`
 - `execute_query(database, sql, max_rows?, timeout_ms?)`
 
 ### 补充定义
@@ -205,8 +198,6 @@
 - 对 `column / index`，父对象字段必填。
 - `get_capabilities()` 返回服务级 `capability`。
 - `get_capabilities(database)` 返回数据库级 `capability`。
-- `get_access_policy()` 返回当前身份的全局访问摘要。
-- `get_access_policy(database)` 返回当前身份在该 `database` 下的细化访问策略。
 - 当当前 `database` 不支持 `index` 时，`list_indexes` 统一返回 `unsupported`。
 
 ## 13. 搜索、过滤与分页
@@ -227,7 +218,7 @@
 - `index`
 
 ### 补充规则
-- `search_metadata` 在 `database` 省略时，表示在当前身份可访问的所有 `database` 范围内搜索元数据。
+- `search_metadata` 在 `database` 省略时，表示在当前 runtime 暴露的所有 `database` 范围内搜索元数据。
 - 该行为不等同于跨 `database` SQL 执行。
 - 当 `schema` 被指定时，`database` 必须同时指定，否则返回 `invalid_request`。
 
@@ -271,7 +262,6 @@
 - `LOAD`
 - `CALL`
 - 各数据库专有高风险元命令
-- 被平台策略或 `access policy` 明确禁止的语句
 
 ### 补充说明
 - 允许的 SQL 类型表示 V1 协议允许承载的语句范围，不代表所有正式支持数据库都必须支持该范围内的每一种语句。
@@ -285,10 +275,10 @@
 - 对不支持事务控制或 `savepoint` 的 `database`，相关语句统一返回 `unsupported`。
 - DDL、DCL、`EXPLAIN ANALYZE` 在事务中的行为遵循数据库原生语义，并由 `capability` 显式声明。
 
-## 16. MCP 会话、身份与事务语义
-- 每个 MCP 会话对应一个逻辑会话上下文和一个唯一调用身份。
-- 当前身份由 MCP 会话建立时的认证上下文确定，并在整个会话期间保持不变。
-- 会话期间身份不可切换。
+## 16. MCP 会话与事务语义
+- 每个 MCP 会话对应一个逻辑会话上下文。
+- V1 内置运行时直接使用 `session_id` 作为审计标签。
+- 会话期间该 `session_id` 保持不变。
 - 会话不支持恢复；会话结束即逻辑上下文结束。
 - 默认执行模式为 `autocommit = true`。
 - 对原生支持事务控制的 `database`，显式执行 `BEGIN` 或 `START TRANSACTION` 后进入事务态。
@@ -296,7 +286,6 @@
 - 当前事务上下文仅在当前 MCP 会话内有效。
 - 事务存续期间绑定单一 `database`，不允许切换目标数据库。
 - MCP 会话结束时，未提交事务统一自动回滚。
-- 当事务超过 `transaction_policy` 限制时，ShardingSphere MCP 应终止该事务并自动回滚。
 - V1 不支持通过 `USE` 或 `SET` 修改会话上下文。
 - 对原生不支持事务控制或 `savepoint` 的 `database`，相关事务语句统一返回 `unsupported`。
 
@@ -378,70 +367,24 @@
 - `index` 是否支持由 `supported_object_types` 明确声明。
 - DDL、DCL、`EXPLAIN ANALYZE` 的事务边界行为必须由数据库级 `capability` 明确声明。
 
-## 20. 权限与访问边界
+## 20. 运行边界与审计
 
-### V1 必须支持
-- `database` 级权限
-- `schema` 级权限
-- `table / view` 级权限
-- 语句类别权限
-
-### 语句类别至少包括
-- `select`
-- `dml`
-- `ddl`
-- `dcl`
-- `transaction_control`
-- `savepoint`
-- `explain_analyze`
-
-### 行为要求
-- 资源发现默认只返回当前身份有权访问的对象。
-- `column` 和 `index` 的可见性继承自父级 `table / view`。
-- 客户端直接访问无权限对象时，必须返回 `unauthorized`。
-- SQL 执行必须受对象级与语句类别级双层权限控制。
-- `CREATE` 类语句按 `database` 或 `schema` 级权限判断。
-- `ALTER`、`DROP`、`TRUNCATE` 类语句按目标对象权限判断。
-- `GRANT`、`REVOKE` 类语句按 `database` 级权限与平台策略共同判断。
-- `EXPLAIN ANALYZE` 除要求具备 `explain_analyze` 权限外，还必须满足其底层目标语句对应的语句类别权限。
-- 元数据读取与 SQL 执行都必须纳入审计。
+### V1 当前实现
+- 内置 runtime 不拦截调用请求。
+- HTTP 端点如需对外暴露，应放在受信网络、上游网关、反向代理或其他网络边界之后。
+- 元数据读取、工具调用与 SQL 执行都必须纳入审计。
 
 ### V1 不纳入正式验收
-- 列级权限
+- 内置对象级可见性裁剪
+- 内置语句类别拦截
+- 列级可见性裁剪
 - 字段脱敏
-- 行级数据权限
-
-## 21. Access Policy
-
-### 至少包含
-- `allowed_databases`
-- `allowed_schemas`
-- `allowed_objects`
-- `allowed_statement_classes`
-- `max_rows`
-- `max_timeout_ms`
-- `transaction_policy`
-- `advanced_statement_policy`
-
-### `transaction_policy` 至少支持
-- `allow_explicit_transaction`
-- `allow_savepoint`
-- `max_transaction_duration_ms`
-
-### `advanced_statement_policy` 至少支持
-- `allow_ddl`
-- `allow_dcl`
-- `allow_explain_analyze`
-
-### 补充说明
-- `transaction_policy` 仅适用于原生支持事务控制的 `database`。
-- `allow_savepoint` 仅适用于原生支持 `savepoint` 的 `database`。
-- 若某语句类别在协议层允许但在当前 `policy` 中被禁用，则统一返回 `policy_denied`。
+- 行级数据过滤
 
 ## 22. 元数据变化感知与同步 SLA
 
 ### V1 正式承诺
-- 结构变化和权限变化必须在 1 分钟内反映到 MCP 公共面。
+- 结构变化和 DCL 变化必须在 1 分钟内反映到 MCP 公共面。
 - 由 ShardingSphere 负责感知变化并同步 MCP 出口。
 
 ### 覆盖变化包括
@@ -449,17 +392,15 @@
 - `table / view` 新增、删除、重命名
 - `column` 新增、删除、重命名、类型变化
 - `index` 新增、删除
-- 访问权限变更
 
 ### 补充规则
 - 若结构变更通过当前 MCP 会话执行成功，当前会话中应尽快可见。
-- 若权限变更通过当前 MCP 会话执行成功，当前会话中的权限判断结果应尽快可见。
 - 全局视角仍以 1 分钟内同步为准。
 
 ## 23. 审计基线
 
 ### 审计记录至少应包含
-- `identity`
+- `session_id`
 - `database`
 - `operation_class`
 - `operation_digest`
@@ -478,12 +419,9 @@
 
 ### 统一错误码
 - `invalid_request`
-- `unauthorized`
-- `policy_denied`
 - `not_found`
 - `unsupported`
 - `conflict`
-- `timeout`
 - `unavailable`
 - `transaction_state_error`
 - `query_failed`
@@ -492,16 +430,13 @@
 - 在无活动事务时执行 `COMMIT`、`ROLLBACK` 或引用不存在的保存点，返回 `transaction_state_error`。
 - 当前 `database` 不支持事务控制时执行事务控制语句，返回 `unsupported`。
 - 当前 `database` 不支持 `savepoint` 时执行 `savepoint` 语句，返回 `unsupported`。
-- 当事务因超出 `transaction_policy` 限制而被终止时，当前调用返回 `timeout`。
-- 该事务被自动回滚后，后续若继续操作已失效事务上下文，返回 `transaction_state_error`。
 
 ## 25. V1 最低统一能力基线
 - V1 正式支持数据库必须统一满足以下最低能力基线：
-- 统一支持核心对象模型：`database / schema / table / view / column / capability / access policy`
-- 统一支持公共 `tools`：`list_databases / list_schemas / list_tables / list_views / list_columns / search_metadata / describe_table / describe_view / get_capabilities / get_access_policy / execute_query`
+- 统一支持核心对象模型：`database / schema / table / view / column / capability`
+- 统一支持公共 `tools`：`list_databases / list_schemas / list_tables / list_views / list_columns / search_metadata / describe_table / describe_view / get_capabilities / execute_query`
 - 统一支持 `result_set / update_count / statement_ack` 三类结果模型
-- 统一支持对象级权限控制、语句类别权限控制和统一错误模型
-- 统一支持结构变化与权限变化在 1 分钟内同步到 MCP 出口
+- 统一支持结构变化在 1 分钟内同步到 MCP 出口
 - 对原生支持事务控制的 `database`，统一支持 `BEGIN / START TRANSACTION / COMMIT / ROLLBACK`
 - 对原生支持 `savepoint` 的 `database`，统一支持 `SAVEPOINT / ROLLBACK TO SAVEPOINT / RELEASE SAVEPOINT`
 - 对不支持事务控制或 `savepoint` 的 `database`，相关 `capability` 必须明确声明，相关语句统一返回 `unsupported`
@@ -534,7 +469,7 @@
 - SQL 执行成功率
 - 事务控制成功率
 - `savepoint` 成功率
-- 权限和越权风险控制效果
+- 运行边界控制效果
 - 上层平台对多数据库 MCP 适配代码的减少比例
 
 ## 28. 主要风险
@@ -543,7 +478,7 @@
 - ClickHouse、Doris、Hive、Presto 等数据库会成为统一契约的一致性风险重点区域。
 - 结果模型不稳定会导致上层仍需写数据库分支。
 - 元数据同步不稳定会直接影响 MCP 可信度。
-- 事务语义、`savepoint` 语义、写操作权限边界和多数据库一致性控制不清会带来安全风险。
+- 事务语义、`savepoint` 语义、写操作边界和多数据库一致性控制不清会带来安全风险。
 
 ## 29. 标准 Demo
 
@@ -555,18 +490,18 @@
 
 ## 30. 压缩版需求清单
 1. 必须提供统一数据库访问与 SQL 执行公共面。
-2. 必须统一 `database / schema / table / view / column / capability / access policy` 对象语义。
+2. 必须统一 `database / schema / table / view / column / capability` 对象语义。
 3. `index` 必须作为数据库级可选公共对象，通过 `capability` 明确声明。
 4. 必须支持对象发现的搜索、过滤与分页。
 5. 必须提供正式公共工具 `execute_query`。
 6. 必须支持通用 SQL 执行，但 V1 不包含 `USE`、`SET`、`COPY`、`LOAD`、`CALL` 和各数据库专有高风险元命令。
-7. 必须定义 MCP 会话语义、身份绑定和事务语义。
+7. 必须定义 MCP 会话语义、审计标签和事务语义。
 8. 必须区分事务控制语义与 `savepoint` 语义。
 9. 必须提供统一执行结果模型。
-10. 必须提供对象级与语句类别级双层权限控制。
-11. 必须补充服务级 `capability` 与数据库级 `capability` 的正式内容模型。
-12. 必须保证结构变化和权限变化在 1 分钟内同步到 MCP 出口。
-13. 必须提供统一错误模型，覆盖权限、策略、冲突、事务和执行失败。
+10. 必须补充服务级 `capability` 与数据库级 `capability` 的正式内容模型。
+11. 必须保证结构变化在 1 分钟内同步到 MCP 出口。
+12. 必须提供统一错误模型，覆盖冲突、事务和执行失败。
+13. HTTP 端点如需对外暴露，必须放在受信网络、上游网关、反向代理或其他网络边界之后。
 14. 必须明确 DDL、DCL、`EXPLAIN ANALYZE` 在事务中的行为遵循数据库原生语义，并通过 `capability` 声明。
 15. 必须提供正式支持数据库的事务能力矩阵，并保证与 `capability` 一致。
 
@@ -578,10 +513,9 @@
 5. 对原生支持 `savepoint` 的 `database`，`savepoint` 语义稳定一致。
 6. 对不支持事务控制或 `savepoint` 的 `database`，相关语句统一返回 `unsupported`。
 7. `index` 仅在 `supported_object_types` 包含该对象时暴露。
-8. 对无权限对象统一返回 `unauthorized`，对策略拒绝统一返回 `policy_denied`。
-9. 通过 MCP 执行成功的结构变更，在当前会话中可快速可见，并在 1 分钟内全局可见。
-10. `USE`、`SET`、`COPY`、`LOAD`、`CALL` 在 V1 中被统一拒绝，并返回一致错误语义。
-11. DDL、DCL、`EXPLAIN ANALYZE` 在事务中的行为差异已通过数据库级 `capability` 明确声明。
-12. MCP 会话绑定唯一身份，会话结束后上下文不恢复，未提交事务自动回滚。
-13. 事务能力矩阵与实际 `capability` 返回一致。
-14. 上层不再需要为不同数据库单独适配对象发现、执行工具和返回结构。
+8. 通过 MCP 执行成功的结构变更，在当前会话中可快速可见，并在 1 分钟内全局可见。
+9. `USE`、`SET`、`COPY`、`LOAD`、`CALL` 在 V1 中被统一拒绝，并返回一致错误语义。
+10. DDL、DCL、`EXPLAIN ANALYZE` 在事务中的行为差异已通过数据库级 `capability` 明确声明。
+11. MCP 会话结束后上下文不恢复，未提交事务自动回滚。
+12. 事务能力矩阵与实际 `capability` 返回一致。
+13. 上层不再需要为不同数据库单独适配对象发现、执行工具和返回结构。
