@@ -189,13 +189,46 @@ class ResultSetUtilsTest {
     }
     
     @Test
+    void assertConvertNumericStringOneToBooleanWithMySQLProtocolType() throws SQLException {
+        assertTrue((boolean) ResultSetUtils.convertValue("1", boolean.class, createMySQLProtocolType()));
+        assertTrue((boolean) ResultSetUtils.convertValue("-1", boolean.class, createMySQLProtocolType()));
+    }
+
+    @Test
+    void assertConvertNumericStringZeroToBooleanWithMySQLProtocolType() throws SQLException {
+        assertFalse((boolean) ResultSetUtils.convertValue("0", boolean.class, createMySQLProtocolType()));
+    }
+
+    @Test
     void assertConvertInvalidStringToBooleanWithMySQLProtocolType() {
         assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertValue("unknown", Boolean.class, createMySQLProtocolType()));
     }
+
+    @Test
+    void assertConvertEmptyStringToIntWithMySQLProtocolType() throws SQLException {
+        int actualValue = (int) ResultSetUtils.convertValue("   ", int.class, createMySQLProtocolType());
+        int expectedValue = 0;
+        assertThat(actualValue, is(expectedValue));
+    }
     
     @Test
-    void assertConvertEmptyStringToIntegerWithMySQLProtocolType() {
-        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertValue("   ", Integer.class, createMySQLProtocolType()));
+    void assertConvertEmptyStringToBooleanWithMySQLProtocolType() throws SQLException {
+        boolean actualValue = (boolean) ResultSetUtils.convertValue("   ", boolean.class, createMySQLProtocolType());
+        assertFalse(actualValue);
+    }
+    
+    @Test
+    void assertConvertDecimalStringToIntWithMySQLProtocolType() throws SQLException {
+        int actualValue = (int) ResultSetUtils.convertValue("123.45", int.class, createMySQLProtocolType());
+        int expectedValue = 123;
+        assertThat(actualValue, is(expectedValue));
+    }
+    
+    @Test
+    void assertConvertExponentStringToIntWithMySQLProtocolType() throws SQLException {
+        int actualValue = (int) ResultSetUtils.convertValue("1e3", int.class, createMySQLProtocolType());
+        int expectedValue = 1000;
+        assertThat(actualValue, is(expectedValue));
     }
     
     @Test

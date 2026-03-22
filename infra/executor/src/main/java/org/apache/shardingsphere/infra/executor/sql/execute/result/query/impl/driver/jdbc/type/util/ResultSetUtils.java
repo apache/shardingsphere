@@ -133,7 +133,7 @@ public final class ResultSetUtils {
     }
     
     private static boolean isMySQLCompatibleConversion(final DatabaseType protocolType) {
-        return null != protocolType && ("MySQL".equals(protocolType.getType()) || protocolType.getTrunkDatabaseType().map(optional -> "MySQL".equals(optional.getType())).orElse(false));
+        return null != protocolType && "MySQL".equals(protocolType.getType());
     }
     
     private static Optional<Object> convertStringValue(final String value, final Class<?> convertType, final boolean isMySQLCompatibleConversion) {
@@ -160,7 +160,7 @@ public final class ResultSetUtils {
     private static Optional<Object> convertMySQLStringValue(final String value, final Class<?> convertType) {
         String trimmedValue = value.trim();
         if (trimmedValue.isEmpty()) {
-            throw new UnsupportedDataTypeConversionException(convertType, value);
+            return Optional.of(convertMySQLEmptyValue(convertType, value));
         }
         try {
             switch (convertType.getName()) {
@@ -169,16 +169,16 @@ public final class ResultSetUtils {
                     return Optional.of(convertMySQLBooleanValue(trimmedValue, convertType, value));
                 case "byte":
                 case "java.lang.Byte":
-                    return Optional.of(new BigDecimal(trimmedValue).byteValueExact());
+                    return Optional.of(convertMySQLIntegerValue(trimmedValue).byteValueExact());
                 case "short":
                 case "java.lang.Short":
-                    return Optional.of(new BigDecimal(trimmedValue).shortValueExact());
+                    return Optional.of(convertMySQLIntegerValue(trimmedValue).shortValueExact());
                 case "int":
                 case "java.lang.Integer":
-                    return Optional.of(new BigDecimal(trimmedValue).intValueExact());
+                    return Optional.of(convertMySQLIntegerValue(trimmedValue).intValueExact());
                 case "long":
                 case "java.lang.Long":
-                    return Optional.of(new BigDecimal(trimmedValue).longValueExact());
+                    return Optional.of(convertMySQLIntegerValue(trimmedValue).longValueExact());
                 case "double":
                 case "java.lang.Double":
                     return Optional.of(Double.parseDouble(trimmedValue));
@@ -192,6 +192,44 @@ public final class ResultSetUtils {
             }
         } catch (final NumberFormatException | ArithmeticException ignored) {
             throw new UnsupportedDataTypeConversionException(convertType, value);
+        }
+    }
+    
+    private static BigDecimal convertMySQLIntegerValue(final String value) {
+        if (value.indexOf('.') > -1 || value.indexOf('e') > -1 || value.indexOf('E') > -1) {
+            double doubleValue = Double.parseDouble(value);
+            return BigDecimal.valueOf(doubleValue).setScale(0, RoundingMode.DOWN);
+        }
+        return new BigDecimal(value);
+    }
+    
+    private static Object convertMySQLEmptyValue(final Class<?> convertType, final String originalValue) {
+        switch (convertType.getName()) {
+            case "boolean":
+            case "java.lang.Boolean":
+                return false;
+            case "byte":
+            case "java.lang.Byte":
+                return (byte) 0;
+            case "short":
+            case "java.lang.Short":
+                return (short) 0;
+            case "int":
+            case "java.lang.Integer":
+                return 0;
+            case "long":
+            case "java.lang.Long":
+                return 0L;
+            case "float":
+            case "java.lang.Float":
+                return 0.0F;
+            case "double":
+            case "java.lang.Double":
+                return 0.0D;
+            case "java.math.BigDecimal":
+                return BigDecimal.ZERO;
+            default:
+                throw new UnsupportedDataTypeConversionException(convertType, originalValue);
         }
     }
     
