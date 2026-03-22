@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import org.apache.shardingsphere.infra.hint.HintManager;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.assertion.ShardingRouteAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -31,6 +32,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 // TODO add assertion for ShardingRouteAssert.assertRoute
 class SubqueryRouteTest {
@@ -88,5 +92,14 @@ class SubqueryRouteTest {
                             "SELECT count(*) FROM t_order WHERE user_id = (SELECT user_id FROM t_order_item WHERE user_id =?) ", Collections.singletonList(1)),
                     Arguments.of("subqueryWithOneInstance", "SELECT COUNT(*) FROM t_order WHERE user_id =?", Collections.singletonList(1)));
         }
+    }
+    
+    @Test
+    void assertSubqueryRoutingDoesNotExplode() {
+        String sql = "SELECT * FROM t_order WHERE user_id IN (SELECT user_id FROM t_order_item WHERE user_id = ?)";
+        
+        RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, Collections.singletonList(1));
+        
+        assertThat(routeContext.getRouteUnits().size(), is(1));
     }
 }

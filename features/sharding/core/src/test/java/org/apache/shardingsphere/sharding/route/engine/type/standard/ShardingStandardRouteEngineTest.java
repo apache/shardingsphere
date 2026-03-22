@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditi
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.fixture.ShardingRouteEngineFixtureBuilder;
+import org.apache.shardingsphere.sharding.rule.BindingTableRule;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
@@ -36,13 +37,16 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 class ShardingStandardRouteEngineTest {
@@ -297,5 +301,64 @@ class ShardingStandardRouteEngineTest {
         RouteContext routeContext = routeEngine.route(shardingRule);
         
         assertThat(routeContext.getRouteUnits().size(), is(4));
+    }
+    
+    @Test
+    void assertRouteWithBindingTableCondition() {
+        ShardingCondition bindingCondition = new ShardingCondition();
+        bindingCondition.getValues().add(new ListShardingConditionValue<>("user_id", "t_order_item", Collections.singletonList(1)));
+        bindingCondition.getValues().add(new ListShardingConditionValue<>("order_id", "t_order_item", Collections.singletonList(1)));
+        
+        ShardingRule shardingRule = spy(ShardingRouteEngineFixtureBuilder.createBasedShardingRule());
+        
+        BindingTableRule bindingTableRule = mock(BindingTableRule.class);
+        when(bindingTableRule.hasLogicTable("t_order")).thenReturn(true);
+        when(bindingTableRule.hasLogicTable("t_order_item")).thenReturn(true);
+        doReturn(Optional.of(bindingTableRule)).when(shardingRule).findBindingTableRule("t_order_item");
+        
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        ShardingConditions shardingConditions = new ShardingConditions(
+                Collections.singletonList(bindingCondition), sqlStatementContext, shardingRule);
+        
+        ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine(
+                "t_order", shardingConditions, sqlStatementContext, new HintValueContext());
+        
+        RouteContext routeContext = routeEngine.route(shardingRule);
+        
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        RouteUnit routeUnit = routeContext.getRouteUnits().iterator().next();
+        assertThat(routeUnit.getDataSourceMapper().getActualName(), is("ds_1"));
+        boolean hasOrder1 = routeUnit.getTableMappers().stream()
+                .anyMatch(mapper -> "t_order_1".equals(mapper.getActualName()));
+        assertThat(hasOrder1, is(true));
+    }
+    
+    @Test
+    void assertRouteWithIrrelevantConditionAndHint() {
+        ShardingCondition irrelevantCondition = new ShardingCondition();
+        irrelevantCondition.getValues().add(new ListShardingConditionValue<>("user_id", "t_unrelated", Collections.singletonList(1)));
+        
+        ShardingRule shardingRule = ShardingRouteEngineFixtureBuilder.createHintShardingRule();
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_hint_test"));
+        
+        ShardingConditions shardingConditions = new ShardingConditions(
+                Collections.singletonList(irrelevantCondition), sqlStatementContext, shardingRule);
+        
+        HintManager hintManager = HintManager.getInstance();
+        hintManager.addDatabaseShardingValue("t_hint_test", 1);
+        hintManager.addTableShardingValue("t_hint_test", 1);
+        
+        ShardingStandardRouteEngine routeEngine = createShardingStandardRouteEngine(
+                "t_hint_test", shardingConditions, sqlStatementContext, new HintValueContext());
+        
+        RouteContext routeContext = routeEngine.route(shardingRule);
+        
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        RouteUnit routeUnit = routeContext.getRouteUnits().iterator().next();
+        assertThat(routeUnit.getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnit.getTableMappers().iterator().next().getActualName(), is("t_hint_test_1"));
+        
+        hintManager.close();
     }
 }
