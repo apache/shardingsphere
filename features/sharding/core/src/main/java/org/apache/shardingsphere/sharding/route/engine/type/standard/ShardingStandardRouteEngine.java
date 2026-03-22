@@ -151,6 +151,7 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
             Collection<DataNode> dataNodes = route0(shardingTable, databaseShardingStrategy, databaseShardingValues, tableShardingStrategy, tableShardingValues);
             
             result.addAll(dataNodes);
+            originalDataNodes.add(new LinkedList<>(dataNodes));
         }
         
         if (!hasRelevantCondition) {
@@ -185,7 +186,7 @@ public final class ShardingStandardRouteEngine implements ShardingRouteEngine {
             Collection<DataNode> dataNodes = route0(shardingTable, databaseShardingStrategy, databaseShardingValues, tableShardingStrategy, tableShardingValues);
             
             result.addAll(dataNodes);
-            originalDataNodes.add(dataNodes);
+            originalDataNodes.add(new LinkedList<>(dataNodes));
         }
         return result;
     }
