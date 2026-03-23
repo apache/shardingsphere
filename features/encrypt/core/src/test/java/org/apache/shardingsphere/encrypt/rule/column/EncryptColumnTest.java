@@ -17,28 +17,29 @@
 
 package org.apache.shardingsphere.encrypt.rule.column;
 
+import org.apache.shardingsphere.encrypt.enums.EncryptColumnItemType;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 class EncryptColumnTest {
     
     @Test
-    void assertGetQueryEncryptorWithoutAssistedQuery() {
+    void assertGetQueryEncryptorWithoutAssisted() {
         EncryptAlgorithm cipherAlgorithm = mock(EncryptAlgorithm.class);
-        assertThat(new EncryptColumn("foo_tbl", new CipherColumnItem("foo_col", cipherAlgorithm)).getQueryEncryptor(), is(cipherAlgorithm));
+        assertThat(new EncryptColumn("foo_tbl", new CipherColumnItem("foo_col", cipherAlgorithm)).getEncryptor(EncryptColumnItemType.CIPHER), is(cipherAlgorithm));
     }
     
     @Test
-    void assertGetQueryEncryptorWithAssistedQuery() {
+    void assertGetQueryEncryptorWithAssisted() {
         EncryptColumn encryptColumn = new EncryptColumn("foo_tbl", new CipherColumnItem("foo_cipher_col", mock(EncryptAlgorithm.class)));
         EncryptAlgorithm assistedQueryAlgorithm = mock(EncryptAlgorithm.class);
         encryptColumn.setAssistedQuery(new AssistedQueryColumnItem("foo_assisted_query_col", assistedQueryAlgorithm));
-        assertThat(encryptColumn.getQueryEncryptor(), is(assistedQueryAlgorithm));
+        assertThat(encryptColumn.getEncryptor(EncryptColumnItemType.ASSISTED_QUERY), is(assistedQueryAlgorithm));
     }
 }

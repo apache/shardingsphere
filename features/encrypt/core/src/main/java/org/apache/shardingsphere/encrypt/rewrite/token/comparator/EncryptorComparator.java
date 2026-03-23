@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.comparator;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.encrypt.enums.EncryptColumnItemType;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
@@ -30,16 +31,53 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 public final class EncryptorComparator {
     
     /**
-     * Compare whether is same encryptor.
+     * Compare whether all encryptors are same or not.
      *
      * @param encryptRule encrypt rule
      * @param leftColumnInfo left column info
      * @param rightColumnInfo right column info
-     * @return whether is same encryptors or not
+     * @return whether all encryptors are same or not
      */
-    public static boolean isSame(final EncryptRule encryptRule, final ColumnSegmentBoundInfo leftColumnInfo, final ColumnSegmentBoundInfo rightColumnInfo) {
-        EncryptAlgorithm leftColumnEncryptor = encryptRule.findQueryEncryptor(leftColumnInfo.getOriginalTable().getValue(), leftColumnInfo.getOriginalColumn().getValue()).orElse(null);
-        EncryptAlgorithm rightColumnEncryptor = encryptRule.findQueryEncryptor(rightColumnInfo.getOriginalTable().getValue(), rightColumnInfo.getOriginalColumn().getValue()).orElse(null);
+    public static boolean isAllSame(final EncryptRule encryptRule, final ColumnSegmentBoundInfo leftColumnInfo, final ColumnSegmentBoundInfo rightColumnInfo) {
+        return isSpecificSame(encryptRule, leftColumnInfo, rightColumnInfo, EncryptColumnItemType.CIPHER)
+                && isSpecificSame(encryptRule, leftColumnInfo, rightColumnInfo, EncryptColumnItemType.ASSISTED_QUERY)
+                && isSpecificSame(encryptRule, leftColumnInfo, rightColumnInfo, EncryptColumnItemType.LIKE_QUERY);
+    }
+    
+    /**
+     * Compare whether specific encryptor is same or not.
+     *
+     * @param encryptRule encrypt rule
+     * @param leftColumnInfo left column info
+     * @param rightColumnInfo right column info
+     * @param columnItemType column item type
+     * @return whether specific encryptor is same or not
+     */
+    public static boolean isSpecificSame(final EncryptRule encryptRule, final ColumnSegmentBoundInfo leftColumnInfo, final ColumnSegmentBoundInfo rightColumnInfo,
+                                         final EncryptColumnItemType columnItemType) {
+        EncryptAlgorithm leftColumnEncryptor = encryptRule.findEncryptor(leftColumnInfo.getOriginalTable().getValue(), leftColumnInfo.getOriginalColumn().getValue(), columnItemType).orElse(null);
+        EncryptAlgorithm rightColumnEncryptor = encryptRule.findEncryptor(rightColumnInfo.getOriginalTable().getValue(), rightColumnInfo.getOriginalColumn().getValue(), columnItemType).orElse(null);
+        return isSame(leftColumnEncryptor, rightColumnEncryptor);
+    }
+    
+    /**
+     * Compare whether equivalent filter encryptor is same or not.
+     *
+     * @param encryptRule encrypt rule
+     * @param leftColumnInfo left column info
+     * @param rightColumnInfo right column info
+     * @return whether equivalent filter encryptor is same or not
+     */
+    public static boolean isEquivalentFilterSame(final EncryptRule encryptRule, final ColumnSegmentBoundInfo leftColumnInfo, final ColumnSegmentBoundInfo rightColumnInfo) {
+        EncryptAlgorithm leftColumnEncryptor =
+                encryptRule.findEncryptor(leftColumnInfo.getOriginalTable().getValue(), leftColumnInfo.getOriginalColumn().getValue(), EncryptColumnItemType.ASSISTED_QUERY).orElse(null);
+        EncryptAlgorithm rightColumnEncryptor =
+                encryptRule.findEncryptor(rightColumnInfo.getOriginalTable().getValue(), rightColumnInfo.getOriginalColumn().getValue(), EncryptColumnItemType.ASSISTED_QUERY).orElse(null);
+        if (null != leftColumnEncryptor || null != rightColumnEncryptor) {
+            return isSame(leftColumnEncryptor, rightColumnEncryptor);
+        }
+        leftColumnEncryptor = encryptRule.findEncryptor(leftColumnInfo.getOriginalTable().getValue(), leftColumnInfo.getOriginalColumn().getValue(), EncryptColumnItemType.CIPHER).orElse(null);
+        rightColumnEncryptor = encryptRule.findEncryptor(rightColumnInfo.getOriginalTable().getValue(), rightColumnInfo.getOriginalColumn().getValue(), EncryptColumnItemType.CIPHER).orElse(null);
         return isSame(leftColumnEncryptor, rightColumnEncryptor);
     }
     
