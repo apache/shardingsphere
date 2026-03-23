@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration.ServerConfiguration;
@@ -39,14 +40,14 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Load runtime configuration for the MCP bootstrap.
+ * MCP configuration loader.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPConfigurationLoader {
     
     private static final String DEFAULT_BIND_HOST = "127.0.0.1";
     
-    private static final int DEFAULT_PORT = 8088;
+    private static final int DEFAULT_PORT = 18088;
     
     private static final String DEFAULT_ENDPOINT_PATH = "/mcp";
     
@@ -68,9 +69,7 @@ public final class MCPConfigurationLoader {
     
     private static File resolveConfigurationFile(final String configPath) throws FileNotFoundException {
         String actualConfigPath = Objects.requireNonNull(configPath, "configPath cannot be null").trim();
-        if (actualConfigPath.isEmpty()) {
-            throw new FileNotFoundException("MCP configuration path cannot be blank.");
-        }
+        ShardingSpherePreconditions.checkState(!actualConfigPath.isEmpty(), () -> new FileNotFoundException("MCP configuration path cannot be blank."));
         Path directPath = Paths.get(actualConfigPath).normalize();
         if (Files.exists(directPath)) {
             return directPath.toFile();

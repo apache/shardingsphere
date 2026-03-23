@@ -50,7 +50,7 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration.ServerConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerContext;
-import org.apache.shardingsphere.mcp.bootstrap.wiring.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler.DatabaseCapabilityView;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.ExecutionRequest;
@@ -93,8 +93,6 @@ public final class StreamableHttpMCPServer {
     private static final String SESSION_HEADER = "MCP-Session-Id";
     
     private static final String PROTOCOL_HEADER = "MCP-Protocol-Version";
-    
-    private static final String CONTENT_TYPE_HEADER = "Content-Type";
     
     private static final String JSON_CONTENT_TYPE = "application/json";
     

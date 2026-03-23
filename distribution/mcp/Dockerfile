@@ -24,6 +24,6 @@ COPY distribution/mcp/target/apache-shardingsphere-mcp-*/ /opt/shardingsphere-mc
 RUN chmod +x /opt/shardingsphere-mcp/bin/start.sh \
     && mkdir -p /opt/shardingsphere-mcp/logs
 
-EXPOSE 8088
+EXPOSE 18088
 
 ENTRYPOINT ["/opt/shardingsphere-mcp/bin/start.sh", "/opt/shardingsphere-mcp/conf/mcp.yaml"]

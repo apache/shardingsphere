@@ -41,7 +41,7 @@ bin/start.sh
 
 - `bin/start.sh` 会以前台方式运行。请保持这个终端不退出，并在第二个终端执行下面的 `curl` 命令。
 - 发行包运行时会读取 `conf/mcp.yaml` 和 `conf/logback.xml`。
-- 默认 HTTP 端点是 `http://127.0.0.1:8088/mcp`。
+- 默认 HTTP 端点是 `http://127.0.0.1:18088/mcp`。
 - 日志会写到 `logs/` 目录。
 - 内置 demo runtime 同时启用 HTTP 和 STDIO，这份 quick start 只演示 HTTP 入口。
 - `bin/start.sh` 启动前会校验配置文件、运行时依赖和 Java 环境，并自动创建 `data/`、`logs/`、`ext-lib/` 目录，然后切到发行包根目录启动，确保相对路径可用。
@@ -53,7 +53,7 @@ bin/start.sh
 ```yaml
 server:
   bindHost: 127.0.0.1
-  port: 8088
+  port: 18088
   endpointPath: /mcp
 
 transport:
@@ -80,7 +80,7 @@ runtime:
 
 ```bash
 INIT_HEADERS=$(mktemp)
-curl -sS -D "${INIT_HEADERS}" -o /dev/null http://127.0.0.1:8088/mcp \
+curl -sS -D "${INIT_HEADERS}" -o /dev/null http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   --data '{"jsonrpc":"2.0","id":"init-1","method":"initialize","params":{"capabilities":{},"clientInfo":{"name":"curl-demo","version":"1.0.0"}}}'
@@ -98,7 +98,7 @@ printf 'SESSION_ID=%s\nPROTOCOL_VERSION=%s\n' "${SESSION_ID}" "${PROTOCOL_VERSIO
 ### 4. 验证 discovery 和 query
 
 ```bash
-curl -sS http://127.0.0.1:8088/mcp \
+curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
@@ -112,7 +112,7 @@ curl -sS http://127.0.0.1:8088/mcp \
 - JSON 负载位于 `data:` 行，其中会包含 `orders`、`order_items`、`active_orders`。
 
 ```bash
-curl -sS http://127.0.0.1:8088/mcp \
+curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
@@ -132,7 +132,7 @@ curl -sS http://127.0.0.1:8088/mcp \
 ### 读取 `shardingsphere://capabilities`
 
 ```bash
-curl -sS http://127.0.0.1:8088/mcp \
+curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
@@ -150,7 +150,7 @@ curl -sS http://127.0.0.1:8088/mcp \
 只有在你想直接观察长连接事件流时才需要这一步：
 
 ```bash
-curl -N http://127.0.0.1:8088/mcp \
+curl -N http://127.0.0.1:18088/mcp \
   -H 'Accept: text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}"
@@ -165,7 +165,7 @@ curl -N http://127.0.0.1:8088/mcp \
 
 ```bash
 curl -sS -D - -o /dev/null \
-  -X DELETE http://127.0.0.1:8088/mcp \
+  -X DELETE http://127.0.0.1:18088/mcp \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}"
 ```
@@ -186,7 +186,7 @@ curl -sS -D - -o /dev/null \
 ```yaml
 server:
   bindHost: 127.0.0.1
-  port: 8088
+  port: 18088
   endpointPath: /mcp
 
 transport:

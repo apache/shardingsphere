@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.audit;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ErrorCode;
 
@@ -44,13 +45,28 @@ public final class AuditRecorder {
      * @param database logical database name
      * @param resourcePath resource path
      * @param success success flag
-     * @param errorCode optional error code
      * @param transactionMarker optional transaction marker
      * @return recorded audit entry
      */
     public AuditRecord recordResourceRead(final String sessionId, final String database, final String resourcePath, final boolean success,
-                                          final Optional<ErrorCode> errorCode, final String transactionMarker) {
-        return record(sessionId, database, OperationClass.RESOURCE_READ, resourcePath, success, errorCode, transactionMarker);
+                                          final String transactionMarker) {
+        return record(sessionId, database, OperationClass.RESOURCE_READ, resourcePath, success, false, ErrorCode.INVALID_REQUEST, transactionMarker);
+    }
+    
+    /**
+     * Record one resource-read audit event with one error code.
+     *
+     * @param sessionId session identifier
+     * @param database logical database name
+     * @param resourcePath resource path
+     * @param success success flag
+     * @param errorCode error code
+     * @param transactionMarker optional transaction marker
+     * @return recorded audit entry
+     */
+    public AuditRecord recordResourceRead(final String sessionId, final String database, final String resourcePath, final boolean success,
+                                          final ErrorCode errorCode, final String transactionMarker) {
+        return record(sessionId, database, OperationClass.RESOURCE_READ, resourcePath, success, true, Objects.requireNonNull(errorCode, "errorCode cannot be null"), transactionMarker);
     }
     
     /**
@@ -60,13 +76,28 @@ public final class AuditRecorder {
      * @param database logical database name
      * @param toolCallSummary tool call summary
      * @param success success flag
-     * @param errorCode optional error code
      * @param transactionMarker optional transaction marker
      * @return recorded audit entry
      */
     public AuditRecord recordMetadataTool(final String sessionId, final String database, final String toolCallSummary, final boolean success,
-                                          final Optional<ErrorCode> errorCode, final String transactionMarker) {
-        return record(sessionId, database, OperationClass.METADATA_TOOL, toolCallSummary, success, errorCode, transactionMarker);
+                                          final String transactionMarker) {
+        return record(sessionId, database, OperationClass.METADATA_TOOL, toolCallSummary, success, false, ErrorCode.INVALID_REQUEST, transactionMarker);
+    }
+    
+    /**
+     * Record one metadata-tool audit event with one error code.
+     *
+     * @param sessionId session identifier
+     * @param database logical database name
+     * @param toolCallSummary tool call summary
+     * @param success success flag
+     * @param errorCode error code
+     * @param transactionMarker optional transaction marker
+     * @return recorded audit entry
+     */
+    public AuditRecord recordMetadataTool(final String sessionId, final String database, final String toolCallSummary, final boolean success,
+                                          final ErrorCode errorCode, final String transactionMarker) {
+        return record(sessionId, database, OperationClass.METADATA_TOOL, toolCallSummary, success, true, Objects.requireNonNull(errorCode, "errorCode cannot be null"), transactionMarker);
     }
     
     /**
@@ -76,13 +107,28 @@ public final class AuditRecorder {
      * @param database logical database name
      * @param sql SQL text
      * @param success success flag
-     * @param errorCode optional error code
      * @param transactionMarker optional transaction marker
      * @return recorded audit entry
      */
     public AuditRecord recordQueryExecution(final String sessionId, final String database, final String sql, final boolean success,
-                                            final Optional<ErrorCode> errorCode, final String transactionMarker) {
-        return record(sessionId, database, OperationClass.QUERY_EXECUTION, sql, success, errorCode, transactionMarker);
+                                            final String transactionMarker) {
+        return record(sessionId, database, OperationClass.QUERY_EXECUTION, sql, success, false, ErrorCode.INVALID_REQUEST, transactionMarker);
+    }
+    
+    /**
+     * Record one query-execution audit event with one error code.
+     *
+     * @param sessionId session identifier
+     * @param database logical database name
+     * @param sql SQL text
+     * @param success success flag
+     * @param errorCode error code
+     * @param transactionMarker optional transaction marker
+     * @return recorded audit entry
+     */
+    public AuditRecord recordQueryExecution(final String sessionId, final String database, final String sql, final boolean success,
+                                            final ErrorCode errorCode, final String transactionMarker) {
+        return record(sessionId, database, OperationClass.QUERY_EXECUTION, sql, success, true, Objects.requireNonNull(errorCode, "errorCode cannot be null"), transactionMarker);
     }
     
     /**
@@ -97,8 +143,8 @@ public final class AuditRecorder {
     }
     
     private AuditRecord record(final String sessionId, final String database, final OperationClass operationClass, final String operationSource,
-                               final boolean success, final Optional<ErrorCode> errorCode, final String transactionMarker) {
-        AuditRecord result = new AuditRecord(sessionId, database, operationClass, digest(operationSource), success, errorCode, transactionMarker, Instant.now().toString());
+                               final boolean success, final boolean errorCodePresent, final ErrorCode errorCode, final String transactionMarker) {
+        AuditRecord result = new AuditRecord(sessionId, database, operationClass, digest(operationSource), success, errorCodePresent, errorCode, transactionMarker, Instant.now().toString());
         records.add(result);
         return result;
     }
@@ -141,7 +187,11 @@ public final class AuditRecorder {
         
         private final boolean success;
         
-        private final Optional<ErrorCode> errorCode;
+        @Getter(AccessLevel.NONE)
+        private final boolean errorCodePresent;
+        
+        @Getter(AccessLevel.NONE)
+        private final ErrorCode errorCode;
         
         private final String transactionMarker;
         
@@ -155,20 +205,31 @@ public final class AuditRecorder {
          * @param operationClass operation class
          * @param operationDigest operation digest
          * @param success success flag
-         * @param errorCode optional error code
+         * @param errorCodePresent error-code presence flag
+         * @param errorCode error code
          * @param transactionMarker transaction marker
          * @param timestamp timestamp
          */
         public AuditRecord(final String sessionId, final String database, final OperationClass operationClass, final String operationDigest,
-                           final boolean success, final Optional<ErrorCode> errorCode, final String transactionMarker, final String timestamp) {
+                           final boolean success, final boolean errorCodePresent, final ErrorCode errorCode, final String transactionMarker, final String timestamp) {
             this.sessionId = Objects.requireNonNull(sessionId, "sessionId cannot be null");
             this.database = Objects.requireNonNull(database, "database cannot be null");
             this.operationClass = Objects.requireNonNull(operationClass, "operationClass cannot be null");
             this.operationDigest = Objects.requireNonNull(operationDigest, "operationDigest cannot be null");
             this.success = success;
+            this.errorCodePresent = errorCodePresent;
             this.errorCode = Objects.requireNonNull(errorCode, "errorCode cannot be null");
             this.transactionMarker = Objects.requireNonNull(transactionMarker, "transactionMarker cannot be null");
             this.timestamp = Objects.requireNonNull(timestamp, "timestamp cannot be null");
+        }
+        
+        /**
+         * Get the error code when one exists.
+         *
+         * @return optional error code
+         */
+        public Optional<ErrorCode> getErrorCode() {
+            return errorCodePresent ? Optional.of(errorCode) : Optional.empty();
         }
     }
 }

@@ -41,7 +41,7 @@ Notes:
 
 - `bin/start.sh` runs in the foreground. Keep this terminal open and use a second terminal for the `curl` commands below.
 - The packaged runtime reads `conf/mcp.yaml` and `conf/logback.xml`.
-- The default HTTP endpoint is `http://127.0.0.1:8088/mcp`.
+- The default HTTP endpoint is `http://127.0.0.1:18088/mcp`.
 - Logs are written under `logs/`.
 - The packaged demo runtime enables both HTTP and STDIO. This quick start exercises the HTTP endpoint only.
 - `bin/start.sh` validates the config file, runtime libraries, and Java availability before startup, creates `data/`, `logs/`, and `ext-lib/`, then starts from the package root so relative runtime paths resolve consistently.
@@ -53,7 +53,7 @@ The default configuration is:
 ```yaml
 server:
   bindHost: 127.0.0.1
-  port: 8088
+  port: 18088
   endpointPath: /mcp
 
 transport:
@@ -80,7 +80,7 @@ Run the following command in a second terminal:
 
 ```bash
 INIT_HEADERS=$(mktemp)
-curl -sS -D "${INIT_HEADERS}" -o /dev/null http://127.0.0.1:8088/mcp \
+curl -sS -D "${INIT_HEADERS}" -o /dev/null http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   --data '{"jsonrpc":"2.0","id":"init-1","method":"initialize","params":{"capabilities":{},"clientInfo":{"name":"curl-demo","version":"1.0.0"}}}'
@@ -98,7 +98,7 @@ Expected result:
 ### 4. Verify discovery and query behavior
 
 ```bash
-curl -sS http://127.0.0.1:8088/mcp \
+curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
@@ -112,7 +112,7 @@ Expected result:
 - The JSON payload appears on the `data:` line and includes `orders`, `order_items`, and `active_orders`.
 
 ```bash
-curl -sS http://127.0.0.1:8088/mcp \
+curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
@@ -132,7 +132,7 @@ Close the session with the DELETE example below when you are done.
 ### Read `shardingsphere://capabilities`
 
 ```bash
-curl -sS http://127.0.0.1:8088/mcp \
+curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
@@ -150,7 +150,7 @@ Expected result:
 Use this only when you want to inspect the long-lived server-sent event stream directly:
 
 ```bash
-curl -N http://127.0.0.1:8088/mcp \
+curl -N http://127.0.0.1:18088/mcp \
   -H 'Accept: text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}"
@@ -165,7 +165,7 @@ Notes:
 
 ```bash
 curl -sS -D - -o /dev/null \
-  -X DELETE http://127.0.0.1:8088/mcp \
+  -X DELETE http://127.0.0.1:18088/mcp \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}"
 ```
@@ -186,7 +186,7 @@ If you want to verify the packaged runtime with HTTP disabled, create a dedicate
 ```yaml
 server:
   bindHost: 127.0.0.1
-  port: 8088
+  port: 18088
   endpointPath: /mcp
 
 transport:

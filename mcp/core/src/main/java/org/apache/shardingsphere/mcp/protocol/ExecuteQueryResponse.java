@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.protocol;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -47,10 +48,14 @@ public final class ExecuteQueryResponse {
     
     private final boolean truncated;
     
-    private final Optional<ErrorDetail> error;
+    @Getter(AccessLevel.NONE)
+    private final boolean errorPresent;
+    
+    @Getter(AccessLevel.NONE)
+    private final ErrorDetail error;
     
     private ExecuteQueryResponse(final ResultKind resultKind, final List<ColumnDefinition> columns, final List<List<Object>> rows, final int affectedRows,
-                                 final String statementType, final String status, final String message, final boolean truncated, final Optional<ErrorDetail> error) {
+                                 final String statementType, final String status, final String message, final boolean truncated, final boolean errorPresent, final ErrorDetail error) {
         this.resultKind = Objects.requireNonNull(resultKind, "resultKind cannot be null");
         this.columns = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(columns, "columns cannot be null")));
         this.rows = toImmutableRows(rows);
@@ -59,6 +64,7 @@ public final class ExecuteQueryResponse {
         this.status = Objects.requireNonNull(status, "status cannot be null");
         this.message = Objects.requireNonNull(message, "message cannot be null");
         this.truncated = truncated;
+        this.errorPresent = errorPresent;
         this.error = Objects.requireNonNull(error, "error cannot be null");
     }
     
@@ -71,7 +77,7 @@ public final class ExecuteQueryResponse {
      * @return result-set response
      */
     public static ExecuteQueryResponse resultSet(final List<ColumnDefinition> columns, final List<List<Object>> rows, final boolean truncated) {
-        return new ExecuteQueryResponse(ResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated, Optional.empty());
+        return new ExecuteQueryResponse(ResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated, false, createAbsentErrorDetail());
     }
     
     /**
@@ -83,7 +89,7 @@ public final class ExecuteQueryResponse {
      */
     public static ExecuteQueryResponse updateCount(final String statementType, final int affectedRows) {
         return new ExecuteQueryResponse(ResultKind.UPDATE_COUNT, Collections.emptyList(), Collections.emptyList(), affectedRows,
-                Objects.requireNonNull(statementType, "statementType cannot be null"), "OK", "", false, Optional.empty());
+                Objects.requireNonNull(statementType, "statementType cannot be null"), "OK", "", false, false, createAbsentErrorDetail());
     }
     
     /**
@@ -95,7 +101,7 @@ public final class ExecuteQueryResponse {
      */
     public static ExecuteQueryResponse statementAck(final String statementType, final String message) {
         return new ExecuteQueryResponse(ResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
-                Objects.requireNonNull(statementType, "statementType cannot be null"), "OK", Objects.requireNonNull(message, "message cannot be null"), false, Optional.empty());
+                Objects.requireNonNull(statementType, "statementType cannot be null"), "OK", Objects.requireNonNull(message, "message cannot be null"), false, false, createAbsentErrorDetail());
     }
     
     /**
@@ -108,7 +114,7 @@ public final class ExecuteQueryResponse {
     public static ExecuteQueryResponse error(final ErrorCode errorCode, final String message) {
         ErrorDetail errorDetail = new ErrorDetail(errorCode, message);
         return new ExecuteQueryResponse(ResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
-                "ERROR", "ERROR", errorDetail.getMessage(), false, Optional.of(errorDetail));
+                "ERROR", "ERROR", errorDetail.getMessage(), false, true, errorDetail);
     }
     
     /**
@@ -117,7 +123,16 @@ public final class ExecuteQueryResponse {
      * @return {@code true} when no unified error is attached
      */
     public boolean isSuccessful() {
-        return !error.isPresent();
+        return !errorPresent;
+    }
+    
+    /**
+     * Get the error detail when one exists.
+     *
+     * @return optional error detail
+     */
+    public Optional<ErrorDetail> getError() {
+        return errorPresent ? Optional.of(error) : Optional.empty();
     }
     
     private static List<List<Object>> toImmutableRows(final List<List<Object>> rows) {
@@ -126,6 +141,10 @@ public final class ExecuteQueryResponse {
             result.add(Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(each, "row cannot be null"))));
         }
         return Collections.unmodifiableList(result);
+    }
+    
+    private static ErrorDetail createAbsentErrorDetail() {
+        return new ErrorDetail(ErrorCode.INVALID_REQUEST, "");
     }
     
     /**

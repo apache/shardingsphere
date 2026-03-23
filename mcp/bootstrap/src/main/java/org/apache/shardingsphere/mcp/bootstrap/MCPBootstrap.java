@@ -36,20 +36,16 @@ public final class MCPBootstrap {
      * Main entrance.
      *
      * @param args startup arguments
-     * @throws IllegalStateException when the runtime configuration cannot be loaded
+     * @throws IOException when the runtime configuration cannot be loaded
      */
     // CHECKSTYLE:OFF
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws IOException {
         // CHECKSTYLE:ON
-        String configPath = resolveConfigurationPath(args);
-        try {
-            new MCPRuntimeLauncher().launch(MCPConfigurationLoader.load(configPath));
-        } catch (final IOException ex) {
-            throw new IllegalStateException(String.format("Failed to load MCP runtime configuration from `%s`.", configPath), ex);
-        }
+        String configPath = getConfigurationPath(args);
+        new MCPRuntimeLauncher().launch(MCPConfigurationLoader.load(configPath));
     }
     
-    private static String resolveConfigurationPath(final String[] args) {
+    private static String getConfigurationPath(final String[] args) {
         if (0 == args.length || null == args[0]) {
             return DEFAULT_CONFIG_PATH;
         }

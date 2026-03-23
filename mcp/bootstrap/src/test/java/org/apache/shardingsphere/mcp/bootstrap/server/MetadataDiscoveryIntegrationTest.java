@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.server;
 
-import org.apache.shardingsphere.mcp.bootstrap.wiring.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 

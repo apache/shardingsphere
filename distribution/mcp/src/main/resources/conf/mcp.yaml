@@ -15,7 +15,7 @@
 
 server:
   bindHost: 127.0.0.1
-  port: 8088
+  port: 18088
   endpointPath: /mcp
 
 transport:

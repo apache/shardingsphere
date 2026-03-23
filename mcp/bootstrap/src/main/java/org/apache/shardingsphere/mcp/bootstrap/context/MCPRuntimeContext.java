@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.wiring;
+package org.apache.shardingsphere.mcp.bootstrap.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;

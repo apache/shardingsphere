@@ -27,7 +27,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * MCP server context with runtime wiring support.
+ * MCP server context with runtime registration support.
  */
 public final class MCPServerContext {
     

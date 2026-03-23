@@ -68,7 +68,7 @@ class MCPConfigurationLoaderTest {
         assertTrue(actual.isHttpEnabled());
         assertTrue(actual.isStdioEnabled());
         assertThat(actual.getServerConfiguration().getBindHost(), is("127.0.0.1"));
-        assertThat(actual.getServerConfiguration().getPort(), is(8088));
+        assertThat(actual.getServerConfiguration().getPort(), is(18088));
         assertThat(actual.getServerConfiguration().getEndpointPath(), is("/mcp"));
         assertFalse(actual.getRuntimeProps().isPresent());
     }

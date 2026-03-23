@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ColumnDefinit
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ErrorCode;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -176,18 +178,18 @@ public final class ExecuteQueryFacade {
     private ExecuteQueryResponse recordResult(final ExecutionRequest executionRequest, final ExecuteQueryResponse response, final String transactionMarker) {
         if (response.isSuccessful()) {
             auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(),
-                    executionRequest.getSql(), true, Optional.empty(), transactionMarker);
+                    executionRequest.getSql(), true, transactionMarker);
             return response;
         }
         ErrorCode errorCode = response.getError().get().getErrorCode();
-        auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), false, Optional.of(errorCode), transactionMarker);
+        auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), false, errorCode, transactionMarker);
         return response;
     }
     
     private ExecuteQueryResponse recordFailure(final ExecutionRequest executionRequest, final String transactionMarker, final ErrorCode errorCode, final String message) {
         ExecuteQueryResponse result = ExecuteQueryResponse.error(errorCode, message);
         auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(),
-                executionRequest.getSql(), false, Optional.of(errorCode), transactionMarker);
+                executionRequest.getSql(), false, errorCode, transactionMarker);
         return result;
     }
     
@@ -252,7 +254,8 @@ public final class ExecuteQueryFacade {
         
         private final Map<String, Integer> updateCounts;
         
-        private final Optional<ShardingSphereExecutionAdapter> executionAdapter;
+        @Getter(AccessLevel.NONE)
+        private final List<ShardingSphereExecutionAdapter> executionAdapters;
         
         private final Consumer<String> metadataRefresher;
         
@@ -263,7 +266,7 @@ public final class ExecuteQueryFacade {
          * @param updateCounts update counts keyed by {@code database:object}
          */
         public DatabaseRuntime(final Map<String, QueryResult> queryResults, final Map<String, Integer> updateCounts) {
-            this(queryResults, updateCounts, Optional.empty(), ignored -> {
+            this(queryResults, updateCounts, Collections.emptyList(), ignored -> {
             });
         }
         
@@ -274,15 +277,15 @@ public final class ExecuteQueryFacade {
          * @param metadataRefresher metadata refresh callback
          */
         public DatabaseRuntime(final ShardingSphereExecutionAdapter executionAdapter, final Consumer<String> metadataRefresher) {
-            this(Collections.emptyMap(), Collections.emptyMap(), Optional.of(Objects.requireNonNull(executionAdapter, "executionAdapter cannot be null")),
+            this(Collections.emptyMap(), Collections.emptyMap(), Collections.singletonList(Objects.requireNonNull(executionAdapter, "executionAdapter cannot be null")),
                     Objects.requireNonNull(metadataRefresher, "metadataRefresher cannot be null"));
         }
         
         private DatabaseRuntime(final Map<String, QueryResult> queryResults, final Map<String, Integer> updateCounts,
-                                final Optional<ShardingSphereExecutionAdapter> executionAdapter, final Consumer<String> metadataRefresher) {
+                                final Collection<ShardingSphereExecutionAdapter> executionAdapters, final Consumer<String> metadataRefresher) {
             this.queryResults = Collections.unmodifiableMap(new LinkedHashMap<>(Objects.requireNonNull(queryResults, "queryResults cannot be null")));
             this.updateCounts = Collections.unmodifiableMap(new LinkedHashMap<>(Objects.requireNonNull(updateCounts, "updateCounts cannot be null")));
-            this.executionAdapter = Objects.requireNonNull(executionAdapter, "executionAdapter cannot be null");
+            this.executionAdapters = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(executionAdapters, "executionAdapters cannot be null")));
             this.metadataRefresher = Objects.requireNonNull(metadataRefresher, "metadataRefresher cannot be null");
         }
         
@@ -314,7 +317,7 @@ public final class ExecuteQueryFacade {
          * @return {@code true} when backed by one execution adapter
          */
         public boolean isAdapterBacked() {
-            return executionAdapter.isPresent();
+            return !executionAdapters.isEmpty();
         }
         
         /**
@@ -325,7 +328,7 @@ public final class ExecuteQueryFacade {
          * @return execution response
          */
         public ExecuteQueryResponse execute(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
-            return executionAdapter.orElseThrow(() -> new IllegalStateException("Execution adapter does not exist.")).execute(executionRequest, classificationResult);
+            return getRequiredExecutionAdapter().execute(executionRequest, classificationResult);
         }
         
         /**
@@ -335,8 +338,8 @@ public final class ExecuteQueryFacade {
          * @param database logical database name
          */
         public void beginTransaction(final String sessionId, final String database) {
-            if (executionAdapter.isPresent()) {
-                executionAdapter.get().beginTransaction(sessionId, database);
+            if (isAdapterBacked()) {
+                getRequiredExecutionAdapter().beginTransaction(sessionId, database);
             }
         }
         
@@ -346,8 +349,8 @@ public final class ExecuteQueryFacade {
          * @param sessionId session identifier
          */
         public void commitTransaction(final String sessionId) {
-            if (executionAdapter.isPresent()) {
-                executionAdapter.get().commitTransaction(sessionId);
+            if (isAdapterBacked()) {
+                getRequiredExecutionAdapter().commitTransaction(sessionId);
             }
         }
         
@@ -357,8 +360,8 @@ public final class ExecuteQueryFacade {
          * @param sessionId session identifier
          */
         public void rollbackTransaction(final String sessionId) {
-            if (executionAdapter.isPresent()) {
-                executionAdapter.get().rollbackTransaction(sessionId);
+            if (isAdapterBacked()) {
+                getRequiredExecutionAdapter().rollbackTransaction(sessionId);
             }
         }
         
@@ -369,8 +372,8 @@ public final class ExecuteQueryFacade {
          * @param savepointName savepoint name
          */
         public void createSavepoint(final String sessionId, final String savepointName) {
-            if (executionAdapter.isPresent()) {
-                executionAdapter.get().createSavepoint(sessionId, savepointName);
+            if (isAdapterBacked()) {
+                getRequiredExecutionAdapter().createSavepoint(sessionId, savepointName);
             }
         }
         
@@ -381,8 +384,8 @@ public final class ExecuteQueryFacade {
          * @param savepointName savepoint name
          */
         public void rollbackToSavepoint(final String sessionId, final String savepointName) {
-            if (executionAdapter.isPresent()) {
-                executionAdapter.get().rollbackToSavepoint(sessionId, savepointName);
+            if (isAdapterBacked()) {
+                getRequiredExecutionAdapter().rollbackToSavepoint(sessionId, savepointName);
             }
         }
         
@@ -393,8 +396,8 @@ public final class ExecuteQueryFacade {
          * @param savepointName savepoint name
          */
         public void releaseSavepoint(final String sessionId, final String savepointName) {
-            if (executionAdapter.isPresent()) {
-                executionAdapter.get().releaseSavepoint(sessionId, savepointName);
+            if (isAdapterBacked()) {
+                getRequiredExecutionAdapter().releaseSavepoint(sessionId, savepointName);
             }
         }
         
@@ -413,9 +416,16 @@ public final class ExecuteQueryFacade {
          * @param sessionId session identifier
          */
         public void closeSession(final String sessionId) {
-            if (executionAdapter.isPresent()) {
-                executionAdapter.get().closeSession(sessionId);
+            if (isAdapterBacked()) {
+                getRequiredExecutionAdapter().closeSession(sessionId);
             }
+        }
+        
+        private ShardingSphereExecutionAdapter getRequiredExecutionAdapter() {
+            if (!isAdapterBacked()) {
+                throw new IllegalStateException("Execution adapter does not exist.");
+            }
+            return executionAdapters.get(0);
         }
         
         private String buildKey(final String database, final String objectName) {

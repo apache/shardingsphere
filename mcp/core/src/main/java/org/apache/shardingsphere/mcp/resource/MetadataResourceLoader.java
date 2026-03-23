@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler.DatabaseCapabilityView;
@@ -203,12 +204,17 @@ public final class MetadataResourceLoader {
         
         private final List<MetadataObject> metadataObjects;
         
-        private final Optional<ErrorCode> errorCode;
+        @Getter(AccessLevel.NONE)
+        private final boolean errorCodePresent;
+        
+        @Getter(AccessLevel.NONE)
+        private final ErrorCode errorCode;
         
         private final String message;
         
-        private ResourceLoadResult(final Collection<MetadataObject> metadataObjects, final Optional<ErrorCode> errorCode, final String message) {
+        private ResourceLoadResult(final Collection<MetadataObject> metadataObjects, final boolean errorCodePresent, final ErrorCode errorCode, final String message) {
             this.metadataObjects = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(metadataObjects, "metadataObjects cannot be null")));
+            this.errorCodePresent = errorCodePresent;
             this.errorCode = Objects.requireNonNull(errorCode, "errorCode cannot be null");
             this.message = Objects.requireNonNull(message, "message cannot be null");
         }
@@ -219,7 +225,7 @@ public final class MetadataResourceLoader {
          * @return {@code true} when no error is attached
          */
         public boolean isSuccessful() {
-            return errorCode.isEmpty();
+            return !errorCodePresent;
         }
         
         /**
@@ -229,7 +235,7 @@ public final class MetadataResourceLoader {
          * @return successful resource load result
          */
         public static ResourceLoadResult success(final Collection<MetadataObject> metadataObjects) {
-            return new ResourceLoadResult(metadataObjects, Optional.empty(), "");
+            return new ResourceLoadResult(metadataObjects, false, ErrorCode.INVALID_REQUEST, "");
         }
         
         /**
@@ -240,7 +246,16 @@ public final class MetadataResourceLoader {
          * @return failed resource load result
          */
         public static ResourceLoadResult error(final ErrorCode errorCode, final String message) {
-            return new ResourceLoadResult(Collections.emptyList(), Optional.of(errorCode), message);
+            return new ResourceLoadResult(Collections.emptyList(), true, Objects.requireNonNull(errorCode, "errorCode cannot be null"), message);
+        }
+        
+        /**
+         * Get the error code when one exists.
+         *
+         * @return optional error code
+         */
+        public Optional<ErrorCode> getErrorCode() {
+            return errorCodePresent ? Optional.of(errorCode) : Optional.empty();
         }
     }
     

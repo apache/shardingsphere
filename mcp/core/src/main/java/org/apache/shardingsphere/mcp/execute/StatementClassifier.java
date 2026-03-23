@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.StatementClass;
 
@@ -46,22 +47,22 @@ public final class StatementClassifier {
             return new ClassificationResult(StatementClass.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", actualSql, extractTargetObject(actualSql), extractSavepointName(actualSql));
         }
         if (upperSql.startsWith("ROLLBACK TO SAVEPOINT") || upperSql.startsWith("RELEASE SAVEPOINT") || upperSql.startsWith("SAVEPOINT ")) {
-            return new ClassificationResult(StatementClass.SAVEPOINT, extractStatementType(upperSql), actualSql, Optional.empty(), extractSavepointName(actualSql));
+            return new ClassificationResult(StatementClass.SAVEPOINT, extractStatementType(upperSql), actualSql, "", extractSavepointName(actualSql));
         }
         if (isTransactionControlStatement(upperSql)) {
-            return new ClassificationResult(StatementClass.TRANSACTION_CONTROL, extractStatementType(upperSql), actualSql, Optional.empty(), Optional.empty());
+            return new ClassificationResult(StatementClass.TRANSACTION_CONTROL, extractStatementType(upperSql), actualSql, "", "");
         }
         if (upperSql.startsWith("SELECT") || upperSql.startsWith("WITH")) {
-            return new ClassificationResult(StatementClass.QUERY, "QUERY", actualSql, extractTargetObject(actualSql), Optional.empty());
+            return new ClassificationResult(StatementClass.QUERY, "QUERY", actualSql, extractTargetObject(actualSql), "");
         }
         if (upperSql.startsWith("INSERT") || upperSql.startsWith("UPDATE") || upperSql.startsWith("DELETE") || upperSql.startsWith("MERGE")) {
-            return new ClassificationResult(StatementClass.DML, extractStatementType(upperSql), actualSql, extractTargetObject(actualSql), Optional.empty());
+            return new ClassificationResult(StatementClass.DML, extractStatementType(upperSql), actualSql, extractTargetObject(actualSql), "");
         }
         if (upperSql.startsWith("CREATE") || upperSql.startsWith("ALTER") || upperSql.startsWith("DROP") || upperSql.startsWith("TRUNCATE")) {
-            return new ClassificationResult(StatementClass.DDL, extractStatementType(upperSql), actualSql, extractTargetObject(actualSql), Optional.empty());
+            return new ClassificationResult(StatementClass.DDL, extractStatementType(upperSql), actualSql, extractTargetObject(actualSql), "");
         }
         if (upperSql.startsWith("GRANT") || upperSql.startsWith("REVOKE")) {
-            return new ClassificationResult(StatementClass.DCL, extractStatementType(upperSql), actualSql, extractTargetObject(actualSql), Optional.empty());
+            return new ClassificationResult(StatementClass.DCL, extractStatementType(upperSql), actualSql, extractTargetObject(actualSql), "");
         }
         throw new IllegalArgumentException("Statement is not supported by the MCP contract.");
     }
@@ -111,32 +112,32 @@ public final class StatementClassifier {
         return upperSql.split("\\s+")[0];
     }
     
-    private Optional<String> extractTargetObject(final String sql) {
+    private String extractTargetObject(final String sql) {
         String[] tokens = sql.replace(",", " ").split("\\s+");
         for (int index = 0; index < tokens.length - 1; index++) {
             String upperToken = tokens[index].toUpperCase();
             if ("FROM".equals(upperToken) || "INTO".equals(upperToken) || "UPDATE".equals(upperToken) || "TABLE".equals(upperToken) || "VIEW".equals(upperToken)) {
-                return Optional.of(tokens[index + 1].replaceAll("[()]", ""));
+                return tokens[index + 1].replaceAll("[()]", "");
             }
         }
-        return Optional.empty();
+        return "";
     }
     
-    private Optional<String> extractSavepointName(final String sql) {
+    private String extractSavepointName(final String sql) {
         String[] tokens = sql.split("\\s+");
         if (tokens.length < 2) {
-            return Optional.empty();
+            return "";
         }
         if ("SAVEPOINT".equalsIgnoreCase(tokens[0])) {
-            return Optional.of(tokens[tokens.length - 1]);
+            return tokens[tokens.length - 1];
         }
         if ("RELEASE".equalsIgnoreCase(tokens[0]) && tokens.length >= 3) {
-            return Optional.of(tokens[tokens.length - 1]);
+            return tokens[tokens.length - 1];
         }
         if ("ROLLBACK".equalsIgnoreCase(tokens[0]) && tokens.length >= 4) {
-            return Optional.of(tokens[tokens.length - 1]);
+            return tokens[tokens.length - 1];
         }
-        return Optional.empty();
+        return "";
     }
     
     /**
@@ -151,9 +152,11 @@ public final class StatementClassifier {
         
         private final String normalizedSql;
         
-        private final Optional<String> targetObjectName;
+        @Getter(AccessLevel.NONE)
+        private final String targetObjectName;
         
-        private final Optional<String> savepointName;
+        @Getter(AccessLevel.NONE)
+        private final String savepointName;
         
         /**
          * Construct a statement classification result.
@@ -165,12 +168,30 @@ public final class StatementClassifier {
          * @param savepointName savepoint name
          */
         public ClassificationResult(final StatementClass statementClass, final String statementType, final String normalizedSql,
-                                    final Optional<String> targetObjectName, final Optional<String> savepointName) {
+                                    final String targetObjectName, final String savepointName) {
             this.statementClass = Objects.requireNonNull(statementClass, "statementClass cannot be null");
             this.statementType = Objects.requireNonNull(statementType, "statementType cannot be null");
             this.normalizedSql = Objects.requireNonNull(normalizedSql, "normalizedSql cannot be null");
             this.targetObjectName = Objects.requireNonNull(targetObjectName, "targetObjectName cannot be null");
             this.savepointName = Objects.requireNonNull(savepointName, "savepointName cannot be null");
+        }
+        
+        /**
+         * Get the target object name when one exists.
+         *
+         * @return optional target object name
+         */
+        public Optional<String> getTargetObjectName() {
+            return targetObjectName.isEmpty() ? Optional.empty() : Optional.of(targetObjectName);
+        }
+        
+        /**
+         * Get the savepoint name when one exists.
+         *
+         * @return optional savepoint name
+         */
+        public Optional<String> getSavepointName() {
+            return savepointName.isEmpty() ? Optional.empty() : Optional.of(savepointName);
         }
     }
 }

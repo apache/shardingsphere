@@ -17,18 +17,23 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.MCPRuntimeProvider.LoadedRuntime;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerContext;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.ProductionRuntimeLoader;
 import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.stdio.StdioMCPServer;
-import org.apache.shardingsphere.mcp.bootstrap.wiring.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
@@ -109,7 +114,7 @@ public final class MCPRuntimeLauncher {
             actualServerContext.stop();
             throw new IllegalStateException("Failed to start HTTP transport.", ex);
         }
-        return new LaunchState(actualServerContext, actualRuntimeContext, Optional.ofNullable(httpServer), Optional.ofNullable(stdioServer));
+        return new LaunchState(actualServerContext, actualRuntimeContext, toTransportList(httpServer), toTransportList(stdioServer));
     }
     
     private void validateTransportConfiguration(final RuntimeConfiguration runtimeConfiguration) {
@@ -134,6 +139,10 @@ public final class MCPRuntimeLauncher {
         return runtimeConfiguration.isStdioEnabled() ? new StdioMCPServer(serverContext.getSessionManager(), runtimeContext) : null;
     }
     
+    private static <T> Collection<T> toTransportList(final T transport) {
+        return null == transport ? Collections.emptyList() : Collections.singletonList(transport);
+    }
+    
     /**
      * Runtime transport configuration.
      */
@@ -146,7 +155,11 @@ public final class MCPRuntimeLauncher {
         
         private final boolean stdioEnabled;
         
-        private final Optional<Properties> runtimeProps;
+        @Getter(AccessLevel.NONE)
+        private final boolean runtimePropsConfigured;
+        
+        @Getter(AccessLevel.NONE)
+        private final Properties runtimeProps;
         
         /**
          * Construct one runtime configuration.
@@ -156,7 +169,11 @@ public final class MCPRuntimeLauncher {
          * @param stdioEnabled STDIO enablement
          */
         public RuntimeConfiguration(final ServerConfiguration serverConfiguration, final boolean httpEnabled, final boolean stdioEnabled) {
-            this(serverConfiguration, httpEnabled, stdioEnabled, Optional.empty());
+            this.serverConfiguration = Objects.requireNonNull(serverConfiguration, "serverConfiguration cannot be null");
+            this.httpEnabled = httpEnabled;
+            this.stdioEnabled = stdioEnabled;
+            runtimePropsConfigured = false;
+            runtimeProps = new Properties();
         }
         
         /**
@@ -169,15 +186,11 @@ public final class MCPRuntimeLauncher {
          */
         public RuntimeConfiguration(final ServerConfiguration serverConfiguration, final boolean httpEnabled, final boolean stdioEnabled,
                                     final Properties runtimeProps) {
-            this(serverConfiguration, httpEnabled, stdioEnabled, Optional.of(copyProperties(runtimeProps)));
-        }
-        
-        private RuntimeConfiguration(final ServerConfiguration serverConfiguration, final boolean httpEnabled, final boolean stdioEnabled,
-                                     final Optional<Properties> runtimeProps) {
             this.serverConfiguration = Objects.requireNonNull(serverConfiguration, "serverConfiguration cannot be null");
             this.httpEnabled = httpEnabled;
             this.stdioEnabled = stdioEnabled;
-            this.runtimeProps = Objects.requireNonNull(runtimeProps, "runtimeProps cannot be null");
+            runtimePropsConfigured = true;
+            this.runtimeProps = copyProperties(runtimeProps);
         }
         
         /**
@@ -186,7 +199,7 @@ public final class MCPRuntimeLauncher {
          * @return runtime property copy
          */
         public Optional<Properties> getRuntimeProps() {
-            return runtimeProps.map(RuntimeConfiguration::copyProperties);
+            return runtimePropsConfigured ? Optional.of(copyProperties(runtimeProps)) : Optional.empty();
         }
         
         private static Properties copyProperties(final Properties props) {
@@ -233,24 +246,44 @@ public final class MCPRuntimeLauncher {
         
         private final MCPRuntimeContext runtimeContext;
         
-        private final Optional<StreamableHttpMCPServer> httpServer;
+        @Getter(AccessLevel.NONE)
+        private final List<StreamableHttpMCPServer> httpServers;
         
-        private final Optional<StdioMCPServer> stdioServer;
+        @Getter(AccessLevel.NONE)
+        private final List<StdioMCPServer> stdioServers;
         
         /**
          * Construct one launch result snapshot.
          *
          * @param serverContext server context
          * @param runtimeContext runtime context
-         * @param httpServer optional HTTP server
-         * @param stdioServer optional STDIO server
+         * @param httpServers HTTP server list
+         * @param stdioServers STDIO server list
          */
-        public LaunchState(final MCPServerContext serverContext, final MCPRuntimeContext runtimeContext, final Optional<StreamableHttpMCPServer> httpServer,
-                           final Optional<StdioMCPServer> stdioServer) {
+        public LaunchState(final MCPServerContext serverContext, final MCPRuntimeContext runtimeContext, final Collection<StreamableHttpMCPServer> httpServers,
+                           final Collection<StdioMCPServer> stdioServers) {
             this.serverContext = Objects.requireNonNull(serverContext, "serverContext cannot be null");
             this.runtimeContext = Objects.requireNonNull(runtimeContext, "runtimeContext cannot be null");
-            this.httpServer = Objects.requireNonNull(httpServer, "httpServer cannot be null");
-            this.stdioServer = Objects.requireNonNull(stdioServer, "stdioServer cannot be null");
+            this.httpServers = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(httpServers, "httpServers cannot be null")));
+            this.stdioServers = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(stdioServers, "stdioServers cannot be null")));
+        }
+        
+        /**
+         * Get the HTTP server when one exists.
+         *
+         * @return optional HTTP server
+         */
+        public Optional<StreamableHttpMCPServer> getHttpServer() {
+            return httpServers.isEmpty() ? Optional.empty() : Optional.of(httpServers.get(0));
+        }
+        
+        /**
+         * Get the STDIO server when one exists.
+         *
+         * @return optional STDIO server
+         */
+        public Optional<StdioMCPServer> getStdioServer() {
+            return stdioServers.isEmpty() ? Optional.empty() : Optional.of(stdioServers.get(0));
         }
     }
 }

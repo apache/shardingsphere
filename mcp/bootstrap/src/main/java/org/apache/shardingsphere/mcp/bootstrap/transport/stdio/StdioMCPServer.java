@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.bootstrap.wiring.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.ExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataCatalog;

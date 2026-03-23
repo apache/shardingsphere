@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.Runt
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration.ServerConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.bootstrap.transport.stdio.StdioMCPServer;
-import org.apache.shardingsphere.mcp.bootstrap.wiring.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.ExecutionRequest;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.QueryResult;

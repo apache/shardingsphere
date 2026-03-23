@@ -30,7 +30,7 @@
 
 1. **Given** 使用发行包默认配置启动 MCP runtime，**When** 读取 transport 开关，**Then** `transport.stdio.enabled = true` 且 `transport.http.enabled = false`。
 2. **Given** 默认配置启动成功，**When** 本地客户端通过 STDIO 建立会话并调用 tool，**Then** 调用成功且不依赖 HTTP listener。
-3. **Given** 默认配置启动成功，**When** 运维尝试访问默认 `http://127.0.0.1:8088/mcp`，**Then** 不应存在由 MCP runtime 打开的 HTTP endpoint。
+3. **Given** 默认配置启动成功，**When** 运维尝试访问默认 `http://127.0.0.1:18088/mcp`，**Then** 不应存在由 MCP runtime 打开的 HTTP endpoint。
 
 ---
 

@@ -75,15 +75,17 @@ public final class DatabaseCapabilityAssembler {
     
     private static final Set<StatementClass> SUPPORTED_STATEMENT_CLASSES = Collections.unmodifiableSet(EnumSet.allOf(StatementClass.class));
     
+    private static final MetadataCatalog EMPTY_METADATA_CATALOG = new MetadataCatalog(Collections.emptyMap(), Collections.emptyList());
+    
     private final DatabaseCapabilityRegistry registry;
     
-    private final Optional<MetadataCatalog> metadataCatalog;
+    private final MetadataCatalog metadataCatalog;
     
     /**
      * Construct an assembler with the default V1 registry.
      */
     public DatabaseCapabilityAssembler() {
-        this(DatabaseCapabilityRegistry.createDefault(), Optional.empty());
+        this(DatabaseCapabilityRegistry.createDefault(), EMPTY_METADATA_CATALOG);
     }
     
     /**
@@ -92,7 +94,7 @@ public final class DatabaseCapabilityAssembler {
      * @param metadataCatalog metadata catalog
      */
     public DatabaseCapabilityAssembler(final MetadataCatalog metadataCatalog) {
-        this(DatabaseCapabilityRegistry.createDefault(), Optional.of(Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null")));
+        this(DatabaseCapabilityRegistry.createDefault(), metadataCatalog);
     }
     
     /**
@@ -101,10 +103,10 @@ public final class DatabaseCapabilityAssembler {
      * @param registry capability registry
      */
     public DatabaseCapabilityAssembler(final DatabaseCapabilityRegistry registry) {
-        this(registry, Optional.empty());
+        this(registry, EMPTY_METADATA_CATALOG);
     }
     
-    private DatabaseCapabilityAssembler(final DatabaseCapabilityRegistry registry, final Optional<MetadataCatalog> metadataCatalog) {
+    private DatabaseCapabilityAssembler(final DatabaseCapabilityRegistry registry, final MetadataCatalog metadataCatalog) {
         this.registry = Objects.requireNonNull(registry, "registry cannot be null");
         this.metadataCatalog = Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null");
     }
@@ -131,7 +133,7 @@ public final class DatabaseCapabilityAssembler {
     }
     
     private DatabaseCapabilityView overlayRuntimeFacts(final DatabaseCapabilityView databaseCapabilityView) {
-        Optional<RuntimeDatabaseDescriptor> runtimeDescriptor = metadataCatalog.flatMap(each -> each.findRuntimeDatabaseDescriptor(databaseCapabilityView.getDatabase()));
+        Optional<RuntimeDatabaseDescriptor> runtimeDescriptor = metadataCatalog.findRuntimeDatabaseDescriptor(databaseCapabilityView.getDatabase());
         if (runtimeDescriptor.isEmpty()) {
             return databaseCapabilityView;
         }

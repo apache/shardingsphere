@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ErrorCode;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
@@ -283,14 +284,19 @@ public final class MetadataToolDispatcher {
         
         private final String nextPageToken;
         
-        private final Optional<ErrorCode> errorCode;
+        @Getter(AccessLevel.NONE)
+        private final boolean errorCodePresent;
+        
+        @Getter(AccessLevel.NONE)
+        private final ErrorCode errorCode;
         
         private final String message;
         
         private ToolDispatchResult(final Collection<MetadataObject> metadataObjects, final String nextPageToken,
-                                   final Optional<ErrorCode> errorCode, final String message) {
+                                   final boolean errorCodePresent, final ErrorCode errorCode, final String message) {
             this.metadataObjects = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(metadataObjects, "metadataObjects cannot be null")));
             this.nextPageToken = Objects.requireNonNull(nextPageToken, "nextPageToken cannot be null");
+            this.errorCodePresent = errorCodePresent;
             this.errorCode = Objects.requireNonNull(errorCode, "errorCode cannot be null");
             this.message = Objects.requireNonNull(message, "message cannot be null");
         }
@@ -301,21 +307,30 @@ public final class MetadataToolDispatcher {
          * @return {@code true} when no error is attached
          */
         public boolean isSuccessful() {
-            return !errorCode.isPresent();
+            return !errorCodePresent;
         }
         
         private static ToolDispatchResult success(final Collection<MetadataObject> metadataObjects, final String nextPageToken) {
-            return new ToolDispatchResult(metadataObjects, nextPageToken, Optional.empty(), "");
+            return new ToolDispatchResult(metadataObjects, nextPageToken, false, ErrorCode.INVALID_REQUEST, "");
         }
         
         private static ToolDispatchResult error(final ErrorCode errorCode, final String message) {
-            return new ToolDispatchResult(Collections.emptyList(), "", Optional.of(errorCode), message);
+            return new ToolDispatchResult(Collections.emptyList(), "", true, Objects.requireNonNull(errorCode, "errorCode cannot be null"), message);
         }
         
         private static ToolDispatchResult fromResourceLoadResult(final ResourceLoadResult loadResult) {
             return loadResult.getErrorCode().isPresent()
                     ? error(loadResult.getErrorCode().get(), loadResult.getMessage())
                     : success(loadResult.getMetadataObjects(), "");
+        }
+        
+        /**
+         * Get the error code when one exists.
+         *
+         * @return optional error code
+         */
+        public Optional<ErrorCode> getErrorCode() {
+            return errorCodePresent ? Optional.of(errorCode) : Optional.empty();
         }
     }
 }
