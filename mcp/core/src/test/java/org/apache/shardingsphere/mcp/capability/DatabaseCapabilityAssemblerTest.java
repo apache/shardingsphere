@@ -64,7 +64,7 @@ class DatabaseCapabilityAssemblerTest {
         assertTrue(actualCapability.isPresent());
         assertThat(actualCapability.get().getDatabase(), is("logic_db"));
         assertThat(actualCapability.get().getDatabaseType(), is("MYSQL"));
-        assertThat(actualCapability.get().getMinSupportedVersion(), is("V1_BASELINE"));
+        assertThat(actualCapability.get().getMinSupportedVersion(), is("BASELINE"));
         assertThat(actualCapability.get().getSupportedObjectTypes(),
                 is(EnumSet.of(SupportedObjectType.DATABASE, SupportedObjectType.SCHEMA, SupportedObjectType.TABLE,
                         SupportedObjectType.VIEW, SupportedObjectType.COLUMN, SupportedObjectType.INDEX, SupportedObjectType.CAPABILITY)));

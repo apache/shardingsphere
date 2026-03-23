@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Classify one SQL statement into the MCP V1 statement classes.
+ * Classify one SQL statement into the MCP statement classes.
  */
 public final class StatementClassifier {
     

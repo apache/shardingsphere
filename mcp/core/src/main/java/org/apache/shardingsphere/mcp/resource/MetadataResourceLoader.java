@@ -37,7 +37,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Load normalized metadata resources for the MCP V1 public object model.
+ * Load normalized metadata resources for the MCP public object model.
  */
 public final class MetadataResourceLoader {
     
@@ -401,7 +401,7 @@ public final class MetadataResourceLoader {
     }
     
     /**
-     * Normalized metadata object for V1 discovery.
+     * Normalized metadata object for metadata discovery.
      */
     @Getter
     public static final class MetadataObject {

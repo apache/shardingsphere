@@ -82,7 +82,7 @@ public final class DatabaseCapabilityAssembler {
     private final MetadataCatalog metadataCatalog;
     
     /**
-     * Construct an assembler with the default V1 registry.
+     * Construct an assembler with the default capability registry.
      */
     public DatabaseCapabilityAssembler() {
         this(DatabaseCapabilityRegistry.createDefault(), EMPTY_METADATA_CATALOG);

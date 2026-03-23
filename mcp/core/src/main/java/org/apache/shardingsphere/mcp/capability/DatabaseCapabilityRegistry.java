@@ -31,14 +31,14 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Registry for the MCP V1 database capability matrix.
+ * Registry for the MCP database capability matrix.
  */
 public final class DatabaseCapabilityRegistry {
     
     private final Map<String, DatabaseCapability> capabilities = new LinkedHashMap<>();
     
     /**
-     * Create the default MCP V1 capability registry.
+     * Create the default MCP capability registry.
      *
      * @return default capability registry
      */
@@ -104,7 +104,7 @@ public final class DatabaseCapabilityRegistry {
                                                               final boolean crossSchemaQuerySupported) {
         Set<SupportedObjectType> supportedObjectTypes = createSupportedObjectTypes(indexSupported);
         Set<StatementClass> supportedStatementClasses = createSupportedStatementClasses(transactionCapability);
-        return new DatabaseCapability(databaseType, "V1_BASELINE", supportedObjectTypes, supportedStatementClasses, transactionCapability,
+        return new DatabaseCapability(databaseType, "BASELINE", supportedObjectTypes, supportedStatementClasses, transactionCapability,
                 createSupportedTransactionStatements(transactionCapability), true, 1000, 30000, defaultSchemaSemantics, crossSchemaQuerySupported,
                 false, TransactionBoundaryBehavior.NATIVE, TransactionBoundaryBehavior.NATIVE, ResultBehavior.UNSUPPORTED, TransactionBoundaryBehavior.UNSUPPORTED);
     }
@@ -216,14 +216,14 @@ public final class DatabaseCapabilityRegistry {
          */
         public DatabaseCapability(final String databaseType, final Set<SupportedObjectType> supportedObjectTypes, final Set<StatementClass> supportedStatementClasses,
                                   final TransactionCapability transactionCapability, final boolean defaultAutocommit, final boolean crossSchemaQuerySupported) {
-            this(databaseType, "V1_BASELINE", supportedObjectTypes, supportedStatementClasses, transactionCapability, createSupportedTransactionStatements(transactionCapability),
+            this(databaseType, "BASELINE", supportedObjectTypes, supportedStatementClasses, transactionCapability, createSupportedTransactionStatements(transactionCapability),
                     defaultAutocommit, 1000, 30000, SchemaSemantics.NATIVE_SCHEMA, crossSchemaQuerySupported,
                     null != supportedStatementClasses && supportedStatementClasses.contains(StatementClass.EXPLAIN_ANALYZE),
                     TransactionBoundaryBehavior.NATIVE, TransactionBoundaryBehavior.NATIVE, ResultBehavior.RESULT_SET, TransactionBoundaryBehavior.NATIVE);
         }
         
         /**
-         * Construct a database capability definition with the full V1 matrix fields.
+         * Construct a database capability definition with the full capability matrix fields.
          *
          * @param databaseType database type
          * @param minSupportedVersion minimum supported version label
@@ -271,7 +271,7 @@ public final class DatabaseCapabilityRegistry {
     }
     
     /**
-     * Supported V1 public object types.
+     * Supported public object types.
      */
     public enum SupportedObjectType {
         
@@ -279,7 +279,7 @@ public final class DatabaseCapabilityRegistry {
     }
     
     /**
-     * Supported V1 statement classes.
+     * Supported statement classes.
      */
     public enum StatementClass {
         

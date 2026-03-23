@@ -35,7 +35,7 @@ import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher;
 import java.util.Objects;
 
 /**
- * Register and expose MCP V1 resources, tools, and runtime facades.
+ * Register and expose MCP resources, tools, and runtime facades.
  */
 @Getter
 public final class MCPRuntimeContext {
@@ -83,7 +83,7 @@ public final class MCPRuntimeContext {
     }
     
     /**
-     * Register the full public V1 MCP surface with the server context.
+     * Register the full public MCP surface with the server context.
      *
      * @param serverContext server context
      */

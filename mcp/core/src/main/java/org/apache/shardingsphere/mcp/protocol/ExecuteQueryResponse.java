@@ -156,7 +156,7 @@ public final class ExecuteQueryResponse {
     }
     
     /**
-     * Unified error code family for MCP V1.
+     * Unified error code family for MCP.
      */
     public enum ErrorCode {
         
