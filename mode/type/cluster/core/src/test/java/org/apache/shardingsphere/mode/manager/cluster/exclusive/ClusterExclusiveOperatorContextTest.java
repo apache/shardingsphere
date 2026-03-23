@@ -17,41 +17,166 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.exclusive;
 
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
+import org.apache.shardingsphere.mode.exclusive.ExclusiveLockHandle;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.core.lock.DistributedLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(DistributedLockHolder.class)
 class ClusterExclusiveOperatorContextTest {
     
-    @Mock
-    private ClusterPersistRepository repository;
-    
-    @Mock
-    private DistributedLock distributedLock;
-    
     @Test
-    void assertStartTryLock() {
-        when(DistributedLockHolder.getDistributedLock("op", repository)).thenReturn(distributedLock);
-        when(distributedLock.tryLock(50L)).thenReturn(true);
-        assertTrue(new ClusterExclusiveOperatorContext(repository).start("op", 50L));
-        verify(distributedLock).tryLock(50L);
+    void assertStartReturnsHandle() {
+        StubDistributedLock distributedLock = new StubDistributedLock(true);
+        assertTrue(new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock)).start("op", 50L).isPresent());
+        assertThat(distributedLock.tryLockCallCount, is(1));
     }
     
     @Test
-    void assertStopUnlock() {
-        when(DistributedLockHolder.getDistributedLock("op", repository)).thenReturn(distributedLock);
-        new ClusterExclusiveOperatorContext(repository).stop("op");
-        verify(distributedLock).unlock();
+    void assertStartReturnsEmptyWhenKeyExists() {
+        StubDistributedLock distributedLock = new StubDistributedLock(true);
+        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock));
+        ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
+        assertFalse(context.start("op", 50L).isPresent());
+        assertThat(distributedLock.tryLockCallCount, is(1));
+        lockHandle.close();
+    }
+    
+    @Test
+    void assertCloseUnlock() {
+        StubDistributedLock distributedLock = new StubDistributedLock(true);
+        new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock)).start("op", 50L).orElseThrow(AssertionError::new).close();
+        assertThat(distributedLock.unlockCallCount, is(1));
+    }
+    
+    @Test
+    void assertStartReturnsHandleAfterClose() {
+        StubDistributedLock distributedLock = new StubDistributedLock(true, true);
+        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock));
+        ExclusiveLockHandle firstHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
+        firstHandle.close();
+        Optional<ExclusiveLockHandle> actual = context.start("op", 50L);
+        assertTrue(actual.isPresent());
+        assertThat(actual.orElseThrow(AssertionError::new), not(firstHandle));
+    }
+    
+    @Test
+    void assertStartRemovesOperationKeyAfterTryLockFailure() {
+        StubDistributedLock distributedLock = new StubDistributedLock(false, true);
+        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock));
+        assertFalse(context.start("op", 50L).isPresent());
+        assertTrue(context.start("op", 50L).isPresent());
+        assertThat(distributedLock.tryLockCallCount, is(2));
+    }
+    
+    private static final class StubDistributedLock implements DistributedLock {
+        
+        private final List<Boolean> tryLockResults;
+        
+        private int tryLockCallCount;
+        
+        private int unlockCallCount;
+        
+        private StubDistributedLock(final boolean... tryLockResults) {
+            this.tryLockResults = new LinkedList<>();
+            for (boolean each : tryLockResults) {
+                this.tryLockResults.add(each);
+            }
+        }
+        
+        @Override
+        public boolean tryLock(final long timeoutMillis) {
+            tryLockCallCount++;
+            return tryLockResults.remove(0);
+        }
+        
+        @Override
+        public void unlock() {
+            unlockCallCount++;
+        }
+    }
+    
+    private static final class StubClusterPersistRepository implements ClusterPersistRepository {
+        
+        private final DistributedLock distributedLock;
+        
+        private StubClusterPersistRepository(final DistributedLock distributedLock) {
+            this.distributedLock = distributedLock;
+        }
+        
+        @Override
+        public void init(final ClusterPersistRepositoryConfiguration config, final ComputeNodeInstanceContext computeNodeInstanceContext) {
+        }
+        
+        @Override
+        public String query(final String key) {
+            return null;
+        }
+        
+        @Override
+        public List<String> getChildrenKeys(final String key) {
+            return Collections.emptyList();
+        }
+        
+        @Override
+        public boolean isExisted(final String key) {
+            return false;
+        }
+        
+        @Override
+        public void persist(final String key, final String value) {
+        }
+        
+        @Override
+        public void update(final String key, final String value) {
+        }
+        
+        @Override
+        public void persistEphemeral(final String key, final String value) {
+        }
+        
+        @Override
+        public boolean persistExclusiveEphemeral(final String key, final String value) {
+            return false;
+        }
+        
+        @Override
+        public Optional<DistributedLock> getDistributedLock(final String lockKey) {
+            return Optional.of(distributedLock);
+        }
+        
+        @Override
+        public void delete(final String key) {
+        }
+        
+        @Override
+        public void watch(final String key, final DataChangedEventListener listener) {
+        }
+        
+        @Override
+        public void removeDataListener(final String key) {
+        }
+        
+        @Override
+        public void close() {
+        }
+        
+        @Override
+        public String getType() {
+            return "STUB";
+        }
     }
 }
