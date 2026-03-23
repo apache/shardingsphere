@@ -81,13 +81,35 @@ public final class MCPConfigurationLoader {
         throw new FileNotFoundException(String.format("MCP configuration file `%s` does not exist.", actualConfigPath));
     }
     
-    private static Properties resolveRuntimeProps(final YamlMCPConfiguration yamlConfig) {
-        YamlRuntimeConfiguration runtimeConfiguration = yamlConfig.getRuntime();
-        Properties result = new Properties();
-        for (Entry<String, String> entry : runtimeConfiguration.getProps().entrySet()) {
-            result.setProperty(entry.getKey(), null == entry.getValue() ? "" : entry.getValue());
+    private static ServerConfiguration resolveServerConfiguration(final YamlMCPConfiguration yamlConfig) {
+        return new ServerConfiguration(resolveBindHost(yamlConfig), resolvePort(yamlConfig), resolveEndpointPath(yamlConfig));
+    }
+    
+    private static String resolveBindHost(final YamlMCPConfiguration yamlConfig) {
+        String bindHost = normalizeText(yamlConfig.getServer().getBindHost());
+        return bindHost.isEmpty() ? DEFAULT_BIND_HOST : bindHost;
+    }
+    
+    private static String normalizeText(final Object value) {
+        return null == value ? "" : String.valueOf(value).trim();
+    }
+    
+    private static int resolvePort(final YamlMCPConfiguration yamlConfig) {
+        Integer result = yamlConfig.getServer().getPort();
+        if (null == result) {
+            return DEFAULT_PORT;
         }
+        ShardingSpherePreconditions.checkState(result >= 0, () -> new IllegalArgumentException("MCP server port cannot be negative."));
         return result;
+    }
+    
+    private static String resolveEndpointPath(final YamlMCPConfiguration yamlConfig) {
+        String endpointPath = normalizeText(yamlConfig.getServer().getEndpointPath());
+        return endpointPath.isEmpty() ? DEFAULT_ENDPOINT_PATH : normalizePath(endpointPath);
+    }
+    
+    private static String normalizePath(final String endpointPath) {
+        return endpointPath.startsWith("/") ? endpointPath : "/" + endpointPath;
     }
     
     private static boolean resolveHttpEnabled(final YamlMCPConfiguration yamlConfig) {
@@ -98,29 +120,13 @@ public final class MCPConfigurationLoader {
         return null == yamlConfig.getTransport().getStdio().getEnabled() || yamlConfig.getTransport().getStdio().getEnabled();
     }
     
-    private static ServerConfiguration resolveServerConfiguration(final YamlMCPConfiguration yamlConfig) {
-        String bindHost = normalizeText(yamlConfig.getServer().getBindHost());
-        String endpointPath = normalizeText(yamlConfig.getServer().getEndpointPath());
-        return new ServerConfiguration(bindHost.isEmpty() ? DEFAULT_BIND_HOST : bindHost, resolvePort(yamlConfig), endpointPath.isEmpty() ? DEFAULT_ENDPOINT_PATH : normalizePath(endpointPath));
-    }
-    
-    private static int resolvePort(final YamlMCPConfiguration yamlConfig) {
-        Integer result = yamlConfig.getServer().getPort();
-        if (null == result) {
-            return DEFAULT_PORT;
-        }
-        if (0 > result) {
-            throw new IllegalArgumentException("MCP server port cannot be negative.");
+    private static Properties resolveRuntimeProps(final YamlMCPConfiguration yamlConfig) {
+        YamlRuntimeConfiguration runtimeConfiguration = yamlConfig.getRuntime();
+        Properties result = new Properties();
+        for (Entry<String, String> entry : runtimeConfiguration.getProps().entrySet()) {
+            result.setProperty(entry.getKey(), null == entry.getValue() ? "" : entry.getValue());
         }
         return result;
-    }
-    
-    private static String normalizeText(final Object value) {
-        return null == value ? "" : String.valueOf(value).trim();
-    }
-    
-    private static String normalizePath(final String endpointPath) {
-        return endpointPath.startsWith("/") ? endpointPath : "/" + endpointPath;
     }
     
     /**
