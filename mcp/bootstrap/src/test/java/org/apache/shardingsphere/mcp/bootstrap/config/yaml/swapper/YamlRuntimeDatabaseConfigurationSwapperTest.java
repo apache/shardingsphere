@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -71,7 +72,7 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
         YamlRuntimeDatabaseConfiguration yamlConfig = new YamlRuntimeDatabaseConfiguration();
         yamlConfig.setSupportsCrossSchemaSql(false);
         
-        RuntimeDatabaseConfiguration actual = swapper.swapToObject("logic_db", yamlConfig, runtimeDefaults);
+        RuntimeDatabaseConfiguration actual = swapper.swapToObject("logic_db", yamlConfig, runtimeDefaults, Set.of("supportsCrossSchemaSql"));
         
         assertFalse(actual.isSupportsCrossSchemaSql());
     }

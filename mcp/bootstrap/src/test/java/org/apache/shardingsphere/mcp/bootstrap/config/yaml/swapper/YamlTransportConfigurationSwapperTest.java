@@ -21,6 +21,8 @@ import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlTransportConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -42,7 +44,7 @@ class YamlTransportConfigurationSwapperTest {
         yamlConfig.setHttpEnabled(false);
         yamlConfig.setStdioEnabled(true);
         
-        TransportConfiguration actual = swapper.swapToObject(yamlConfig);
+        TransportConfiguration actual = swapper.swapToObject(yamlConfig, Set.of("httpEnabled", "stdioEnabled"));
         
         assertFalse(actual.isHttpEnabled());
         assertTrue(actual.isStdioEnabled());

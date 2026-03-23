@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.Getter;
-
-import java.util.Objects;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Runtime database configuration for one logical database binding.
  */
 @Getter
+@RequiredArgsConstructor
 public final class RuntimeDatabaseConfiguration {
     
     private final String databaseType;
@@ -45,30 +45,4 @@ public final class RuntimeDatabaseConfiguration {
     
     private final boolean supportsExplainAnalyze;
     
-    /**
-     * Construct a runtime database configuration.
-     *
-     * @param databaseType database type
-     * @param jdbcUrl JDBC URL
-     * @param username username
-     * @param password password
-     * @param driverClassName driver class name
-     * @param schemaPattern schema pattern
-     * @param defaultSchema default schema
-     * @param supportsCrossSchemaSql cross-schema SQL support flag
-     * @param supportsExplainAnalyze explain analyze support flag
-     */
-    public RuntimeDatabaseConfiguration(final String databaseType, final String jdbcUrl, final String username, final String password,
-                                        final String driverClassName, final String schemaPattern, final String defaultSchema,
-                                        final boolean supportsCrossSchemaSql, final boolean supportsExplainAnalyze) {
-        this.databaseType = Objects.requireNonNull(databaseType, "databaseType cannot be null");
-        this.jdbcUrl = Objects.requireNonNull(jdbcUrl, "jdbcUrl cannot be null");
-        this.username = Objects.requireNonNull(username, "username cannot be null");
-        this.password = Objects.requireNonNull(password, "password cannot be null");
-        this.driverClassName = Objects.requireNonNull(driverClassName, "driverClassName cannot be null");
-        this.schemaPattern = Objects.requireNonNull(schemaPattern, "schemaPattern cannot be null");
-        this.defaultSchema = Objects.requireNonNull(defaultSchema, "defaultSchema cannot be null");
-        this.supportsCrossSchemaSql = supportsCrossSchemaSql;
-        this.supportsExplainAnalyze = supportsExplainAnalyze;
-    }
 }

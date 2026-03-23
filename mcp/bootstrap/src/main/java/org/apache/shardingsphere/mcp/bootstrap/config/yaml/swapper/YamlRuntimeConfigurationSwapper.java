@@ -25,6 +25,8 @@ import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfigurati
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -49,13 +51,17 @@ public final class YamlRuntimeConfigurationSwapper implements YamlConfigurationS
     
     @Override
     public RuntimeConfiguration swapToObject(final YamlRuntimeConfiguration yamlConfig) {
+        return swapToObject(yamlConfig, Collections.emptyMap());
+    }
+    
+    RuntimeConfiguration swapToObject(final YamlRuntimeConfiguration yamlConfig, final Map<String, Collection<String>> configuredDatabaseFields) {
         YamlRuntimeConfiguration actualYamlConfig = null == yamlConfig ? new YamlRuntimeConfiguration() : yamlConfig;
         Map<String, String> actualProps = null == actualYamlConfig.getProps() ? new LinkedHashMap<>() : actualYamlConfig.getProps();
         Map<String, String> actualDefaults = null == actualYamlConfig.getDefaults() ? new LinkedHashMap<>() : actualYamlConfig.getDefaults();
         Map<String, YamlRuntimeDatabaseConfiguration> actualDatabases = null == actualYamlConfig.getDatabases() ? new LinkedHashMap<>() : actualYamlConfig.getDatabases();
         ShardingSpherePreconditions.checkState(actualProps.isEmpty() || actualDatabases.isEmpty(),
                 () -> new IllegalArgumentException("`runtime.props` and `runtime.databases` cannot be configured together."));
-        return new RuntimeConfiguration(swapProps(actualProps), swapTopologyConfiguration(actualDatabases, actualDefaults));
+        return new RuntimeConfiguration(swapProps(actualProps), swapTopologyConfiguration(actualDatabases, actualDefaults, configuredDatabaseFields));
     }
     
     private Properties swapProps(final Map<String, String> yamlProps) {
@@ -66,7 +72,8 @@ public final class YamlRuntimeConfigurationSwapper implements YamlConfigurationS
         return result;
     }
     
-    private RuntimeTopologyConfiguration swapTopologyConfiguration(final Map<String, YamlRuntimeDatabaseConfiguration> yamlDatabaseConfigs, final Map<String, String> runtimeDefaults) {
+    private RuntimeTopologyConfiguration swapTopologyConfiguration(final Map<String, YamlRuntimeDatabaseConfiguration> yamlDatabaseConfigs, final Map<String, String> runtimeDefaults,
+                                                                   final Map<String, Collection<String>> configuredDatabaseFields) {
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(yamlDatabaseConfigs.size(), 1F);
         for (Entry<String, YamlRuntimeDatabaseConfiguration> entry : yamlDatabaseConfigs.entrySet()) {
             String databaseName = normalizeText(entry.getKey());
@@ -74,7 +81,8 @@ public final class YamlRuntimeConfigurationSwapper implements YamlConfigurationS
                     () -> new IllegalArgumentException("Runtime logical database name cannot be blank."));
             ShardingSpherePreconditions.checkState(!result.containsKey(databaseName),
                     () -> new IllegalArgumentException(String.format("Runtime logical database `%s` is duplicated.", databaseName)));
-            result.put(databaseName, databaseConfigSwapper.swapToObject(databaseName, entry.getValue(), runtimeDefaults));
+            result.put(databaseName, databaseConfigSwapper.swapToObject(databaseName, entry.getValue(), runtimeDefaults,
+                    configuredDatabaseFields.getOrDefault(databaseName, Collections.emptySet())));
         }
         return new RuntimeTopologyConfiguration(result);
     }

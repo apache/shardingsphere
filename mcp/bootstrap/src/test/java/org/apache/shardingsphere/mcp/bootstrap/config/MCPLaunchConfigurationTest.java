@@ -26,30 +26,15 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPLaunchConfigurationTest {
     
     @Test
-    void assertGetRuntimePropsWithEmptyPropertiesAfterMutation() {
+    void assertGetRuntimeProps() {
         Properties runtimeProps = PropertiesBuilder.build(new Property("databaseName", "logic_db"));
         MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(runtimeProps, new RuntimeTopologyConfiguration(Map.of()));
         
-        runtimeProps.clear();
-        
-        assertFalse(launchConfiguration.getRuntimeProps().isPresent());
-    }
-    
-    @Test
-    void assertGetRuntimePropsWithConfiguredPropertiesAfterMutation() {
-        Properties runtimeProps = new Properties();
-        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(runtimeProps, new RuntimeTopologyConfiguration(Map.of()));
-        
-        runtimeProps.setProperty("databaseName", "logic_db");
-        
-        Properties actual = launchConfiguration.getRuntimeProps().orElseThrow();
-        assertThat(actual.getProperty("databaseName"), is("logic_db"));
+        assertThat(launchConfiguration.getRuntimeProps().getProperty("databaseName"), is("logic_db"));
     }
     
     @Test
@@ -58,7 +43,7 @@ class MCPLaunchConfigurationTest {
                 new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false)));
         MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(new Properties(), runtimeTopologyConfiguration);
         
-        assertTrue(launchConfiguration.getRuntimeTopologyConfiguration().isPresent());
+        assertThat(launchConfiguration.getRuntimeTopologyConfiguration().getDatabases().get("logic_db").getDatabaseType(), is("H2"));
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration(final Properties runtimeProps, final RuntimeTopologyConfiguration runtimeTopologyConfiguration) {

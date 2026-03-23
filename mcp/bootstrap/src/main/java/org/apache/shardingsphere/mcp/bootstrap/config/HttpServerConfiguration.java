@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.Getter;
-
-import java.util.Objects;
+import lombok.RequiredArgsConstructor;
 
 /**
  * HTTP server configuration.
  */
 @Getter
+@RequiredArgsConstructor
 public final class HttpServerConfiguration {
     
     private final String bindHost;
@@ -33,16 +33,4 @@ public final class HttpServerConfiguration {
     
     private final String endpointPath;
     
-    /**
-     * Construct one HTTP server configuration.
-     *
-     * @param bindHost bind host
-     * @param port bind port
-     * @param endpointPath endpoint path
-     */
-    public HttpServerConfiguration(final String bindHost, final int port, final String endpointPath) {
-        this.bindHost = Objects.requireNonNull(bindHost, "bindHost cannot be null");
-        this.port = port;
-        this.endpointPath = Objects.requireNonNull(endpointPath, "endpointPath cannot be null");
-    }
 }

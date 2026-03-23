@@ -18,35 +18,16 @@
 package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.Getter;
-
-import java.util.Collections;
-import java.util.LinkedHashMap;
+import lombok.RequiredArgsConstructor;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Runtime topology configuration for direct multi-database launch.
  */
 @Getter
+@RequiredArgsConstructor
 public final class RuntimeTopologyConfiguration {
     
     private final Map<String, RuntimeDatabaseConfiguration> databases;
     
-    /**
-     * Construct a runtime topology configuration.
-     *
-     * @param databases runtime databases keyed by logical database name
-     */
-    public RuntimeTopologyConfiguration(final Map<String, RuntimeDatabaseConfiguration> databases) {
-        this.databases = Collections.unmodifiableMap(new LinkedHashMap<>(Objects.requireNonNull(databases, "databases cannot be null")));
-    }
-    
-    /**
-     * Determine whether the topology contains at least one runtime database binding.
-     *
-     * @return {@code true} when configured
-     */
-    public boolean isConfigured() {
-        return !databases.isEmpty();
-    }
 }

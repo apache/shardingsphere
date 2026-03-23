@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-
-import java.util.Objects;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import java.util.Properties;
 
 /**
  * MCP launch configuration.
  */
 @Getter
+@RequiredArgsConstructor
 public final class MCPLaunchConfiguration {
     
     private final HttpServerConfiguration httpServerConfiguration;
@@ -37,46 +34,7 @@ public final class MCPLaunchConfiguration {
     
     private final boolean stdioEnabled;
     
-    @Getter(AccessLevel.NONE)
     private final Properties runtimeProps;
     
     private final RuntimeTopologyConfiguration runtimeTopologyConfiguration;
-    
-    /**
-     * Construct one MCP launch configuration.
-     *
-     * @param httpServerConfiguration HTTP server configuration
-     * @param httpEnabled HTTP enablement
-     * @param stdioEnabled STDIO enablement
-     * @param runtimeProps runtime properties
-     * @param runtimeTopologyConfiguration runtime topology configuration
-     */
-    public MCPLaunchConfiguration(final HttpServerConfiguration httpServerConfiguration, final boolean httpEnabled, final boolean stdioEnabled,
-                                  final Properties runtimeProps, final RuntimeTopologyConfiguration runtimeTopologyConfiguration) {
-        this.httpServerConfiguration = Objects.requireNonNull(httpServerConfiguration, "httpServerConfiguration cannot be null");
-        this.httpEnabled = httpEnabled;
-        this.stdioEnabled = stdioEnabled;
-        this.runtimeProps = Objects.requireNonNull(runtimeProps, "runtimeProps cannot be null");
-        this.runtimeTopologyConfiguration = Objects.requireNonNull(runtimeTopologyConfiguration, "runtimeTopologyConfiguration cannot be null");
-        ShardingSpherePreconditions.checkState(runtimeProps.isEmpty() || !runtimeTopologyConfiguration.isConfigured(),
-                () -> new IllegalArgumentException("MCP runtime properties and runtime databases cannot be configured together."));
-    }
-    
-    /**
-     * Get runtime properties.
-     *
-     * @return runtime properties
-     */
-    public Optional<Properties> getRuntimeProps() {
-        return runtimeProps.isEmpty() ? Optional.empty() : Optional.of(runtimeProps);
-    }
-    
-    /**
-     * Get runtime topology configuration.
-     *
-     * @return runtime topology configuration when present
-     */
-    public Optional<RuntimeTopologyConfiguration> getRuntimeTopologyConfiguration() {
-        return runtimeTopologyConfiguration.isConfigured() ? Optional.of(runtimeTopologyConfiguration) : Optional.empty();
-    }
 }

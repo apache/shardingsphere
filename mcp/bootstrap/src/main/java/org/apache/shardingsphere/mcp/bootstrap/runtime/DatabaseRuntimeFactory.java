@@ -71,7 +71,7 @@ public final class DatabaseRuntimeFactory {
      */
     public Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final RuntimeTopologyConfiguration runtimeTopologyConfiguration) {
         RuntimeTopologyConfiguration actualRuntimeTopologyConfiguration = Objects.requireNonNull(runtimeTopologyConfiguration, "runtimeTopologyConfiguration cannot be null");
-        if (!actualRuntimeTopologyConfiguration.isConfigured()) {
+        if (actualRuntimeTopologyConfiguration.getDatabases().isEmpty()) {
             throw new IllegalArgumentException("At least one runtime database must be configured.");
         }
         return createConnectionConfigurations(actualRuntimeTopologyConfiguration.getDatabases());

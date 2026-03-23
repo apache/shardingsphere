@@ -22,12 +22,17 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpServerConfiguration;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * YAML HTTP server configuration swapper.
  */
 public final class YamlHttpServerConfigurationSwapper implements YamlConfigurationSwapper<YamlHttpServerConfiguration, HttpServerConfiguration> {
     
     private static final String DEFAULT_BIND_HOST = "127.0.0.1";
+    
+    private static final int DEFAULT_PORT = 18088;
     
     private static final String DEFAULT_ENDPOINT_PATH = "/mcp";
     
@@ -42,14 +47,22 @@ public final class YamlHttpServerConfigurationSwapper implements YamlConfigurati
     
     @Override
     public HttpServerConfiguration swapToObject(final YamlHttpServerConfiguration yamlConfig) {
+        return swapToObject(yamlConfig, Collections.emptySet());
+    }
+    
+    HttpServerConfiguration swapToObject(final YamlHttpServerConfiguration yamlConfig, final Collection<String> configuredFields) {
         YamlHttpServerConfiguration actualYamlConfig = null == yamlConfig ? new YamlHttpServerConfiguration() : yamlConfig;
         String bindHost = normalizeText(actualYamlConfig.getBindHost());
         String endpointPath = normalizeText(actualYamlConfig.getEndpointPath());
-        return new HttpServerConfiguration(bindHost.isEmpty() ? DEFAULT_BIND_HOST : bindHost, resolvePort(actualYamlConfig.getPort()),
+        boolean portConfigured = configuredFields.contains("port") || 0 != actualYamlConfig.getPort();
+        return new HttpServerConfiguration(bindHost.isEmpty() ? DEFAULT_BIND_HOST : bindHost, resolvePort(actualYamlConfig.getPort(), portConfigured),
                 endpointPath.isEmpty() ? DEFAULT_ENDPOINT_PATH : normalizePath(endpointPath));
     }
     
-    private int resolvePort(final int port) {
+    private int resolvePort(final int port, final boolean configured) {
+        if (!configured) {
+            return DEFAULT_PORT;
+        }
         ShardingSpherePreconditions.checkState(port >= 0, () -> new IllegalArgumentException("MCP server port cannot be negative."));
         return port;
     }

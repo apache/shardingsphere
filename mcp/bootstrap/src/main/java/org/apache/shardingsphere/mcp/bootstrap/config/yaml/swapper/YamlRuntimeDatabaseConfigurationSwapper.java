@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -47,10 +49,15 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
     
     @Override
     public RuntimeDatabaseConfiguration swapToObject(final YamlRuntimeDatabaseConfiguration yamlConfig) {
-        return swapToObject("", yamlConfig, new LinkedHashMap<>());
+        return swapToObject("", yamlConfig, new LinkedHashMap<>(), Collections.emptySet());
     }
     
     RuntimeDatabaseConfiguration swapToObject(final String databaseName, final YamlRuntimeDatabaseConfiguration yamlConfig, final Map<String, String> runtimeDefaults) {
+        return swapToObject(databaseName, yamlConfig, runtimeDefaults, Collections.emptySet());
+    }
+    
+    RuntimeDatabaseConfiguration swapToObject(final String databaseName, final YamlRuntimeDatabaseConfiguration yamlConfig, final Map<String, String> runtimeDefaults,
+                                              final Collection<String> configuredFields) {
         YamlRuntimeDatabaseConfiguration actualYamlConfig = null == yamlConfig ? new YamlRuntimeDatabaseConfiguration() : yamlConfig;
         Map<String, String> actualRuntimeDefaults = null == runtimeDefaults ? new LinkedHashMap<>() : runtimeDefaults;
         return new RuntimeDatabaseConfiguration(resolveRequiredText(actualYamlConfig.getDatabaseType(), actualRuntimeDefaults, "databaseType", databaseName),
@@ -60,8 +67,10 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
                 resolveText(actualYamlConfig.getDriverClassName(), actualRuntimeDefaults, "driverClassName"),
                 resolveText(actualYamlConfig.getSchemaPattern(), actualRuntimeDefaults, "schemaPattern"),
                 resolveText(actualYamlConfig.getDefaultSchema(), actualRuntimeDefaults, "defaultSchema"),
-                resolveBoolean(actualYamlConfig.isSupportsCrossSchemaSql(), actualYamlConfig.containsExplicitSupportsCrossSchemaSqlValue(), actualRuntimeDefaults, "supportsCrossSchemaSql"),
-                resolveBoolean(actualYamlConfig.isSupportsExplainAnalyze(), actualYamlConfig.containsExplicitSupportsExplainAnalyzeValue(), actualRuntimeDefaults, "supportsExplainAnalyze"));
+                resolveBoolean(actualYamlConfig.isSupportsCrossSchemaSql(), configuredFields.contains("supportsCrossSchemaSql") || actualYamlConfig.isSupportsCrossSchemaSql(),
+                        actualRuntimeDefaults, "supportsCrossSchemaSql"),
+                resolveBoolean(actualYamlConfig.isSupportsExplainAnalyze(), configuredFields.contains("supportsExplainAnalyze") || actualYamlConfig.isSupportsExplainAnalyze(),
+                        actualRuntimeDefaults, "supportsExplainAnalyze"));
     }
     
     private String resolveRequiredText(final String value, final Map<String, String> runtimeDefaults, final String fieldName, final String databaseName) {
@@ -77,7 +86,7 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
     }
     
     private boolean resolveBoolean(final boolean value, final boolean explicitlyConfigured, final Map<String, String> runtimeDefaults, final String fieldName) {
-        return explicitlyConfigured ? value : Boolean.parseBoolean(normalizeText(runtimeDefaults.get(fieldName)));
+        return explicitlyConfigured || !runtimeDefaults.containsKey(fieldName) ? value : Boolean.parseBoolean(normalizeText(runtimeDefaults.get(fieldName)));
     }
     
     private String normalizeText(final Object value) {

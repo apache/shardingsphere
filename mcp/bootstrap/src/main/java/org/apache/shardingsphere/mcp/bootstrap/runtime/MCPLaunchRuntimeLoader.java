@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+
 import java.util.Objects;
 import java.util.Properties;
 
@@ -40,11 +41,16 @@ public final class MCPLaunchRuntimeLoader {
     }
     
     private LoadedRuntime loadRuntime(final MCPLaunchConfiguration launchConfiguration) {
-        return launchConfiguration.getRuntimeTopologyConfiguration().map(runtimeProvider::load).orElseGet(() -> runtimeProvider.load(getRuntimeProps(launchConfiguration)));
+        return launchConfiguration.getRuntimeTopologyConfiguration().getDatabases().isEmpty()
+                ? runtimeProvider.load(getRequiredRuntimeProps(launchConfiguration))
+                : runtimeProvider.load(launchConfiguration.getRuntimeTopologyConfiguration());
     }
     
-    private Properties getRuntimeProps(final MCPLaunchConfiguration launchConfiguration) {
-        return launchConfiguration.getRuntimeProps()
-                .orElseThrow(() -> new IllegalArgumentException("MCP runtime properties or runtime databases must be configured for the default launch path."));
+    private Properties getRequiredRuntimeProps(final MCPLaunchConfiguration launchConfiguration) {
+        Properties result = launchConfiguration.getRuntimeProps();
+        if (result.isEmpty()) {
+            throw new IllegalArgumentException("MCP runtime properties or runtime databases must be configured for the default launch path.");
+        }
+        return result;
     }
 }

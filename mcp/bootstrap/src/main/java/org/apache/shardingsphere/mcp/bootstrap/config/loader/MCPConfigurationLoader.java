@@ -19,9 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.config.loader;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
 
 import java.io.File;
@@ -47,7 +45,7 @@ public final class MCPConfigurationLoader {
      */
     public static MCPLaunchConfiguration load(final String configPath) throws IOException {
         File configFile = resolveConfigurationFile(configPath);
-        return new YamlMCPLaunchConfigurationSwapper().swapToObject(YamlEngine.unmarshal(Files.readString(configFile.toPath()), YamlMCPLaunchConfiguration.class, true));
+        return new YamlMCPLaunchConfigurationSwapper().swapToObject(Files.readString(configFile.toPath()));
     }
     
     private static File resolveConfigurationFile(final String configPath) throws FileNotFoundException {

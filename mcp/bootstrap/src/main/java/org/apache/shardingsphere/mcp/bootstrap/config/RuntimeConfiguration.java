@@ -18,31 +18,18 @@
 package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.Getter;
-
-import java.util.Objects;
+import lombok.RequiredArgsConstructor;
 import java.util.Properties;
 
 /**
  * Runtime configuration.
  */
 @Getter
+@RequiredArgsConstructor
 public final class RuntimeConfiguration {
     
     private final Properties props;
     
     private final RuntimeTopologyConfiguration topologyConfiguration;
     
-    /**
-     * Construct runtime configuration.
-     *
-     * @param props runtime properties
-     * @param topologyConfiguration runtime topology configuration
-     */
-    public RuntimeConfiguration(final Properties props, final RuntimeTopologyConfiguration topologyConfiguration) {
-        this.props = Objects.requireNonNull(props, "props cannot be null");
-        this.topologyConfiguration = Objects.requireNonNull(topologyConfiguration, "topologyConfiguration cannot be null");
-        if (!props.isEmpty() && topologyConfiguration.isConfigured()) {
-            throw new IllegalArgumentException("MCP runtime properties and runtime databases cannot be configured together.");
-        }
-    }
 }

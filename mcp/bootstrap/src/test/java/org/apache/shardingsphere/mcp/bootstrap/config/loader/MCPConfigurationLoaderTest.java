@@ -56,7 +56,7 @@ class MCPConfigurationLoaderTest {
         assertThat(actual.getHttpServerConfiguration().getBindHost(), is("0.0.0.0"));
         assertThat(actual.getHttpServerConfiguration().getPort(), is(9090));
         assertThat(actual.getHttpServerConfiguration().getEndpointPath(), is("/gateway"));
-        assertFalse(actual.getRuntimeProps().isPresent());
+        assertTrue(actual.getRuntimeProps().isEmpty());
     }
     
     @Test
@@ -70,7 +70,7 @@ class MCPConfigurationLoaderTest {
         assertThat(actual.getHttpServerConfiguration().getBindHost(), is("127.0.0.1"));
         assertThat(actual.getHttpServerConfiguration().getPort(), is(18088));
         assertThat(actual.getHttpServerConfiguration().getEndpointPath(), is("/mcp"));
-        assertFalse(actual.getRuntimeProps().isPresent());
+        assertTrue(actual.getRuntimeProps().isEmpty());
     }
     
     @Test
@@ -81,7 +81,7 @@ class MCPConfigurationLoaderTest {
                 + "    databaseType: H2\n");
         
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
-        Properties actualProps = actual.getRuntimeProps().orElseThrow();
+        Properties actualProps = actual.getRuntimeProps();
         
         assertThat(actualProps.getProperty("databaseName"), is("logic_db"));
         assertThat(actualProps.getProperty("databaseType"), is("H2"));
@@ -103,9 +103,9 @@ class MCPConfigurationLoaderTest {
                 + "      supportsCrossSchemaSql: true\n");
         
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
-        Map<String, RuntimeDatabaseConfiguration> actualDatabases = actual.getRuntimeTopologyConfiguration().orElseThrow().getDatabases();
+        Map<String, RuntimeDatabaseConfiguration> actualDatabases = actual.getRuntimeTopologyConfiguration().getDatabases();
         
-        assertFalse(actual.getRuntimeProps().isPresent());
+        assertTrue(actual.getRuntimeProps().isEmpty());
         assertThat(actualDatabases.size(), is(2));
         assertThat(actualDatabases.get("logic_db").getDatabaseType(), is("H2"));
         assertThat(actualDatabases.get("logic_db").getDriverClassName(), is("org.h2.Driver"));

@@ -30,7 +30,7 @@ public final class YamlHttpServerConfiguration implements YamlConfiguration {
     
     private String bindHost;
     
-    private int port = 18088;
+    private int port;
     
     private String endpointPath;
 }
