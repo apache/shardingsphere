@@ -17,15 +17,8 @@
 
 package org.apache.shardingsphere.mcp.capability;
 
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler.DatabaseCapabilityView;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler.ServiceCapability;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.ResultBehavior;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.SchemaSemantics;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.StatementClass;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.SupportedObjectType;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.TransactionBoundaryBehavior;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataCatalog;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.RuntimeDatabaseDescriptor;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

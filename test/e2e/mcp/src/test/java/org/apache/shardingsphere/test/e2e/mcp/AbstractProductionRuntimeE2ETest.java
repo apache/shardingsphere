@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.e2e.mcp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPConfigurationLoader;
+import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.LaunchState;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.LaunchState;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -58,7 +58,7 @@ abstract class AbstractProductionRuntimeE2ETest {
             if (launchState.getStdioServer().isPresent()) {
                 launchState.getStdioServer().get().stop();
             }
-            launchState.getServerContext().stop();
+            launchState.getServerRegistry().stop();
             launchState = null;
         }
     }
@@ -154,6 +154,14 @@ abstract class AbstractProductionRuntimeE2ETest {
         return Map.of();
     }
     
+    protected Map<String, String> getRuntimeDefaults() {
+        return Map.of();
+    }
+    
+    protected Map<String, Map<String, String>> getRuntimeDatabases() {
+        return Map.of();
+    }
+    
     protected void prepareRuntimeFixture() throws IOException {
     }
     
@@ -241,10 +249,29 @@ abstract class AbstractProductionRuntimeE2ETest {
         result.append("    enabled: false\n");
         result.append("runtime:\n");
         Map<String, String> runtimeProps = getRuntimeProps();
+        Map<String, Map<String, String>> runtimeDatabases = getRuntimeDatabases();
+        if (!runtimeProps.isEmpty() && !runtimeDatabases.isEmpty()) {
+            throw new IllegalStateException("runtime props and runtime databases cannot be configured together.");
+        }
         if (!runtimeProps.isEmpty()) {
             result.append("  props:\n");
             for (Entry<String, String> entry : runtimeProps.entrySet()) {
                 result.append("    ").append(entry.getKey()).append(": ").append(toYamlScalar(entry.getValue())).append('\n');
+            }
+        } else if (!runtimeDatabases.isEmpty()) {
+            Map<String, String> runtimeDefaults = getRuntimeDefaults();
+            if (!runtimeDefaults.isEmpty()) {
+                result.append("  defaults:\n");
+                for (Entry<String, String> entry : runtimeDefaults.entrySet()) {
+                    result.append("    ").append(entry.getKey()).append(": ").append(toYamlScalar(entry.getValue())).append('\n');
+                }
+            }
+            result.append("  databases:\n");
+            for (Entry<String, Map<String, String>> databaseEntry : runtimeDatabases.entrySet()) {
+                result.append("    ").append(databaseEntry.getKey()).append(":\n");
+                for (Entry<String, String> propertyEntry : databaseEntry.getValue().entrySet()) {
+                    result.append("      ").append(propertyEntry.getKey()).append(": ").append(toYamlScalar(propertyEntry.getValue())).append('\n');
+                }
             }
         }
         return result.toString();

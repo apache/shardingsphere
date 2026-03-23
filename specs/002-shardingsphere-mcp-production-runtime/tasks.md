@@ -28,11 +28,11 @@
 
 **⚠️ CRITICAL**: No user story work should start until this phase is complete.
 
-- [x] T003 Define runtime provider abstractions in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/McpRuntimeProvider.java`
-- [x] T004 [P] Add production runtime loading and fail-fast validation in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/ProductionRuntimeLoader.java`
-- [x] T005 [P] Extend MCP packaged configuration loading for runtime providers in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/McpConfigurationLoader.java`
-- [x] T006 Replace empty-runtime production launch defaults in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/lifecycle/McpRuntimeLauncher.java`
-- [x] T007 [P] Add bootstrap configuration and fail-fast tests in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/ProductionRuntimeLoaderTest.java`
+- [x] T003 Define runtime provider abstractions in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/MCPRuntimeProvider.java`
+- [x] T004 [P] Add production runtime loading and fail-fast validation in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/MCPLaunchRuntimeLoader.java`
+- [x] T005 [P] Extend MCP packaged configuration loading for runtime providers in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/MCPConfigurationLoader.java`
+- [x] T006 Replace empty-runtime production launch defaults in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/lifecycle/MCPRuntimeLauncher.java`
+- [x] T007 [P] Add bootstrap configuration and fail-fast tests in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/MCPLaunchRuntimeLoaderTest.java`
 - [x] T008 Implement a shared production-runtime E2E harness in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/AbstractProductionRuntimeE2ETest.java`
 
 **Checkpoint**: Provider loading, launch validation, and shared test scaffolding are ready.
@@ -56,7 +56,7 @@
 - [x] T012 [P] [US1] Implement ShardingSphere metadata provider in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/ShardingSphereMetadataProvider.java`
 - [x] T013 [P] [US1] Adapt provider output to `MetadataCatalog` in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/MetadataCatalogFactory.java`
 - [x] T014 [US1] Overlay runtime metadata into capability assembly in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/main/java/org/apache/shardingsphere/mcp/capability/DatabaseCapabilityAssembler.java`
-- [x] T015 [US1] Wire metadata provider into bootstrap runtime loading in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/ProductionRuntimeLoader.java`
+- [x] T015 [US1] Wire metadata provider into bootstrap runtime loading in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/MCPLaunchRuntimeLoader.java`
 
 **Checkpoint**: Discovery and capability flows are real-runtime backed and demoable as the MVP slice.
 

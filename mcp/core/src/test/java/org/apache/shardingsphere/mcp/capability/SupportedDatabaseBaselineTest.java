@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.capability;
 
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.DatabaseCapability;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

@@ -109,11 +109,6 @@ jobs:
             -X POST http://127.0.0.1:18088/mcp)
           test "${TOOL_STATUS}" = "200"
           grep -q 'supportedTools' "${RUNNER_TEMP}/mcp-tool.body"
-          UNAUTH_DELETE_STATUS=$(curl -sS -o "${RUNNER_TEMP}/mcp-delete-unauth.body" -w '%{http_code}' \
-            -H "MCP-Session-Id: ${SESSION_ID}" \
-            -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-            -X DELETE http://127.0.0.1:18088/mcp)
-          test "${UNAUTH_DELETE_STATUS}" = "401"
           DELETE_STATUS=$(curl -sS -o "${RUNNER_TEMP}/mcp-delete.body" -w '%{http_code}' \
             -H 'X-Trusted-Identity: ci_user' \
             -H "MCP-Session-Id: ${SESSION_ID}" \

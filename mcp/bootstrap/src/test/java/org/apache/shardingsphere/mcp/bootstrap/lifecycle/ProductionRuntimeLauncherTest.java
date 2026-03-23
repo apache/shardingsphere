@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.LaunchState;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration.ServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,12 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.util.Map;
+import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProductionRuntimeLauncherTest {
@@ -46,7 +51,7 @@ class ProductionRuntimeLauncherTest {
             if (launchState.getStdioServer().isPresent()) {
                 launchState.getStdioServer().get().stop();
             }
-            launchState.getServerContext().stop();
+            launchState.getServerRegistry().stop();
             launchState = null;
         }
     }
@@ -56,10 +61,21 @@ class ProductionRuntimeLauncherTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        launchState = runtimeLauncher.launch(new RuntimeConfiguration(new ServerConfiguration("127.0.0.1", 0, "/mcp"), false, true,
-                H2RuntimeTestSupport.createRuntimeProps("logic_db", jdbcUrl)));
+        launchState = runtimeLauncher.launch(new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/mcp"), false, true,
+                H2RuntimeTestSupport.createRuntimeProps("logic_db", jdbcUrl), new RuntimeTopologyConfiguration(Map.of())));
         assertTrue(launchState.getStdioServer().isPresent());
-        assertTrue(launchState.getRuntimeContext().getCapabilityAssembler().assembleDatabaseCapability("logic_db", "H2").isPresent());
-        assertTrue(launchState.getRuntimeContext().getCapabilityAssembler().assembleServiceCapability().getSupportedTools().contains("execute_query"));
+        assertTrue(launchState.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("logic_db", "H2").isPresent());
+        assertTrue(launchState.getRuntimeServices().getCapabilityAssembler().assembleServiceCapability().getSupportedTools().contains("execute_query"));
+    }
+    
+    @Test
+    void assertLaunchWithInvalidRuntimeProps() {
+        Properties props = new Properties();
+        props.setProperty("databaseType", "H2");
+        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/mcp"), false, true,
+                        props, new RuntimeTopologyConfiguration(Map.of()))));
+        assertThat(actual.getMessage(), is("Runtime property `databaseName` is required."));
     }
 }

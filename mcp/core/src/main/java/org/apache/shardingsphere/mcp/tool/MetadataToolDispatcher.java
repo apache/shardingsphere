@@ -17,15 +17,13 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataCatalog;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataObject;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataObjectType;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.ResourceLoadResult;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.ResourceRequest;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.MetadataObject;
+import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.ResourceLoadResult;
+import org.apache.shardingsphere.mcp.resource.ResourceRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +32,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -220,117 +217,5 @@ public final class MetadataToolDispatcher {
             }
         }
         return result;
-    }
-    
-    /**
-     * Tool request contract for metadata discovery.
-     */
-    @Getter
-    public static final class ToolRequest {
-        
-        private final String toolName;
-        
-        private final String database;
-        
-        private final String schema;
-        
-        private final String objectName;
-        
-        private final String parentObjectType;
-        
-        private final String query;
-        
-        private final Set<MetadataObjectType> objectTypes;
-        
-        private final int pageSize;
-        
-        private final String pageToken;
-        
-        /**
-         * Construct a metadata tool request.
-         *
-         * @param toolName tool identifier
-         * @param database logical database name or empty string
-         * @param schema schema name or empty string
-         * @param objectName object name or parent object name depending on the tool
-         * @param parentObjectType parent object type name or empty string
-         * @param query search query or empty string
-         * @param objectTypes object type filter for search or empty set
-         * @param pageSize requested page size
-         * @param pageToken requested page token or empty string
-         */
-        public ToolRequest(final String toolName, final String database, final String schema, final String objectName,
-                           final String parentObjectType, final String query, final Set<MetadataObjectType> objectTypes,
-                           final int pageSize, final String pageToken) {
-            this.toolName = Objects.requireNonNull(toolName, "toolName cannot be null");
-            this.database = Objects.requireNonNull(database, "database cannot be null");
-            this.schema = Objects.requireNonNull(schema, "schema cannot be null");
-            this.objectName = Objects.requireNonNull(objectName, "objectName cannot be null");
-            this.parentObjectType = Objects.requireNonNull(parentObjectType, "parentObjectType cannot be null");
-            this.query = Objects.requireNonNull(query, "query cannot be null");
-            this.objectTypes = Collections.unmodifiableSet(new LinkedHashSet<>(Objects.requireNonNull(objectTypes, "objectTypes cannot be null")));
-            this.pageSize = pageSize;
-            this.pageToken = Objects.requireNonNull(pageToken, "pageToken cannot be null");
-        }
-    }
-    
-    /**
-     * Dispatch result for one metadata tool request.
-     */
-    @Getter
-    public static final class ToolDispatchResult {
-        
-        private final List<MetadataObject> metadataObjects;
-        
-        private final String nextPageToken;
-        
-        @Getter(AccessLevel.NONE)
-        private final boolean errorCodePresent;
-        
-        @Getter(AccessLevel.NONE)
-        private final ErrorCode errorCode;
-        
-        private final String message;
-        
-        private ToolDispatchResult(final Collection<MetadataObject> metadataObjects, final String nextPageToken,
-                                   final boolean errorCodePresent, final ErrorCode errorCode, final String message) {
-            this.metadataObjects = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(metadataObjects, "metadataObjects cannot be null")));
-            this.nextPageToken = Objects.requireNonNull(nextPageToken, "nextPageToken cannot be null");
-            this.errorCodePresent = errorCodePresent;
-            this.errorCode = Objects.requireNonNull(errorCode, "errorCode cannot be null");
-            this.message = Objects.requireNonNull(message, "message cannot be null");
-        }
-        
-        /**
-         * Determine whether the tool request finished successfully.
-         *
-         * @return {@code true} when no error is attached
-         */
-        public boolean isSuccessful() {
-            return !errorCodePresent;
-        }
-        
-        private static ToolDispatchResult success(final Collection<MetadataObject> metadataObjects, final String nextPageToken) {
-            return new ToolDispatchResult(metadataObjects, nextPageToken, false, ErrorCode.INVALID_REQUEST, "");
-        }
-        
-        private static ToolDispatchResult error(final ErrorCode errorCode, final String message) {
-            return new ToolDispatchResult(Collections.emptyList(), "", true, Objects.requireNonNull(errorCode, "errorCode cannot be null"), message);
-        }
-        
-        private static ToolDispatchResult fromResourceLoadResult(final ResourceLoadResult loadResult) {
-            return loadResult.getErrorCode().isPresent()
-                    ? error(loadResult.getErrorCode().get(), loadResult.getMessage())
-                    : success(loadResult.getMetadataObjects(), "");
-        }
-        
-        /**
-         * Get the error code when one exists.
-         *
-         * @return optional error code
-         */
-        public Optional<ErrorCode> getErrorCode() {
-            return errorCodePresent ? Optional.of(errorCode) : Optional.empty();
-        }
     }
 }

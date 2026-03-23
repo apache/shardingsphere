@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.mcp.protocol;
 
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ColumnDefinition;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ErrorCode;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ResultKind;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

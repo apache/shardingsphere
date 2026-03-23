@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.bootstrap;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
+import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 
 import java.io.IOException;
 

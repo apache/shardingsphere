@@ -63,15 +63,20 @@ transport:
     enabled: true
 
 runtime:
-  props:
-    databaseName: logic_db
-    databaseType: H2
-    jdbcUrl: "jdbc:h2:file:./data/mcp-demo;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
-    driverClassName: org.h2.Driver
+  defaults:
     schemaPattern: public
     defaultSchema: public
     supportsCrossSchemaSql: true
     supportsExplainAnalyze: false
+  databases:
+    orders:
+      databaseType: H2
+      jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+      driverClassName: org.h2.Driver
+    billing:
+      databaseType: H2
+      jdbcUrl: "jdbc:h2:file:./data/mcp-demo-billing;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+      driverClassName: org.h2.Driver
 ```
 
 ### 3. Initialize one MCP session
@@ -103,7 +108,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"list_tables","arguments":{"database":"logic_db","schema":"public"}}}'
+  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"list_tables","arguments":{"database":"orders","schema":"public"}}}'
 ```
 
 Expected result:
@@ -214,7 +219,7 @@ For local embedding, call `StdioMCPServer` directly:
 
 ```java
 MCPSessionManager sessionManager = new MCPSessionManager();
-StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, new MCPRuntimeContext(sessionManager));
+StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, new MCPRuntimeServices(sessionManager));
 stdioMCPServer.start();
 String sessionId = stdioMCPServer.initializeSession();
 ToolDispatchResult result = stdioMCPServer.invokeMetadataTool(sessionId, metadataCatalog,
@@ -227,12 +232,12 @@ Use `executeQuery(sessionId, executionRequest)` when the caller also provides a 
 Reference:
 
 - `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioMCPServer.java`
-- `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/server/StdioTransportIntegrationTest.java`
+- `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioTransportIntegrationTest.java`
 
 ## Runtime Notes
 
-- The packaged `conf/mcp.yaml` now ships with a demo JDBC runtime block so the distribution can prove non-empty metadata and real query execution on the first run.
-- For real deployments, replace the `runtime` block with your own logical database mapping and JDBC connection properties.
+- The packaged `conf/mcp.yaml` now ships with a demo multi-database JDBC runtime block so the distribution can prove logical-database discovery and real query execution on the first run.
+- For real deployments, replace the `runtime` block with your own logical database mapping and JDBC connection properties. Prefer `runtime.databases` for direct multi-database connectivity; the legacy single-database `runtime.props` form remains supported for compatibility.
 - If your target database driver is not already packaged, copy the driver jar under `ext-lib/` before running `bin/start.sh`.
 - For local-only HTTP usage, keep `transport.http.enabled: true` and set `transport.stdio.enabled: false` if you do not need STDIO.
 - For local in-process integration, keep `transport.stdio.enabled: true`. The packaged runtime starts the same STDIO runtime, but it does not expose a separate text shell.

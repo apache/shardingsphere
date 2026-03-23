@@ -35,12 +35,19 @@ class MCPBootstrapTest {
     
     @Test
     void assertMain() throws IOException {
-        Path configFile = createConfigFile();
+        Path configFile = createLegacyConfigFile();
         
         assertDoesNotThrow(() -> MCPBootstrap.main(new String[]{configFile.toString()}));
     }
     
-    private Path createConfigFile() throws IOException {
+    @Test
+    void assertMainWithRuntimeDatabases() throws IOException {
+        Path configFile = createRuntimeDatabasesConfigFile();
+        
+        assertDoesNotThrow(() -> MCPBootstrap.main(new String[]{configFile.toString()}));
+    }
+    
+    private Path createLegacyConfigFile() throws IOException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "bootstrap");
         initializeDatabase(jdbcUrl);
         Path result = tempDir.resolve("mcp.yaml");
@@ -57,6 +64,31 @@ class MCPBootstrapTest {
                 + "    defaultSchema: public\n"
                 + "    supportsCrossSchemaSql: true\n"
                 + "    supportsExplainAnalyze: false\n");
+        return result;
+    }
+    
+    private Path createRuntimeDatabasesConfigFile() throws IOException {
+        String firstJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "bootstrap-orders");
+        String secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "bootstrap-analytics");
+        initializeDatabase(firstJdbcUrl);
+        initializeDatabase(secondJdbcUrl);
+        Path result = tempDir.resolve("mcp-runtime-databases.yaml");
+        Files.writeString(result, "transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "runtime:\n"
+                + "  defaults:\n"
+                + "    databaseType: H2\n"
+                + "    driverClassName: org.h2.Driver\n"
+                + "    schemaPattern: public\n"
+                + "    defaultSchema: public\n"
+                + "    supportsCrossSchemaSql: true\n"
+                + "    supportsExplainAnalyze: false\n"
+                + "  databases:\n"
+                + "    orders:\n"
+                + "      jdbcUrl: '" + firstJdbcUrl + "'\n"
+                + "    analytics:\n"
+                + "      jdbcUrl: '" + secondJdbcUrl + "'\n");
         return result;
     }
     

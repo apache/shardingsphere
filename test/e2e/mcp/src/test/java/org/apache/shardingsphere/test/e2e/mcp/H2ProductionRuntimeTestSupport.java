@@ -23,6 +23,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 final class H2ProductionRuntimeTestSupport {
@@ -45,6 +46,37 @@ final class H2ProductionRuntimeTestSupport {
                 "defaultSchema", "public",
                 "supportsCrossSchemaSql", "true",
                 "supportsExplainAnalyze", "false");
+    }
+    
+    static Map<String, String> createRuntimeDefaults() {
+        return Map.of(
+                "databaseType", "H2",
+                "driverClassName", "org.h2.Driver",
+                "schemaPattern", "public",
+                "defaultSchema", "public",
+                "supportsCrossSchemaSql", "true",
+                "supportsExplainAnalyze", "false");
+    }
+    
+    static Map<String, String> createRuntimeDefaultsWithoutDatabaseType() {
+        return Map.of(
+                "driverClassName", "org.h2.Driver",
+                "schemaPattern", "public",
+                "defaultSchema", "public",
+                "supportsCrossSchemaSql", "true",
+                "supportsExplainAnalyze", "false");
+    }
+    
+    static Map<String, String> createRuntimeDatabase(final String jdbcUrl) {
+        Map<String, String> result = new LinkedHashMap<>();
+        result.put("jdbcUrl", jdbcUrl);
+        return result;
+    }
+    
+    static Map<String, String> createRuntimeDatabase(final String jdbcUrl, final String databaseType) {
+        Map<String, String> result = createRuntimeDatabase(jdbcUrl);
+        result.put("databaseType", databaseType);
+        return result;
     }
     
     static void initializeDatabase(final String jdbcUrl) throws SQLException {

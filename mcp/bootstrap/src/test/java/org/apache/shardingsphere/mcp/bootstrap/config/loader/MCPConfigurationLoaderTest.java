@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.config;
+package org.apache.shardingsphere.mcp.bootstrap.config.loader;
 
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,13 +51,13 @@ class MCPConfigurationLoaderTest {
                 + "  stdio:\n"
                 + "    enabled: false\n");
         
-        RuntimeConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         
         assertTrue(actual.isHttpEnabled());
         assertFalse(actual.isStdioEnabled());
-        assertThat(actual.getServerConfiguration().getBindHost(), is("0.0.0.0"));
-        assertThat(actual.getServerConfiguration().getPort(), is(9090));
-        assertThat(actual.getServerConfiguration().getEndpointPath(), is("/gateway"));
+        assertThat(actual.getHttpServerConfiguration().getBindHost(), is("0.0.0.0"));
+        assertThat(actual.getHttpServerConfiguration().getPort(), is(9090));
+        assertThat(actual.getHttpServerConfiguration().getEndpointPath(), is("/gateway"));
         assertFalse(actual.getRuntimeProps().isPresent());
     }
     
@@ -63,13 +65,13 @@ class MCPConfigurationLoaderTest {
     void assertLoadWithDefaults() throws IOException {
         Path configFile = createConfigFile("");
         
-        RuntimeConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         
         assertTrue(actual.isHttpEnabled());
         assertTrue(actual.isStdioEnabled());
-        assertThat(actual.getServerConfiguration().getBindHost(), is("127.0.0.1"));
-        assertThat(actual.getServerConfiguration().getPort(), is(18088));
-        assertThat(actual.getServerConfiguration().getEndpointPath(), is("/mcp"));
+        assertThat(actual.getHttpServerConfiguration().getBindHost(), is("127.0.0.1"));
+        assertThat(actual.getHttpServerConfiguration().getPort(), is(18088));
+        assertThat(actual.getHttpServerConfiguration().getEndpointPath(), is("/mcp"));
         assertFalse(actual.getRuntimeProps().isPresent());
     }
     
@@ -80,11 +82,53 @@ class MCPConfigurationLoaderTest {
                 + "    databaseName: logic_db\n"
                 + "    databaseType: H2\n");
         
-        RuntimeConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         Properties actualProps = actual.getRuntimeProps().orElseThrow();
         
         assertThat(actualProps.getProperty("databaseName"), is("logic_db"));
         assertThat(actualProps.getProperty("databaseType"), is("H2"));
+    }
+    
+    @Test
+    void assertLoadWithRuntimeDatabases() throws IOException {
+        Path configFile = createConfigFile("runtime:\n"
+                + "  defaults:\n"
+                + "    databaseType: H2\n"
+                + "    driverClassName: org.h2.Driver\n"
+                + "    schemaPattern: public\n"
+                + "    defaultSchema: public\n"
+                + "  databases:\n"
+                + "    logic_db:\n"
+                + "      jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    analytics_db:\n"
+                + "      jdbcUrl: jdbc:h2:mem:analytics\n"
+                + "      supportsCrossSchemaSql: true\n");
+        
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
+        Map<String, RuntimeDatabaseConfiguration> actualDatabases = actual.getRuntimeTopologyConfiguration().orElseThrow().getDatabases();
+        
+        assertFalse(actual.getRuntimeProps().isPresent());
+        assertThat(actualDatabases.size(), is(2));
+        assertThat(actualDatabases.get("logic_db").getDatabaseType(), is("H2"));
+        assertThat(actualDatabases.get("logic_db").getDriverClassName(), is("org.h2.Driver"));
+        assertThat(actualDatabases.get("logic_db").getSchemaPattern(), is("public"));
+        assertFalse(actualDatabases.get("logic_db").isSupportsCrossSchemaSql());
+        assertTrue(actualDatabases.get("analytics_db").isSupportsCrossSchemaSql());
+    }
+    
+    @Test
+    void assertLoadWithRuntimePropsAndDatabases() throws IOException {
+        Path configFile = createConfigFile("runtime:\n"
+                + "  props:\n"
+                + "    databaseName: logic_db\n"
+                + "  databases:\n"
+                + "    logic_db:\n"
+                + "      databaseType: H2\n"
+                + "      jdbcUrl: jdbc:h2:mem:logic\n");
+        
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
+        
+        assertThat(actual.getMessage(), is("`runtime.props` and `runtime.databases` cannot be configured together."));
     }
     
     @Test

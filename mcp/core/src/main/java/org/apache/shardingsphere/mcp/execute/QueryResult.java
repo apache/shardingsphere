@@ -1,0 +1,49 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.execute;
+
+import lombok.Getter;
+import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * Query result definition for the in-memory runtime.
+ */
+@Getter
+public final class QueryResult {
+    
+    private final List<ColumnDefinition> columns;
+    
+    private final List<List<Object>> rows;
+    
+    /**
+     * Construct one query result definition.
+     *
+     * @param columns columns
+     * @param rows rows
+     */
+    public QueryResult(final Collection<ColumnDefinition> columns, final Collection<List<Object>> rows) {
+        this.columns = Collections.unmodifiableList(new LinkedList<>(Objects.requireNonNull(columns, "columns cannot be null")));
+        this.rows = Collections.unmodifiableList(new LinkedList<>(Objects.requireNonNull(rows, "rows cannot be null")));
+    }
+}

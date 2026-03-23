@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.ExecutionRequest;
+import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ColumnDefinition;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ErrorCode;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -65,7 +64,7 @@ public final class ShardingSphereExecutionAdapter {
      * @param classificationResult classification result
      * @return execution response
      */
-    public ExecuteQueryResponse execute(final ExecutionRequest executionRequest, final StatementClassifier.ClassificationResult classificationResult) {
+    public ExecuteQueryResponse execute(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         Connection connection = null;
         boolean closeConnection = false;
         try {
@@ -145,7 +144,7 @@ public final class ShardingSphereExecutionAdapter {
      * Commit one session transaction.
      *
      * @param sessionId session identifier
-     * @throws IllegalStateException when the transaction does not exist or commit fails
+     * @throws IllegalStateException when commit fails
      */
     public void commitTransaction(final String sessionId) {
         SessionConnectionContext sessionConnectionContext = getRequiredSessionConnection(sessionId);
@@ -174,7 +173,7 @@ public final class ShardingSphereExecutionAdapter {
      *
      * @param sessionId session identifier
      * @param savepointName savepoint name
-     * @throws IllegalStateException when the transaction does not exist or the savepoint cannot be created
+     * @throws IllegalStateException when the savepoint cannot be created
      */
     public void createSavepoint(final String sessionId, final String savepointName) {
         SessionConnectionContext sessionConnectionContext = getRequiredSessionConnection(sessionId);
@@ -190,7 +189,7 @@ public final class ShardingSphereExecutionAdapter {
      *
      * @param sessionId session identifier
      * @param savepointName savepoint name
-     * @throws IllegalStateException when the transaction or savepoint does not exist, or rollback fails
+     * @throws IllegalStateException when the savepoint does not exist or rollback fails
      */
     public void rollbackToSavepoint(final String sessionId, final String savepointName) {
         SessionConnectionContext sessionConnectionContext = getRequiredSessionConnection(sessionId);
@@ -208,7 +207,7 @@ public final class ShardingSphereExecutionAdapter {
      *
      * @param sessionId session identifier
      * @param savepointName savepoint name
-     * @throws IllegalStateException when the transaction or savepoint does not exist, or release fails
+     * @throws IllegalStateException when the savepoint does not exist or release fails
      */
     public void releaseSavepoint(final String sessionId, final String savepointName) {
         SessionConnectionContext sessionConnectionContext = getRequiredSessionConnection(sessionId);

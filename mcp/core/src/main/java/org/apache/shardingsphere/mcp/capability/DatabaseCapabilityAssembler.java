@@ -17,15 +17,8 @@
 
 package org.apache.shardingsphere.mcp.capability;
 
-import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.DatabaseCapability;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.ResultBehavior;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.SchemaSemantics;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.StatementClass;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.SupportedObjectType;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.TransactionBoundaryBehavior;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataCatalog;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.RuntimeDatabaseDescriptor;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -160,114 +153,22 @@ public final class DatabaseCapabilityAssembler {
                 capability.getExplainAnalyzeResultBehavior(), capability.getExplainAnalyzeTransactionBehavior());
     }
     
-    private static <T> List<T> toImmutableList(final Collection<T> values) {
+    static <T> List<T> toImmutableList(final Collection<T> values) {
         return Collections.unmodifiableList(new LinkedList<>(Objects.requireNonNull(values, "values cannot be null")));
     }
     
-    private static <T extends Enum<T>> Set<T> toImmutableEnumSet(final Set<T> values, final Class<T> enumType) {
+    static <T extends Enum<T>> Set<T> toImmutableEnumSet(final Set<T> values, final Class<T> enumType) {
         if (values.isEmpty()) {
             return Collections.unmodifiableSet(EnumSet.noneOf(enumType));
         }
         return Collections.unmodifiableSet(EnumSet.copyOf(values));
     }
     
-    private static Set<String> toImmutableStrings(final Collection<String> values) {
+    static Set<String> toImmutableStrings(final Collection<String> values) {
         Set<String> result = new LinkedHashSet<>(Objects.requireNonNull(values, "supportedTransactionStatements" + " cannot be null").size());
         for (String each : values) {
             result.add(Objects.requireNonNull(each, "supportedTransactionStatements" + " cannot contain null"));
         }
         return Collections.unmodifiableSet(result);
-    }
-    
-    /**
-     * Service-level capability view.
-     */
-    @Getter
-    public static final class ServiceCapability {
-        
-        private final List<String> supportedResources;
-        
-        private final List<String> supportedTools;
-        
-        private final Set<StatementClass> supportedStatementClasses;
-        
-        ServiceCapability(final List<String> supportedResources, final List<String> supportedTools, final Set<StatementClass> supportedStatementClasses) {
-            this.supportedResources = toImmutableList(supportedResources);
-            this.supportedTools = toImmutableList(supportedTools);
-            this.supportedStatementClasses = toImmutableEnumSet(Objects.requireNonNull(supportedStatementClasses, "supportedStatementClasses cannot be null"),
-                    StatementClass.class);
-        }
-    }
-    
-    /**
-     * Database-level capability view.
-     */
-    @Getter
-    public static final class DatabaseCapabilityView {
-        
-        private final String database;
-        
-        private final String databaseType;
-        
-        private final String minSupportedVersion;
-        
-        private final Set<SupportedObjectType> supportedObjectTypes;
-        
-        private final Set<StatementClass> supportedStatementClasses;
-        
-        private final boolean supportsTransactionControl;
-        
-        private final boolean supportsSavepoint;
-        
-        private final Set<String> supportedTransactionStatements;
-        
-        private final boolean defaultAutocommit;
-        
-        private final int maxRowsDefault;
-        
-        private final int maxTimeoutMsDefault;
-        
-        private final SchemaSemantics defaultSchemaSemantics;
-        
-        private final boolean supportsCrossSchemaSql;
-        
-        private final boolean supportsExplainAnalyze;
-        
-        private final TransactionBoundaryBehavior ddlTransactionBehavior;
-        
-        private final TransactionBoundaryBehavior dclTransactionBehavior;
-        
-        private final ResultBehavior explainAnalyzeResultBehavior;
-        
-        private final TransactionBoundaryBehavior explainAnalyzeTransactionBehavior;
-        
-        DatabaseCapabilityView(final String database, final String databaseType, final String minSupportedVersion, final Set<SupportedObjectType> supportedObjectTypes,
-                               final Set<StatementClass> supportedStatementClasses, final boolean supportsTransactionControl, final boolean supportsSavepoint,
-                               final Set<String> supportedTransactionStatements, final boolean defaultAutocommit, final int maxRowsDefault,
-                               final int maxTimeoutMsDefault, final SchemaSemantics defaultSchemaSemantics, final boolean supportsCrossSchemaSql,
-                               final boolean supportsExplainAnalyze, final TransactionBoundaryBehavior ddlTransactionBehavior,
-                               final TransactionBoundaryBehavior dclTransactionBehavior, final ResultBehavior explainAnalyzeResultBehavior,
-                               final TransactionBoundaryBehavior explainAnalyzeTransactionBehavior) {
-            this.database = Objects.requireNonNull(database, "database cannot be null");
-            this.databaseType = Objects.requireNonNull(databaseType, "databaseType cannot be null");
-            this.minSupportedVersion = Objects.requireNonNull(minSupportedVersion, "minSupportedVersion cannot be null");
-            this.supportedObjectTypes = toImmutableEnumSet(Objects.requireNonNull(supportedObjectTypes, "supportedObjectTypes cannot be null"),
-                    SupportedObjectType.class);
-            this.supportedStatementClasses = toImmutableEnumSet(Objects.requireNonNull(supportedStatementClasses, "supportedStatementClasses cannot be null"),
-                    StatementClass.class);
-            this.supportsTransactionControl = supportsTransactionControl;
-            this.supportsSavepoint = supportsSavepoint;
-            this.supportedTransactionStatements = toImmutableStrings(supportedTransactionStatements);
-            this.defaultAutocommit = defaultAutocommit;
-            this.maxRowsDefault = maxRowsDefault;
-            this.maxTimeoutMsDefault = maxTimeoutMsDefault;
-            this.defaultSchemaSemantics = Objects.requireNonNull(defaultSchemaSemantics, "defaultSchemaSemantics cannot be null");
-            this.supportsCrossSchemaSql = supportsCrossSchemaSql;
-            this.supportsExplainAnalyze = supportsExplainAnalyze;
-            this.ddlTransactionBehavior = Objects.requireNonNull(ddlTransactionBehavior, "ddlTransactionBehavior cannot be null");
-            this.dclTransactionBehavior = Objects.requireNonNull(dclTransactionBehavior, "dclTransactionBehavior cannot be null");
-            this.explainAnalyzeResultBehavior = Objects.requireNonNull(explainAnalyzeResultBehavior, "explainAnalyzeResultBehavior cannot be null");
-            this.explainAnalyzeTransactionBehavior = Objects.requireNonNull(explainAnalyzeTransactionBehavior, "explainAnalyzeTransactionBehavior cannot be null");
-        }
     }
 }

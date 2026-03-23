@@ -63,15 +63,20 @@ transport:
     enabled: true
 
 runtime:
-  props:
-    databaseName: logic_db
-    databaseType: H2
-    jdbcUrl: "jdbc:h2:file:./data/mcp-demo;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
-    driverClassName: org.h2.Driver
+  defaults:
     schemaPattern: public
     defaultSchema: public
     supportsCrossSchemaSql: true
     supportsExplainAnalyze: false
+  databases:
+    orders:
+      databaseType: H2
+      jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+      driverClassName: org.h2.Driver
+    billing:
+      databaseType: H2
+      jdbcUrl: "jdbc:h2:file:./data/mcp-demo-billing;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+      driverClassName: org.h2.Driver
 ```
 
 ### 3. 初始化一个 MCP 会话
@@ -103,7 +108,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"list_tables","arguments":{"database":"logic_db","schema":"public"}}}'
+  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"list_tables","arguments":{"database":"orders","schema":"public"}}}'
 ```
 
 预期结果：
@@ -214,7 +219,7 @@ bin/start.sh conf/mcp-stdio.yaml
 
 ```java
 MCPSessionManager sessionManager = new MCPSessionManager();
-StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, new MCPRuntimeContext(sessionManager));
+StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, new MCPRuntimeServices(sessionManager));
 stdioMCPServer.start();
 String sessionId = stdioMCPServer.initializeSession();
 ToolDispatchResult result = stdioMCPServer.invokeMetadataTool(sessionId, metadataCatalog,
@@ -227,12 +232,12 @@ stdioMCPServer.closeSession(sessionId);
 参考：
 
 - `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioMCPServer.java`
-- `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/server/StdioTransportIntegrationTest.java`
+- `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioTransportIntegrationTest.java`
 
 ## Runtime 说明
 
-- 发行包里的 `conf/mcp.yaml` 现在默认内置一段 demo JDBC runtime 配置，所以第一次启动就能验证非空 metadata 和真实 query 执行。
-- 如果要接真实部署，请把 `runtime` 段替换成你自己的逻辑库映射和 JDBC 连接属性。
+- 发行包里的 `conf/mcp.yaml` 现在默认内置一段 demo 多数据库 JDBC runtime 配置，所以第一次启动就能验证逻辑库发现和真实 query 执行。
+- 如果要接真实部署，请把 `runtime` 段替换成你自己的逻辑库映射和 JDBC 连接属性。直连多数据库时优先使用 `runtime.databases`；旧的单库 `runtime.props` 写法仍保留兼容。
 - 如果目标数据库的驱动没有随发行包提供，请先把对应 jar 放到 `ext-lib/`，再执行 `bin/start.sh`。
 - 如果只需要本地 HTTP 调试，保留 `transport.http.enabled: true`，并在不需要 STDIO 时把 `transport.stdio.enabled` 设为 `false`。
 - 如果要做本地进程内集成，保留 `transport.stdio.enabled: true`。发行包会启动同一套 STDIO runtime，但目前不会额外暴露独立的文本 Shell。

@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
-import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseRuntimeFactory.DatabaseConnectionConfiguration;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;

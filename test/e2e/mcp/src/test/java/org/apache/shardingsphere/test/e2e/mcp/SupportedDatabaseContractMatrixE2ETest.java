@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler.DatabaseCapabilityView;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;

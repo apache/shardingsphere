@@ -17,17 +17,15 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.context;
 
-import lombok.Getter;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerContext;
+import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler.ServiceCapability;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.execute.StatementClassifier;
+import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
 import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher;
@@ -35,66 +33,136 @@ import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher;
 import java.util.Objects;
 
 /**
- * Register and expose MCP resources, tools, and runtime facades.
+ * Compatibility wrapper for {@link MCPRuntimeServices}.
+ *
+ * @deprecated Prefer {@link MCPRuntimeServices}.
  */
-@Getter
+@Deprecated
 public final class MCPRuntimeContext {
     
-    private final DatabaseCapabilityAssembler capabilityAssembler;
-    
-    private final MetadataResourceLoader metadataResourceLoader;
-    
-    private final MetadataToolDispatcher metadataToolDispatcher;
-    
-    private final TransactionCommandExecutor transactionCommandExecutor;
-    
-    private final AuditRecorder auditRecorder;
-    
-    private final MetadataRefreshCoordinator metadataRefreshCoordinator;
-    
-    private final ExecuteQueryFacade executeQueryFacade;
+    private final MCPRuntimeServices runtimeServices;
     
     /**
-     * Construct a runtime context using one shared session manager.
+     * Construct compatibility runtime services using one shared session manager.
      *
      * @param sessionManager session manager
      */
     public MCPRuntimeContext(final MCPSessionManager sessionManager) {
-        this(sessionManager, new MetadataCatalog(java.util.Collections.emptyMap(), java.util.Collections.emptyList()),
-                new DatabaseRuntime(java.util.Collections.emptyMap(), java.util.Collections.emptyMap()));
+        runtimeServices = new MCPRuntimeServices(sessionManager);
     }
     
     /**
-     * Construct a runtime context using one shared session manager and runtime inputs.
+     * Construct compatibility runtime services using one shared session manager and runtime inputs.
      *
      * @param sessionManager session manager
      * @param metadataCatalog metadata catalog
      * @param databaseRuntime database runtime
      */
     public MCPRuntimeContext(final MCPSessionManager sessionManager, final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
-        capabilityAssembler = new DatabaseCapabilityAssembler(Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null"));
-        metadataResourceLoader = new MetadataResourceLoader(capabilityAssembler);
-        metadataToolDispatcher = new MetadataToolDispatcher(metadataResourceLoader);
-        transactionCommandExecutor = new TransactionCommandExecutor(capabilityAssembler, Objects.requireNonNull(sessionManager, "sessionManager cannot be null"),
-                Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null"));
-        auditRecorder = new AuditRecorder();
-        metadataRefreshCoordinator = new MetadataRefreshCoordinator();
-        executeQueryFacade = new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler, transactionCommandExecutor, auditRecorder, metadataRefreshCoordinator);
+        runtimeServices = new MCPRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
+    }
+    
+    private MCPRuntimeContext(final MCPRuntimeServices runtimeServices) {
+        this.runtimeServices = Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null");
     }
     
     /**
-     * Register the full public MCP surface with the server context.
+     * Create one compatibility wrapper from runtime services.
+     *
+     * @param runtimeServices runtime services
+     * @return compatibility wrapper
+     */
+    public static MCPRuntimeContext fromServices(final MCPRuntimeServices runtimeServices) {
+        return new MCPRuntimeContext(runtimeServices);
+    }
+    
+    /**
+     * Get the underlying runtime services.
+     *
+     * @return runtime services
+     */
+    public MCPRuntimeServices getRuntimeServices() {
+        return runtimeServices;
+    }
+    
+    /**
+     * Get the capability assembler.
+     *
+     * @return capability assembler
+     */
+    public DatabaseCapabilityAssembler getCapabilityAssembler() {
+        return runtimeServices.getCapabilityAssembler();
+    }
+    
+    /**
+     * Get the metadata resource loader.
+     *
+     * @return metadata resource loader
+     */
+    public MetadataResourceLoader getMetadataResourceLoader() {
+        return runtimeServices.getMetadataResourceLoader();
+    }
+    
+    /**
+     * Get the metadata tool dispatcher.
+     *
+     * @return metadata tool dispatcher
+     */
+    public MetadataToolDispatcher getMetadataToolDispatcher() {
+        return runtimeServices.getMetadataToolDispatcher();
+    }
+    
+    /**
+     * Get the transaction command executor.
+     *
+     * @return transaction command executor
+     */
+    public TransactionCommandExecutor getTransactionCommandExecutor() {
+        return runtimeServices.getTransactionCommandExecutor();
+    }
+    
+    /**
+     * Get the audit recorder.
+     *
+     * @return audit recorder
+     */
+    public AuditRecorder getAuditRecorder() {
+        return runtimeServices.getAuditRecorder();
+    }
+    
+    /**
+     * Get the metadata refresh coordinator.
+     *
+     * @return metadata refresh coordinator
+     */
+    public MetadataRefreshCoordinator getMetadataRefreshCoordinator() {
+        return runtimeServices.getMetadataRefreshCoordinator();
+    }
+    
+    /**
+     * Get the execute-query facade.
+     *
+     * @return execute-query facade
+     */
+    public ExecuteQueryFacade getExecuteQueryFacade() {
+        return runtimeServices.getExecuteQueryFacade();
+    }
+    
+    /**
+     * Register the full public MCP surface with the compatibility server context.
      *
      * @param serverContext server context
      */
     public void registerDefaults(final MCPServerContext serverContext) {
-        MCPServerContext actualServerContext = Objects.requireNonNull(serverContext, "serverContext cannot be null");
-        ServiceCapability serviceCapability = capabilityAssembler.assembleServiceCapability();
-        for (String each : serviceCapability.getSupportedResources()) {
-            actualServerContext.registerResource(each);
-        }
-        for (String each : serviceCapability.getSupportedTools()) {
-            actualServerContext.registerTool(each);
-        }
+        runtimeServices.registerDefaults(serverContext);
+    }
+    
+    /**
+     * Register the full public MCP surface with the server registry.
+     *
+     * @param serverRegistry server registry
+     */
+    public void registerDefaults(final MCPServerRegistry serverRegistry) {
+        runtimeServices.registerDefaults(serverRegistry);
     }
 }

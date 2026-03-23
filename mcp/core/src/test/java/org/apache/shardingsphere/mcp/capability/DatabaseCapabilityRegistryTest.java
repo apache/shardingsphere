@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.mcp.capability;
 
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.DatabaseCapability;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.StatementClass;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.SupportedObjectType;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.TransactionCapability;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;

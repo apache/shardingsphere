@@ -1,0 +1,131 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
+
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlTransportSwitch;
+import org.junit.jupiter.api.Test;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class YamlMCPConfigurationSwapperTest {
+    
+    private final YamlMCPConfigurationSwapper swapper = new YamlMCPConfigurationSwapper();
+    
+    @Test
+    void assertSwapToObject() {
+        MCPLaunchConfiguration actual = swapper.swapToObject(createYamlConfig());
+        
+        assertThat(actual.getHttpServerConfiguration().getBindHost(), is("0.0.0.0"));
+        assertThat(actual.getHttpServerConfiguration().getPort(), is(9090));
+        assertThat(actual.getHttpServerConfiguration().getEndpointPath(), is("/gateway"));
+        assertFalse(actual.isHttpEnabled());
+        assertTrue(actual.isStdioEnabled());
+        assertThat(actual.getRuntimeProps().orElseThrow().getProperty("databaseName"), is("logic_db"));
+    }
+    
+    @Test
+    void assertSwapToObjectWithNullSections() {
+        YamlMCPConfiguration yamlConfig = new YamlMCPConfiguration();
+        yamlConfig.setServer(null);
+        yamlConfig.setTransport(null);
+        yamlConfig.setRuntime(null);
+        
+        MCPLaunchConfiguration actual = swapper.swapToObject(yamlConfig);
+        
+        assertThat(actual.getHttpServerConfiguration().getBindHost(), is("127.0.0.1"));
+        assertThat(actual.getHttpServerConfiguration().getPort(), is(18088));
+        assertThat(actual.getHttpServerConfiguration().getEndpointPath(), is("/mcp"));
+        assertTrue(actual.isHttpEnabled());
+        assertTrue(actual.isStdioEnabled());
+        assertFalse(actual.getRuntimeProps().isPresent());
+        assertFalse(actual.getRuntimeTopologyConfiguration().isPresent());
+    }
+    
+    @Test
+    void assertSwapToYamlConfigurationWithRuntimeProps() {
+        Properties runtimeProps = PropertiesBuilder.build(new Property("databaseName", "logic_db"), new Property("databaseType", "H2"));
+        MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 18088, "/mcp"), true, false,
+                runtimeProps, new RuntimeTopologyConfiguration(new LinkedHashMap<>()));
+        
+        YamlMCPConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
+        
+        assertThat(actual.getServer().getBindHost(), is("127.0.0.1"));
+        assertTrue(actual.getTransport().getHttp().getEnabled());
+        assertFalse(actual.getTransport().getStdio().getEnabled());
+        assertThat(actual.getRuntime().getProps().get("databaseName"), is("logic_db"));
+        assertTrue(actual.getRuntime().getDatabases().isEmpty());
+    }
+    
+    @Test
+    void assertSwapToYamlConfigurationWithRuntimeDatabases() {
+        Map<String, RuntimeDatabaseConfiguration> databases = new LinkedHashMap<>(1, 1F);
+        databases.put("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false));
+        MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 18088, "/mcp"), true, true,
+                new Properties(), new RuntimeTopologyConfiguration(databases));
+        
+        YamlMCPConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
+        
+        assertThat(actual.getRuntime().getDatabases().get("logic_db").getDatabaseType(), is("H2"));
+        assertTrue(actual.getRuntime().getProps().isEmpty());
+        assertTrue(actual.getRuntime().getDefaults().isEmpty());
+    }
+    
+    private YamlMCPConfiguration createYamlConfig() {
+        YamlMCPConfiguration result = new YamlMCPConfiguration();
+        result.setServer(createYamlServerConfig());
+        result.setTransport(createYamlTransportConfig());
+        result.getRuntime().getProps().put("databaseName", "logic_db");
+        result.getRuntime().getProps().put("databaseType", "H2");
+        return result;
+    }
+    
+    private YamlServerConfiguration createYamlServerConfig() {
+        YamlServerConfiguration result = new YamlServerConfiguration();
+        result.setBindHost("0.0.0.0");
+        result.setPort(9090);
+        result.setEndpointPath("gateway");
+        return result;
+    }
+    
+    private YamlTransportConfiguration createYamlTransportConfig() {
+        YamlTransportConfiguration result = new YamlTransportConfiguration();
+        YamlTransportSwitch http = new YamlTransportSwitch();
+        http.setEnabled(false);
+        result.setHttp(http);
+        YamlTransportSwitch stdio = new YamlTransportSwitch();
+        stdio.setEnabled(true);
+        result.setStdio(stdio);
+        return result;
+    }
+}

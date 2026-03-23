@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.ExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ResultKind;
+import org.apache.shardingsphere.mcp.protocol.ResultKind;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

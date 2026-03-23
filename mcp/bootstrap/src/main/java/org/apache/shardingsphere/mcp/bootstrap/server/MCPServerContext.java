@@ -17,32 +17,54 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.server;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.Objects;
-import java.util.Set;
 
 /**
- * MCP server context with runtime registration support.
+ * Compatibility wrapper for {@link MCPServerRegistry}.
+ *
+ * @deprecated Prefer {@link MCPServerRegistry}.
  */
+@Deprecated
 public final class MCPServerContext {
     
-    @Getter
-    private final MCPSessionManager sessionManager;
-    
-    private final Set<String> registeredResources = new LinkedHashSet<>();
-    
-    private final Set<String> registeredTools = new LinkedHashSet<>();
-    
-    @Getter
-    private boolean running;
+    private final MCPServerRegistry serverRegistry;
     
     public MCPServerContext(final MCPSessionManager sessionManager) {
-        this.sessionManager = Objects.requireNonNull(sessionManager, "sessionManager cannot be null");
+        serverRegistry = new MCPServerRegistry(sessionManager);
+    }
+    
+    private MCPServerContext(final MCPServerRegistry serverRegistry) {
+        this.serverRegistry = Objects.requireNonNull(serverRegistry, "serverRegistry cannot be null");
+    }
+    
+    /**
+     * Create one compatibility wrapper from the current server registry.
+     *
+     * @param serverRegistry server registry
+     * @return compatibility wrapper
+     */
+    public static MCPServerContext fromRegistry(final MCPServerRegistry serverRegistry) {
+        return new MCPServerContext(serverRegistry);
+    }
+    
+    /**
+     * Get the shared session manager.
+     *
+     * @return session manager
+     */
+    public MCPSessionManager getSessionManager() {
+        return serverRegistry.getSessionManager();
+    }
+    
+    /**
+     * Get the underlying server registry.
+     *
+     * @return server registry
+     */
+    public MCPServerRegistry getServerRegistry() {
+        return serverRegistry;
     }
     
     /**
@@ -51,7 +73,7 @@ public final class MCPServerContext {
      * @param resourceName resource identifier
      */
     public void registerResource(final String resourceName) {
-        registeredResources.add(normalizeName(resourceName, "resourceName"));
+        serverRegistry.registerResource(resourceName);
     }
     
     /**
@@ -60,27 +82,30 @@ public final class MCPServerContext {
      * @param toolName tool identifier
      */
     public void registerTool(final String toolName) {
-        registeredTools.add(normalizeName(toolName, "toolName"));
-    }
-    
-    private String normalizeName(final String value, final String fieldName) {
-        String result = Objects.requireNonNull(value, fieldName + " cannot be null").trim();
-        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(fieldName + " cannot be empty."));
-        return result;
+        serverRegistry.registerTool(toolName);
     }
     
     /**
      * Start the server context.
      */
     public void start() {
-        running = true;
+        serverRegistry.start();
     }
     
     /**
      * Stop the server context.
      */
     public void stop() {
-        running = false;
+        serverRegistry.stop();
+    }
+    
+    /**
+     * Check whether the server registry is running.
+     *
+     * @return running status
+     */
+    public boolean isRunning() {
+        return serverRegistry.isRunning();
     }
     
     /**
@@ -89,32 +114,7 @@ public final class MCPServerContext {
      * @return registration snapshot
      */
     public RegistrationSnapshot snapshot() {
-        return new RegistrationSnapshot(registeredResources, registeredTools, running);
-    }
-    
-    /**
-     * Immutable registration snapshot.
-     */
-    @Getter
-    public static final class RegistrationSnapshot {
-        
-        private final Set<String> resources;
-        
-        private final Set<String> tools;
-        
-        private final boolean running;
-        
-        /**
-         * Construct a registration snapshot.
-         *
-         * @param resources registered resources
-         * @param tools registered tools
-         * @param running runtime state
-         */
-        public RegistrationSnapshot(final Set<String> resources, final Set<String> tools, final boolean running) {
-            this.resources = Collections.unmodifiableSet(new LinkedHashSet<>(Objects.requireNonNull(resources, "resources cannot be null")));
-            this.tools = Collections.unmodifiableSet(new LinkedHashSet<>(Objects.requireNonNull(tools, "tools cannot be null")));
-            this.running = running;
-        }
+        MCPServerRegistry.RegistrationSnapshot actual = serverRegistry.snapshot();
+        return new RegistrationSnapshot(actual.getResources(), actual.getTools(), actual.isRunning());
     }
 }

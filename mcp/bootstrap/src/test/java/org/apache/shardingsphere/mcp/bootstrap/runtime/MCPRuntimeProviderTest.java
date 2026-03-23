@@ -19,7 +19,8 @@ package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
-import org.apache.shardingsphere.mcp.bootstrap.runtime.MCPRuntimeProvider.LoadedRuntime;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -32,6 +33,7 @@ import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -54,6 +56,22 @@ class MCPRuntimeProviderTest {
         LoadedRuntime actual = runtimeProvider.load(H2RuntimeTestSupport.createRuntimeProps("logic_db", jdbcUrl));
         assertThat(actual.getMetadataCatalog().getDatabaseTypes().size(), is(1));
         assertTrue(actual.getMetadataCatalog().getDatabaseTypes().containsKey("logic_db"));
+        assertThat(actual.getMetadataCatalog().getMetadataObjects().size(), greaterThan(0));
+    }
+    
+    @Test
+    void assertLoadWithRuntimeTopology() throws SQLException {
+        String firstJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "runtime-provider-first");
+        String secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "runtime-provider-second");
+        H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
+        H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
+        MCPRuntimeProvider runtimeProvider = new MCPRuntimeProvider();
+        LoadedRuntime actual = runtimeProvider.load(new RuntimeTopologyConfiguration(Map.of(
+                "logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl),
+                "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl))));
+        assertThat(actual.getMetadataCatalog().getDatabaseTypes().size(), is(2));
+        assertTrue(actual.getMetadataCatalog().getDatabaseTypes().containsKey("logic_db"));
+        assertTrue(actual.getMetadataCatalog().getDatabaseTypes().containsKey("analytics_db"));
         assertThat(actual.getMetadataCatalog().getMetadataObjects().size(), greaterThan(0));
     }
     
@@ -83,6 +101,10 @@ class MCPRuntimeProviderTest {
         } finally {
             DriverManager.deregisterDriver(driver);
         }
+    }
+    
+    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl) {
+        return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver", "public", "public", true, false);
     }
     
     private static final class CountingDriver implements Driver {

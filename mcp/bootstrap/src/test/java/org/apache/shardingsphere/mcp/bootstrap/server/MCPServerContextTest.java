@@ -72,7 +72,7 @@ class MCPServerContextTest {
         serverContext.registerTool("execute_query");
         serverContext.start();
         
-        MCPServerContext.RegistrationSnapshot actual = serverContext.snapshot();
+        RegistrationSnapshot actual = serverContext.snapshot();
         
         assertThat(actual.getResources().size(), is(1));
         assertThat(actual.getTools().size(), is(1));

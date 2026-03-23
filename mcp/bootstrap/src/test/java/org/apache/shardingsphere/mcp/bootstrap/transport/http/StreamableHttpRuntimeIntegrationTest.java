@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.server;
+package org.apache.shardingsphere.mcp.bootstrap.transport.http;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.LaunchState;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration.ServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.LaunchState;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
+import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -60,15 +62,15 @@ class StreamableHttpRuntimeIntegrationTest {
             if (launchState.getStdioServer().isPresent()) {
                 launchState.getStdioServer().get().stop();
             }
-            launchState.getServerContext().stop();
+            launchState.getServerRegistry().stop();
         }
     }
     
     @Test
     void assertLaunchHttpServerWithConfiguredEndpoint() throws IOException, InterruptedException {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        RuntimeConfiguration runtimeConfiguration = createRuntimeConfiguration();
-        launchState = runtimeLauncher.launch(new MCPServerContext(new MCPSessionManager()), runtimeConfiguration);
+        MCPLaunchConfiguration runtimeConfiguration = createRuntimeConfiguration();
+        launchState = runtimeLauncher.launch(new MCPServerRegistry(new MCPSessionManager()), runtimeConfiguration);
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest initializeRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
@@ -118,8 +120,8 @@ class StreamableHttpRuntimeIntegrationTest {
     @Test
     void assertLaunchHttpServerWithoutInitializeProtocolVersion() throws IOException, InterruptedException {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        RuntimeConfiguration runtimeConfiguration = createRuntimeConfiguration();
-        launchState = runtimeLauncher.launch(new MCPServerContext(new MCPSessionManager()), runtimeConfiguration);
+        MCPLaunchConfiguration runtimeConfiguration = createRuntimeConfiguration();
+        launchState = runtimeLauncher.launch(new MCPServerRegistry(new MCPSessionManager()), runtimeConfiguration);
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest initializeRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
@@ -138,8 +140,8 @@ class StreamableHttpRuntimeIntegrationTest {
     @Test
     void assertRejectDeleteWithoutSessionHeader() throws IOException, InterruptedException {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        RuntimeConfiguration runtimeConfiguration = createRuntimeConfiguration();
-        launchState = runtimeLauncher.launch(new MCPServerContext(new MCPSessionManager()), runtimeConfiguration);
+        MCPLaunchConfiguration runtimeConfiguration = createRuntimeConfiguration();
+        launchState = runtimeLauncher.launch(new MCPServerRegistry(new MCPSessionManager()), runtimeConfiguration);
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest deleteRequest = HttpRequest.newBuilder(createEndpointUri())
                 .DELETE()
@@ -153,8 +155,8 @@ class StreamableHttpRuntimeIntegrationTest {
     @Test
     void assertRejectDeleteWithMissingSession() throws IOException, InterruptedException {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        RuntimeConfiguration runtimeConfiguration = createRuntimeConfiguration();
-        launchState = runtimeLauncher.launch(new MCPServerContext(new MCPSessionManager()), runtimeConfiguration);
+        MCPLaunchConfiguration runtimeConfiguration = createRuntimeConfiguration();
+        launchState = runtimeLauncher.launch(new MCPServerRegistry(new MCPSessionManager()), runtimeConfiguration);
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest deleteRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("MCP-Session-Id", "missing-session")
@@ -169,8 +171,8 @@ class StreamableHttpRuntimeIntegrationTest {
     @Test
     void assertRejectDeleteWithProtocolVersionMismatch() throws IOException, InterruptedException {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        RuntimeConfiguration runtimeConfiguration = createRuntimeConfiguration();
-        launchState = runtimeLauncher.launch(new MCPServerContext(new MCPSessionManager()), runtimeConfiguration);
+        MCPLaunchConfiguration runtimeConfiguration = createRuntimeConfiguration();
+        launchState = runtimeLauncher.launch(new MCPServerRegistry(new MCPSessionManager()), runtimeConfiguration);
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpRequest deleteRequest = HttpRequest.newBuilder(createEndpointUri())
@@ -186,8 +188,8 @@ class StreamableHttpRuntimeIntegrationTest {
     @Test
     void assertRejectOpenStreamAfterDelete() throws IOException, InterruptedException {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        RuntimeConfiguration runtimeConfiguration = createRuntimeConfiguration();
-        launchState = runtimeLauncher.launch(new MCPServerContext(new MCPSessionManager()), runtimeConfiguration);
+        MCPLaunchConfiguration runtimeConfiguration = createRuntimeConfiguration();
+        launchState = runtimeLauncher.launch(new MCPServerRegistry(new MCPSessionManager()), runtimeConfiguration);
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpRequest deleteRequest = HttpRequest.newBuilder(createEndpointUri())
@@ -210,8 +212,8 @@ class StreamableHttpRuntimeIntegrationTest {
     @Test
     void assertRejectInitializeWithInvalidOrigin() throws IOException, InterruptedException {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        RuntimeConfiguration runtimeConfiguration = createRuntimeConfiguration();
-        launchState = runtimeLauncher.launch(new MCPServerContext(new MCPSessionManager()), runtimeConfiguration);
+        MCPLaunchConfiguration runtimeConfiguration = createRuntimeConfiguration();
+        launchState = runtimeLauncher.launch(new MCPServerRegistry(new MCPSessionManager()), runtimeConfiguration);
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest initializeRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("Origin", "https://evil.example.com")
@@ -229,8 +231,8 @@ class StreamableHttpRuntimeIntegrationTest {
         return URI.create(String.format("http://127.0.0.1:%d%s", localPort, "/gateway"));
     }
     
-    private RuntimeConfiguration createRuntimeConfiguration() {
-        return new RuntimeConfiguration(new ServerConfiguration("127.0.0.1", 0, "/gateway"), true, false, createRuntimeProps());
+    private MCPLaunchConfiguration createRuntimeConfiguration() {
+        return new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/gateway"), true, false, createRuntimeProps(), new RuntimeTopologyConfiguration(Map.of()));
     }
     
     private Properties createRuntimeProps() {

@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ErrorCode;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataCatalog;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataObject;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataObjectType;
-import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher.ToolDispatchResult;
-import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher.ToolRequest;
+import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.MetadataObject;
+import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

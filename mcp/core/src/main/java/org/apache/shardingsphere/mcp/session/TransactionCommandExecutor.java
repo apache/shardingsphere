@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mcp.session;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler.DatabaseCapabilityView;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
+import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ErrorCode;
 
 import java.util.Locale;
 import java.util.Objects;

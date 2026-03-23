@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.server;
+package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
 
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.LaunchState;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration.ServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.LaunchState;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
-import org.apache.shardingsphere.mcp.bootstrap.transport.stdio.StdioMCPServer;
-import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.ExecutionRequest;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.QueryResult;
+import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
+import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
+import org.apache.shardingsphere.mcp.execute.QueryResult;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ColumnDefinition;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataCatalog;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataObject;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataObjectType;
+import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.MetadataObject;
+import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher.ToolDispatchResult;
-import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher.ToolRequest;
+import org.apache.shardingsphere.mcp.tool.ToolDispatchResult;
+import org.apache.shardingsphere.mcp.tool.ToolRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -69,7 +70,7 @@ class StdioTransportIntegrationTest {
     @Test
     void assertInitializeSession() {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, new MCPRuntimeContext(sessionManager));
+        StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, new MCPRuntimeServices(sessionManager));
         
         String actual = stdioMCPServer.initializeSession();
         
@@ -104,7 +105,7 @@ class StdioTransportIntegrationTest {
     @Test
     void assertCloseSession() {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, new MCPRuntimeContext(sessionManager));
+        StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, new MCPRuntimeServices(sessionManager));
         String sessionId = stdioMCPServer.initializeSession();
         
         stdioMCPServer.closeSession(sessionId);
@@ -115,13 +116,13 @@ class StdioTransportIntegrationTest {
     @Test
     void assertLaunch() {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPServerContext serverContext = new MCPServerContext(sessionManager);
+        MCPServerRegistry serverRegistry = new MCPServerRegistry(sessionManager);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         
-        LaunchState actual = runtimeLauncher.launch(serverContext,
-                new RuntimeConfiguration(new ServerConfiguration("127.0.0.1", 0, "/mcp"), false, true, createRuntimeProps()));
+        LaunchState actual = runtimeLauncher.launch(serverRegistry,
+                new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/mcp"), false, true, createRuntimeProps(), new RuntimeTopologyConfiguration(Map.of())));
         
-        assertTrue(actual.getServerContext().isRunning());
+        assertTrue(actual.getServerRegistry().isRunning());
         assertTrue(actual.getStdioServer().isPresent());
         assertTrue(actual.getStdioServer().get().isRunning());
     }
@@ -131,15 +132,16 @@ class StdioTransportIntegrationTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new RuntimeConfiguration(new ServerConfiguration("127.0.0.1", 0, "/mcp"), false, false, new  Properties())));
+                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/mcp"), false, false,
+                        new Properties(), new RuntimeTopologyConfiguration(Map.of()))));
         
         assertThat(actual.getMessage(), is("At least one transport must be enabled."));
     }
     
     private StdioMCPServer createStdioServer() {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(sessionManager);
-        return new StdioMCPServer(sessionManager, runtimeContext);
+        MCPRuntimeServices runtimeServices = new MCPRuntimeServices(sessionManager);
+        return new StdioMCPServer(sessionManager, runtimeServices);
     }
     
     private MetadataCatalog createMetadataCatalog() {

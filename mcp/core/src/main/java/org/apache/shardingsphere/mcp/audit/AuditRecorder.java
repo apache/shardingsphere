@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.mcp.audit;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -29,7 +27,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Record MCP audit events for metadata and query activity.
@@ -160,76 +157,6 @@ public final class AuditRecorder {
             return result.toString();
         } catch (final NoSuchAlgorithmException ex) {
             throw new IllegalStateException("SHA-256 is not available.", ex);
-        }
-    }
-    
-    /**
-     * Audit operation classes.
-     */
-    public enum OperationClass {
-        
-        RESOURCE_READ, METADATA_TOOL, QUERY_EXECUTION
-    }
-    
-    /**
-     * Audit record projection.
-     */
-    @Getter
-    public static final class AuditRecord {
-        
-        private final String sessionId;
-        
-        private final String database;
-        
-        private final OperationClass operationClass;
-        
-        private final String operationDigest;
-        
-        private final boolean success;
-        
-        @Getter(AccessLevel.NONE)
-        private final boolean errorCodePresent;
-        
-        @Getter(AccessLevel.NONE)
-        private final ErrorCode errorCode;
-        
-        private final String transactionMarker;
-        
-        private final String timestamp;
-        
-        /**
-         * Construct an audit record projection.
-         *
-         * @param sessionId session identifier
-         * @param database logical database name
-         * @param operationClass operation class
-         * @param operationDigest operation digest
-         * @param success success flag
-         * @param errorCodePresent error-code presence flag
-         * @param errorCode error code
-         * @param transactionMarker transaction marker
-         * @param timestamp timestamp
-         */
-        public AuditRecord(final String sessionId, final String database, final OperationClass operationClass, final String operationDigest,
-                           final boolean success, final boolean errorCodePresent, final ErrorCode errorCode, final String transactionMarker, final String timestamp) {
-            this.sessionId = Objects.requireNonNull(sessionId, "sessionId cannot be null");
-            this.database = Objects.requireNonNull(database, "database cannot be null");
-            this.operationClass = Objects.requireNonNull(operationClass, "operationClass cannot be null");
-            this.operationDigest = Objects.requireNonNull(operationDigest, "operationDigest cannot be null");
-            this.success = success;
-            this.errorCodePresent = errorCodePresent;
-            this.errorCode = Objects.requireNonNull(errorCode, "errorCode cannot be null");
-            this.transactionMarker = Objects.requireNonNull(transactionMarker, "transactionMarker cannot be null");
-            this.timestamp = Objects.requireNonNull(timestamp, "timestamp cannot be null");
-        }
-        
-        /**
-         * Get the error code when one exists.
-         *
-         * @return optional error code
-         */
-        public Optional<ErrorCode> getErrorCode() {
-            return errorCodePresent ? Optional.of(errorCode) : Optional.empty();
         }
     }
 }

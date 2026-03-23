@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
-import lombok.Getter;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
+import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ShardingSphereExecutionAdapter;
 import org.apache.shardingsphere.mcp.execute.ShardingSphereExecutionAdapter.ConnectionProvider;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -51,13 +54,38 @@ public final class DatabaseRuntimeFactory {
     public Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final Properties props) {
         Properties actualProps = Objects.requireNonNull(props, "props cannot be null");
         validateLegacyRuntimeProperties(actualProps);
-        String databaseName = getRequiredProperty(actualProps, DATABASE_NAME_KEY);
-        Map<String, DatabaseConnectionConfiguration> result = new LinkedHashMap<>(1, 1F);
-        result.put(databaseName, new DatabaseConnectionConfiguration(databaseName, getRequiredProperty(actualProps, "databaseType"),
-                getRequiredProperty(actualProps, "jdbcUrl"), getProperty(actualProps, "username"), getProperty(actualProps, "password"),
-                getProperty(actualProps, "driverClassName"), getProperty(actualProps, "schemaPattern"),
-                getProperty(actualProps, "defaultSchema"), Boolean.parseBoolean(getProperty(actualProps, "supportsCrossSchemaSql", "false")),
-                Boolean.parseBoolean(getProperty(actualProps, "supportsExplainAnalyze", "false"))));
+        return createConnectionConfigurations(new RuntimeTopologyConfiguration(Collections.singletonMap(getRequiredProperty(actualProps, DATABASE_NAME_KEY),
+                new RuntimeDatabaseConfiguration(getRequiredProperty(actualProps, "databaseType"), getRequiredProperty(actualProps, "jdbcUrl"),
+                        getProperty(actualProps, "username"), getProperty(actualProps, "password"), getProperty(actualProps, "driverClassName"),
+                        getProperty(actualProps, "schemaPattern"), getProperty(actualProps, "defaultSchema"),
+                        Boolean.parseBoolean(getProperty(actualProps, "supportsCrossSchemaSql", "false")),
+                        Boolean.parseBoolean(getProperty(actualProps, "supportsExplainAnalyze", "false"))))));
+    }
+    
+    /**
+     * Create connection configurations from runtime topology configuration.
+     *
+     * @param runtimeTopologyConfiguration runtime topology configuration
+     * @return connection configurations keyed by logical database
+     * @throws IllegalArgumentException when no runtime database is configured
+     */
+    public Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final RuntimeTopologyConfiguration runtimeTopologyConfiguration) {
+        RuntimeTopologyConfiguration actualRuntimeTopologyConfiguration = Objects.requireNonNull(runtimeTopologyConfiguration, "runtimeTopologyConfiguration cannot be null");
+        if (!actualRuntimeTopologyConfiguration.isConfigured()) {
+            throw new IllegalArgumentException("At least one runtime database must be configured.");
+        }
+        return createConnectionConfigurations(actualRuntimeTopologyConfiguration.getDatabases());
+    }
+    
+    private Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        Map<String, DatabaseConnectionConfiguration> result = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
+        for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
+            String databaseName = normalizeDatabaseName(entry.getKey());
+            if (result.containsKey(databaseName)) {
+                throw new IllegalArgumentException(String.format("Runtime logical database `%s` is duplicated.", databaseName));
+            }
+            result.put(databaseName, createConnectionConfiguration(databaseName, entry.getValue()));
+        }
         return Collections.unmodifiableMap(result);
     }
     
@@ -76,13 +104,26 @@ public final class DatabaseRuntimeFactory {
             connectionProviders.put(each.getDatabase(), () -> jdbcConnectionFactory.openConnection(each));
         }
         ShardingSphereExecutionAdapter executionAdapter = new ShardingSphereExecutionAdapter(connectionProviders);
-        return new DatabaseRuntime(executionAdapter, ignored -> refreshMetadata(connectionConfigurations, metadataCatalog, metadataLoader));
+        return new DatabaseRuntime(executionAdapter, database -> refreshMetadata(database, connectionConfigurations, metadataCatalog, metadataLoader));
     }
     
-    private void refreshMetadata(final Map<String, DatabaseConnectionConfiguration> connectionConfigurations,
+    private DatabaseConnectionConfiguration createConnectionConfiguration(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfiguration) {
+        RuntimeDatabaseConfiguration actualRuntimeDatabaseConfiguration = Objects.requireNonNull(runtimeDatabaseConfiguration, "runtimeDatabaseConfiguration cannot be null");
+        return new DatabaseConnectionConfiguration(databaseName, getRequiredValue(actualRuntimeDatabaseConfiguration.getDatabaseType(), databaseName, "databaseType"),
+                getRequiredValue(actualRuntimeDatabaseConfiguration.getJdbcUrl(), databaseName, "jdbcUrl"), actualRuntimeDatabaseConfiguration.getUsername(),
+                actualRuntimeDatabaseConfiguration.getPassword(), actualRuntimeDatabaseConfiguration.getDriverClassName(), actualRuntimeDatabaseConfiguration.getSchemaPattern(),
+                actualRuntimeDatabaseConfiguration.getDefaultSchema(), actualRuntimeDatabaseConfiguration.isSupportsCrossSchemaSql(),
+                actualRuntimeDatabaseConfiguration.isSupportsExplainAnalyze());
+    }
+    
+    private void refreshMetadata(final String database, final Map<String, DatabaseConnectionConfiguration> connectionConfigurations,
                                  final MetadataCatalog metadataCatalog, final JdbcMetadataLoader metadataLoader) {
-        MetadataCatalog refreshedCatalog = metadataLoader.load(connectionConfigurations);
-        metadataCatalog.replaceSnapshot(refreshedCatalog.getDatabaseTypes(), refreshedCatalog.getMetadataObjects(), refreshedCatalog.getRuntimeDatabaseDescriptors());
+        DatabaseConnectionConfiguration connectionConfiguration = Objects.requireNonNull(connectionConfigurations.get(database),
+                String.format("Database `%s` is not configured.", database));
+        MetadataCatalog refreshedCatalog = metadataLoader.load(Collections.singletonMap(database, connectionConfiguration));
+        RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = Objects.requireNonNull(refreshedCatalog.getRuntimeDatabaseDescriptors().get(database),
+                "runtimeDatabaseDescriptor cannot be null");
+        metadataCatalog.replaceDatabaseSnapshot(database, refreshedCatalog.getDatabaseTypes().get(database), refreshedCatalog.getMetadataObjects(), runtimeDatabaseDescriptor);
     }
     
     private void validateLegacyRuntimeProperties(final Properties props) {
@@ -114,59 +155,19 @@ public final class DatabaseRuntimeFactory {
         return Objects.requireNonNull(props.getProperty(key, defaultValue), "propertyValue cannot be null").trim();
     }
     
-    /**
-     * JDBC connection configuration for one logical database.
-     */
-    @Getter
-    public static final class DatabaseConnectionConfiguration {
-        
-        private final String database;
-        
-        private final String databaseType;
-        
-        private final String jdbcUrl;
-        
-        private final String username;
-        
-        private final String password;
-        
-        private final String driverClassName;
-        
-        private final String schemaPattern;
-        
-        private final String defaultSchema;
-        
-        private final boolean supportsCrossSchemaSql;
-        
-        private final boolean supportsExplainAnalyze;
-        
-        /**
-         * Construct one JDBC connection configuration.
-         *
-         * @param database logical database name
-         * @param databaseType database type
-         * @param jdbcUrl JDBC URL
-         * @param username username
-         * @param password password
-         * @param driverClassName driver class name
-         * @param schemaPattern schema pattern
-         * @param defaultSchema default schema
-         * @param supportsCrossSchemaSql cross-schema SQL support flag
-         * @param supportsExplainAnalyze explain analyze support flag
-         */
-        public DatabaseConnectionConfiguration(final String database, final String databaseType, final String jdbcUrl, final String username,
-                                               final String password, final String driverClassName, final String schemaPattern,
-                                               final String defaultSchema, final boolean supportsCrossSchemaSql, final boolean supportsExplainAnalyze) {
-            this.database = Objects.requireNonNull(database, "database cannot be null");
-            this.databaseType = Objects.requireNonNull(databaseType, "databaseType cannot be null");
-            this.jdbcUrl = Objects.requireNonNull(jdbcUrl, "jdbcUrl cannot be null");
-            this.username = Objects.requireNonNull(username, "username cannot be null");
-            this.password = Objects.requireNonNull(password, "password cannot be null");
-            this.driverClassName = Objects.requireNonNull(driverClassName, "driverClassName cannot be null");
-            this.schemaPattern = Objects.requireNonNull(schemaPattern, "schemaPattern cannot be null");
-            this.defaultSchema = Objects.requireNonNull(defaultSchema, "defaultSchema cannot be null");
-            this.supportsCrossSchemaSql = supportsCrossSchemaSql;
-            this.supportsExplainAnalyze = supportsExplainAnalyze;
+    private String normalizeDatabaseName(final String databaseName) {
+        String result = Objects.requireNonNull(databaseName, "databaseName cannot be null").trim();
+        if (result.isEmpty()) {
+            throw new IllegalArgumentException("Runtime logical database name cannot be blank.");
         }
+        return result;
+    }
+    
+    private String getRequiredValue(final String value, final String databaseName, final String fieldName) {
+        String result = Objects.requireNonNull(value, fieldName + " cannot be null").trim();
+        if (result.isEmpty()) {
+            throw new IllegalArgumentException(String.format("Runtime database `%s` property `%s` is required.", databaseName, fieldName));
+        }
+        return result;
     }
 }

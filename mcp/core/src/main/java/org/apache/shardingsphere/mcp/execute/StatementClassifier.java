@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.StatementClass;
+import org.apache.shardingsphere.mcp.capability.StatementClass;
 
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Classify one SQL statement into the MCP statement classes.
@@ -138,60 +135,5 @@ public final class StatementClassifier {
             return tokens[tokens.length - 1];
         }
         return "";
-    }
-    
-    /**
-     * Statement classification result.
-     */
-    @Getter
-    public static final class ClassificationResult {
-        
-        private final StatementClass statementClass;
-        
-        private final String statementType;
-        
-        private final String normalizedSql;
-        
-        @Getter(AccessLevel.NONE)
-        private final String targetObjectName;
-        
-        @Getter(AccessLevel.NONE)
-        private final String savepointName;
-        
-        /**
-         * Construct a statement classification result.
-         *
-         * @param statementClass statement class
-         * @param statementType statement type
-         * @param normalizedSql normalized SQL
-         * @param targetObjectName target object name
-         * @param savepointName savepoint name
-         */
-        public ClassificationResult(final StatementClass statementClass, final String statementType, final String normalizedSql,
-                                    final String targetObjectName, final String savepointName) {
-            this.statementClass = Objects.requireNonNull(statementClass, "statementClass cannot be null");
-            this.statementType = Objects.requireNonNull(statementType, "statementType cannot be null");
-            this.normalizedSql = Objects.requireNonNull(normalizedSql, "normalizedSql cannot be null");
-            this.targetObjectName = Objects.requireNonNull(targetObjectName, "targetObjectName cannot be null");
-            this.savepointName = Objects.requireNonNull(savepointName, "savepointName cannot be null");
-        }
-        
-        /**
-         * Get the target object name when one exists.
-         *
-         * @return optional target object name
-         */
-        public Optional<String> getTargetObjectName() {
-            return targetObjectName.isEmpty() ? Optional.empty() : Optional.of(targetObjectName);
-        }
-        
-        /**
-         * Get the savepoint name when one exists.
-         *
-         * @return optional savepoint name
-         */
-        public Optional<String> getSavepointName() {
-            return savepointName.isEmpty() ? Optional.empty() : Optional.of(savepointName);
-        }
     }
 }

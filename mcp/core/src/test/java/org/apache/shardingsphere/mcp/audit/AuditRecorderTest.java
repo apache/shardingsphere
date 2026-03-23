@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.audit;
 
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,9 +31,9 @@ class AuditRecorderTest {
     void assertRecordResourceRead() {
         AuditRecorder auditRecorder = new AuditRecorder();
         
-        AuditRecorder.AuditRecord actual = auditRecorder.recordResourceRead("session-1", "logic_db", "shardingsphere://databases", true, "QUERY");
+        AuditRecord actual = auditRecorder.recordResourceRead("session-1", "logic_db", "shardingsphere://databases", true, "QUERY");
         
-        assertThat(actual.getOperationClass(), is(AuditRecorder.OperationClass.RESOURCE_READ));
+        assertThat(actual.getOperationClass(), is(OperationClass.RESOURCE_READ));
         assertTrue(actual.isSuccess());
         assertThat(actual.getOperationDigest().length(), is(64));
     }
@@ -42,9 +42,9 @@ class AuditRecorderTest {
     void assertRecordMetadataTool() {
         AuditRecorder auditRecorder = new AuditRecorder();
         
-        AuditRecorder.AuditRecord actual = auditRecorder.recordMetadataTool("session-1", "logic_db", "list_tables", false, ErrorCode.INVALID_REQUEST, "QUERY");
+        AuditRecord actual = auditRecorder.recordMetadataTool("session-1", "logic_db", "list_tables", false, ErrorCode.INVALID_REQUEST, "QUERY");
         
-        assertThat(actual.getOperationClass(), is(AuditRecorder.OperationClass.METADATA_TOOL));
+        assertThat(actual.getOperationClass(), is(OperationClass.METADATA_TOOL));
         assertFalse(actual.isSuccess());
         assertTrue(actual.getErrorCode().isPresent());
     }
@@ -53,9 +53,9 @@ class AuditRecorderTest {
     void assertRecordQueryExecution() {
         AuditRecorder auditRecorder = new AuditRecorder();
         
-        AuditRecorder.AuditRecord actual = auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", true, "QUERY");
+        AuditRecord actual = auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", true, "QUERY");
         
-        assertThat(actual.getOperationClass(), is(AuditRecorder.OperationClass.QUERY_EXECUTION));
+        assertThat(actual.getOperationClass(), is(OperationClass.QUERY_EXECUTION));
         assertThat(actual.getDatabase(), is("logic_db"));
     }
     

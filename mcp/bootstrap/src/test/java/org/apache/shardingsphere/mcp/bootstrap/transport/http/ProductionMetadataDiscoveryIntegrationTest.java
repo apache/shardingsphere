@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.server;
+package org.apache.shardingsphere.mcp.bootstrap.transport.http;
 
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
 import org.junit.jupiter.api.Test;

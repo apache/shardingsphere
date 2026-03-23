@@ -19,12 +19,13 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.ExecutionRequest;
+import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
+import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher.ToolDispatchResult;
-import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher.ToolRequest;
+import org.apache.shardingsphere.mcp.tool.ToolDispatchResult;
+import org.apache.shardingsphere.mcp.tool.ToolRequest;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -36,7 +37,7 @@ public final class StdioMCPServer {
     
     private final MCPSessionManager sessionManager;
     
-    private final MCPRuntimeContext runtimeContext;
+    private final MCPRuntimeServices runtimeServices;
     
     @Getter
     private boolean running;
@@ -45,11 +46,23 @@ public final class StdioMCPServer {
      * Construct one STDIO MCP server.
      *
      * @param sessionManager session manager
-     * @param runtimeContext runtime context
+     * @param runtimeServices runtime services
      */
-    public StdioMCPServer(final MCPSessionManager sessionManager, final MCPRuntimeContext runtimeContext) {
+    public StdioMCPServer(final MCPSessionManager sessionManager, final MCPRuntimeServices runtimeServices) {
         this.sessionManager = Objects.requireNonNull(sessionManager, "sessionManager cannot be null");
-        this.runtimeContext = Objects.requireNonNull(runtimeContext, "runtimeContext cannot be null");
+        this.runtimeServices = Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null");
+    }
+    
+    /**
+     * Construct one STDIO MCP server.
+     *
+     * @param sessionManager session manager
+     * @param runtimeContext compatibility runtime context
+     * @deprecated use {@link #StdioMCPServer(MCPSessionManager, MCPRuntimeServices)} instead
+     */
+    @Deprecated
+    public StdioMCPServer(final MCPSessionManager sessionManager, final MCPRuntimeContext runtimeContext) {
+        this(sessionManager, Objects.requireNonNull(runtimeContext, "runtimeContext cannot be null").getRuntimeServices());
     }
     
     /**
@@ -87,7 +100,7 @@ public final class StdioMCPServer {
      */
     public ToolDispatchResult invokeMetadataTool(final String sessionId, final MetadataCatalog metadataCatalog, final ToolRequest toolRequest) {
         requireSession(sessionId);
-        return runtimeContext.getMetadataToolDispatcher().dispatch(metadataCatalog, toolRequest);
+        return runtimeServices.getMetadataToolDispatcher().dispatch(metadataCatalog, toolRequest);
     }
     
     /**
@@ -99,7 +112,7 @@ public final class StdioMCPServer {
      */
     public ExecuteQueryResponse executeQuery(final String sessionId, final ExecutionRequest executionRequest) {
         requireSession(sessionId);
-        return runtimeContext.getExecuteQueryFacade().execute(executionRequest);
+        return runtimeServices.getExecuteQueryFacade().execute(executionRequest);
     }
     
     /**
@@ -108,8 +121,8 @@ public final class StdioMCPServer {
      * @param sessionId session identifier
      */
     public void closeSession(final String sessionId) {
-        runtimeContext.getMetadataRefreshCoordinator().clearSession(sessionId);
-        runtimeContext.getTransactionCommandExecutor().getDatabaseRuntime().closeSession(sessionId);
+        runtimeServices.getMetadataRefreshCoordinator().clearSession(sessionId);
+        runtimeServices.getTransactionCommandExecutor().getDatabaseRuntime().closeSession(sessionId);
         sessionManager.closeSession(sessionId);
     }
     

@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
-import lombok.Getter;
-import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseRuntimeFactory.DatabaseConnectionConfiguration;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataCatalog;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -43,29 +40,22 @@ public final class MCPRuntimeProvider {
      */
     public LoadedRuntime load(final Properties props) {
         Map<String, DatabaseConnectionConfiguration> connectionConfigurations = databaseRuntimeFactory.createConnectionConfigurations(props);
-        MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigurations);
-        return new LoadedRuntime(metadataCatalog, databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, metadataLoader));
+        return load(connectionConfigurations);
     }
     
     /**
-     * Loaded runtime projection.
+     * Load one runtime projection from runtime topology configuration.
+     *
+     * @param runtimeTopologyConfiguration runtime topology configuration
+     * @return loaded runtime projection
      */
-    @Getter
-    public static final class LoadedRuntime {
-        
-        private final MetadataCatalog metadataCatalog;
-        
-        private final DatabaseRuntime databaseRuntime;
-        
-        /**
-         * Construct one loaded runtime projection.
-         *
-         * @param metadataCatalog metadata catalog
-         * @param databaseRuntime database runtime
-         */
-        public LoadedRuntime(final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
-            this.metadataCatalog = Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null");
-            this.databaseRuntime = Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null");
-        }
+    public LoadedRuntime load(final RuntimeTopologyConfiguration runtimeTopologyConfiguration) {
+        Map<String, DatabaseConnectionConfiguration> connectionConfigurations = databaseRuntimeFactory.createConnectionConfigurations(runtimeTopologyConfiguration);
+        return load(connectionConfigurations);
+    }
+    
+    private LoadedRuntime load(final Map<String, DatabaseConnectionConfiguration> connectionConfigurations) {
+        MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigurations);
+        return new LoadedRuntime(metadataCatalog, databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, metadataLoader));
     }
 }

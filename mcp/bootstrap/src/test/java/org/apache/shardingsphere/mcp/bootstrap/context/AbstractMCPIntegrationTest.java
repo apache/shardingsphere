@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.server;
+package org.apache.shardingsphere.mcp.bootstrap.context;
+
+import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,44 +30,44 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public abstract class AbstractMCPIntegrationTest {
     
-    private MCPServerContext serverContext;
+    private MCPServerRegistry serverRegistry;
     
     @BeforeEach
     void setUpContext() {
-        serverContext = createServerContext();
-        serverContext.start();
+        serverRegistry = createServerRegistry();
+        serverRegistry.start();
     }
     
     @AfterEach
     void tearDownContext() {
-        if (null != serverContext) {
-            serverContext.stop();
+        if (null != serverRegistry) {
+            serverRegistry.stop();
         }
     }
     
     /**
-     * Create the server context instance for the current integration test.
+     * Create the server registry instance for the current integration test.
      *
-     * @return server context instance
+     * @return server registry instance
      */
-    protected abstract MCPServerContext createServerContext();
+    protected abstract MCPServerRegistry createServerRegistry();
     
     /**
-     * Get the running server context instance.
+     * Get the running server registry instance.
      *
-     * @return server context instance
+     * @return server registry instance
      */
-    protected final MCPServerContext getServerContext() {
-        assertNotNull(serverContext);
-        return serverContext;
+    protected final MCPServerRegistry getServerRegistry() {
+        assertNotNull(serverRegistry);
+        return serverRegistry;
     }
     
     /**
-     * Assert that a tool has already been wired into the server context snapshot.
+     * Assert that a tool has already been wired into the server registry snapshot.
      *
      * @param toolName tool identifier
      */
     protected final void assertToolRegistered(final String toolName) {
-        assertTrue(getServerContext().snapshot().getTools().contains(toolName));
+        assertTrue(getServerRegistry().snapshot().getTools().contains(toolName));
     }
 }

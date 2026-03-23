@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.server;
+package org.apache.shardingsphere.mcp.bootstrap.context;
 
-import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
@@ -27,41 +27,41 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MetadataDiscoveryIntegrationTest extends AbstractMCPIntegrationTest {
     
-    private MCPRuntimeContext runtimeContext;
+    private MCPRuntimeServices runtimeServices;
     
     @Override
-    protected MCPServerContext createServerContext() {
+    protected MCPServerRegistry createServerRegistry() {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        runtimeContext = new MCPRuntimeContext(sessionManager);
-        MCPServerContext result = new MCPServerContext(sessionManager);
-        runtimeContext.registerDefaults(result);
+        runtimeServices = new MCPRuntimeServices(sessionManager);
+        MCPServerRegistry result = new MCPServerRegistry(sessionManager);
+        runtimeServices.registerDefaults(result);
         return result;
     }
     
     @Test
     void assertRegisterResourceDefaults() {
-        MCPServerContext.RegistrationSnapshot actual = getServerContext().snapshot();
+        MCPServerRegistry.RegistrationSnapshot actual = getServerRegistry().snapshot();
         
-        assertThat(actual.getResources().size(), is(runtimeContext.getCapabilityAssembler().assembleServiceCapability().getSupportedResources().size()));
+        assertThat(actual.getResources().size(), is(runtimeServices.getCapabilityAssembler().assembleServiceCapability().getSupportedResources().size()));
         assertTrue(actual.getResources().contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes"));
-        assertTrue(getServerContext().snapshot().getResources().contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}"));
+        assertTrue(getServerRegistry().snapshot().getResources().contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}"));
     }
     
     @Test
     void assertRegisterDefaults() {
-        MCPServerContext.RegistrationSnapshot actual = getServerContext().snapshot();
+        MCPServerRegistry.RegistrationSnapshot actual = getServerRegistry().snapshot();
         
-        assertThat(actual.getResources().size(), is(runtimeContext.getCapabilityAssembler().assembleServiceCapability().getSupportedResources().size()));
-        assertThat(actual.getTools().size(), is(runtimeContext.getCapabilityAssembler().assembleServiceCapability().getSupportedTools().size()));
+        assertThat(actual.getResources().size(), is(runtimeServices.getCapabilityAssembler().assembleServiceCapability().getSupportedResources().size()));
+        assertThat(actual.getTools().size(), is(runtimeServices.getCapabilityAssembler().assembleServiceCapability().getSupportedTools().size()));
         assertTrue(actual.getTools().contains("execute_query"));
         assertTrue(actual.getResources().contains("shardingsphere://capabilities"));
     }
     
     @Test
     void assertRegisterToolDefaults() {
-        MCPServerContext.RegistrationSnapshot actual = getServerContext().snapshot();
+        MCPServerRegistry.RegistrationSnapshot actual = getServerRegistry().snapshot();
         
-        assertThat(actual.getTools().size(), is(runtimeContext.getCapabilityAssembler().assembleServiceCapability().getSupportedTools().size()));
+        assertThat(actual.getTools().size(), is(runtimeServices.getCapabilityAssembler().assembleServiceCapability().getSupportedTools().size()));
         assertTrue(actual.getTools().contains("search_metadata"));
         assertTrue(actual.getTools().contains("describe_table"));
     }

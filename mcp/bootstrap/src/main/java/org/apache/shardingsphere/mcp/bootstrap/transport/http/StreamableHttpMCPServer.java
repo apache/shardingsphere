@@ -48,22 +48,24 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration.ServerConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerContext;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler.DatabaseCapabilityView;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.ExecutionRequest;
+import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
+import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerContext;
+import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
+import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
+import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ErrorCode;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataCatalog;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataObjectType;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.ResourceLoadResult;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.ResourceRequest;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.ResourceLoadResult;
+import org.apache.shardingsphere.mcp.resource.ResourceRequest;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher.ToolDispatchResult;
-import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher.ToolRequest;
+import org.apache.shardingsphere.mcp.tool.ToolDispatchResult;
+import org.apache.shardingsphere.mcp.tool.ToolRequest;
 
 import java.io.IOException;
 import java.net.URI;
@@ -116,11 +118,11 @@ public final class StreamableHttpMCPServer {
     
     private static final String RESOURCE_DATABASES = "shardingsphere://databases";
     
-    private final ServerConfiguration serverConfiguration;
+    private final HttpServerConfiguration serverConfiguration;
     
-    private final MCPServerContext serverContext;
+    private final MCPServerRegistry serverRegistry;
     
-    private final MCPRuntimeContext runtimeContext;
+    private final MCPRuntimeServices runtimeServices;
     
     private final McpJsonMapper jsonMapper = createJsonMapper();
     
@@ -147,11 +149,11 @@ public final class StreamableHttpMCPServer {
      * Construct one HTTP MCP server.
      *
      * @param serverConfiguration server configuration
-     * @param serverContext server context
-     * @param runtimeContext runtime context
+     * @param serverRegistry server registry
+     * @param runtimeServices runtime services
      */
-    public StreamableHttpMCPServer(final ServerConfiguration serverConfiguration, final MCPServerContext serverContext, final MCPRuntimeContext runtimeContext) {
-        this(serverConfiguration, serverContext, runtimeContext, new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()),
+    public StreamableHttpMCPServer(final HttpServerConfiguration serverConfiguration, final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices) {
+        this(serverConfiguration, serverRegistry, runtimeServices, new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()),
                 new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
     }
     
@@ -159,19 +161,50 @@ public final class StreamableHttpMCPServer {
      * Construct one HTTP MCP server with caller-provided runtime metadata.
      *
      * @param serverConfiguration server configuration
-     * @param serverContext server context
-     * @param runtimeContext runtime context
+     * @param serverRegistry server registry
+     * @param runtimeServices runtime services
      * @param metadataCatalog metadata catalog
      * @param databaseRuntime database runtime
      */
-    public StreamableHttpMCPServer(final ServerConfiguration serverConfiguration, final MCPServerContext serverContext, final MCPRuntimeContext runtimeContext,
+    public StreamableHttpMCPServer(final HttpServerConfiguration serverConfiguration, final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices,
                                    final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
         this.serverConfiguration = Objects.requireNonNull(serverConfiguration, "serverConfiguration cannot be null");
-        this.serverContext = Objects.requireNonNull(serverContext, "serverContext cannot be null");
-        this.runtimeContext = Objects.requireNonNull(runtimeContext, "runtimeContext cannot be null");
+        this.serverRegistry = Objects.requireNonNull(serverRegistry, "serverRegistry cannot be null");
+        this.runtimeServices = Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null");
         this.metadataCatalog = Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null");
         this.databaseRuntime = Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null");
-        metadataRefreshCoordinator = runtimeContext.getMetadataRefreshCoordinator();
+        metadataRefreshCoordinator = runtimeServices.getMetadataRefreshCoordinator();
+    }
+    
+    /**
+     * Construct one HTTP MCP server.
+     *
+     * @param serverConfiguration server configuration
+     * @param serverContext compatibility server context
+     * @param runtimeContext compatibility runtime context
+     * @deprecated use {@link #StreamableHttpMCPServer(HttpServerConfiguration, MCPServerRegistry, MCPRuntimeServices)} instead
+     */
+    @Deprecated
+    public StreamableHttpMCPServer(final HttpServerConfiguration serverConfiguration, final MCPServerContext serverContext, final MCPRuntimeContext runtimeContext) {
+        this(serverConfiguration, Objects.requireNonNull(serverContext, "serverContext cannot be null").getServerRegistry(),
+                Objects.requireNonNull(runtimeContext, "runtimeContext cannot be null").getRuntimeServices());
+    }
+    
+    /**
+     * Construct one HTTP MCP server with caller-provided runtime metadata.
+     *
+     * @param serverConfiguration server configuration
+     * @param serverContext compatibility server context
+     * @param runtimeContext compatibility runtime context
+     * @param metadataCatalog metadata catalog
+     * @param databaseRuntime database runtime
+     * @deprecated use {@link #StreamableHttpMCPServer(HttpServerConfiguration, MCPServerRegistry, MCPRuntimeServices, MetadataCatalog, DatabaseRuntime)} instead
+     */
+    @Deprecated
+    public StreamableHttpMCPServer(final HttpServerConfiguration serverConfiguration, final MCPServerContext serverContext, final MCPRuntimeContext runtimeContext,
+                                   final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
+        this(serverConfiguration, Objects.requireNonNull(serverContext, "serverContext cannot be null").getServerRegistry(),
+                Objects.requireNonNull(runtimeContext, "runtimeContext cannot be null").getRuntimeServices(), metadataCatalog, databaseRuntime);
     }
     
     /**
@@ -183,7 +216,7 @@ public final class StreamableHttpMCPServer {
         if (running) {
             return;
         }
-        transportProvider = new SdkStreamableHttpServlet(serverContext.getSessionManager(), databaseRuntime, metadataRefreshCoordinator, jsonMapper,
+        transportProvider = new SdkStreamableHttpServlet(serverRegistry.getSessionManager(), databaseRuntime, metadataRefreshCoordinator, jsonMapper,
                 serverConfiguration.getBindHost(), serverConfiguration.getEndpointPath());
         syncServer = createSyncServer();
         try {
@@ -275,7 +308,7 @@ public final class StreamableHttpMCPServer {
     
     private List<SyncToolSpecification> createToolSpecifications() {
         List<SyncToolSpecification> result = new ArrayList<>();
-        for (String each : runtimeContext.getCapabilityAssembler().assembleServiceCapability().getSupportedTools()) {
+        for (String each : runtimeServices.getCapabilityAssembler().assembleServiceCapability().getSupportedTools()) {
             result.add(new SyncToolSpecification.Builder()
                     .tool(createToolDefinition(each))
                     .callHandler(this::handleToolCall)
@@ -423,7 +456,7 @@ public final class StreamableHttpMCPServer {
     }
     
     private McpSchema.CallToolResult handleMetadataToolCall(final String toolName, final Map<String, Object> arguments) {
-        ToolDispatchResult result = runtimeContext.getMetadataToolDispatcher().dispatch(metadataCatalog, createMetadataToolRequest(toolName, arguments));
+        ToolDispatchResult result = runtimeServices.getMetadataToolDispatcher().dispatch(metadataCatalog, createMetadataToolRequest(toolName, arguments));
         if (!result.isSuccessful()) {
             return errorToolResult(toDomainErrorCode(result.getErrorCode().orElse(ErrorCode.INVALID_REQUEST)), result.getMessage());
         }
@@ -473,13 +506,13 @@ public final class StreamableHttpMCPServer {
     private McpSchema.CallToolResult handleGetCapabilities(final Map<String, Object> arguments) {
         String database = getStringArgument(arguments, "database");
         if (database.isEmpty()) {
-            return successToolResult(runtimeContext.getCapabilityAssembler().assembleServiceCapability());
+            return successToolResult(runtimeServices.getCapabilityAssembler().assembleServiceCapability());
         }
         String databaseType = metadataCatalog.getDatabaseTypes().get(database);
         if (null == databaseType) {
             return errorToolResult("not_found", "Database capability does not exist.");
         }
-        Optional<DatabaseCapabilityView> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(database, databaseType);
+        Optional<DatabaseCapabilityView> capability = runtimeServices.getCapabilityAssembler().assembleDatabaseCapability(database, databaseType);
         return capability.isPresent() ? successToolResult(capability.get()) : errorToolResult("not_found", "Database capability does not exist.");
     }
     
@@ -496,7 +529,7 @@ public final class StreamableHttpMCPServer {
         ExecutionRequest executionRequest = new ExecutionRequest(sessionId, database, databaseType, getStringArgument(arguments, "schema"),
                 sql, getIntegerArgument(arguments, "max_rows", 0), getIntegerArgument(arguments, "timeout_ms", 0), databaseRuntime,
                 System.currentTimeMillis());
-        ExecuteQueryResponse response = runtimeContext.getExecuteQueryFacade().execute(executionRequest);
+        ExecuteQueryResponse response = runtimeServices.getExecuteQueryFacade().execute(executionRequest);
         return response.isSuccessful() ? successToolResult(toExecuteQueryPayload(response))
                 : errorToolResult(toDomainErrorCode(response.getError().get().getErrorCode()), response.getError().get().getMessage(), toExecuteQueryPayload(response));
     }
@@ -550,7 +583,7 @@ public final class StreamableHttpMCPServer {
     
     private List<SyncResourceSpecification> createResourceSpecifications() {
         List<SyncResourceSpecification> result = new ArrayList<>();
-        for (String each : runtimeContext.getCapabilityAssembler().assembleServiceCapability().getSupportedResources()) {
+        for (String each : runtimeServices.getCapabilityAssembler().assembleServiceCapability().getSupportedResources()) {
             if (!isTemplatedResource(each)) {
                 result.add(new SyncResourceSpecification(createResource(each), this::handleReadResource));
             }
@@ -560,7 +593,7 @@ public final class StreamableHttpMCPServer {
     
     private List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
         List<SyncResourceTemplateSpecification> result = new ArrayList<>();
-        for (String each : runtimeContext.getCapabilityAssembler().assembleServiceCapability().getSupportedResources()) {
+        for (String each : runtimeServices.getCapabilityAssembler().assembleServiceCapability().getSupportedResources()) {
             if (isTemplatedResource(each)) {
                 result.add(new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource));
             }
@@ -593,10 +626,10 @@ public final class StreamableHttpMCPServer {
     
     private Object resolveResourcePayload(final String resourceUri) {
         if (RESOURCE_CAPABILITIES.equals(resourceUri)) {
-            return runtimeContext.getCapabilityAssembler().assembleServiceCapability();
+            return runtimeServices.getCapabilityAssembler().assembleServiceCapability();
         }
         if (RESOURCE_DATABASES.equals(resourceUri)) {
-            return toResourcePayload(runtimeContext.getMetadataResourceLoader().load(metadataCatalog, new ResourceRequest("", "", MetadataObjectType.DATABASE, "", "", "")));
+            return toResourcePayload(runtimeServices.getMetadataResourceLoader().load(metadataCatalog, new ResourceRequest("", "", MetadataObjectType.DATABASE, "", "", "")));
         }
         List<String> segments = splitResourceUri(resourceUri);
         if (segments.size() >= 3 && "databases".equals(segments.get(0)) && "capabilities".equals(segments.get(2))) {
@@ -605,11 +638,11 @@ public final class StreamableHttpMCPServer {
             if (null == databaseType) {
                 return createErrorPayload("not_found", "Database capability does not exist.");
             }
-            Optional<DatabaseCapabilityView> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(database, databaseType);
+            Optional<DatabaseCapabilityView> capability = runtimeServices.getCapabilityAssembler().assembleDatabaseCapability(database, databaseType);
             return capability.isPresent() ? capability.get() : createErrorPayload("not_found", "Database capability does not exist.");
         }
         Optional<ResourceRequest> resourceRequest = createMetadataResourceRequest(segments);
-        return resourceRequest.isPresent() ? toResourcePayload(runtimeContext.getMetadataResourceLoader().load(metadataCatalog, resourceRequest.get()))
+        return resourceRequest.isPresent() ? toResourcePayload(runtimeServices.getMetadataResourceLoader().load(metadataCatalog, resourceRequest.get()))
                 : createErrorPayload("invalid_request", "Unsupported resource URI.");
     }
     
@@ -1017,10 +1050,6 @@ public final class StreamableHttpMCPServer {
             return "";
         }
         
-        private String getSessionProtocolVersion(final String sessionId) {
-            return FIXED_PROTOCOL_VERSION;
-        }
-        
         private McpSchema.InitializeRequest normalizeInitializeRequest(final McpSchema.InitializeRequest initializeRequest) {
             String actualProtocolVersion = normalizeProtocolVersion(initializeRequest.protocolVersion());
             if (actualProtocolVersion.equals(initializeRequest.protocolVersion())) {
@@ -1079,7 +1108,7 @@ public final class StreamableHttpMCPServer {
         
         private void addNegotiatedProtocolHeader(final String name, final String value) {
             if (SESSION_HEADER.equalsIgnoreCase(name) && null != value && !value.trim().isEmpty()) {
-                super.setHeader(PROTOCOL_HEADER, owner.getSessionProtocolVersion(value.trim()));
+                super.setHeader(PROTOCOL_HEADER, FIXED_PROTOCOL_VERSION);
             }
         }
     }

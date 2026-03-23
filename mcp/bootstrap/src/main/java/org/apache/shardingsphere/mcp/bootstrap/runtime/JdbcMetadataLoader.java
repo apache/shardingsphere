@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
-import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseRuntimeFactory.DatabaseConnectionConfiguration;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityRegistry.SupportedObjectType;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataCatalog;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataObject;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataObjectType;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.RuntimeDatabaseDescriptor;
+import org.apache.shardingsphere.mcp.capability.SupportedObjectType;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.MetadataObject;
+import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -75,19 +74,27 @@ public final class JdbcMetadataLoader {
         Set<SupportedObjectType> supportedObjectTypes = new LinkedHashSet<>();
         supportedObjectTypes.add(SupportedObjectType.DATABASE);
         List<String> schemas = resolveSchemas(connectionConfiguration, connection, databaseMetaData);
-        if (!schemas.isEmpty()) {
-            supportedObjectTypes.add(SupportedObjectType.SCHEMA);
+        loadMetadataObjects(connectionConfiguration, databaseMetaData, schemas, metadataObjects, supportedObjectTypes);
+        RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = new RuntimeDatabaseDescriptor(connectionConfiguration.getDatabase(),
+                connectionConfiguration.getDatabaseType(), supportedObjectTypes, resolveDefaultSchema(connectionConfiguration, connection, schemas),
+                connectionConfiguration.isSupportsCrossSchemaSql(), connectionConfiguration.isSupportsExplainAnalyze());
+        return new RuntimeMetadataSnapshot(metadataObjects, runtimeDatabaseDescriptor);
+    }
+    
+    private void loadMetadataObjects(final DatabaseConnectionConfiguration connectionConfiguration, final DatabaseMetaData databaseMetaData, final List<String> schemas,
+                                     final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes) throws SQLException {
+        if (schemas.isEmpty()) {
+            loadTables(connectionConfiguration, databaseMetaData, "", metadataObjects, supportedObjectTypes);
+            loadViews(connectionConfiguration, databaseMetaData, "", metadataObjects, supportedObjectTypes);
+            return;
         }
+        supportedObjectTypes.add(SupportedObjectType.SCHEMA);
         for (String each : schemas) {
             String schema = normalizeSchema(each);
             metadataObjects.add(new MetadataObject(connectionConfiguration.getDatabase(), schema, MetadataObjectType.SCHEMA, schema, "", ""));
             loadTables(connectionConfiguration, databaseMetaData, schema, metadataObjects, supportedObjectTypes);
             loadViews(connectionConfiguration, databaseMetaData, schema, metadataObjects, supportedObjectTypes);
         }
-        RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = new RuntimeDatabaseDescriptor(connectionConfiguration.getDatabase(),
-                connectionConfiguration.getDatabaseType(), supportedObjectTypes, resolveDefaultSchema(connectionConfiguration, connection, schemas),
-                connectionConfiguration.isSupportsCrossSchemaSql(), connectionConfiguration.isSupportsExplainAnalyze());
-        return new RuntimeMetadataSnapshot(metadataObjects, runtimeDatabaseDescriptor);
     }
     
     private List<String> resolveSchemas(final DatabaseConnectionConfiguration connectionConfiguration,
@@ -113,7 +120,11 @@ public final class JdbcMetadataLoader {
                 result.add(actualSchema);
             }
         }
-        return result.isEmpty() ? Collections.singletonList(connectionConfiguration.getDefaultSchema()) : result;
+        if (!result.isEmpty()) {
+            return result;
+        }
+        String defaultSchema = connectionConfiguration.getDefaultSchema().trim();
+        return defaultSchema.isEmpty() ? Collections.emptyList() : Collections.singletonList(defaultSchema);
     }
     
     private boolean isSystemSchema(final String schemaName) {
@@ -123,7 +134,7 @@ public final class JdbcMetadataLoader {
     
     private void loadTables(final DatabaseConnectionConfiguration connectionConfiguration, final DatabaseMetaData databaseMetaData, final String schema,
                             final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes) throws SQLException {
-        try (ResultSet tables = databaseMetaData.getTables(null, schema, "%", new String[]{"TABLE"})) {
+        try (ResultSet tables = databaseMetaData.getTables(null, getSchemaPattern(schema), "%", new String[]{"TABLE"})) {
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
                 if (null == tableName || tableName.trim().isEmpty()) {
@@ -140,7 +151,7 @@ public final class JdbcMetadataLoader {
     
     private void loadViews(final DatabaseConnectionConfiguration connectionConfiguration, final DatabaseMetaData databaseMetaData, final String schema,
                            final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes) throws SQLException {
-        try (ResultSet views = databaseMetaData.getTables(null, schema, "%", new String[]{"VIEW"})) {
+        try (ResultSet views = databaseMetaData.getTables(null, getSchemaPattern(schema), "%", new String[]{"VIEW"})) {
             while (views.next()) {
                 String viewName = views.getString("TABLE_NAME");
                 if (null == viewName || viewName.trim().isEmpty()) {
@@ -157,7 +168,7 @@ public final class JdbcMetadataLoader {
     private void loadColumns(final DatabaseConnectionConfiguration connectionConfiguration, final DatabaseMetaData databaseMetaData, final String schema,
                              final String objectName, final String parentObjectType, final List<MetadataObject> metadataObjects,
                              final Set<SupportedObjectType> supportedObjectTypes) throws SQLException {
-        try (ResultSet columns = databaseMetaData.getColumns(null, schema, objectName, "%")) {
+        try (ResultSet columns = databaseMetaData.getColumns(null, getSchemaPattern(schema), objectName, "%")) {
             while (columns.next()) {
                 String columnName = columns.getString("COLUMN_NAME");
                 if (null == columnName || columnName.trim().isEmpty()) {
@@ -173,7 +184,7 @@ public final class JdbcMetadataLoader {
     private void loadIndexes(final DatabaseConnectionConfiguration connectionConfiguration, final DatabaseMetaData databaseMetaData, final String schema,
                              final String tableName, final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes) throws SQLException {
         Set<String> indexNames = new LinkedHashSet<>();
-        try (ResultSet indexes = databaseMetaData.getIndexInfo(null, schema, tableName, false, false)) {
+        try (ResultSet indexes = databaseMetaData.getIndexInfo(null, getSchemaPattern(schema), tableName, false, false)) {
             while (indexes.next()) {
                 String indexName = indexes.getString("INDEX_NAME");
                 if (null == indexName || indexName.trim().isEmpty()) {
@@ -205,6 +216,11 @@ public final class JdbcMetadataLoader {
     
     private String normalizeSchema(final String schema) {
         return null == schema ? "" : schema.trim();
+    }
+    
+    private String getSchemaPattern(final String schema) {
+        String result = normalizeSchema(schema);
+        return result.isEmpty() ? null : result;
     }
     
     private static final class RuntimeMetadataSnapshot {

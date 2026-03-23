@@ -19,18 +19,19 @@ package org.apache.shardingsphere.test.e2e.mcp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.LaunchState;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration.ServerConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerContext;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.QueryResult;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ColumnDefinition;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataCatalog;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataObject;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader.MetadataObjectType;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.LaunchState;
+import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
+import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.QueryResult;
+import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.MetadataObject;
+import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.AfterEach;
 
@@ -66,13 +67,13 @@ abstract class AbstractMCPE2ETest {
             if (launchState.getStdioServer().isPresent()) {
                 launchState.getStdioServer().get().stop();
             }
-            launchState.getServerContext().stop();
+            launchState.getServerRegistry().stop();
             launchState = null;
         }
     }
     
-    protected final MCPRuntimeContext createRuntimeContext(final MCPSessionManager sessionManager) {
-        return new MCPRuntimeContext(sessionManager);
+    protected final MCPRuntimeServices createRuntimeServices(final MCPSessionManager sessionManager) {
+        return new MCPRuntimeServices(sessionManager);
     }
     
     protected final LaunchState launchRuntime() {
@@ -214,10 +215,11 @@ abstract class AbstractMCPE2ETest {
     
     private LaunchState launchRuntimeInternal() {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPServerContext serverContext = new MCPServerContext(sessionManager);
-        MCPRuntimeContext runtimeContext = createRuntimeContext(sessionManager);
-        RuntimeConfiguration runtimeConfiguration = new RuntimeConfiguration(new ServerConfiguration("127.0.0.1", 0, ENDPOINT_PATH), true, false, new Properties());
-        launchState = new MCPRuntimeLauncher().launch(serverContext, runtimeContext, runtimeConfiguration, createMetadataCatalog(), createDatabaseRuntime());
+        MCPServerRegistry serverRegistry = new MCPServerRegistry(sessionManager);
+        MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
+        MCPLaunchConfiguration runtimeConfiguration = new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, ENDPOINT_PATH), true, false,
+                new Properties(), new RuntimeTopologyConfiguration(Map.of()));
+        launchState = new MCPRuntimeLauncher().launch(serverRegistry, runtimeServices, runtimeConfiguration, createMetadataCatalog(), createDatabaseRuntime());
         return launchState;
     }
     
