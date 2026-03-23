@@ -37,10 +37,6 @@ public final class YamlTransportConfigurationSwapper implements YamlConfiguratio
     @Override
     public TransportConfiguration swapToObject(final YamlTransportConfiguration yamlConfig) {
         YamlTransportConfiguration actualYamlConfig = null == yamlConfig ? new YamlTransportConfiguration() : yamlConfig;
-        return new TransportConfiguration(resolveEnabled(actualYamlConfig.getHttpEnabled()), resolveEnabled(actualYamlConfig.getStdioEnabled()));
-    }
-    
-    private boolean resolveEnabled(final Boolean enabled) {
-        return null == enabled || enabled;
+        return new TransportConfiguration(actualYamlConfig.isHttpEnabled(), actualYamlConfig.isStdioEnabled());
     }
 }

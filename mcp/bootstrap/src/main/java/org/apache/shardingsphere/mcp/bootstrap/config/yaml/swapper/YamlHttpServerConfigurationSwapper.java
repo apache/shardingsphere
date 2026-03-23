@@ -29,8 +29,6 @@ public final class YamlHttpServerConfigurationSwapper implements YamlConfigurati
     
     private static final String DEFAULT_BIND_HOST = "127.0.0.1";
     
-    private static final int DEFAULT_PORT = 18088;
-    
     private static final String DEFAULT_ENDPOINT_PATH = "/mcp";
     
     @Override
@@ -51,10 +49,7 @@ public final class YamlHttpServerConfigurationSwapper implements YamlConfigurati
                 endpointPath.isEmpty() ? DEFAULT_ENDPOINT_PATH : normalizePath(endpointPath));
     }
     
-    private int resolvePort(final Integer port) {
-        if (null == port) {
-            return DEFAULT_PORT;
-        }
+    private int resolvePort(final int port) {
         ShardingSpherePreconditions.checkState(port >= 0, () -> new IllegalArgumentException("MCP server port cannot be negative."));
         return port;
     }

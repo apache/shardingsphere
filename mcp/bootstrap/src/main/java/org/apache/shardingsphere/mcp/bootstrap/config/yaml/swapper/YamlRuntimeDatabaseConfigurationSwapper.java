@@ -60,8 +60,8 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
                 resolveText(actualYamlConfig.getDriverClassName(), actualRuntimeDefaults, "driverClassName"),
                 resolveText(actualYamlConfig.getSchemaPattern(), actualRuntimeDefaults, "schemaPattern"),
                 resolveText(actualYamlConfig.getDefaultSchema(), actualRuntimeDefaults, "defaultSchema"),
-                resolveBoolean(actualYamlConfig.getSupportsCrossSchemaSql(), actualRuntimeDefaults, "supportsCrossSchemaSql"),
-                resolveBoolean(actualYamlConfig.getSupportsExplainAnalyze(), actualRuntimeDefaults, "supportsExplainAnalyze"));
+                resolveBoolean(actualYamlConfig.isSupportsCrossSchemaSql(), actualYamlConfig.containsExplicitSupportsCrossSchemaSqlValue(), actualRuntimeDefaults, "supportsCrossSchemaSql"),
+                resolveBoolean(actualYamlConfig.isSupportsExplainAnalyze(), actualYamlConfig.containsExplicitSupportsExplainAnalyzeValue(), actualRuntimeDefaults, "supportsExplainAnalyze"));
     }
     
     private String resolveRequiredText(final String value, final Map<String, String> runtimeDefaults, final String fieldName, final String databaseName) {
@@ -76,11 +76,8 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
         return result.isEmpty() ? normalizeText(runtimeDefaults.get(fieldName)) : result;
     }
     
-    private boolean resolveBoolean(final Boolean value, final Map<String, String> runtimeDefaults, final String fieldName) {
-        if (null != value) {
-            return value;
-        }
-        return Boolean.parseBoolean(normalizeText(runtimeDefaults.get(fieldName)));
+    private boolean resolveBoolean(final boolean value, final boolean explicitlyConfigured, final Map<String, String> runtimeDefaults, final String fieldName) {
+        return explicitlyConfigured ? value : Boolean.parseBoolean(normalizeText(runtimeDefaults.get(fieldName)));
     }
     
     private String normalizeText(final Object value) {

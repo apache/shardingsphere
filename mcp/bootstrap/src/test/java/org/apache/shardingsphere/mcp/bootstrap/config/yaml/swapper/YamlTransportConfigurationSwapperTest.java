@@ -52,7 +52,7 @@ class YamlTransportConfigurationSwapperTest {
     void assertSwapToYamlConfiguration() {
         YamlTransportConfiguration actual = swapper.swapToYamlConfiguration(new TransportConfiguration(true, false));
         
-        assertTrue(actual.getHttpEnabled());
-        assertFalse(actual.getStdioEnabled());
+        assertTrue(actual.isHttpEnabled());
+        assertFalse(actual.isStdioEnabled());
     }
 }

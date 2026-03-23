@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.config;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
@@ -42,7 +43,53 @@ public final class YamlRuntimeDatabaseConfiguration implements YamlConfiguration
     
     private String defaultSchema;
     
-    private Boolean supportsCrossSchemaSql;
+    private boolean supportsCrossSchemaSql;
     
-    private Boolean supportsExplainAnalyze;
+    private boolean supportsExplainAnalyze;
+    
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private transient boolean explicitSupportsCrossSchemaSql;
+    
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private transient boolean explicitSupportsExplainAnalyze;
+    
+    /**
+     * Set whether cross-schema SQL is supported.
+     *
+     * @param supportsCrossSchemaSql whether cross-schema SQL is supported
+     */
+    public void setSupportsCrossSchemaSql(final boolean supportsCrossSchemaSql) {
+        this.supportsCrossSchemaSql = supportsCrossSchemaSql;
+        explicitSupportsCrossSchemaSql = true;
+    }
+    
+    /**
+     * Set whether explain analyze is supported.
+     *
+     * @param supportsExplainAnalyze whether explain analyze is supported
+     */
+    public void setSupportsExplainAnalyze(final boolean supportsExplainAnalyze) {
+        this.supportsExplainAnalyze = supportsExplainAnalyze;
+        explicitSupportsExplainAnalyze = true;
+    }
+    
+    /**
+     * Check whether cross-schema SQL support is explicitly configured.
+     *
+     * @return true if explicitly configured, otherwise false
+     */
+    public boolean containsExplicitSupportsCrossSchemaSqlValue() {
+        return explicitSupportsCrossSchemaSql;
+    }
+    
+    /**
+     * Check whether explain analyze support is explicitly configured.
+     *
+     * @return true if explicitly configured, otherwise false
+     */
+    public boolean containsExplicitSupportsExplainAnalyzeValue() {
+        return explicitSupportsExplainAnalyze;
+    }
 }

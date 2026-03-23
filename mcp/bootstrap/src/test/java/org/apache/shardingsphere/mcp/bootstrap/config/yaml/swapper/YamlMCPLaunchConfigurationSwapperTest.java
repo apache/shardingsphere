@@ -80,8 +80,8 @@ class YamlMCPLaunchConfigurationSwapperTest {
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
         
         assertThat(actual.getServer().getBindHost(), is("127.0.0.1"));
-        assertTrue(actual.getTransport().getHttpEnabled());
-        assertFalse(actual.getTransport().getStdioEnabled());
+        assertTrue(actual.getTransport().isHttpEnabled());
+        assertFalse(actual.getTransport().isStdioEnabled());
         assertThat(actual.getRuntime().getProps().get("databaseName"), is("logic_db"));
         assertTrue(actual.getRuntime().getDatabases().isEmpty());
     }
