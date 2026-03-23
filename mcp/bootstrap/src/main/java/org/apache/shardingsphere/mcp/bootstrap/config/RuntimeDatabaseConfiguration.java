@@ -44,5 +44,4 @@ public final class RuntimeDatabaseConfiguration {
     private final boolean supportsCrossSchemaSql;
     
     private final boolean supportsExplainAnalyze;
-    
 }

@@ -29,5 +29,4 @@ import java.util.Map;
 public final class RuntimeTopologyConfiguration {
     
     private final Map<String, RuntimeDatabaseConfiguration> databases;
-    
 }

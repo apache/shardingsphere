@@ -31,5 +31,4 @@ public final class RuntimeConfiguration {
     private final Properties props;
     
     private final RuntimeTopologyConfiguration topologyConfiguration;
-    
 }
