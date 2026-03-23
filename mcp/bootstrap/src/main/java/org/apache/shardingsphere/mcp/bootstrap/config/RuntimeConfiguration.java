@@ -24,8 +24,8 @@ import java.util.Properties;
 /**
  * Runtime configuration.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class RuntimeConfiguration {
     
     private final Properties props;

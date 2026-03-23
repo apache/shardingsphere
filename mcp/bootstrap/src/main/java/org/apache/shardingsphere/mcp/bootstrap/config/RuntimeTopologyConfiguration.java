@@ -24,8 +24,8 @@ import java.util.Map;
 /**
  * Runtime topology configuration for direct multi-database launch.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class RuntimeTopologyConfiguration {
     
     private final Map<String, RuntimeDatabaseConfiguration> databases;

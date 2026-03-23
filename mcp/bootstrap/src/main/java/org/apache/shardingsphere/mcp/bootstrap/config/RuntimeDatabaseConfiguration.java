@@ -23,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * Runtime database configuration for one logical database binding.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class RuntimeDatabaseConfiguration {
     
     private final String databaseType;

@@ -23,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * HTTP server configuration.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class HttpServerConfiguration {
     
     private final String bindHost;

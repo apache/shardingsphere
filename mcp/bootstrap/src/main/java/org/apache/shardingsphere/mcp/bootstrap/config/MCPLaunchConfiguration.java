@@ -24,8 +24,8 @@ import java.util.Properties;
 /**
  * MCP launch configuration.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class MCPLaunchConfiguration {
     
     private final HttpServerConfiguration httpServerConfiguration;
