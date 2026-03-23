@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -61,7 +64,7 @@ class ProductionRuntimeLauncherTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        launchState = runtimeLauncher.launch(new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/mcp"), false, true,
+        launchState = runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
                 H2RuntimeTestSupport.createRuntimeProps("logic_db", jdbcUrl), new RuntimeTopologyConfiguration(Map.of())));
         assertTrue(launchState.getStdioServer().isPresent());
         assertTrue(launchState.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("logic_db", "H2").isPresent());
@@ -74,8 +77,12 @@ class ProductionRuntimeLauncherTest {
         props.setProperty("databaseType", "H2");
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/mcp"), false, true,
+                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
                         props, new RuntimeTopologyConfiguration(Map.of()))));
         assertThat(actual.getMessage(), is("Runtime property `databaseName` is required."));
+    }
+    
+    private TransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {
+        return new TransportConfiguration(new HttpTransportConfiguration(httpEnabled, new HttpServerConfiguration("127.0.0.1", 0, endpointPath)), new StdioTransportConfiguration(stdioEnabled));
     }
 }

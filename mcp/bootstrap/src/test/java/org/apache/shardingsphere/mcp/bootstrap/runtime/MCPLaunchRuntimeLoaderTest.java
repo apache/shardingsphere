@@ -20,9 +20,12 @@ package org.apache.shardingsphere.mcp.bootstrap.runtime;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -60,7 +63,7 @@ class MCPLaunchRuntimeLoaderTest {
         String secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "production-runtime-loader-second");
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
         H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
-        LoadedRuntime actual = launchRuntimeLoader.load(new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/mcp"), true, false, new Properties(),
+        LoadedRuntime actual = launchRuntimeLoader.load(new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"), new Properties(),
                 new RuntimeTopologyConfiguration(Map.of(
                         "logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl),
                         "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl)))));
@@ -73,7 +76,7 @@ class MCPLaunchRuntimeLoaderTest {
     void assertLoadWithoutRuntimeConfiguration() {
         MCPLaunchRuntimeLoader launchRuntimeLoader = new MCPLaunchRuntimeLoader();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> launchRuntimeLoader.load(new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/mcp"), true, false,
+                () -> launchRuntimeLoader.load(new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"),
                         new Properties(), new RuntimeTopologyConfiguration(Map.of()))));
         assertThat(actual.getMessage(), is("MCP runtime properties or runtime databases must be configured for the default launch path."));
     }
@@ -98,10 +101,14 @@ class MCPLaunchRuntimeLoaderTest {
     }
     
     private MCPLaunchConfiguration createRuntimeConfiguration(final Properties runtimeProps) {
-        return new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/mcp"), true, false, runtimeProps, new RuntimeTopologyConfiguration(Map.of()));
+        return new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"), runtimeProps, new RuntimeTopologyConfiguration(Map.of()));
     }
     
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl) {
         return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver", "public", "public", true, false);
+    }
+    
+    private TransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {
+        return new TransportConfiguration(new HttpTransportConfiguration(httpEnabled, new HttpServerConfiguration("127.0.0.1", 0, endpointPath)), new StdioTransportConfiguration(stdioEnabled));
     }
 }

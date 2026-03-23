@@ -13,14 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-server:
-  bindHost: 127.0.0.1
-  port: 18088
-  endpointPath: /mcp
-
 transport:
-  httpEnabled: true
-  stdioEnabled: true
+  http:
+    enabled: true
+    server:
+      bindHost: 127.0.0.1
+      port: 18088
+      endpointPath: /mcp
+  stdio:
+    enabled: true
 
 runtime:
   # Replace this demo runtime block for real deployments.

@@ -41,21 +41,23 @@ class MCPConfigurationLoaderTest {
     
     @Test
     void assertLoadWithExplicitTransportConfiguration() throws IOException {
-        Path configFile = createConfigFile("server:\n"
-                + "  bindHost: 0.0.0.0\n"
-                + "  port: 9090\n"
-                + "  endpointPath: gateway\n"
-                + "transport:\n"
-                + "  httpEnabled: true\n"
-                + "  stdioEnabled: false\n");
+        Path configFile = createConfigFile("transport:\n"
+                + "  http:\n"
+                + "    enabled: true\n"
+                + "    server:\n"
+                + "      bindHost: 0.0.0.0\n"
+                + "      port: 9090\n"
+                + "      endpointPath: gateway\n"
+                + "  stdio:\n"
+                + "    enabled: false\n");
         
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         
-        assertTrue(actual.isHttpEnabled());
-        assertFalse(actual.isStdioEnabled());
-        assertThat(actual.getHttpServerConfiguration().getBindHost(), is("0.0.0.0"));
-        assertThat(actual.getHttpServerConfiguration().getPort(), is(9090));
-        assertThat(actual.getHttpServerConfiguration().getEndpointPath(), is("/gateway"));
+        assertTrue(actual.getTransport().getHttp().isEnabled());
+        assertFalse(actual.getTransport().getStdio().isEnabled());
+        assertThat(actual.getTransport().getHttp().getServer().getBindHost(), is("0.0.0.0"));
+        assertThat(actual.getTransport().getHttp().getServer().getPort(), is(9090));
+        assertThat(actual.getTransport().getHttp().getServer().getEndpointPath(), is("/gateway"));
         assertTrue(actual.getRuntimeProps().isEmpty());
     }
     
@@ -65,11 +67,11 @@ class MCPConfigurationLoaderTest {
         
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         
-        assertTrue(actual.isHttpEnabled());
-        assertTrue(actual.isStdioEnabled());
-        assertThat(actual.getHttpServerConfiguration().getBindHost(), is("127.0.0.1"));
-        assertThat(actual.getHttpServerConfiguration().getPort(), is(18088));
-        assertThat(actual.getHttpServerConfiguration().getEndpointPath(), is("/mcp"));
+        assertTrue(actual.getTransport().getHttp().isEnabled());
+        assertTrue(actual.getTransport().getStdio().isEnabled());
+        assertThat(actual.getTransport().getHttp().getServer().getBindHost(), is("127.0.0.1"));
+        assertThat(actual.getTransport().getHttp().getServer().getPort(), is(18088));
+        assertThat(actual.getTransport().getHttp().getServer().getEndpointPath(), is("/mcp"));
         assertTrue(actual.getRuntimeProps().isEmpty());
     }
     
@@ -131,13 +133,33 @@ class MCPConfigurationLoaderTest {
     
     @Test
     void assertLoadWithNegativePort() throws IOException {
-        Path configFile = createConfigFile("server:\n"
-                + "  port: -1\n");
+        Path configFile = createConfigFile("transport:\n"
+                + "  http:\n"
+                + "    enabled: true\n"
+                + "    server:\n"
+                + "      port: -1\n");
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> MCPConfigurationLoader.load(configFile.toString()));
         
         assertThat(actual.getMessage(), is("MCP server port cannot be negative."));
+    }
+    
+    @Test
+    void assertLoadWithDisabledHttpIgnoresServerConfiguration() throws IOException {
+        Path configFile = createConfigFile("transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    server:\n"
+                + "      port: -1\n"
+                + "  stdio:\n"
+                + "    enabled: true\n");
+        
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
+        
+        assertFalse(actual.getTransport().getHttp().isEnabled());
+        assertTrue(actual.getTransport().getStdio().isEnabled());
+        assertThat(actual.getTransport().getHttp().getServer().getPort(), is(18088));
     }
     
     private Path createConfigFile(final String yamlContent) throws IOException {

@@ -28,11 +28,7 @@ import java.util.Properties;
 @Getter
 public final class MCPLaunchConfiguration {
     
-    private final HttpServerConfiguration httpServerConfiguration;
-    
-    private final boolean httpEnabled;
-    
-    private final boolean stdioEnabled;
+    private final TransportConfiguration transport;
     
     private final Properties runtimeProps;
     

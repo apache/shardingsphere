@@ -20,10 +20,13 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.http;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
+import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.LaunchState;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
@@ -232,7 +235,9 @@ class StreamableHttpRuntimeIntegrationTest {
     }
     
     private MCPLaunchConfiguration createRuntimeConfiguration() {
-        return new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/gateway"), true, false, createRuntimeProps(), new RuntimeTopologyConfiguration(Map.of()));
+        return new MCPLaunchConfiguration(
+                new TransportConfiguration(new HttpTransportConfiguration(true, new HttpServerConfiguration("127.0.0.1", 0, "/gateway")), new StdioTransportConfiguration(false)),
+                createRuntimeProps(), new RuntimeTopologyConfiguration(Map.of()));
     }
     
     private Properties createRuntimeProps() {

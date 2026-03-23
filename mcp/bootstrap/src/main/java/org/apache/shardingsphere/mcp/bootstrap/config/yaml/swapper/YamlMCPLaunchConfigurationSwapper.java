@@ -38,8 +38,6 @@ import java.util.Map.Entry;
  */
 public final class YamlMCPLaunchConfigurationSwapper implements YamlConfigurationSwapper<YamlMCPLaunchConfiguration, MCPLaunchConfiguration> {
     
-    private final YamlHttpServerConfigurationSwapper httpServerConfigSwapper = new YamlHttpServerConfigurationSwapper();
-    
     private final YamlTransportConfigurationSwapper transportConfigSwapper = new YamlTransportConfigurationSwapper();
     
     private final YamlRuntimeConfigurationSwapper runtimeConfigSwapper = new YamlRuntimeConfigurationSwapper();
@@ -47,8 +45,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     @Override
     public YamlMCPLaunchConfiguration swapToYamlConfiguration(final MCPLaunchConfiguration data) {
         YamlMCPLaunchConfiguration result = new YamlMCPLaunchConfiguration();
-        result.setServer(httpServerConfigSwapper.swapToYamlConfiguration(data.getHttpServerConfiguration()));
-        result.setTransport(transportConfigSwapper.swapToYamlConfiguration(new TransportConfiguration(data.isHttpEnabled(), data.isStdioEnabled())));
+        result.setTransport(transportConfigSwapper.swapToYamlConfiguration(data.getTransport()));
         result.setRuntime(runtimeConfigSwapper.swapToYamlConfiguration(new RuntimeConfiguration(data.getRuntimeProps(),
                 data.getRuntimeTopologyConfiguration().getDatabases().isEmpty() ? createEmptyRuntimeTopologyConfiguration() : data.getRuntimeTopologyConfiguration())));
         return result;
@@ -63,23 +60,20 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     public MCPLaunchConfiguration swapToObject(final String yamlContent) {
         YamlMCPLaunchConfiguration yamlConfig = YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class, true);
         Map<String, Object> yamlRoot = loadYamlRoot(yamlContent);
-        return swapToObject(yamlConfig, getConfiguredFieldNames(yamlRoot, "server"), getConfiguredFieldNames(yamlRoot, "transport"),
-                getConfiguredRuntimeBooleanFields(yamlRoot));
+        return swapToObject(yamlConfig, getConfiguredSection(yamlRoot, "transport"), getConfiguredRuntimeBooleanFields(yamlRoot));
     }
     
     @Override
     public MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
-        return swapToObject(yamlConfig, Collections.emptySet(), Collections.emptySet(), Collections.emptyMap());
+        return swapToObject(yamlConfig, Collections.emptyMap(), Collections.emptyMap());
     }
     
-    private MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig, final Collection<String> configuredServerFields,
-                                                final Collection<String> configuredTransportFields,
+    private MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig, final Map<String, Object> configuredTransportSections,
                                                 final Map<String, Collection<String>> configuredRuntimeBooleanFields) {
         YamlMCPLaunchConfiguration actualYamlConfig = null == yamlConfig ? new YamlMCPLaunchConfiguration() : yamlConfig;
-        TransportConfiguration transportConfig = transportConfigSwapper.swapToObject(actualYamlConfig.getTransport(), configuredTransportFields);
+        TransportConfiguration transportConfig = transportConfigSwapper.swapToObject(actualYamlConfig.getTransport(), configuredTransportSections);
         RuntimeConfiguration runtimeConfig = runtimeConfigSwapper.swapToObject(actualYamlConfig.getRuntime(), configuredRuntimeBooleanFields);
-        return new MCPLaunchConfiguration(httpServerConfigSwapper.swapToObject(actualYamlConfig.getServer(), configuredServerFields),
-                transportConfig.isHttpEnabled(), transportConfig.isStdioEnabled(), runtimeConfig.getProps(), runtimeConfig.getTopologyConfiguration());
+        return new MCPLaunchConfiguration(transportConfig, runtimeConfig.getProps(), runtimeConfig.getTopologyConfiguration());
     }
     
     @SuppressWarnings("unchecked")
@@ -88,9 +82,10 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         return yamlRoot instanceof Map ? (Map<String, Object>) yamlRoot : Collections.emptyMap();
     }
     
-    private Collection<String> getConfiguredFieldNames(final Map<String, Object> yamlRoot, final String sectionName) {
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getConfiguredSection(final Map<String, Object> yamlRoot, final String sectionName) {
         Object section = yamlRoot.get(sectionName);
-        return section instanceof Map ? new LinkedHashSet<>(((Map<?, ?>) section).keySet().stream().map(String::valueOf).toList()) : Collections.emptySet();
+        return section instanceof Map ? (Map<String, Object>) section : Collections.emptyMap();
     }
     
     private Map<String, Collection<String>> getConfiguredRuntimeBooleanFields(final Map<String, Object> yamlRoot) {

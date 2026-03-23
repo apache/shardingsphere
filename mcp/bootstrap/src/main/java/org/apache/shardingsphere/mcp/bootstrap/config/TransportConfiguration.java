@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public final class TransportConfiguration {
     
-    private final boolean httpEnabled;
+    private final HttpTransportConfiguration http;
     
-    private final boolean stdioEnabled;
+    private final StdioTransportConfiguration stdio;
 }

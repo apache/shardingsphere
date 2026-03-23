@@ -20,10 +20,13 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.http;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
+import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.LaunchState;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -128,7 +131,9 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     }
     
     private MCPLaunchConfiguration createRuntimeConfiguration() {
-        return new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/gateway"), true, false, createRuntimeProps(), new RuntimeTopologyConfiguration(Map.of()));
+        return new MCPLaunchConfiguration(
+                new TransportConfiguration(new HttpTransportConfiguration(true, new HttpServerConfiguration("127.0.0.1", 0, "/gateway")), new StdioTransportConfiguration(false)),
+                createRuntimeProps(), new RuntimeTopologyConfiguration(Map.of()));
     }
     
     private URI createEndpointUri() {

@@ -18,11 +18,14 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.LaunchState;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
@@ -120,7 +123,7 @@ class StdioTransportIntegrationTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         
         LaunchState actual = runtimeLauncher.launch(serverRegistry,
-                new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/mcp"), false, true, createRuntimeProps(), new RuntimeTopologyConfiguration(Map.of())));
+                new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"), createRuntimeProps(), new RuntimeTopologyConfiguration(Map.of())));
         
         assertTrue(actual.getServerRegistry().isRunning());
         assertTrue(actual.getStdioServer().isPresent());
@@ -132,7 +135,7 @@ class StdioTransportIntegrationTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/mcp"), false, false,
+                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, false, "/mcp"),
                         new Properties(), new RuntimeTopologyConfiguration(Map.of()))));
         
         assertThat(actual.getMessage(), is("At least one transport must be enabled."));
@@ -173,5 +176,9 @@ class StdioTransportIntegrationTest {
             throw new IllegalStateException(ex);
         }
         return H2RuntimeTestSupport.createRuntimeProps("logic_db", jdbcUrl);
+    }
+    
+    private TransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {
+        return new TransportConfiguration(new HttpTransportConfiguration(httpEnabled, new HttpServerConfiguration("127.0.0.1", 0, endpointPath)), new StdioTransportConfiguration(stdioEnabled));
     }
 }

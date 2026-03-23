@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.config.yaml.config;
+package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import lombok.RequiredArgsConstructor;
 
 /**
- * YAML MCP launch configuration.
+ * STDIO transport configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlMCPLaunchConfiguration implements YamlConfiguration {
+public final class StdioTransportConfiguration {
     
-    private YamlTransportConfiguration transport;
-    
-    private YamlRuntimeConfiguration runtime;
+    private final boolean enabled;
 }

@@ -21,34 +21,41 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlTransportConfiguration;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * YAML transport configuration swapper.
  */
 public final class YamlTransportConfigurationSwapper implements YamlConfigurationSwapper<YamlTransportConfiguration, TransportConfiguration> {
     
+    private final YamlHttpTransportConfigurationSwapper httpConfigSwapper = new YamlHttpTransportConfigurationSwapper();
+    
+    private final YamlStdioTransportConfigurationSwapper stdioConfigSwapper = new YamlStdioTransportConfigurationSwapper();
+    
     @Override
     public YamlTransportConfiguration swapToYamlConfiguration(final TransportConfiguration data) {
         YamlTransportConfiguration result = new YamlTransportConfiguration();
-        result.setHttpEnabled(data.isHttpEnabled());
-        result.setStdioEnabled(data.isStdioEnabled());
+        result.setHttp(httpConfigSwapper.swapToYamlConfiguration(data.getHttp()));
+        result.setStdio(stdioConfigSwapper.swapToYamlConfiguration(data.getStdio()));
         return result;
     }
     
     @Override
     public TransportConfiguration swapToObject(final YamlTransportConfiguration yamlConfig) {
-        return swapToObject(yamlConfig, Collections.emptySet());
+        return swapToObject(yamlConfig, Collections.emptyMap());
     }
     
-    TransportConfiguration swapToObject(final YamlTransportConfiguration yamlConfig, final Collection<String> configuredFields) {
+    TransportConfiguration swapToObject(final YamlTransportConfiguration yamlConfig, final Map<String, Object> configuredSections) {
         YamlTransportConfiguration actualYamlConfig = null == yamlConfig ? new YamlTransportConfiguration() : yamlConfig;
-        return new TransportConfiguration(resolveEnabled(actualYamlConfig.isHttpEnabled(), configuredFields.contains("httpEnabled") || actualYamlConfig.isHttpEnabled()),
-                resolveEnabled(actualYamlConfig.isStdioEnabled(), configuredFields.contains("stdioEnabled") || actualYamlConfig.isStdioEnabled()));
+        Map<String, Object> actualConfiguredSections = null == configuredSections ? Collections.emptyMap() : configuredSections;
+        return new TransportConfiguration(httpConfigSwapper.swapToObject(actualYamlConfig.getHttp(), getConfiguredSection(actualConfiguredSections, "http")),
+                stdioConfigSwapper.swapToObject(actualYamlConfig.getStdio(), getConfiguredSection(actualConfiguredSections, "stdio")));
     }
     
-    private boolean resolveEnabled(final boolean enabled, final boolean configured) {
-        return configured ? enabled : true;
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getConfiguredSection(final Map<String, Object> configuredSections, final String sectionName) {
+        Object section = configuredSections.get(sectionName);
+        return section instanceof Map ? (Map<String, Object>) section : Collections.emptyMap();
     }
 }

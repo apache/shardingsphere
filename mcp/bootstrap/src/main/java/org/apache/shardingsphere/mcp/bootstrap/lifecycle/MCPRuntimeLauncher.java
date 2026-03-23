@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.MCPLaunchRuntimeLoader;
@@ -144,7 +145,8 @@ public final class MCPRuntimeLauncher {
     }
     
     private void validateTransportConfiguration(final MCPLaunchConfiguration launchConfiguration) {
-        if (!launchConfiguration.isHttpEnabled() && !launchConfiguration.isStdioEnabled()) {
+        TransportConfiguration transportConfig = launchConfiguration.getTransport();
+        if (!transportConfig.getHttp().isEnabled() && !transportConfig.getStdio().isEnabled()) {
             throw new IllegalArgumentException("At least one transport must be enabled.");
         }
     }
@@ -152,17 +154,17 @@ public final class MCPRuntimeLauncher {
     private StreamableHttpMCPServer createHttpServer(final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices,
                                                      final MCPLaunchConfiguration launchConfiguration, final MetadataCatalog metadataCatalog,
                                                      final DatabaseRuntime databaseRuntime) {
-        if (!launchConfiguration.isHttpEnabled()) {
+        if (!launchConfiguration.getTransport().getHttp().isEnabled()) {
             return null;
         }
-        return new StreamableHttpMCPServer(launchConfiguration.getHttpServerConfiguration(), Objects.requireNonNull(serverRegistry, "serverRegistry cannot be null"),
+        return new StreamableHttpMCPServer(launchConfiguration.getTransport().getHttp().getServer(), Objects.requireNonNull(serverRegistry, "serverRegistry cannot be null"),
                 Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null"), Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null"),
                 Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null"));
     }
     
     private StdioMCPServer createStdioServer(final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices,
                                              final MCPLaunchConfiguration launchConfiguration) {
-        return launchConfiguration.isStdioEnabled() ? new StdioMCPServer(serverRegistry.getSessionManager(), runtimeServices) : null;
+        return launchConfiguration.getTransport().getStdio().isEnabled() ? new StdioMCPServer(serverRegistry.getSessionManager(), runtimeServices) : null;
     }
     
     private static <T> Collection<T> toTransportList(final T transport) {

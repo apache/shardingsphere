@@ -51,14 +51,15 @@ Notes:
 The default configuration is:
 
 ```yaml
-server:
-  bindHost: 127.0.0.1
-  port: 18088
-  endpointPath: /mcp
-
 transport:
-  httpEnabled: true
-  stdioEnabled: true
+  http:
+    enabled: true
+    server:
+      bindHost: 127.0.0.1
+      port: 18088
+      endpointPath: /mcp
+  stdio:
+    enabled: true
 
 runtime:
   defaults:
@@ -187,14 +188,11 @@ The packaged distribution enables the same runtime, but it does not expose a sep
 If you want to verify the packaged runtime with HTTP disabled, create a dedicated configuration file such as `conf/mcp-stdio.yaml`:
 
 ```yaml
-server:
-  bindHost: 127.0.0.1
-  port: 18088
-  endpointPath: /mcp
-
 transport:
-  httpEnabled: false
-  stdioEnabled: true
+  http:
+    enabled: false
+  stdio:
+    enabled: true
 ```
 
 Then start the runtime with that file:
@@ -206,7 +204,7 @@ bin/start.sh conf/mcp-stdio.yaml
 Notes:
 
 - The process still runs in the foreground.
-- If both `transport.httpEnabled` and `transport.stdioEnabled` are `false`, startup fails with `At least one transport must be enabled.`
+- If both `transport.http.enabled` and `transport.stdio.enabled` are `false`, startup fails with `At least one transport must be enabled.`
 - The default `conf/logback.xml` writes logs to stdout and `logs/mcp.log`, so `bin/start.sh` is not a ready-made JSON-RPC-over-stdio shell for external clients.
 
 ### Integrate from Java
@@ -235,8 +233,8 @@ Reference:
 - The packaged `conf/mcp.yaml` now ships with a demo multi-database JDBC runtime block so the distribution can prove logical-database discovery and real query execution on the first run.
 - For real deployments, replace the `runtime` block with your own logical database mapping and JDBC connection properties. Prefer `runtime.databases` for direct multi-database connectivity; the legacy single-database `runtime.props` form remains supported for compatibility.
 - If your target database driver is not already packaged, copy the driver jar under `ext-lib/` before running `bin/start.sh`.
-- For local-only HTTP usage, keep `transport.httpEnabled: true` and set `transport.stdioEnabled: false` if you do not need STDIO.
-- For local in-process integration, keep `transport.stdioEnabled: true`. The packaged runtime starts the same STDIO runtime, but it does not expose a separate text shell.
+- For local-only HTTP usage, keep `transport.http.enabled: true` and set `transport.stdio.enabled: false` if you do not need STDIO.
+- For local in-process integration, keep `transport.stdio.enabled: true`. The packaged runtime starts the same STDIO runtime, but it does not expose a separate text shell.
 - If you expose the HTTP endpoint outside localhost, place it behind a trusted network boundary, gateway, or reverse proxy.
 - To start with a custom configuration file, run `bin/start.sh /path/to/mcp.yaml`.
 - To tune the JVM for local experiments, use `JAVA_OPTS`, for example `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`.

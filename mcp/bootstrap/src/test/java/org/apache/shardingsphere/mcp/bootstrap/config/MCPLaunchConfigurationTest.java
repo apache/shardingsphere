@@ -26,6 +26,8 @@ import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPLaunchConfigurationTest {
     
@@ -38,6 +40,15 @@ class MCPLaunchConfigurationTest {
     }
     
     @Test
+    void assertGetTransport() {
+        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(new Properties(), new RuntimeTopologyConfiguration(Map.of()));
+        
+        assertTrue(launchConfiguration.getTransport().getHttp().isEnabled());
+        assertFalse(launchConfiguration.getTransport().getStdio().isEnabled());
+        assertThat(launchConfiguration.getTransport().getHttp().getServer().getEndpointPath(), is("/mcp"));
+    }
+    
+    @Test
     void assertGetRuntimeTopologyConfiguration() {
         RuntimeTopologyConfiguration runtimeTopologyConfiguration = new RuntimeTopologyConfiguration(Map.of("logic_db",
                 new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false)));
@@ -47,6 +58,10 @@ class MCPLaunchConfigurationTest {
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration(final Properties runtimeProps, final RuntimeTopologyConfiguration runtimeTopologyConfiguration) {
-        return new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, "/mcp"), true, false, runtimeProps, runtimeTopologyConfiguration);
+        return new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"), runtimeProps, runtimeTopologyConfiguration);
+    }
+    
+    private TransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {
+        return new TransportConfiguration(new HttpTransportConfiguration(httpEnabled, new HttpServerConfiguration("127.0.0.1", 0, endpointPath)), new StdioTransportConfiguration(stdioEnabled));
     }
 }
