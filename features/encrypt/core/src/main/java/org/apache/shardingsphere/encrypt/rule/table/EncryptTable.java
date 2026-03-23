@@ -21,6 +21,7 @@ import com.cedarsoftware.util.CaseInsensitiveMap;
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.enums.EncryptColumnItemType;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLogicColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -81,6 +82,18 @@ public final class EncryptTable {
     @HighFrequencyInvocation
     public Optional<EncryptAlgorithm> findEncryptor(final String logicColumnName) {
         return columns.containsKey(logicColumnName) ? Optional.of(columns.get(logicColumnName).getCipher().getEncryptor()) : Optional.empty();
+    }
+    
+    /**
+     * Find encryptor.
+     *
+     * @param columnName column name
+     * @param columnItemType column item type
+     * @return encryptor
+     */
+    @HighFrequencyInvocation
+    public Optional<EncryptAlgorithm> findEncryptor(final String columnName, final EncryptColumnItemType columnItemType) {
+        return isEncryptColumn(columnName) ? Optional.ofNullable(getEncryptColumn(columnName).getEncryptor(columnItemType)) : Optional.empty();
     }
     
     /**
@@ -166,17 +179,6 @@ public final class EncryptTable {
      */
     public boolean isLikeQueryColumn(final String columnName) {
         return columns.values().stream().anyMatch(each -> columnName.equalsIgnoreCase(each.getLikeQuery().map(LikeQueryColumnItem::getName).orElse(null)));
-    }
-    
-    /**
-     * Find query encryptor.
-     *
-     * @param columnName column name
-     * @return query encryptor
-     */
-    @HighFrequencyInvocation
-    public Optional<EncryptAlgorithm> findQueryEncryptor(final String columnName) {
-        return isEncryptColumn(columnName) ? Optional.of(getEncryptColumn(columnName).getQueryEncryptor()) : Optional.empty();
     }
     
     /**
