@@ -34,14 +34,14 @@ class MCPLaunchConfigurationTest {
     @Test
     void assertGetRuntimeProps() {
         Properties runtimeProps = PropertiesBuilder.build(new Property("databaseName", "logic_db"));
-        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(runtimeProps, new RuntimeTopologyConfiguration(Map.of()));
+        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(runtimeProps, Map.of());
         
         assertThat(launchConfiguration.getRuntimeProps().getProperty("databaseName"), is("logic_db"));
     }
     
     @Test
     void assertGetTransport() {
-        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(new Properties(), new RuntimeTopologyConfiguration(Map.of()));
+        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(new Properties(), Map.of());
         
         assertTrue(launchConfiguration.getTransport().getHttp().isEnabled());
         assertFalse(launchConfiguration.getTransport().getStdio().isEnabled());
@@ -49,16 +49,16 @@ class MCPLaunchConfigurationTest {
     }
     
     @Test
-    void assertGetRuntimeTopologyConfiguration() {
-        RuntimeTopologyConfiguration runtimeTopologyConfiguration = new RuntimeTopologyConfiguration(Map.of("logic_db",
-                new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false)));
-        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(new Properties(), runtimeTopologyConfiguration);
+    void assertGetRuntimeDatabases() {
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = Map.of("logic_db",
+                new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false));
+        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(new Properties(), runtimeDatabases);
         
-        assertThat(launchConfiguration.getRuntimeTopologyConfiguration().getDatabases().get("logic_db").getDatabaseType(), is("H2"));
+        assertThat(launchConfiguration.getRuntimeDatabases().get("logic_db").getDatabaseType(), is("H2"));
     }
     
-    private MCPLaunchConfiguration createLaunchConfiguration(final Properties runtimeProps, final RuntimeTopologyConfiguration runtimeTopologyConfiguration) {
-        return new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"), runtimeProps, runtimeTopologyConfiguration);
+    private MCPLaunchConfiguration createLaunchConfiguration(final Properties runtimeProps, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        return new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"), runtimeProps, runtimeDatabases);
     }
     
     private TransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {

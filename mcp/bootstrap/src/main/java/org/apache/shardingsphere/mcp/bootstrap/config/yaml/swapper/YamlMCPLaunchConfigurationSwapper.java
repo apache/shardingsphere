@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.yaml.snakeyaml.Yaml;
@@ -46,8 +45,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     public YamlMCPLaunchConfiguration swapToYamlConfiguration(final MCPLaunchConfiguration data) {
         YamlMCPLaunchConfiguration result = new YamlMCPLaunchConfiguration();
         result.setTransport(transportConfigSwapper.swapToYamlConfiguration(data.getTransport()));
-        result.setRuntime(runtimeConfigSwapper.swapToYamlConfiguration(new RuntimeConfiguration(data.getRuntimeProps(),
-                data.getRuntimeTopologyConfiguration().getDatabases().isEmpty() ? createEmptyRuntimeTopologyConfiguration() : data.getRuntimeTopologyConfiguration())));
+        result.setRuntime(runtimeConfigSwapper.swapToYamlConfiguration(new RuntimeConfiguration(data.getRuntimeProps(), data.getRuntimeDatabases())));
         return result;
     }
     
@@ -73,7 +71,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         YamlMCPLaunchConfiguration actualYamlConfig = null == yamlConfig ? new YamlMCPLaunchConfiguration() : yamlConfig;
         TransportConfiguration transportConfig = transportConfigSwapper.swapToObject(actualYamlConfig.getTransport(), configuredTransportSections);
         RuntimeConfiguration runtimeConfig = runtimeConfigSwapper.swapToObject(actualYamlConfig.getRuntime(), configuredRuntimeBooleanFields);
-        return new MCPLaunchConfiguration(transportConfig, runtimeConfig.getProps(), runtimeConfig.getTopologyConfiguration());
+        return new MCPLaunchConfiguration(transportConfig, runtimeConfig.getProps(), runtimeConfig.getDatabases());
     }
     
     @SuppressWarnings("unchecked")
@@ -114,7 +112,4 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         return result;
     }
     
-    private RuntimeTopologyConfiguration createEmptyRuntimeTopologyConfiguration() {
-        return new RuntimeTopologyConfiguration(new LinkedHashMap<>());
-    }
 }

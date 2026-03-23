@@ -41,9 +41,9 @@ public final class MCPLaunchRuntimeLoader {
     }
     
     private LoadedRuntime loadRuntime(final MCPLaunchConfiguration launchConfiguration) {
-        return launchConfiguration.getRuntimeTopologyConfiguration().getDatabases().isEmpty()
+        return launchConfiguration.getRuntimeDatabases().isEmpty()
                 ? runtimeProvider.load(getRequiredRuntimeProps(launchConfiguration))
-                : runtimeProvider.load(launchConfiguration.getRuntimeTopologyConfiguration());
+                : runtimeProvider.load(launchConfiguration.getRuntimeDatabases());
     }
     
     private Properties getRequiredRuntimeProps(final MCPLaunchConfiguration launchConfiguration) {

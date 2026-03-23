@@ -19,11 +19,9 @@ package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.MCPLaunchRuntimeLoader;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.LoadedRuntime;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerContext;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.stdio.StdioMCPServer;
@@ -70,19 +68,6 @@ public final class MCPRuntimeLauncher {
     }
     
     /**
-     * Launch the MCP runtime on one existing bootstrap instance.
-     *
-     * @param serverContext server context
-     * @param launchConfiguration launch configuration
-     * @return launch state
-     * @deprecated Prefer {@link #launch(MCPServerRegistry, MCPLaunchConfiguration)}.
-     */
-    @Deprecated
-    public LaunchState launch(final MCPServerContext serverContext, final MCPLaunchConfiguration launchConfiguration) {
-        return launch(Objects.requireNonNull(serverContext, "serverContext cannot be null").getServerRegistry(), launchConfiguration);
-    }
-    
-    /**
      * Launch the MCP runtime with caller-provided runtime dependencies.
      *
      * @param serverRegistry server registry
@@ -123,25 +108,6 @@ public final class MCPRuntimeLauncher {
             throw new IllegalStateException("Failed to start HTTP transport.", ex);
         }
         return new LaunchState(actualServerRegistry, actualRuntimeServices, toTransportList(httpServer), toTransportList(stdioServer));
-    }
-    
-    /**
-     * Launch the MCP runtime with caller-provided runtime dependencies.
-     *
-     * @param serverContext server context
-     * @param runtimeContext runtime context
-     * @param launchConfiguration launch configuration
-     * @param metadataCatalog metadata catalog
-     * @param databaseRuntime database runtime
-     * @return launch state
-     * @throws IllegalStateException when HTTP transport startup fails
-     * @deprecated Prefer {@link #launch(MCPServerRegistry, MCPRuntimeServices, MCPLaunchConfiguration, MetadataCatalog, DatabaseRuntime)}.
-     */
-    @Deprecated
-    public LaunchState launch(final MCPServerContext serverContext, final MCPRuntimeContext runtimeContext, final MCPLaunchConfiguration launchConfiguration,
-                              final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
-        return launch(Objects.requireNonNull(serverContext, "serverContext cannot be null").getServerRegistry(),
-                Objects.requireNonNull(runtimeContext, "runtimeContext cannot be null").getRuntimeServices(), launchConfiguration, metadataCatalog, databaseRuntime);
     }
     
     private void validateTransportConfiguration(final MCPLaunchConfiguration launchConfiguration) {

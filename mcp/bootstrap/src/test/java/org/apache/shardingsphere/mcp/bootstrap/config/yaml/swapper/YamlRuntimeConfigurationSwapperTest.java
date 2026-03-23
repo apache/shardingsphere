@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
@@ -47,7 +46,7 @@ class YamlRuntimeConfigurationSwapperTest {
         RuntimeConfiguration actual = swapper.swapToObject(yamlConfig);
         
         assertThat(actual.getProps().getProperty("databaseName"), is("logic_db"));
-        assertTrue(actual.getTopologyConfiguration().getDatabases().isEmpty());
+        assertTrue(actual.getDatabases().isEmpty());
     }
     
     @Test
@@ -67,9 +66,9 @@ class YamlRuntimeConfigurationSwapperTest {
         
         RuntimeConfiguration actual = swapper.swapToObject(yamlConfig);
         
-        assertThat(actual.getTopologyConfiguration().getDatabases().get("logic_db").getDatabaseType(), is("H2"));
-        assertThat(actual.getTopologyConfiguration().getDatabases().get("logic_db").getDriverClassName(), is("org.h2.Driver"));
-        assertTrue(actual.getTopologyConfiguration().getDatabases().get("analytics_db").isSupportsCrossSchemaSql());
+        assertThat(actual.getDatabases().get("logic_db").getDatabaseType(), is("H2"));
+        assertThat(actual.getDatabases().get("logic_db").getDriverClassName(), is("org.h2.Driver"));
+        assertTrue(actual.getDatabases().get("analytics_db").isSupportsCrossSchemaSql());
     }
     
     @Test
@@ -100,8 +99,7 @@ class YamlRuntimeConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfigurationWithRuntimeProps() {
-        RuntimeConfiguration runtimeConfig = new RuntimeConfiguration(PropertiesBuilder.build(new Property("databaseName", "logic_db")),
-                new RuntimeTopologyConfiguration(new LinkedHashMap<>()));
+        RuntimeConfiguration runtimeConfig = new RuntimeConfiguration(PropertiesBuilder.build(new Property("databaseName", "logic_db")), new LinkedHashMap<>());
         
         YamlRuntimeConfiguration actual = swapper.swapToYamlConfiguration(runtimeConfig);
         
@@ -113,7 +111,7 @@ class YamlRuntimeConfigurationSwapperTest {
     void assertSwapToYamlConfigurationWithRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> databases = new LinkedHashMap<>(1, 1F);
         databases.put("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false));
-        RuntimeConfiguration runtimeConfig = new RuntimeConfiguration(PropertiesBuilder.build(), new RuntimeTopologyConfiguration(databases));
+        RuntimeConfiguration runtimeConfig = new RuntimeConfiguration(PropertiesBuilder.build(), databases);
         
         YamlRuntimeConfiguration actual = swapper.swapToYamlConfiguration(runtimeConfig);
         

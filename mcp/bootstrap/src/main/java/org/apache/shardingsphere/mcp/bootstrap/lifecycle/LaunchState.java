@@ -19,9 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerContext;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.stdio.StdioMCPServer;
@@ -63,28 +61,6 @@ public final class LaunchState {
         this.runtimeServices = Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null");
         this.httpServers = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(httpServers, "httpServers cannot be null")));
         this.stdioServers = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(stdioServers, "stdioServers cannot be null")));
-    }
-    
-    /**
-     * Get the compatibility server context.
-     *
-     * @return compatibility server context
-     * @deprecated use {@link #getServerRegistry()} instead
-     */
-    @Deprecated
-    public MCPServerContext getServerContext() {
-        return MCPServerContext.fromRegistry(serverRegistry);
-    }
-    
-    /**
-     * Get the compatibility runtime context.
-     *
-     * @return compatibility runtime context
-     * @deprecated use {@link #getRuntimeServices()} instead
-     */
-    @Deprecated
-    public MCPRuntimeContext getRuntimeContext() {
-        return MCPRuntimeContext.fromServices(runtimeServices);
     }
     
     /**

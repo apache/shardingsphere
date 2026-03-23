@@ -104,7 +104,7 @@ class MCPConfigurationLoaderTest {
                 + "      supportsCrossSchemaSql: true\n");
         
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
-        Map<String, RuntimeDatabaseConfiguration> actualDatabases = actual.getRuntimeTopologyConfiguration().getDatabases();
+        Map<String, RuntimeDatabaseConfiguration> actualDatabases = actual.getRuntimeDatabases();
         
         assertTrue(actual.getRuntimeProps().isEmpty());
         assertThat(actualDatabases.size(), is(2));

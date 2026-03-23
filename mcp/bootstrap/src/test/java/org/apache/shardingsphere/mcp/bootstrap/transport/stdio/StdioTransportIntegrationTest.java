@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
@@ -122,7 +121,7 @@ class StdioTransportIntegrationTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         
         LaunchState actual = runtimeLauncher.launch(serverRegistry,
-                new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"), createRuntimeProps(), new RuntimeTopologyConfiguration(Map.of())));
+                new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"), createRuntimeProps(), Map.of()));
         
         assertTrue(actual.getServerRegistry().isRunning());
         assertTrue(actual.getStdioServer().isPresent());
@@ -135,7 +134,7 @@ class StdioTransportIntegrationTest {
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, false, "/mcp"),
-                        new Properties(), new RuntimeTopologyConfiguration(Map.of()))));
+                        new Properties(), Map.of())));
         
         assertThat(actual.getMessage(), is("At least one transport must be enabled."));
     }

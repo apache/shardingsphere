@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.junit.jupiter.api.Test;
@@ -56,16 +55,16 @@ class MCPLaunchRuntimeLoaderTest {
     }
     
     @Test
-    void assertLoadWithRuntimeTopology() throws SQLException {
+    void assertLoadWithRuntimeDatabases() throws SQLException {
         MCPLaunchRuntimeLoader launchRuntimeLoader = new MCPLaunchRuntimeLoader();
         String firstJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "production-runtime-loader-first");
         String secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "production-runtime-loader-second");
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
         H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         LoadedRuntime actual = launchRuntimeLoader.load(new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"), new Properties(),
-                new RuntimeTopologyConfiguration(Map.of(
+                Map.of(
                         "logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl),
-                        "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl)))));
+                        "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl))));
         assertThat(actual.getMetadataCatalog().getDatabaseTypes().size(), is(2));
         assertTrue(actual.getMetadataCatalog().getDatabaseTypes().containsKey("logic_db"));
         assertTrue(actual.getMetadataCatalog().getDatabaseTypes().containsKey("analytics_db"));
@@ -76,7 +75,7 @@ class MCPLaunchRuntimeLoaderTest {
         MCPLaunchRuntimeLoader launchRuntimeLoader = new MCPLaunchRuntimeLoader();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> launchRuntimeLoader.load(new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"),
-                        new Properties(), new RuntimeTopologyConfiguration(Map.of()))));
+                        new Properties(), Map.of())));
         assertThat(actual.getMessage(), is("MCP runtime properties or runtime databases must be configured for the default launch path."));
     }
     
@@ -100,7 +99,7 @@ class MCPLaunchRuntimeLoaderTest {
     }
     
     private MCPLaunchConfiguration createRuntimeConfiguration(final Properties runtimeProps) {
-        return new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"), runtimeProps, new RuntimeTopologyConfiguration(Map.of()));
+        return new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"), runtimeProps, Map.of());
     }
     
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl) {

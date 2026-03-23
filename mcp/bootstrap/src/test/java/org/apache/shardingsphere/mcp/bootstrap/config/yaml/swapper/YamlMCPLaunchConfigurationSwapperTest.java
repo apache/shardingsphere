@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
@@ -78,7 +77,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
         assertTrue(actual.getTransport().getHttp().isEnabled());
         assertTrue(actual.getTransport().getStdio().isEnabled());
         assertTrue(actual.getRuntimeProps().isEmpty());
-        assertTrue(actual.getRuntimeTopologyConfiguration().getDatabases().isEmpty());
+        assertTrue(actual.getRuntimeDatabases().isEmpty());
     }
     
     @Test
@@ -86,7 +85,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
         Properties runtimeProps = PropertiesBuilder.build(new Property("databaseName", "logic_db"), new Property("databaseType", "H2"));
         MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(new TransportConfiguration(
                 new HttpTransportConfiguration(true, "127.0.0.1", 18088, "/mcp"), new StdioTransportConfiguration(false)),
-                runtimeProps, new RuntimeTopologyConfiguration(new LinkedHashMap<>()));
+                runtimeProps, new LinkedHashMap<>());
         
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
         
@@ -103,7 +102,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
         databases.put("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false));
         MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(new TransportConfiguration(
                 new HttpTransportConfiguration(true, "127.0.0.1", 18088, "/mcp"), new StdioTransportConfiguration(true)),
-                new Properties(), new RuntimeTopologyConfiguration(databases));
+                new Properties(), databases);
         
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
         

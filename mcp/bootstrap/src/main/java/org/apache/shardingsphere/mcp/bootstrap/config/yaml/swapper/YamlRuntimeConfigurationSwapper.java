@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 
@@ -43,7 +42,7 @@ public final class YamlRuntimeConfigurationSwapper implements YamlConfigurationS
     public YamlRuntimeConfiguration swapToYamlConfiguration(final RuntimeConfiguration data) {
         YamlRuntimeConfiguration result = new YamlRuntimeConfiguration();
         data.getProps().forEach((key, value) -> result.getProps().put(String.valueOf(key), null == value ? "" : String.valueOf(value)));
-        for (Entry<String, RuntimeDatabaseConfiguration> entry : data.getTopologyConfiguration().getDatabases().entrySet()) {
+        for (Entry<String, RuntimeDatabaseConfiguration> entry : data.getDatabases().entrySet()) {
             result.getDatabases().put(entry.getKey(), databaseConfigSwapper.swapToYamlConfiguration(entry.getValue()));
         }
         return result;
@@ -61,7 +60,7 @@ public final class YamlRuntimeConfigurationSwapper implements YamlConfigurationS
         Map<String, YamlRuntimeDatabaseConfiguration> actualDatabases = null == actualYamlConfig.getDatabases() ? new LinkedHashMap<>() : actualYamlConfig.getDatabases();
         ShardingSpherePreconditions.checkState(actualProps.isEmpty() || actualDatabases.isEmpty(),
                 () -> new IllegalArgumentException("`runtime.props` and `runtime.databases` cannot be configured together."));
-        return new RuntimeConfiguration(swapProps(actualProps), swapTopologyConfiguration(actualDatabases, actualDefaults, configuredDatabaseFields));
+        return new RuntimeConfiguration(swapProps(actualProps), swapDatabases(actualDatabases, actualDefaults, configuredDatabaseFields));
     }
     
     private Properties swapProps(final Map<String, String> yamlProps) {
@@ -72,8 +71,8 @@ public final class YamlRuntimeConfigurationSwapper implements YamlConfigurationS
         return result;
     }
     
-    private RuntimeTopologyConfiguration swapTopologyConfiguration(final Map<String, YamlRuntimeDatabaseConfiguration> yamlDatabaseConfigs, final Map<String, String> runtimeDefaults,
-                                                                   final Map<String, Collection<String>> configuredDatabaseFields) {
+    private Map<String, RuntimeDatabaseConfiguration> swapDatabases(final Map<String, YamlRuntimeDatabaseConfiguration> yamlDatabaseConfigs, final Map<String, String> runtimeDefaults,
+                                                                    final Map<String, Collection<String>> configuredDatabaseFields) {
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(yamlDatabaseConfigs.size(), 1F);
         for (Entry<String, YamlRuntimeDatabaseConfiguration> entry : yamlDatabaseConfigs.entrySet()) {
             String databaseName = normalizeText(entry.getKey());
@@ -84,7 +83,7 @@ public final class YamlRuntimeConfigurationSwapper implements YamlConfigurationS
             result.put(databaseName, databaseConfigSwapper.swapToObject(databaseName, entry.getValue(), runtimeDefaults,
                     configuredDatabaseFields.getOrDefault(databaseName, Collections.emptySet())));
         }
-        return new RuntimeTopologyConfiguration(result);
+        return result;
     }
     
     private String normalizeText(final Object value) {

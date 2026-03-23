@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.bootstrap.runtime;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.junit.jupiter.api.io.TempDir;
@@ -60,12 +59,12 @@ class DatabaseRuntimeFactoryTest {
     }
     
     @Test
-    void assertCreateConnectionConfigurationsWithRuntimeTopology() {
+    void assertCreateConnectionConfigurationsWithRuntimeDatabases() {
         DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
         
-        Map<String, DatabaseConnectionConfiguration> actual = databaseRuntimeFactory.createConnectionConfigurations(new RuntimeTopologyConfiguration(Map.of(
+        Map<String, DatabaseConnectionConfiguration> actual = databaseRuntimeFactory.createConnectionConfigurations(Map.of(
                 "logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false),
-                "analytics_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:analytics", "", "", "org.h2.Driver", "public", "public", false, false))));
+                "analytics_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:analytics", "", "", "org.h2.Driver", "public", "public", false, false)));
         
         assertThat(actual.size(), is(2));
         assertThat(actual.get("logic_db").getJdbcUrl(), is("jdbc:h2:mem:logic"));
@@ -73,11 +72,11 @@ class DatabaseRuntimeFactoryTest {
     }
     
     @Test
-    void assertCreateConnectionConfigurationsWithMissingDatabaseTypeInRuntimeTopology() {
+    void assertCreateConnectionConfigurationsWithMissingDatabaseTypeInRuntimeDatabases() {
         DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> databaseRuntimeFactory.createConnectionConfigurations(
-                new RuntimeTopologyConfiguration(Map.of("logic_db", new RuntimeDatabaseConfiguration("", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false)))));
+                Map.of("logic_db", new RuntimeDatabaseConfiguration("", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false))));
         
         assertThat(actual.getMessage(), is("Runtime database `logic_db` property `databaseType` is required."));
     }

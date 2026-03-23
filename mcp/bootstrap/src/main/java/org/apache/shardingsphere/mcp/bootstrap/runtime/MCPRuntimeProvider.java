@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 
 import java.util.Map;
@@ -40,21 +40,21 @@ public final class MCPRuntimeProvider {
      */
     public LoadedRuntime load(final Properties props) {
         Map<String, DatabaseConnectionConfiguration> connectionConfigurations = databaseRuntimeFactory.createConnectionConfigurations(props);
-        return load(connectionConfigurations);
+        return loadRuntime(connectionConfigurations);
     }
     
     /**
-     * Load one runtime projection from runtime topology configuration.
+     * Load one runtime projection from runtime databases.
      *
-     * @param runtimeTopologyConfiguration runtime topology configuration
+     * @param runtimeDatabases runtime databases
      * @return loaded runtime projection
      */
-    public LoadedRuntime load(final RuntimeTopologyConfiguration runtimeTopologyConfiguration) {
-        Map<String, DatabaseConnectionConfiguration> connectionConfigurations = databaseRuntimeFactory.createConnectionConfigurations(runtimeTopologyConfiguration);
-        return load(connectionConfigurations);
+    public LoadedRuntime load(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        Map<String, DatabaseConnectionConfiguration> connectionConfigurations = databaseRuntimeFactory.createConnectionConfigurations(runtimeDatabases);
+        return loadRuntime(connectionConfigurations);
     }
     
-    private LoadedRuntime load(final Map<String, DatabaseConnectionConfiguration> connectionConfigurations) {
+    private LoadedRuntime loadRuntime(final Map<String, DatabaseConnectionConfiguration> connectionConfigurations) {
         MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigurations);
         return new LoadedRuntime(metadataCatalog, databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, metadataLoader));
     }

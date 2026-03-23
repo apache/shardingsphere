@@ -49,9 +49,7 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerContext;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
@@ -174,37 +172,6 @@ public final class StreamableHttpMCPServer {
         this.metadataCatalog = Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null");
         this.databaseRuntime = Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null");
         metadataRefreshCoordinator = runtimeServices.getMetadataRefreshCoordinator();
-    }
-    
-    /**
-     * Construct one HTTP MCP server.
-     *
-     * @param transportConfiguration HTTP transport configuration
-     * @param serverContext compatibility server context
-     * @param runtimeContext compatibility runtime context
-     * @deprecated use {@link #StreamableHttpMCPServer(HttpTransportConfiguration, MCPServerRegistry, MCPRuntimeServices)} instead
-     */
-    @Deprecated
-    public StreamableHttpMCPServer(final HttpTransportConfiguration transportConfiguration, final MCPServerContext serverContext, final MCPRuntimeContext runtimeContext) {
-        this(transportConfiguration, Objects.requireNonNull(serverContext, "serverContext cannot be null").getServerRegistry(),
-                Objects.requireNonNull(runtimeContext, "runtimeContext cannot be null").getRuntimeServices());
-    }
-    
-    /**
-     * Construct one HTTP MCP server with caller-provided runtime metadata.
-     *
-     * @param transportConfiguration HTTP transport configuration
-     * @param serverContext compatibility server context
-     * @param runtimeContext compatibility runtime context
-     * @param metadataCatalog metadata catalog
-     * @param databaseRuntime database runtime
-     * @deprecated use {@link #StreamableHttpMCPServer(HttpTransportConfiguration, MCPServerRegistry, MCPRuntimeServices, MetadataCatalog, DatabaseRuntime)} instead
-     */
-    @Deprecated
-    public StreamableHttpMCPServer(final HttpTransportConfiguration transportConfiguration, final MCPServerContext serverContext, final MCPRuntimeContext runtimeContext,
-                                   final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
-        this(transportConfiguration, Objects.requireNonNull(serverContext, "serverContext cannot be null").getServerRegistry(),
-                Objects.requireNonNull(runtimeContext, "runtimeContext cannot be null").getRuntimeServices(), metadataCatalog, databaseRuntime);
     }
     
     /**

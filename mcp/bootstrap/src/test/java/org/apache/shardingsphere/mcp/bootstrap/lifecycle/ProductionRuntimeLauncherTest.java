@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
@@ -64,7 +63,7 @@ class ProductionRuntimeLauncherTest {
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         launchState = runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
-                H2RuntimeTestSupport.createRuntimeProps("logic_db", jdbcUrl), new RuntimeTopologyConfiguration(Map.of())));
+                H2RuntimeTestSupport.createRuntimeProps("logic_db", jdbcUrl), Map.of()));
         assertTrue(launchState.getStdioServer().isPresent());
         assertTrue(launchState.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("logic_db", "H2").isPresent());
         assertTrue(launchState.getRuntimeServices().getCapabilityAssembler().assembleServiceCapability().getSupportedTools().contains("execute_query"));
@@ -77,7 +76,7 @@ class ProductionRuntimeLauncherTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
-                        props, new RuntimeTopologyConfiguration(Map.of()))));
+                        props, Map.of())));
         assertThat(actual.getMessage(), is("Runtime property `databaseName` is required."));
     }
     

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
@@ -51,18 +50,6 @@ public final class StdioMCPServer {
     public StdioMCPServer(final MCPSessionManager sessionManager, final MCPRuntimeServices runtimeServices) {
         this.sessionManager = Objects.requireNonNull(sessionManager, "sessionManager cannot be null");
         this.runtimeServices = Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null");
-    }
-    
-    /**
-     * Construct one STDIO MCP server.
-     *
-     * @param sessionManager session manager
-     * @param runtimeContext compatibility runtime context
-     * @deprecated use {@link #StdioMCPServer(MCPSessionManager, MCPRuntimeServices)} instead
-     */
-    @Deprecated
-    public StdioMCPServer(final MCPSessionManager sessionManager, final MCPRuntimeContext runtimeContext) {
-        this(sessionManager, Objects.requireNonNull(runtimeContext, "runtimeContext cannot be null").getRuntimeServices());
     }
     
     /**

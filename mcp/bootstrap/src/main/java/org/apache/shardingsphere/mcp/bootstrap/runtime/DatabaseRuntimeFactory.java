@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ShardingSphereExecutionAdapter;
 import org.apache.shardingsphere.mcp.execute.ShardingSphereExecutionAdapter.ConnectionProvider;
@@ -54,30 +53,30 @@ public final class DatabaseRuntimeFactory {
     public Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final Properties props) {
         Properties actualProps = Objects.requireNonNull(props, "props cannot be null");
         validateLegacyRuntimeProperties(actualProps);
-        return createConnectionConfigurations(new RuntimeTopologyConfiguration(Collections.singletonMap(getRequiredProperty(actualProps, DATABASE_NAME_KEY),
+        return createConnectionConfigurations(Collections.singletonMap(getRequiredProperty(actualProps, DATABASE_NAME_KEY),
                 new RuntimeDatabaseConfiguration(getRequiredProperty(actualProps, "databaseType"), getRequiredProperty(actualProps, "jdbcUrl"),
                         getProperty(actualProps, "username"), getProperty(actualProps, "password"), getProperty(actualProps, "driverClassName"),
                         getProperty(actualProps, "schemaPattern"), getProperty(actualProps, "defaultSchema"),
                         Boolean.parseBoolean(getProperty(actualProps, "supportsCrossSchemaSql", "false")),
-                        Boolean.parseBoolean(getProperty(actualProps, "supportsExplainAnalyze", "false"))))));
+                        Boolean.parseBoolean(getProperty(actualProps, "supportsExplainAnalyze", "false")))));
     }
     
     /**
-     * Create connection configurations from runtime topology configuration.
+     * Create connection configurations from runtime databases.
      *
-     * @param runtimeTopologyConfiguration runtime topology configuration
+     * @param runtimeDatabases runtime databases
      * @return connection configurations keyed by logical database
      * @throws IllegalArgumentException when no runtime database is configured
      */
-    public Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final RuntimeTopologyConfiguration runtimeTopologyConfiguration) {
-        RuntimeTopologyConfiguration actualRuntimeTopologyConfiguration = Objects.requireNonNull(runtimeTopologyConfiguration, "runtimeTopologyConfiguration cannot be null");
-        if (actualRuntimeTopologyConfiguration.getDatabases().isEmpty()) {
+    public Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        Map<String, RuntimeDatabaseConfiguration> actualRuntimeDatabases = Objects.requireNonNull(runtimeDatabases, "runtimeDatabases cannot be null");
+        if (actualRuntimeDatabases.isEmpty()) {
             throw new IllegalArgumentException("At least one runtime database must be configured.");
         }
-        return createConnectionConfigurations(actualRuntimeTopologyConfiguration.getDatabases());
+        return buildConnectionConfigurations(actualRuntimeDatabases);
     }
     
-    private Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+    private Map<String, DatabaseConnectionConfiguration> buildConnectionConfigurations(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         Map<String, DatabaseConnectionConfiguration> result = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
         for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
             String databaseName = normalizeDatabaseName(entry.getKey());

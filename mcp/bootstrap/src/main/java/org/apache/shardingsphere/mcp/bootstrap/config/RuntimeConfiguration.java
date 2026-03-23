@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -30,5 +32,5 @@ public final class RuntimeConfiguration {
     
     private final Properties props;
     
-    private final RuntimeTopologyConfiguration topologyConfiguration;
+    private final Map<String, RuntimeDatabaseConfiguration> databases;
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.bootstrap.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerContext;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
@@ -97,16 +96,5 @@ public final class MCPRuntimeServices {
         for (String each : serviceCapability.getSupportedTools()) {
             actualServerRegistry.registerTool(each);
         }
-    }
-    
-    /**
-     * Register the full public MCP surface with the compatibility server context.
-     *
-     * @param serverContext compatibility server context
-     * @deprecated use {@link #registerDefaults(MCPServerRegistry)} instead
-     */
-    @Deprecated
-    public void registerDefaults(final MCPServerContext serverContext) {
-        registerDefaults(Objects.requireNonNull(serverContext, "serverContext cannot be null").getServerRegistry());
     }
 }
