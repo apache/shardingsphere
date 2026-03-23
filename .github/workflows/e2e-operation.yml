@@ -46,7 +46,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6.0.1
-      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d
         id: filter
         with:
           token: ${{ github.token }}
@@ -116,7 +116,7 @@ jobs:
           echo "RUNNER_TEMP=$RUNNER_TEMP"
           echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
       - name: Download Source Snapshot
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: source-snapshot
           path: ${{ runner.temp }}/source-snapshot
