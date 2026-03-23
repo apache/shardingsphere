@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**
@@ -32,13 +30,19 @@ import java.util.Map;
  */
 public final class YamlHttpTransportConfigurationSwapper implements YamlConfigurationSwapper<YamlHttpTransportConfiguration, HttpTransportConfiguration> {
     
-    private final YamlHttpServerConfigurationSwapper serverConfigSwapper = new YamlHttpServerConfigurationSwapper();
+    private static final String DEFAULT_BIND_HOST = "127.0.0.1";
+    
+    private static final int DEFAULT_PORT = 18088;
+    
+    private static final String DEFAULT_ENDPOINT_PATH = "/mcp";
     
     @Override
     public YamlHttpTransportConfiguration swapToYamlConfiguration(final HttpTransportConfiguration data) {
         YamlHttpTransportConfiguration result = new YamlHttpTransportConfiguration();
         result.setEnabled(data.isEnabled());
-        result.setServer(serverConfigSwapper.swapToYamlConfiguration(data.getServer()));
+        result.setBindHost(data.getBindHost());
+        result.setPort(data.getPort());
+        result.setEndpointPath(data.getEndpointPath());
         return result;
     }
     
@@ -51,17 +55,38 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         YamlHttpTransportConfiguration actualYamlConfig = null == yamlConfig ? new YamlHttpTransportConfiguration() : yamlConfig;
         Map<String, Object> actualConfiguredSection = null == configuredSection ? Collections.emptyMap() : configuredSection;
         boolean enabled = resolveEnabled(actualYamlConfig.isEnabled(), actualConfiguredSection.containsKey("enabled") || actualYamlConfig.isEnabled());
-        HttpServerConfiguration server = enabled
-                ? serverConfigSwapper.swapToObject(actualYamlConfig.getServer(), getConfiguredFieldNames(actualConfiguredSection.get("server")))
-                : serverConfigSwapper.swapToObject(null);
-        return new HttpTransportConfiguration(enabled, server);
+        return enabled ? new HttpTransportConfiguration(true, resolveBindHost(actualYamlConfig.getBindHost()),
+                resolvePort(actualYamlConfig.getPort(), actualConfiguredSection.containsKey("port") || 0 != actualYamlConfig.getPort()), resolveEndpointPath(actualYamlConfig.getEndpointPath()))
+                : new HttpTransportConfiguration(false, DEFAULT_BIND_HOST, DEFAULT_PORT, DEFAULT_ENDPOINT_PATH);
     }
     
     private boolean resolveEnabled(final boolean enabled, final boolean configured) {
         return configured ? enabled : true;
     }
     
-    private Collection<String> getConfiguredFieldNames(final Object section) {
-        return section instanceof Map ? new LinkedHashSet<>(((Map<?, ?>) section).keySet().stream().map(String::valueOf).toList()) : Collections.emptySet();
+    private String resolveBindHost(final String bindHost) {
+        String result = normalizeText(bindHost);
+        return result.isEmpty() ? DEFAULT_BIND_HOST : result;
+    }
+    
+    private int resolvePort(final int port, final boolean configured) {
+        if (!configured) {
+            return DEFAULT_PORT;
+        }
+        ShardingSpherePreconditions.checkState(port >= 0, () -> new IllegalArgumentException("MCP server port cannot be negative."));
+        return port;
+    }
+    
+    private String resolveEndpointPath(final String endpointPath) {
+        String result = normalizeText(endpointPath);
+        return result.isEmpty() ? DEFAULT_ENDPOINT_PATH : normalizePath(result);
+    }
+    
+    private String normalizePath(final String endpointPath) {
+        return endpointPath.startsWith("/") ? endpointPath : "/" + endpointPath;
+    }
+    
+    private String normalizeText(final Object value) {
+        return null == value ? "" : String.valueOf(value).trim();
     }
 }

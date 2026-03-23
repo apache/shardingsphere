@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
-import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpServerConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -39,28 +37,26 @@ class YamlHttpTransportConfigurationSwapperTest {
         HttpTransportConfiguration actual = swapper.swapToObject(new YamlHttpTransportConfiguration());
         
         assertTrue(actual.isEnabled());
-        assertThat(actual.getServer().getPort(), is(18088));
+        assertThat(actual.getPort(), is(18088));
     }
     
     @Test
-    void assertSwapToObjectWithDisabledHttpIgnoresServerConfiguration() {
+    void assertSwapToObjectWithDisabledHttpIgnoresHttpConfiguration() {
         YamlHttpTransportConfiguration yamlConfig = new YamlHttpTransportConfiguration();
         yamlConfig.setEnabled(false);
-        YamlHttpServerConfiguration server = new YamlHttpServerConfiguration();
-        server.setPort(-1);
-        yamlConfig.setServer(server);
+        yamlConfig.setPort(-1);
         
-        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig, Map.of("enabled", false, "server", Map.of("port", -1)));
+        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig, Map.of("enabled", false, "port", -1));
         
         assertFalse(actual.isEnabled());
-        assertThat(actual.getServer().getPort(), is(18088));
+        assertThat(actual.getPort(), is(18088));
     }
     
     @Test
     void assertSwapToYamlConfiguration() {
-        YamlHttpTransportConfiguration actual = swapper.swapToYamlConfiguration(new HttpTransportConfiguration(true, new HttpServerConfiguration("127.0.0.1", 18088, "/mcp")));
+        YamlHttpTransportConfiguration actual = swapper.swapToYamlConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 18088, "/mcp"));
         
         assertTrue(actual.isEnabled());
-        assertThat(actual.getServer().getEndpointPath(), is("/mcp"));
+        assertThat(actual.getEndpointPath(), is("/mcp"));
     }
 }

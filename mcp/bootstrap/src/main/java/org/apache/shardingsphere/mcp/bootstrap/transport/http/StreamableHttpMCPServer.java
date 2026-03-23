@@ -48,7 +48,7 @@ import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerContext;
@@ -118,7 +118,7 @@ public final class StreamableHttpMCPServer {
     
     private static final String RESOURCE_DATABASES = "shardingsphere://databases";
     
-    private final HttpServerConfiguration serverConfiguration;
+    private final HttpTransportConfiguration transportConfiguration;
     
     private final MCPServerRegistry serverRegistry;
     
@@ -148,27 +148,27 @@ public final class StreamableHttpMCPServer {
     /**
      * Construct one HTTP MCP server.
      *
-     * @param serverConfiguration server configuration
+     * @param transportConfiguration HTTP transport configuration
      * @param serverRegistry server registry
      * @param runtimeServices runtime services
      */
-    public StreamableHttpMCPServer(final HttpServerConfiguration serverConfiguration, final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices) {
-        this(serverConfiguration, serverRegistry, runtimeServices, new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()),
+    public StreamableHttpMCPServer(final HttpTransportConfiguration transportConfiguration, final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices) {
+        this(transportConfiguration, serverRegistry, runtimeServices, new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()),
                 new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
     }
     
     /**
      * Construct one HTTP MCP server with caller-provided runtime metadata.
      *
-     * @param serverConfiguration server configuration
+     * @param transportConfiguration HTTP transport configuration
      * @param serverRegistry server registry
      * @param runtimeServices runtime services
      * @param metadataCatalog metadata catalog
      * @param databaseRuntime database runtime
      */
-    public StreamableHttpMCPServer(final HttpServerConfiguration serverConfiguration, final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices,
+    public StreamableHttpMCPServer(final HttpTransportConfiguration transportConfiguration, final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices,
                                    final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
-        this.serverConfiguration = Objects.requireNonNull(serverConfiguration, "serverConfiguration cannot be null");
+        this.transportConfiguration = Objects.requireNonNull(transportConfiguration, "transportConfiguration cannot be null");
         this.serverRegistry = Objects.requireNonNull(serverRegistry, "serverRegistry cannot be null");
         this.runtimeServices = Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null");
         this.metadataCatalog = Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null");
@@ -179,31 +179,31 @@ public final class StreamableHttpMCPServer {
     /**
      * Construct one HTTP MCP server.
      *
-     * @param serverConfiguration server configuration
+     * @param transportConfiguration HTTP transport configuration
      * @param serverContext compatibility server context
      * @param runtimeContext compatibility runtime context
-     * @deprecated use {@link #StreamableHttpMCPServer(HttpServerConfiguration, MCPServerRegistry, MCPRuntimeServices)} instead
+     * @deprecated use {@link #StreamableHttpMCPServer(HttpTransportConfiguration, MCPServerRegistry, MCPRuntimeServices)} instead
      */
     @Deprecated
-    public StreamableHttpMCPServer(final HttpServerConfiguration serverConfiguration, final MCPServerContext serverContext, final MCPRuntimeContext runtimeContext) {
-        this(serverConfiguration, Objects.requireNonNull(serverContext, "serverContext cannot be null").getServerRegistry(),
+    public StreamableHttpMCPServer(final HttpTransportConfiguration transportConfiguration, final MCPServerContext serverContext, final MCPRuntimeContext runtimeContext) {
+        this(transportConfiguration, Objects.requireNonNull(serverContext, "serverContext cannot be null").getServerRegistry(),
                 Objects.requireNonNull(runtimeContext, "runtimeContext cannot be null").getRuntimeServices());
     }
     
     /**
      * Construct one HTTP MCP server with caller-provided runtime metadata.
      *
-     * @param serverConfiguration server configuration
+     * @param transportConfiguration HTTP transport configuration
      * @param serverContext compatibility server context
      * @param runtimeContext compatibility runtime context
      * @param metadataCatalog metadata catalog
      * @param databaseRuntime database runtime
-     * @deprecated use {@link #StreamableHttpMCPServer(HttpServerConfiguration, MCPServerRegistry, MCPRuntimeServices, MetadataCatalog, DatabaseRuntime)} instead
+     * @deprecated use {@link #StreamableHttpMCPServer(HttpTransportConfiguration, MCPServerRegistry, MCPRuntimeServices, MetadataCatalog, DatabaseRuntime)} instead
      */
     @Deprecated
-    public StreamableHttpMCPServer(final HttpServerConfiguration serverConfiguration, final MCPServerContext serverContext, final MCPRuntimeContext runtimeContext,
+    public StreamableHttpMCPServer(final HttpTransportConfiguration transportConfiguration, final MCPServerContext serverContext, final MCPRuntimeContext runtimeContext,
                                    final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
-        this(serverConfiguration, Objects.requireNonNull(serverContext, "serverContext cannot be null").getServerRegistry(),
+        this(transportConfiguration, Objects.requireNonNull(serverContext, "serverContext cannot be null").getServerRegistry(),
                 Objects.requireNonNull(runtimeContext, "runtimeContext cannot be null").getRuntimeServices(), metadataCatalog, databaseRuntime);
     }
     
@@ -217,20 +217,20 @@ public final class StreamableHttpMCPServer {
             return;
         }
         transportProvider = new SdkStreamableHttpServlet(serverRegistry.getSessionManager(), databaseRuntime, metadataRefreshCoordinator, jsonMapper,
-                serverConfiguration.getBindHost(), serverConfiguration.getEndpointPath());
+                transportConfiguration.getBindHost(), transportConfiguration.getEndpointPath());
         syncServer = createSyncServer();
         try {
             tomcat = new Tomcat();
             baseDirectory = Files.createTempDirectory("shardingsphere-mcp-tomcat");
             connector = new Connector();
-            connector.setPort(serverConfiguration.getPort());
-            connector.setProperty("address", serverConfiguration.getBindHost());
+            connector.setPort(transportConfiguration.getPort());
+            connector.setProperty("address", transportConfiguration.getBindHost());
             tomcat.setBaseDir(baseDirectory.toString());
             tomcat.setConnector(connector);
             Context context = tomcat.addContext("", baseDirectory.toString());
             Wrapper servletWrapper = Tomcat.addServlet(context, "mcp-streamable-http", transportProvider);
             servletWrapper.setAsyncSupported(true);
-            context.addServletMappingDecoded(serverConfiguration.getEndpointPath(), "mcp-streamable-http");
+            context.addServletMappingDecoded(transportConfiguration.getEndpointPath(), "mcp-streamable-http");
             tomcat.start();
             running = true;
         } catch (final LifecycleException ex) {
@@ -274,7 +274,7 @@ public final class StreamableHttpMCPServer {
      * @return bound port
      */
     public int getLocalPort() {
-        return null == connector ? serverConfiguration.getPort() : connector.getLocalPort();
+        return null == connector ? transportConfiguration.getPort() : connector.getLocalPort();
     }
     
     private McpSyncServer createSyncServer() {

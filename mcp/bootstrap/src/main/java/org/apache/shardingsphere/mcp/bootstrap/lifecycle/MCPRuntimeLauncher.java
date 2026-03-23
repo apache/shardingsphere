@@ -157,7 +157,7 @@ public final class MCPRuntimeLauncher {
         if (!launchConfiguration.getTransport().getHttp().isEnabled()) {
             return null;
         }
-        return new StreamableHttpMCPServer(launchConfiguration.getTransport().getHttp().getServer(), Objects.requireNonNull(serverRegistry, "serverRegistry cannot be null"),
+        return new StreamableHttpMCPServer(launchConfiguration.getTransport().getHttp(), Objects.requireNonNull(serverRegistry, "serverRegistry cannot be null"),
                 Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null"), Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null"),
                 Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null"));
     }

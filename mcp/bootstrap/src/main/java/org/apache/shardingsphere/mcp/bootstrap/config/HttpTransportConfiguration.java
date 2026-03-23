@@ -29,5 +29,9 @@ public final class HttpTransportConfiguration {
     
     private final boolean enabled;
     
-    private final HttpServerConfiguration server;
+    private final String bindHost;
+    
+    private final int port;
+    
+    private final String endpointPath;
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
-import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
@@ -43,7 +42,7 @@ class YamlTransportConfigurationSwapperTest {
         
         assertTrue(actual.getHttp().isEnabled());
         assertTrue(actual.getStdio().isEnabled());
-        assertThat(actual.getHttp().getServer().getEndpointPath(), is("/mcp"));
+        assertThat(actual.getHttp().getEndpointPath(), is("/mcp"));
     }
     
     @Test
@@ -65,10 +64,10 @@ class YamlTransportConfigurationSwapperTest {
     @Test
     void assertSwapToYamlConfiguration() {
         YamlTransportConfiguration actual = swapper.swapToYamlConfiguration(
-                new TransportConfiguration(new HttpTransportConfiguration(true, new HttpServerConfiguration("127.0.0.1", 18088, "/mcp")), new StdioTransportConfiguration(false)));
+                new TransportConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 18088, "/mcp"), new StdioTransportConfiguration(false)));
         
         assertTrue(actual.getHttp().isEnabled());
         assertFalse(actual.getStdio().isEnabled());
-        assertThat(actual.getHttp().getServer().getPort(), is(18088));
+        assertThat(actual.getHttp().getPort(), is(18088));
     }
 }

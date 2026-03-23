@@ -45,7 +45,7 @@ class MCPLaunchConfigurationTest {
         
         assertTrue(launchConfiguration.getTransport().getHttp().isEnabled());
         assertFalse(launchConfiguration.getTransport().getStdio().isEnabled());
-        assertThat(launchConfiguration.getTransport().getHttp().getServer().getEndpointPath(), is("/mcp"));
+        assertThat(launchConfiguration.getTransport().getHttp().getEndpointPath(), is("/mcp"));
     }
     
     @Test
@@ -62,6 +62,6 @@ class MCPLaunchConfigurationTest {
     }
     
     private TransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {
-        return new TransportConfiguration(new HttpTransportConfiguration(httpEnabled, new HttpServerConfiguration("127.0.0.1", 0, endpointPath)), new StdioTransportConfiguration(stdioEnabled));
+        return new TransportConfiguration(new HttpTransportConfiguration(httpEnabled, "127.0.0.1", 0, endpointPath), new StdioTransportConfiguration(stdioEnabled));
     }
 }

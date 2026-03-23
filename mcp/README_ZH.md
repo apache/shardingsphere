@@ -54,10 +54,9 @@ bin/start.sh
 transport:
   http:
     enabled: true
-    server:
-      bindHost: 127.0.0.1
-      port: 18088
-      endpointPath: /mcp
+    bindHost: 127.0.0.1
+    port: 18088
+    endpointPath: /mcp
   stdio:
     enabled: true
 
@@ -67,7 +66,7 @@ runtime:
     defaultSchema: public
     supportsCrossSchemaSql: true
     supportsExplainAnalyze: false
-  databases:
+  里面已经配置:
     orders:
       databaseType: H2
       jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"

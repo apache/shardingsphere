@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
-import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
@@ -47,10 +46,9 @@ class YamlMCPLaunchConfigurationSwapperTest {
         MCPLaunchConfiguration actual = swapper.swapToObject("transport:\n"
                 + "  http:\n"
                 + "    enabled: true\n"
-                + "    server:\n"
-                + "      bindHost: 0.0.0.0\n"
-                + "      port: 9090\n"
-                + "      endpointPath: gateway\n"
+                + "    bindHost: 0.0.0.0\n"
+                + "    port: 9090\n"
+                + "    endpointPath: gateway\n"
                 + "  stdio:\n"
                 + "    enabled: false\n"
                 + "runtime:\n"
@@ -58,9 +56,9 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    databaseName: logic_db\n"
                 + "    databaseType: H2\n");
         
-        assertThat(actual.getTransport().getHttp().getServer().getBindHost(), is("0.0.0.0"));
-        assertThat(actual.getTransport().getHttp().getServer().getPort(), is(9090));
-        assertThat(actual.getTransport().getHttp().getServer().getEndpointPath(), is("/gateway"));
+        assertThat(actual.getTransport().getHttp().getBindHost(), is("0.0.0.0"));
+        assertThat(actual.getTransport().getHttp().getPort(), is(9090));
+        assertThat(actual.getTransport().getHttp().getEndpointPath(), is("/gateway"));
         assertTrue(actual.getTransport().getHttp().isEnabled());
         assertFalse(actual.getTransport().getStdio().isEnabled());
         assertThat(actual.getRuntimeProps().getProperty("databaseName"), is("logic_db"));
@@ -74,9 +72,9 @@ class YamlMCPLaunchConfigurationSwapperTest {
         
         MCPLaunchConfiguration actual = swapper.swapToObject(yamlConfig);
         
-        assertThat(actual.getTransport().getHttp().getServer().getBindHost(), is("127.0.0.1"));
-        assertThat(actual.getTransport().getHttp().getServer().getPort(), is(18088));
-        assertThat(actual.getTransport().getHttp().getServer().getEndpointPath(), is("/mcp"));
+        assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));
+        assertThat(actual.getTransport().getHttp().getPort(), is(18088));
+        assertThat(actual.getTransport().getHttp().getEndpointPath(), is("/mcp"));
         assertTrue(actual.getTransport().getHttp().isEnabled());
         assertTrue(actual.getTransport().getStdio().isEnabled());
         assertTrue(actual.getRuntimeProps().isEmpty());
@@ -87,12 +85,12 @@ class YamlMCPLaunchConfigurationSwapperTest {
     void assertSwapToYamlConfigurationWithRuntimeProps() {
         Properties runtimeProps = PropertiesBuilder.build(new Property("databaseName", "logic_db"), new Property("databaseType", "H2"));
         MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(new TransportConfiguration(
-                new HttpTransportConfiguration(true, new HttpServerConfiguration("127.0.0.1", 18088, "/mcp")), new StdioTransportConfiguration(false)),
+                new HttpTransportConfiguration(true, "127.0.0.1", 18088, "/mcp"), new StdioTransportConfiguration(false)),
                 runtimeProps, new RuntimeTopologyConfiguration(new LinkedHashMap<>()));
         
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
         
-        assertThat(actual.getTransport().getHttp().getServer().getBindHost(), is("127.0.0.1"));
+        assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));
         assertTrue(actual.getTransport().getHttp().isEnabled());
         assertFalse(actual.getTransport().getStdio().isEnabled());
         assertThat(actual.getRuntime().getProps().get("databaseName"), is("logic_db"));
@@ -104,7 +102,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
         Map<String, RuntimeDatabaseConfiguration> databases = new LinkedHashMap<>(1, 1F);
         databases.put("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false));
         MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(new TransportConfiguration(
-                new HttpTransportConfiguration(true, new HttpServerConfiguration("127.0.0.1", 18088, "/mcp")), new StdioTransportConfiguration(true)),
+                new HttpTransportConfiguration(true, "127.0.0.1", 18088, "/mcp"), new StdioTransportConfiguration(true)),
                 new Properties(), new RuntimeTopologyConfiguration(databases));
         
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);

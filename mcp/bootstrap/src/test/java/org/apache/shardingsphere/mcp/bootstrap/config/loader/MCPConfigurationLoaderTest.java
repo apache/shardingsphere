@@ -44,10 +44,9 @@ class MCPConfigurationLoaderTest {
         Path configFile = createConfigFile("transport:\n"
                 + "  http:\n"
                 + "    enabled: true\n"
-                + "    server:\n"
-                + "      bindHost: 0.0.0.0\n"
-                + "      port: 9090\n"
-                + "      endpointPath: gateway\n"
+                + "    bindHost: 0.0.0.0\n"
+                + "    port: 9090\n"
+                + "    endpointPath: gateway\n"
                 + "  stdio:\n"
                 + "    enabled: false\n");
         
@@ -55,9 +54,9 @@ class MCPConfigurationLoaderTest {
         
         assertTrue(actual.getTransport().getHttp().isEnabled());
         assertFalse(actual.getTransport().getStdio().isEnabled());
-        assertThat(actual.getTransport().getHttp().getServer().getBindHost(), is("0.0.0.0"));
-        assertThat(actual.getTransport().getHttp().getServer().getPort(), is(9090));
-        assertThat(actual.getTransport().getHttp().getServer().getEndpointPath(), is("/gateway"));
+        assertThat(actual.getTransport().getHttp().getBindHost(), is("0.0.0.0"));
+        assertThat(actual.getTransport().getHttp().getPort(), is(9090));
+        assertThat(actual.getTransport().getHttp().getEndpointPath(), is("/gateway"));
         assertTrue(actual.getRuntimeProps().isEmpty());
     }
     
@@ -69,9 +68,9 @@ class MCPConfigurationLoaderTest {
         
         assertTrue(actual.getTransport().getHttp().isEnabled());
         assertTrue(actual.getTransport().getStdio().isEnabled());
-        assertThat(actual.getTransport().getHttp().getServer().getBindHost(), is("127.0.0.1"));
-        assertThat(actual.getTransport().getHttp().getServer().getPort(), is(18088));
-        assertThat(actual.getTransport().getHttp().getServer().getEndpointPath(), is("/mcp"));
+        assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));
+        assertThat(actual.getTransport().getHttp().getPort(), is(18088));
+        assertThat(actual.getTransport().getHttp().getEndpointPath(), is("/mcp"));
         assertTrue(actual.getRuntimeProps().isEmpty());
     }
     
@@ -136,8 +135,7 @@ class MCPConfigurationLoaderTest {
         Path configFile = createConfigFile("transport:\n"
                 + "  http:\n"
                 + "    enabled: true\n"
-                + "    server:\n"
-                + "      port: -1\n");
+                + "    port: -1\n");
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> MCPConfigurationLoader.load(configFile.toString()));
@@ -150,8 +148,7 @@ class MCPConfigurationLoaderTest {
         Path configFile = createConfigFile("transport:\n"
                 + "  http:\n"
                 + "    enabled: false\n"
-                + "    server:\n"
-                + "      port: -1\n"
+                + "    port: -1\n"
                 + "  stdio:\n"
                 + "    enabled: true\n");
         
@@ -159,7 +156,7 @@ class MCPConfigurationLoaderTest {
         
         assertFalse(actual.getTransport().getHttp().isEnabled());
         assertTrue(actual.getTransport().getStdio().isEnabled());
-        assertThat(actual.getTransport().getHttp().getServer().getPort(), is(18088));
+        assertThat(actual.getTransport().getHttp().getPort(), is(18088));
     }
     
     private Path createConfigFile(final String yamlContent) throws IOException {

@@ -30,5 +30,9 @@ public final class YamlHttpTransportConfiguration implements YamlConfiguration {
     
     private boolean enabled;
     
-    private YamlHttpServerConfiguration server;
+    private String bindHost;
+    
+    private int port;
+    
+    private String endpointPath;
 }

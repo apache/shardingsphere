@@ -54,10 +54,9 @@ The default configuration is:
 transport:
   http:
     enabled: true
-    server:
-      bindHost: 127.0.0.1
-      port: 18088
-      endpointPath: /mcp
+    bindHost: 127.0.0.1
+    port: 18088
+    endpointPath: /mcp
   stdio:
     enabled: true
 
