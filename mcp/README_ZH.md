@@ -57,10 +57,8 @@ server:
   endpointPath: /mcp
 
 transport:
-  http:
-    enabled: true
-  stdio:
-    enabled: true
+  httpEnabled: true
+  stdioEnabled: true
 
 runtime:
   defaults:
@@ -195,10 +193,8 @@ server:
   endpointPath: /mcp
 
 transport:
-  http:
-    enabled: false
-  stdio:
-    enabled: true
+  httpEnabled: false
+  stdioEnabled: true
 ```
 
 然后使用这个配置文件启动：
@@ -210,7 +206,7 @@ bin/start.sh conf/mcp-stdio.yaml
 说明：
 
 - 进程仍然会以前台方式运行。
-- 如果 `transport.http.enabled` 和 `transport.stdio.enabled` 同时为 `false`，启动会因 `At least one transport must be enabled.` 失败。
+- 如果 `transport.httpEnabled` 和 `transport.stdioEnabled` 同时为 `false`，启动会因 `At least one transport must be enabled.` 失败。
 - 默认 `conf/logback.xml` 会把日志写到 stdout 和 `logs/mcp.log`，因此 `bin/start.sh` 目前不是可以直接给外部客户端使用的 JSON-RPC-over-STDIO Shell。
 
 ### 在 Java 中集成
@@ -239,8 +235,8 @@ stdioMCPServer.closeSession(sessionId);
 - 发行包里的 `conf/mcp.yaml` 现在默认内置一段 demo 多数据库 JDBC runtime 配置，所以第一次启动就能验证逻辑库发现和真实 query 执行。
 - 如果要接真实部署，请把 `runtime` 段替换成你自己的逻辑库映射和 JDBC 连接属性。直连多数据库时优先使用 `runtime.databases`；旧的单库 `runtime.props` 写法仍保留兼容。
 - 如果目标数据库的驱动没有随发行包提供，请先把对应 jar 放到 `ext-lib/`，再执行 `bin/start.sh`。
-- 如果只需要本地 HTTP 调试，保留 `transport.http.enabled: true`，并在不需要 STDIO 时把 `transport.stdio.enabled` 设为 `false`。
-- 如果要做本地进程内集成，保留 `transport.stdio.enabled: true`。发行包会启动同一套 STDIO runtime，但目前不会额外暴露独立的文本 Shell。
+- 如果只需要本地 HTTP 调试，保留 `transport.httpEnabled: true`，并在不需要 STDIO 时把 `transport.stdioEnabled` 设为 `false`。
+- 如果要做本地进程内集成，保留 `transport.stdioEnabled: true`。发行包会启动同一套 STDIO runtime，但目前不会额外暴露独立的文本 Shell。
 - 如果 HTTP 端点要暴露到 localhost 之外，建议放在受信网络、上游网关或反向代理之后。
 - 如果要使用自定义配置文件启动，可以执行 `bin/start.sh /path/to/mcp.yaml`。
 - 如果要调整 JVM 参数，可以使用 `JAVA_OPTS`，例如 `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`。

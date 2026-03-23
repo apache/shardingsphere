@@ -19,10 +19,8 @@ server:
   endpointPath: /mcp
 
 transport:
-  http:
-    enabled: true
-  stdio:
-    enabled: true
+  httpEnabled: true
+  stdioEnabled: true
 
 runtime:
   # Replace this demo runtime block for real deployments.

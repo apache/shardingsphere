@@ -23,10 +23,9 @@ import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlTransportSwitch;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
@@ -38,9 +37,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class YamlMCPConfigurationSwapperTest {
+class YamlMCPLaunchConfigurationSwapperTest {
     
-    private final YamlMCPConfigurationSwapper swapper = new YamlMCPConfigurationSwapper();
+    private final YamlMCPLaunchConfigurationSwapper swapper = new YamlMCPLaunchConfigurationSwapper();
     
     @Test
     void assertSwapToObject() {
@@ -56,7 +55,7 @@ class YamlMCPConfigurationSwapperTest {
     
     @Test
     void assertSwapToObjectWithNullSections() {
-        YamlMCPConfiguration yamlConfig = new YamlMCPConfiguration();
+        YamlMCPLaunchConfiguration yamlConfig = new YamlMCPLaunchConfiguration();
         yamlConfig.setServer(null);
         yamlConfig.setTransport(null);
         yamlConfig.setRuntime(null);
@@ -78,11 +77,11 @@ class YamlMCPConfigurationSwapperTest {
         MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 18088, "/mcp"), true, false,
                 runtimeProps, new RuntimeTopologyConfiguration(new LinkedHashMap<>()));
         
-        YamlMCPConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
+        YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
         
         assertThat(actual.getServer().getBindHost(), is("127.0.0.1"));
-        assertTrue(actual.getTransport().getHttp().getEnabled());
-        assertFalse(actual.getTransport().getStdio().getEnabled());
+        assertTrue(actual.getTransport().getHttpEnabled());
+        assertFalse(actual.getTransport().getStdioEnabled());
         assertThat(actual.getRuntime().getProps().get("databaseName"), is("logic_db"));
         assertTrue(actual.getRuntime().getDatabases().isEmpty());
     }
@@ -94,15 +93,15 @@ class YamlMCPConfigurationSwapperTest {
         MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 18088, "/mcp"), true, true,
                 new Properties(), new RuntimeTopologyConfiguration(databases));
         
-        YamlMCPConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
+        YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
         
         assertThat(actual.getRuntime().getDatabases().get("logic_db").getDatabaseType(), is("H2"));
         assertTrue(actual.getRuntime().getProps().isEmpty());
         assertTrue(actual.getRuntime().getDefaults().isEmpty());
     }
     
-    private YamlMCPConfiguration createYamlConfig() {
-        YamlMCPConfiguration result = new YamlMCPConfiguration();
+    private YamlMCPLaunchConfiguration createYamlConfig() {
+        YamlMCPLaunchConfiguration result = new YamlMCPLaunchConfiguration();
         result.setServer(createYamlServerConfig());
         result.setTransport(createYamlTransportConfig());
         result.getRuntime().getProps().put("databaseName", "logic_db");
@@ -110,8 +109,8 @@ class YamlMCPConfigurationSwapperTest {
         return result;
     }
     
-    private YamlServerConfiguration createYamlServerConfig() {
-        YamlServerConfiguration result = new YamlServerConfiguration();
+    private YamlHttpServerConfiguration createYamlServerConfig() {
+        YamlHttpServerConfiguration result = new YamlHttpServerConfiguration();
         result.setBindHost("0.0.0.0");
         result.setPort(9090);
         result.setEndpointPath("gateway");
@@ -120,12 +119,8 @@ class YamlMCPConfigurationSwapperTest {
     
     private YamlTransportConfiguration createYamlTransportConfig() {
         YamlTransportConfiguration result = new YamlTransportConfiguration();
-        YamlTransportSwitch http = new YamlTransportSwitch();
-        http.setEnabled(false);
-        result.setHttp(http);
-        YamlTransportSwitch stdio = new YamlTransportSwitch();
-        stdio.setEnabled(true);
-        result.setStdio(stdio);
+        result.setHttpEnabled(false);
+        result.setStdioEnabled(true);
         return result;
     }
 }

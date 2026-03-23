@@ -46,10 +46,8 @@ class MCPConfigurationLoaderTest {
                 + "  port: 9090\n"
                 + "  endpointPath: gateway\n"
                 + "transport:\n"
-                + "  http:\n"
-                + "    enabled: true\n"
-                + "  stdio:\n"
-                + "    enabled: false\n");
+                + "  httpEnabled: true\n"
+                + "  stdioEnabled: false\n");
         
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         

@@ -20,12 +20,12 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpServerConfiguration;
 
 /**
- * YAML server configuration swapper.
+ * YAML HTTP server configuration swapper.
  */
-public final class YamlServerConfigurationSwapper implements YamlConfigurationSwapper<YamlServerConfiguration, HttpServerConfiguration> {
+public final class YamlHttpServerConfigurationSwapper implements YamlConfigurationSwapper<YamlHttpServerConfiguration, HttpServerConfiguration> {
     
     private static final String DEFAULT_BIND_HOST = "127.0.0.1";
     
@@ -34,8 +34,8 @@ public final class YamlServerConfigurationSwapper implements YamlConfigurationSw
     private static final String DEFAULT_ENDPOINT_PATH = "/mcp";
     
     @Override
-    public YamlServerConfiguration swapToYamlConfiguration(final HttpServerConfiguration data) {
-        YamlServerConfiguration result = new YamlServerConfiguration();
+    public YamlHttpServerConfiguration swapToYamlConfiguration(final HttpServerConfiguration data) {
+        YamlHttpServerConfiguration result = new YamlHttpServerConfiguration();
         result.setBindHost(data.getBindHost());
         result.setPort(data.getPort());
         result.setEndpointPath(data.getEndpointPath());
@@ -43,8 +43,8 @@ public final class YamlServerConfigurationSwapper implements YamlConfigurationSw
     }
     
     @Override
-    public HttpServerConfiguration swapToObject(final YamlServerConfiguration yamlConfig) {
-        YamlServerConfiguration actualYamlConfig = null == yamlConfig ? new YamlServerConfiguration() : yamlConfig;
+    public HttpServerConfiguration swapToObject(final YamlHttpServerConfiguration yamlConfig) {
+        YamlHttpServerConfiguration actualYamlConfig = null == yamlConfig ? new YamlHttpServerConfiguration() : yamlConfig;
         String bindHost = normalizeText(actualYamlConfig.getBindHost());
         String endpointPath = normalizeText(actualYamlConfig.getEndpointPath());
         return new HttpServerConfiguration(bindHost.isEmpty() ? DEFAULT_BIND_HOST : bindHost, resolvePort(actualYamlConfig.getPort()),

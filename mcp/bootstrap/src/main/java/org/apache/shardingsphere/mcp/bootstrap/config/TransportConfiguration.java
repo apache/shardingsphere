@@ -18,25 +18,16 @@
 package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Transport configuration.
  */
+@RequiredArgsConstructor
 @Getter
 public final class TransportConfiguration {
     
     private final boolean httpEnabled;
     
     private final boolean stdioEnabled;
-    
-    /**
-     * Construct transport configuration.
-     *
-     * @param httpEnabled HTTP enablement
-     * @param stdioEnabled STDIO enablement
-     */
-    public TransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled) {
-        this.httpEnabled = httpEnabled;
-        this.stdioEnabled = stdioEnabled;
-    }
 }

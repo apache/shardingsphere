@@ -22,26 +22,26 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
 /**
- * YAML MCP configuration swapper.
+ * YAML MCP launch configuration swapper.
  */
-public final class YamlMCPConfigurationSwapper implements YamlConfigurationSwapper<YamlMCPConfiguration, MCPLaunchConfiguration> {
+public final class YamlMCPLaunchConfigurationSwapper implements YamlConfigurationSwapper<YamlMCPLaunchConfiguration, MCPLaunchConfiguration> {
     
-    private final YamlServerConfigurationSwapper serverConfigSwapper = new YamlServerConfigurationSwapper();
+    private final YamlHttpServerConfigurationSwapper httpServerConfigSwapper = new YamlHttpServerConfigurationSwapper();
     
     private final YamlTransportConfigurationSwapper transportConfigSwapper = new YamlTransportConfigurationSwapper();
     
     private final YamlRuntimeConfigurationSwapper runtimeConfigSwapper = new YamlRuntimeConfigurationSwapper();
     
     @Override
-    public YamlMCPConfiguration swapToYamlConfiguration(final MCPLaunchConfiguration data) {
-        YamlMCPConfiguration result = new YamlMCPConfiguration();
-        result.setServer(serverConfigSwapper.swapToYamlConfiguration(data.getHttpServerConfiguration()));
+    public YamlMCPLaunchConfiguration swapToYamlConfiguration(final MCPLaunchConfiguration data) {
+        YamlMCPLaunchConfiguration result = new YamlMCPLaunchConfiguration();
+        result.setServer(httpServerConfigSwapper.swapToYamlConfiguration(data.getHttpServerConfiguration()));
         result.setTransport(transportConfigSwapper.swapToYamlConfiguration(new TransportConfiguration(data.isHttpEnabled(), data.isStdioEnabled())));
         result.setRuntime(runtimeConfigSwapper.swapToYamlConfiguration(
                 new RuntimeConfiguration(data.getRuntimeProps().orElseGet(Properties::new), data.getRuntimeTopologyConfiguration().orElseGet(this::createEmptyRuntimeTopologyConfiguration))));
@@ -49,11 +49,11 @@ public final class YamlMCPConfigurationSwapper implements YamlConfigurationSwapp
     }
     
     @Override
-    public MCPLaunchConfiguration swapToObject(final YamlMCPConfiguration yamlConfig) {
-        YamlMCPConfiguration actualYamlConfig = null == yamlConfig ? new YamlMCPConfiguration() : yamlConfig;
+    public MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
+        YamlMCPLaunchConfiguration actualYamlConfig = null == yamlConfig ? new YamlMCPLaunchConfiguration() : yamlConfig;
         TransportConfiguration transportConfig = transportConfigSwapper.swapToObject(actualYamlConfig.getTransport());
         RuntimeConfiguration runtimeConfig = runtimeConfigSwapper.swapToObject(actualYamlConfig.getRuntime());
-        return new MCPLaunchConfiguration(serverConfigSwapper.swapToObject(actualYamlConfig.getServer()),
+        return new MCPLaunchConfiguration(httpServerConfigSwapper.swapToObject(actualYamlConfig.getServer()),
                 transportConfig.isHttpEnabled(), transportConfig.isStdioEnabled(), runtimeConfig.getProps(), runtimeConfig.getTopologyConfiguration());
     }
     

@@ -22,11 +22,15 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * YAML transport switch configuration.
+ * YAML MCP launch configuration.
  */
 @Getter
 @Setter
-public final class YamlTransportSwitch implements YamlConfiguration {
+public final class YamlMCPLaunchConfiguration implements YamlConfiguration {
     
-    private Boolean enabled;
+    private YamlHttpServerConfiguration server = new YamlHttpServerConfiguration();
+    
+    private YamlTransportConfiguration transport = new YamlTransportConfiguration();
+    
+    private YamlRuntimeConfiguration runtime = new YamlRuntimeConfiguration();
 }

@@ -18,20 +18,20 @@
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpServerConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class YamlServerConfigurationSwapperTest {
+class YamlHttpServerConfigurationSwapperTest {
     
-    private final YamlServerConfigurationSwapper swapper = new YamlServerConfigurationSwapper();
+    private final YamlHttpServerConfigurationSwapper swapper = new YamlHttpServerConfigurationSwapper();
     
     @Test
     void assertSwapToObjectWithDefaults() {
-        HttpServerConfiguration actual = swapper.swapToObject(new YamlServerConfiguration());
+        HttpServerConfiguration actual = swapper.swapToObject(new YamlHttpServerConfiguration());
         
         assertThat(actual.getBindHost(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(18088));
@@ -40,7 +40,7 @@ class YamlServerConfigurationSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        YamlServerConfiguration yamlConfig = new YamlServerConfiguration();
+        YamlHttpServerConfiguration yamlConfig = new YamlHttpServerConfiguration();
         yamlConfig.setBindHost("0.0.0.0");
         yamlConfig.setPort(9090);
         yamlConfig.setEndpointPath("gateway");
@@ -54,7 +54,7 @@ class YamlServerConfigurationSwapperTest {
     
     @Test
     void assertSwapToObjectWithNegativePort() {
-        YamlServerConfiguration yamlConfig = new YamlServerConfiguration();
+        YamlHttpServerConfiguration yamlConfig = new YamlHttpServerConfiguration();
         yamlConfig.setPort(-1);
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
@@ -64,7 +64,7 @@ class YamlServerConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        YamlServerConfiguration actual = swapper.swapToYamlConfiguration(new HttpServerConfiguration("0.0.0.0", 9090, "/gateway"));
+        YamlHttpServerConfiguration actual = swapper.swapToYamlConfiguration(new HttpServerConfiguration("0.0.0.0", 9090, "/gateway"));
         
         assertThat(actual.getBindHost(), is("0.0.0.0"));
         assertThat(actual.getPort(), is(9090));

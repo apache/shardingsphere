@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlTransportSwitch;
 
 /**
  * YAML transport configuration swapper.
@@ -30,22 +29,15 @@ public final class YamlTransportConfigurationSwapper implements YamlConfiguratio
     @Override
     public YamlTransportConfiguration swapToYamlConfiguration(final TransportConfiguration data) {
         YamlTransportConfiguration result = new YamlTransportConfiguration();
-        result.setHttp(createSwitch(data.isHttpEnabled()));
-        result.setStdio(createSwitch(data.isStdioEnabled()));
+        result.setHttpEnabled(data.isHttpEnabled());
+        result.setStdioEnabled(data.isStdioEnabled());
         return result;
     }
     
     @Override
     public TransportConfiguration swapToObject(final YamlTransportConfiguration yamlConfig) {
         YamlTransportConfiguration actualYamlConfig = null == yamlConfig ? new YamlTransportConfiguration() : yamlConfig;
-        return new TransportConfiguration(resolveEnabled(null == actualYamlConfig.getHttp() ? null : actualYamlConfig.getHttp().getEnabled()),
-                resolveEnabled(null == actualYamlConfig.getStdio() ? null : actualYamlConfig.getStdio().getEnabled()));
-    }
-    
-    private YamlTransportSwitch createSwitch(final boolean enabled) {
-        YamlTransportSwitch result = new YamlTransportSwitch();
-        result.setEnabled(enabled);
-        return result;
+        return new TransportConfiguration(resolveEnabled(actualYamlConfig.getHttpEnabled()), resolveEnabled(actualYamlConfig.getStdioEnabled()));
     }
     
     private boolean resolveEnabled(final Boolean enabled) {

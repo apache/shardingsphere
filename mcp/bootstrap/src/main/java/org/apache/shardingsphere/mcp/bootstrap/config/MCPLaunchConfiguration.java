@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -57,9 +58,8 @@ public final class MCPLaunchConfiguration {
         this.stdioEnabled = stdioEnabled;
         this.runtimeProps = Objects.requireNonNull(runtimeProps, "runtimeProps cannot be null");
         this.runtimeTopologyConfiguration = Objects.requireNonNull(runtimeTopologyConfiguration, "runtimeTopologyConfiguration cannot be null");
-        if (!runtimeProps.isEmpty() && runtimeTopologyConfiguration.isConfigured()) {
-            throw new IllegalArgumentException("MCP runtime properties and runtime databases cannot be configured together.");
-        }
+        ShardingSpherePreconditions.checkState(runtimeProps.isEmpty() || !runtimeTopologyConfiguration.isConfigured(),
+                () -> new IllegalArgumentException("MCP runtime properties and runtime databases cannot be configured together."));
     }
     
     /**
