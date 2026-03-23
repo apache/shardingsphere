@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.encrypt.checker.sql.projection;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.encrypt.enums.EncryptColumnItemType;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
@@ -118,10 +119,10 @@ class EncryptSelectProjectionSupportedCheckerTest {
     
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
-        when(result.findQueryEncryptor("foo_tbl", "foo_col_1")).thenReturn(Optional.empty());
-        when(result.findQueryEncryptor("foo_tbl", "foo_col_2")).thenReturn(Optional.empty());
-        when(result.findQueryEncryptor("bar_tbl", "bar_col_1")).thenReturn(Optional.empty());
-        when(result.findQueryEncryptor("bar_tbl", "bar_col_2")).thenReturn(Optional.empty());
+        when(result.findEncryptor("foo_tbl", "foo_col_1", EncryptColumnItemType.CIPHER)).thenReturn(Optional.empty());
+        when(result.findEncryptor("foo_tbl", "foo_col_2", EncryptColumnItemType.CIPHER)).thenReturn(Optional.empty());
+        when(result.findEncryptor("bar_tbl", "bar_col_1", EncryptColumnItemType.CIPHER)).thenReturn(Optional.empty());
+        when(result.findEncryptor("bar_tbl", "bar_col_2", EncryptColumnItemType.CIPHER)).thenReturn(Optional.empty());
         return result;
     }
 }

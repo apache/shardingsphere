@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.QuantifySubqueryExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.RowExpression;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
@@ -94,9 +95,9 @@ public final class SubqueryNestedInBinaryOperationEncryptorChecker {
     }
     
     private static List<ColumnSegmentBoundInfo> getSubqueryColumnBoundInfos(final ExpressionSegment expression, final int expectedSize) {
-        ShardingSpherePreconditions.checkState(expression instanceof SubqueryExpressionSegment || expression instanceof SubquerySegment,
-                () -> new UnsupportedSQLOperationException(String.format("only support subquery expression or subquery segment, but got %s", expression.getClass().getName())));
-        SubquerySegment subquerySegment = expression instanceof SubquerySegment ? (SubquerySegment) expression : ((SubqueryExpressionSegment) expression).getSubquery();
+        ShardingSpherePreconditions.checkState(isSubquerySegment(expression),
+                () -> new UnsupportedSQLOperationException(String.format("only support subquery segment, but got %s", expression.getClass().getName())));
+        SubquerySegment subquerySegment = getSubquerySegment(expression);
         Collection<ProjectionSegment> projections = subquerySegment.getSelect().getProjections().getProjections();
         ShardingSpherePreconditions.checkState(projections.size() == expectedSize,
                 () -> new UnsupportedSQLOperationException(String.format("Subquery column count %d does not match row expression column count %d", projections.size(), expectedSize)));
@@ -109,10 +110,17 @@ public final class SubqueryNestedInBinaryOperationEncryptorChecker {
         return result;
     }
     
+    private static SubquerySegment getSubquerySegment(final ExpressionSegment expression) {
+        if (expression instanceof SubquerySegment) {
+            return (SubquerySegment) expression;
+        }
+        return expression instanceof QuantifySubqueryExpression ? ((QuantifySubqueryExpression) expression).getSubquery() : ((SubqueryExpressionSegment) expression).getSubquery();
+    }
+    
     private static ColumnSegmentBoundInfo getSubqueryColumnBoundInfo(final ExpressionSegment expression) {
-        ShardingSpherePreconditions.checkState(expression instanceof SubqueryExpressionSegment || expression instanceof SubquerySegment,
-                () -> new UnsupportedSQLOperationException(String.format("only support subquery expression or subquery segment, but got %s", expression.getClass().getName())));
-        SubquerySegment subquerySegment = expression instanceof SubquerySegment ? (SubquerySegment) expression : ((SubqueryExpressionSegment) expression).getSubquery();
+        ShardingSpherePreconditions.checkState(isSubquerySegment(expression),
+                () -> new UnsupportedSQLOperationException(String.format("only support subquery segment, but got %s", expression.getClass().getName())));
+        SubquerySegment subquerySegment = getSubquerySegment(expression);
         ProjectionSegment projection = subquerySegment.getSelect().getProjections().getProjections().iterator().next();
         return projection instanceof ColumnProjectionSegment
                 ? ((ColumnProjectionSegment) projection).getColumn().getColumnBoundInfo()
@@ -120,11 +128,15 @@ public final class SubqueryNestedInBinaryOperationEncryptorChecker {
     }
     
     private static boolean isNotColumnAndSubquery(final ExpressionSegment expression) {
-        return !(expression instanceof ColumnSegment) && !(expression instanceof RowExpression) && !(expression instanceof SubqueryExpressionSegment) && !(expression instanceof SubquerySegment);
+        return !(expression instanceof ColumnSegment) && !(expression instanceof RowExpression) && !isSubquerySegment(expression);
+    }
+    
+    private static boolean isSubquerySegment(final ExpressionSegment expression) {
+        return expression instanceof SubqueryExpressionSegment || expression instanceof SubquerySegment || expression instanceof QuantifySubqueryExpression;
     }
     
     private static void checkEncryptorIsSame(final ColumnSegmentBoundInfo leftColumnInfo, final ColumnSegmentBoundInfo rightColumnInfo, final EncryptRule encryptRule, final String scenario) {
-        if (EncryptorComparator.isSame(encryptRule, leftColumnInfo, rightColumnInfo)) {
+        if (EncryptorComparator.isEquivalentFilterSame(encryptRule, leftColumnInfo, rightColumnInfo)) {
             return;
         }
         String reason = "Can not use different encryptor for " + leftColumnInfo + " and " + rightColumnInfo + " in " + scenario;
