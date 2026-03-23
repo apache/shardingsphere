@@ -57,7 +57,7 @@ class ProductionRuntimeLoaderTest {
     void assertLoadWithoutRuntimeProps() {
         ProductionRuntimeLoader productionRuntimeLoader = new ProductionRuntimeLoader();
         IllegalStateException actual = assertThrows(IllegalStateException.class,
-                () -> productionRuntimeLoader.load(new RuntimeConfiguration(new ServerConfiguration("127.0.0.1", 0, "/mcp"), true, false)));
+                () -> productionRuntimeLoader.load(new RuntimeConfiguration(new ServerConfiguration("127.0.0.1", 0, "/mcp"), true, false, new  Properties())));
         assertThat(actual.getMessage(), is("MCP runtime properties are required for the default launch path."));
     }
     

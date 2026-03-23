@@ -36,7 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -60,11 +59,8 @@ public final class MCPConfigurationLoader {
      */
     public static RuntimeConfiguration load(final String configPath) throws IOException {
         File configFile = resolveConfigurationFile(configPath);
-        String yamlContent = Files.readString(configFile.toPath());
-        YamlMCPConfiguration yamlConfig = YamlEngine.unmarshal(yamlContent, YamlMCPConfiguration.class, true);
-        Optional<Properties> runtimeProps = resolveRuntimeProps(yamlConfig);
-        return runtimeProps.map(optional -> new RuntimeConfiguration(resolveServerConfiguration(yamlConfig), resolveHttpEnabled(yamlConfig), resolveStdioEnabled(yamlConfig), optional))
-                .orElseGet(() -> new RuntimeConfiguration(resolveServerConfiguration(yamlConfig), resolveHttpEnabled(yamlConfig), resolveStdioEnabled(yamlConfig)));
+        YamlMCPConfiguration yamlConfig = YamlEngine.unmarshal(Files.readString(configFile.toPath()), YamlMCPConfiguration.class, true);
+        return new RuntimeConfiguration(resolveServerConfiguration(yamlConfig), resolveHttpEnabled(yamlConfig), resolveStdioEnabled(yamlConfig), resolveRuntimeProps(yamlConfig));
     }
     
     private static File resolveConfigurationFile(final String configPath) throws FileNotFoundException {
@@ -85,6 +81,15 @@ public final class MCPConfigurationLoader {
         throw new FileNotFoundException(String.format("MCP configuration file `%s` does not exist.", actualConfigPath));
     }
     
+    private static Properties resolveRuntimeProps(final YamlMCPConfiguration yamlConfig) {
+        YamlRuntimeConfiguration runtimeConfiguration = yamlConfig.getRuntime();
+        Properties result = new Properties();
+        for (Entry<String, String> entry : runtimeConfiguration.getProps().entrySet()) {
+            result.setProperty(entry.getKey(), null == entry.getValue() ? "" : entry.getValue());
+        }
+        return result;
+    }
+    
     private static boolean resolveHttpEnabled(final YamlMCPConfiguration yamlConfig) {
         return null == yamlConfig.getTransport().getHttp().getEnabled() || yamlConfig.getTransport().getHttp().getEnabled();
     }
@@ -97,15 +102,6 @@ public final class MCPConfigurationLoader {
         String bindHost = normalizeText(yamlConfig.getServer().getBindHost());
         String endpointPath = normalizeText(yamlConfig.getServer().getEndpointPath());
         return new ServerConfiguration(bindHost.isEmpty() ? DEFAULT_BIND_HOST : bindHost, resolvePort(yamlConfig), endpointPath.isEmpty() ? DEFAULT_ENDPOINT_PATH : normalizePath(endpointPath));
-    }
-    
-    private static Optional<Properties> resolveRuntimeProps(final YamlMCPConfiguration yamlConfig) {
-        YamlRuntimeConfiguration runtimeConfiguration = yamlConfig.getRuntime();
-        Properties props = new Properties();
-        for (Entry<String, String> entry : runtimeConfiguration.getProps().entrySet()) {
-            props.setProperty(entry.getKey(), null == entry.getValue() ? "" : entry.getValue());
-        }
-        return props.isEmpty() ? Optional.empty() : Optional.of(props);
     }
     
     private static int resolvePort(final YamlMCPConfiguration yamlConfig) {

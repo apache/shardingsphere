@@ -156,25 +156,10 @@ public final class MCPRuntimeLauncher {
         private final boolean stdioEnabled;
         
         @Getter(AccessLevel.NONE)
-        private final boolean runtimePropsConfigured;
-        
-        @Getter(AccessLevel.NONE)
         private final Properties runtimeProps;
         
-        /**
-         * Construct one runtime configuration.
-         *
-         * @param serverConfiguration server configuration
-         * @param httpEnabled HTTP enablement
-         * @param stdioEnabled STDIO enablement
-         */
-        public RuntimeConfiguration(final ServerConfiguration serverConfiguration, final boolean httpEnabled, final boolean stdioEnabled) {
-            this.serverConfiguration = Objects.requireNonNull(serverConfiguration, "serverConfiguration cannot be null");
-            this.httpEnabled = httpEnabled;
-            this.stdioEnabled = stdioEnabled;
-            runtimePropsConfigured = false;
-            runtimeProps = new Properties();
-        }
+        @Getter(AccessLevel.NONE)
+        private final boolean runtimePropsConfigured;
         
         /**
          * Construct one runtime configuration with one explicit runtime property set.
@@ -184,13 +169,12 @@ public final class MCPRuntimeLauncher {
          * @param stdioEnabled STDIO enablement
          * @param runtimeProps runtime properties
          */
-        public RuntimeConfiguration(final ServerConfiguration serverConfiguration, final boolean httpEnabled, final boolean stdioEnabled,
-                                    final Properties runtimeProps) {
+        public RuntimeConfiguration(final ServerConfiguration serverConfiguration, final boolean httpEnabled, final boolean stdioEnabled, final Properties runtimeProps) {
             this.serverConfiguration = Objects.requireNonNull(serverConfiguration, "serverConfiguration cannot be null");
             this.httpEnabled = httpEnabled;
             this.stdioEnabled = stdioEnabled;
-            runtimePropsConfigured = true;
             this.runtimeProps = copyProperties(runtimeProps);
+            runtimePropsConfigured = !runtimeProps.isEmpty();
         }
         
         /**

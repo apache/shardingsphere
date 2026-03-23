@@ -19,12 +19,12 @@ package org.apache.shardingsphere.test.e2e.mcp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.LaunchState;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher.RuntimeConfiguration.ServerConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerContext;
-import org.apache.shardingsphere.mcp.bootstrap.wiring.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade.QueryResult;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse.ColumnDefinition;
@@ -39,11 +39,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Map.Entry;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -215,7 +216,7 @@ abstract class AbstractMCPE2ETest {
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPServerContext serverContext = new MCPServerContext(sessionManager);
         MCPRuntimeContext runtimeContext = createRuntimeContext(sessionManager);
-        RuntimeConfiguration runtimeConfiguration = new RuntimeConfiguration(new ServerConfiguration("127.0.0.1", 0, ENDPOINT_PATH), true, false);
+        RuntimeConfiguration runtimeConfiguration = new RuntimeConfiguration(new ServerConfiguration("127.0.0.1", 0, ENDPOINT_PATH), true, false, new Properties());
         launchState = new MCPRuntimeLauncher().launch(serverContext, runtimeContext, runtimeConfiguration, createMetadataCatalog(), createDatabaseRuntime());
         return launchState;
     }

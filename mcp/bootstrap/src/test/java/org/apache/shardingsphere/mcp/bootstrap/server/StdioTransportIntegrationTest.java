@@ -131,7 +131,7 @@ class StdioTransportIntegrationTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new RuntimeConfiguration(new ServerConfiguration("127.0.0.1", 0, "/mcp"), false, false)));
+                () -> runtimeLauncher.launch(new RuntimeConfiguration(new ServerConfiguration("127.0.0.1", 0, "/mcp"), false, false, new  Properties())));
         
         assertThat(actual.getMessage(), is("At least one transport must be enabled."));
     }
