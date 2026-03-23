@@ -31,7 +31,7 @@ import java.util.Properties;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DistributedLockHolder {
-
+    
     /**
      * Get distributed lock.
      *
