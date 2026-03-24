@@ -35,7 +35,6 @@ public final class YamlStdioTransportConfigurationSwapper implements YamlConfigu
     
     @Override
     public StdioTransportConfiguration swapToObject(final YamlStdioTransportConfiguration yamlConfig) {
-        YamlStdioTransportConfiguration actualYamlConfig = null == yamlConfig ? new YamlStdioTransportConfiguration() : yamlConfig;
-        return new StdioTransportConfiguration(actualYamlConfig.isEnabled());
+        return null == yamlConfig ? new StdioTransportConfiguration() : new StdioTransportConfiguration(yamlConfig.isEnabled());
     }
 }

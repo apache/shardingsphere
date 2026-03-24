@@ -46,10 +46,7 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
     RuntimeDatabaseConfiguration swapToObject(final String databaseName, final YamlRuntimeDatabaseConfiguration yamlConfig) {
         YamlRuntimeDatabaseConfiguration actualYamlConfig = null == yamlConfig ? new YamlRuntimeDatabaseConfiguration() : yamlConfig;
         return new RuntimeDatabaseConfiguration(resolveRequiredText(actualYamlConfig.getDatabaseType(), "databaseType", databaseName),
-                resolveRequiredText(actualYamlConfig.getJdbcUrl(), "jdbcUrl", databaseName),
-                resolveText(actualYamlConfig.getUsername()),
-                resolveText(actualYamlConfig.getPassword()),
-                resolveText(actualYamlConfig.getDriverClassName()));
+                resolveRequiredText(actualYamlConfig.getJdbcUrl(), "jdbcUrl", databaseName), normalizeText(actualYamlConfig.getUsername()), normalizeText(actualYamlConfig.getPassword()), normalizeText(actualYamlConfig.getDriverClassName()));
     }
     
     private String resolveRequiredText(final String value, final String fieldName, final String databaseName) {
@@ -59,17 +56,13 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
         return result;
     }
     
-    private String resolveText(final String value) {
-        String result = normalizeText(value);
-        return result;
-    }
-    
     private String normalizeText(final Object value) {
         return null == value ? "" : String.valueOf(value).trim();
     }
     
     private String formatRequiredMessage(final String databaseName, final String fieldName) {
-        return databaseName.isEmpty() ? String.format("Runtime database property `%s` is required.", fieldName)
+        return databaseName.isEmpty()
+                ? String.format("Runtime database property `%s` is required.", fieldName)
                 : String.format("Runtime database `%s` property `%s` is required.", databaseName, fieldName);
     }
 }

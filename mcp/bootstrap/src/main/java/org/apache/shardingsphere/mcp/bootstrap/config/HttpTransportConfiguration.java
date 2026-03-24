@@ -34,4 +34,8 @@ public final class HttpTransportConfiguration {
     private final int port;
     
     private final String endpointPath;
+    
+    public HttpTransportConfiguration() {
+        this(false, "", -1, "");
+    }
 }
