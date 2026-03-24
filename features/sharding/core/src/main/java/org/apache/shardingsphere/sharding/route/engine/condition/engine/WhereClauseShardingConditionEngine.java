@@ -46,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SafeNumberOperationUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 
 import java.util.ArrayList;
@@ -115,9 +116,9 @@ public final class WhereClauseShardingConditionEngine {
                 if (!shardingColumn.isPresent()) {
                     continue;
                 }
-                String schemaName = columnSegment.getColumnBoundInfo().getOriginalSchema().getValue();
-                ShardingSpherePreconditions.checkState(database.containsSchema(schemaName), () -> new SchemaNotFoundException(schemaName));
-                ShardingSphereSchema schema = database.getSchema(schemaName);
+                IdentifierValue originalSchema = columnSegment.getColumnBoundInfo().getOriginalSchema();
+                ShardingSpherePreconditions.checkState(database.containsSchema(originalSchema), () -> new SchemaNotFoundException(originalSchema.getValue()));
+                ShardingSphereSchema schema = database.getSchema(originalSchema);
                 ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
                 HashColumn column = new HashColumn(shardingColumn.get(), tableName, schema.getTable(tableName).getColumn(shardingColumn.get()).isCaseSensitive());
                 Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, params, timestampServiceRule);
