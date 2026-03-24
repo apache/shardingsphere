@@ -39,6 +39,7 @@ import java.util.Collections;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,10 +61,11 @@ class CommentStatementBinderTest {
     
     @Test
     void assertBindWithTable() {
+        IdentifierValue databaseName = new IdentifierValue("foo_db_1");
         when(metaData.containsDatabase("foo_db_1")).thenReturn(true);
-        when(metaData.getDatabase("foo_db_1")).thenReturn(database);
-        when(database.containsSchema("foo_db_1")).thenReturn(true);
-        when(database.getSchema("foo_db_1")).thenReturn(schema);
+        when(metaData.getDatabase(eq(databaseName))).thenReturn(database);
+        when(database.containsSchema(eq(databaseName))).thenReturn(true);
+        when(database.getSchema(eq(databaseName))).thenReturn(schema);
         when(schema.containsTable("t_order")).thenReturn(true);
         when(schema.getTable("t_order")).thenReturn(table);
         when(table.getAllColumns()).thenReturn(Collections.emptyList());
@@ -90,10 +92,11 @@ class CommentStatementBinderTest {
     
     @Test
     void assertBindWithColumn() {
+        IdentifierValue databaseName = new IdentifierValue("foo_db_1");
         when(metaData.containsDatabase("foo_db_1")).thenReturn(true);
-        when(metaData.getDatabase("foo_db_1")).thenReturn(database);
-        when(database.containsSchema("foo_db_1")).thenReturn(true);
-        when(database.getSchema("foo_db_1")).thenReturn(schema);
+        when(metaData.getDatabase(eq(databaseName))).thenReturn(database);
+        when(database.containsSchema(eq(databaseName))).thenReturn(true);
+        when(database.getSchema(eq(databaseName))).thenReturn(schema);
         when(schema.containsTable("t_order")).thenReturn(true);
         when(schema.getTable("t_order")).thenReturn(table);
         when(table.getAllColumns()).thenReturn(Collections.emptyList());
