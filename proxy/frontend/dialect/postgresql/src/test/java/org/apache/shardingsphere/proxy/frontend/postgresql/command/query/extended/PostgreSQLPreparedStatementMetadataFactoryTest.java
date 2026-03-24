@@ -42,6 +42,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -134,18 +135,21 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(result.getMetaDataContexts().getMetaData().containsDatabase("postgres")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres").getProtocolType()).thenReturn(databaseType);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getProtocolType()).thenReturn(databaseType);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getStorageType()).thenReturn(databaseType);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres").getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres").containsSchema("public")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres").getSchema("public")).thenReturn(schema);
+        when(database.containsSchema(any(IdentifierValue.class))).thenReturn(true);
+        when(database.getSchema("public")).thenReturn(schema);
+        when(database.getSchema(any(IdentifierValue.class))).thenReturn(schema);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singletonList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
         when(schema.containsTable("foo_tbl")).thenReturn(true);
         when(schema.getTable("foo_tbl")).thenReturn(table);
-        ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase("postgres");
+        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres")).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(any(IdentifierValue.class))).thenReturn(database);
         when(result.getDatabase("postgres")).thenReturn(database);
         return result;
     }
