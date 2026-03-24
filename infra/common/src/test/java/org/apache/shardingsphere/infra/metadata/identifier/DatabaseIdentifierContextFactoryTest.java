@@ -59,6 +59,8 @@ class DatabaseIdentifierContextFactoryTest {
     
     private static final DatabaseType MYSQL_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
+    private static final DatabaseType ORACLE_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
     @Test
     void assertCreateDefault() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
@@ -130,6 +132,24 @@ class DatabaseIdentifierContextFactoryTest {
         IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
         assertTrue(actualSchemaRule.matches("test_db", "TEST_DB", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertCreateUsesInsensitiveRuleForDatabaseScope() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(ORACLE_DATABASE_TYPE,
+                createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE));
+        IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.DATABASE);
+        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
+        assertTrue(actualRule.matches("foo_db", "FOO_DB", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertRefreshUsesInsensitiveRuleForDatabaseScope() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, ORACLE_DATABASE_TYPE, createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE));
+        IdentifierCaseRule actualRule = actual.getRule(IdentifierScope.DATABASE);
+        assertThat(actualRule.getLookupMode(QuoteCharacter.NONE), is(LookupMode.NORMALIZED));
+        assertTrue(actualRule.matches("foo_db", "FOO_DB", QuoteCharacter.NONE));
     }
     
     private static Stream<Arguments> createWithProtocolTypeAndPropsArguments() {
