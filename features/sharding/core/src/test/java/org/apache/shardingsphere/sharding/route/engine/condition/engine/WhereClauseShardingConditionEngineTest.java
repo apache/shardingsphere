@@ -79,8 +79,8 @@ class WhereClauseShardingConditionEngineTest {
     void setUp() {
         shardingConditionEngine = new WhereClauseShardingConditionEngine(database, rule, mock(TimestampServiceRule.class));
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
-        when(database.containsSchema("")).thenReturn(true);
-        when(database.getSchema("")).thenReturn(schema);
+        when(database.containsSchema(new IdentifierValue(""))).thenReturn(true);
+        when(database.getSchema(new IdentifierValue(""))).thenReturn(schema);
         when(schema.containsTable("")).thenReturn(true);
         when(schema.getTable("")).thenReturn(table);
         when(table.getColumn("foo_sharding_col")).thenReturn(mock(ShardingSphereColumn.class));
