@@ -162,12 +162,18 @@ public final class IndexMetaDataUtils {
      * @return matched logic index name
      */
     public static Optional<String> findGeneratedLogicIndexName(final String actualIndexName, final String actualTableName, final Collection<String> candidateLogicIndexNames) {
-        String generatedLogicIndexName = getGeneratedLogicIndexName(actualIndexName, actualTableName);
-        if (!isTruncatedGeneratedActualIndexName(actualIndexName) && !generatedLogicIndexName.equals(actualIndexName) || candidateLogicIndexNames.contains(generatedLogicIndexName)) {
-            return Optional.of(generatedLogicIndexName);
+        if (candidateLogicIndexNames.contains(actualIndexName)) {
+            return Optional.of(actualIndexName);
         }
         Optional<String> result = candidateLogicIndexNames.stream().filter(each -> isGeneratedActualIndexNameMatch(actualIndexName, each, actualTableName)).findFirst();
-        return result.isPresent() ? result : Optional.of(generatedLogicIndexName);
+        if (result.isPresent()) {
+            return result;
+        }
+        String generatedLogicIndexName = getGeneratedLogicIndexName(actualIndexName, actualTableName);
+        if (isProvablyGeneratedActualIndexName(actualIndexName, generatedLogicIndexName, actualTableName)) {
+            return Optional.of(generatedLogicIndexName);
+        }
+        return Optional.of(actualIndexName);
     }
     
     /**
@@ -264,8 +270,10 @@ public final class IndexMetaDataUtils {
         return actualPrefix.equals(truncateToUtf8Bytes(logicIndexName, getUtf8Length(actualPrefix)));
     }
     
-    private static boolean isTruncatedGeneratedActualIndexName(final String actualIndexName) {
-        return TRUNCATED_INDEX_NAME_SUFFIX_PATTERN.matcher(actualIndexName).find();
+    private static boolean isProvablyGeneratedActualIndexName(final String actualIndexName, final String generatedLogicIndexName, final String actualTableName) {
+        return !generatedLogicIndexName.equals(actualIndexName) && (getLegacyActualIndexName(generatedLogicIndexName, actualTableName).equals(actualIndexName)
+                || getShortenedActualIndexName(generatedLogicIndexName, actualTableName).equals(actualIndexName)
+                || (generatedLogicIndexName + getHashedActualIndexNameSuffix(generatedLogicIndexName, actualTableName)).equals(actualIndexName));
     }
     
     private static int getIndexNameMaxLength(final DatabaseType databaseType) {

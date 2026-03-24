@@ -139,6 +139,30 @@ class IndexMetaDataUtilsTest {
     }
     
     @Test
+    void assertFindGeneratedLogicIndexNameKeepsExactCandidateWithHashLikeSuffix() {
+        assertThat(IndexMetaDataUtils.findGeneratedLogicIndexName("foo_h12345678", "t_account_0", Collections.singleton("foo_h12345678")).orElse(""),
+                is("foo_h12345678"));
+    }
+    
+    @Test
+    void assertFindGeneratedLogicIndexNameKeepsExactCandidateWithTruncationLikeSuffix() {
+        assertThat(IndexMetaDataUtils.findGeneratedLogicIndexName("foo_t12345678", "t_account_0", Collections.singleton("foo_t12345678")).orElse(""),
+                is("foo_t12345678"));
+    }
+    
+    @Test
+    void assertFindGeneratedLogicIndexNameKeepsUnprovableHashLikeSuffixWithoutCandidate() {
+        assertThat(IndexMetaDataUtils.findGeneratedLogicIndexName("foo_h12345678", "t_account_0", Collections.emptyList()).orElse(""),
+                is("foo_h12345678"));
+    }
+    
+    @Test
+    void assertFindGeneratedLogicIndexNameKeepsUnprovableTruncationLikeSuffixWithoutCandidate() {
+        assertThat(IndexMetaDataUtils.findGeneratedLogicIndexName("foo_t12345678", "t_account_0", Collections.emptyList()).orElse(""),
+                is("foo_t12345678"));
+    }
+    
+    @Test
     void assertGetTableNames() {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("foo_idx")));
         Collection<QualifiedTable> actual = IndexMetaDataUtils.getTableNames(buildDatabase(), fixtureDatabaseType, Collections.singleton(indexSegment));
