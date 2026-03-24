@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 import org.yaml.snakeyaml.Yaml;
@@ -36,6 +36,8 @@ import java.util.Map.Entry;
  * YAML MCP launch configuration swapper.
  */
 public final class YamlMCPLaunchConfigurationSwapper implements YamlConfigurationSwapper<YamlMCPLaunchConfiguration, MCPLaunchConfiguration> {
+    
+    private static final String TRANSPORT_VALIDATION_ERROR_MESSAGE = "At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true.";
     
     private final YamlMCPTransportConfigurationSwapper transportConfigSwapper = new YamlMCPTransportConfigurationSwapper();
     
@@ -66,6 +68,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     public MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
         YamlMCPLaunchConfiguration actualYamlConfig = null == yamlConfig ? new YamlMCPLaunchConfiguration() : yamlConfig;
         MCPTransportConfiguration transportConfig = transportConfigSwapper.swapToObject(actualYamlConfig.getTransport());
+        validateTransportConfiguration(transportConfig);
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = swapToRuntimeDatabases(actualYamlConfig.getRuntimeDatabases());
         return new MCPLaunchConfiguration(transportConfig, runtimeDatabases);
     }
@@ -111,6 +114,12 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
                 throw new IllegalArgumentException(String.format(
                         "Legacy capability booleans are no longer supported for runtime database `%s`. Capabilities are derived automatically.", entry.getKey()));
             }
+        }
+    }
+    
+    private void validateTransportConfiguration(final MCPTransportConfiguration transportConfig) {
+        if (!transportConfig.hasEnabledTransport()) {
+            throw new IllegalArgumentException(TRANSPORT_VALIDATION_ERROR_MESSAGE);
         }
     }
     

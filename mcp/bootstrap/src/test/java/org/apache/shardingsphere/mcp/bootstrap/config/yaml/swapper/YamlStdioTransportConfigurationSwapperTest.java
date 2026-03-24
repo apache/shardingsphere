@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlStdioTrans
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlStdioTransportConfigurationSwapperTest {
     
@@ -32,7 +31,7 @@ class YamlStdioTransportConfigurationSwapperTest {
     void assertSwapToObjectWithDefaults() {
         StdioTransportConfiguration actual = swapper.swapToObject(new YamlStdioTransportConfiguration());
         
-        assertTrue(actual.isEnabled());
+        assertFalse(actual.isEnabled());
     }
     
     @Test

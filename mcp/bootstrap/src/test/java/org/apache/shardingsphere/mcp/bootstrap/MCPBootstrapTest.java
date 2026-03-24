@@ -49,6 +49,8 @@ class MCPBootstrapTest {
         Files.writeString(result, "transport:\n"
                 + "  http:\n"
                 + "    enabled: false\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
                 + "runtimeDatabases:\n"
                 + "  orders:\n"
                 + "    databaseType: H2\n"

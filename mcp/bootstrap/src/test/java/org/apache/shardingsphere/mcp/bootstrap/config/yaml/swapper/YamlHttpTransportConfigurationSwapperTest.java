@@ -34,7 +34,7 @@ class YamlHttpTransportConfigurationSwapperTest {
     void assertSwapToObjectWithDefaults() {
         HttpTransportConfiguration actual = swapper.swapToObject(new YamlHttpTransportConfiguration());
         
-        assertTrue(actual.isEnabled());
+        assertFalse(actual.isEnabled());
         assertThat(actual.getPort(), is(18088));
     }
     
@@ -53,6 +53,7 @@ class YamlHttpTransportConfigurationSwapperTest {
     @Test
     void assertSwapToObjectWithZeroPort() {
         YamlHttpTransportConfiguration yamlConfig = new YamlHttpTransportConfiguration();
+        yamlConfig.setEnabled(true);
         yamlConfig.setPort(0);
         
         HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig);

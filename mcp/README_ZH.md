@@ -41,14 +41,15 @@ bin/start.sh
 
 - `bin/start.sh` 会以前台方式运行。请保持这个终端不退出，并在第二个终端执行下面的 `curl` 命令。
 - 发行包运行时会读取 `conf/mcp.yaml` 和 `conf/logback.xml`。
-- 默认 HTTP 端点是 `http://127.0.0.1:18088/mcp`。
+- 启用 HTTP 时，默认端点是 `http://127.0.0.1:18088/mcp`。
 - 日志会写到 `logs/` 目录。
-- 内置 demo runtime 同时启用 HTTP 和 STDIO，这份 quick start 只演示 HTTP 入口。
+- 如果省略 `transport.http.enabled` 或 `transport.stdio.enabled`，默认值都是 `false`。
+- 发行包内置示例配置会显式启用 HTTP 和 STDIO，这份 quick start 只演示 HTTP 入口。
 - `bin/start.sh` 启动前会校验配置文件、运行时依赖和 Java 环境，并自动创建 `data/`、`logs/`、`ext-lib/` 目录，然后切到发行包根目录启动，确保相对路径可用。
 - 如果启动成功，进程会保持前台运行；如果立刻退出，优先查看终端报错和 `logs/mcp.log`。
 - 内置 demo runtime 会暴露两个逻辑库 `orders` 和 `billing`，底层使用发行包自带的 H2 驱动以及 `data/` 下的种子数据。
 
-默认配置如下：
+发行包内置示例配置如下：
 
 ```yaml
 transport:
@@ -197,7 +198,7 @@ bin/start.sh conf/mcp-stdio.yaml
 说明：
 
 - 进程仍然会以前台方式运行。
-- 如果 `transport.http.enabled` 和 `transport.stdio.enabled` 同时为 `false`，启动会因 `At least one transport must be enabled.` 失败。
+- 如果 `transport.http.enabled` 和 `transport.stdio.enabled` 同时为 `false`，或者两个字段都省略，启动会因 "At least one transport must be explicitly enabled. Set transport.http.enabled or transport.stdio.enabled to true." 失败。
 - 默认 `conf/logback.xml` 会把日志写到 stdout 和 `logs/mcp.log`，因此 `bin/start.sh` 目前不是可以直接给外部客户端使用的 JSON-RPC-over-STDIO Shell。
 
 ### 在 Java 中集成
@@ -227,6 +228,7 @@ stdioMCPServer.closeSession(sessionId);
 - 如果要接真实部署，请把 `runtimeDatabases` 段替换成你自己的逻辑库映射和 JDBC 连接属性。每个逻辑库条目都需要显式声明所需的 runtime 字段；schema 发现改为依赖 JDBC metadata，legacy `runtime.*` alias 已不再支持。
 - 对支持 JDBC 4 自动注册的驱动，`driverClassName` 可以不写；只有目标驱动需要显式覆盖时再配置。
 - 如果目标数据库的驱动没有随发行包提供，请先把对应 jar 放到 `ext-lib/`，再执行 `bin/start.sh`。
+- 如果 `transport.http.enabled` 和 `transport.stdio.enabled` 都不写，它们会默认是 `false`，所以至少要显式启用一个 transport。
 - 如果只需要本地 HTTP 调试，保留 `transport.http.enabled: true`，并在不需要 STDIO 时把 `transport.stdio.enabled` 设为 `false`。
 - 如果要做本地进程内集成，保留 `transport.stdio.enabled: true`。发行包会启动同一套 STDIO runtime，但目前不会额外暴露独立的文本 Shell。
 - 如果 HTTP 端点要暴露到 localhost 之外，建议放在受信网络、上游网关或反向代理之后。

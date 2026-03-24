@@ -41,14 +41,15 @@ Notes:
 
 - `bin/start.sh` runs in the foreground. Keep this terminal open and use a second terminal for the `curl` commands below.
 - The packaged runtime reads `conf/mcp.yaml` and `conf/logback.xml`.
-- The default HTTP endpoint is `http://127.0.0.1:18088/mcp`.
+- When HTTP is enabled, the default endpoint is `http://127.0.0.1:18088/mcp`.
 - Logs are written under `logs/`.
-- The packaged demo runtime enables both HTTP and STDIO. This quick start exercises the HTTP endpoint only.
+- If `transport.http.enabled` or `transport.stdio.enabled` is omitted, it defaults to `false`.
+- The packaged sample configuration explicitly enables both HTTP and STDIO. This quick start exercises the HTTP endpoint only.
 - `bin/start.sh` validates the config file, runtime libraries, and Java availability before startup, creates `data/`, `logs/`, and `ext-lib/`, then starts from the package root so relative runtime paths resolve consistently.
 - If startup succeeds, the process stays running in the foreground. If it exits immediately, inspect the terminal error and `logs/mcp.log` first.
 - The bundled demo runtime exposes two logical databases named `orders` and `billing`, both backed by the packaged H2 driver and seed data under `data/`.
 
-The default configuration is:
+The packaged sample configuration is:
 
 ```yaml
 transport:
@@ -197,7 +198,7 @@ bin/start.sh conf/mcp-stdio.yaml
 Notes:
 
 - The process still runs in the foreground.
-- If both `transport.http.enabled` and `transport.stdio.enabled` are `false`, startup fails with `At least one transport must be enabled.`
+- If both `transport.http.enabled` and `transport.stdio.enabled` are `false`, or both fields are omitted, startup fails with: "At least one transport must be explicitly enabled. Set transport.http.enabled or transport.stdio.enabled to true."
 - The default `conf/logback.xml` writes logs to stdout and `logs/mcp.log`, so `bin/start.sh` is not a ready-made JSON-RPC-over-stdio shell for external clients.
 
 ### Integrate from Java
@@ -227,6 +228,7 @@ Reference:
 - For real deployments, replace the `runtimeDatabases` block with your own logical database mapping and JDBC connection properties. Each logical database entry must declare its own required runtime fields; schema discovery now comes from JDBC metadata, and legacy `runtime.*` aliases are no longer supported.
 - `driverClassName` is optional for JDBC 4 drivers that auto-register through `DriverManager`. Keep it only when your target driver requires an explicit override.
 - If your target database driver is not already packaged, copy the driver jar under `ext-lib/` before running `bin/start.sh`.
+- If `transport.http.enabled` and `transport.stdio.enabled` are both omitted, they default to `false`, so you must explicitly enable at least one transport.
 - For local-only HTTP usage, keep `transport.http.enabled: true` and set `transport.stdio.enabled: false` if you do not need STDIO.
 - For local in-process integration, keep `transport.stdio.enabled: true`. The packaged runtime starts the same STDIO runtime, but it does not expose a separate text shell.
 - If you expose the HTTP endpoint outside localhost, place it behind a trusted network boundary, gateway, or reverse proxy.

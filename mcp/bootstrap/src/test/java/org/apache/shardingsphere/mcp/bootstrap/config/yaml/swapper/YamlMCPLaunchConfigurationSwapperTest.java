@@ -67,14 +67,20 @@ class YamlMCPLaunchConfigurationSwapperTest {
         yamlConfig.setTransport(null);
         yamlConfig.setRuntimeDatabases(null);
         
-        MCPLaunchConfiguration actual = swapper.swapToObject(yamlConfig);
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
         
-        assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));
-        assertThat(actual.getTransport().getHttp().getPort(), is(18088));
-        assertThat(actual.getTransport().getHttp().getEndpointPath(), is("/mcp"));
-        assertTrue(actual.getTransport().getHttp().isEnabled());
-        assertTrue(actual.getTransport().getStdio().isEnabled());
-        assertTrue(actual.getRuntimeDatabases().isEmpty());
+        assertThat(actual.getMessage(), is("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithDisabledTransports() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "  stdio:\n"
+                + "    enabled: false\n"));
+        
+        assertThat(actual.getMessage(), is("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true."));
     }
     
     @Test

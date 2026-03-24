@@ -38,8 +38,8 @@ class YamlMCPTransportConfigurationSwapperTest {
     void assertSwapToObjectWithDefaults() {
         MCPTransportConfiguration actual = swapper.swapToObject(new YamlMCPTransportConfiguration());
         
-        assertTrue(actual.getHttp().isEnabled());
-        assertTrue(actual.getStdio().isEnabled());
+        assertFalse(actual.getHttp().isEnabled());
+        assertFalse(actual.getStdio().isEnabled());
         assertThat(actual.getHttp().getEndpointPath(), is("/mcp"));
     }
     

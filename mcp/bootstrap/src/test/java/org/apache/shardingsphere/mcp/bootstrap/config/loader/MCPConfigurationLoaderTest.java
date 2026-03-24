@@ -62,14 +62,22 @@ class MCPConfigurationLoaderTest {
     void assertLoadWithDefaults() throws IOException {
         Path configFile = createConfigFile("");
         
-        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
         
-        assertTrue(actual.getTransport().getHttp().isEnabled());
-        assertTrue(actual.getTransport().getStdio().isEnabled());
-        assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));
-        assertThat(actual.getTransport().getHttp().getPort(), is(18088));
-        assertThat(actual.getTransport().getHttp().getEndpointPath(), is("/mcp"));
-        assertTrue(actual.getRuntimeDatabases().isEmpty());
+        assertThat(actual.getMessage(), is("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true."));
+    }
+    
+    @Test
+    void assertLoadWithRuntimeDatabasesAndNoTransport() throws IOException {
+        Path configFile = createConfigFile("runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    driverClassName: org.h2.Driver\n");
+        
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
+        
+        assertThat(actual.getMessage(), is("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true."));
     }
     
     @Test
@@ -87,7 +95,10 @@ class MCPConfigurationLoaderTest {
     
     @Test
     void assertLoadWithRuntimeDatabases() throws IOException {
-        Path configFile = createConfigFile("runtimeDatabases:\n"
+        Path configFile = createConfigFile("transport:\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases:\n"
                 + "  logic_db:\n"
                 + "    databaseType: H2\n"
                 + "    jdbcUrl: jdbc:h2:mem:logic\n"

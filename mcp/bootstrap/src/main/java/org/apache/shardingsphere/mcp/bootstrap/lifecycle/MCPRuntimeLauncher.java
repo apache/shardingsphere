@@ -41,6 +41,8 @@ import java.util.Objects;
  */
 public final class MCPRuntimeLauncher {
     
+    private static final String TRANSPORT_VALIDATION_ERROR_MESSAGE = "At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true.";
+    
     private final DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
     
     private final JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
@@ -67,7 +69,7 @@ public final class MCPRuntimeLauncher {
     public MCPLaunchState launch(final MCPServerRegistry serverRegistry, final MCPLaunchConfiguration launchConfiguration) {
         MCPServerRegistry actualServerRegistry = Objects.requireNonNull(serverRegistry, "serverRegistry cannot be null");
         MCPLaunchConfiguration actualLaunchConfiguration = Objects.requireNonNull(launchConfiguration, "launchConfiguration cannot be null");
-        validateTransportConfiguration(actualLaunchConfiguration);
+        validateTransportConfiguration(actualLaunchConfiguration.getTransport());
         Map<String, DatabaseConnectionConfiguration> connectionConfigurations = createConnectionConfigurations(actualLaunchConfiguration);
         MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigurations);
         DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, metadataLoader);
@@ -93,7 +95,7 @@ public final class MCPRuntimeLauncher {
         MCPLaunchConfiguration actualLaunchConfiguration = Objects.requireNonNull(launchConfiguration, "launchConfiguration cannot be null");
         MetadataCatalog actualMetadataCatalog = Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null");
         DatabaseRuntime actualDatabaseRuntime = Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null");
-        validateTransportConfiguration(actualLaunchConfiguration);
+        validateTransportConfiguration(actualLaunchConfiguration.getTransport());
         actualRuntimeServices.registerDefaults(actualServerRegistry);
         StreamableHttpMCPServer httpServer = createHttpServer(actualServerRegistry, actualRuntimeServices, actualLaunchConfiguration, actualMetadataCatalog, actualDatabaseRuntime);
         StdioMCPServer stdioServer = createStdioServer(actualServerRegistry, actualRuntimeServices, actualLaunchConfiguration);
@@ -118,10 +120,9 @@ public final class MCPRuntimeLauncher {
         return new MCPLaunchState(actualServerRegistry, actualRuntimeServices, toTransportList(httpServer), toTransportList(stdioServer));
     }
     
-    private void validateTransportConfiguration(final MCPLaunchConfiguration launchConfiguration) {
-        MCPTransportConfiguration transportConfig = launchConfiguration.getTransport();
-        if (!transportConfig.getHttp().isEnabled() && !transportConfig.getStdio().isEnabled()) {
-            throw new IllegalArgumentException("At least one transport must be enabled.");
+    private void validateTransportConfiguration(final MCPTransportConfiguration transportConfig) {
+        if (!transportConfig.hasEnabledTransport()) {
+            throw new IllegalArgumentException(TRANSPORT_VALIDATION_ERROR_MESSAGE);
         }
     }
     

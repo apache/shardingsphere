@@ -17,26 +17,26 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Test;
 
-/**
- * MCP transport configuration.
- */
-@RequiredArgsConstructor
-@Getter
-public final class MCPTransportConfiguration {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class MCPTransportConfigurationTest {
     
-    private final HttpTransportConfiguration http;
+    @Test
+    void assertHasEnabledTransport() {
+        MCPTransportConfiguration actual = new MCPTransportConfiguration(
+                new HttpTransportConfiguration(true, "127.0.0.1", 18088, "/mcp"), new StdioTransportConfiguration(false));
+        
+        assertTrue(actual.hasEnabledTransport());
+    }
     
-    private final StdioTransportConfiguration stdio;
-    
-    /**
-     * Check whether any transport is enabled.
-     *
-     * @return true if any transport is enabled, false otherwise
-     */
-    public boolean hasEnabledTransport() {
-        return http.isEnabled() || stdio.isEnabled();
+    @Test
+    void assertHasEnabledTransportWithDisabledTransports() {
+        MCPTransportConfiguration actual = new MCPTransportConfiguration(
+                new HttpTransportConfiguration(false, "127.0.0.1", 18088, "/mcp"), new StdioTransportConfiguration(false));
+        
+        assertFalse(actual.hasEnabledTransport());
     }
 }
