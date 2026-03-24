@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -36,13 +39,13 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     
     private final YamlMCPTransportConfigurationSwapper transportConfigSwapper = new YamlMCPTransportConfigurationSwapper();
     
-    private final YamlRuntimeConfigurationSwapper runtimeConfigSwapper = new YamlRuntimeConfigurationSwapper();
+    private final YamlRuntimeDatabaseConfigurationSwapper runtimeDatabaseConfigSwapper = new YamlRuntimeDatabaseConfigurationSwapper();
     
     @Override
     public YamlMCPLaunchConfiguration swapToYamlConfiguration(final MCPLaunchConfiguration data) {
         YamlMCPLaunchConfiguration result = new YamlMCPLaunchConfiguration();
         result.setTransport(transportConfigSwapper.swapToYamlConfiguration(data.getTransport()));
-        result.setRuntime(runtimeConfigSwapper.swapToYamlConfiguration(data.getRuntimeDatabases()));
+        result.setRuntimeDatabases(swapToYamlRuntimeDatabases(data.getRuntimeDatabases()));
         return result;
     }
     
@@ -54,7 +57,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
      */
     public MCPLaunchConfiguration swapToObject(final String yamlContent) {
         Map<String, Object> yamlRoot = loadYamlRoot(yamlContent);
-        validateRuntimeSection(getConfiguredSection(yamlRoot, "runtime"));
+        validateRootSections(yamlRoot);
         YamlMCPLaunchConfiguration yamlConfig = YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class, true);
         return swapToObject(yamlConfig, getConfiguredSection(yamlRoot, "transport"));
     }
@@ -67,7 +70,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     private MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig, final Map<String, Object> configuredTransportSections) {
         YamlMCPLaunchConfiguration actualYamlConfig = null == yamlConfig ? new YamlMCPLaunchConfiguration() : yamlConfig;
         MCPTransportConfiguration transportConfig = transportConfigSwapper.swapToObject(actualYamlConfig.getTransport(), configuredTransportSections);
-        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = runtimeConfigSwapper.swapToObject(actualYamlConfig.getRuntime());
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = swapToRuntimeDatabases(actualYamlConfig.getRuntimeDatabases());
         return new MCPLaunchConfiguration(transportConfig, runtimeDatabases);
     }
     
@@ -83,32 +86,65 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         return section instanceof Map ? (Map<String, Object>) section : Collections.emptyMap();
     }
     
-    private void validateRuntimeSection(final Map<String, Object> runtimeSection) {
+    private void validateRootSections(final Map<String, Object> yamlRoot) {
+        validateLegacyRuntimeSection(getConfiguredSection(yamlRoot, "runtime"));
+        validateRuntimeDatabasesSection(getConfiguredSection(yamlRoot, "runtimeDatabases"));
+    }
+    
+    private void validateLegacyRuntimeSection(final Map<String, Object> runtimeSection) {
         if (runtimeSection.isEmpty()) {
             return;
         }
         if (runtimeSection.containsKey("props")) {
-            throw new IllegalArgumentException("`runtime.props` is no longer supported. Configure direct runtime databases with `runtime.databases`.");
+            throw new IllegalArgumentException("`runtime.props` is no longer supported. Configure direct runtime databases with `runtimeDatabases`.");
         }
         if (runtimeSection.containsKey("defaults")) {
-            throw new IllegalArgumentException("`runtime.defaults` is no longer supported. Configure shared defaults with `runtime.databaseDefaults`.");
+            throw new IllegalArgumentException("`runtime.defaults` is no longer supported. Configure direct runtime databases with `runtimeDatabases`.");
         }
-        Object databaseDefaults = runtimeSection.get("databaseDefaults");
-        if (databaseDefaults instanceof Map && containsLegacyCapabilityBooleans((Map<?, ?>) databaseDefaults)) {
-            throw new IllegalArgumentException("Legacy capability booleans are no longer supported under `runtime.databaseDefaults`. Capabilities are derived automatically.");
+        if (runtimeSection.containsKey("databaseDefaults")) {
+            throw new IllegalArgumentException("`runtime.databaseDefaults` is no longer supported. Configure each runtime database explicitly under `runtimeDatabases`.");
         }
-        Object databases = runtimeSection.get("databases");
-        if (databases instanceof Map) {
-            for (Entry<?, ?> entry : ((Map<?, ?>) databases).entrySet()) {
-                if (entry.getValue() instanceof Map && containsLegacyCapabilityBooleans((Map<?, ?>) entry.getValue())) {
-                    throw new IllegalArgumentException(String.format(
-                            "Legacy capability booleans are no longer supported for runtime database `%s`. Capabilities are derived automatically.", entry.getKey()));
-                }
+        if (runtimeSection.containsKey("databases")) {
+            throw new IllegalArgumentException("`runtime.databases` is no longer supported. Configure direct runtime databases with `runtimeDatabases`.");
+        }
+    }
+    
+    private void validateRuntimeDatabasesSection(final Map<String, Object> runtimeDatabasesSection) {
+        for (Entry<?, ?> entry : runtimeDatabasesSection.entrySet()) {
+            if (entry.getValue() instanceof Map && containsLegacyCapabilityBooleans((Map<?, ?>) entry.getValue())) {
+                throw new IllegalArgumentException(String.format(
+                        "Legacy capability booleans are no longer supported for runtime database `%s`. Capabilities are derived automatically.", entry.getKey()));
             }
         }
     }
     
+    private Map<String, YamlRuntimeDatabaseConfiguration> swapToYamlRuntimeDatabases(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        Map<String, YamlRuntimeDatabaseConfiguration> result = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
+        for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
+            result.put(entry.getKey(), runtimeDatabaseConfigSwapper.swapToYamlConfiguration(entry.getValue()));
+        }
+        return result;
+    }
+    
+    private Map<String, RuntimeDatabaseConfiguration> swapToRuntimeDatabases(final Map<String, YamlRuntimeDatabaseConfiguration> yamlRuntimeDatabases) {
+        Map<String, YamlRuntimeDatabaseConfiguration> actualYamlRuntimeDatabases = null == yamlRuntimeDatabases ? new LinkedHashMap<>() : yamlRuntimeDatabases;
+        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(actualYamlRuntimeDatabases.size(), 1F);
+        for (Entry<String, YamlRuntimeDatabaseConfiguration> entry : actualYamlRuntimeDatabases.entrySet()) {
+            String databaseName = normalizeText(entry.getKey());
+            ShardingSpherePreconditions.checkState(!databaseName.isEmpty(),
+                    () -> new IllegalArgumentException("Runtime logical database name cannot be blank."));
+            ShardingSpherePreconditions.checkState(!result.containsKey(databaseName),
+                    () -> new IllegalArgumentException(String.format("Runtime logical database `%s` is duplicated.", databaseName)));
+            result.put(databaseName, runtimeDatabaseConfigSwapper.swapToObject(databaseName, entry.getValue()));
+        }
+        return result;
+    }
+    
     private boolean containsLegacyCapabilityBooleans(final Map<?, ?> databaseConfig) {
         return databaseConfig.containsKey("supportsCrossSchemaSql") || databaseConfig.containsKey("supportsExplainAnalyze");
+    }
+    
+    private String normalizeText(final Object value) {
+        return null == value ? "" : String.valueOf(value).trim();
     }
 }

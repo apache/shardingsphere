@@ -45,8 +45,8 @@ class ProductionRefreshVisibilityE2ETest extends AbstractProductionRuntimeE2ETes
     }
     
     @Override
-    protected Map<String, String> getRuntimeProps() {
-        return H2ProductionRuntimeTestSupport.createRuntimeProps(jdbcUrl);
+    protected Map<String, Map<String, String>> getRuntimeDatabases() {
+        return Map.of("logic_db", H2ProductionRuntimeTestSupport.createRuntimeDatabase(jdbcUrl));
     }
     
     @Test

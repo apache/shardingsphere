@@ -127,7 +127,7 @@ public final class MCPRuntimeLauncher {
     
     private Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final MCPLaunchConfiguration launchConfiguration) {
         if (launchConfiguration.getRuntimeDatabases().isEmpty()) {
-            throw new IllegalArgumentException("`runtime.databases` must be configured for the default launch path.");
+            throw new IllegalArgumentException("`runtimeDatabases` must be configured for the default launch path.");
         }
         return databaseRuntimeFactory.createConnectionConfigurations(launchConfiguration.getRuntimeDatabases());
     }

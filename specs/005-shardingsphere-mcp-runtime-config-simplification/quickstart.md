@@ -4,8 +4,8 @@
 
 验证 MCP direct runtime 使用新的 canonical 配置结构启动：
 
-- `runtime.databases`
-- `runtime.databaseDefaults` 可选保留为共享连接默认值
+- `runtimeDatabases`
+- 不再在新示例里保留 `runtime` 包裹层
 - 不再在新示例里手工配置 `supportsCrossSchemaSql`
 - 不再在新示例里手工配置 `supportsExplainAnalyze`
 - 不再在新示例里手工配置 `schemaPattern`
@@ -26,21 +26,19 @@ From the repository root:
 transport:
   http:
     enabled: true
-    server:
-      bindHost: 127.0.0.1
-      port: 18088
-      endpointPath: /mcp
+    bindHost: 127.0.0.1
+    port: 18088
+    endpointPath: /mcp
   stdio:
     enabled: true
 
-runtime:
-  databases:
-    orders:
-      databaseType: H2
-      jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
-    billing:
-      databaseType: H2
-      jdbcUrl: "jdbc:h2:file:./data/mcp-demo-billing;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+runtimeDatabases:
+  orders:
+    databaseType: H2
+    jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+  billing:
+    databaseType: H2
+    jdbcUrl: "jdbc:h2:file:./data/mcp-demo-billing;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
 ```
 
 Notes:
@@ -59,7 +57,7 @@ bin/start.sh
 Expected result:
 
 - 配置成功加载为 direct runtime topology。
-- 服务不要求 `runtime.props` 才能走 default launch path。
+- 服务不要求 `runtime.props` 或 `runtime.databaseDefaults` 才能走 default launch path。
 - `get_capabilities(database)` 返回系统自动推导的 capability。
 
 ## 5. Validate capability behavior
@@ -71,9 +69,9 @@ Expected result:
 3. 若某 database type / version 不支持 `EXPLAIN ANALYZE`，
    `execute_query(database, "EXPLAIN ANALYZE ...")` 返回 `unsupported`
 
-## 6. Legacy mapping reference
+## 6. Legacy rejection reference
 
-### Legacy single-db alias
+### Legacy single-db input
 
 Before:
 
@@ -85,7 +83,18 @@ runtime:
     jdbcUrl: jdbc:h2:mem:logic
 ```
 
-Canonical:
+Use instead:
+
+```yaml
+runtimeDatabases:
+  logic_db:
+    databaseType: H2
+    jdbcUrl: jdbc:h2:mem:logic
+```
+
+### Legacy wrapped multi-db input
+
+Before:
 
 ```yaml
 runtime:
@@ -95,26 +104,17 @@ runtime:
       jdbcUrl: jdbc:h2:mem:logic
 ```
 
-### Legacy defaults alias
-
-Before:
+Use instead:
 
 ```yaml
-runtime:
-  defaults:
-    driverClassName: org.h2.Driver
-```
-
-Canonical:
-
-```yaml
-runtime:
-  databaseDefaults:
-    driverClassName: org.h2.Driver
+runtimeDatabases:
+  logic_db:
+    databaseType: H2
+    jdbcUrl: jdbc:h2:mem:logic
 ```
 
 ## 7. Migration expectations
 
-- 兼容期内 legacy aliases 仍可被加载。
-- canonical keys 与对应 legacy aliases 混用时应 fail fast。
-- 新文档与默认配置只展示 canonical 结构。
+- legacy `runtime.*` aliases 不再被加载。
+- 发现旧 key 时系统应 fail fast，并给出明确替换提示。
+- 新文档与默认配置只展示 `runtimeDatabases` canonical 结构。

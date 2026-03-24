@@ -150,14 +150,6 @@ abstract class AbstractProductionRuntimeE2ETest {
         return "/gateway";
     }
     
-    protected Map<String, String> getRuntimeProps() {
-        return Map.of();
-    }
-    
-    protected Map<String, String> getRuntimeDefaults() {
-        return Map.of();
-    }
-    
     protected Map<String, Map<String, String>> getRuntimeDatabases() {
         return Map.of();
     }
@@ -246,22 +238,9 @@ abstract class AbstractProductionRuntimeE2ETest {
         result.append("    endpointPath: ").append(toYamlScalar(getEndpointPath())).append('\n');
         result.append("  stdio:\n");
         result.append("    enabled: false\n");
-        result.append("runtime:\n");
-        Map<String, String> runtimeProps = getRuntimeProps();
         Map<String, Map<String, String>> runtimeDatabases = getRuntimeDatabases();
-        if (!runtimeProps.isEmpty() && !runtimeDatabases.isEmpty()) {
-            throw new IllegalStateException("runtime props and runtime databases cannot be configured together.");
-        }
-        if (!runtimeProps.isEmpty()) {
-            result.append("  databases:\n");
-            appendDatabaseEntry(result, String.valueOf(runtimeProps.getOrDefault("databaseName", "logic_db")), runtimeProps);
-        } else if (!runtimeDatabases.isEmpty()) {
-            Map<String, String> runtimeDefaults = getRuntimeDefaults();
-            if (!runtimeDefaults.isEmpty()) {
-                result.append("  databaseDefaults:\n");
-                appendDatabaseProperties(result, "    ", runtimeDefaults, true);
-            }
-            result.append("  databases:\n");
+        if (!runtimeDatabases.isEmpty()) {
+            result.append("runtimeDatabases:\n");
             for (Entry<String, Map<String, String>> databaseEntry : runtimeDatabases.entrySet()) {
                 appendDatabaseEntry(result, databaseEntry.getKey(), databaseEntry.getValue());
             }
@@ -270,22 +249,22 @@ abstract class AbstractProductionRuntimeE2ETest {
     }
     
     private void appendDatabaseEntry(final StringBuilder result, final String databaseName, final Map<String, String> properties) {
-        result.append("    ").append(databaseName).append(":\n");
-        appendDatabaseProperties(result, "      ", properties, false);
+        result.append("  ").append(databaseName).append(":\n");
+        appendDatabaseProperties(result, "    ", properties);
     }
     
-    private void appendDatabaseProperties(final StringBuilder result, final String indent, final Map<String, String> properties, final boolean defaults) {
+    private void appendDatabaseProperties(final StringBuilder result, final String indent, final Map<String, String> properties) {
         for (Entry<String, String> entry : properties.entrySet()) {
-            if (shouldSkipEntry(entry.getKey(), entry.getValue(), defaults)) {
+            if (shouldSkipEntry(entry.getKey(), entry.getValue())) {
                 continue;
             }
             result.append(indent).append(entry.getKey()).append(": ").append(toYamlScalar(entry.getValue())).append('\n');
         }
     }
     
-    private boolean shouldSkipEntry(final String key, final String value, final boolean defaults) {
+    private boolean shouldSkipEntry(final String key, final String value) {
         return value.isEmpty() || "databaseName".equals(key) || "schemaPattern".equals(key) || "defaultSchema".equals(key)
-                || "supportsCrossSchemaSql".equals(key) || "supportsExplainAnalyze".equals(key) || defaults && "jdbcUrl".equals(key);
+                || "supportsCrossSchemaSql".equals(key) || "supportsExplainAnalyze".equals(key);
     }
     
     private String toYamlScalar(final String value) {

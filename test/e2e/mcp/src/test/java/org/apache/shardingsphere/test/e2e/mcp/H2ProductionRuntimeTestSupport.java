@@ -36,34 +36,19 @@ final class H2ProductionRuntimeTestSupport {
                 tempDir.resolve(databaseName).toAbsolutePath());
     }
     
-    static Map<String, String> createRuntimeProps(final String jdbcUrl) {
-        return Map.of(
-                "databaseName", "logic_db",
-                "databaseType", "H2",
-                "jdbcUrl", jdbcUrl,
-                "driverClassName", "org.h2.Driver");
-    }
-    
-    static Map<String, String> createRuntimeDefaults() {
-        return Map.of(
-                "databaseType", "H2",
-                "driverClassName", "org.h2.Driver");
-    }
-    
-    static Map<String, String> createRuntimeDefaultsWithoutDatabaseType() {
-        return Map.of(
-                "driverClassName", "org.h2.Driver");
-    }
-    
     static Map<String, String> createRuntimeDatabase(final String jdbcUrl) {
         Map<String, String> result = new LinkedHashMap<>();
+        result.put("databaseType", "H2");
         result.put("jdbcUrl", jdbcUrl);
+        result.put("driverClassName", "org.h2.Driver");
         return result;
     }
     
     static Map<String, String> createRuntimeDatabase(final String jdbcUrl, final String databaseType) {
-        Map<String, String> result = createRuntimeDatabase(jdbcUrl);
+        Map<String, String> result = new LinkedHashMap<>();
         result.put("databaseType", databaseType);
+        result.put("jdbcUrl", jdbcUrl);
+        result.put("driverClassName", "org.h2.Driver");
         return result;
     }
     

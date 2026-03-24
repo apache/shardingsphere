@@ -60,14 +60,15 @@ transport:
   stdio:
     enabled: true
 
-runtime:
-  databases:
-    orders:
-      databaseType: H2
-      jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
-    billing:
-      databaseType: H2
-      jdbcUrl: "jdbc:h2:file:./data/mcp-demo-billing;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+runtimeDatabases:
+  orders:
+    databaseType: H2
+    jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+    driverClassName: org.h2.Driver
+  billing:
+    databaseType: H2
+    jdbcUrl: "jdbc:h2:file:./data/mcp-demo-billing;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+    driverClassName: org.h2.Driver
 ```
 
 ### 3. 初始化一个 MCP 会话
@@ -222,8 +223,8 @@ stdioMCPServer.closeSession(sessionId);
 
 ## Runtime 说明
 
-- 发行包里的 `conf/mcp.yaml` 现在默认内置一段 demo 多数据库 JDBC runtime 配置，所以第一次启动就能验证逻辑库发现和真实 query 执行。
-- 如果要接真实部署，请把 `runtime` 段替换成你自己的逻辑库映射和 JDBC 连接属性。`runtime.databases` 是直连模型，`runtime.databaseDefaults` 只用来放共享连接默认值；schema 发现改为依赖 JDBC metadata，legacy runtime alias 已不再支持。
+- 发行包里的 `conf/mcp.yaml` 现在默认内置一段 demo 多数据库 JDBC `runtimeDatabases` 配置，所以第一次启动就能验证逻辑库发现和真实 query 执行。
+- 如果要接真实部署，请把 `runtimeDatabases` 段替换成你自己的逻辑库映射和 JDBC 连接属性。每个逻辑库条目都需要显式声明所需的 runtime 字段；schema 发现改为依赖 JDBC metadata，legacy `runtime.*` alias 已不再支持。
 - 对支持 JDBC 4 自动注册的驱动，`driverClassName` 可以不写；只有目标驱动需要显式覆盖时再配置。
 - 如果目标数据库的驱动没有随发行包提供，请先把对应 jar 放到 `ext-lib/`，再执行 `bin/start.sh`。
 - 如果只需要本地 HTTP 调试，保留 `transport.http.enabled: true`，并在不需要 STDIO 时把 `transport.stdio.enabled` 设为 `false`。

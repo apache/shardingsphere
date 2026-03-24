@@ -2,26 +2,27 @@
 
 ## Core Domain Entities
 
-### RuntimeConfigurationEnvelope
+### LaunchConfigurationDocument
 
-- **Purpose**: 描述 `transport` 之外 direct runtime 的 canonical 配置包裹层。
+- **Purpose**: 描述 YAML launch configuration 的顶层结构。
 - **Fields**:
-  - `runtime`
+  - `transport`
+  - `runtimeDatabases`
 - **Validation rules**:
-  - `runtime` 继续作为顶级 direct runtime 命名空间。
-  - default launch path 不能依赖多个并列的 direct runtime 根模型。
+  - `transport` 与 `runtimeDatabases` 处于同一抽象层级。
+  - `runtimeDatabases` 与运行时对象 `MCPLaunchConfiguration.runtimeDatabases`
+    一一对应。
 
-### DirectRuntimeConfiguration
+### DirectRuntimeDatabasesConfiguration
 
-- **Purpose**: 描述 canonical direct JDBC runtime 配置。
+- **Purpose**: 描述 canonical direct JDBC runtime 拓扑。
 - **Fields**:
-  - `databaseDefaults`
-  - `databases`
-  - `migrationState`
+  - `runtimeDatabases`
 - **Validation rules**:
-  - `databases` 必须按 unique logical database 名称键控。
-  - `databaseDefaults` 只补缺省值，不得隐式创建 database binding。
-  - canonical 配置不得再把 `runtime.props` 作为主写法。
+  - `runtimeDatabases` 必须按 unique logical database 名称键控。
+  - canonical 配置不得再通过 `runtime` 包裹层表达。
+  - canonical 配置不得再把 `runtime.props`、`runtime.defaults`、
+    `runtime.databaseDefaults`、`runtime.databases` 作为有效输入。
 
 ### LogicalDatabaseBindingConfiguration
 
@@ -65,55 +66,42 @@
   - `databaseVersion` 缺失时，系统回退到 safe type-level defaults。
   - `supportsExplainAnalyze` 的最终值必须与 `execute_query` 的实际拦截语义一致。
 
-### LegacyRuntimeAliasInput
+### LegacyRuntimeInput
 
-- **Purpose**: 描述兼容期内允许进入 loader 的历史配置形态。
+- **Purpose**: 描述会被显式拒绝的历史配置形态。
 - **Fields**:
   - `runtime.props`
   - `runtime.defaults`
+  - `runtime.databaseDefaults`
+  - `runtime.databases`
   - legacy `supportsCrossSchemaSql`
   - legacy `supportsExplainAnalyze`
 - **Validation rules**:
-  - legacy alias 只允许进入 canonicalization 入口，不允许作为最终 canonical 输出保留。
-  - 若 canonical keys 与对应 legacy aliases 混用，必须 fail fast。
-  - 使用 legacy alias 时必须生成 migration diagnostics。
-
-### RuntimeConfigMigrationState
-
-- **Purpose**: 描述一次 direct runtime 配置加载是否经过了 legacy-to-canonical 转换。
-- **Fields**:
-  - `usedLegacyPropsAlias`
-  - `usedLegacyDefaultsAlias`
-  - `usedLegacyCapabilityBooleans`
-  - `diagnostics`
-- **Validation rules**:
-  - migration diagnostics 必须可追溯到具体的 legacy key。
-  - 无 legacy alias 时，migration state 应为空或无诊断。
+  - legacy runtime keys 只允许进入 validation 入口，不允许再被 canonicalization。
+  - 一旦出现 legacy runtime keys，系统必须 fail fast。
+  - legacy capability booleans 在 canonical 配置中同样必须 fail fast。
 
 ## Relationships
 
-- `RuntimeConfigurationEnvelope.runtime` 包含一个 `DirectRuntimeConfiguration`。
-- `DirectRuntimeConfiguration.databaseDefaults` 为多个
-  `LogicalDatabaseBindingConfiguration` 提供共享缺省值。
+- `LaunchConfigurationDocument.runtimeDatabases` 直接承载
+  `LogicalDatabaseBindingConfiguration` 的映射。
 - 每个 logical database 在 metadata 加载和 capability 装配后生成一个
   `DerivedDatabaseCapabilityFacts`。
-- `LegacyRuntimeAliasInput` 在 loader 中被转换成 canonical
-  `DirectRuntimeConfiguration`，并在 `RuntimeConfigMigrationState` 中留下诊断痕迹。
+- `LegacyRuntimeInput` 只参与拒绝诊断，不再生成 canonical runtime 配置。
 
 ## Canonical Configuration Shape
 
 ```yaml
-runtime:
-  databases:
-    orders:
-      databaseType: H2
-      jdbcUrl: jdbc:h2:file:./data/orders
-      driverClassName: org.h2.Driver
+runtimeDatabases:
+  orders:
+    databaseType: H2
+    jdbcUrl: jdbc:h2:file:./data/orders
+    driverClassName: org.h2.Driver
 ```
 
-## Legacy-to-Canonical Mapping
+## Legacy Rejection Reference
 
-### Legacy single-db path
+### Legacy single-db input
 
 ```yaml
 runtime:
@@ -123,7 +111,12 @@ runtime:
     jdbcUrl: jdbc:h2:mem:logic
 ```
 
-maps to:
+Expected behavior:
+
+- 配置加载失败。
+- 错误消息明确要求改用 `runtimeDatabases.logic_db`。
+
+### Legacy wrapped multi-db input
 
 ```yaml
 runtime:
@@ -133,32 +126,19 @@ runtime:
       jdbcUrl: jdbc:h2:mem:logic
 ```
 
-### Legacy shared defaults alias
+Expected behavior:
 
-```yaml
-runtime:
-  defaults:
-    driverClassName: org.h2.Driver
-```
-
-maps to:
-
-```yaml
-runtime:
-  databaseDefaults:
-    driverClassName: org.h2.Driver
-```
+- 配置加载失败。
+- 错误消息明确要求改用顶级 `runtimeDatabases`。
 
 ## State Transitions
 
-- `raw_yaml -> canonicalized`
-  - loader 读取 canonical keys 或 legacy aliases。
-- `canonicalized -> validated`
-  - 检查 logical database 唯一性、必填字段和 canonical/legacy 冲突。
+- `raw_yaml -> validated`
+  - loader 读取 `transport` 与 `runtimeDatabases`。
 - `validated -> metadata_loaded`
   - direct runtime 根据 binding 与 JDBC metadata 自动装载 runtime metadata。
 - `metadata_loaded -> capability_derived`
   - capability assembler 根据 type-level defaults、数据库版本和运行时 metadata
     生成 `DerivedDatabaseCapabilityFacts`。
-- `legacy_alias_used -> diagnostics_emitted`
-  - 兼容期使用 legacy keys 时记录 deprecation diagnostics。
+- `legacy_input_detected -> rejected_with_diagnostics`
+  - 发现旧 `runtime.*` key 或 legacy capability booleans 时直接失败，并输出迁移提示。

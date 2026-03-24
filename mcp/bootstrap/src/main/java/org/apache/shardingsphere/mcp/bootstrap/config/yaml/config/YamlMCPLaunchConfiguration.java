@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * YAML MCP launch configuration.
  */
@@ -30,5 +33,5 @@ public final class YamlMCPLaunchConfiguration implements YamlConfiguration {
     
     private YamlMCPTransportConfiguration transport;
     
-    private YamlRuntimeConfiguration runtime;
+    private Map<String, YamlRuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>();
 }

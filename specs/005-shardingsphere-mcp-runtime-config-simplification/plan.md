@@ -7,10 +7,9 @@
 ## Summary
 
 本 follow-up 收敛 MCP direct JDBC runtime 的 operator-facing 配置模型：
-保留 `runtime` 顶级命名空间，让 `runtime.databases` 成为 single-db 与
-multi-db 的统一 canonical 入口，把 shared defaults 改名为
-`runtime.databaseDefaults`，移除 schema 的外部配置面，弱化 `driverClassName`
-为 optional override，并把 `supportsCrossSchemaSql` 与
+让顶级 `runtimeDatabases` 成为 single-db 与 multi-db 的统一 canonical 入口，
+删除 `runtime` 包裹层和 shared defaults 模型，移除 schema 的外部配置面，弱化
+`driverClassName` 为 optional override，并把 `supportsCrossSchemaSql` 与
 `supportsExplainAnalyze` 从常规 YAML 配置移到系统自动 capability 推导。
 
 ## Technical Context
@@ -27,10 +26,10 @@ JDBC connectivity to supported databases
 **Project Type**: Java monorepo subproject with packaged distribution and
 dedicated bootstrap/core test modules  
 **Constraints**: Keep MCP V1 public contract unchanged; keep the smallest safe
-change; maintain backward-compatible parsing for legacy runtime aliases during
-one migration window; avoid requiring operator capability booleans  
-**Scale/Scope**: YAML contract, config normalization, runtime launch path,
-driver loading behavior, capability derivation, docs, and regression coverage
+change; prefer one-to-one YAML/runtime mapping; avoid requiring operator
+capability booleans  
+**Scale/Scope**: YAML contract, config validation, runtime launch path, driver
+loading behavior, capability derivation, docs, and regression coverage
 
 ## Constitution Check
 
@@ -39,13 +38,13 @@ driver loading behavior, capability derivation, docs, and regression coverage
 - **Gate 1 - Smallest safe change**: PASS  
   变更聚焦 direct runtime 配置收敛，不改 public MCP contract。
 - **Gate 2 - Readability and simplicity**: PASS  
-  目标是把 single-db 与 multi-db 统一到一套 runtime topology 写法，减少 operator 心智负担。
+  目标是让 YAML 与运行时对象一一对应，减少 operator 心智负担。
 - **Gate 3 - Runtime behavior remains traceable**: PASS  
-  capability derivation、legacy alias canonicalization 与 driver override 都会留下明确规则和诊断。
+  capability derivation、legacy key rejection 与 driver override 都有明确规则和诊断。
 - **Gate 4 - Verification path exists**: PASS  
-  可通过 YAML swappers、config loader、bootstrap launch、capability 和 execution tests 覆盖主要风险。
+  可通过 launch-level swapper、config loader、bootstrap launch、capability 和 execution tests 覆盖主要风险。
 - **Gate 5 - Compatibility risk is bounded**: PASS  
-  保留 legacy aliases 的兼容期，但 canonical 文档与默认配置只展示新结构。
+  旧 `runtime.*` keys 不再被加载，但保留显式迁移提示。
 
 ## Project Structure
 
@@ -65,18 +64,18 @@ specs/005-shardingsphere-mcp-runtime-config-simplification/
 
 ```text
 distribution/mcp/src/main/resources/conf/mcp.yaml
+mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/MCPLaunchConfiguration.java
 mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/loader/MCPConfigurationLoader.java
 mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/RuntimeDatabaseConfiguration.java
-mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/config/YamlRuntimeConfiguration.java
+mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/config/YamlMCPLaunchConfiguration.java
 mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/config/YamlRuntimeDatabaseConfiguration.java
 mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlMCPLaunchConfigurationSwapper.java
-mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlRuntimeConfigurationSwapper.java
 mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlRuntimeDatabaseConfigurationSwapper.java
+mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/lifecycle/MCPRuntimeLauncher.java
 mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/DatabaseConnectionConfiguration.java
 mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/DatabaseRuntimeFactory.java
 mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/JdbcConnectionFactory.java
 mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/JdbcMetadataLoader.java
-mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/MCPLaunchRuntimeLoader.java
 mcp/core/src/main/java/org/apache/shardingsphere/mcp/capability/DatabaseCapabilityAssembler.java
 mcp/core/src/main/java/org/apache/shardingsphere/mcp/capability/DatabaseCapabilityRegistry.java
 mcp/core/src/main/java/org/apache/shardingsphere/mcp/execute/ExecuteQueryFacade.java
@@ -95,21 +94,21 @@ docs/mcp/ShardingSphere-MCP-Detailed-Design.md
 
 ## Design Decisions
 
-### 1. 保留 `runtime` 顶级命名空间
+### 1. 顶级 canonical runtime 入口是 `runtimeDatabases`
 
-- `runtime` 继续和 `transport` 并列。
-- 不把 `databases` 与 shared defaults 提升到顶级。
+- `runtimeDatabases` 直接和 `transport` 并列。
+- 不再保留 `runtime` 包裹层。
 
-### 2. `runtime.databases` 成为 direct runtime 唯一 canonical 入口
+### 2. `runtimeDatabases` 同时覆盖 single-db 与 multi-db
 
-- single-db 与 multi-db 统一使用 logical database 拓扑。
-- `runtime.props` 只在兼容期作为 migration alias 进入 canonicalization。
+- 单库就是只含一个 logical database entry 的 map。
+- 不再保留 `runtime.props` 作为兼容加载路径。
 
-### 3. `runtime.databaseDefaults` 替代 `runtime.defaults`
+### 3. 删除 shared defaults 模型
 
-- shared defaults 改为更可读的名字。
+- 不再保留 `runtime.databaseDefaults` 或其他 shared-defaults canonical 写法。
+- 每个 logical database entry 都显式声明自己的运行时输入。
 - `schemaPattern` 与 `defaultSchema` 从 operator-facing YAML 中移除。
-- schema 范围与默认 schema 改由 JDBC metadata 自动发现。
 
 ### 4. `driverClassName` 只保留为 optional override
 
@@ -122,57 +121,51 @@ docs/mcp/ShardingSphere-MCP-Detailed-Design.md
   YAML 中移除。
 - 系统根据 database type、database version 与 runtime metadata 推导。
 
-### 6. legacy aliases 兼容但显式诊断
+### 6. legacy keys 只保留显式拒绝诊断
 
-- `runtime.props`、`runtime.defaults` 和 legacy capability booleans
-  在兼容期内可读。
-- canonical key 与 legacy alias 混用时必须 fail fast。
+- `runtime.props`、`runtime.defaults`、`runtime.databaseDefaults`、
+  `runtime.databases` 和 legacy capability booleans 在校验阶段被拒绝。
+- 错误消息必须指向 `runtimeDatabases` 现行写法。
 
 ## Branch Checklist
 
 在实现前固定关键分支与计划测试，避免配置收敛 follow-up 出现覆盖盲区：
 
 1. `canonical_single_database_config`
-   Planned test: canonical one-database YAML loads and starts without `runtime.props`
-2. `canonical_database_defaults_inheritance`
-   Planned test: `runtime.databaseDefaults` connection defaults are inherited deterministically
-3. `legacy_props_alias`
-   Planned test: legacy `runtime.props` loads as one canonical database binding with diagnostics
+   Planned test: one-database `runtimeDatabases` YAML loads and starts successfully
+2. `canonical_multi_database_config`
+   Planned test: two-database `runtimeDatabases` YAML loads and starts successfully
+3. `legacy_runtime_key_rejection`
+   Planned test: `runtime.props` / `runtime.databases` / `runtime.databaseDefaults` all fail with targeted diagnostics
 4. `optional_driver_autodiscovery`
    Planned test: omitted `driverClassName` succeeds when driver is on classpath
 5. `invalid_explicit_driver`
    Planned test: explicit bad `driverClassName` fails fast with clear diagnostic
 6. `derived_explain_analyze_capability`
    Planned test: `EXPLAIN ANALYZE` gating follows derived capability, not operator booleans
-7. `legacy_capability_boolean_deprecation`
-   Planned test: legacy booleans are accepted only as migration shim with warnings
+7. `legacy_capability_boolean_rejection`
+   Planned test: legacy booleans are rejected with migration guidance
 8. `canonical_legacy_conflict_validation`
    Planned test: mixed canonical and legacy runtime keys fail fast with targeted diagnostics
 
 ## Implementation Strategy
 
-1. 重定义 YAML 配置模型，让 canonical direct runtime 只围绕
-   `runtime.databaseDefaults` 和 `runtime.databases`。
-2. 在 YAML swappers 和 config loader 中完成 legacy alias 的 canonicalization
-   与 conflict validation。
-3. 收敛 runtime launch path，使 default launch path 以 canonical database
-   topology 为中心，而不是继续依赖 `runtime.props`。
+1. 重定义 launch-level YAML 配置模型，让 canonical direct runtime 只围绕
+   `runtimeDatabases`。
+2. 在 YAML swappers 和 config loader 中完成 legacy runtime keys 的 validation
+   and rejection。
+3. 收敛 runtime launch path，使 default launch path 以 `runtimeDatabases`
+   为中心，而不是继续依赖旧 `runtime.*` 结构。
 4. 把 `driverClassName` 变成 optional override，并把 capability booleans
    迁移到自动 derivation。
 5. 更新 packaged config、README、设计文档和 regression tests。
 
 ## Validation Strategy
 
-- **Config canonicalization and loader coverage**
+- **Config and launch-level coverage**
 ```bash
 ./mvnw -pl mcp/bootstrap -am -DskipITs -Dspotless.skip=true \
-  -Dtest=MCPConfigurationLoaderTest,YamlRuntimeConfigurationSwapperTest,YamlRuntimeDatabaseConfigurationSwapperTest,YamlMCPLaunchConfigurationSwapperTest test \
-  -Dsurefire.failIfNoSpecifiedTests=false
-```
-- **Default launch path and migration alias coverage**
-```bash
-./mvnw -pl mcp/bootstrap -am -DskipITs -Dspotless.skip=true \
-  -Dtest=MCPBootstrapTest,MCPLaunchRuntimeLoaderTest test \
+  -Dtest=MCPConfigurationLoaderTest,YamlRuntimeDatabaseConfigurationSwapperTest,YamlMCPLaunchConfigurationSwapperTest,ProductionRuntimeLauncherTest,MCPBootstrapTest test \
   -Dsurefire.failIfNoSpecifiedTests=false
 ```
 - **Capability derivation and execution gating**
@@ -184,19 +177,18 @@ docs/mcp/ShardingSphere-MCP-Detailed-Design.md
 - **Production runtime E2E verification**
 ```bash
 ./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true \
-  -Dtest=ProductionMetadataDiscoveryE2ETest,ProductionMultiDatabaseE2ETest,ProductionExecuteQueryE2ETest test \
+  -Dtest=ProductionMetadataDiscoveryE2ETest,ProductionMultiDatabaseE2ETest,ProductionExecuteQueryE2ETest,ProductionRefreshVisibilityE2ETest,ProductionMixedDatabaseTypeE2ETest test \
   -Dsurefire.failIfNoSpecifiedTests=false
 ```
 - **Scoped style checks for touched modules**
 ```bash
-./mvnw -pl mcp/core,mcp/bootstrap,distribution/mcp,test/e2e/mcp -am \
-  checkstyle:check -Pcheck -DskipITs -Dspotless.skip=true
+./mvnw -pl mcp/bootstrap,test/e2e/mcp -Pcheck -DskipITs -DskipTests checkstyle:check spotless:check
 ```
 
 ## Rollout Notes
 
 - 这是 direct runtime 配置契约收敛，不是 MCP 协议重写。
 - `005` 继续继承 `001`、`002` 和 `004` 已定义的 MCP domain 与 capability contracts，
-  本 follow-up 只补充 direct runtime 输入规范化与迁移行为。
-- canonical 结构生效后，默认发行包与 README 只展示新写法。
-- legacy aliases 兼容期结束后，应通过新的 follow-up 删除兼容分支，而不是长期并存。
+  本 follow-up 只补充 direct runtime 输入规范化、legacy rejection 与文档统一。
+- canonical 结构生效后，默认发行包与 README 只展示 `runtimeDatabases`。
+- 如果未来需要重新引入兼容迁移窗口，应通过新的 follow-up 明确设计，而不是在当前实现里保留隐式兼容。

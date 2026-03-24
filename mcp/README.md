@@ -60,14 +60,15 @@ transport:
   stdio:
     enabled: true
 
-runtime:
-  databases:
-    orders:
-      databaseType: H2
-      jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
-    billing:
-      databaseType: H2
-      jdbcUrl: "jdbc:h2:file:./data/mcp-demo-billing;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+runtimeDatabases:
+  orders:
+    databaseType: H2
+    jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+    driverClassName: org.h2.Driver
+  billing:
+    databaseType: H2
+    jdbcUrl: "jdbc:h2:file:./data/mcp-demo-billing;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+    driverClassName: org.h2.Driver
 ```
 
 ### 3. Initialize one MCP session
@@ -222,8 +223,8 @@ Reference:
 
 ## Runtime Notes
 
-- The packaged `conf/mcp.yaml` now ships with a demo multi-database JDBC runtime block so the distribution can prove logical-database discovery and real query execution on the first run.
-- For real deployments, replace the `runtime` block with your own logical database mapping and JDBC connection properties. Use `runtime.databases` as the direct runtime model and `runtime.databaseDefaults` only for shared connection defaults; schema discovery now comes from JDBC metadata, and legacy runtime aliases are no longer supported.
+- The packaged `conf/mcp.yaml` now ships with a demo multi-database JDBC `runtimeDatabases` block so the distribution can prove logical-database discovery and real query execution on the first run.
+- For real deployments, replace the `runtimeDatabases` block with your own logical database mapping and JDBC connection properties. Each logical database entry must declare its own required runtime fields; schema discovery now comes from JDBC metadata, and legacy `runtime.*` aliases are no longer supported.
 - `driverClassName` is optional for JDBC 4 drivers that auto-register through `DriverManager`. Keep it only when your target driver requires an explicit override.
 - If your target database driver is not already packaged, copy the driver jar under `ext-lib/` before running `bin/start.sh`.
 - For local-only HTTP usage, keep `transport.http.enabled: true` and set `transport.stdio.enabled: false` if you do not need STDIO.

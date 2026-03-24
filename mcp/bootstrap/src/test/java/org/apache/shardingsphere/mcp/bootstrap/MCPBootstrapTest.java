@@ -49,15 +49,15 @@ class MCPBootstrapTest {
         Files.writeString(result, "transport:\n"
                 + "  http:\n"
                 + "    enabled: false\n"
-                + "runtime:\n"
-                + "  databaseDefaults:\n"
+                + "runtimeDatabases:\n"
+                + "  orders:\n"
                 + "    databaseType: H2\n"
+                + "    jdbcUrl: '" + firstJdbcUrl + "'\n"
                 + "    driverClassName: org.h2.Driver\n"
-                + "  databases:\n"
-                + "    orders:\n"
-                + "      jdbcUrl: '" + firstJdbcUrl + "'\n"
-                + "    analytics:\n"
-                + "      jdbcUrl: '" + secondJdbcUrl + "'\n");
+                + "  analytics:\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: '" + secondJdbcUrl + "'\n"
+                + "    driverClassName: org.h2.Driver\n");
         return result;
     }
     

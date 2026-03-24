@@ -441,23 +441,22 @@ stateDiagram-v2
 - HTTP transport 固定使用 MCP `2025-11-25` 协议基线，不作为外部配置项暴露
 - distribution 默认配置同时启用 HTTP 与 STDIO；STDIO 仍主要用于本地测试与进程内联调，不作为额外交互式文本 Shell
 
-#### `runtime`
-- databases
-  - canonical logical database mapping
+#### `runtimeDatabases`
+- canonical logical database mapping
   - JDBC URL / credentials / optional driver override
-- databaseDefaults
-  - shared connection defaults
-- legacy compatibility
+- legacy rejected keys
   - `runtime.props`
   - `runtime.defaults`
-  - per-database capability booleans only for migration compatibility, not as the primary operator-facing model
+  - `runtime.databaseDefaults`
+  - `runtime.databases`
+  - per-database capability booleans are rejected with migration guidance, not as the primary operator-facing model
 - distribution 默认配置提供一段 demo JDBC runtime，确保发行包第一次启动即可验证非空 metadata 与真实执行链路；真实部署需替换为目标环境配置
 
 ## 12. 运行边界与审计详细设计
 
 ### 12.1 运行边界
 - V1 内置 runtime 聚焦 session 协商、会话状态维护与运行边界校验。
-- follow-up production runtime 路径要求通过 `runtime.databases` 显式装配真实 metadata 与执行适配，不再允许空 runtime 作为成功启动兜底。
+- follow-up production runtime 路径要求通过 `runtimeDatabases` 显式装配真实 metadata 与执行适配，不再允许空 runtime 作为成功启动兜底。
 - HTTP 端点如需对外暴露，应放在受信网络、上游网关、反向代理或其他网络边界之后。
 
 ### 12.2 审计模型

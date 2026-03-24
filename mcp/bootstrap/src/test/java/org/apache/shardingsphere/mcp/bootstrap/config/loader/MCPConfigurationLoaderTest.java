@@ -82,20 +82,20 @@ class MCPConfigurationLoaderTest {
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
         
-        assertThat(actual.getMessage(), is("`runtime.props` is no longer supported. Configure direct runtime databases with `runtime.databases`."));
+        assertThat(actual.getMessage(), is("`runtime.props` is no longer supported. Configure direct runtime databases with `runtimeDatabases`."));
     }
     
     @Test
     void assertLoadWithRuntimeDatabases() throws IOException {
-        Path configFile = createConfigFile("runtime:\n"
-                + "  databaseDefaults:\n"
+        Path configFile = createConfigFile("runtimeDatabases:\n"
+                + "  logic_db:\n"
                 + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"
                 + "    driverClassName: org.h2.Driver\n"
-                + "  databases:\n"
-                + "    logic_db:\n"
-                + "      jdbcUrl: jdbc:h2:mem:logic\n"
-                + "    analytics_db:\n"
-                + "      jdbcUrl: jdbc:h2:mem:analytics\n");
+                + "  analytics_db:\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:analytics\n"
+                + "    driverClassName: org.h2.Driver\n");
         
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         Map<String, RuntimeDatabaseConfiguration> actualDatabases = actual.getRuntimeDatabases();
@@ -117,17 +117,30 @@ class MCPConfigurationLoaderTest {
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
         
-        assertThat(actual.getMessage(), is("`runtime.defaults` is no longer supported. Configure shared defaults with `runtime.databaseDefaults`."));
+        assertThat(actual.getMessage(), is("`runtime.defaults` is no longer supported. Configure direct runtime databases with `runtimeDatabases`."));
+    }
+    
+    @Test
+    void assertLoadWithLegacyRuntimeDatabaseDefaults() throws IOException {
+        Path configFile = createConfigFile("runtime:\n"
+                + "  databaseDefaults:\n"
+                + "    databaseType: H2\n"
+                + "  databases:\n"
+                + "    logic_db:\n"
+                + "      jdbcUrl: jdbc:h2:mem:logic\n");
+        
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
+        
+        assertThat(actual.getMessage(), is("`runtime.databaseDefaults` is no longer supported. Configure each runtime database explicitly under `runtimeDatabases`."));
     }
     
     @Test
     void assertLoadWithLegacyRuntimeCapabilityOverride() throws IOException {
-        Path configFile = createConfigFile("runtime:\n"
-                + "  databases:\n"
-                + "    logic_db:\n"
-                + "      databaseType: H2\n"
-                + "      jdbcUrl: jdbc:h2:mem:logic\n"
-                + "      supportsCrossSchemaSql: true\n");
+        Path configFile = createConfigFile("runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    supportsCrossSchemaSql: true\n");
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
         

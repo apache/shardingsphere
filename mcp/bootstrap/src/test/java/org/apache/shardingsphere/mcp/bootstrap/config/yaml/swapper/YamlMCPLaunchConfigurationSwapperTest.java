@@ -48,11 +48,10 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    endpointPath: gateway\n"
                 + "  stdio:\n"
                 + "    enabled: false\n"
-                + "runtime:\n"
-                + "  databases:\n"
-                + "    logic_db:\n"
-                + "      databaseType: H2\n"
-                + "      jdbcUrl: jdbc:h2:mem:logic\n");
+                + "runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n");
         
         assertThat(actual.getTransport().getHttp().getBindHost(), is("0.0.0.0"));
         assertThat(actual.getTransport().getHttp().getPort(), is(9090));
@@ -66,7 +65,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
     void assertSwapToObjectWithNullSections() {
         YamlMCPLaunchConfiguration yamlConfig = new YamlMCPLaunchConfiguration();
         yamlConfig.setTransport(null);
-        yamlConfig.setRuntime(null);
+        yamlConfig.setRuntimeDatabases(null);
         
         MCPLaunchConfiguration actual = swapper.swapToObject(yamlConfig);
         
@@ -88,7 +87,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
         
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
         
-        assertThat(actual.getRuntime().getDatabases().get("logic_db").getDatabaseType(), is("H2"));
+        assertThat(actual.getRuntimeDatabases().get("logic_db").getDatabaseType(), is("H2"));
         assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));
     }
     
@@ -100,7 +99,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    databaseType: H2\n"
                 + "    jdbcUrl: jdbc:h2:mem:logic\n"));
         
-        assertThat(actual.getMessage(), is("`runtime.props` is no longer supported. Configure direct runtime databases with `runtime.databases`."));
+        assertThat(actual.getMessage(), is("`runtime.props` is no longer supported. Configure direct runtime databases with `runtimeDatabases`."));
     }
     
     @Test
@@ -109,17 +108,36 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  defaults:\n"
                 + "    databaseType: H2\n"));
         
-        assertThat(actual.getMessage(), is("`runtime.defaults` is no longer supported. Configure shared defaults with `runtime.databaseDefaults`."));
+        assertThat(actual.getMessage(), is("`runtime.defaults` is no longer supported. Configure direct runtime databases with `runtimeDatabases`."));
     }
     
     @Test
-    void assertSwapToObjectWithLegacyRuntimeCapabilityOverride() {
+    void assertSwapToObjectWithLegacyRuntimeDatabaseDefaults() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("runtime:\n"
+                + "  databaseDefaults:\n"
+                + "    databaseType: H2\n"));
+        
+        assertThat(actual.getMessage(), is("`runtime.databaseDefaults` is no longer supported. Configure each runtime database explicitly under `runtimeDatabases`."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithLegacyRuntimeDatabases() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("runtime:\n"
                 + "  databases:\n"
                 + "    logic_db:\n"
                 + "      databaseType: H2\n"
-                + "      jdbcUrl: jdbc:h2:mem:logic\n"
-                + "      supportsExplainAnalyze: true\n"));
+                + "      jdbcUrl: jdbc:h2:mem:logic\n"));
+        
+        assertThat(actual.getMessage(), is("`runtime.databases` is no longer supported. Configure direct runtime databases with `runtimeDatabases`."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithLegacyRuntimeCapabilityOverride() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    supportsExplainAnalyze: true\n"));
         
         assertThat(actual.getMessage(), is("Legacy capability booleans are no longer supported for runtime database `logic_db`. Capabilities are derived automatically."));
     }

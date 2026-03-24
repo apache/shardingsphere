@@ -35,12 +35,6 @@ class ProductionMixedDatabaseTypeE2ETest extends AbstractProductionRuntimeE2ETes
     
     private String secondJdbcUrl;
     
-    @Override
-    protected Map<String, String> getRuntimeDefaults() {
-        return H2ProductionRuntimeTestSupport.createRuntimeDefaultsWithoutDatabaseType();
-    }
-    
-    @Override
     protected Map<String, Map<String, String>> getRuntimeDatabases() {
         Map<String, Map<String, String>> result = new LinkedHashMap<>();
         result.put("logic_db", H2ProductionRuntimeTestSupport.createRuntimeDatabase(firstJdbcUrl, "MySQL"));

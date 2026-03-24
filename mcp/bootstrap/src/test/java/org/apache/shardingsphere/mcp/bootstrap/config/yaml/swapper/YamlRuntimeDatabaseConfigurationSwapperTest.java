@@ -39,23 +39,9 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
     }
     
     @Test
-    void assertSwapToObjectWithDatabaseDefaults() {
-        YamlRuntimeDatabaseConfiguration runtimeDefaults = new YamlRuntimeDatabaseConfiguration();
-        runtimeDefaults.setDatabaseType("H2");
-        runtimeDefaults.setJdbcUrl("jdbc:h2:mem:logic");
-        runtimeDefaults.setDriverClassName("org.h2.Driver");
-        
-        RuntimeDatabaseConfiguration actual = swapper.swapToObject("logic_db", new YamlRuntimeDatabaseConfiguration(), runtimeDefaults);
-        
-        assertThat(actual.getDatabaseType(), is("H2"));
-        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:logic"));
-        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
-    }
-    
-    @Test
     void assertSwapToObjectWithRequiredFieldMissing() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> swapper.swapToObject("logic_db", new YamlRuntimeDatabaseConfiguration(), new YamlRuntimeDatabaseConfiguration()));
+                () -> swapper.swapToObject("logic_db", new YamlRuntimeDatabaseConfiguration()));
         
         assertThat(actual.getMessage(), is("Runtime database `logic_db` property `databaseType` is required."));
     }

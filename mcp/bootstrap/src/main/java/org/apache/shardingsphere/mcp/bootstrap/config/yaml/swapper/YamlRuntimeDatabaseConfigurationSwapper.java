@@ -40,19 +40,16 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
     
     @Override
     public RuntimeDatabaseConfiguration swapToObject(final YamlRuntimeDatabaseConfiguration yamlConfig) {
-        return swapToObject("", yamlConfig, new YamlRuntimeDatabaseConfiguration());
+        return swapToObject("", yamlConfig);
     }
     
-    RuntimeDatabaseConfiguration swapToObject(final String databaseName, final YamlRuntimeDatabaseConfiguration yamlConfig, final YamlRuntimeDatabaseConfiguration databaseDefaults) {
+    RuntimeDatabaseConfiguration swapToObject(final String databaseName, final YamlRuntimeDatabaseConfiguration yamlConfig) {
         YamlRuntimeDatabaseConfiguration actualYamlConfig = null == yamlConfig ? new YamlRuntimeDatabaseConfiguration() : yamlConfig;
-        YamlRuntimeDatabaseConfiguration actualDatabaseDefaults = null == databaseDefaults ? new YamlRuntimeDatabaseConfiguration() : databaseDefaults;
-        return new RuntimeDatabaseConfiguration(resolveRequiredText(resolveText(actualYamlConfig.getDatabaseType(), actualDatabaseDefaults.getDatabaseType(),
-                "databaseType"), "databaseType", databaseName),
-                resolveRequiredText(resolveText(actualYamlConfig.getJdbcUrl(), actualDatabaseDefaults.getJdbcUrl(), "jdbcUrl"),
-                        "jdbcUrl", databaseName),
-                resolveText(actualYamlConfig.getUsername(), actualDatabaseDefaults.getUsername(), "username"),
-                resolveText(actualYamlConfig.getPassword(), actualDatabaseDefaults.getPassword(), "password"),
-                resolveText(actualYamlConfig.getDriverClassName(), actualDatabaseDefaults.getDriverClassName(), "driverClassName"));
+        return new RuntimeDatabaseConfiguration(resolveRequiredText(actualYamlConfig.getDatabaseType(), "databaseType", databaseName),
+                resolveRequiredText(actualYamlConfig.getJdbcUrl(), "jdbcUrl", databaseName),
+                resolveText(actualYamlConfig.getUsername()),
+                resolveText(actualYamlConfig.getPassword()),
+                resolveText(actualYamlConfig.getDriverClassName()));
     }
     
     private String resolveRequiredText(final String value, final String fieldName, final String databaseName) {
@@ -62,12 +59,9 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
         return result;
     }
     
-    private String resolveText(final String value, final String defaultValue, final String fieldName) {
+    private String resolveText(final String value) {
         String result = normalizeText(value);
-        if (!result.isEmpty()) {
-            return result;
-        }
-        return normalizeText(defaultValue);
+        return result;
     }
     
     private String normalizeText(final Object value) {
