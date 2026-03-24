@@ -21,9 +21,6 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlStdioTransportConfiguration;
 
-import java.util.Collections;
-import java.util.Map;
-
 /**
  * YAML STDIO transport configuration swapper.
  */
@@ -38,16 +35,7 @@ public final class YamlStdioTransportConfigurationSwapper implements YamlConfigu
     
     @Override
     public StdioTransportConfiguration swapToObject(final YamlStdioTransportConfiguration yamlConfig) {
-        return swapToObject(yamlConfig, Collections.emptyMap());
-    }
-    
-    StdioTransportConfiguration swapToObject(final YamlStdioTransportConfiguration yamlConfig, final Map<String, Object> configuredSection) {
         YamlStdioTransportConfiguration actualYamlConfig = null == yamlConfig ? new YamlStdioTransportConfiguration() : yamlConfig;
-        Map<String, Object> actualConfiguredSection = null == configuredSection ? Collections.emptyMap() : configuredSection;
-        return new StdioTransportConfiguration(resolveEnabled(actualYamlConfig.isEnabled(), actualConfiguredSection.containsKey("enabled") || actualYamlConfig.isEnabled()));
-    }
-    
-    private boolean resolveEnabled(final boolean enabled, final boolean configured) {
-        return configured ? enabled : true;
+        return new StdioTransportConfiguration(actualYamlConfig.isEnabled());
     }
 }

@@ -22,9 +22,6 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 
-import java.util.Collections;
-import java.util.Map;
-
 /**
  * YAML HTTP transport configuration swapper.
  */
@@ -48,20 +45,11 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     
     @Override
     public HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig) {
-        return swapToObject(yamlConfig, Collections.emptyMap());
-    }
-    
-    HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig, final Map<String, Object> configuredSection) {
         YamlHttpTransportConfiguration actualYamlConfig = null == yamlConfig ? new YamlHttpTransportConfiguration() : yamlConfig;
-        Map<String, Object> actualConfiguredSection = null == configuredSection ? Collections.emptyMap() : configuredSection;
-        boolean enabled = resolveEnabled(actualYamlConfig.isEnabled(), actualConfiguredSection.containsKey("enabled") || actualYamlConfig.isEnabled());
+        boolean enabled = actualYamlConfig.isEnabled();
         return enabled ? new HttpTransportConfiguration(true, resolveBindHost(actualYamlConfig.getBindHost()),
-                resolvePort(actualYamlConfig.getPort(), actualConfiguredSection.containsKey("port") || 0 != actualYamlConfig.getPort()), resolveEndpointPath(actualYamlConfig.getEndpointPath()))
+                resolvePort(actualYamlConfig.getPort()), resolveEndpointPath(actualYamlConfig.getEndpointPath()))
                 : new HttpTransportConfiguration(false, DEFAULT_BIND_HOST, DEFAULT_PORT, DEFAULT_ENDPOINT_PATH);
-    }
-    
-    private boolean resolveEnabled(final boolean enabled, final boolean configured) {
-        return configured ? enabled : true;
     }
     
     private String resolveBindHost(final String bindHost) {
@@ -69,8 +57,8 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         return result.isEmpty() ? DEFAULT_BIND_HOST : result;
     }
     
-    private int resolvePort(final int port, final boolean configured) {
-        if (!configured) {
+    private int resolvePort(final Integer port) {
+        if (null == port) {
             return DEFAULT_PORT;
         }
         ShardingSpherePreconditions.checkState(port >= 0, () -> new IllegalArgumentException("MCP server port cannot be negative."));

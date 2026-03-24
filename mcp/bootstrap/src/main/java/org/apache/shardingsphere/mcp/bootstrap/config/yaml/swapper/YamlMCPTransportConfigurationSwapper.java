@@ -21,9 +21,6 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
 
-import java.util.Collections;
-import java.util.Map;
-
 /**
  * YAML MCP transport configuration swapper.
  */
@@ -43,19 +40,7 @@ public final class YamlMCPTransportConfigurationSwapper implements YamlConfigura
     
     @Override
     public MCPTransportConfiguration swapToObject(final YamlMCPTransportConfiguration yamlConfig) {
-        return swapToObject(yamlConfig, Collections.emptyMap());
-    }
-    
-    MCPTransportConfiguration swapToObject(final YamlMCPTransportConfiguration yamlConfig, final Map<String, Object> configuredSections) {
         YamlMCPTransportConfiguration actualYamlConfig = null == yamlConfig ? new YamlMCPTransportConfiguration() : yamlConfig;
-        Map<String, Object> actualConfiguredSections = null == configuredSections ? Collections.emptyMap() : configuredSections;
-        return new MCPTransportConfiguration(httpConfigSwapper.swapToObject(actualYamlConfig.getHttp(), getConfiguredSection(actualConfiguredSections, "http")),
-                stdioConfigSwapper.swapToObject(actualYamlConfig.getStdio(), getConfiguredSection(actualConfiguredSections, "stdio")));
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> getConfiguredSection(final Map<String, Object> configuredSections, final String sectionName) {
-        Object section = configuredSections.get(sectionName);
-        return section instanceof Map ? (Map<String, Object>) section : Collections.emptyMap();
+        return new MCPTransportConfiguration(httpConfigSwapper.swapToObject(actualYamlConfig.getHttp()), stdioConfigSwapper.swapToObject(actualYamlConfig.getStdio()));
     }
 }

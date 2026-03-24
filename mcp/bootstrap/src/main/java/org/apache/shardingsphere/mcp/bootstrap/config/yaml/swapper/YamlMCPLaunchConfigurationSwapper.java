@@ -59,17 +59,13 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         Map<String, Object> yamlRoot = loadYamlRoot(yamlContent);
         validateRootSections(yamlRoot);
         YamlMCPLaunchConfiguration yamlConfig = YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class, true);
-        return swapToObject(yamlConfig, getConfiguredSection(yamlRoot, "transport"));
+        return swapToObject(yamlConfig);
     }
     
     @Override
     public MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
-        return swapToObject(yamlConfig, Collections.emptyMap());
-    }
-    
-    private MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig, final Map<String, Object> configuredTransportSections) {
         YamlMCPLaunchConfiguration actualYamlConfig = null == yamlConfig ? new YamlMCPLaunchConfiguration() : yamlConfig;
-        MCPTransportConfiguration transportConfig = transportConfigSwapper.swapToObject(actualYamlConfig.getTransport(), configuredTransportSections);
+        MCPTransportConfiguration transportConfig = transportConfigSwapper.swapToObject(actualYamlConfig.getTransport());
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = swapToRuntimeDatabases(actualYamlConfig.getRuntimeDatabases());
         return new MCPLaunchConfiguration(transportConfig, runtimeDatabases);
     }

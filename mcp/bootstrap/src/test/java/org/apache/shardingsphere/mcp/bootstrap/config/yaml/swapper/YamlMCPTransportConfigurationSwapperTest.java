@@ -25,8 +25,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlStdioTrans
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -55,7 +53,7 @@ class YamlMCPTransportConfigurationSwapperTest {
         stdio.setEnabled(true);
         yamlConfig.setStdio(stdio);
         
-        MCPTransportConfiguration actual = swapper.swapToObject(yamlConfig, Map.of("http", Map.of("enabled", false), "stdio", Map.of("enabled", true)));
+        MCPTransportConfiguration actual = swapper.swapToObject(yamlConfig);
         
         assertFalse(actual.getHttp().isEnabled());
         assertTrue(actual.getStdio().isEnabled());

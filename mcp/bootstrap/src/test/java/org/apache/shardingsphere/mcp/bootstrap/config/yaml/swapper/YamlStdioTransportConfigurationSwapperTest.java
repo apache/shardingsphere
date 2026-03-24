@@ -21,8 +21,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguratio
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlStdioTransportConfiguration;
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -42,7 +40,7 @@ class YamlStdioTransportConfigurationSwapperTest {
         YamlStdioTransportConfiguration yamlConfig = new YamlStdioTransportConfiguration();
         yamlConfig.setEnabled(false);
         
-        StdioTransportConfiguration actual = swapper.swapToObject(yamlConfig, Map.of("enabled", false));
+        StdioTransportConfiguration actual = swapper.swapToObject(yamlConfig);
         
         assertFalse(actual.isEnabled());
     }

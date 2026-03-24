@@ -21,8 +21,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -46,10 +44,21 @@ class YamlHttpTransportConfigurationSwapperTest {
         yamlConfig.setEnabled(false);
         yamlConfig.setPort(-1);
         
-        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig, Map.of("enabled", false, "port", -1));
+        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig);
         
         assertFalse(actual.isEnabled());
         assertThat(actual.getPort(), is(18088));
+    }
+    
+    @Test
+    void assertSwapToObjectWithZeroPort() {
+        YamlHttpTransportConfiguration yamlConfig = new YamlHttpTransportConfiguration();
+        yamlConfig.setPort(0);
+        
+        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig);
+        
+        assertTrue(actual.isEnabled());
+        assertThat(actual.getPort(), is(0));
     }
     
     @Test
