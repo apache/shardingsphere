@@ -73,6 +73,7 @@ public final class ShardingTable {
     
     private final ShardingAuditStrategyConfiguration auditStrategyConfig;
     
+    // TODO Remove this when #38178 finished.
     @Getter(AccessLevel.NONE)
     private final String generateKeyColumn;
     
