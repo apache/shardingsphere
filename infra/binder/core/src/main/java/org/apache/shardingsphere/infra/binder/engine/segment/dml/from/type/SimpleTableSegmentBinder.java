@@ -90,7 +90,7 @@ public final class SimpleTableSegmentBinder {
         IdentifierValue databaseName = getDatabaseName(segment, binderContext);
         Optional<IdentifierValue> schemaName = getSchemaName(segment, binderContext, databaseName);
         IdentifierValue tableName = segment.getTableName().getIdentifier();
-        Optional<ShardingSphereSchema> schema = schemaName.map(identifierValue -> binderContext.getMetaData().getDatabase(databaseName.getValue()).getSchema(identifierValue.getValue()));
+        Optional<ShardingSphereSchema> schema = schemaName.map(identifierValue -> binderContext.getMetaData().getDatabase(databaseName).getSchema(identifierValue));
         checkTableExists(binderContext, schema.orElse(null), tableName.getValue(), segment);
         checkTableMetadata(binderContext, schema.orElse(null), schemaName.map(IdentifierValue::getValue).orElse(null), tableName.getValue());
         createSimpleTableBinderContext(segment, schema.orElse(null), databaseName, schemaName.orElse(null), binderContext)
@@ -114,7 +114,7 @@ public final class SimpleTableSegmentBinder {
     
     private static Optional<IdentifierValue> getSchemaName(final SimpleTableSegment segment, final SQLStatementBinderContext binderContext, final IdentifierValue databaseName) {
         Optional<IdentifierValue> result = getSchemaName(segment, binderContext);
-        result.ifPresent(identifierValue -> ShardingSpherePreconditions.checkState(binderContext.getMetaData().getDatabase(databaseName.getValue()).containsSchema(identifierValue.getValue()),
+        result.ifPresent(identifierValue -> ShardingSpherePreconditions.checkState(binderContext.getMetaData().getDatabase(databaseName).containsSchema(identifierValue),
                 () -> new SchemaNotFoundException(identifierValue.getValue())));
         return result;
     }
