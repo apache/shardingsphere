@@ -20,53 +20,68 @@ package org.apache.shardingsphere.mode.exclusive;
 import org.apache.shardingsphere.mode.exclusive.callback.ExclusiveOperationCallback;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-@ExtendWith(MockitoExtension.class)
 class ExclusiveOperatorEngineTest {
     
-    @Mock
-    private ExclusiveOperatorContext context;
+    private StubExclusiveOperatorContext context;
     
     private ExclusiveOperatorEngine engine;
     
     @BeforeEach
     void setUp() {
+        context = new StubExclusiveOperatorContext();
         engine = new ExclusiveOperatorEngine(context);
     }
     
     @Test
     void assertOperate() throws SQLException {
         long timeoutMillis = 100L;
-        when(context.start("/exclusive_operation/foo_operation", timeoutMillis)).thenReturn(true);
         AtomicBoolean callbackExecuted = new AtomicBoolean(false);
+        context.startResult = Optional.of(() -> context.closed.set(true));
         engine.operate(() -> "foo_operation", timeoutMillis, () -> callbackExecuted.set(true));
         assertTrue(callbackExecuted.get());
-        verify(context).start("/exclusive_operation/foo_operation", timeoutMillis);
-        verify(context).stop("/exclusive_operation/foo_operation");
+        assertThat(context.actualOperationKey, is("/exclusive_operation/foo_operation"));
+        assertThat(context.actualTimeoutMillis, is(timeoutMillis));
+        assertTrue(context.closed.get());
     }
     
     @Test
     void assertOperateWithResult() throws SQLException {
         @SuppressWarnings("unchecked")
-        ExclusiveOperationCallback<String> callback = mock(ExclusiveOperationCallback.class);
+        ExclusiveOperationCallback<String> callback = () -> "ignored";
         long timeoutMillis = 100L;
+        context.startResult = Optional.empty();
         assertNull(engine.operateWithResult(() -> "foo_operation", timeoutMillis, callback));
-        verify(context).start("/exclusive_operation/foo_operation", timeoutMillis);
-        verify(context, never()).stop(anyString());
-        verify(callback, never()).execute();
+        assertThat(context.actualOperationKey, is("/exclusive_operation/foo_operation"));
+        assertThat(context.actualTimeoutMillis, is(timeoutMillis));
+        assertFalse(context.closed.get());
+    }
+    
+    private static final class StubExclusiveOperatorContext implements ExclusiveOperatorContext {
+        
+        private String actualOperationKey;
+        
+        private long actualTimeoutMillis;
+        
+        private Optional<ExclusiveLockHandle> startResult = Optional.empty();
+        
+        private final AtomicBoolean closed = new AtomicBoolean(false);
+        
+        @Override
+        public Optional<ExclusiveLockHandle> start(final String operationKey, final long timeoutMillis) {
+            actualOperationKey = operationKey;
+            actualTimeoutMillis = timeoutMillis;
+            return startResult;
+        }
     }
 }

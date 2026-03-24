@@ -24,17 +24,13 @@ import org.apache.shardingsphere.mode.repository.cluster.core.lock.type.DefaultD
 import org.apache.shardingsphere.mode.repository.cluster.core.lock.type.props.DefaultLockTypedProperties;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 
-import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Distributed lock holder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DistributedLockHolder {
-    
-    private static final Map<String, DistributedLock> LOCKS = new ConcurrentHashMap<>();
     
     /**
      * Get distributed lock.
@@ -44,10 +40,6 @@ public final class DistributedLockHolder {
      * @return got distributed lock
      */
     public static DistributedLock getDistributedLock(final String lockKey, final ClusterPersistRepository repository) {
-        return LOCKS.computeIfAbsent(lockKey, key -> loadDistributedLock(lockKey, repository));
-    }
-    
-    private static DistributedLock loadDistributedLock(final String lockKey, final ClusterPersistRepository repository) {
         return repository.getDistributedLock(lockKey).orElseGet(() -> new DefaultDistributedLock(lockKey, repository, new DefaultLockTypedProperties(new Properties())));
     }
 }
