@@ -60,8 +60,6 @@ class MCPBootstrapTest {
                 + "    databaseType: H2\n"
                 + "    jdbcUrl: '" + jdbcUrl + "'\n"
                 + "    driverClassName: org.h2.Driver\n"
-                + "    schemaPattern: public\n"
-                + "    defaultSchema: public\n"
                 + "    supportsCrossSchemaSql: true\n"
                 + "    supportsExplainAnalyze: false\n");
         return result;
@@ -77,13 +75,9 @@ class MCPBootstrapTest {
                 + "  http:\n"
                 + "    enabled: false\n"
                 + "runtime:\n"
-                + "  defaults:\n"
+                + "  databaseDefaults:\n"
                 + "    databaseType: H2\n"
                 + "    driverClassName: org.h2.Driver\n"
-                + "    schemaPattern: public\n"
-                + "    defaultSchema: public\n"
-                + "    supportsCrossSchemaSql: true\n"
-                + "    supportsExplainAnalyze: false\n"
                 + "  databases:\n"
                 + "    orders:\n"
                 + "      jdbcUrl: '" + firstJdbcUrl + "'\n"

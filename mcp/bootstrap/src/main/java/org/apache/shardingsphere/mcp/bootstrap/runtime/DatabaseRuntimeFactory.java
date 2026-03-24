@@ -55,9 +55,8 @@ public final class DatabaseRuntimeFactory {
         validateLegacyRuntimeProperties(actualProps);
         return createConnectionConfigurations(Collections.singletonMap(getRequiredProperty(actualProps, DATABASE_NAME_KEY),
                 new RuntimeDatabaseConfiguration(getRequiredProperty(actualProps, "databaseType"), getRequiredProperty(actualProps, "jdbcUrl"),
-                        getProperty(actualProps, "username"), getProperty(actualProps, "password"), getProperty(actualProps, "driverClassName"),
-                        getProperty(actualProps, "schemaPattern"), getProperty(actualProps, "defaultSchema"),
-                        Boolean.parseBoolean(getProperty(actualProps, "supportsCrossSchemaSql", "false")),
+                        getProperty(actualProps, "username"), getProperty(actualProps, "password"), getProperty(actualProps, "driverClassName"), actualProps.containsKey("supportsCrossSchemaSql"),
+                        Boolean.parseBoolean(getProperty(actualProps, "supportsCrossSchemaSql", "false")), actualProps.containsKey("supportsExplainAnalyze"),
                         Boolean.parseBoolean(getProperty(actualProps, "supportsExplainAnalyze", "false")))));
     }
     
@@ -110,9 +109,10 @@ public final class DatabaseRuntimeFactory {
         RuntimeDatabaseConfiguration actualRuntimeDatabaseConfiguration = Objects.requireNonNull(runtimeDatabaseConfiguration, "runtimeDatabaseConfiguration cannot be null");
         return new DatabaseConnectionConfiguration(databaseName, getRequiredValue(actualRuntimeDatabaseConfiguration.getDatabaseType(), databaseName, "databaseType"),
                 getRequiredValue(actualRuntimeDatabaseConfiguration.getJdbcUrl(), databaseName, "jdbcUrl"), actualRuntimeDatabaseConfiguration.getUsername(),
-                actualRuntimeDatabaseConfiguration.getPassword(), actualRuntimeDatabaseConfiguration.getDriverClassName(), actualRuntimeDatabaseConfiguration.getSchemaPattern(),
-                actualRuntimeDatabaseConfiguration.getDefaultSchema(), actualRuntimeDatabaseConfiguration.isSupportsCrossSchemaSql(),
-                actualRuntimeDatabaseConfiguration.isSupportsExplainAnalyze());
+                actualRuntimeDatabaseConfiguration.getPassword(), actualRuntimeDatabaseConfiguration.getDriverClassName(),
+                actualRuntimeDatabaseConfiguration.isLegacySupportsCrossSchemaSqlConfigured(),
+                actualRuntimeDatabaseConfiguration.isLegacySupportsCrossSchemaSql(), actualRuntimeDatabaseConfiguration.isLegacySupportsExplainAnalyzeConfigured(),
+                actualRuntimeDatabaseConfiguration.isLegacySupportsExplainAnalyze());
     }
     
     private void refreshMetadata(final String database, final Map<String, DatabaseConnectionConfiguration> connectionConfigurations,

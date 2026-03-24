@@ -51,7 +51,7 @@ class MCPLaunchConfigurationTest {
     @Test
     void assertGetRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = Map.of("logic_db",
-                new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false));
+                new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", false, false, false, false));
         MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(new Properties(), runtimeDatabases);
         
         assertThat(launchConfiguration.getRuntimeDatabases().get("logic_db").getDatabaseType(), is("H2"));

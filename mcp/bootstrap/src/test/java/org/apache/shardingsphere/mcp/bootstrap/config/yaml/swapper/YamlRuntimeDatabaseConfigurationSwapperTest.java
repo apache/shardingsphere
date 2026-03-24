@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -42,45 +41,49 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
         assertThat(actual.getDatabaseType(), is("H2"));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:logic"));
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
-        assertThat(actual.getSchemaPattern(), is("public"));
-        assertTrue(actual.isSupportsCrossSchemaSql());
+        assertTrue(actual.isLegacySupportsCrossSchemaSqlConfigured());
+        assertTrue(actual.isLegacySupportsCrossSchemaSql());
     }
     
     @Test
     void assertSwapToObjectWithRuntimeDefaults() {
-        Map<String, String> runtimeDefaults = new LinkedHashMap<>(4, 1F);
-        runtimeDefaults.put("databaseType", "H2");
-        runtimeDefaults.put("jdbcUrl", "jdbc:h2:mem:logic");
-        runtimeDefaults.put("driverClassName", "org.h2.Driver");
-        runtimeDefaults.put("supportsCrossSchemaSql", "true");
+        YamlRuntimeDatabaseConfiguration runtimeDefaults = new YamlRuntimeDatabaseConfiguration();
+        runtimeDefaults.setDatabaseType("H2");
+        runtimeDefaults.setJdbcUrl("jdbc:h2:mem:logic");
+        runtimeDefaults.setDriverClassName("org.h2.Driver");
+        Map<String, String> legacyRuntimeDefaults = new LinkedHashMap<>(1, 1F);
+        legacyRuntimeDefaults.put("supportsCrossSchemaSql", "true");
         
-        RuntimeDatabaseConfiguration actual = swapper.swapToObject("logic_db", new YamlRuntimeDatabaseConfiguration(), runtimeDefaults);
+        RuntimeDatabaseConfiguration actual = swapper.swapToObject("logic_db", new YamlRuntimeDatabaseConfiguration(), runtimeDefaults, legacyRuntimeDefaults);
         
         assertThat(actual.getDatabaseType(), is("H2"));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:logic"));
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
-        assertTrue(actual.isSupportsCrossSchemaSql());
+        assertTrue(actual.isLegacySupportsCrossSchemaSqlConfigured());
+        assertTrue(actual.isLegacySupportsCrossSchemaSql());
     }
     
     @Test
     void assertSwapToObjectWithExplicitBooleanOverridesRuntimeDefaults() {
-        Map<String, String> runtimeDefaults = new LinkedHashMap<>(5, 1F);
-        runtimeDefaults.put("databaseType", "H2");
-        runtimeDefaults.put("jdbcUrl", "jdbc:h2:mem:logic");
-        runtimeDefaults.put("driverClassName", "org.h2.Driver");
-        runtimeDefaults.put("supportsCrossSchemaSql", "true");
+        YamlRuntimeDatabaseConfiguration runtimeDefaults = new YamlRuntimeDatabaseConfiguration();
+        runtimeDefaults.setDatabaseType("H2");
+        runtimeDefaults.setJdbcUrl("jdbc:h2:mem:logic");
+        runtimeDefaults.setDriverClassName("org.h2.Driver");
+        Map<String, String> legacyRuntimeDefaults = new LinkedHashMap<>(1, 1F);
+        legacyRuntimeDefaults.put("supportsCrossSchemaSql", "true");
         YamlRuntimeDatabaseConfiguration yamlConfig = new YamlRuntimeDatabaseConfiguration();
         yamlConfig.setSupportsCrossSchemaSql(false);
         
-        RuntimeDatabaseConfiguration actual = swapper.swapToObject("logic_db", yamlConfig, runtimeDefaults, Set.of("supportsCrossSchemaSql"));
+        RuntimeDatabaseConfiguration actual = swapper.swapToObject("logic_db", yamlConfig, runtimeDefaults, legacyRuntimeDefaults);
         
-        assertFalse(actual.isSupportsCrossSchemaSql());
+        assertTrue(actual.isLegacySupportsCrossSchemaSqlConfigured());
+        assertFalse(actual.isLegacySupportsCrossSchemaSql());
     }
     
     @Test
     void assertSwapToObjectWithRequiredFieldMissing() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> swapper.swapToObject("logic_db", new YamlRuntimeDatabaseConfiguration(), new LinkedHashMap<>()));
+                () -> swapper.swapToObject("logic_db", new YamlRuntimeDatabaseConfiguration(), new YamlRuntimeDatabaseConfiguration(), new LinkedHashMap<>()));
         
         assertThat(actual.getMessage(), is("Runtime database `logic_db` property `databaseType` is required."));
     }
@@ -88,13 +91,13 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
     @Test
     void assertSwapToYamlConfiguration() {
         YamlRuntimeDatabaseConfiguration actual = swapper.swapToYamlConfiguration(
-                new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", false, true));
+                new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", false, false, false, false));
         
         assertThat(actual.getDatabaseType(), is("H2"));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:logic"));
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
-        assertTrue(actual.isSupportsExplainAnalyze());
-        assertFalse(actual.isSupportsCrossSchemaSql());
+        assertThat(actual.getSupportsExplainAnalyze(), is((Boolean) null));
+        assertThat(actual.getSupportsCrossSchemaSql(), is((Boolean) null));
     }
     
     private YamlRuntimeDatabaseConfiguration createYamlConfig() {
@@ -104,8 +107,6 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
         result.setUsername("");
         result.setPassword("");
         result.setDriverClassName("org.h2.Driver");
-        result.setSchemaPattern("public");
-        result.setDefaultSchema("public");
         result.setSupportsCrossSchemaSql(true);
         result.setSupportsExplainAnalyze(false);
         return result;

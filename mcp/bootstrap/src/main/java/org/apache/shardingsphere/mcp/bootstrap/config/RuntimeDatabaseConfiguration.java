@@ -37,11 +37,11 @@ public final class RuntimeDatabaseConfiguration {
     
     private final String driverClassName;
     
-    private final String schemaPattern;
+    private final boolean legacySupportsCrossSchemaSqlConfigured;
     
-    private final String defaultSchema;
+    private final boolean legacySupportsCrossSchemaSql;
     
-    private final boolean supportsCrossSchemaSql;
+    private final boolean legacySupportsExplainAnalyzeConfigured;
     
-    private final boolean supportsExplainAnalyze;
+    private final boolean legacySupportsExplainAnalyze;
 }

@@ -33,23 +33,22 @@
   - `username`
   - `password`
   - `driverClassName`
-  - `metadata`
 - **Validation rules**:
   - `database` 必须显式命名且在一个 runtime 中唯一。
   - `databaseType` 与 `jdbcUrl` 是 direct binding 的最小必填项。
   - `driverClassName` 为可选覆盖项，而不是必填项。
-  - `metadata` 中的字段只影响 metadata 装载边界与 fallback。
+  - schema 范围与默认 schema 不再由 operator 配置提供。
 
-### MetadataScopeConfiguration
+### RuntimeSchemaDiscoveryFacts
 
-- **Purpose**: 描述 direct runtime 在 metadata 发现阶段的范围和 fallback 规则。
+- **Purpose**: 描述 direct runtime 在 metadata 发现阶段由 JDBC 自动识别出的 schema 事实。
 - **Fields**:
-  - `schemaPattern`
+  - `discoveredSchemas`
   - `defaultSchema`
 - **Validation rules**:
-  - `schemaPattern` 用于显式限定 metadata discovery 的 schema 范围。
-  - `defaultSchema` 用于 schema 自动探测缺失时的 fallback 和 descriptor 输出。
-  - per-database metadata 覆盖 shared `databaseDefaults.metadata`。
+  - 优先使用 `Connection.getSchema()`。
+  - 若当前 schema 不可用，则回退到 `DatabaseMetaData.getSchemas()` 过滤后的结果。
+  - `defaultSchema` 是运行时事实，可为空，但不是 operator-facing 输入。
 
 ### DerivedDatabaseCapabilityFacts
 
@@ -96,7 +95,6 @@
 - `RuntimeConfigurationEnvelope.runtime` 包含一个 `DirectRuntimeConfiguration`。
 - `DirectRuntimeConfiguration.databaseDefaults` 为多个
   `LogicalDatabaseBindingConfiguration` 提供共享缺省值。
-- 每个 `LogicalDatabaseBindingConfiguration` 包含一个 `MetadataScopeConfiguration`。
 - 每个 logical database 在 metadata 加载和 capability 装配后生成一个
   `DerivedDatabaseCapabilityFacts`。
 - `LegacyRuntimeAliasInput` 在 loader 中被转换成 canonical
@@ -106,17 +104,11 @@
 
 ```yaml
 runtime:
-  databaseDefaults:
-    metadata:
-      schemaPattern: public
-      defaultSchema: public
   databases:
     orders:
       databaseType: H2
       jdbcUrl: jdbc:h2:file:./data/orders
       driverClassName: org.h2.Driver
-      metadata:
-        defaultSchema: public
 ```
 
 ## Legacy-to-Canonical Mapping
@@ -146,8 +138,7 @@ runtime:
 ```yaml
 runtime:
   defaults:
-    schemaPattern: public
-    defaultSchema: public
+    driverClassName: org.h2.Driver
 ```
 
 maps to:
@@ -155,9 +146,7 @@ maps to:
 ```yaml
 runtime:
   databaseDefaults:
-    metadata:
-      schemaPattern: public
-      defaultSchema: public
+    driverClassName: org.h2.Driver
 ```
 
 ## State Transitions
@@ -167,7 +156,7 @@ runtime:
 - `canonicalized -> validated`
   - 检查 logical database 唯一性、必填字段和 canonical/legacy 冲突。
 - `validated -> metadata_loaded`
-  - direct runtime 根据 binding 与 metadata scope 装载 runtime metadata。
+  - direct runtime 根据 binding 与 JDBC metadata 自动装载 runtime metadata。
 - `metadata_loaded -> capability_derived`
   - capability assembler 根据 type-level defaults、数据库版本和运行时 metadata
     生成 `DerivedDatabaseCapabilityFacts`。

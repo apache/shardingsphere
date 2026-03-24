@@ -53,14 +53,16 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "runtime:\n"
                 + "  props:\n"
                 + "    databaseName: logic_db\n"
-                + "    databaseType: H2\n");
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n");
         
         assertThat(actual.getTransport().getHttp().getBindHost(), is("0.0.0.0"));
         assertThat(actual.getTransport().getHttp().getPort(), is(9090));
         assertThat(actual.getTransport().getHttp().getEndpointPath(), is("/gateway"));
         assertTrue(actual.getTransport().getHttp().isEnabled());
         assertFalse(actual.getTransport().getStdio().isEnabled());
-        assertThat(actual.getRuntimeProps().getProperty("databaseName"), is("logic_db"));
+        assertTrue(actual.getRuntimeProps().isEmpty());
+        assertThat(actual.getRuntimeDatabases().get("logic_db").getDatabaseType(), is("H2"));
     }
     
     @Test
@@ -82,7 +84,8 @@ class YamlMCPLaunchConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfigurationWithRuntimeProps() {
-        Properties runtimeProps = PropertiesBuilder.build(new Property("databaseName", "logic_db"), new Property("databaseType", "H2"));
+        Properties runtimeProps = PropertiesBuilder.build(
+                new Property("databaseName", "logic_db"), new Property("databaseType", "H2"), new Property("jdbcUrl", "jdbc:h2:mem:logic"));
         MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(new TransportConfiguration(
                 new HttpTransportConfiguration(true, "127.0.0.1", 18088, "/mcp"), new StdioTransportConfiguration(false)),
                 runtimeProps, new LinkedHashMap<>());
@@ -92,14 +95,14 @@ class YamlMCPLaunchConfigurationSwapperTest {
         assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));
         assertTrue(actual.getTransport().getHttp().isEnabled());
         assertFalse(actual.getTransport().getStdio().isEnabled());
-        assertThat(actual.getRuntime().getProps().get("databaseName"), is("logic_db"));
-        assertTrue(actual.getRuntime().getDatabases().isEmpty());
+        assertTrue(actual.getRuntime().getProps().isEmpty());
+        assertThat(actual.getRuntime().getDatabases().get("logic_db").getDatabaseType(), is("H2"));
     }
     
     @Test
     void assertSwapToYamlConfigurationWithRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> databases = new LinkedHashMap<>(1, 1F);
-        databases.put("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false));
+        databases.put("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", false, false, false, false));
         MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(new TransportConfiguration(
                 new HttpTransportConfiguration(true, "127.0.0.1", 18088, "/mcp"), new StdioTransportConfiguration(true)),
                 new Properties(), databases);

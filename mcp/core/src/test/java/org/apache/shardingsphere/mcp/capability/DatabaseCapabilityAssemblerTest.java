@@ -89,7 +89,7 @@ class DatabaseCapabilityAssemblerTest {
     void assertAssembleDatabaseCapabilityWithRuntimeOverlay() {
         MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of("logic_db", "MySQL"), Collections.emptyList(), Map.of(
                 "logic_db", new RuntimeDatabaseDescriptor("logic_db", "MySQL", EnumSet.of(SupportedObjectType.DATABASE, SupportedObjectType.SCHEMA,
-                        SupportedObjectType.TABLE, SupportedObjectType.COLUMN, SupportedObjectType.CAPABILITY), "public", true, true)));
+                        SupportedObjectType.TABLE, SupportedObjectType.COLUMN, SupportedObjectType.CAPABILITY), "8.0.32", "public", true, true, false, false)));
         DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler(metadataCatalog);
         
         Optional<DatabaseCapabilityView> actualCapability = assembler.assembleDatabaseCapability("logic_db", "mysql");
@@ -98,6 +98,21 @@ class DatabaseCapabilityAssemblerTest {
         assertFalse(actualCapability.get().getSupportedObjectTypes().contains(SupportedObjectType.INDEX));
         assertTrue(actualCapability.get().isSupportsCrossSchemaSql());
         assertTrue(actualCapability.get().isSupportsExplainAnalyze());
+    }
+    
+    @Test
+    void assertAssembleDatabaseCapabilityWithLegacyExplainAnalyzeOverride() {
+        MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of("logic_db", "MySQL"), Collections.emptyList(), Map.of(
+                "logic_db", new RuntimeDatabaseDescriptor("logic_db", "MySQL", EnumSet.of(SupportedObjectType.DATABASE, SupportedObjectType.SCHEMA,
+                        SupportedObjectType.TABLE, SupportedObjectType.COLUMN, SupportedObjectType.CAPABILITY), "8.0.32", "public", false, false, true, false)));
+        DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler(metadataCatalog);
+        
+        Optional<DatabaseCapabilityView> actualCapability = assembler.assembleDatabaseCapability("logic_db", "mysql");
+        
+        assertTrue(actualCapability.isPresent());
+        assertFalse(actualCapability.get().isSupportsExplainAnalyze());
+        assertThat(actualCapability.get().getExplainAnalyzeResultBehavior(), is(ResultBehavior.UNSUPPORTED));
+        assertThat(actualCapability.get().getExplainAnalyzeTransactionBehavior(), is(TransactionBoundaryBehavior.UNSUPPORTED));
     }
     
     @Test

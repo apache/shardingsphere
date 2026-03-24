@@ -23,12 +23,11 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 import org.yaml.snakeyaml.Yaml;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -36,6 +35,8 @@ import java.util.Map.Entry;
  * YAML MCP launch configuration swapper.
  */
 public final class YamlMCPLaunchConfigurationSwapper implements YamlConfigurationSwapper<YamlMCPLaunchConfiguration, MCPLaunchConfiguration> {
+    
+    private static final System.Logger LOGGER = System.getLogger(YamlMCPLaunchConfigurationSwapper.class.getName());
     
     private final YamlTransportConfigurationSwapper transportConfigSwapper = new YamlTransportConfigurationSwapper();
     
@@ -58,19 +59,19 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     public MCPLaunchConfiguration swapToObject(final String yamlContent) {
         YamlMCPLaunchConfiguration yamlConfig = YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class, true);
         Map<String, Object> yamlRoot = loadYamlRoot(yamlContent);
-        return swapToObject(yamlConfig, getConfiguredSection(yamlRoot, "transport"), getConfiguredRuntimeBooleanFields(yamlRoot));
+        logLegacyRuntimeWarnings(yamlConfig.getRuntime());
+        return swapToObject(yamlConfig, getConfiguredSection(yamlRoot, "transport"));
     }
     
     @Override
     public MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
-        return swapToObject(yamlConfig, Collections.emptyMap(), Collections.emptyMap());
+        return swapToObject(yamlConfig, Collections.emptyMap());
     }
     
-    private MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig, final Map<String, Object> configuredTransportSections,
-                                                final Map<String, Collection<String>> configuredRuntimeBooleanFields) {
+    private MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig, final Map<String, Object> configuredTransportSections) {
         YamlMCPLaunchConfiguration actualYamlConfig = null == yamlConfig ? new YamlMCPLaunchConfiguration() : yamlConfig;
         TransportConfiguration transportConfig = transportConfigSwapper.swapToObject(actualYamlConfig.getTransport(), configuredTransportSections);
-        RuntimeConfiguration runtimeConfig = runtimeConfigSwapper.swapToObject(actualYamlConfig.getRuntime(), configuredRuntimeBooleanFields);
+        RuntimeConfiguration runtimeConfig = runtimeConfigSwapper.swapToObject(actualYamlConfig.getRuntime());
         return new MCPLaunchConfiguration(transportConfig, runtimeConfig.getProps(), runtimeConfig.getDatabases());
     }
     
@@ -86,30 +87,28 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         return section instanceof Map ? (Map<String, Object>) section : Collections.emptyMap();
     }
     
-    private Map<String, Collection<String>> getConfiguredRuntimeBooleanFields(final Map<String, Object> yamlRoot) {
-        Map<String, Collection<String>> result = new LinkedHashMap<>();
-        Object runtimeSection = yamlRoot.get("runtime");
-        if (!(runtimeSection instanceof Map)) {
-            return result;
+    private void logLegacyRuntimeWarnings(final YamlRuntimeConfiguration runtimeConfig) {
+        if (null == runtimeConfig) {
+            return;
         }
-        Object databasesSection = ((Map<?, ?>) runtimeSection).get("databases");
-        if (!(databasesSection instanceof Map)) {
-            return result;
+        if (null != runtimeConfig.getProps() && !runtimeConfig.getProps().isEmpty()) {
+            LOGGER.log(System.Logger.Level.WARNING, "`runtime.props` is deprecated. Use `runtime.databases` instead.");
         }
-        for (Entry<?, ?> entry : ((Map<?, ?>) databasesSection).entrySet()) {
-            if (!(entry.getValue() instanceof Map)) {
-                continue;
-            }
-            Collection<String> configuredFieldNames = new LinkedHashSet<>();
-            if (((Map<?, ?>) entry.getValue()).containsKey("supportsCrossSchemaSql")) {
-                configuredFieldNames.add("supportsCrossSchemaSql");
-            }
-            if (((Map<?, ?>) entry.getValue()).containsKey("supportsExplainAnalyze")) {
-                configuredFieldNames.add("supportsExplainAnalyze");
-            }
-            result.put(String.valueOf(entry.getKey()).trim(), configuredFieldNames);
+        if (null != runtimeConfig.getDefaults() && !runtimeConfig.getDefaults().isEmpty()) {
+            LOGGER.log(System.Logger.Level.WARNING, "`runtime.defaults` is deprecated. Use `runtime.databaseDefaults` instead.");
         }
-        return result;
+        if (containsLegacyCapabilityBooleans(runtimeConfig.getDatabaseDefaults())) {
+            LOGGER.log(System.Logger.Level.WARNING, "Legacy capability booleans are deprecated. Capability values are derived automatically.");
+        }
+        for (Entry<String, YamlRuntimeDatabaseConfiguration> entry : runtimeConfig.getDatabases().entrySet()) {
+            if (containsLegacyCapabilityBooleans(entry.getValue())) {
+                LOGGER.log(System.Logger.Level.WARNING, "Legacy capability booleans for runtime database `{0}` are deprecated. Capability values are derived automatically.",
+                        entry.getKey());
+            }
+        }
     }
     
+    private boolean containsLegacyCapabilityBooleans(final YamlRuntimeDatabaseConfiguration databaseConfig) {
+        return null != databaseConfig && (null != databaseConfig.getSupportsCrossSchemaSql() || null != databaseConfig.getSupportsExplainAnalyze());
+    }
 }

@@ -46,7 +46,7 @@ Notes:
 - The packaged demo runtime enables both HTTP and STDIO. This quick start exercises the HTTP endpoint only.
 - `bin/start.sh` validates the config file, runtime libraries, and Java availability before startup, creates `data/`, `logs/`, and `ext-lib/`, then starts from the package root so relative runtime paths resolve consistently.
 - If startup succeeds, the process stays running in the foreground. If it exits immediately, inspect the terminal error and `logs/mcp.log` first.
-- The bundled demo runtime exposes one logical database named `logic_db` backed by the packaged H2 driver and seed data under `data/mcp-demo`.
+- The bundled demo runtime exposes two logical databases named `orders` and `billing`, both backed by the packaged H2 driver and seed data under `data/`.
 
 The default configuration is:
 
@@ -61,20 +61,13 @@ transport:
     enabled: true
 
 runtime:
-  defaults:
-    schemaPattern: public
-    defaultSchema: public
-    supportsCrossSchemaSql: true
-    supportsExplainAnalyze: false
   databases:
     orders:
       databaseType: H2
       jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
-      driverClassName: org.h2.Driver
     billing:
       databaseType: H2
       jdbcUrl: "jdbc:h2:file:./data/mcp-demo-billing;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
-      driverClassName: org.h2.Driver
 ```
 
 ### 3. Initialize one MCP session
@@ -120,7 +113,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"tool-2","method":"tools/call","params":{"name":"execute_query","arguments":{"database":"logic_db","schema":"public","sql":"SELECT status FROM orders ORDER BY order_id","max_rows":10}}}'
+  --data '{"jsonrpc":"2.0","id":"tool-2","method":"tools/call","params":{"name":"execute_query","arguments":{"database":"orders","schema":"public","sql":"SELECT status FROM orders ORDER BY order_id","max_rows":10}}}'
 ```
 
 Expected result:
@@ -230,7 +223,8 @@ Reference:
 ## Runtime Notes
 
 - The packaged `conf/mcp.yaml` now ships with a demo multi-database JDBC runtime block so the distribution can prove logical-database discovery and real query execution on the first run.
-- For real deployments, replace the `runtime` block with your own logical database mapping and JDBC connection properties. Prefer `runtime.databases` for direct multi-database connectivity; the legacy single-database `runtime.props` form remains supported for compatibility.
+- For real deployments, replace the `runtime` block with your own logical database mapping and JDBC connection properties. Use `runtime.databases` as the canonical direct runtime model and `runtime.databaseDefaults` only for shared connection defaults; schema discovery now comes from JDBC metadata, while the legacy single-database `runtime.props` form remains supported for compatibility.
+- `driverClassName` is optional for JDBC 4 drivers that auto-register through `DriverManager`. Keep it only when your target driver requires an explicit override.
 - If your target database driver is not already packaged, copy the driver jar under `ext-lib/` before running `bin/start.sh`.
 - For local-only HTTP usage, keep `transport.http.enabled: true` and set `transport.stdio.enabled: false` if you do not need STDIO.
 - For local in-process integration, keep `transport.stdio.enabled: true`. The packaged runtime starts the same STDIO runtime, but it does not expose a separate text shell.

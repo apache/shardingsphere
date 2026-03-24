@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -40,53 +38,54 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
         result.setUsername(data.getUsername());
         result.setPassword(data.getPassword());
         result.setDriverClassName(data.getDriverClassName());
-        result.setSchemaPattern(data.getSchemaPattern());
-        result.setDefaultSchema(data.getDefaultSchema());
-        result.setSupportsCrossSchemaSql(data.isSupportsCrossSchemaSql());
-        result.setSupportsExplainAnalyze(data.isSupportsExplainAnalyze());
         return result;
     }
     
     @Override
     public RuntimeDatabaseConfiguration swapToObject(final YamlRuntimeDatabaseConfiguration yamlConfig) {
-        return swapToObject("", yamlConfig, new LinkedHashMap<>(), Collections.emptySet());
+        return swapToObject("", yamlConfig, new YamlRuntimeDatabaseConfiguration(), new LinkedHashMap<>());
     }
     
-    RuntimeDatabaseConfiguration swapToObject(final String databaseName, final YamlRuntimeDatabaseConfiguration yamlConfig, final Map<String, String> runtimeDefaults) {
-        return swapToObject(databaseName, yamlConfig, runtimeDefaults, Collections.emptySet());
-    }
-    
-    RuntimeDatabaseConfiguration swapToObject(final String databaseName, final YamlRuntimeDatabaseConfiguration yamlConfig, final Map<String, String> runtimeDefaults,
-                                              final Collection<String> configuredFields) {
+    RuntimeDatabaseConfiguration swapToObject(final String databaseName, final YamlRuntimeDatabaseConfiguration yamlConfig, final YamlRuntimeDatabaseConfiguration databaseDefaults,
+                                              final Map<String, String> legacyRuntimeDefaults) {
         YamlRuntimeDatabaseConfiguration actualYamlConfig = null == yamlConfig ? new YamlRuntimeDatabaseConfiguration() : yamlConfig;
-        Map<String, String> actualRuntimeDefaults = null == runtimeDefaults ? new LinkedHashMap<>() : runtimeDefaults;
-        return new RuntimeDatabaseConfiguration(resolveRequiredText(actualYamlConfig.getDatabaseType(), actualRuntimeDefaults, "databaseType", databaseName),
-                resolveRequiredText(actualYamlConfig.getJdbcUrl(), actualRuntimeDefaults, "jdbcUrl", databaseName),
-                resolveText(actualYamlConfig.getUsername(), actualRuntimeDefaults, "username"),
-                resolveText(actualYamlConfig.getPassword(), actualRuntimeDefaults, "password"),
-                resolveText(actualYamlConfig.getDriverClassName(), actualRuntimeDefaults, "driverClassName"),
-                resolveText(actualYamlConfig.getSchemaPattern(), actualRuntimeDefaults, "schemaPattern"),
-                resolveText(actualYamlConfig.getDefaultSchema(), actualRuntimeDefaults, "defaultSchema"),
-                resolveBoolean(actualYamlConfig.isSupportsCrossSchemaSql(), configuredFields.contains("supportsCrossSchemaSql") || actualYamlConfig.isSupportsCrossSchemaSql(),
-                        actualRuntimeDefaults, "supportsCrossSchemaSql"),
-                resolveBoolean(actualYamlConfig.isSupportsExplainAnalyze(), configuredFields.contains("supportsExplainAnalyze") || actualYamlConfig.isSupportsExplainAnalyze(),
-                        actualRuntimeDefaults, "supportsExplainAnalyze"));
+        YamlRuntimeDatabaseConfiguration actualDatabaseDefaults = null == databaseDefaults ? new YamlRuntimeDatabaseConfiguration() : databaseDefaults;
+        Map<String, String> actualLegacyRuntimeDefaults = null == legacyRuntimeDefaults ? new LinkedHashMap<>() : legacyRuntimeDefaults;
+        return new RuntimeDatabaseConfiguration(resolveRequiredText(resolveText(actualYamlConfig.getDatabaseType(), actualDatabaseDefaults.getDatabaseType(),
+                actualLegacyRuntimeDefaults, "databaseType"), "databaseType", databaseName),
+                resolveRequiredText(resolveText(actualYamlConfig.getJdbcUrl(), actualDatabaseDefaults.getJdbcUrl(), actualLegacyRuntimeDefaults, "jdbcUrl"),
+                        "jdbcUrl", databaseName),
+                resolveText(actualYamlConfig.getUsername(), actualDatabaseDefaults.getUsername(), actualLegacyRuntimeDefaults, "username"),
+                resolveText(actualYamlConfig.getPassword(), actualDatabaseDefaults.getPassword(), actualLegacyRuntimeDefaults, "password"),
+                resolveText(actualYamlConfig.getDriverClassName(), actualDatabaseDefaults.getDriverClassName(), actualLegacyRuntimeDefaults, "driverClassName"),
+                isLegacyBooleanConfigured(actualYamlConfig.getSupportsCrossSchemaSql(), actualLegacyRuntimeDefaults, "supportsCrossSchemaSql"),
+                resolveLegacyBoolean(actualYamlConfig.getSupportsCrossSchemaSql(), actualLegacyRuntimeDefaults, "supportsCrossSchemaSql"),
+                isLegacyBooleanConfigured(actualYamlConfig.getSupportsExplainAnalyze(), actualLegacyRuntimeDefaults, "supportsExplainAnalyze"),
+                resolveLegacyBoolean(actualYamlConfig.getSupportsExplainAnalyze(), actualLegacyRuntimeDefaults, "supportsExplainAnalyze"));
     }
     
-    private String resolveRequiredText(final String value, final Map<String, String> runtimeDefaults, final String fieldName, final String databaseName) {
-        String result = resolveText(value, runtimeDefaults, fieldName);
+    private String resolveRequiredText(final String value, final String fieldName, final String databaseName) {
+        String result = normalizeText(value);
         ShardingSpherePreconditions.checkState(!result.isEmpty(),
                 () -> new IllegalArgumentException(formatRequiredMessage(databaseName, fieldName)));
         return result;
     }
     
-    private String resolveText(final String value, final Map<String, String> runtimeDefaults, final String fieldName) {
+    private String resolveText(final String value, final String defaultValue, final Map<String, String> legacyRuntimeDefaults, final String fieldName) {
         String result = normalizeText(value);
-        return result.isEmpty() ? normalizeText(runtimeDefaults.get(fieldName)) : result;
+        if (!result.isEmpty()) {
+            return result;
+        }
+        result = normalizeText(defaultValue);
+        return result.isEmpty() ? normalizeText(legacyRuntimeDefaults.get(fieldName)) : result;
     }
     
-    private boolean resolveBoolean(final boolean value, final boolean explicitlyConfigured, final Map<String, String> runtimeDefaults, final String fieldName) {
-        return explicitlyConfigured || !runtimeDefaults.containsKey(fieldName) ? value : Boolean.parseBoolean(normalizeText(runtimeDefaults.get(fieldName)));
+    private boolean isLegacyBooleanConfigured(final Boolean value, final Map<String, String> legacyRuntimeDefaults, final String fieldName) {
+        return null != value || legacyRuntimeDefaults.containsKey(fieldName);
+    }
+    
+    private boolean resolveLegacyBoolean(final Boolean value, final Map<String, String> legacyRuntimeDefaults, final String fieldName) {
+        return null != value ? value : Boolean.parseBoolean(normalizeText(legacyRuntimeDefaults.get(fieldName)));
     }
     
     private String normalizeText(final Object value) {

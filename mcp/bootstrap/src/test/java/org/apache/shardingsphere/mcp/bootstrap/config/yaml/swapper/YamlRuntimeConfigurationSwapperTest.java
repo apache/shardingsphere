@@ -42,20 +42,21 @@ class YamlRuntimeConfigurationSwapperTest {
         YamlRuntimeConfiguration yamlConfig = new YamlRuntimeConfiguration();
         yamlConfig.getProps().put("databaseName", "logic_db");
         yamlConfig.getProps().put("databaseType", "H2");
+        yamlConfig.getProps().put("jdbcUrl", "jdbc:h2:mem:logic");
         
         RuntimeConfiguration actual = swapper.swapToObject(yamlConfig);
         
-        assertThat(actual.getProps().getProperty("databaseName"), is("logic_db"));
-        assertTrue(actual.getDatabases().isEmpty());
+        assertTrue(actual.getProps().isEmpty());
+        assertThat(actual.getDatabases().get("logic_db").getDatabaseType(), is("H2"));
     }
     
     @Test
     void assertSwapToObjectWithRuntimeDatabases() {
+        YamlRuntimeDatabaseConfiguration databaseDefaults = new YamlRuntimeDatabaseConfiguration();
+        databaseDefaults.setDatabaseType("H2");
+        databaseDefaults.setDriverClassName("org.h2.Driver");
         YamlRuntimeConfiguration yamlConfig = new YamlRuntimeConfiguration();
-        yamlConfig.getDefaults().put("databaseType", "H2");
-        yamlConfig.getDefaults().put("driverClassName", "org.h2.Driver");
-        yamlConfig.getDefaults().put("schemaPattern", "public");
-        yamlConfig.getDefaults().put("defaultSchema", "public");
+        yamlConfig.setDatabaseDefaults(databaseDefaults);
         YamlRuntimeDatabaseConfiguration firstDatabaseConfig = new YamlRuntimeDatabaseConfiguration();
         firstDatabaseConfig.setJdbcUrl("jdbc:h2:mem:logic");
         yamlConfig.getDatabases().put(" logic_db ", firstDatabaseConfig);
@@ -68,7 +69,8 @@ class YamlRuntimeConfigurationSwapperTest {
         
         assertThat(actual.getDatabases().get("logic_db").getDatabaseType(), is("H2"));
         assertThat(actual.getDatabases().get("logic_db").getDriverClassName(), is("org.h2.Driver"));
-        assertTrue(actual.getDatabases().get("analytics_db").isSupportsCrossSchemaSql());
+        assertTrue(actual.getDatabases().get("analytics_db").isLegacySupportsCrossSchemaSqlConfigured());
+        assertTrue(actual.getDatabases().get("analytics_db").isLegacySupportsCrossSchemaSql());
     }
     
     @Test
@@ -88,8 +90,10 @@ class YamlRuntimeConfigurationSwapperTest {
     @Test
     void assertSwapToObjectWithBlankDatabaseName() {
         YamlRuntimeConfiguration yamlConfig = new YamlRuntimeConfiguration();
-        yamlConfig.getDefaults().put("databaseType", "H2");
-        yamlConfig.getDefaults().put("jdbcUrl", "jdbc:h2:mem:logic");
+        YamlRuntimeDatabaseConfiguration databaseDefaults = new YamlRuntimeDatabaseConfiguration();
+        databaseDefaults.setDatabaseType("H2");
+        databaseDefaults.setJdbcUrl("jdbc:h2:mem:logic");
+        yamlConfig.setDatabaseDefaults(databaseDefaults);
         yamlConfig.getDatabases().put(" ", new YamlRuntimeDatabaseConfiguration());
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
@@ -99,18 +103,19 @@ class YamlRuntimeConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfigurationWithRuntimeProps() {
-        RuntimeConfiguration runtimeConfig = new RuntimeConfiguration(PropertiesBuilder.build(new Property("databaseName", "logic_db")), new LinkedHashMap<>());
+        RuntimeConfiguration runtimeConfig = new RuntimeConfiguration(PropertiesBuilder.build(
+                new Property("databaseName", "logic_db"), new Property("databaseType", "H2"), new Property("jdbcUrl", "jdbc:h2:mem:logic")), new LinkedHashMap<>());
         
         YamlRuntimeConfiguration actual = swapper.swapToYamlConfiguration(runtimeConfig);
         
-        assertThat(actual.getProps().get("databaseName"), is("logic_db"));
-        assertTrue(actual.getDatabases().isEmpty());
+        assertTrue(actual.getProps().isEmpty());
+        assertTrue(actual.getDatabases().containsKey("logic_db"));
     }
     
     @Test
     void assertSwapToYamlConfigurationWithRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> databases = new LinkedHashMap<>(1, 1F);
-        databases.put("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false));
+        databases.put("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", false, false, false, false));
         RuntimeConfiguration runtimeConfig = new RuntimeConfiguration(PropertiesBuilder.build(), databases);
         
         YamlRuntimeConfiguration actual = swapper.swapToYamlConfiguration(runtimeConfig);

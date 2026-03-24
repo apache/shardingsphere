@@ -98,7 +98,7 @@ class JdbcMetadataLoaderTest {
         DriverManager.registerDriver(mockDriver);
         try {
             MetadataCatalog actual = metadataLoader.load(Map.of("logic_db",
-                    new DatabaseConnectionConfiguration("logic_db", "MySQL", "jdbc:mock:no-schema", "", "", "", "", "", false, false)));
+                    new DatabaseConnectionConfiguration("logic_db", "MySQL", "jdbc:mock:no-schema", "", "", "", false, false, false, false)));
             assertFalse(actual.getMetadataObjects().stream().anyMatch(each -> MetadataObjectType.SCHEMA == each.getObjectType()));
             assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "orders"));
             assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.COLUMN, "order_id"));
@@ -112,7 +112,7 @@ class JdbcMetadataLoaderTest {
     }
     
     private DatabaseConnectionConfiguration createConnectionConfiguration(final String database, final String jdbcUrl) {
-        return new DatabaseConnectionConfiguration(database, "H2", jdbcUrl, "", "", "org.h2.Driver", "public", "public", true, false);
+        return new DatabaseConnectionConfiguration(database, "H2", jdbcUrl, "", "", "org.h2.Driver", false, false, false, false);
     }
     
     private Connection createConnectionWithoutSchema() throws SQLException {

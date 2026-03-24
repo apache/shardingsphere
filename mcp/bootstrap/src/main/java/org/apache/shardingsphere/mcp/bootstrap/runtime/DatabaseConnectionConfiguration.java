@@ -39,13 +39,13 @@ public final class DatabaseConnectionConfiguration {
     
     private final String driverClassName;
     
-    private final String schemaPattern;
+    private final boolean legacySupportsCrossSchemaSqlConfigured;
     
-    private final String defaultSchema;
+    private final boolean legacySupportsCrossSchemaSql;
     
-    private final boolean supportsCrossSchemaSql;
+    private final boolean legacySupportsExplainAnalyzeConfigured;
     
-    private final boolean supportsExplainAnalyze;
+    private final boolean legacySupportsExplainAnalyze;
     
     /**
      * Construct one JDBC connection configuration.
@@ -56,23 +56,24 @@ public final class DatabaseConnectionConfiguration {
      * @param username username
      * @param password password
      * @param driverClassName driver class name
-     * @param schemaPattern schema pattern
-     * @param defaultSchema default schema
-     * @param supportsCrossSchemaSql cross-schema SQL support flag
-     * @param supportsExplainAnalyze explain analyze support flag
+     * @param legacySupportsCrossSchemaSqlConfigured legacy cross-schema SQL override configured flag
+     * @param legacySupportsCrossSchemaSql legacy cross-schema SQL override flag
+     * @param legacySupportsExplainAnalyzeConfigured legacy explain analyze override configured flag
+     * @param legacySupportsExplainAnalyze legacy explain analyze override flag
      */
     public DatabaseConnectionConfiguration(final String database, final String databaseType, final String jdbcUrl, final String username,
-                                           final String password, final String driverClassName, final String schemaPattern,
-                                           final String defaultSchema, final boolean supportsCrossSchemaSql, final boolean supportsExplainAnalyze) {
+                                           final String password, final String driverClassName, final boolean legacySupportsCrossSchemaSqlConfigured,
+                                           final boolean legacySupportsCrossSchemaSql, final boolean legacySupportsExplainAnalyzeConfigured,
+                                           final boolean legacySupportsExplainAnalyze) {
         this.database = Objects.requireNonNull(database, "database cannot be null");
         this.databaseType = Objects.requireNonNull(databaseType, "databaseType cannot be null");
         this.jdbcUrl = Objects.requireNonNull(jdbcUrl, "jdbcUrl cannot be null");
         this.username = Objects.requireNonNull(username, "username cannot be null");
         this.password = Objects.requireNonNull(password, "password cannot be null");
         this.driverClassName = Objects.requireNonNull(driverClassName, "driverClassName cannot be null");
-        this.schemaPattern = Objects.requireNonNull(schemaPattern, "schemaPattern cannot be null");
-        this.defaultSchema = Objects.requireNonNull(defaultSchema, "defaultSchema cannot be null");
-        this.supportsCrossSchemaSql = supportsCrossSchemaSql;
-        this.supportsExplainAnalyze = supportsExplainAnalyze;
+        this.legacySupportsCrossSchemaSqlConfigured = legacySupportsCrossSchemaSqlConfigured;
+        this.legacySupportsCrossSchemaSql = legacySupportsCrossSchemaSql;
+        this.legacySupportsExplainAnalyzeConfigured = legacySupportsExplainAnalyzeConfigured;
+        this.legacySupportsExplainAnalyze = legacySupportsExplainAnalyze;
     }
 }

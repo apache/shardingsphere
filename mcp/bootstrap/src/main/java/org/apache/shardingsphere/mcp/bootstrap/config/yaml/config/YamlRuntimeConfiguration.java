@@ -35,5 +35,7 @@ public final class YamlRuntimeConfiguration implements YamlConfiguration {
     
     private Map<String, String> defaults = new LinkedHashMap<>();
     
+    private YamlRuntimeDatabaseConfiguration databaseDefaults;
+    
     private Map<String, YamlRuntimeDatabaseConfiguration> databases = new LinkedHashMap<>();
 }

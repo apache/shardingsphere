@@ -58,10 +58,6 @@ public final class H2RuntimeTestSupport {
         result.setProperty("databaseType", "H2");
         result.setProperty("jdbcUrl", jdbcUrl);
         result.setProperty("driverClassName", "org.h2.Driver");
-        result.setProperty("schemaPattern", "public");
-        result.setProperty("defaultSchema", "public");
-        result.setProperty("supportsCrossSchemaSql", "true");
-        result.setProperty("supportsExplainAnalyze", "false");
         return result;
     }
     

@@ -544,7 +544,7 @@ flowchart TB
 
 ### 15.1 运行边界
 - V1 内置 runtime 聚焦 session 协商、会话状态维护与运行边界校验。
-- follow-up production runtime 路径通过 `runtime.props` 显式装配真实 metadata 与执行适配，不再允许默认空 `MetadataCatalog` / 空 `DatabaseRuntime` 作为成功启动路径。
+- follow-up production runtime 路径通过 `runtime.databases` 显式装配真实 metadata 与执行适配，不再允许默认空 `MetadataCatalog` / 空 `DatabaseRuntime` 作为成功启动路径。
 - HTTP 服务如需对外暴露，应放在受信网络、上游网关、反向代理或其他网络边界之后。
 
 ### 15.2 审计基线
@@ -579,7 +579,7 @@ flowchart TB
 ### 16.2.1 默认发行包启动面
 - distribution 默认同时启用 HTTP 与 STDIO。
 - 默认 `conf/mcp.yaml` 内置一段 demo JDBC runtime，用于首次启动时验证非空 metadata 和真实 `execute_query` 行为。
-- 真实部署需要替换 `runtime` 段为目标逻辑库与 JDBC 连接属性；如需额外 JDBC 驱动，可放入发行包根目录下的 `ext-lib/`。
+- 真实部署需要替换 `runtime` 段为目标逻辑库与 JDBC 连接属性；`runtime.databases` 为 canonical 模型，`runtime.databaseDefaults` 仅用于共享连接默认值；schema 范围与默认 schema 由 JDBC metadata 自动发现，如需额外 JDBC 驱动，可放入发行包根目录下的 `ext-lib/`。
 
 ### 16.3 推荐集群拓扑
 - MCP 服务集群

@@ -18,10 +18,14 @@
 package org.apache.shardingsphere.mcp.capability;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -91,8 +95,28 @@ class DatabaseCapabilityRegistryTest {
         assertThrows(UnsupportedOperationException.class, actual::clear);
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("versionAwareExplainAnalyzeCases")
+    void assertFindWithVersionAwareExplainAnalyze(final String caseName, final String databaseType, final String databaseVersion, final boolean expected) {
+        DatabaseCapabilityRegistry registry = DatabaseCapabilityRegistry.createDefault();
+        
+        Optional<DatabaseCapability> actual = registry.find(databaseType, databaseVersion);
+        
+        assertTrue(actual.isPresent(), caseName);
+        assertThat(actual.get().isSupportsExplainAnalyze(), is(expected));
+    }
+    
     private DatabaseCapability createCapability() {
         return new DatabaseCapability("mysql", EnumSet.of(SupportedObjectType.TABLE), EnumSet.of(StatementClass.QUERY),
                 TransactionCapability.LOCAL_WITH_SAVEPOINT, true, false);
+    }
+    
+    private static Stream<Arguments> versionAwareExplainAnalyzeCases() {
+        return Stream.of(
+                Arguments.of("MYSQL baseline before 8.0.18", "MYSQL", "8.0.17", false),
+                Arguments.of("MYSQL 8.0.18", "MYSQL", "8.0.18", true),
+                Arguments.of("MYSQL unparseable version", "MYSQL", "unknown", false),
+                Arguments.of("POSTGRESQL baseline", "POSTGRESQL", "16.4", true),
+                Arguments.of("H2 baseline", "H2", "2.2.224", true));
     }
 }

@@ -4,10 +4,12 @@
 
 验证 MCP direct runtime 使用新的 canonical 配置结构启动：
 
-- `runtime.databaseDefaults`
 - `runtime.databases`
+- `runtime.databaseDefaults` 可选保留为共享连接默认值
 - 不再在新示例里手工配置 `supportsCrossSchemaSql`
 - 不再在新示例里手工配置 `supportsExplainAnalyze`
+- 不再在新示例里手工配置 `schemaPattern`
+- 不再在新示例里手工配置 `defaultSchema`
 - `driverClassName` 只在需要显式覆盖时提供
 
 ## 2. Prepare the packaged runtime
@@ -32,25 +34,20 @@ transport:
     enabled: true
 
 runtime:
-  databaseDefaults:
-    metadata:
-      schemaPattern: public
-      defaultSchema: public
   databases:
     orders:
       databaseType: H2
       jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
-      driverClassName: org.h2.Driver
     billing:
       databaseType: H2
       jdbcUrl: "jdbc:h2:file:./data/mcp-demo-billing;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
-      driverClassName: org.h2.Driver
 ```
 
 Notes:
 
-- `driverClassName` 在现代 JDBC 4 driver 场景通常可以省略。
-- `schemaPattern` 和 `defaultSchema` 仍保留，因为它们决定 metadata scope。
+- 这个示例刻意省略 `driverClassName`，用来强调它只是 optional override。
+- 当 classpath 自动发现不足时，再为具体 binding 显式补 `driverClassName`。
+- schema 范围与默认 schema 由 JDBC metadata 自动发现。
 - capability booleans 由系统自动推导。
 
 ## 4. Start the runtime
@@ -105,8 +102,7 @@ Before:
 ```yaml
 runtime:
   defaults:
-    schemaPattern: public
-    defaultSchema: public
+    driverClassName: org.h2.Driver
 ```
 
 Canonical:
@@ -114,9 +110,7 @@ Canonical:
 ```yaml
 runtime:
   databaseDefaults:
-    metadata:
-      schemaPattern: public
-      defaultSchema: public
+    driverClassName: org.h2.Driver
 ```
 
 ## 7. Migration expectations

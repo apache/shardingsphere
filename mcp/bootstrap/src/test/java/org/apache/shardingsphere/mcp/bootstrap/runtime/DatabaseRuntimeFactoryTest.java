@@ -63,8 +63,8 @@ class DatabaseRuntimeFactoryTest {
         DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
         
         Map<String, DatabaseConnectionConfiguration> actual = databaseRuntimeFactory.createConnectionConfigurations(Map.of(
-                "logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false),
-                "analytics_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:analytics", "", "", "org.h2.Driver", "public", "public", false, false)));
+                "logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", false, false, false, false),
+                "analytics_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:analytics", "", "", "org.h2.Driver", false, false, false, false)));
         
         assertThat(actual.size(), is(2));
         assertThat(actual.get("logic_db").getJdbcUrl(), is("jdbc:h2:mem:logic"));
@@ -76,7 +76,7 @@ class DatabaseRuntimeFactoryTest {
         DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> databaseRuntimeFactory.createConnectionConfigurations(
-                Map.of("logic_db", new RuntimeDatabaseConfiguration("", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false))));
+                Map.of("logic_db", new RuntimeDatabaseConfiguration("", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", false, false, false, false))));
         
         assertThat(actual.getMessage(), is("Runtime database `logic_db` property `databaseType` is required."));
     }
@@ -116,8 +116,8 @@ class DatabaseRuntimeFactoryTest {
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
         H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         Map<String, DatabaseConnectionConfiguration> connectionConfigurations = Map.of(
-                "logic_db", new DatabaseConnectionConfiguration("logic_db", "H2", firstJdbcUrl, "", "", "org.h2.Driver", "public", "public", true, false),
-                "analytics_db", new DatabaseConnectionConfiguration("analytics_db", "H2", secondJdbcUrl, "", "", "org.h2.Driver", "public", "public", true, false));
+                "logic_db", new DatabaseConnectionConfiguration("logic_db", "H2", firstJdbcUrl, "", "", "org.h2.Driver", false, false, false, false),
+                "analytics_db", new DatabaseConnectionConfiguration("analytics_db", "H2", secondJdbcUrl, "", "", "org.h2.Driver", false, false, false, false));
         MetadataCatalog metadataCatalog = jdbcMetadataLoader.load(connectionConfigurations);
         DatabaseRuntime actual = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, jdbcMetadataLoader);
         H2RuntimeTestSupport.executeStatements(firstJdbcUrl, "CREATE TABLE public.orders_archive (order_id INT PRIMARY KEY)");
@@ -136,7 +136,7 @@ class DatabaseRuntimeFactoryTest {
         DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
         JdbcMetadataLoader jdbcMetadataLoader = mock(JdbcMetadataLoader.class);
         Map<String, DatabaseConnectionConfiguration> connectionConfigurations = Map.of(
-                "logic_db", new DatabaseConnectionConfiguration("logic_db", "H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", "public", "public", true, false));
+                "logic_db", new DatabaseConnectionConfiguration("logic_db", "H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", false, false, false, false));
         MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of("logic_db", "H2"), List.of());
         DatabaseRuntime actual = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, jdbcMetadataLoader);
         when(jdbcMetadataLoader.load(anyMap())).thenThrow(new IllegalStateException("refresh failed"));

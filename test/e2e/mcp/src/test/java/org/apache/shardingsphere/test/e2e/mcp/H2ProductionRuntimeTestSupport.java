@@ -41,30 +41,18 @@ final class H2ProductionRuntimeTestSupport {
                 "databaseName", "logic_db",
                 "databaseType", "H2",
                 "jdbcUrl", jdbcUrl,
-                "driverClassName", "org.h2.Driver",
-                "schemaPattern", "public",
-                "defaultSchema", "public",
-                "supportsCrossSchemaSql", "true",
-                "supportsExplainAnalyze", "false");
+                "driverClassName", "org.h2.Driver");
     }
     
     static Map<String, String> createRuntimeDefaults() {
         return Map.of(
                 "databaseType", "H2",
-                "driverClassName", "org.h2.Driver",
-                "schemaPattern", "public",
-                "defaultSchema", "public",
-                "supportsCrossSchemaSql", "true",
-                "supportsExplainAnalyze", "false");
+                "driverClassName", "org.h2.Driver");
     }
     
     static Map<String, String> createRuntimeDefaultsWithoutDatabaseType() {
         return Map.of(
-                "driverClassName", "org.h2.Driver",
-                "schemaPattern", "public",
-                "defaultSchema", "public",
-                "supportsCrossSchemaSql", "true",
-                "supportsExplainAnalyze", "false");
+                "driverClassName", "org.h2.Driver");
     }
     
     static Map<String, String> createRuntimeDatabase(final String jdbcUrl) {

@@ -17,8 +17,8 @@
 
 **Purpose**: Make the config-contract change explicit before touching implementation.
 
-- [ ] T001 Add runtime-config simplification notes to `/Users/zhangliang/IdeaProjects/shardingsphere/docs/mcp/ShardingSphere-MCP-Technical-Design.md`
-- [ ] T002 [P] Add canonical runtime YAML and migration notes to `/Users/zhangliang/IdeaProjects/shardingsphere/docs/mcp/ShardingSphere-MCP-Detailed-Design.md`
+- [x] T001 Add runtime-config simplification notes to `/Users/zhangliang/IdeaProjects/shardingsphere/docs/mcp/ShardingSphere-MCP-Technical-Design.md`
+- [x] T002 [P] Add canonical runtime YAML and migration notes to `/Users/zhangliang/IdeaProjects/shardingsphere/docs/mcp/ShardingSphere-MCP-Detailed-Design.md`
 
 ---
 
@@ -28,16 +28,16 @@
 
 **CRITICAL**: No story work should be considered complete until this phase is done.
 
-- [ ] T003 Redefine canonical runtime YAML envelope in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/config/YamlRuntimeConfiguration.java`
-- [ ] T004 [P] Reshape direct database binding YAML fields in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/config/YamlRuntimeDatabaseConfiguration.java`
-- [ ] T005 [P] Canonicalize `runtime.databaseDefaults` and legacy aliases in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlRuntimeConfigurationSwapper.java`
-- [ ] T006 [P] Merge metadata defaults, optional driver, and legacy capability fields in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlRuntimeDatabaseConfigurationSwapper.java`
-- [ ] T007 [P] Align runtime binding domain fields in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/RuntimeDatabaseConfiguration.java`
-- [ ] T008 [P] Align connection configuration fields with metadata scope and optional driver in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/DatabaseConnectionConfiguration.java`
-- [ ] T009 [P] Extend canonical and legacy parsing coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/loader/MCPConfigurationLoaderTest.java`
-- [ ] T010 [P] Extend runtime YAML canonicalization coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlRuntimeConfigurationSwapperTest.java`
-- [ ] T011 [P] Extend per-database binding swapper coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlRuntimeDatabaseConfigurationSwapperTest.java`
-- [ ] T012 [P] Extend launch-level YAML swapper coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlMCPLaunchConfigurationSwapperTest.java`
+- [x] T003 Redefine canonical runtime YAML envelope in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/config/YamlRuntimeConfiguration.java`
+- [x] T004 [P] Reshape direct database binding YAML fields in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/config/YamlRuntimeDatabaseConfiguration.java`
+- [x] T005 [P] Canonicalize `runtime.databaseDefaults` and legacy aliases in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlRuntimeConfigurationSwapper.java`
+- [x] T006 [P] Merge metadata defaults, optional driver, and legacy capability fields in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlRuntimeDatabaseConfigurationSwapper.java`
+- [x] T007 [P] Align runtime binding domain fields in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/RuntimeDatabaseConfiguration.java`
+- [x] T008 [P] Align connection configuration fields with metadata scope and optional driver in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/DatabaseConnectionConfiguration.java`
+- [x] T009 [P] Extend canonical and legacy parsing coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/loader/MCPConfigurationLoaderTest.java`
+- [x] T010 [P] Extend runtime YAML canonicalization coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlRuntimeConfigurationSwapperTest.java`
+- [x] T011 [P] Extend per-database binding swapper coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlRuntimeDatabaseConfigurationSwapperTest.java`
+- [x] T012 [P] Extend launch-level YAML swapper coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlMCPLaunchConfigurationSwapperTest.java`
 
 **Checkpoint**: Canonical YAML, legacy alias normalization, and parsing tests are aligned.
 
@@ -51,15 +51,15 @@
 
 ### Tests for User Story 1
 
-- [ ] T013 [P] [US1] Add canonical single-db and multi-db bootstrap coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/MCPBootstrapTest.java`
-- [ ] T014 [P] [US1] Add canonical launch-path and legacy alias coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/runtime/MCPLaunchRuntimeLoaderTest.java`
+- [x] T013 [P] [US1] Add canonical single-db and multi-db bootstrap coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/MCPBootstrapTest.java`
+- [x] T014 [P] [US1] Add canonical launch-path and legacy alias coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/runtime/MCPLaunchRuntimeLoaderTest.java`
 
 ### Implementation for User Story 1
 
-- [ ] T015 [P] [US1] Make `runtime.databases` the canonical default-launch input in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/MCPLaunchRuntimeLoader.java`
-- [ ] T016 [P] [US1] Bound legacy single-db migration in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/DatabaseRuntimeFactory.java`
-- [ ] T017 [US1] Update packaged canonical runtime example in `/Users/zhangliang/IdeaProjects/shardingsphere/distribution/mcp/src/main/resources/conf/mcp.yaml`
-- [ ] T018 [US1] Update E2E runtime config rendering to emit canonical shape in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/AbstractProductionRuntimeE2ETest.java`
+- [x] T015 [P] [US1] Make `runtime.databases` the canonical default-launch input in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/MCPLaunchRuntimeLoader.java`
+- [x] T016 [P] [US1] Bound legacy single-db migration in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/DatabaseRuntimeFactory.java`
+- [x] T017 [US1] Update packaged canonical runtime example in `/Users/zhangliang/IdeaProjects/shardingsphere/distribution/mcp/src/main/resources/conf/mcp.yaml`
+- [x] T018 [US1] Update E2E runtime config rendering to emit canonical shape in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/AbstractProductionRuntimeE2ETest.java`
 
 **Checkpoint**: Direct runtime has one canonical topology path and legacy single-db input is clearly bounded.
 
@@ -73,17 +73,17 @@
 
 ### Tests for User Story 2
 
-- [ ] T019 [P] [US2] Add derived-capability coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/test/java/org/apache/shardingsphere/mcp/capability/DatabaseCapabilityAssemblerTest.java`
-- [ ] T020 [P] [US2] Add `EXPLAIN ANALYZE` gating coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/test/java/org/apache/shardingsphere/mcp/execute/ExecuteQueryFacadeTest.java`
-- [ ] T021 [P] [US2] Add optional-driver and explicit-driver failure coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/runtime/JdbcConnectionFactoryTest.java`
+- [x] T019 [P] [US2] Add derived-capability coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/test/java/org/apache/shardingsphere/mcp/capability/DatabaseCapabilityAssemblerTest.java`
+- [x] T020 [P] [US2] Add `EXPLAIN ANALYZE` gating coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/test/java/org/apache/shardingsphere/mcp/execute/ExecuteQueryFacadeTest.java`
+- [x] T021 [P] [US2] Add optional-driver and explicit-driver failure coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/runtime/JdbcConnectionFactoryTest.java`
 
 ### Implementation for User Story 2
 
-- [ ] T022 [P] [US2] Capture version-aware runtime facts in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/main/java/org/apache/shardingsphere/mcp/resource/RuntimeDatabaseDescriptor.java`
-- [ ] T023 [P] [US2] Load capability derivation inputs from JDBC metadata in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/JdbcMetadataLoader.java`
-- [ ] T024 [P] [US2] Overlay automatic direct-runtime capability facts in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/main/java/org/apache/shardingsphere/mcp/capability/DatabaseCapabilityAssembler.java`
-- [ ] T025 [P] [US2] Extend type-level capability defaults with version-aware hooks in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/main/java/org/apache/shardingsphere/mcp/capability/DatabaseCapabilityRegistry.java`
-- [ ] T026 [US2] Keep `driverClassName` as optional override in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/JdbcConnectionFactory.java`
+- [x] T022 [P] [US2] Capture version-aware runtime facts in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/main/java/org/apache/shardingsphere/mcp/resource/RuntimeDatabaseDescriptor.java`
+- [x] T023 [P] [US2] Load capability derivation inputs from JDBC metadata in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/JdbcMetadataLoader.java`
+- [x] T024 [P] [US2] Overlay automatic direct-runtime capability facts in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/main/java/org/apache/shardingsphere/mcp/capability/DatabaseCapabilityAssembler.java`
+- [x] T025 [P] [US2] Extend type-level capability defaults with version-aware hooks in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/main/java/org/apache/shardingsphere/mcp/capability/DatabaseCapabilityRegistry.java`
+- [x] T026 [US2] Keep `driverClassName` as optional override in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/JdbcConnectionFactory.java`
 
 **Checkpoint**: Capability booleans are derived automatically and driver configuration noise is reduced.
 
@@ -95,13 +95,18 @@
 
 **Independent Test**: legacy aliases 被接受或拒绝时都得到清晰诊断；默认配置和 README 只展示 canonical 结构。
 
+### Tests for User Story 3
+
+- [x] T027 [P] [US3] Add legacy-key diagnostics and conflict-validation coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlMCPLaunchConfigurationSwapperTest.java`
+- [x] T028 [P] [US3] Add migration-diagnostic loader coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/loader/MCPConfigurationLoaderTest.java`
+
 ### Implementation for User Story 3
 
-- [ ] T027 [P] [US3] Add legacy-key diagnostics and conflict validation at launch-config level in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlMCPLaunchConfigurationSwapper.java`
-- [ ] T028 [P] [US3] Update MCP operator docs to canonical runtime config in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/README.md`
-- [ ] T029 [P] [US3] Update Chinese MCP operator docs to canonical runtime config in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/README_ZH.md`
-- [ ] T030 [P] [US3] Reconcile technical design wording in `/Users/zhangliang/IdeaProjects/shardingsphere/docs/mcp/ShardingSphere-MCP-Technical-Design.md`
-- [ ] T031 [P] [US3] Reconcile detailed design wording in `/Users/zhangliang/IdeaProjects/shardingsphere/docs/mcp/ShardingSphere-MCP-Detailed-Design.md`
+- [x] T029 [P] [US3] Add legacy-key diagnostics and conflict validation at launch-config level in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlMCPLaunchConfigurationSwapper.java`
+- [x] T030 [P] [US3] Update MCP operator docs to canonical runtime config in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/README.md`
+- [x] T031 [P] [US3] Update Chinese MCP operator docs to canonical runtime config in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/README_ZH.md`
+- [x] T032 [P] [US3] Reconcile technical design wording in `/Users/zhangliang/IdeaProjects/shardingsphere/docs/mcp/ShardingSphere-MCP-Technical-Design.md`
+- [x] T033 [P] [US3] Reconcile detailed design wording in `/Users/zhangliang/IdeaProjects/shardingsphere/docs/mcp/ShardingSphere-MCP-Detailed-Design.md`
 
 **Checkpoint**: Migration rules are explicit and all operator-facing docs point to one canonical shape.
 
@@ -111,9 +116,10 @@
 
 **Purpose**: Close final quality and consistency gaps.
 
-- [ ] T032 [P] Run bootstrap scoped verification in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/pom.xml`
-- [ ] T033 [P] Run core scoped verification in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/pom.xml`
-- [ ] T034 [P] Reconcile final wording across `/Users/zhangliang/IdeaProjects/shardingsphere/docs/mcp/ShardingSphere-MCP-Technical-Design.md` and `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/README_ZH.md`
+- [x] T034 [P] Run bootstrap scoped verification in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/pom.xml`
+- [x] T035 [P] Run core scoped verification in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/pom.xml`
+- [x] T036 [P] Run E2E scoped verification in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/pom.xml`
+- [x] T037 [P] Reconcile final wording across `/Users/zhangliang/IdeaProjects/shardingsphere/docs/mcp/ShardingSphere-MCP-Technical-Design.md` and `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/README_ZH.md`
 
 ## Dependencies & Execution Order
 
@@ -135,8 +141,9 @@
 - `T004`, `T005`, `T006`, `T007`, `T009`, `T010`, `T011`, and `T012` can run in parallel after `T003`.
 - `T013` and `T014` can run in parallel for US1.
 - `T019`, `T020`, and `T021` can run in parallel for US2 tests.
+- `T027` and `T028` can run in parallel for US3 diagnostics coverage.
 - `T022`, `T023`, `T024`, and `T025` can run in parallel once the foundational config model is stable.
-- `T028`, `T029`, `T030`, and `T031` can run in parallel for documentation.
+- `T030`, `T031`, `T032`, and `T033` can run in parallel for documentation.
 
 ## Implementation Strategy
 
@@ -158,3 +165,4 @@
 
 - This task list focuses on direct runtime configuration simplification, not MCP protocol redesign.
 - The file paths reflect the current implementation seams and can be refined during coding if the canonical config contract remains unchanged.
+- `T015`, `T020`, and `T026` were satisfied by validating existing implementation seams after upstream canonicalization and capability-derivation changes; no extra production-file edits were required in those exact paths.

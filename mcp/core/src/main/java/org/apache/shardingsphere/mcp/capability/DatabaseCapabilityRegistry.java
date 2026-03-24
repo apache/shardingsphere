@@ -27,11 +27,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Registry for the MCP database capability matrix.
  */
 public final class DatabaseCapabilityRegistry {
+    
+    private static final Pattern VERSION_PATTERN = Pattern.compile("(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?.*");
     
     private final Map<String, DatabaseCapability> capabilities = new LinkedHashMap<>();
     
@@ -74,7 +78,18 @@ public final class DatabaseCapabilityRegistry {
      * @return capability definition when present
      */
     public Optional<DatabaseCapability> find(final String databaseType) {
-        return Optional.ofNullable(capabilities.get(normalizeDatabaseType(databaseType)));
+        return find(databaseType, "");
+    }
+    
+    /**
+     * Find a capability definition by database type and version.
+     *
+     * @param databaseType database type
+     * @param databaseVersion database version
+     * @return capability definition when present
+     */
+    public Optional<DatabaseCapability> find(final String databaseType, final String databaseVersion) {
+        return Optional.ofNullable(capabilities.get(normalizeDatabaseType(databaseType))).map(each -> applyVersionAwareOverrides(each, databaseVersion));
     }
     
     /**
@@ -99,6 +114,51 @@ public final class DatabaseCapabilityRegistry {
     
     static <T> T requireNonNull(final T value, final String message) {
         return Objects.requireNonNull(value, message);
+    }
+    
+    private DatabaseCapability applyVersionAwareOverrides(final DatabaseCapability capability, final String databaseVersion) {
+        boolean supportsExplainAnalyze = isExplainAnalyzeSupported(capability.getDatabaseType(), databaseVersion);
+        if (supportsExplainAnalyze == capability.isSupportsExplainAnalyze()) {
+            return capability;
+        }
+        return new DatabaseCapability(capability.getDatabaseType(), capability.getMinSupportedVersion(), capability.getSupportedObjectTypes(),
+                capability.getSupportedStatementClasses(), capability.getTransactionCapability(), capability.getSupportedTransactionStatements(),
+                capability.isDefaultAutocommit(), capability.getMaxRowsDefault(), capability.getMaxTimeoutMsDefault(), capability.getDefaultSchemaSemantics(),
+                capability.isCrossSchemaQuerySupported(), supportsExplainAnalyze, capability.getDdlTransactionBehavior(), capability.getDclTransactionBehavior(),
+                supportsExplainAnalyze ? ResultBehavior.RESULT_SET : ResultBehavior.UNSUPPORTED,
+                supportsExplainAnalyze ? TransactionBoundaryBehavior.NATIVE : TransactionBoundaryBehavior.UNSUPPORTED);
+    }
+    
+    private boolean isExplainAnalyzeSupported(final String databaseType, final String databaseVersion) {
+        switch (normalizeDatabaseType(databaseType)) {
+            case "POSTGRESQL":
+            case "OPENGAUSS":
+            case "DORIS":
+            case "PRESTO":
+            case "H2":
+                return true;
+            case "MYSQL":
+                return isVersionAtLeast(databaseVersion, 8, 0, 18);
+            default:
+                return false;
+        }
+    }
+    
+    private boolean isVersionAtLeast(final String databaseVersion, final int major, final int minor, final int patch) {
+        Matcher matcher = VERSION_PATTERN.matcher(null == databaseVersion ? "" : databaseVersion.trim());
+        if (!matcher.matches()) {
+            return false;
+        }
+        int actualMajor = Integer.parseInt(matcher.group(1));
+        int actualMinor = null == matcher.group(2) ? 0 : Integer.parseInt(matcher.group(2));
+        int actualPatch = null == matcher.group(3) ? 0 : Integer.parseInt(matcher.group(3));
+        if (actualMajor != major) {
+            return actualMajor > major;
+        }
+        if (actualMinor != minor) {
+            return actualMinor > minor;
+        }
+        return actualPatch >= patch;
     }
     
     private static DatabaseCapability createDefaultCapability(final String databaseType, final TransactionCapability transactionCapability,

@@ -92,18 +92,16 @@ class MCPRuntimeProviderTest {
             LoadedRuntime actual = runtimeProvider.load(PropertiesBuilder.build(
                     new Property("databaseName", "logic_db"),
                     new Property("databaseType", "H2"),
-                    new Property("jdbcUrl", CountingDriver.JDBC_URL),
-                    new Property("schemaPattern", "public"),
-                    new Property("defaultSchema", "public")));
+                    new Property("jdbcUrl", CountingDriver.JDBC_URL)));
             assertThat(driver.getConnectionCount(), is(1));
-            assertThat(actual.getMetadataCatalog().getMetadataObjects().size(), is(1));
+            assertThat(actual.getMetadataCatalog().getMetadataObjects().size(), is(0));
         } finally {
             DriverManager.deregisterDriver(driver);
         }
     }
     
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl) {
-        return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver", "public", "public", true, false);
+        return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver", false, false, false, false);
     }
     
     private static final class CountingDriver implements Driver {
@@ -161,8 +159,9 @@ class MCPRuntimeProviderTest {
             ResultSet emptyResultSet = createEmptyResultSet();
             return (DatabaseMetaData) Proxy.newProxyInstance(DatabaseMetaData.class.getClassLoader(), new Class[]{DatabaseMetaData.class},
                     (proxy, method, args) -> "getTables".equals(method.getName()) || "getColumns".equals(method.getName()) || "getIndexInfo".equals(method.getName())
-                            ? emptyResultSet
-                            : getDefaultValue(method.getReturnType()));
+                            || "getSchemas".equals(method.getName())
+                                    ? emptyResultSet
+                                    : getDefaultValue(method.getReturnType()));
         }
         
         private ResultSet createEmptyResultSet() {

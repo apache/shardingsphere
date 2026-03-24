@@ -9,7 +9,7 @@
 本 follow-up 收敛 MCP direct JDBC runtime 的 operator-facing 配置模型：
 保留 `runtime` 顶级命名空间，让 `runtime.databases` 成为 single-db 与
 multi-db 的统一 canonical 入口，把 shared defaults 改名为
-`runtime.databaseDefaults`，保留 metadata scope 配置，弱化 `driverClassName`
+`runtime.databaseDefaults`，移除 schema 的外部配置面，弱化 `driverClassName`
 为 optional override，并把 `supportsCrossSchemaSql` 与
 `supportsExplainAnalyze` 从常规 YAML 配置移到系统自动 capability 推导。
 
@@ -108,7 +108,8 @@ docs/mcp/ShardingSphere-MCP-Detailed-Design.md
 ### 3. `runtime.databaseDefaults` 替代 `runtime.defaults`
 
 - shared defaults 改为更可读的名字。
-- `schemaPattern` 与 `defaultSchema` 收敛到 `metadata` 子配置。
+- `schemaPattern` 与 `defaultSchema` 从 operator-facing YAML 中移除。
+- schema 范围与默认 schema 改由 JDBC metadata 自动发现。
 
 ### 4. `driverClassName` 只保留为 optional override
 
@@ -134,7 +135,7 @@ docs/mcp/ShardingSphere-MCP-Detailed-Design.md
 1. `canonical_single_database_config`
    Planned test: canonical one-database YAML loads and starts without `runtime.props`
 2. `canonical_database_defaults_inheritance`
-   Planned test: `runtime.databaseDefaults.metadata` is inherited and overridden deterministically
+   Planned test: `runtime.databaseDefaults` connection defaults are inherited deterministically
 3. `legacy_props_alias`
    Planned test: legacy `runtime.props` loads as one canonical database binding with diagnostics
 4. `optional_driver_autodiscovery`
@@ -145,6 +146,8 @@ docs/mcp/ShardingSphere-MCP-Detailed-Design.md
    Planned test: `EXPLAIN ANALYZE` gating follows derived capability, not operator booleans
 7. `legacy_capability_boolean_deprecation`
    Planned test: legacy booleans are accepted only as migration shim with warnings
+8. `canonical_legacy_conflict_validation`
+   Planned test: mixed canonical and legacy runtime keys fail fast with targeted diagnostics
 
 ## Implementation Strategy
 
@@ -178,6 +181,12 @@ docs/mcp/ShardingSphere-MCP-Detailed-Design.md
   -Dtest=DatabaseCapabilityAssemblerTest,ExecuteQueryFacadeTest test \
   -Dsurefire.failIfNoSpecifiedTests=false
 ```
+- **Production runtime E2E verification**
+```bash
+./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true \
+  -Dtest=ProductionMetadataDiscoveryE2ETest,ProductionMultiDatabaseE2ETest,ProductionExecuteQueryE2ETest test \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
 - **Scoped style checks for touched modules**
 ```bash
 ./mvnw -pl mcp/core,mcp/bootstrap,distribution/mcp,test/e2e/mcp -am \
@@ -187,5 +196,7 @@ docs/mcp/ShardingSphere-MCP-Detailed-Design.md
 ## Rollout Notes
 
 - 这是 direct runtime 配置契约收敛，不是 MCP 协议重写。
+- `005` 继续继承 `001`、`002` 和 `004` 已定义的 MCP domain 与 capability contracts，
+  本 follow-up 只补充 direct runtime 输入规范化与迁移行为。
 - canonical 结构生效后，默认发行包与 README 只展示新写法。
 - legacy aliases 兼容期结束后，应通过新的 follow-up 删除兼容分支，而不是长期并存。

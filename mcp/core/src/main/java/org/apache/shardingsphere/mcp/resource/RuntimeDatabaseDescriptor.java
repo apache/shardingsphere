@@ -36,31 +36,45 @@ public final class RuntimeDatabaseDescriptor {
     
     private final String databaseType;
     
+    private final String databaseVersion;
+    
     private final Set<SupportedObjectType> supportedObjectTypes;
     
     private final String defaultSchema;
     
-    private final boolean supportsCrossSchemaSql;
+    private final boolean legacySupportsCrossSchemaSqlConfigured;
     
-    private final boolean supportsExplainAnalyze;
+    private final boolean legacySupportsCrossSchemaSql;
+    
+    private final boolean legacySupportsExplainAnalyzeConfigured;
+    
+    private final boolean legacySupportsExplainAnalyze;
     
     /**
      * Construct one runtime database descriptor.
      *
      * @param database logical database name
      * @param databaseType database type
+     * @param databaseVersion database version
      * @param supportedObjectTypes supported object types
      * @param defaultSchema default schema
-     * @param supportsCrossSchemaSql cross-schema SQL support flag
-     * @param supportsExplainAnalyze explain analyze support flag
+     * @param legacySupportsCrossSchemaSqlConfigured legacy cross-schema SQL override configured flag
+     * @param legacySupportsCrossSchemaSql legacy cross-schema SQL override flag
+     * @param legacySupportsExplainAnalyzeConfigured legacy explain analyze override configured flag
+     * @param legacySupportsExplainAnalyze legacy explain analyze override flag
      */
     public RuntimeDatabaseDescriptor(final String database, final String databaseType, final Collection<SupportedObjectType> supportedObjectTypes,
-                                     final String defaultSchema, final boolean supportsCrossSchemaSql, final boolean supportsExplainAnalyze) {
+                                     final String databaseVersion, final String defaultSchema, final boolean legacySupportsCrossSchemaSqlConfigured,
+                                     final boolean legacySupportsCrossSchemaSql, final boolean legacySupportsExplainAnalyzeConfigured,
+                                     final boolean legacySupportsExplainAnalyze) {
         this.database = Objects.requireNonNull(database, "database cannot be null");
         this.databaseType = Objects.requireNonNull(databaseType, "databaseType cannot be null");
+        this.databaseVersion = Objects.requireNonNull(databaseVersion, "databaseVersion cannot be null");
         this.supportedObjectTypes = Collections.unmodifiableSet(new LinkedHashSet<>(Objects.requireNonNull(supportedObjectTypes, "supportedObjectTypes cannot be null")));
         this.defaultSchema = Objects.requireNonNull(defaultSchema, "defaultSchema cannot be null");
-        this.supportsCrossSchemaSql = supportsCrossSchemaSql;
-        this.supportsExplainAnalyze = supportsExplainAnalyze;
+        this.legacySupportsCrossSchemaSqlConfigured = legacySupportsCrossSchemaSqlConfigured;
+        this.legacySupportsCrossSchemaSql = legacySupportsCrossSchemaSql;
+        this.legacySupportsExplainAnalyzeConfigured = legacySupportsExplainAnalyzeConfigured;
+        this.legacySupportsExplainAnalyze = legacySupportsExplainAnalyze;
     }
 }

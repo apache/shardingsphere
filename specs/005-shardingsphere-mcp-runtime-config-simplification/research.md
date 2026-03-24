@@ -29,19 +29,21 @@
     维持成两套 operator-facing 模型。
   - 彻底删除 `runtime.props` 不留兼容: rejected，因为当前已有测试、示例和现存配置依赖它。
 
-## Decision 3: 把 shared defaults 改名为 `databaseDefaults`，并把 metadata 明确成子域
+## Decision 3: 把 shared defaults 改名为 `databaseDefaults`，并移除 schema 的 operator 配置面
 
 - **Decision**: canonical shared defaults 改为 `runtime.databaseDefaults`，
-  per-database metadata 范围放在 `metadata` 子配置中。
+  但 `schemaPattern` 与 `defaultSchema` 不再作为 operator-facing YAML 配置，
+  schema 范围和默认 schema 改由 JDBC metadata 自动发现。
 - **Rationale**:
   - `defaults` 过于宽泛，不利于审阅者一眼识别“这是给 database bindings 用的默认值”。
   - `props` 已在 direct runtime 历史模型里代表另一条 single-db path，不能复用。
-  - `schemaPattern` 和 `defaultSchema` 不是数据库固有能力，而是 metadata scope；
-    把它们放在 `metadata` 下能更准确表达职责。
+  - `schemaPattern` 不是数据库事实，而是 metadata 查询过滤策略，不适合作为长期 operator 配置。
+  - `defaultSchema` 可以作为运行时事实保留，但应从连接与 JDBC metadata 自动推导，而不是要求用户手填。
 - **Alternatives considered**:
   - 保持 `defaults`: rejected，因为命名仍然过宽，容易与其他默认值概念混淆。
   - 把 `defaults` 改名为 `props`: rejected，因为会和 legacy `runtime.props`
     冲突，语义更差。
+  - 保留 `metadata` 子配置: rejected，因为会继续暴露 schema 范围控制，和“自动发现”目标冲突。
 
 ## Decision 4: `driverClassName` 保留为 optional override，而不是从 `DatabaseType` 直接推导
 

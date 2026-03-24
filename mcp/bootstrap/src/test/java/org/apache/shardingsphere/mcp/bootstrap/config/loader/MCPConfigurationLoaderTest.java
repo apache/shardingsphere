@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.Properties;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -79,23 +77,21 @@ class MCPConfigurationLoaderTest {
         Path configFile = createConfigFile("runtime:\n"
                 + "  props:\n"
                 + "    databaseName: logic_db\n"
-                + "    databaseType: H2\n");
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n");
         
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
-        Properties actualProps = actual.getRuntimeProps();
         
-        assertThat(actualProps.getProperty("databaseName"), is("logic_db"));
-        assertThat(actualProps.getProperty("databaseType"), is("H2"));
+        assertTrue(actual.getRuntimeProps().isEmpty());
+        assertThat(actual.getRuntimeDatabases().get("logic_db").getDatabaseType(), is("H2"));
     }
     
     @Test
     void assertLoadWithRuntimeDatabases() throws IOException {
         Path configFile = createConfigFile("runtime:\n"
-                + "  defaults:\n"
+                + "  databaseDefaults:\n"
                 + "    databaseType: H2\n"
                 + "    driverClassName: org.h2.Driver\n"
-                + "    schemaPattern: public\n"
-                + "    defaultSchema: public\n"
                 + "  databases:\n"
                 + "    logic_db:\n"
                 + "      jdbcUrl: jdbc:h2:mem:logic\n"
@@ -110,9 +106,9 @@ class MCPConfigurationLoaderTest {
         assertThat(actualDatabases.size(), is(2));
         assertThat(actualDatabases.get("logic_db").getDatabaseType(), is("H2"));
         assertThat(actualDatabases.get("logic_db").getDriverClassName(), is("org.h2.Driver"));
-        assertThat(actualDatabases.get("logic_db").getSchemaPattern(), is("public"));
-        assertFalse(actualDatabases.get("logic_db").isSupportsCrossSchemaSql());
-        assertTrue(actualDatabases.get("analytics_db").isSupportsCrossSchemaSql());
+        assertFalse(actualDatabases.get("logic_db").isLegacySupportsCrossSchemaSqlConfigured());
+        assertTrue(actualDatabases.get("analytics_db").isLegacySupportsCrossSchemaSqlConfigured());
+        assertTrue(actualDatabases.get("analytics_db").isLegacySupportsCrossSchemaSql());
     }
     
     @Test

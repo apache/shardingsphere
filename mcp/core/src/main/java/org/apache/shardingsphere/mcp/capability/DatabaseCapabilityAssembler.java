@@ -122,7 +122,10 @@ public final class DatabaseCapabilityAssembler {
      */
     public Optional<DatabaseCapabilityView> assembleDatabaseCapability(final String database, final String databaseType) {
         String actualDatabase = Objects.requireNonNull(database, "database cannot be null");
-        return registry.find(databaseType).map(each -> overlayRuntimeFacts(createDatabaseCapability(actualDatabase, each)));
+        Optional<RuntimeDatabaseDescriptor> runtimeDescriptor = metadataCatalog.findRuntimeDatabaseDescriptor(actualDatabase);
+        String actualDatabaseType = runtimeDescriptor.map(RuntimeDatabaseDescriptor::getDatabaseType).orElse(databaseType);
+        String actualDatabaseVersion = runtimeDescriptor.map(RuntimeDatabaseDescriptor::getDatabaseVersion).orElse("");
+        return registry.find(actualDatabaseType, actualDatabaseVersion).map(each -> overlayRuntimeFacts(createDatabaseCapability(actualDatabase, each)));
     }
     
     private DatabaseCapabilityView overlayRuntimeFacts(final DatabaseCapabilityView databaseCapabilityView) {
@@ -133,15 +136,22 @@ public final class DatabaseCapabilityAssembler {
         Set<SupportedObjectType> supportedObjectTypes = runtimeDescriptor.get().getSupportedObjectTypes().isEmpty()
                 ? databaseCapabilityView.getSupportedObjectTypes()
                 : runtimeDescriptor.get().getSupportedObjectTypes();
+        boolean supportsCrossSchemaSql = runtimeDescriptor.get().isLegacySupportsCrossSchemaSqlConfigured()
+                ? runtimeDescriptor.get().isLegacySupportsCrossSchemaSql()
+                : databaseCapabilityView.isSupportsCrossSchemaSql();
+        boolean supportsExplainAnalyze = runtimeDescriptor.get().isLegacySupportsExplainAnalyzeConfigured()
+                ? runtimeDescriptor.get().isLegacySupportsExplainAnalyze()
+                : databaseCapabilityView.isSupportsExplainAnalyze();
+        ResultBehavior explainAnalyzeResultBehavior = supportsExplainAnalyze ? ResultBehavior.RESULT_SET : ResultBehavior.UNSUPPORTED;
+        TransactionBoundaryBehavior explainAnalyzeTransactionBehavior = supportsExplainAnalyze ? TransactionBoundaryBehavior.NATIVE
+                : TransactionBoundaryBehavior.UNSUPPORTED;
         return new DatabaseCapabilityView(databaseCapabilityView.getDatabase(), runtimeDescriptor.get().getDatabaseType(),
                 databaseCapabilityView.getMinSupportedVersion(), supportedObjectTypes, databaseCapabilityView.getSupportedStatementClasses(),
                 databaseCapabilityView.isSupportsTransactionControl(), databaseCapabilityView.isSupportsSavepoint(),
                 databaseCapabilityView.getSupportedTransactionStatements(), databaseCapabilityView.isDefaultAutocommit(),
                 databaseCapabilityView.getMaxRowsDefault(), databaseCapabilityView.getMaxTimeoutMsDefault(),
-                databaseCapabilityView.getDefaultSchemaSemantics(), runtimeDescriptor.get().isSupportsCrossSchemaSql(),
-                runtimeDescriptor.get().isSupportsExplainAnalyze(), databaseCapabilityView.getDdlTransactionBehavior(),
-                databaseCapabilityView.getDclTransactionBehavior(), databaseCapabilityView.getExplainAnalyzeResultBehavior(),
-                databaseCapabilityView.getExplainAnalyzeTransactionBehavior());
+                databaseCapabilityView.getDefaultSchemaSemantics(), supportsCrossSchemaSql, supportsExplainAnalyze, databaseCapabilityView.getDdlTransactionBehavior(),
+                databaseCapabilityView.getDclTransactionBehavior(), explainAnalyzeResultBehavior, explainAnalyzeTransactionBehavior);
     }
     
     private static DatabaseCapabilityView createDatabaseCapability(final String database, final DatabaseCapability capability) {

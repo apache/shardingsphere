@@ -19,9 +19,10 @@ package org.apache.shardingsphere.test.e2e.mcp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.bootstrap.config.HttpServerConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeTopologyConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.LaunchState;
@@ -217,8 +218,8 @@ abstract class AbstractMCPE2ETest {
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPServerRegistry serverRegistry = new MCPServerRegistry(sessionManager);
         MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
-        MCPLaunchConfiguration runtimeConfiguration = new MCPLaunchConfiguration(new HttpServerConfiguration("127.0.0.1", 0, ENDPOINT_PATH), true, false,
-                new Properties(), new RuntimeTopologyConfiguration(Map.of()));
+        TransportConfiguration transportConfiguration = new TransportConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH), new StdioTransportConfiguration(false));
+        MCPLaunchConfiguration runtimeConfiguration = new MCPLaunchConfiguration(transportConfiguration, new Properties(), Map.of());
         launchState = new MCPRuntimeLauncher().launch(serverRegistry, runtimeServices, runtimeConfiguration, createMetadataCatalog(), createDatabaseRuntime());
         return launchState;
     }
