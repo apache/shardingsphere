@@ -19,10 +19,11 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.LaunchState;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPLaunchState;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
@@ -46,7 +47,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -71,7 +71,7 @@ class StdioTransportIntegrationTest {
     @Test
     void assertInitializeSession() {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, new MCPRuntimeServices(sessionManager));
+        StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, createRuntimeServices(sessionManager));
         
         String actual = stdioMCPServer.initializeSession();
         
@@ -106,7 +106,7 @@ class StdioTransportIntegrationTest {
     @Test
     void assertCloseSession() {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, new MCPRuntimeServices(sessionManager));
+        StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, createRuntimeServices(sessionManager));
         String sessionId = stdioMCPServer.initializeSession();
         
         stdioMCPServer.closeSession(sessionId);
@@ -120,8 +120,8 @@ class StdioTransportIntegrationTest {
         MCPServerRegistry serverRegistry = new MCPServerRegistry(sessionManager);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         
-        LaunchState actual = runtimeLauncher.launch(serverRegistry,
-                new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"), createRuntimeProps(), Map.of()));
+        MCPLaunchState actual = runtimeLauncher.launch(serverRegistry,
+                new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"), createRuntimeDatabases()));
         
         assertTrue(actual.getServerRegistry().isRunning());
         assertTrue(actual.getStdioServer().isPresent());
@@ -133,16 +133,19 @@ class StdioTransportIntegrationTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, false, "/mcp"),
-                        new Properties(), Map.of())));
+                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, false, "/mcp"), Map.of())));
         
         assertThat(actual.getMessage(), is("At least one transport must be enabled."));
     }
     
     private StdioMCPServer createStdioServer() {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPRuntimeServices runtimeServices = new MCPRuntimeServices(sessionManager);
+        MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
         return new StdioMCPServer(sessionManager, runtimeServices);
+    }
+    
+    private MCPRuntimeServices createRuntimeServices(final MCPSessionManager sessionManager) {
+        return new MCPRuntimeServices(sessionManager, new MetadataCatalog(Map.of(), List.of()), new DatabaseRuntime(Map.of(), Map.of()));
     }
     
     private MetadataCatalog createMetadataCatalog() {
@@ -166,17 +169,17 @@ class StdioTransportIntegrationTest {
         return new DatabaseRuntime(queryResults, updateCounts);
     }
     
-    private Properties createRuntimeProps() {
+    private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "stdio-transport");
         try {
             H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
-        return H2RuntimeTestSupport.createRuntimeProps("logic_db", jdbcUrl);
+        return H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
     }
     
-    private TransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {
-        return new TransportConfiguration(new HttpTransportConfiguration(httpEnabled, "127.0.0.1", 0, endpointPath), new StdioTransportConfiguration(stdioEnabled));
+    private MCPTransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {
+        return new MCPTransportConfiguration(new HttpTransportConfiguration(httpEnabled, "127.0.0.1", 0, endpointPath), new StdioTransportConfiguration(stdioEnabled));
     }
 }

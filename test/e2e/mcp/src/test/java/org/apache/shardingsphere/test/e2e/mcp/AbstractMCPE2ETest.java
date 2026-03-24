@@ -22,10 +22,10 @@ import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.LaunchState;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPLaunchState;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.QueryResult;
@@ -46,7 +46,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -57,7 +56,7 @@ abstract class AbstractMCPE2ETest {
     
     private static final String ENDPOINT_PATH = "/gateway";
     
-    private LaunchState launchState;
+    private MCPLaunchState launchState;
     
     @AfterEach
     void tearDown() {
@@ -73,15 +72,16 @@ abstract class AbstractMCPE2ETest {
         }
     }
     
-    protected final MCPRuntimeServices createRuntimeServices(final MCPSessionManager sessionManager) {
-        return new MCPRuntimeServices(sessionManager);
+    protected final MCPRuntimeServices createRuntimeServices(final MCPSessionManager sessionManager, final MetadataCatalog metadataCatalog,
+                                                             final DatabaseRuntime databaseRuntime) {
+        return new MCPRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
     }
     
-    protected final LaunchState launchRuntime() {
+    protected final MCPLaunchState launchRuntime() {
         return launchRuntimeInternal();
     }
     
-    protected final LaunchState getLaunchState() {
+    protected final MCPLaunchState getLaunchState() {
         return launchState;
     }
     
@@ -214,13 +214,15 @@ abstract class AbstractMCPE2ETest {
         return Map.of();
     }
     
-    private LaunchState launchRuntimeInternal() {
+    private MCPLaunchState launchRuntimeInternal() {
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPServerRegistry serverRegistry = new MCPServerRegistry(sessionManager);
-        MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
-        TransportConfiguration transportConfiguration = new TransportConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH), new StdioTransportConfiguration(false));
-        MCPLaunchConfiguration runtimeConfiguration = new MCPLaunchConfiguration(transportConfiguration, new Properties(), Map.of());
-        launchState = new MCPRuntimeLauncher().launch(serverRegistry, runtimeServices, runtimeConfiguration, createMetadataCatalog(), createDatabaseRuntime());
+        MetadataCatalog metadataCatalog = createMetadataCatalog();
+        DatabaseRuntime databaseRuntime = createDatabaseRuntime();
+        MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
+        MCPTransportConfiguration transportConfiguration = new MCPTransportConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH), new StdioTransportConfiguration(false));
+        MCPLaunchConfiguration runtimeConfiguration = new MCPLaunchConfiguration(transportConfiguration, Map.of());
+        launchState = new MCPRuntimeLauncher().launch(serverRegistry, runtimeServices, runtimeConfiguration, metadataCatalog, databaseRuntime);
         return launchState;
     }
     

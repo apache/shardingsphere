@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
-import org.apache.shardingsphere.mcp.bootstrap.runtime.MCPLaunchRuntimeLoader;
-import org.apache.shardingsphere.mcp.bootstrap.runtime.LoadedRuntime;
+import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseConnectionConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseRuntimeFactory;
+import org.apache.shardingsphere.mcp.bootstrap.runtime.JdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.stdio.StdioMCPServer;
@@ -32,6 +33,7 @@ import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -39,13 +41,17 @@ import java.util.Objects;
  */
 public final class MCPRuntimeLauncher {
     
+    private final DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
+    
+    private final JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
+    
     /**
      * Launch the MCP runtime with the supplied transport configuration.
      *
      * @param launchConfiguration launch configuration
      * @return launch state
      */
-    public LaunchState launch(final MCPLaunchConfiguration launchConfiguration) {
+    public MCPLaunchState launch(final MCPLaunchConfiguration launchConfiguration) {
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPServerRegistry serverRegistry = new MCPServerRegistry(sessionManager);
         return launch(serverRegistry, launchConfiguration);
@@ -58,13 +64,15 @@ public final class MCPRuntimeLauncher {
      * @param launchConfiguration launch configuration
      * @return launch state
      */
-    public LaunchState launch(final MCPServerRegistry serverRegistry, final MCPLaunchConfiguration launchConfiguration) {
+    public MCPLaunchState launch(final MCPServerRegistry serverRegistry, final MCPLaunchConfiguration launchConfiguration) {
         MCPServerRegistry actualServerRegistry = Objects.requireNonNull(serverRegistry, "serverRegistry cannot be null");
         MCPLaunchConfiguration actualLaunchConfiguration = Objects.requireNonNull(launchConfiguration, "launchConfiguration cannot be null");
         validateTransportConfiguration(actualLaunchConfiguration);
-        LoadedRuntime loadedRuntime = new MCPLaunchRuntimeLoader().load(actualLaunchConfiguration);
-        MCPRuntimeServices runtimeServices = new MCPRuntimeServices(actualServerRegistry.getSessionManager(), loadedRuntime.getMetadataCatalog(), loadedRuntime.getDatabaseRuntime());
-        return launch(actualServerRegistry, runtimeServices, actualLaunchConfiguration, loadedRuntime.getMetadataCatalog(), loadedRuntime.getDatabaseRuntime());
+        Map<String, DatabaseConnectionConfiguration> connectionConfigurations = createConnectionConfigurations(actualLaunchConfiguration);
+        MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigurations);
+        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, metadataLoader);
+        MCPRuntimeServices runtimeServices = new MCPRuntimeServices(actualServerRegistry.getSessionManager(), metadataCatalog, databaseRuntime);
+        return launch(actualServerRegistry, runtimeServices, actualLaunchConfiguration, metadataCatalog, databaseRuntime);
     }
     
     /**
@@ -78,8 +86,8 @@ public final class MCPRuntimeLauncher {
      * @return launch state
      * @throws IllegalStateException when HTTP transport startup fails
      */
-    public LaunchState launch(final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices, final MCPLaunchConfiguration launchConfiguration,
-                              final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
+    public MCPLaunchState launch(final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices, final MCPLaunchConfiguration launchConfiguration,
+                                 final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
         MCPServerRegistry actualServerRegistry = Objects.requireNonNull(serverRegistry, "serverRegistry cannot be null");
         MCPRuntimeServices actualRuntimeServices = Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null");
         MCPLaunchConfiguration actualLaunchConfiguration = Objects.requireNonNull(launchConfiguration, "launchConfiguration cannot be null");
@@ -107,14 +115,21 @@ public final class MCPRuntimeLauncher {
             actualServerRegistry.stop();
             throw new IllegalStateException("Failed to start HTTP transport.", ex);
         }
-        return new LaunchState(actualServerRegistry, actualRuntimeServices, toTransportList(httpServer), toTransportList(stdioServer));
+        return new MCPLaunchState(actualServerRegistry, actualRuntimeServices, toTransportList(httpServer), toTransportList(stdioServer));
     }
     
     private void validateTransportConfiguration(final MCPLaunchConfiguration launchConfiguration) {
-        TransportConfiguration transportConfig = launchConfiguration.getTransport();
+        MCPTransportConfiguration transportConfig = launchConfiguration.getTransport();
         if (!transportConfig.getHttp().isEnabled() && !transportConfig.getStdio().isEnabled()) {
             throw new IllegalArgumentException("At least one transport must be enabled.");
         }
+    }
+    
+    private Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final MCPLaunchConfiguration launchConfiguration) {
+        if (launchConfiguration.getRuntimeDatabases().isEmpty()) {
+            throw new IllegalArgumentException("`runtime.databases` must be configured for the default launch path.");
+        }
+        return databaseRuntimeFactory.createConnectionConfigurations(launchConfiguration.getRuntimeDatabases());
     }
     
     private StreamableHttpMCPServer createHttpServer(final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices,

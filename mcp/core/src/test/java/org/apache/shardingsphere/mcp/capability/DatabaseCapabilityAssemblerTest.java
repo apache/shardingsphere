@@ -36,7 +36,7 @@ class DatabaseCapabilityAssemblerTest {
     
     @Test
     void assertAssembleServiceCapability() {
-        DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler();
+        DatabaseCapabilityAssembler assembler = createAssembler();
         
         ServiceCapability actualServiceCapability = assembler.assembleServiceCapability();
         
@@ -50,7 +50,7 @@ class DatabaseCapabilityAssemblerTest {
     
     @Test
     void assertAssembleDatabaseCapability() {
-        DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler();
+        DatabaseCapabilityAssembler assembler = createAssembler();
         
         Optional<DatabaseCapabilityView> actualCapability = assembler.assembleDatabaseCapability("logic_db", "mysql");
         
@@ -73,7 +73,7 @@ class DatabaseCapabilityAssemblerTest {
     
     @Test
     void assertAssembleDatabaseCapabilityWithoutIndex() {
-        DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler();
+        DatabaseCapabilityAssembler assembler = createAssembler();
         
         Optional<DatabaseCapabilityView> actualCapability = assembler.assembleDatabaseCapability("warehouse", "hive");
         
@@ -89,35 +89,20 @@ class DatabaseCapabilityAssemblerTest {
     void assertAssembleDatabaseCapabilityWithRuntimeOverlay() {
         MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of("logic_db", "MySQL"), Collections.emptyList(), Map.of(
                 "logic_db", new RuntimeDatabaseDescriptor("logic_db", "MySQL", EnumSet.of(SupportedObjectType.DATABASE, SupportedObjectType.SCHEMA,
-                        SupportedObjectType.TABLE, SupportedObjectType.COLUMN, SupportedObjectType.CAPABILITY), "8.0.32", "public", true, true, false, false)));
+                        SupportedObjectType.TABLE, SupportedObjectType.COLUMN, SupportedObjectType.CAPABILITY), "8.0.32", "public")));
         DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler(metadataCatalog);
         
         Optional<DatabaseCapabilityView> actualCapability = assembler.assembleDatabaseCapability("logic_db", "mysql");
         
         assertTrue(actualCapability.isPresent());
         assertFalse(actualCapability.get().getSupportedObjectTypes().contains(SupportedObjectType.INDEX));
-        assertTrue(actualCapability.get().isSupportsCrossSchemaSql());
+        assertFalse(actualCapability.get().isSupportsCrossSchemaSql());
         assertTrue(actualCapability.get().isSupportsExplainAnalyze());
     }
     
     @Test
-    void assertAssembleDatabaseCapabilityWithLegacyExplainAnalyzeOverride() {
-        MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of("logic_db", "MySQL"), Collections.emptyList(), Map.of(
-                "logic_db", new RuntimeDatabaseDescriptor("logic_db", "MySQL", EnumSet.of(SupportedObjectType.DATABASE, SupportedObjectType.SCHEMA,
-                        SupportedObjectType.TABLE, SupportedObjectType.COLUMN, SupportedObjectType.CAPABILITY), "8.0.32", "public", false, false, true, false)));
-        DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler(metadataCatalog);
-        
-        Optional<DatabaseCapabilityView> actualCapability = assembler.assembleDatabaseCapability("logic_db", "mysql");
-        
-        assertTrue(actualCapability.isPresent());
-        assertFalse(actualCapability.get().isSupportsExplainAnalyze());
-        assertThat(actualCapability.get().getExplainAnalyzeResultBehavior(), is(ResultBehavior.UNSUPPORTED));
-        assertThat(actualCapability.get().getExplainAnalyzeTransactionBehavior(), is(TransactionBoundaryBehavior.UNSUPPORTED));
-    }
-    
-    @Test
     void assertAssembleDatabaseCapabilityWithUnknownDatabaseType() {
-        DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler();
+        DatabaseCapabilityAssembler assembler = createAssembler();
         
         Optional<DatabaseCapabilityView> actualCapability = assembler.assembleDatabaseCapability("logic_db", "unknown");
         
@@ -125,9 +110,13 @@ class DatabaseCapabilityAssemblerTest {
     }
     
     @Test
-    void assertConstructWithNullRegistry() {
-        NullPointerException actualException = assertThrows(NullPointerException.class, () -> new DatabaseCapabilityAssembler((DatabaseCapabilityRegistry) null));
+    void assertConstructWithNullMetadataCatalog() {
+        NullPointerException actualException = assertThrows(NullPointerException.class, () -> new DatabaseCapabilityAssembler(null));
         
-        assertThat(actualException.getMessage(), is("registry cannot be null"));
+        assertThat(actualException.getMessage(), is("metadataCatalog cannot be null"));
+    }
+    
+    private DatabaseCapabilityAssembler createAssembler() {
+        return new DatabaseCapabilityAssembler(new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()));
     }
 }

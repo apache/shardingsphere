@@ -17,15 +17,18 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -50,7 +53,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchListDatabases() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
+        MetadataToolDispatcher dispatcher = createDispatcher();
         
         ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("list_databases", "", "", "", "", "", Set.of(), 10, ""));
         
@@ -62,7 +65,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchListTablesWithPagination() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
+        MetadataToolDispatcher dispatcher = createDispatcher();
         
         ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("list_tables", "logic_db", "public", "", "", "order", Set.of(), 1, ""));
         
@@ -74,7 +77,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchSearchMetadataAcrossDatabases() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
+        MetadataToolDispatcher dispatcher = createDispatcher();
         Set<MetadataObjectType> objectTypes = new LinkedHashSet<>();
         objectTypes.add(MetadataObjectType.TABLE);
         objectTypes.add(MetadataObjectType.VIEW);
@@ -99,7 +102,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchSearchMetadataWithSchemaWithoutDatabase() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
+        MetadataToolDispatcher dispatcher = createDispatcher();
         
         ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("search_metadata", "", "public", "", "", "order", Set.of(), 10, ""));
         
@@ -111,7 +114,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchDescribeView() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
+        MetadataToolDispatcher dispatcher = createDispatcher();
         
         ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("describe_view", "logic_db", "public", "active_orders", "", "", Set.of(), 10, ""));
         
@@ -123,7 +126,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchListIndexesWithUnsupportedDatabaseType() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
+        MetadataToolDispatcher dispatcher = createDispatcher();
         
         ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("list_indexes", "warehouse", "warehouse", "facts", "", "", Set.of(), 10, ""));
         
@@ -134,7 +137,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchWithInvalidPageToken() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
+        MetadataToolDispatcher dispatcher = createDispatcher();
         
         ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, "invalid"));
         
@@ -146,7 +149,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchWithPageOffsetBeyondResultSize() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
+        MetadataToolDispatcher dispatcher = createDispatcher();
         
         ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, "99"));
         
@@ -157,7 +160,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchWithUnsupportedTool() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
+        MetadataToolDispatcher dispatcher = createDispatcher();
         
         ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("unsupported_tool", "", "", "", "", "", Set.of(), 10, ""));
         
@@ -170,7 +173,7 @@ class MetadataToolDispatcherTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertDispatchWithMissingRequiredFieldCases")
     void assertDispatchWithMissingRequiredField(final String name, final ToolRequest toolRequest, final String expectedMessage) {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
+        MetadataToolDispatcher dispatcher = createDispatcher();
         
         ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), toolRequest);
         
@@ -212,5 +215,9 @@ class MetadataToolDispatcherTest {
         metadataObjects.add(new MetadataObject("warehouse", "warehouse", MetadataObjectType.TABLE, "facts", "", ""));
         metadataObjects.add(new MetadataObject("warehouse", "warehouse", MetadataObjectType.COLUMN, "fact_id", "TABLE", "facts"));
         return new MetadataCatalog(databaseTypes, metadataObjects);
+    }
+    
+    private MetadataToolDispatcher createDispatcher() {
+        return new MetadataToolDispatcher(new MetadataResourceLoader(new DatabaseCapabilityAssembler(new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()))));
     }
 }

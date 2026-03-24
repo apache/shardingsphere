@@ -21,9 +21,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.TransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.LaunchState;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPLaunchState;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
@@ -38,7 +39,6 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -50,7 +50,7 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     @TempDir
     private Path tempDir;
     
-    private LaunchState launchState;
+    private MCPLaunchState launchState;
     
     @AfterEach
     void tearDown() {
@@ -130,8 +130,8 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     
     private MCPLaunchConfiguration createRuntimeConfiguration() {
         return new MCPLaunchConfiguration(
-                new TransportConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, "/gateway"), new StdioTransportConfiguration(false)),
-                createRuntimeProps(), Map.of());
+                new MCPTransportConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, "/gateway"), new StdioTransportConfiguration(false)),
+                createRuntimeDatabases());
     }
     
     private URI createEndpointUri() {
@@ -185,7 +185,7 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     
     protected abstract void prepareRuntimeFixture() throws SQLException;
     
-    protected abstract Properties createRuntimeProps();
+    protected abstract Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases();
     
     protected final Path getTempDir() {
         return tempDir;

@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
@@ -45,26 +42,12 @@ class DatabaseRuntimeFactoryTest {
     private Path tempDir;
     
     @Test
-    void assertCreateConnectionConfigurations() {
-        DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
-        
-        Map<String, DatabaseConnectionConfiguration> actual = databaseRuntimeFactory.createConnectionConfigurations(PropertiesBuilder.build(
-                new Property("databaseName", "logic_db"),
-                new Property("databaseType", "H2"),
-                new Property("jdbcUrl", "jdbc:h2:mem:test")));
-        
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get("logic_db").getDatabaseType(), is("H2"));
-        assertThat(actual.get("logic_db").getJdbcUrl(), is("jdbc:h2:mem:test"));
-    }
-    
-    @Test
     void assertCreateConnectionConfigurationsWithRuntimeDatabases() {
         DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
         
         Map<String, DatabaseConnectionConfiguration> actual = databaseRuntimeFactory.createConnectionConfigurations(Map.of(
-                "logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", false, false, false, false),
-                "analytics_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:analytics", "", "", "org.h2.Driver", false, false, false, false)));
+                "logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"),
+                "analytics_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:analytics", "", "", "org.h2.Driver")));
         
         assertThat(actual.size(), is(2));
         assertThat(actual.get("logic_db").getJdbcUrl(), is("jdbc:h2:mem:logic"));
@@ -76,35 +59,19 @@ class DatabaseRuntimeFactoryTest {
         DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> databaseRuntimeFactory.createConnectionConfigurations(
-                Map.of("logic_db", new RuntimeDatabaseConfiguration("", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", false, false, false, false))));
+                Map.of("logic_db", new RuntimeDatabaseConfiguration("", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"))));
         
         assertThat(actual.getMessage(), is("Runtime database `logic_db` property `databaseType` is required."));
     }
     
     @Test
-    void assertCreateConnectionConfigurationsWithLegacyDatabaseNames() {
+    void assertCreateConnectionConfigurationsWithNoRuntimeDatabases() {
         DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> databaseRuntimeFactory.createConnectionConfigurations(
-                PropertiesBuilder.build(new Property("databaseNames", "logic_db"))));
+                Map.of()));
         
-        assertThat(actual.getMessage(),
-                is("Runtime property `databaseNames` is no longer supported. Configure a single database with `databaseName`, `databaseType`, and `jdbcUrl`."));
-    }
-    
-    @Test
-    void assertCreateConnectionConfigurationsWithLegacyDatabaseEntries() {
-        DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
-        Properties props = PropertiesBuilder.build(
-                new Property("databaseName", "logic_db"),
-                new Property("databaseType", "H2"),
-                new Property("jdbcUrl", "jdbc:h2:mem:test"),
-                new Property("databases.logic_db.jdbcUrl", "jdbc:h2:mem:legacy"));
-        
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> databaseRuntimeFactory.createConnectionConfigurations(props));
-        
-        assertThat(actual.getMessage(),
-                is("Runtime properties with `databases.<name>.*` are no longer supported. Configure a single database with `databaseName`, `databaseType`, and `jdbcUrl`."));
+        assertThat(actual.getMessage(), is("At least one runtime database must be configured."));
     }
     
     @Test
@@ -116,8 +83,8 @@ class DatabaseRuntimeFactoryTest {
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
         H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         Map<String, DatabaseConnectionConfiguration> connectionConfigurations = Map.of(
-                "logic_db", new DatabaseConnectionConfiguration("logic_db", "H2", firstJdbcUrl, "", "", "org.h2.Driver", false, false, false, false),
-                "analytics_db", new DatabaseConnectionConfiguration("analytics_db", "H2", secondJdbcUrl, "", "", "org.h2.Driver", false, false, false, false));
+                "logic_db", new DatabaseConnectionConfiguration("logic_db", "H2", firstJdbcUrl, "", "", "org.h2.Driver"),
+                "analytics_db", new DatabaseConnectionConfiguration("analytics_db", "H2", secondJdbcUrl, "", "", "org.h2.Driver"));
         MetadataCatalog metadataCatalog = jdbcMetadataLoader.load(connectionConfigurations);
         DatabaseRuntime actual = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, jdbcMetadataLoader);
         H2RuntimeTestSupport.executeStatements(firstJdbcUrl, "CREATE TABLE public.orders_archive (order_id INT PRIMARY KEY)");
@@ -136,7 +103,7 @@ class DatabaseRuntimeFactoryTest {
         DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
         JdbcMetadataLoader jdbcMetadataLoader = mock(JdbcMetadataLoader.class);
         Map<String, DatabaseConnectionConfiguration> connectionConfigurations = Map.of(
-                "logic_db", new DatabaseConnectionConfiguration("logic_db", "H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", false, false, false, false));
+                "logic_db", new DatabaseConnectionConfiguration("logic_db", "H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"));
         MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of("logic_db", "H2"), List.of());
         DatabaseRuntime actual = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, jdbcMetadataLoader);
         when(jdbcMetadataLoader.load(anyMap())).thenThrow(new IllegalStateException("refresh failed"));

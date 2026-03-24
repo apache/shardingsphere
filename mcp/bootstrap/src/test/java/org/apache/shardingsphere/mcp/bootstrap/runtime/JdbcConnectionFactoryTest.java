@@ -42,8 +42,7 @@ class JdbcConnectionFactoryTest {
         JdbcConnectionFactory connectionFactory = new JdbcConnectionFactory();
         
         try (
-                Connection actual = connectionFactory.openConnection(new DatabaseConnectionConfiguration("logic_db", "H2", jdbcUrl, "", "", "",
-                        false, false, false, false))) {
+                Connection actual = connectionFactory.openConnection(new DatabaseConnectionConfiguration("logic_db", "H2", jdbcUrl, "", "", ""))) {
             assertNotNull(actual);
             assertFalse(actual.isClosed());
         }
@@ -54,8 +53,7 @@ class JdbcConnectionFactoryTest {
         JdbcConnectionFactory connectionFactory = new JdbcConnectionFactory();
         
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> connectionFactory.openConnection(
-                new DatabaseConnectionConfiguration("logic_db", "H2", "jdbc:h2:mem:missing-driver", "", "", "org.example.MissingDriver",
-                        false, false, false, false)));
+                new DatabaseConnectionConfiguration("logic_db", "H2", "jdbc:h2:mem:missing-driver", "", "", "org.example.MissingDriver")));
         
         assertThat(actual.getMessage(), is("JDBC driver `org.example.MissingDriver` is not available for database `logic_db`."));
     }

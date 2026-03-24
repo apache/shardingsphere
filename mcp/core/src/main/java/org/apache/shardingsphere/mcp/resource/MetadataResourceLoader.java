@@ -38,13 +38,6 @@ public final class MetadataResourceLoader {
     private final DatabaseCapabilityAssembler capabilityAssembler;
     
     /**
-     * Construct a metadata resource loader with the default capability assembler.
-     */
-    public MetadataResourceLoader() {
-        this(new DatabaseCapabilityAssembler());
-    }
-    
-    /**
      * Construct a metadata resource loader with a caller-provided capability assembler.
      *
      * @param capabilityAssembler capability assembler

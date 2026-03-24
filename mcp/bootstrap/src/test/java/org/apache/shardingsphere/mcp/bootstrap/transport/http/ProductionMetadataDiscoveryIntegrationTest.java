@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.http;
 
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +27,6 @@ import java.net.http.HttpResponse;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -43,8 +43,8 @@ class ProductionMetadataDiscoveryIntegrationTest extends AbstractProductionRunti
     }
     
     @Override
-    protected Properties createRuntimeProps() {
-        return H2RuntimeTestSupport.createRuntimeProps("logic_db", jdbcUrl);
+    protected Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
+        return H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
     }
     
     @Test

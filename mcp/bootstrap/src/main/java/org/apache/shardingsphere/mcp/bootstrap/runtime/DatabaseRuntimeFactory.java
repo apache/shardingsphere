@@ -29,36 +29,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Properties;
 
 /**
- * Create production database runtimes from runtime properties.
+ * Create production database runtimes from runtime databases.
  */
 public final class DatabaseRuntimeFactory {
     
-    private static final String DATABASE_NAME_KEY = "databaseName";
-    
-    private static final String LEGACY_DATABASE_NAMES_KEY = "databaseNames";
-    
-    private static final String LEGACY_DATABASES_PREFIX = "databases.";
-    
     private final JdbcConnectionFactory jdbcConnectionFactory = new JdbcConnectionFactory();
-    
-    /**
-     * Create connection configurations from runtime properties.
-     *
-     * @param props runtime properties
-     * @return connection configurations keyed by logical database
-     */
-    public Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final Properties props) {
-        Properties actualProps = Objects.requireNonNull(props, "props cannot be null");
-        validateLegacyRuntimeProperties(actualProps);
-        return createConnectionConfigurations(Collections.singletonMap(getRequiredProperty(actualProps, DATABASE_NAME_KEY),
-                new RuntimeDatabaseConfiguration(getRequiredProperty(actualProps, "databaseType"), getRequiredProperty(actualProps, "jdbcUrl"),
-                        getProperty(actualProps, "username"), getProperty(actualProps, "password"), getProperty(actualProps, "driverClassName"), actualProps.containsKey("supportsCrossSchemaSql"),
-                        Boolean.parseBoolean(getProperty(actualProps, "supportsCrossSchemaSql", "false")), actualProps.containsKey("supportsExplainAnalyze"),
-                        Boolean.parseBoolean(getProperty(actualProps, "supportsExplainAnalyze", "false")))));
-    }
     
     /**
      * Create connection configurations from runtime databases.
@@ -109,10 +86,7 @@ public final class DatabaseRuntimeFactory {
         RuntimeDatabaseConfiguration actualRuntimeDatabaseConfiguration = Objects.requireNonNull(runtimeDatabaseConfiguration, "runtimeDatabaseConfiguration cannot be null");
         return new DatabaseConnectionConfiguration(databaseName, getRequiredValue(actualRuntimeDatabaseConfiguration.getDatabaseType(), databaseName, "databaseType"),
                 getRequiredValue(actualRuntimeDatabaseConfiguration.getJdbcUrl(), databaseName, "jdbcUrl"), actualRuntimeDatabaseConfiguration.getUsername(),
-                actualRuntimeDatabaseConfiguration.getPassword(), actualRuntimeDatabaseConfiguration.getDriverClassName(),
-                actualRuntimeDatabaseConfiguration.isLegacySupportsCrossSchemaSqlConfigured(),
-                actualRuntimeDatabaseConfiguration.isLegacySupportsCrossSchemaSql(), actualRuntimeDatabaseConfiguration.isLegacySupportsExplainAnalyzeConfigured(),
-                actualRuntimeDatabaseConfiguration.isLegacySupportsExplainAnalyze());
+                actualRuntimeDatabaseConfiguration.getPassword(), actualRuntimeDatabaseConfiguration.getDriverClassName());
     }
     
     private void refreshMetadata(final String database, final Map<String, DatabaseConnectionConfiguration> connectionConfigurations,
@@ -123,35 +97,6 @@ public final class DatabaseRuntimeFactory {
         RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = Objects.requireNonNull(refreshedCatalog.getRuntimeDatabaseDescriptors().get(database),
                 "runtimeDatabaseDescriptor cannot be null");
         metadataCatalog.replaceDatabaseSnapshot(database, refreshedCatalog.getDatabaseTypes().get(database), refreshedCatalog.getMetadataObjects(), runtimeDatabaseDescriptor);
-    }
-    
-    private void validateLegacyRuntimeProperties(final Properties props) {
-        if (!getProperty(props, LEGACY_DATABASE_NAMES_KEY).isEmpty()) {
-            throw new IllegalArgumentException("Runtime property `databaseNames` is no longer supported. "
-                    + "Configure a single database with `databaseName`, `databaseType`, and `jdbcUrl`.");
-        }
-        for (String each : props.stringPropertyNames()) {
-            if (each.startsWith(LEGACY_DATABASES_PREFIX)) {
-                throw new IllegalArgumentException("Runtime properties with `databases.<name>.*` are no longer supported. "
-                        + "Configure a single database with `databaseName`, `databaseType`, and `jdbcUrl`.");
-            }
-        }
-    }
-    
-    private String getRequiredProperty(final Properties props, final String key) {
-        String result = getProperty(props, key);
-        if (result.isEmpty()) {
-            throw new IllegalArgumentException(String.format("Runtime property `%s` is required.", key));
-        }
-        return result;
-    }
-    
-    private String getProperty(final Properties props, final String key) {
-        return getProperty(props, key, "");
-    }
-    
-    private String getProperty(final Properties props, final String key, final String defaultValue) {
-        return Objects.requireNonNull(props.getProperty(key, defaultValue), "propertyValue cannot be null").trim();
     }
     
     private String normalizeDatabaseName(final String databaseName) {

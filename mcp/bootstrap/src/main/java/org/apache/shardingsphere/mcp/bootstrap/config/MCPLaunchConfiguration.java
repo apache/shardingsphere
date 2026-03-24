@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * MCP launch configuration.
@@ -30,9 +29,7 @@ import java.util.Properties;
 @Getter
 public final class MCPLaunchConfiguration {
     
-    private final TransportConfiguration transport;
-    
-    private final Properties runtimeProps;
+    private final MCPTransportConfiguration transport;
     
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
 }

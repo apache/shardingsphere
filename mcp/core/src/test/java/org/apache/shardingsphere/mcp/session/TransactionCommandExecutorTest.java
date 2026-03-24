@@ -18,13 +18,16 @@
 package org.apache.shardingsphere.mcp.session;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
+import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Collections;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,7 +43,7 @@ class TransactionCommandExecutorTest {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
         prepareTransactionState(sessionManager, sql);
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(new DatabaseCapabilityAssembler(), sessionManager);
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseRuntime());
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", sql);
         
@@ -64,7 +67,7 @@ class TransactionCommandExecutorTest {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
         sessionManager.beginTransaction("session-1", "warehouse");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(new DatabaseCapabilityAssembler(), sessionManager);
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseRuntime());
         
         ExecuteQueryResponse actual = executor.execute("session-1", "warehouse", "Hive", "SAVEPOINT sp_1");
         
@@ -77,7 +80,7 @@ class TransactionCommandExecutorTest {
     void assertExecuteWithInvalidCommand() {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(new DatabaseCapabilityAssembler(), sessionManager);
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseRuntime());
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", "SELECT 1");
         
@@ -90,7 +93,7 @@ class TransactionCommandExecutorTest {
     void assertExecuteWithNoActiveTransaction() {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(new DatabaseCapabilityAssembler(), sessionManager);
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseRuntime());
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", "COMMIT");
         
@@ -107,5 +110,13 @@ class TransactionCommandExecutorTest {
         if (sql.startsWith("ROLLBACK TO SAVEPOINT") || sql.startsWith("RELEASE SAVEPOINT")) {
             sessionManager.rememberSavepoint("session-1", "SP_1");
         }
+    }
+    
+    private DatabaseCapabilityAssembler createCapabilityAssembler() {
+        return new DatabaseCapabilityAssembler(new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()));
+    }
+    
+    private DatabaseRuntime createDatabaseRuntime() {
+        return new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap());
     }
 }

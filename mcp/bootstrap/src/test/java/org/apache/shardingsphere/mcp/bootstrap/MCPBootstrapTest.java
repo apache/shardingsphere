@@ -34,35 +34,10 @@ class MCPBootstrapTest {
     private Path tempDir;
     
     @Test
-    void assertMain() throws IOException {
-        Path configFile = createLegacyConfigFile();
-        
-        assertDoesNotThrow(() -> MCPBootstrap.main(new String[]{configFile.toString()}));
-    }
-    
-    @Test
     void assertMainWithRuntimeDatabases() throws IOException {
         Path configFile = createRuntimeDatabasesConfigFile();
         
         assertDoesNotThrow(() -> MCPBootstrap.main(new String[]{configFile.toString()}));
-    }
-    
-    private Path createLegacyConfigFile() throws IOException {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "bootstrap");
-        initializeDatabase(jdbcUrl);
-        Path result = tempDir.resolve("mcp.yaml");
-        Files.writeString(result, "transport:\n"
-                + "  http:\n"
-                + "    enabled: false\n"
-                + "runtime:\n"
-                + "  props:\n"
-                + "    databaseName: logic_db\n"
-                + "    databaseType: H2\n"
-                + "    jdbcUrl: '" + jdbcUrl + "'\n"
-                + "    driverClassName: org.h2.Driver\n"
-                + "    supportsCrossSchemaSql: true\n"
-                + "    supportsExplainAnalyze: false\n");
-        return result;
     }
     
     private Path createRuntimeDatabasesConfigFile() throws IOException {

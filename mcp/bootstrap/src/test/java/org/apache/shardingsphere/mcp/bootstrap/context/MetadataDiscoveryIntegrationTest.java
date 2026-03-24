@@ -18,8 +18,12 @@
 package org.apache.shardingsphere.mcp.bootstrap.context;
 
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
+import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -32,7 +36,8 @@ class MetadataDiscoveryIntegrationTest extends AbstractMCPIntegrationTest {
     @Override
     protected MCPServerRegistry createServerRegistry() {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        runtimeServices = new MCPRuntimeServices(sessionManager);
+        runtimeServices = new MCPRuntimeServices(sessionManager, new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()),
+                new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
         MCPServerRegistry result = new MCPServerRegistry(sessionManager);
         runtimeServices.registerDefaults(result);
         return result;

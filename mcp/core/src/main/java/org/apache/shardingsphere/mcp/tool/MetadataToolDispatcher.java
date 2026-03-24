@@ -42,13 +42,6 @@ public final class MetadataToolDispatcher {
     private final MetadataResourceLoader resourceLoader;
     
     /**
-     * Construct a dispatcher with the default metadata resource loader.
-     */
-    public MetadataToolDispatcher() {
-        this(new MetadataResourceLoader());
-    }
-    
-    /**
      * Construct a dispatcher with a caller-provided metadata resource loader.
      *
      * @param resourceLoader metadata resource loader

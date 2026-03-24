@@ -18,8 +18,12 @@
 package org.apache.shardingsphere.mcp.bootstrap.context;
 
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
+import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -30,7 +34,7 @@ class MCPRuntimeServicesTest {
     
     @Test
     void assertConstruct() {
-        MCPRuntimeServices actual = new MCPRuntimeServices(new MCPSessionManager());
+        MCPRuntimeServices actual = createRuntimeServices(new MCPSessionManager());
         
         assertNotNull(actual.getCapabilityAssembler());
         assertNotNull(actual.getMetadataResourceLoader());
@@ -44,7 +48,7 @@ class MCPRuntimeServicesTest {
     @Test
     void assertRegisterDefaults() {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPRuntimeServices runtimeServices = new MCPRuntimeServices(sessionManager);
+        MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
         MCPServerRegistry serverRegistry = new MCPServerRegistry(sessionManager);
         
         runtimeServices.registerDefaults(serverRegistry);
@@ -54,5 +58,10 @@ class MCPRuntimeServicesTest {
         assertThat(actual.getTools().size(), is(runtimeServices.getCapabilityAssembler().assembleServiceCapability().getSupportedTools().size()));
         assertTrue(actual.getResources().contains("shardingsphere://capabilities"));
         assertTrue(actual.getTools().contains("execute_query"));
+    }
+    
+    private MCPRuntimeServices createRuntimeServices(final MCPSessionManager sessionManager) {
+        return new MCPRuntimeServices(sessionManager, new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()),
+                new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
     }
 }

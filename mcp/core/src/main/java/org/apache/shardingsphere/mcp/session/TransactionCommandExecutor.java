@@ -45,16 +45,6 @@ public final class TransactionCommandExecutor {
      *
      * @param capabilityAssembler database capability assembler
      * @param sessionManager session manager
-     */
-    public TransactionCommandExecutor(final DatabaseCapabilityAssembler capabilityAssembler, final MCPSessionManager sessionManager) {
-        this(capabilityAssembler, sessionManager, new DatabaseRuntime(java.util.Collections.emptyMap(), java.util.Collections.emptyMap()));
-    }
-    
-    /**
-     * Construct a transaction command executor.
-     *
-     * @param capabilityAssembler database capability assembler
-     * @param sessionManager session manager
      * @param databaseRuntime database runtime
      */
     public TransactionCommandExecutor(final DatabaseCapabilityAssembler capabilityAssembler, final MCPSessionManager sessionManager, final DatabaseRuntime databaseRuntime) {

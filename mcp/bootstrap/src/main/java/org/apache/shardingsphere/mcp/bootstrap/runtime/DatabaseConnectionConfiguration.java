@@ -39,14 +39,6 @@ public final class DatabaseConnectionConfiguration {
     
     private final String driverClassName;
     
-    private final boolean legacySupportsCrossSchemaSqlConfigured;
-    
-    private final boolean legacySupportsCrossSchemaSql;
-    
-    private final boolean legacySupportsExplainAnalyzeConfigured;
-    
-    private final boolean legacySupportsExplainAnalyze;
-    
     /**
      * Construct one JDBC connection configuration.
      *
@@ -56,24 +48,14 @@ public final class DatabaseConnectionConfiguration {
      * @param username username
      * @param password password
      * @param driverClassName driver class name
-     * @param legacySupportsCrossSchemaSqlConfigured legacy cross-schema SQL override configured flag
-     * @param legacySupportsCrossSchemaSql legacy cross-schema SQL override flag
-     * @param legacySupportsExplainAnalyzeConfigured legacy explain analyze override configured flag
-     * @param legacySupportsExplainAnalyze legacy explain analyze override flag
      */
     public DatabaseConnectionConfiguration(final String database, final String databaseType, final String jdbcUrl, final String username,
-                                           final String password, final String driverClassName, final boolean legacySupportsCrossSchemaSqlConfigured,
-                                           final boolean legacySupportsCrossSchemaSql, final boolean legacySupportsExplainAnalyzeConfigured,
-                                           final boolean legacySupportsExplainAnalyze) {
+                                           final String password, final String driverClassName) {
         this.database = Objects.requireNonNull(database, "database cannot be null");
         this.databaseType = Objects.requireNonNull(databaseType, "databaseType cannot be null");
         this.jdbcUrl = Objects.requireNonNull(jdbcUrl, "jdbcUrl cannot be null");
         this.username = Objects.requireNonNull(username, "username cannot be null");
         this.password = Objects.requireNonNull(password, "password cannot be null");
         this.driverClassName = Objects.requireNonNull(driverClassName, "driverClassName cannot be null");
-        this.legacySupportsCrossSchemaSqlConfigured = legacySupportsCrossSchemaSqlConfigured;
-        this.legacySupportsCrossSchemaSql = legacySupportsCrossSchemaSql;
-        this.legacySupportsExplainAnalyzeConfigured = legacySupportsExplainAnalyzeConfigured;
-        this.legacySupportsExplainAnalyze = legacySupportsExplainAnalyze;
     }
 }

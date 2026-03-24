@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ResultKind;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -172,9 +174,10 @@ class ExecuteQueryFacadeTest {
     
     private ExecuteQueryFacade createFacade(final MCPSessionManager sessionManager, final AuditRecorder auditRecorder,
                                             final MetadataRefreshCoordinator metadataRefreshCoordinator) {
-        DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler();
+        DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()));
         return new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler,
-                new TransactionCommandExecutor(capabilityAssembler, sessionManager), auditRecorder, metadataRefreshCoordinator);
+                new TransactionCommandExecutor(capabilityAssembler, sessionManager, new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap())),
+                auditRecorder, metadataRefreshCoordinator);
     }
     
     private ExecutionRequest createExecutionRequest(final String databaseType, final String sql, final int maxRows, final long nowMillis) {

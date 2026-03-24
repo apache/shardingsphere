@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlMCPLaunchConfiguration implements YamlConfiguration {
     
-    private YamlTransportConfiguration transport;
+    private YamlMCPTransportConfiguration transport;
     
     private YamlRuntimeConfiguration runtime;
 }

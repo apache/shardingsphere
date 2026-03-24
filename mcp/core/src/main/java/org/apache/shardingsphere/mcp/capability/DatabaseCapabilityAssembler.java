@@ -68,18 +68,9 @@ public final class DatabaseCapabilityAssembler {
     
     private static final Set<StatementClass> SUPPORTED_STATEMENT_CLASSES = Collections.unmodifiableSet(EnumSet.allOf(StatementClass.class));
     
-    private static final MetadataCatalog EMPTY_METADATA_CATALOG = new MetadataCatalog(Collections.emptyMap(), Collections.emptyList());
-    
     private final DatabaseCapabilityRegistry registry;
     
     private final MetadataCatalog metadataCatalog;
-    
-    /**
-     * Construct an assembler with the default capability registry.
-     */
-    public DatabaseCapabilityAssembler() {
-        this(DatabaseCapabilityRegistry.createDefault(), EMPTY_METADATA_CATALOG);
-    }
     
     /**
      * Construct an assembler with runtime metadata facts.
@@ -87,20 +78,7 @@ public final class DatabaseCapabilityAssembler {
      * @param metadataCatalog metadata catalog
      */
     public DatabaseCapabilityAssembler(final MetadataCatalog metadataCatalog) {
-        this(DatabaseCapabilityRegistry.createDefault(), metadataCatalog);
-    }
-    
-    /**
-     * Construct an assembler with a caller-provided registry.
-     *
-     * @param registry capability registry
-     */
-    public DatabaseCapabilityAssembler(final DatabaseCapabilityRegistry registry) {
-        this(registry, EMPTY_METADATA_CATALOG);
-    }
-    
-    private DatabaseCapabilityAssembler(final DatabaseCapabilityRegistry registry, final MetadataCatalog metadataCatalog) {
-        this.registry = Objects.requireNonNull(registry, "registry cannot be null");
+        registry = DatabaseCapabilityRegistry.createDefault();
         this.metadataCatalog = Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null");
     }
     
@@ -136,12 +114,8 @@ public final class DatabaseCapabilityAssembler {
         Set<SupportedObjectType> supportedObjectTypes = runtimeDescriptor.get().getSupportedObjectTypes().isEmpty()
                 ? databaseCapabilityView.getSupportedObjectTypes()
                 : runtimeDescriptor.get().getSupportedObjectTypes();
-        boolean supportsCrossSchemaSql = runtimeDescriptor.get().isLegacySupportsCrossSchemaSqlConfigured()
-                ? runtimeDescriptor.get().isLegacySupportsCrossSchemaSql()
-                : databaseCapabilityView.isSupportsCrossSchemaSql();
-        boolean supportsExplainAnalyze = runtimeDescriptor.get().isLegacySupportsExplainAnalyzeConfigured()
-                ? runtimeDescriptor.get().isLegacySupportsExplainAnalyze()
-                : databaseCapabilityView.isSupportsExplainAnalyze();
+        boolean supportsCrossSchemaSql = databaseCapabilityView.isSupportsCrossSchemaSql();
+        boolean supportsExplainAnalyze = databaseCapabilityView.isSupportsExplainAnalyze();
         ResultBehavior explainAnalyzeResultBehavior = supportsExplainAnalyze ? ResultBehavior.RESULT_SET : ResultBehavior.UNSUPPORTED;
         TransactionBoundaryBehavior explainAnalyzeTransactionBehavior = supportsExplainAnalyze ? TransactionBoundaryBehavior.NATIVE
                 : TransactionBoundaryBehavior.UNSUPPORTED;

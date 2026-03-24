@@ -144,18 +144,6 @@ public final class StreamableHttpMCPServer {
     private boolean running;
     
     /**
-     * Construct one HTTP MCP server.
-     *
-     * @param transportConfiguration HTTP transport configuration
-     * @param serverRegistry server registry
-     * @param runtimeServices runtime services
-     */
-    public StreamableHttpMCPServer(final HttpTransportConfiguration transportConfiguration, final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices) {
-        this(transportConfiguration, serverRegistry, runtimeServices, new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()),
-                new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
-    }
-    
-    /**
      * Construct one HTTP MCP server with caller-provided runtime metadata.
      *
      * @param transportConfiguration HTTP transport configuration

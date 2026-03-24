@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config;
 
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
-import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -32,16 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MCPLaunchConfigurationTest {
     
     @Test
-    void assertGetRuntimeProps() {
-        Properties runtimeProps = PropertiesBuilder.build(new Property("databaseName", "logic_db"));
-        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(runtimeProps, Map.of());
-        
-        assertThat(launchConfiguration.getRuntimeProps().getProperty("databaseName"), is("logic_db"));
-    }
-    
-    @Test
     void assertGetTransport() {
-        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(new Properties(), Map.of());
+        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(Map.of());
         
         assertTrue(launchConfiguration.getTransport().getHttp().isEnabled());
         assertFalse(launchConfiguration.getTransport().getStdio().isEnabled());
@@ -50,18 +39,17 @@ class MCPLaunchConfigurationTest {
     
     @Test
     void assertGetRuntimeDatabases() {
-        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = Map.of("logic_db",
-                new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver", false, false, false, false));
-        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(new Properties(), runtimeDatabases);
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"));
+        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(runtimeDatabases);
         
         assertThat(launchConfiguration.getRuntimeDatabases().get("logic_db").getDatabaseType(), is("H2"));
     }
     
-    private MCPLaunchConfiguration createLaunchConfiguration(final Properties runtimeProps, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        return new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"), runtimeProps, runtimeDatabases);
+    private MCPLaunchConfiguration createLaunchConfiguration(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        return new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"), runtimeDatabases);
     }
     
-    private TransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {
-        return new TransportConfiguration(new HttpTransportConfiguration(httpEnabled, "127.0.0.1", 0, endpointPath), new StdioTransportConfiguration(stdioEnabled));
+    private MCPTransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {
+        return new MCPTransportConfiguration(new HttpTransportConfiguration(httpEnabled, "127.0.0.1", 0, endpointPath), new StdioTransportConfiguration(stdioEnabled));
     }
 }

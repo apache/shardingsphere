@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.LaunchState;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPLaunchState;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -47,7 +47,7 @@ abstract class AbstractProductionRuntimeE2ETest {
     @TempDir
     private Path tempDir;
     
-    private LaunchState launchState;
+    private MCPLaunchState launchState;
     
     @AfterEach
     void tearDown() {
@@ -63,7 +63,7 @@ abstract class AbstractProductionRuntimeE2ETest {
         }
     }
     
-    protected final LaunchState launchProductionRuntime() throws IOException {
+    protected final MCPLaunchState launchProductionRuntime() throws IOException {
         prepareRuntimeFixture();
         Path configFile = tempDir.resolve("mcp.yaml");
         Files.writeString(configFile, createConfigurationContent());

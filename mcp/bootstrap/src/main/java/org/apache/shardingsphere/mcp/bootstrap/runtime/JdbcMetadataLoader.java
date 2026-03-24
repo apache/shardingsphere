@@ -75,10 +75,7 @@ public final class JdbcMetadataLoader {
         supportedObjectTypes.add(SupportedObjectType.DATABASE);
         loadMetadataObjects(connectionConfiguration, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
         RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = new RuntimeDatabaseDescriptor(connectionConfiguration.getDatabase(),
-                connectionConfiguration.getDatabaseType(), supportedObjectTypes, resolveDatabaseVersion(databaseMetaData),
-                resolveDefaultSchema(connection, discoveredSchemas), connectionConfiguration.isLegacySupportsCrossSchemaSqlConfigured(),
-                connectionConfiguration.isLegacySupportsCrossSchemaSql(), connectionConfiguration.isLegacySupportsExplainAnalyzeConfigured(),
-                connectionConfiguration.isLegacySupportsExplainAnalyze());
+                connectionConfiguration.getDatabaseType(), supportedObjectTypes, resolveDatabaseVersion(databaseMetaData), resolveDefaultSchema(connection, discoveredSchemas));
         return new RuntimeMetadataSnapshot(metadataObjects, runtimeDatabaseDescriptor);
     }
     

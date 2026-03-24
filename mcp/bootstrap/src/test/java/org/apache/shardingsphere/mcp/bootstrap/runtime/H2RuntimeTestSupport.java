@@ -17,14 +17,16 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
+
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 
 /**
  * Shared H2-backed runtime test support.
@@ -46,19 +48,14 @@ public final class H2RuntimeTestSupport {
     }
     
     /**
-     * Create runtime properties for the H2-backed runtime.
+     * Create runtime databases for the H2-backed runtime.
      *
      * @param logicalDatabase logical database name
      * @param jdbcUrl JDBC URL
-     * @return runtime properties
+     * @return runtime databases
      */
-    public static Properties createRuntimeProps(final String logicalDatabase, final String jdbcUrl) {
-        Properties result = new Properties();
-        result.setProperty("databaseName", logicalDatabase);
-        result.setProperty("databaseType", "H2");
-        result.setProperty("jdbcUrl", jdbcUrl);
-        result.setProperty("driverClassName", "org.h2.Driver");
-        return result;
+    public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final String logicalDatabase, final String jdbcUrl) {
+        return Map.of(logicalDatabase, new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver"));
     }
     
     /**

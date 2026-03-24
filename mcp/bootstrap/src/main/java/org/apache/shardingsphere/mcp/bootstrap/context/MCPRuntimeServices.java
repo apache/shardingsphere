@@ -55,16 +55,6 @@ public final class MCPRuntimeServices {
     private final ExecuteQueryFacade executeQueryFacade;
     
     /**
-     * Construct runtime services using one shared session manager.
-     *
-     * @param sessionManager session manager
-     */
-    public MCPRuntimeServices(final MCPSessionManager sessionManager) {
-        this(sessionManager, new MetadataCatalog(java.util.Collections.emptyMap(), java.util.Collections.emptyList()),
-                new DatabaseRuntime(java.util.Collections.emptyMap(), java.util.Collections.emptyMap()));
-    }
-    
-    /**
      * Construct runtime services using one shared session manager and runtime inputs.
      *
      * @param sessionManager session manager

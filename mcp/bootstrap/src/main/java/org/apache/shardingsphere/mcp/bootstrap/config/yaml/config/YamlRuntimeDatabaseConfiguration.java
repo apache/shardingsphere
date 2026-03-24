@@ -37,8 +37,4 @@ public final class YamlRuntimeDatabaseConfiguration implements YamlConfiguration
     private String password;
     
     private String driverClassName;
-    
-    private Boolean supportsCrossSchemaSql;
-    
-    private Boolean supportsExplainAnalyze;
 }

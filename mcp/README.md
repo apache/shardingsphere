@@ -223,7 +223,7 @@ Reference:
 ## Runtime Notes
 
 - The packaged `conf/mcp.yaml` now ships with a demo multi-database JDBC runtime block so the distribution can prove logical-database discovery and real query execution on the first run.
-- For real deployments, replace the `runtime` block with your own logical database mapping and JDBC connection properties. Use `runtime.databases` as the canonical direct runtime model and `runtime.databaseDefaults` only for shared connection defaults; schema discovery now comes from JDBC metadata, while the legacy single-database `runtime.props` form remains supported for compatibility.
+- For real deployments, replace the `runtime` block with your own logical database mapping and JDBC connection properties. Use `runtime.databases` as the direct runtime model and `runtime.databaseDefaults` only for shared connection defaults; schema discovery now comes from JDBC metadata, and legacy runtime aliases are no longer supported.
 - `driverClassName` is optional for JDBC 4 drivers that auto-register through `DriverManager`. Keep it only when your target driver requires an explicit override.
 - If your target database driver is not already packaged, copy the driver jar under `ext-lib/` before running `bin/start.sh`.
 - For local-only HTTP usage, keep `transport.http.enabled: true` and set `transport.stdio.enabled: false` if you do not need STDIO.
