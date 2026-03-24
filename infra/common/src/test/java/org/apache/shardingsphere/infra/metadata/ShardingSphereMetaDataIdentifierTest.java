@@ -65,6 +65,17 @@ class ShardingSphereMetaDataIdentifierTest {
     }
     
     @Test
+    void assertContainsLowerCaseLogicalDatabaseWithOracleProtocol() {
+        assertTrue(createMetaData(oracleDatabaseType, createDatabase("foo_db", oracleDatabaseType)).containsDatabase("FOO_DB"));
+    }
+    
+    @Test
+    void assertGetLowerCaseLogicalDatabaseWithOracleProtocol() {
+        ShardingSphereDatabase database = createDatabase("foo_db", oracleDatabaseType);
+        assertThat(createMetaData(oracleDatabaseType, database).getDatabase("FOO_DB"), is(database));
+    }
+    
+    @Test
     void assertAddDatabase() {
         ShardingSphereMetaData metaData = createMetaData(postgreSQLDatabaseType);
         metaData.addDatabase("foo_db", postgreSQLDatabaseType, new ConfigurationProperties(new Properties()));
@@ -92,7 +103,7 @@ class ShardingSphereMetaDataIdentifierTest {
         props.setProperty(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.SENSITIVE.name());
         ShardingSphereMetaData metaData =
                 createMetaData(postgreSQLDatabaseType, new ConfigurationProperties(props), createDatabase("foo_db", postgreSQLDatabaseType));
-        assertFalse(metaData.containsDatabase("FOO_DB"));
+        assertTrue(metaData.containsDatabase("FOO_DB"));
     }
     
     @Test
