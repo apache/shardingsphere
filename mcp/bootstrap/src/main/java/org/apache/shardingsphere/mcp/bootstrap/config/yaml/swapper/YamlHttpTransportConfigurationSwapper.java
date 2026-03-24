@@ -46,10 +46,8 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     @Override
     public HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig) {
         YamlHttpTransportConfiguration actualYamlConfig = null == yamlConfig ? new YamlHttpTransportConfiguration() : yamlConfig;
-        boolean enabled = actualYamlConfig.isEnabled();
-        return enabled ? new HttpTransportConfiguration(true, resolveBindHost(actualYamlConfig.getBindHost()),
-                resolvePort(actualYamlConfig.getPort()), resolveEndpointPath(actualYamlConfig.getEndpointPath()))
-                : new HttpTransportConfiguration(false, DEFAULT_BIND_HOST, DEFAULT_PORT, DEFAULT_ENDPOINT_PATH);
+        return new HttpTransportConfiguration(
+                actualYamlConfig.isEnabled(), resolveBindHost(actualYamlConfig.getBindHost()), resolvePort(actualYamlConfig.getPort()), resolveEndpointPath(actualYamlConfig.getEndpointPath()));
     }
     
     private String resolveBindHost(final String bindHost) {
