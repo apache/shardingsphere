@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.exclusive;
 
+import org.apache.shardingsphere.mode.exclusive.ExclusiveLockHandle;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorContext;
 import org.apache.shardingsphere.mode.retry.RetryExecutor;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
@@ -31,12 +33,9 @@ public final class StandaloneExclusiveOperatorContext implements ExclusiveOperat
     private final Collection<String> exclusiveOperationKeys = new CopyOnWriteArraySet<>();
     
     @Override
-    public boolean start(final String operationKey, final long timeoutMillis) {
-        return new RetryExecutor(timeoutMillis, 50L).execute(arg -> exclusiveOperationKeys.add(operationKey), null);
-    }
-    
-    @Override
-    public void stop(final String operationKey) {
-        exclusiveOperationKeys.remove(operationKey);
+    public Optional<ExclusiveLockHandle> start(final String operationKey, final long timeoutMillis) {
+        return new RetryExecutor(timeoutMillis, 50L).execute(arg -> exclusiveOperationKeys.add(operationKey), null)
+                ? Optional.of(() -> exclusiveOperationKeys.remove(operationKey))
+                : Optional.empty();
     }
 }

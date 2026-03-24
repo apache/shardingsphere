@@ -17,42 +17,39 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.exclusive;
 
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.mode.exclusive.ExclusiveLockHandle;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.util.Collection;
+import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StandaloneExclusiveOperatorContextTest {
     
     @Test
-    void assertStartReturnsTrueWhenKeyAbsent() {
-        assertTrue(new StandaloneExclusiveOperatorContext().start("operation-key", 50L));
+    void assertStartReturnsHandleWhenKeyAbsent() {
+        Optional<ExclusiveLockHandle> actual = new StandaloneExclusiveOperatorContext().start("operation-key", 50L);
+        assertTrue(actual.isPresent());
     }
     
     @Test
-    void assertStartReturnsFalseWhenKeyExists() {
+    void assertStartReturnsEmptyWhenKeyExists() {
         StandaloneExclusiveOperatorContext context = new StandaloneExclusiveOperatorContext();
-        Collection<String> existingKeys = getExclusiveOperationKeys(context);
-        existingKeys.add("duplicated-key");
-        assertFalse(context.start("duplicated-key", 0L));
+        ExclusiveLockHandle firstHandle = context.start("duplicated-key", 0L).orElseThrow(AssertionError::new);
+        assertFalse(context.start("duplicated-key", 0L).isPresent());
+        firstHandle.close();
     }
     
     @Test
-    void assertStopRemovesOperationKey() {
+    void assertCloseReleasesOperationKey() {
         StandaloneExclusiveOperatorContext context = new StandaloneExclusiveOperatorContext();
-        Collection<String> existingKeys = getExclusiveOperationKeys(context);
-        existingKeys.add("stopped-key");
-        context.stop("stopped-key");
-        assertTrue(existingKeys.isEmpty());
-    }
-    
-    @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
-    private Collection<String> getExclusiveOperationKeys(final StandaloneExclusiveOperatorContext context) {
-        return (Collection<String>) Plugins.getMemberAccessor().get(StandaloneExclusiveOperatorContext.class.getDeclaredField("exclusiveOperationKeys"), context);
+        ExclusiveLockHandle firstHandle = context.start("stopped-key", 0L).orElseThrow(AssertionError::new);
+        firstHandle.close();
+        Optional<ExclusiveLockHandle> actual = context.start("stopped-key", 0L);
+        assertTrue(actual.isPresent());
+        assertThat(actual.orElseThrow(AssertionError::new), not(firstHandle));
     }
 }

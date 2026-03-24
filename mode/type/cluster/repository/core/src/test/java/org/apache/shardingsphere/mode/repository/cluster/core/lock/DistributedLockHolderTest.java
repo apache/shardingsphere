@@ -17,52 +17,131 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.core.lock;
 
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.core.lock.type.DefaultDistributedLock;
+import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.not;
 
-@ExtendWith(MockitoExtension.class)
 class DistributedLockHolderTest {
-    
-    @Mock
-    private ClusterPersistRepository repository;
-    
-    @BeforeEach
-    @AfterEach
-    @SuppressWarnings("unchecked")
-    @SneakyThrows(ReflectiveOperationException.class)
-    void clearLocks() {
-        ((Map<String, DistributedLock>) Plugins.getMemberAccessor().get(DistributedLockHolder.class.getDeclaredField("LOCKS"), null)).clear();
-    }
     
     @Test
     void assertGetDistributedLockReturnsRepositoryLock() {
-        DistributedLock distributedLock = mock(DistributedLock.class);
-        when(repository.getDistributedLock("lock-key")).thenReturn(Optional.of(distributedLock));
-        assertThat(DistributedLockHolder.getDistributedLock("lock-key", repository), is(distributedLock));
+        DistributedLock firstLock = new StubDistributedLock();
+        DistributedLock secondLock = new StubDistributedLock();
+        StubClusterPersistRepository repository = new StubClusterPersistRepository(Optional.of(firstLock), Optional.of(secondLock));
+        assertThat(DistributedLockHolder.getDistributedLock("lock-key", repository), is(firstLock));
+        assertThat(DistributedLockHolder.getDistributedLock("lock-key", repository), is(secondLock));
     }
     
     @Test
-    void assertGetDistributedLockCreatesDefaultLock() {
-        when(repository.getDistributedLock("lock-key")).thenReturn(Optional.empty());
+    void assertGetDistributedLockCreatesDefaultLockEachTime() {
+        StubClusterPersistRepository repository = new StubClusterPersistRepository(Optional.empty(), Optional.empty());
         DistributedLock actual = DistributedLockHolder.getDistributedLock("lock-key", repository);
+        DistributedLock another = DistributedLockHolder.getDistributedLock("lock-key", repository);
         assertThat(actual, isA(DefaultDistributedLock.class));
+        assertThat(another, isA(DefaultDistributedLock.class));
+        assertThat(another, not(actual));
+    }
+    
+    private static final class StubDistributedLock implements DistributedLock {
+        
+        @Override
+        public boolean tryLock(final long timeoutMillis) {
+            return true;
+        }
+        
+        @Override
+        public void unlock() {
+        }
+    }
+    
+    private static final class StubClusterPersistRepository implements ClusterPersistRepository {
+        
+        private final List<Optional<DistributedLock>> distributedLocks;
+        
+        private int index;
+        
+        private StubClusterPersistRepository(final Optional<DistributedLock> firstLock, final Optional<DistributedLock> secondLock) {
+            distributedLocks = Arrays.asList(firstLock, secondLock);
+        }
+        
+        @Override
+        public void init(final ClusterPersistRepositoryConfiguration config, final ComputeNodeInstanceContext computeNodeInstanceContext) {
+        }
+        
+        @Override
+        public String query(final String key) {
+            return null;
+        }
+        
+        @Override
+        public List<String> getChildrenKeys(final String key) {
+            return Collections.emptyList();
+        }
+        
+        @Override
+        public boolean isExisted(final String key) {
+            return false;
+        }
+        
+        @Override
+        public void persist(final String key, final String value) {
+        }
+        
+        @Override
+        public void update(final String key, final String value) {
+        }
+        
+        @Override
+        public void persistEphemeral(final String key, final String value) {
+        }
+        
+        @Override
+        public boolean persistExclusiveEphemeral(final String key, final String value) {
+            return false;
+        }
+        
+        @Override
+        public Optional<DistributedLock> getDistributedLock(final String lockKey) {
+            Optional<DistributedLock> result = distributedLocks.get(index);
+            if (index < distributedLocks.size() - 1) {
+                index++;
+            }
+            return result;
+        }
+        
+        @Override
+        public void delete(final String key) {
+        }
+        
+        @Override
+        public void watch(final String key, final DataChangedEventListener listener) {
+        }
+        
+        @Override
+        public void removeDataListener(final String key) {
+        }
+        
+        @Override
+        public void close() {
+        }
+        
+        @Override
+        public String getType() {
+            return "STUB";
+        }
     }
 }
