@@ -84,6 +84,18 @@ class YamlMCPLaunchConfigurationSwapperTest {
     }
     
     @Test
+    void assertSwapToObjectWithRuntimeDatabaseTypeMissing() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("transport:\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"));
+        
+        assertThat(actual.getMessage(), is("Runtime database `logic_db` property `databaseType` is required."));
+    }
+    
+    @Test
     void assertSwapToYamlConfigurationWithRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> databases = new LinkedHashMap<>(1, 1F);
         databases.put("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"));

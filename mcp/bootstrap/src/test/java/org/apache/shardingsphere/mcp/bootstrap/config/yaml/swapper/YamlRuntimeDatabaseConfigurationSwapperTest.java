@@ -41,9 +41,9 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
     @Test
     void assertSwapToObjectWithRequiredFieldMissing() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> swapper.swapToObject("logic_db", new YamlRuntimeDatabaseConfiguration()));
+                () -> swapper.swapToObject(new YamlRuntimeDatabaseConfiguration()));
         
-        assertThat(actual.getMessage(), is("Runtime database `logic_db` property `databaseType` is required."));
+        assertThat(actual.getMessage(), is("Runtime database property `databaseType` is required."));
     }
     
     @Test

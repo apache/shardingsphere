@@ -128,9 +128,21 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
             String databaseName = normalizeText(entry.getKey());
             ShardingSpherePreconditions.checkState(!databaseName.isEmpty(), () -> new IllegalArgumentException("Runtime logical database name cannot be blank."));
             ShardingSpherePreconditions.checkState(!result.containsKey(databaseName), () -> new IllegalArgumentException(String.format("Runtime logical database `%s` is duplicated.", databaseName)));
-            result.put(databaseName, runtimeDatabaseConfigSwapper.swapToObject(databaseName, entry.getValue()));
+            validateRuntimeDatabaseConfiguration(databaseName, entry.getValue());
+            result.put(databaseName, runtimeDatabaseConfigSwapper.swapToObject(entry.getValue()));
         }
         return result;
+    }
+    
+    private void validateRuntimeDatabaseConfiguration(final String databaseName, final YamlRuntimeDatabaseConfiguration yamlConfig) {
+        YamlRuntimeDatabaseConfiguration actualYamlConfig = null == yamlConfig ? new YamlRuntimeDatabaseConfiguration() : yamlConfig;
+        validateRequiredText(actualYamlConfig.getDatabaseType(), "databaseType", databaseName);
+        validateRequiredText(actualYamlConfig.getJdbcUrl(), "jdbcUrl", databaseName);
+    }
+    
+    private void validateRequiredText(final String value, final String fieldName, final String databaseName) {
+        ShardingSpherePreconditions.checkState(!normalizeText(value).isEmpty(),
+                () -> new IllegalArgumentException(String.format("Runtime database `%s` property `%s` is required.", databaseName, fieldName)));
     }
     
     private String normalizeText(final Object value) {

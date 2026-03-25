@@ -43,7 +43,7 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
         return swapToObject("", yamlConfig);
     }
     
-    RuntimeDatabaseConfiguration swapToObject(final String databaseName, final YamlRuntimeDatabaseConfiguration yamlConfig) {
+    private RuntimeDatabaseConfiguration swapToObject(final String databaseName, final YamlRuntimeDatabaseConfiguration yamlConfig) {
         YamlRuntimeDatabaseConfiguration actualYamlConfig = null == yamlConfig ? new YamlRuntimeDatabaseConfiguration() : yamlConfig;
         return new RuntimeDatabaseConfiguration(resolveRequiredText(actualYamlConfig.getDatabaseType(), "databaseType", databaseName),
                 resolveRequiredText(actualYamlConfig.getJdbcUrl(), "jdbcUrl", databaseName),
