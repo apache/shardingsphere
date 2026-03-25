@@ -75,7 +75,6 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -166,7 +165,7 @@ class MySQLComQueryPacketExecutorTest {
         MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = createDatabase();
         when(result.getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(result.getMetaData().getDatabase(any(IdentifierValue.class))).thenReturn(database);
+        when(result.getMetaData().getDatabase(new IdentifierValue("foo_db"))).thenReturn(database);
         RuleMetaData globalRuleMetaData = new RuleMetaData(
                 Arrays.asList(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()), new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
         when(result.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
@@ -174,6 +173,7 @@ class MySQLComQueryPacketExecutorTest {
         props.setProperty(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), "1");
         when(result.getMetaData().getProps()).thenReturn(new ConfigurationProperties(props));
         when(result.getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(result.getMetaData().containsDatabase(new IdentifierValue("foo_db"))).thenReturn(true);
         return result;
     }
     

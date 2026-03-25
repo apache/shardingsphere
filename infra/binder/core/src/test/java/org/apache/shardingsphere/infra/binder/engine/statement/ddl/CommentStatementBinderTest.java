@@ -62,12 +62,13 @@ class CommentStatementBinderTest {
     @Test
     void assertBindWithTable() {
         IdentifierValue databaseName = new IdentifierValue("foo_db_1");
-        when(metaData.containsDatabase("foo_db_1")).thenReturn(true);
+        IdentifierValue tableName = new IdentifierValue("t_order");
+        when(metaData.containsDatabase(eq(databaseName))).thenReturn(true);
         when(metaData.getDatabase(eq(databaseName))).thenReturn(database);
         when(database.containsSchema(eq(databaseName))).thenReturn(true);
         when(database.getSchema(eq(databaseName))).thenReturn(schema);
-        when(schema.containsTable("t_order")).thenReturn(true);
-        when(schema.getTable("t_order")).thenReturn(table);
+        when(schema.containsTable(eq(tableName))).thenReturn(true);
+        when(schema.getTable(eq(tableName))).thenReturn(table);
         when(table.getAllColumns()).thenReturn(Collections.emptyList());
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
@@ -93,12 +94,13 @@ class CommentStatementBinderTest {
     @Test
     void assertBindWithColumn() {
         IdentifierValue databaseName = new IdentifierValue("foo_db_1");
-        when(metaData.containsDatabase("foo_db_1")).thenReturn(true);
+        IdentifierValue tableName = new IdentifierValue("t_order");
+        when(metaData.containsDatabase(eq(databaseName))).thenReturn(true);
         when(metaData.getDatabase(eq(databaseName))).thenReturn(database);
         when(database.containsSchema(eq(databaseName))).thenReturn(true);
         when(database.getSchema(eq(databaseName))).thenReturn(schema);
-        when(schema.containsTable("t_order")).thenReturn(true);
-        when(schema.getTable("t_order")).thenReturn(table);
+        when(schema.containsTable(eq(tableName))).thenReturn(true);
+        when(schema.getTable(eq(tableName))).thenReturn(table);
         when(table.getAllColumns()).thenReturn(Collections.emptyList());
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);

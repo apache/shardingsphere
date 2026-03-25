@@ -194,14 +194,17 @@ class MySQLMultiStatementsProxyBackendHandlerTest {
         ShardingSphereTable table = new ShardingSphereTable("t", Arrays.asList(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true, false),
                 new ShardingSphereColumn("v", Types.INTEGER, false, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList());
         when(database.getSchema("foo_db")).thenReturn(schema);
-        when(database.getSchema(any(IdentifierValue.class))).thenReturn(schema);
+        when(database.getSchema(new IdentifierValue("foo_db"))).thenReturn(schema);
         when(schema.getTable("t")).thenReturn(table);
+        when(schema.getTable(new IdentifierValue("t"))).thenReturn(table);
         when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue("foo_db"))).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(any(IdentifierValue.class))).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("foo_db"))).thenReturn(database);
         when(database.containsSchema("foo_db")).thenReturn(true);
-        when(database.containsSchema(any(IdentifierValue.class))).thenReturn(true);
+        when(database.containsSchema(new IdentifierValue("foo_db"))).thenReturn(true);
         when(schema.containsTable("t")).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue("t"))).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         return result;
     }
