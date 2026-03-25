@@ -111,7 +111,8 @@ public final class WhereClauseShardingConditionEngine {
         Map<HashColumn, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1F);
         for (ExpressionSegment each : predicates) {
             for (ColumnSegment columnSegment : ColumnExtractor.extract(each)) {
-                String tableName = columnSegment.getColumnBoundInfo().getOriginalTable().getValue();
+                IdentifierValue originalTable = columnSegment.getColumnBoundInfo().getOriginalTable();
+                String tableName = originalTable.getValue();
                 Optional<String> shardingColumn = rule.findShardingColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue(), tableName);
                 if (!shardingColumn.isPresent()) {
                     continue;
@@ -119,8 +120,8 @@ public final class WhereClauseShardingConditionEngine {
                 IdentifierValue originalSchema = columnSegment.getColumnBoundInfo().getOriginalSchema();
                 ShardingSpherePreconditions.checkState(database.containsSchema(originalSchema), () -> new SchemaNotFoundException(originalSchema.getValue()));
                 ShardingSphereSchema schema = database.getSchema(originalSchema);
-                ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
-                HashColumn column = new HashColumn(shardingColumn.get(), tableName, schema.getTable(tableName).getColumn(shardingColumn.get()).isCaseSensitive());
+                ShardingSpherePreconditions.checkState(schema.containsTable(originalTable), () -> new TableNotFoundException(tableName));
+                HashColumn column = new HashColumn(shardingColumn.get(), tableName, schema.getTable(originalTable).getColumn(shardingColumn.get()).isCaseSensitive());
                 Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, params, timestampServiceRule);
                 if (!shardingConditionValue.isPresent()) {
                     continue;

@@ -35,6 +35,7 @@ import org.apache.shardingsphere.sharding.merge.dql.groupby.aggregation.Aggregat
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -128,8 +129,8 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     private boolean getValueCaseSensitiveFromTables(final QueryResult queryResult,
                                                     final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final int columnIndex) throws SQLException {
         for (SimpleTableSegment each : selectStatementContext.getTablesContext().getSimpleTables()) {
-            String tableName = each.getTableName().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new NoSuchTableException(tableName));
+            IdentifierValue tableName = each.getTableName().getIdentifier();
+            ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new NoSuchTableException(tableName.getValue()));
             ShardingSphereTable table = schema.getTable(tableName);
             String columnName = queryResult.getMetaData().getColumnName(columnIndex);
             if (table.containsColumn(columnName)) {

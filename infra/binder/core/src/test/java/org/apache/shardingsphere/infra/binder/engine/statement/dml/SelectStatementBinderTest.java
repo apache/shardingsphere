@@ -253,11 +253,21 @@ class SelectStatementBinderTest {
     private ShardingSphereMetaData mockMetaData() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
         IdentifierValue fooDatabase = new IdentifierValue("foo_db");
+        IdentifierValue tOrder = new IdentifierValue("t_order");
+        IdentifierValue tUser = new IdentifierValue("t_user");
         when(schema.getTable("t_order").getAllColumns()).thenReturn(Arrays.asList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)));
         when(schema.getTable("t_user").getAllColumns()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("user_id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("user_name", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("email", Types.VARCHAR, false, false, false, true, false, false)));
+        when(schema.getTable(tOrder).getAllColumns()).thenReturn(Arrays.asList(
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
+                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)));
+        when(schema.getTable(tUser).getAllColumns()).thenReturn(Arrays.asList(
                 new ShardingSphereColumn("user_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("user_name", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("email", Types.VARCHAR, false, false, false, true, false, false)));
@@ -270,6 +280,8 @@ class SelectStatementBinderTest {
         when(result.getDatabase(fooDatabase).containsSchema(fooDatabase)).thenReturn(true);
         when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("t_order")).thenReturn(true);
         when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("t_user")).thenReturn(true);
+        when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tOrder)).thenReturn(true);
+        when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tUser)).thenReturn(true);
         return result;
     }
 }

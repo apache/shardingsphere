@@ -185,22 +185,23 @@ class PostgreSQLComBindExecutorTest {
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(result.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(true);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getProtocolType()).thenReturn(databaseType);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(database.containsSchema(any(IdentifierValue.class))).thenReturn(true);
+        when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         when(database.getSchema("public")).thenReturn(schema);
-        when(database.getSchema(any(IdentifierValue.class))).thenReturn(schema);
+        when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
         ShardingSphereTable table = new ShardingSphereTable("t_order", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("k", Types.INTEGER, true, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        when(schema.containsTable("t_order")).thenReturn(true);
-        when(schema.getTable("t_order")).thenReturn(table);
+        when(schema.containsTable(new IdentifierValue("t_order"))).thenReturn(true);
+        when(schema.getTable(new IdentifierValue("t_order"))).thenReturn(table);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(any(IdentifierValue.class))).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(database);
         when(result.getDatabase(DATABASE_NAME)).thenReturn(database);
         return result;
     }

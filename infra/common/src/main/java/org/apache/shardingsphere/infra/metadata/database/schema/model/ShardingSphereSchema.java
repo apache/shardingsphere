@@ -128,7 +128,7 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      * @return contains table or not
      */
-    private boolean containsTable(final IdentifierValue tableName) {
+    public boolean containsTable(final IdentifierValue tableName) {
         return findTable(tableName).isPresent();
     }
     
@@ -148,7 +148,7 @@ public final class ShardingSphereSchema {
      * @param tableName table name
      * @return table
      */
-    private ShardingSphereTable getTable(final IdentifierValue tableName) {
+    public ShardingSphereTable getTable(final IdentifierValue tableName) {
         return findTable(tableName).orElse(null);
     }
     
@@ -294,12 +294,32 @@ public final class ShardingSphereSchema {
     }
     
     /**
+     * Get visible column names.
+     *
+     * @param tableName table name
+     * @return visible column names
+     */
+    public List<String> getVisibleColumnNames(final IdentifierValue tableName) {
+        return containsTable(tableName) ? getTable(tableName).getVisibleColumns() : Collections.emptyList();
+    }
+    
+    /**
      * Get visible column and index map.
      *
      * @param tableName table name
      * @return visible column and index map
      */
     public Map<String, Integer> getVisibleColumnAndIndexMap(final String tableName) {
+        return containsTable(tableName) ? getTable(tableName).getVisibleColumnAndIndexMap() : Collections.emptyMap();
+    }
+    
+    /**
+     * Get visible column and index map.
+     *
+     * @param tableName table name
+     * @return visible column and index map
+     */
+    public Map<String, Integer> getVisibleColumnAndIndexMap(final IdentifierValue tableName) {
         return containsTable(tableName) ? getTable(tableName).getVisibleColumnAndIndexMap() : Collections.emptyMap();
     }
     
