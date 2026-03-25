@@ -82,7 +82,7 @@ class WhereClauseShardingConditionEngineTest {
         when(database.getSchema(new IdentifierValue(""))).thenReturn(schema);
         when(schema.containsTable(new IdentifierValue(""))).thenReturn(true);
         when(schema.getTable(new IdentifierValue(""))).thenReturn(table);
-        when(table.getColumn(new IdentifierValue("foo_sharding_col"))).thenReturn(mock(ShardingSphereColumn.class));
+        when(table.getColumn("foo_sharding_col")).thenReturn(mock(ShardingSphereColumn.class));
     }
     
     @Test

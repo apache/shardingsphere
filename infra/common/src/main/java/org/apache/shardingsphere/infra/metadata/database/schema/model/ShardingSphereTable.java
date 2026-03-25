@@ -163,7 +163,7 @@ public final class ShardingSphereTable {
      * @return contains column or not
      */
     public boolean containsColumn(final String columnName) {
-        return containsColumn(null == columnName ? null : new IdentifierValue(columnName, QuoteCharacter.NONE));
+        return null != columnName && containsColumn(new IdentifierValue(columnName, QuoteCharacter.NONE));
     }
     
     /**
@@ -183,7 +183,7 @@ public final class ShardingSphereTable {
      * @return column
      */
     public ShardingSphereColumn getColumn(final String columnName) {
-        return getColumn(null == columnName ? null : new IdentifierValue(columnName, QuoteCharacter.NONE));
+        return null == columnName ? null : getColumn(new IdentifierValue(columnName, QuoteCharacter.NONE));
     }
     
     /**
