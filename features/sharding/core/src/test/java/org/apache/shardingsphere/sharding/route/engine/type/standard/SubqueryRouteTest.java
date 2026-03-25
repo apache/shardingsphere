@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.assertion.ShardingRouteAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -58,15 +60,6 @@ class SubqueryRouteTest {
     }
     
     @Test
-    void assertRouteWithConditionsFromNonBindingSubqueryTable() {
-        String sql = "SELECT * FROM t_order WHERE user_id = ? AND order_id = ? AND status IN (SELECT status FROM t_category WHERE id = ?)";
-        
-        RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1, 1));
-        
-        assertThat(routeContext.getRouteUnits().size(), is(1));
-    }
-    
-    @Test
     void assertSubqueryWithMultipleConditionsDoesNotExplode() {
         String sql = "SELECT * FROM t_order a WHERE user_id = ? AND order_id = ? "
                 + "AND user_id IN (SELECT user_id FROM t_order_item WHERE user_id IN (?, ?, ?))";
@@ -77,15 +70,35 @@ class SubqueryRouteTest {
     }
     
     @Test
+    void assertBindingTableSubqueryDoesNotBreakRouting() {
+        String sql = "SELECT * FROM t_order WHERE user_id = ? AND user_id IN "
+                + "(SELECT user_id FROM t_order_item WHERE user_id = ?)";
+        
+        RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1));
+        
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+    }
+    
+    @Test
+    void assertNonBindingShardingSubqueryDoesNotExplode() {
+        String sql = "SELECT * FROM t_user WHERE user_id = ? "
+                + "AND user_id IN (SELECT user_id FROM t_order_non_binding WHERE order_id = ?)";
+        
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1), databaseType);
+        
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+    }
+    
+    @Test
     void assertHintRoutingWithIrrelevantSubqueryConditions() {
         try (HintManager hintManager = HintManager.getInstance()) {
             hintManager.addDatabaseShardingValue("t_hint_test", 1);
             hintManager.addTableShardingValue("t_hint_test", 1);
             
-            String sql = "SELECT * FROM t_hint_test WHERE user_id IN (SELECT id FROM t_category WHERE id = ?)";
+            String sql = "SELECT * FROM t_hint_test WHERE user_id IN (SELECT user_id FROM t_order_non_binding WHERE order_id = ?)";
             
             RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, Collections.singletonList(1));
-            
             assertThat(routeContext.getRouteUnits().size(), is(1));
         }
     }
@@ -94,19 +107,47 @@ class SubqueryRouteTest {
     void assertComplexRouteWithIrrelevantSubquery() {
         String sql = "SELECT * FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id "
                 + "WHERE o.user_id = ? AND i.user_id = ? "
-                + "AND o.user_id IN (SELECT id FROM t_category WHERE id = ?)";
+                + "AND o.user_id IN (SELECT user_id FROM t_order_non_binding WHERE order_id = ?)";
         
         RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1, 1));
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+    }
+    
+    @Test
+    void assertNonBindingSubqueryWithDifferentShardingKeyDoesNotExplode() {
+        String sql = "SELECT * FROM t_order o "
+                + "WHERE o.user_id = ? "
+                + "AND o.user_id IN ("
+                + "  SELECT user_id FROM t_order_non_binding "
+                + "  WHERE order_id IN (?, ?)"
+                + ")";
+        
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        
+        RouteContext routeContext = ShardingRouteAssert.assertRoute(
+                sql,
+                Arrays.asList(1, 1, 3),
+                databaseType);
         
         assertThat(routeContext.getRouteUnits().size(), is(1));
     }
     
     @Test
-    void assertBindingTableSubqueryDoesNotBreakRouting() {
-        String sql = "SELECT * FROM t_order WHERE user_id = ? AND user_id IN "
-                + "(SELECT user_id FROM t_order_item WHERE user_id = ?)";
+    void assertFullChainNonBindingSubqueryProducesSingleRoute() {
+        String sql = "SELECT * FROM t_order o "
+                + "WHERE o.user_id = ? "
+                + "AND o.order_id = ? "
+                + "AND o.user_id IN ("
+                + "  SELECT user_id FROM t_order_non_binding "
+                + "  WHERE order_id = ?"
+                + ")";
         
-        RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1));
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        
+        RouteContext routeContext = ShardingRouteAssert.assertRoute(
+                sql,
+                Arrays.asList(1, 1, 1),
+                databaseType);
         
         assertThat(routeContext.getRouteUnits().size(), is(1));
     }

@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -360,5 +361,39 @@ class ShardingStandardRouteEngineTest {
         assertThat(routeUnit.getTableMappers().iterator().next().getActualName(), is("t_hint_test_1"));
         
         hintManager.close();
+    }
+    
+    @Test
+    void assertRouteWithNonBindingSubqueryCondition() {
+        ShardingRule rule = ShardingRouteEngineFixtureBuilder.createAllShardingRule();
+        
+        ShardingCondition relevant = new ShardingCondition();
+        relevant.getValues().add(
+                new ListShardingConditionValue<>("user_id", "t_order", Collections.singletonList(1)));
+        relevant.getValues().add(
+                new ListShardingConditionValue<>("order_id", "t_order", Collections.singletonList(1)));
+        
+        ShardingCondition irrelevant = new ShardingCondition();
+        irrelevant.getValues().add(
+                new ListShardingConditionValue<>("order_id", "t_order_non_binding", Collections.singletonList(1)));
+        
+        ShardingConditions conditions = new ShardingConditions(
+                Arrays.asList(relevant, irrelevant),
+                mock(SQLStatementContext.class, RETURNS_DEEP_STUBS),
+                rule);
+        
+        ShardingStandardRouteEngine engine = new ShardingStandardRouteEngine(
+                "t_order",
+                conditions,
+                mock(SQLStatementContext.class, RETURNS_DEEP_STUBS),
+                new HintValueContext(),
+                new ConfigurationProperties(new Properties()));
+        
+        RouteContext context = engine.route(rule);
+        
+        assertThat(context.getRouteUnits().size(), is(1));
+        
+        RouteUnit unit = context.getRouteUnits().iterator().next();
+        assertThat(unit.getDataSourceMapper().getActualName(), is("ds_1"));
     }
 }
