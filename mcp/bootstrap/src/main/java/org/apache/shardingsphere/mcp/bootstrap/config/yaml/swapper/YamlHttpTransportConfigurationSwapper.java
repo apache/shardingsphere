@@ -40,13 +40,8 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     @Override
     public HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig) {
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("Property `transport.http` is required."));
-        return new HttpTransportConfiguration(resolveEnabled(yamlConfig.getEnabled()), resolveRequiredText(yamlConfig.getBindHost(), "transport.http.bindHost"),
+        return new HttpTransportConfiguration(yamlConfig.isEnabled(), resolveRequiredText(yamlConfig.getBindHost(), "transport.http.bindHost"),
                 resolvePort(yamlConfig.getPort()), resolveEndpointPath(yamlConfig.getEndpointPath()));
-    }
-    
-    private boolean resolveEnabled(final Boolean enabled) {
-        ShardingSpherePreconditions.checkNotNull(enabled, () -> new IllegalArgumentException("Property `transport.http.enabled` is required."));
-        return enabled;
     }
     
     private String resolveRequiredText(final String value, final String propertyName) {

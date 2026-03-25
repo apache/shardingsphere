@@ -120,6 +120,21 @@ class YamlMCPLaunchConfigurationSwapperTest {
     }
     
     @Test
+    void assertSwapToObjectWithOmittedTransportEnabled() {
+        MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal("transport:\n"
+                + "  http:\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases: {}\n", YamlMCPLaunchConfiguration.class));
+        
+        assertFalse(actual.getTransport().getHttp().isEnabled());
+        assertTrue(actual.getTransport().getStdio().isEnabled());
+    }
+    
+    @Test
     void assertSwapToObjectWithRuntimeDatabaseTypeMissing() {
         String yamlContent = "transport:\n"
                 + "  http:\n"
@@ -267,6 +282,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
         assertThat(actual.getRuntimeDatabases().get("logic_db").getDatabaseType(), is("H2"));
         assertThat(actual.getRuntimeDatabases().get("logic_db").getUsername(), is(""));
         assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));
-        assertThat(actual.getTransport().getStdio().getEnabled(), is(Boolean.TRUE));
+        assertTrue(actual.getTransport().getStdio().isEnabled());
     }
 }

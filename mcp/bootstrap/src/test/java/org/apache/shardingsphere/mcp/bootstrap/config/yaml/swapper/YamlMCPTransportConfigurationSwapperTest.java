@@ -78,19 +78,19 @@ class YamlMCPTransportConfigurationSwapperTest {
         YamlMCPTransportConfiguration actual = swapper.swapToYamlConfiguration(
                 new MCPTransportConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 18088, "/mcp"), new StdioTransportConfiguration(false)));
         
-        assertThat(actual.getHttp().getEnabled(), is(Boolean.TRUE));
+        assertTrue(actual.getHttp().isEnabled());
         assertThat(actual.getHttp().getPort(), is(18088));
-        assertThat(actual.getStdio().getEnabled(), is(Boolean.FALSE));
+        assertFalse(actual.getStdio().isEnabled());
     }
     
     private YamlMCPTransportConfiguration createYamlConfig() {
         YamlHttpTransportConfiguration http = new YamlHttpTransportConfiguration();
-        http.setEnabled(Boolean.FALSE);
+        http.setEnabled(false);
         http.setBindHost("127.0.0.1");
         http.setPort(18088);
         http.setEndpointPath("/mcp");
         YamlStdioTransportConfiguration stdio = new YamlStdioTransportConfiguration();
-        stdio.setEnabled(Boolean.TRUE);
+        stdio.setEnabled(true);
         YamlMCPTransportConfiguration result = new YamlMCPTransportConfiguration();
         result.setHttp(http);
         result.setStdio(stdio);

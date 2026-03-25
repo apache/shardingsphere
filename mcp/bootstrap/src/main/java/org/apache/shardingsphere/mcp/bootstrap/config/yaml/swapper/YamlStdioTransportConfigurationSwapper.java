@@ -37,7 +37,6 @@ public final class YamlStdioTransportConfigurationSwapper implements YamlConfigu
     @Override
     public StdioTransportConfiguration swapToObject(final YamlStdioTransportConfiguration yamlConfig) {
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("Property `transport.stdio` is required."));
-        ShardingSpherePreconditions.checkNotNull(yamlConfig.getEnabled(), () -> new IllegalArgumentException("Property `transport.stdio.enabled` is required."));
-        return new StdioTransportConfiguration(yamlConfig.getEnabled());
+        return new StdioTransportConfiguration(yamlConfig.isEnabled());
     }
 }

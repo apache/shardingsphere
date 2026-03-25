@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -32,7 +33,7 @@ class YamlHttpTransportConfigurationSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig(Boolean.TRUE, "127.0.0.1", 18088, "/mcp"));
+        HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig(true, "127.0.0.1", 18088, "/mcp"));
         
         assertTrue(actual.isEnabled());
         assertThat(actual.getBindHost(), is("127.0.0.1"));
@@ -41,17 +42,21 @@ class YamlHttpTransportConfigurationSwapperTest {
     }
     
     @Test
-    void assertSwapToObjectWithMissingEnabled() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> swapper.swapToObject(createYamlConfig(null, "127.0.0.1", 18088, "/mcp")));
+    void assertSwapToObjectWithOmittedEnabled() {
+        YamlHttpTransportConfiguration yamlConfig = new YamlHttpTransportConfiguration();
+        yamlConfig.setBindHost("127.0.0.1");
+        yamlConfig.setPort(18088);
+        yamlConfig.setEndpointPath("/mcp");
         
-        assertThat(actual.getMessage(), is("Property `transport.http.enabled` is required."));
+        HttpTransportConfiguration actual = swapper.swapToObject(yamlConfig);
+        
+        assertFalse(actual.isEnabled());
     }
     
     @Test
     void assertSwapToObjectWithMissingBindHost() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> swapper.swapToObject(createYamlConfig(Boolean.TRUE, null, 18088, "/mcp")));
+                () -> swapper.swapToObject(createYamlConfig(true, null, 18088, "/mcp")));
         
         assertThat(actual.getMessage(), is("Property `transport.http.bindHost` is required."));
     }
@@ -59,7 +64,7 @@ class YamlHttpTransportConfigurationSwapperTest {
     @Test
     void assertSwapToObjectWithNegativePort() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> swapper.swapToObject(createYamlConfig(Boolean.TRUE, "127.0.0.1", -1, "/mcp")));
+                () -> swapper.swapToObject(createYamlConfig(true, "127.0.0.1", -1, "/mcp")));
         
         assertThat(actual.getMessage(), is("Property `transport.http.port` cannot be negative."));
     }
@@ -67,7 +72,7 @@ class YamlHttpTransportConfigurationSwapperTest {
     @Test
     void assertSwapToObjectWithEndpointPathMissingLeadingSlash() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> swapper.swapToObject(createYamlConfig(Boolean.TRUE, "127.0.0.1", 18088, "gateway")));
+                () -> swapper.swapToObject(createYamlConfig(true, "127.0.0.1", 18088, "gateway")));
         
         assertThat(actual.getMessage(), is("Property `transport.http.endpointPath` must start with '/'."));
     }
@@ -83,13 +88,13 @@ class YamlHttpTransportConfigurationSwapperTest {
     void assertSwapToYamlConfiguration() {
         YamlHttpTransportConfiguration actual = swapper.swapToYamlConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 18088, "/mcp"));
         
-        assertThat(actual.getEnabled(), is(Boolean.TRUE));
+        assertTrue(actual.isEnabled());
         assertThat(actual.getBindHost(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(18088));
         assertThat(actual.getEndpointPath(), is("/mcp"));
     }
     
-    private YamlHttpTransportConfiguration createYamlConfig(final Boolean enabled, final String bindHost, final Integer port, final String endpointPath) {
+    private YamlHttpTransportConfiguration createYamlConfig(final boolean enabled, final String bindHost, final Integer port, final String endpointPath) {
         YamlHttpTransportConfiguration result = new YamlHttpTransportConfiguration();
         result.setEnabled(enabled);
         result.setBindHost(bindHost);

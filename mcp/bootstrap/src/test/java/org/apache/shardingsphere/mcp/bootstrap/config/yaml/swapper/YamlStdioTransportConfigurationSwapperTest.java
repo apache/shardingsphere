@@ -25,6 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlStdioTransportConfigurationSwapperTest {
     
@@ -33,18 +34,18 @@ class YamlStdioTransportConfigurationSwapperTest {
     @Test
     void assertSwapToObject() {
         YamlStdioTransportConfiguration yamlConfig = new YamlStdioTransportConfiguration();
-        yamlConfig.setEnabled(Boolean.FALSE);
+        yamlConfig.setEnabled(true);
         
         StdioTransportConfiguration actual = swapper.swapToObject(yamlConfig);
         
-        assertFalse(actual.isEnabled());
+        assertTrue(actual.isEnabled());
     }
     
     @Test
-    void assertSwapToObjectWithMissingEnabled() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(new YamlStdioTransportConfiguration()));
+    void assertSwapToObjectWithOmittedEnabled() {
+        StdioTransportConfiguration actual = swapper.swapToObject(new YamlStdioTransportConfiguration());
         
-        assertThat(actual.getMessage(), is("Property `transport.stdio.enabled` is required."));
+        assertFalse(actual.isEnabled());
     }
     
     @Test
@@ -58,6 +59,6 @@ class YamlStdioTransportConfigurationSwapperTest {
     void assertSwapToYamlConfiguration() {
         YamlStdioTransportConfiguration actual = swapper.swapToYamlConfiguration(new StdioTransportConfiguration(false));
         
-        assertThat(actual.getEnabled(), is(Boolean.FALSE));
+        assertFalse(actual.isEnabled());
     }
 }

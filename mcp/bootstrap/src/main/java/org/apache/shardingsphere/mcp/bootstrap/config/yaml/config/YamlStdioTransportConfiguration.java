@@ -28,5 +28,5 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlStdioTransportConfiguration implements YamlConfiguration {
     
-    private Boolean enabled;
+    private boolean enabled;
 }

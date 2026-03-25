@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlHttpTransportConfiguration implements YamlConfiguration {
     
-    private Boolean enabled;
+    private boolean enabled;
     
     private String bindHost;
     
