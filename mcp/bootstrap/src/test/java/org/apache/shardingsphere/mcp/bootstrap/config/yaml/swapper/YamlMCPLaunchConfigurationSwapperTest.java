@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
@@ -24,11 +25,13 @@ import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfigurati
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.junit.jupiter.api.Test;
+import org.yaml.snakeyaml.constructor.ConstructorException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,21 +43,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        MCPLaunchConfiguration actual = swapper.swapToObject("transport:\n"
-                + "  http:\n"
-                + "    enabled: true\n"
-                + "    bindHost: 0.0.0.0\n"
-                + "    port: 9090\n"
-                + "    endpointPath: /gateway\n"
-                + "  stdio:\n"
-                + "    enabled: false\n"
-                + "runtimeDatabases:\n"
-                + "  logic_db:\n"
-                + "    databaseType: H2\n"
-                + "    jdbcUrl: jdbc:h2:mem:logic\n"
-                + "    username: demo\n"
-                + "    password: secret\n"
-                + "    driverClassName: org.h2.Driver\n");
+        MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal("transport:\n" + "  http:\n" + "    enabled: true\n" + "    bindHost: 0.0.0.0\n" + "    port: 9090\n" + "    endpointPath: /gateway\n" + "  stdio:\n" + "    enabled: false\n" + "runtimeDatabases:\n" + "  logic_db:\n" + "    databaseType: H2\n" + "    jdbcUrl: jdbc:h2:mem:logic\n" + "    username: demo\n" + "    password: secret\n" + "    driverClassName: org.h2.Driver\n", YamlMCPLaunchConfiguration.class));
         
         assertThat(actual.getTransport().getHttp().getBindHost(), is("0.0.0.0"));
         assertThat(actual.getTransport().getHttp().getPort(), is(9090));
@@ -73,35 +62,35 @@ class YamlMCPLaunchConfigurationSwapperTest {
     }
     
     @Test
-    void assertSwapToObjectWithMissingTransportSection() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("runtimeDatabases:\n"
-                + "  logic_db:\n"
-                + "    databaseType: H2\n"
-                + "    jdbcUrl: jdbc:h2:mem:logic\n"
-                + "    username: ''\n"
-                + "    password: ''\n"
-                + "    driverClassName: org.h2.Driver\n"));
+    void assertSwapToObjectWithEmptyContent() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal("", YamlMCPLaunchConfiguration.class)));
         
         assertThat(actual.getMessage(), is("Property `transport` is required."));
     }
     
     @Test
-    void assertSwapToObjectWithMissingRuntimeDatabasesSection() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("transport:\n"
-                + "  http:\n"
-                + "    enabled: false\n"
-                + "    bindHost: 127.0.0.1\n"
-                + "    port: 18088\n"
-                + "    endpointPath: /mcp\n"
-                + "  stdio:\n"
-                + "    enabled: true\n"));
+    void assertSwapToObjectWithMissingTransportSection() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal("runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
+                + "    driverClassName: org.h2.Driver\n", YamlMCPLaunchConfiguration.class)));
         
-        assertThat(actual.getMessage(), is("Property `runtimeDatabases` is required."));
+        assertThat(actual.getMessage(), is("Property `transport` is required."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithoutRuntimeDatabasesSection() {
+        MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal("transport:\n" + "  http:\n" + "    enabled: false\n" + "    bindHost: 127.0.0.1\n" + "    port: 18088\n" + "    endpointPath: /mcp\n" + "  stdio:\n" + "    enabled: true\n", YamlMCPLaunchConfiguration.class));
+        
+        assertTrue(actual.getRuntimeDatabases().isEmpty());
     }
     
     @Test
     void assertSwapToObjectWithDisabledTransports() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("transport:\n"
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal("transport:\n"
                 + "  http:\n"
                 + "    enabled: false\n"
                 + "    bindHost: 127.0.0.1\n"
@@ -109,7 +98,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    endpointPath: /mcp\n"
                 + "  stdio:\n"
                 + "    enabled: false\n"
-                + "runtimeDatabases: {}\n"));
+                + "runtimeDatabases: {}\n", YamlMCPLaunchConfiguration.class)));
         
         assertThat(actual.getMessage(), is("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true."));
     }
@@ -130,14 +119,14 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    username: ''\n"
                 + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n";
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlContent));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
         
         assertThat(actual.getMessage(), is("Runtime database property `databaseType` is required."));
     }
     
     @Test
     void assertSwapToObjectWithNullRuntimeDatabaseConfiguration() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("transport:\n"
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal("transport:\n"
                 + "  http:\n"
                 + "    enabled: false\n"
                 + "    bindHost: 127.0.0.1\n"
@@ -146,18 +135,18 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  stdio:\n"
                 + "    enabled: true\n"
                 + "runtimeDatabases:\n"
-                + "  logic_db: null\n"));
+                + "  logic_db: null\n", YamlMCPLaunchConfiguration.class)));
         
-        assertThat(actual.getMessage(), is("Property `runtimeDatabases.logic_db` must be a mapping."));
+        assertThat(actual.getMessage(), is("Runtime database configuration cannot be null."));
     }
     
     @Test
     void assertSwapToObjectWithUnsupportedRootProperty() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("runtime:\n"
+        ConstructorException actual = assertThrows(ConstructorException.class, () -> swapper.swapToObject(YamlEngine.unmarshal("runtime:\n"
                 + "  props:\n"
-                + "    databaseName: logic_db\n"));
+                + "    databaseName: logic_db\n", YamlMCPLaunchConfiguration.class)));
         
-        assertThat(actual.getMessage(), is("Unsupported YAML property `runtime`."));
+        assertThat(actual.getMessage(), containsString("Unable to find property 'runtime'"));
     }
     
     @Test
@@ -178,13 +167,13 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n"
                 + "    supportsExplainAnalyze: true\n";
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlContent));
+        ConstructorException actual = assertThrows(ConstructorException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
         
-        assertThat(actual.getMessage(), is("Unsupported YAML property `runtimeDatabases.logic_db.supportsExplainAnalyze`."));
+        assertThat(actual.getMessage(), containsString("Unable to find property 'supportsExplainAnalyze'"));
     }
     
     @Test
-    void assertSwapToObjectWithNonStringRuntimeDatabaseName() {
+    void assertSwapToObjectWithNumericRuntimeDatabaseName() {
         String yamlContent = "transport:\n"
                 + "  http:\n"
                 + "    enabled: false\n"
@@ -200,9 +189,9 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    username: ''\n"
                 + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n";
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlContent));
+        MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class));
         
-        assertThat(actual.getMessage(), is("Runtime logical database name must be a string."));
+        assertThat(actual.getRuntimeDatabases().get("1").getDatabaseType(), is("H2"));
     }
     
     @Test

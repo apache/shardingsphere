@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.yaml.snakeyaml.constructor.ConstructorException;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,6 +29,7 @@ import java.nio.file.Path;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -90,9 +92,9 @@ class MCPConfigurationLoaderTest {
                 + "  props:\n"
                 + "    databaseName: logic_db\n");
         
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
+        ConstructorException actual = assertThrows(ConstructorException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
         
-        assertThat(actual.getMessage(), is("Unsupported YAML property `runtime`."));
+        assertThat(actual.getMessage(), containsString("Unable to find property 'runtime'"));
     }
     
     @Test
@@ -140,7 +142,7 @@ class MCPConfigurationLoaderTest {
     }
     
     @Test
-    void assertLoadWithMissingRuntimeDatabasesSection() throws IOException {
+    void assertLoadWithoutRuntimeDatabasesSection() throws IOException {
         Path configFile = createConfigFile("transport:\n"
                 + "  http:\n"
                 + "    enabled: false\n"
@@ -150,9 +152,9 @@ class MCPConfigurationLoaderTest {
                 + "  stdio:\n"
                 + "    enabled: true\n");
         
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         
-        assertThat(actual.getMessage(), is("Property `runtimeDatabases` is required."));
+        assertTrue(actual.getRuntimeDatabases().isEmpty());
     }
     
     @Test
@@ -174,9 +176,9 @@ class MCPConfigurationLoaderTest {
                 + "    driverClassName: org.h2.Driver\n"
                 + "    supportsCrossSchemaSql: true\n");
         
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
+        ConstructorException actual = assertThrows(ConstructorException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
         
-        assertThat(actual.getMessage(), is("Unsupported YAML property `runtimeDatabases.logic_db.supportsCrossSchemaSql`."));
+        assertThat(actual.getMessage(), containsString("Unable to find property 'supportsCrossSchemaSql'"));
     }
     
     @Test
