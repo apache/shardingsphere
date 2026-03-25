@@ -146,16 +146,19 @@ class MCPConfigurationLoaderTest {
     }
     
     @Test
-    void assertLoadWithLegacyRuntimeCapabilityOverride() throws IOException {
-        Path configFile = createConfigFile("runtimeDatabases:\n"
+    void assertLoadIgnoreLegacyRuntimeCapabilityOverride() throws IOException {
+        Path configFile = createConfigFile("transport:\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases:\n"
                 + "  logic_db:\n"
                 + "    databaseType: H2\n"
                 + "    jdbcUrl: jdbc:h2:mem:logic\n"
                 + "    supportsCrossSchemaSql: true\n");
         
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         
-        assertThat(actual.getMessage(), is("Legacy capability booleans are no longer supported for runtime database `logic_db`. Capabilities are derived automatically."));
+        assertThat(actual.getRuntimeDatabases().get("logic_db").getDatabaseType(), is("H2"));
     }
     
     @Test

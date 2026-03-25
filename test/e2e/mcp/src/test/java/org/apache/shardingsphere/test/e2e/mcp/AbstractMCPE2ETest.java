@@ -216,13 +216,13 @@ abstract class AbstractMCPE2ETest {
     
     private MCPLaunchState launchRuntimeInternal() {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPServerRegistry serverRegistry = new MCPServerRegistry(sessionManager);
+        MCPServerRegistry registry = new MCPServerRegistry(sessionManager);
         MetadataCatalog metadataCatalog = createMetadataCatalog();
         DatabaseRuntime databaseRuntime = createDatabaseRuntime();
         MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
         MCPTransportConfiguration transportConfiguration = new MCPTransportConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH), new StdioTransportConfiguration(false));
-        MCPLaunchConfiguration runtimeConfiguration = new MCPLaunchConfiguration(transportConfiguration, Map.of());
-        launchState = new MCPRuntimeLauncher().launch(serverRegistry, runtimeServices, runtimeConfiguration, metadataCatalog, databaseRuntime);
+        MCPLaunchConfiguration config = new MCPLaunchConfiguration(transportConfiguration, Map.of());
+        launchState = new MCPRuntimeLauncher().launch(registry, config, runtimeServices, metadataCatalog, databaseRuntime);
         return launchState;
     }
     

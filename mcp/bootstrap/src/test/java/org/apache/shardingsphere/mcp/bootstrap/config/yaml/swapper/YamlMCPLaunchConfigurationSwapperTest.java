@@ -138,14 +138,17 @@ class YamlMCPLaunchConfigurationSwapperTest {
     }
     
     @Test
-    void assertSwapToObjectWithLegacyRuntimeCapabilityOverride() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("runtimeDatabases:\n"
+    void assertSwapToObjectIgnoreLegacyRuntimeCapabilityOverride() {
+        MCPLaunchConfiguration actual = swapper.swapToObject("transport:\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases:\n"
                 + "  logic_db:\n"
                 + "    databaseType: H2\n"
                 + "    jdbcUrl: jdbc:h2:mem:logic\n"
-                + "    supportsExplainAnalyze: true\n"));
+                + "    supportsExplainAnalyze: true\n");
         
-        assertThat(actual.getMessage(), is("Legacy capability booleans are no longer supported for runtime database `logic_db`. Capabilities are derived automatically."));
+        assertThat(actual.getRuntimeDatabases().get("logic_db").getDatabaseType(), is("H2"));
     }
     
 }
