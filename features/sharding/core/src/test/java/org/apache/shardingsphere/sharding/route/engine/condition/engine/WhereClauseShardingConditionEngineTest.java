@@ -78,12 +78,11 @@ class WhereClauseShardingConditionEngineTest {
     @BeforeEach
     void setUp() {
         shardingConditionEngine = new WhereClauseShardingConditionEngine(database, rule, mock(TimestampServiceRule.class));
-        IdentifierValue tableName = new IdentifierValue("");
         when(sqlStatementContext.getWhereSegments()).thenReturn(Collections.singleton(whereSegment));
         when(database.containsSchema(new IdentifierValue(""))).thenReturn(true);
         when(database.getSchema(new IdentifierValue(""))).thenReturn(schema);
-        when(schema.containsTable(tableName)).thenReturn(true);
-        when(schema.getTable(tableName)).thenReturn(table);
+        when(schema.containsTable(new IdentifierValue(""))).thenReturn(true);
+        when(schema.getTable(new IdentifierValue(""))).thenReturn(table);
         when(table.getColumn("foo_sharding_col")).thenReturn(mock(ShardingSphereColumn.class));
     }
     

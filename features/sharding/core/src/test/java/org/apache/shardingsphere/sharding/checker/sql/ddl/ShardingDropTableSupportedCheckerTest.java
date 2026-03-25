@@ -73,9 +73,8 @@ class ShardingDropTableSupportedCheckerTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        IdentifierValue tableName = new IdentifierValue("t_order_item");
         when(schema.containsTable("t_order_item")).thenReturn(true);
-        when(schema.containsTable(tableName)).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue("t_order_item"))).thenReturn(true);
         ShardingDropTableSupportedChecker checker = new ShardingDropTableSupportedChecker();
         assertDoesNotThrow(() -> checker.check(rule, database, schema, sqlStatementContext));
     }

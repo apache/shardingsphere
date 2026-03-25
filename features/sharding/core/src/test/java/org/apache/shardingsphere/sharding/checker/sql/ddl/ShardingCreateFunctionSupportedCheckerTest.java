@@ -77,10 +77,8 @@ class ShardingCreateFunctionSupportedCheckerTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        IdentifierValue barTable = new IdentifierValue("bar_tbl");
-        IdentifierValue fooTable = new IdentifierValue("foo_tbl");
-        when(schema.containsTable(barTable)).thenReturn(true);
-        when(schema.containsTable(fooTable)).thenReturn(false);
+        when(schema.containsTable(new IdentifierValue("bar_tbl"))).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue("foo_tbl"))).thenReturn(false);
         assertDoesNotThrow(() -> new ShardingCreateFunctionSupportedChecker().check(rule, database, schema, sqlStatementContext));
     }
     
@@ -131,8 +129,7 @@ class ShardingCreateFunctionSupportedCheckerTest {
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        IdentifierValue fooTable = new IdentifierValue("foo_tbl");
-        when(schema.containsTable(fooTable)).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue("foo_tbl"))).thenReturn(true);
         assertThrows(TableExistsException.class, () -> new ShardingCreateFunctionSupportedChecker().check(rule, database, schema, sqlStatementContext));
     }
 }

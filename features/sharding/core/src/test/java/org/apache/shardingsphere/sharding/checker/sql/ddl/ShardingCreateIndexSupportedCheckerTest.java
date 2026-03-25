@@ -58,47 +58,43 @@ class ShardingCreateIndexSupportedCheckerTest {
     
     @Test
     void assertCheckWhenTableExistIndexNotExistForPostgreSQL() {
-        IdentifierValue tableName = new IdentifierValue("t_order");
         CreateIndexStatement sqlStatement = CreateIndexStatement.builder()
                 .databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
                 .index(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))))
                 .build();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.containsTable(tableName)).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue("t_order"))).thenReturn(true);
         assertDoesNotThrow(() -> new ShardingCreateIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
     
     @Test
     void assertCheckWhenTableNotExistIndexNotExistForPostgreSQL() {
-        IdentifierValue tableName = new IdentifierValue("t_order");
         CreateIndexStatement sqlStatement = CreateIndexStatement.builder()
                 .databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
                 .index(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))))
                 .build();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.containsTable(tableName)).thenReturn(false);
+        when(schema.containsTable(new IdentifierValue("t_order"))).thenReturn(false);
         assertThrows(NoSuchTableException.class, () -> new ShardingCreateIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
     
     @Test
     void assertCheckWhenTableExistIndexExistForPostgreSQL() {
-        IdentifierValue tableName = new IdentifierValue("t_order");
         CreateIndexStatement sqlStatement = CreateIndexStatement.builder()
                 .databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
                 .index(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))))
                 .build();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.containsTable(tableName)).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue("t_order"))).thenReturn(true);
         when(schema.containsIndex("t_order", "t_order_index")).thenReturn(true);
         assertThrows(DuplicateIndexException.class, () -> new ShardingCreateIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
     
     @Test
     void assertCheckWithoutIndexNameWhenTableExistIndexNotExistForPostgreSQL() {
-        IdentifierValue tableName = new IdentifierValue("t_order");
         CreateIndexStatement sqlStatement = CreateIndexStatement.builder()
                 .databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
@@ -106,13 +102,12 @@ class ShardingCreateIndexSupportedCheckerTest {
                 .anonymousIndexStartIndex(10)
                 .build();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.containsTable(tableName)).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue("t_order"))).thenReturn(true);
         assertDoesNotThrow(() -> new ShardingCreateIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
     
     @Test
     void assertCheckWithoutIndexNameWhenTableNotExistIndexNotExistForPostgreSQL() {
-        IdentifierValue tableName = new IdentifierValue("t_order");
         CreateIndexStatement sqlStatement = CreateIndexStatement.builder()
                 .databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
@@ -120,13 +115,12 @@ class ShardingCreateIndexSupportedCheckerTest {
                 .anonymousIndexStartIndex(10)
                 .build();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.containsTable(tableName)).thenReturn(false);
+        when(schema.containsTable(new IdentifierValue("t_order"))).thenReturn(false);
         assertThrows(NoSuchTableException.class, () -> new ShardingCreateIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }
     
     @Test
     void assertCheckWithoutIndexNameWhenTableExistIndexExistForPostgreSQL() {
-        IdentifierValue tableName = new IdentifierValue("t_order");
         CreateIndexStatement sqlStatement = CreateIndexStatement.builder()
                 .databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
@@ -134,7 +128,7 @@ class ShardingCreateIndexSupportedCheckerTest {
                 .anonymousIndexStartIndex(10)
                 .build();
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.containsTable(tableName)).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue("t_order"))).thenReturn(true);
         when(schema.containsIndex("t_order", "content_idx")).thenReturn(true);
         assertThrows(DuplicateIndexException.class, () -> new ShardingCreateIndexSupportedChecker().check(rule, database, schema, new CommonSQLStatementContext(sqlStatement)));
     }

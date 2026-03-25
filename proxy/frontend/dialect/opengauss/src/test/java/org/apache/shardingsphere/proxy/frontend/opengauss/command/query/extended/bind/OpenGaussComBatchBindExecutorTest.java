@@ -178,9 +178,9 @@ class OpenGaussComBatchBindExecutorTest {
                 new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()))));
         ShardingSphereDatabase database = mockDatabase();
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(any(IdentifierValue.class))).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("foo_db"))).thenReturn(database);
         lenient().when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase(any(IdentifierValue.class))).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue("foo_db"))).thenReturn(true);
         return result;
     }
     
@@ -199,11 +199,11 @@ class OpenGaussComBatchBindExecutorTest {
         when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
-        when(result.containsSchema(any(IdentifierValue.class))).thenReturn(true);
+        when(result.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         when(result.getSchema("public")).thenReturn(schema);
-        when(result.getSchema(any(IdentifierValue.class))).thenReturn(schema);
-        when(schema.containsTable(any(IdentifierValue.class))).thenReturn(true);
-        when(schema.getTable(any(IdentifierValue.class)).getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false)));
+        when(result.getSchema(new IdentifierValue("public"))).thenReturn(schema);
+        when(schema.containsTable(new IdentifierValue("bmsql"))).thenReturn(true);
+        when(schema.getTable(new IdentifierValue("bmsql")).getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false)));
         return result;
     }
 }
