@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.database.connector.core.type;
 
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DefaultSchemaOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,8 +35,6 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class DatabaseTypeRegistryTest {
     
@@ -58,12 +59,17 @@ class DatabaseTypeRegistryTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("getDefaultSchemaNameWithIdentifierPatternArguments")
+    void assertGetDefaultSchemaNameWithIdentifierPattern(final String name, final IdentifierPatternType identifierPatternType,
+                                                         final String databaseName, final String expectedSchemaName) throws ReflectiveOperationException {
+        DatabaseTypeRegistry databaseTypeRegistry = createDatabaseTypeRegistry(identifierPatternType, null);
+        assertThat(databaseTypeRegistry.getDefaultSchemaName(databaseName), is(expectedSchemaName));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("formatIdentifierPatternArguments")
     void assertFormatIdentifierPattern(final String name, final IdentifierPatternType identifierPatternType, final String expectedIdentifierPattern) throws ReflectiveOperationException {
-        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
-        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(identifierPatternType);
-        DatabaseTypeRegistry databaseTypeRegistry = new DatabaseTypeRegistry(trunkDatabaseType);
-        Plugins.getMemberAccessor().set(DatabaseTypeRegistry.class.getDeclaredField("dialectDatabaseMetaData"), databaseTypeRegistry, dialectDatabaseMetaData);
+        DatabaseTypeRegistry databaseTypeRegistry = createDatabaseTypeRegistry(identifierPatternType, null);
         assertThat(databaseTypeRegistry.formatIdentifierPattern("Foo"), is(expectedIdentifierPattern));
     }
     
@@ -74,10 +80,62 @@ class DatabaseTypeRegistryTest {
                 Arguments.of("database name is null", "BRANCH", null, null));
     }
     
+    private static Stream<Arguments> getDefaultSchemaNameWithIdentifierPatternArguments() {
+        return Stream.of(
+                Arguments.of("upper case identifier pattern formats default schema", IdentifierPatternType.UPPER_CASE, "foo_db", "FOO_DB"),
+                Arguments.of("lower case identifier pattern formats default schema", IdentifierPatternType.LOWER_CASE, "FOO_DB", "foo_db"),
+                Arguments.of("keep origin identifier pattern keeps default schema", IdentifierPatternType.KEEP_ORIGIN, "Foo_Db", "Foo_Db"),
+                Arguments.of("null database name keeps null default schema", IdentifierPatternType.UPPER_CASE, null, null));
+    }
+    
     private static Stream<Arguments> formatIdentifierPatternArguments() {
         return Stream.of(
                 Arguments.of("identifier pattern upper case", IdentifierPatternType.UPPER_CASE, "FOO"),
                 Arguments.of("identifier pattern lower case", IdentifierPatternType.LOWER_CASE, "foo"),
                 Arguments.of("identifier pattern keep origin", IdentifierPatternType.KEEP_ORIGIN, "Foo"));
+    }
+    
+    private DatabaseTypeRegistry createDatabaseTypeRegistry(final IdentifierPatternType identifierPatternType, final String defaultSchema) throws ReflectiveOperationException {
+        DatabaseTypeRegistry result = new DatabaseTypeRegistry(trunkDatabaseType);
+        Plugins.getMemberAccessor().set(DatabaseTypeRegistry.class.getDeclaredField("dialectDatabaseMetaData"),
+                result, new FixtureDialectDatabaseMetaData(identifierPatternType, defaultSchema));
+        return result;
+    }
+    
+    private static final class FixtureDialectDatabaseMetaData implements DialectDatabaseMetaData {
+        
+        private final IdentifierPatternType identifierPatternType;
+        
+        private final DefaultSchemaOption schemaOption;
+        
+        private FixtureDialectDatabaseMetaData(final IdentifierPatternType identifierPatternType, final String defaultSchema) {
+            this.identifierPatternType = identifierPatternType;
+            schemaOption = new DefaultSchemaOption(false, defaultSchema);
+        }
+        
+        @Override
+        public QuoteCharacter getQuoteCharacter() {
+            return QuoteCharacter.NONE;
+        }
+        
+        @Override
+        public IdentifierPatternType getIdentifierPatternType() {
+            return identifierPatternType;
+        }
+        
+        @Override
+        public NullsOrderType getDefaultNullsOrderType() {
+            return NullsOrderType.LOW;
+        }
+        
+        @Override
+        public DefaultSchemaOption getSchemaOption() {
+            return schemaOption;
+        }
+        
+        @Override
+        public String getDatabaseType() {
+            return "FIXTURE";
+        }
     }
 }
