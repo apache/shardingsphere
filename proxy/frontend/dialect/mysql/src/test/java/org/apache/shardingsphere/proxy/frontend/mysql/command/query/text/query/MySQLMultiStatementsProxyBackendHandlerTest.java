@@ -196,12 +196,15 @@ class MySQLMultiStatementsProxyBackendHandlerTest {
         when(database.getSchema("foo_db")).thenReturn(schema);
         when(database.getSchema(any(IdentifierValue.class))).thenReturn(schema);
         when(schema.getTable("t")).thenReturn(table);
+        when(schema.getTable(any(IdentifierValue.class))).thenReturn(table);
         when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase(any(IdentifierValue.class))).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().getDatabase(any(IdentifierValue.class))).thenReturn(database);
         when(database.containsSchema("foo_db")).thenReturn(true);
         when(database.containsSchema(any(IdentifierValue.class))).thenReturn(true);
         when(schema.containsTable("t")).thenReturn(true);
+        when(schema.containsTable(any(IdentifierValue.class))).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         return result;
     }

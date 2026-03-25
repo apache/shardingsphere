@@ -179,7 +179,8 @@ class OpenGaussComBatchBindExecutorTest {
         ShardingSphereDatabase database = mockDatabase();
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().getDatabase(any(IdentifierValue.class))).thenReturn(database);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        lenient().when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase(any(IdentifierValue.class))).thenReturn(true);
         return result;
     }
     
@@ -201,8 +202,8 @@ class OpenGaussComBatchBindExecutorTest {
         when(result.containsSchema(any(IdentifierValue.class))).thenReturn(true);
         when(result.getSchema("public")).thenReturn(schema);
         when(result.getSchema(any(IdentifierValue.class))).thenReturn(schema);
-        when(schema.containsTable("bmsql")).thenReturn(true);
-        when(schema.getTable("bmsql").getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false)));
+        when(schema.containsTable(any(IdentifierValue.class))).thenReturn(true);
+        when(schema.getTable(any(IdentifierValue.class)).getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false)));
         return result;
     }
 }

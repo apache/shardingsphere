@@ -114,6 +114,7 @@ class SQLStatementContextFactoryTest {
         IdentifierValue fooDatabase = new IdentifierValue("foo_db");
         IdentifierValue publicSchema = new IdentifierValue("public");
         IdentifierValue dboSchema = new IdentifierValue("dbo");
+        IdentifierValue tbl = new IdentifierValue("tbl");
         when(database.getName()).thenReturn("foo_db");
         when(database.containsSchema("foo_db")).thenReturn(true);
         when(database.containsSchema("public")).thenReturn(true);
@@ -127,6 +128,9 @@ class SQLStatementContextFactoryTest {
         when(database.getSchema(fooDatabase).containsTable("tbl")).thenReturn(true);
         when(database.getSchema(publicSchema).containsTable("tbl")).thenReturn(true);
         when(database.getSchema(dboSchema).containsTable("tbl")).thenReturn(true);
+        when(database.getSchema(fooDatabase).containsTable(tbl)).thenReturn(true);
+        when(database.getSchema(publicSchema).containsTable(tbl)).thenReturn(true);
+        when(database.getSchema(dboSchema).containsTable(tbl)).thenReturn(true);
         return new ShardingSphereMetaData(Collections.singleton(database), mock(ResourceMetaData.class), mock(RuleMetaData.class), mock(ConfigurationProperties.class));
     }
 }

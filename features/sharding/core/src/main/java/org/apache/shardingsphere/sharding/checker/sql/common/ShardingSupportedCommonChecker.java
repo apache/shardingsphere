@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.exception.syntax.DMLWithMultipleShardi
 import org.apache.shardingsphere.sharding.exception.syntax.UnsupportedShardingOperationException;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 
@@ -61,8 +62,8 @@ public final class ShardingSupportedCommonChecker {
      */
     public static void checkTableExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
-            String tableName = each.getTableName().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new NoSuchTableException(tableName));
+            IdentifierValue tableName = each.getTableName().getIdentifier();
+            ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new NoSuchTableException(tableName.getValue()));
         }
     }
     
@@ -75,8 +76,8 @@ public final class ShardingSupportedCommonChecker {
      */
     public static void checkTableNotExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
-            String tableName = each.getTableName().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(!schema.containsTable(tableName), () -> new TableExistsException(tableName));
+            IdentifierValue tableName = each.getTableName().getIdentifier();
+            ShardingSpherePreconditions.checkState(!schema.containsTable(tableName), () -> new TableExistsException(tableName.getValue()));
         }
     }
     

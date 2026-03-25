@@ -174,6 +174,7 @@ class MySQLComQueryPacketExecutorTest {
         props.setProperty(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), "1");
         when(result.getMetaData().getProps()).thenReturn(new ConfigurationProperties(props));
         when(result.getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(result.getMetaData().containsDatabase(any(IdentifierValue.class))).thenReturn(true);
         return result;
     }
     
