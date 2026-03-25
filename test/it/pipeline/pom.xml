@@ -27,6 +27,7 @@
     <name>${project.artifactId}</name>
     
     <properties>
+        <java.version>21</java.version>
         <maven.compiler.release>21</maven.compiler.release>
     </properties>
     
