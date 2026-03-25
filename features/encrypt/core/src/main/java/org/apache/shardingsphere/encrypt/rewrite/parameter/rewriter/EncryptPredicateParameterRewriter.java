@@ -46,8 +46,6 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     
     private final EncryptRule rule;
     
-    private final String databaseName;
-    
     private final Collection<EncryptCondition> encryptConditions;
     
     @Override
@@ -78,7 +76,7 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
                 : encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, columnName, originalValues);
     }
     
-    private List<Object> getEncryptedLikeValues(final String databaseName, final String schemaName, final List<Object> originalValues, 
+    private List<Object> getEncryptedLikeValues(final String databaseName, final String schemaName, final List<Object> originalValues,
                                                 final EncryptColumn encryptColumn, final String tableName, final String columnName) {
         ShardingSpherePreconditions.checkState(encryptColumn.getLikeQuery().isPresent() || encryptColumn.getCipher().getEncryptor().getMetaData().isSupportLike(),
                 () -> new MissingMatchedEncryptQueryAlgorithmException(tableName, columnName, "LIKE"));
