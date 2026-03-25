@@ -99,9 +99,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
      * @return launch configuration
      */
     public MCPLaunchConfiguration swapToObject(final String yamlContent) {
-        Map<?, ?> yamlRoot = loadYamlRoot(yamlContent);
-        validateYamlRoot(yamlRoot);
-        return swapToObject(createYamlConfig(yamlRoot));
+        return swapToObject(parseYamlConfiguration(loadYamlRoot(yamlContent)));
     }
     
     private Map<?, ?> loadYamlRoot(final String yamlContent) {
@@ -111,33 +109,25 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         return yamlRoot instanceof Map ? (Map<?, ?>) yamlRoot : Map.of();
     }
     
-    private void validateYamlRoot(final Map<?, ?> yamlRoot) {
+    private YamlMCPLaunchConfiguration parseYamlConfiguration(final Map<?, ?> yamlRoot) {
         validateRootProperties(yamlRoot);
-        Map<?, ?> transportSection = getRequiredMapping(yamlRoot, "transport", TRANSPORT_REQUIRED_ERROR_MESSAGE, TRANSPORT_MAPPING_ERROR_MESSAGE);
-        validateAllowedProperties(transportSection, "transport", TRANSPORT_PROPERTIES);
-        validateAllowedProperties(getRequiredMapping(transportSection, "http", "Property `transport.http` is required.", "Property `transport.http` must be a mapping."),
-                "transport.http", HTTP_PROPERTIES);
-        validateAllowedProperties(getRequiredMapping(transportSection, "stdio", "Property `transport.stdio` is required.", "Property `transport.stdio` must be a mapping."),
-                "transport.stdio", STDIO_PROPERTIES);
-        validateRuntimeDatabasesRoot(getRequiredMapping(yamlRoot, "runtimeDatabases", RUNTIME_DATABASES_REQUIRED_ERROR_MESSAGE, RUNTIME_DATABASES_MAPPING_ERROR_MESSAGE));
-    }
-    
-    private YamlMCPLaunchConfiguration createYamlConfig(final Map<?, ?> yamlRoot) {
         YamlMCPLaunchConfiguration result = new YamlMCPLaunchConfiguration();
-        result.setTransport(createYamlTransportConfig(getRequiredMapping(yamlRoot, "transport", TRANSPORT_REQUIRED_ERROR_MESSAGE, TRANSPORT_MAPPING_ERROR_MESSAGE)));
-        result.setRuntimeDatabases(createYamlRuntimeDatabases(getRequiredMapping(yamlRoot, "runtimeDatabases",
+        result.setTransport(parseYamlTransportConfig(getRequiredMapping(yamlRoot, "transport", TRANSPORT_REQUIRED_ERROR_MESSAGE, TRANSPORT_MAPPING_ERROR_MESSAGE)));
+        result.setRuntimeDatabases(parseYamlRuntimeDatabases(getRequiredMapping(yamlRoot, "runtimeDatabases",
                 RUNTIME_DATABASES_REQUIRED_ERROR_MESSAGE, RUNTIME_DATABASES_MAPPING_ERROR_MESSAGE)));
         return result;
     }
     
-    private YamlMCPTransportConfiguration createYamlTransportConfig(final Map<?, ?> transportSection) {
+    private YamlMCPTransportConfiguration parseYamlTransportConfig(final Map<?, ?> transportSection) {
+        validateAllowedProperties(transportSection, "transport", TRANSPORT_PROPERTIES);
         YamlMCPTransportConfiguration result = new YamlMCPTransportConfiguration();
-        result.setHttp(createYamlHttpConfig(getRequiredMapping(transportSection, "http", "Property `transport.http` is required.", "Property `transport.http` must be a mapping.")));
-        result.setStdio(createYamlStdioConfig(getRequiredMapping(transportSection, "stdio", "Property `transport.stdio` is required.", "Property `transport.stdio` must be a mapping.")));
+        result.setHttp(parseYamlHttpConfig(getRequiredMapping(transportSection, "http", "Property `transport.http` is required.", "Property `transport.http` must be a mapping.")));
+        result.setStdio(parseYamlStdioConfig(getRequiredMapping(transportSection, "stdio", "Property `transport.stdio` is required.", "Property `transport.stdio` must be a mapping.")));
         return result;
     }
     
-    private YamlHttpTransportConfiguration createYamlHttpConfig(final Map<?, ?> httpSection) {
+    private YamlHttpTransportConfiguration parseYamlHttpConfig(final Map<?, ?> httpSection) {
+        validateAllowedProperties(httpSection, "transport.http", HTTP_PROPERTIES);
         YamlHttpTransportConfiguration result = new YamlHttpTransportConfiguration();
         result.setEnabled(getBooleanValue(httpSection.get("enabled"), "transport.http.enabled"));
         result.setBindHost(getStringValue(httpSection.get("bindHost"), "transport.http.bindHost"));
@@ -146,17 +136,18 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         return result;
     }
     
-    private YamlStdioTransportConfiguration createYamlStdioConfig(final Map<?, ?> stdioSection) {
+    private YamlStdioTransportConfiguration parseYamlStdioConfig(final Map<?, ?> stdioSection) {
+        validateAllowedProperties(stdioSection, "transport.stdio", STDIO_PROPERTIES);
         YamlStdioTransportConfiguration result = new YamlStdioTransportConfiguration();
         result.setEnabled(getBooleanValue(stdioSection.get("enabled"), "transport.stdio.enabled"));
         return result;
     }
     
-    private Map<String, YamlRuntimeDatabaseConfiguration> createYamlRuntimeDatabases(final Map<?, ?> runtimeDatabases) {
+    private Map<String, YamlRuntimeDatabaseConfiguration> parseYamlRuntimeDatabases(final Map<?, ?> runtimeDatabases) {
         Map<String, YamlRuntimeDatabaseConfiguration> result = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
         for (Entry<?, ?> entry : runtimeDatabases.entrySet()) {
             String databaseName = validateRuntimeDatabaseName(entry.getKey());
-            result.put(databaseName, createYamlRuntimeDatabaseConfig(databaseName, entry.getValue()));
+            result.put(databaseName, parseYamlRuntimeDatabaseConfig(databaseName, entry.getValue()));
         }
         return result;
     }
@@ -167,10 +158,11 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         return (Map<?, ?>) yamlRoot.get(propertyName);
     }
     
-    private YamlRuntimeDatabaseConfiguration createYamlRuntimeDatabaseConfig(final String databaseName, final Object value) {
+    private YamlRuntimeDatabaseConfiguration parseYamlRuntimeDatabaseConfig(final String databaseName, final Object value) {
         ShardingSpherePreconditions.checkState(value instanceof Map,
                 () -> new IllegalArgumentException(String.format("Property `runtimeDatabases.%s` must be a mapping.", databaseName)));
         Map<?, ?> runtimeDatabaseSection = (Map<?, ?>) value;
+        validateAllowedProperties(runtimeDatabaseSection, "runtimeDatabases." + databaseName, RUNTIME_DATABASE_PROPERTIES);
         YamlRuntimeDatabaseConfiguration result = new YamlRuntimeDatabaseConfiguration();
         result.setDatabaseType(getStringValue(runtimeDatabaseSection.get("databaseType"), "runtimeDatabases." + databaseName + ".databaseType"));
         result.setJdbcUrl(getStringValue(runtimeDatabaseSection.get("jdbcUrl"), "runtimeDatabases." + databaseName + ".jdbcUrl"));
@@ -192,15 +184,6 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
             String propertyName = String.valueOf(each);
             ShardingSpherePreconditions.checkState(allowedProperties.contains(propertyName),
                     () -> new IllegalArgumentException(String.format("Unsupported YAML property `%s`.", sectionName + "." + propertyName)));
-        }
-    }
-    
-    private void validateRuntimeDatabasesRoot(final Map<?, ?> runtimeDatabases) {
-        for (Entry<?, ?> entry : runtimeDatabases.entrySet()) {
-            String databaseName = validateRuntimeDatabaseName(entry.getKey());
-            ShardingSpherePreconditions.checkState(entry.getValue() instanceof Map,
-                    () -> new IllegalArgumentException(String.format("Property `runtimeDatabases.%s` must be a mapping.", databaseName)));
-            validateAllowedProperties((Map<?, ?>) entry.getValue(), "runtimeDatabases." + databaseName, RUNTIME_DATABASE_PROPERTIES);
         }
     }
     
