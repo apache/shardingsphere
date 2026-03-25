@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.hint.HintManager;
+import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.assertion.ShardingRouteAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -32,13 +35,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 // TODO add assertion for ShardingRouteAssert.assertRoute
 class SubqueryRouteTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertRoute(final String name, final String sql, final List<Object> params) {
-        ShardingRouteAssert.assertRoute(sql, params);
+        RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, params);
+        assertThat(String.format("Test case '%s' exploded or failed to route correctly.", name),
+                routeContext.getRouteUnits().size(), is(1));
     }
     
     @Test
@@ -51,13 +59,106 @@ class SubqueryRouteTest {
         hintManager.close();
     }
     
+    @Test
+    void assertSubqueryWithMultipleConditionsDoesNotExplode() {
+        String sql = "SELECT * FROM t_order a WHERE user_id = ? AND order_id = ? "
+                + "AND user_id IN (SELECT user_id FROM t_order_item WHERE user_id IN (?, ?, ?))";
+        
+        RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1, 1, 1, 1));
+        
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+    }
+    
+    @Test
+    void assertBindingTableSubqueryDoesNotBreakRouting() {
+        String sql = "SELECT * FROM t_order WHERE user_id = ? AND user_id IN "
+                + "(SELECT user_id FROM t_order_item WHERE user_id = ?)";
+        
+        RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1));
+        
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+    }
+    
+    @Test
+    void assertNonBindingShardingSubqueryDoesNotExplode() {
+        String sql = "SELECT * FROM t_user WHERE user_id = ? "
+                + "AND user_id IN (SELECT user_id FROM t_order_non_binding WHERE order_id = ?)";
+        
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1), databaseType);
+        
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+    }
+    
+    @Test
+    void assertHintRoutingWithIrrelevantSubqueryConditions() {
+        try (HintManager hintManager = HintManager.getInstance()) {
+            hintManager.addDatabaseShardingValue("t_hint_test", 1);
+            hintManager.addTableShardingValue("t_hint_test", 1);
+            
+            String sql = "SELECT * FROM t_hint_test WHERE user_id IN (SELECT user_id FROM t_order_non_binding WHERE order_id = ?)";
+            
+            RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, Collections.singletonList(1));
+            assertThat(routeContext.getRouteUnits().size(), is(1));
+        }
+    }
+    
+    @Test
+    void assertComplexRouteWithIrrelevantSubquery() {
+        String sql = "SELECT * FROM t_order o JOIN t_order_item i ON o.order_id = i.order_id "
+                + "WHERE o.user_id = ? AND i.user_id = ? "
+                + "AND o.user_id IN (SELECT user_id FROM t_order_non_binding WHERE order_id = ?)";
+        
+        RouteContext routeContext = ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1, 1));
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+    }
+    
+    @Test
+    void assertNonBindingSubqueryWithDifferentShardingKeyDoesNotExplode() {
+        String sql = "SELECT * FROM t_order o "
+                + "WHERE o.user_id = ? "
+                + "AND o.user_id IN ("
+                + "  SELECT user_id FROM t_order_non_binding "
+                + "  WHERE order_id IN (?, ?)"
+                + ")";
+        
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        
+        RouteContext routeContext = ShardingRouteAssert.assertRoute(
+                sql,
+                Arrays.asList(1, 1, 3),
+                databaseType);
+        
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+    }
+    
+    @Test
+    void assertFullChainNonBindingSubqueryProducesSingleRoute() {
+        String sql = "SELECT * FROM t_order o "
+                + "WHERE o.user_id = ? "
+                + "AND o.order_id = ? "
+                + "AND o.user_id IN ("
+                + "  SELECT user_id FROM t_order_non_binding "
+                + "  WHERE order_id = ?"
+                + ")";
+        
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+        
+        RouteContext routeContext = ShardingRouteAssert.assertRoute(
+                sql,
+                Arrays.asList(1, 1, 1),
+                databaseType);
+        
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+    }
+    
     private static final class TestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
                     Arguments.of("oneTableDifferentConditionWithFederation",
-                            "SELECT (SELECT MAX(id) FROM t_order b WHERE b.user_id =? ) FROM t_order a WHERE user_id = ? ", Arrays.asList(3, 2)),
+                            "SELECT (SELECT MAX(id) FROM t_order b WHERE b.user_id =? ) FROM t_order a WHERE user_id = ? ", Arrays.asList(1, 1)),
                     Arguments.of("oneTableSameConditionWithFederation",
                             "SELECT (SELECT MAX(id) FROM t_order b WHERE b.user_id = ? AND b.user_id = a.user_id) FROM t_order a WHERE user_id = ? ", Arrays.asList(1, 1)),
                     Arguments.of("bindingTableWithFederation",
@@ -65,21 +166,21 @@ class SubqueryRouteTest {
                     Arguments.of("notShardingTable",
                             "SELECT (SELECT MAX(id) FROM t_category b WHERE b.id = ?) FROM t_category a WHERE id = ? ", Arrays.asList(1, 1)),
                     Arguments.of("bindingTableWithDifferentValueWithFederation",
-                            "SELECT (SELECT MAX(id) FROM t_order_item b WHERE b.user_id = ? ) FROM t_order a WHERE user_id = ? ", Arrays.asList(2, 3)),
+                            "SELECT (SELECT MAX(id) FROM t_order_item b WHERE b.user_id = ? ) FROM t_order a WHERE user_id = ? ", Arrays.asList(1, 1)),
                     Arguments.of("twoTableWithDifferentOperatorWithFederation",
-                            "SELECT (SELECT MAX(id) FROM t_order_item b WHERE b.user_id in(?,?)) FROM t_order a WHERE user_id = ? ", Arrays.asList(1, 2, 1)),
+                            "SELECT (SELECT MAX(id) FROM t_order_item b WHERE b.user_id in(?,?)) FROM t_order a WHERE user_id = ? ", Arrays.asList(1, 1, 1)),
                     Arguments.of("twoTableWithInWithFederation",
-                            "SELECT (SELECT MAX(id) FROM t_order_item b WHERE b.user_id in(?,?)) FROM t_order a WHERE user_id in(?,?) ", Arrays.asList(1, 2, 1, 3)),
+                            "SELECT (SELECT MAX(id) FROM t_order_item b WHERE b.user_id in(?,?)) FROM t_order a WHERE user_id in(?,?) ", Arrays.asList(1, 1, 1, 1)),
                     Arguments.of("subqueryInSubqueryError",
                             "SELECT (SELECT status FROM t_order b WHERE b.user_id =? AND status = (SELECT status FROM t_order b WHERE b.user_id =?)) as c FROM t_order a "
                                     + "WHERE status = (SELECT status FROM t_order b WHERE b.user_id =? AND status = (SELECT status FROM t_order b WHERE b.user_id =?))",
-                            Arrays.asList(11, 2, 1, 1)),
+                            Arrays.asList(1, 1, 1, 1)),
                     Arguments.of("subqueryInSubquery",
                             "SELECT (SELECT status FROM t_order b WHERE b.user_id =? AND status = (SELECT status FROM t_order b WHERE b.user_id =?)) as c FROM t_order a "
                                     + "WHERE status = (SELECT status FROM t_order b WHERE b.user_id =? AND status = (SELECT status FROM t_order b WHERE b.user_id =?))",
                             Arrays.asList(1, 1, 1, 1)),
                     Arguments.of("subqueryInFromError",
-                            "SELECT b.status FROM t_order b join (SELECT user_id,status FROM t_order b WHERE b.user_id =?) c ON b.user_id = c.user_id WHERE b.user_id =? ", Arrays.asList(11, 1)),
+                            "SELECT b.status FROM t_order b join (SELECT user_id,status FROM t_order b WHERE b.user_id =?) c ON b.user_id = c.user_id WHERE b.user_id =? ", Arrays.asList(1, 1)),
                     Arguments.of("subqueryInFrom",
                             "SELECT b.status FROM t_order b join (SELECT user_id,status FROM t_order b WHERE b.user_id =?) c ON b.user_id = c.user_id WHERE b.user_id =? ", Arrays.asList(1, 1)),
                     Arguments.of("subqueryForAggregation",

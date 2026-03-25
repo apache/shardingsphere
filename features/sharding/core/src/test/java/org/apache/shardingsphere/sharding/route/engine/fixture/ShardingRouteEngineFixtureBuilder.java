@@ -173,6 +173,13 @@ public final class ShardingRouteEngineFixtureBuilder {
         shardingRuleConfig.getTables().add(createInlineTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${user_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getTables().add(createInlineTableRuleConfiguration("t_user", "ds_${0..1}.t_user_${0..1}", "t_user_${user_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getTables().add(createTableRuleWithHintConfiguration());
+        ShardingTableRuleConfiguration nonBindingRule = createTableRuleConfiguration(
+                "t_order_non_binding",
+                "ds_${0..1}.t_order_non_binding_${0..1}",
+                createStandardShardingStrategyConfiguration("t_order_non_binding_ds_inline", "ds_${order_id % 2}"),
+                createStandardShardingStrategyConfiguration("t_order_non_binding_inline", "t_order_non_binding_${order_id % 2}"));
+        shardingRuleConfig.getTables().add(nonBindingRule);
+        
         shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", "t_order,t_order_item"));
         shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put(
@@ -180,6 +187,10 @@ public final class ShardingRouteEngineFixtureBuilder {
         shardingRuleConfig.getShardingAlgorithms().put(
                 "t_order_item_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_item_${user_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put("t_user_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_user_${user_id % 2}"))));
+        shardingRuleConfig.getShardingAlgorithms().put("t_order_non_binding_ds_inline",
+                new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${order_id % 2}"))));
+        shardingRuleConfig.getShardingAlgorithms().put("t_order_non_binding_inline",
+                new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "t_order_non_binding_${order_id % 2}"))));
         shardingRuleConfig.getShardingAlgorithms().put("core_hint_fixture", new AlgorithmConfiguration("CORE.HINT.FIXTURE", new Properties()));
         return new ShardingRule(shardingRuleConfig, Maps.of("ds_0", new MockedDataSource(), "ds_1", new MockedDataSource(), "main", new MockedDataSource()), mock(ComputeNodeInstanceContext.class),
                 Collections.emptyList());
