@@ -149,8 +149,13 @@ class ResultSetUtilsTest {
     }
     
     @Test
-    void assertConvertStringToByteWithMySQLProtocolType() throws SQLException {
-        assertThat(ResultSetUtils.convertValue("127", Byte.class, createMySQLProtocolType()), is((Object) Byte.valueOf((byte) 127)));
+    void assertConvertSingleCharacterStringToByteWithMySQLProtocolType() throws SQLException {
+        assertThat(ResultSetUtils.convertValue("1", Byte.class, createMySQLProtocolType()), is((Object) Byte.valueOf((byte) '1')));
+    }
+    
+    @Test
+    void assertConvertMultiCharacterStringToByteWithMySQLProtocolType() {
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertValue("127", Byte.class, createMySQLProtocolType()));
     }
     
     @Test
@@ -160,7 +165,12 @@ class ResultSetUtilsTest {
     
     @Test
     void assertConvertStringToIntegerWithMySQLProtocolType() throws SQLException {
-        assertThat(ResultSetUtils.convertValue(" 123 ", Integer.class, createMySQLProtocolType()), is((Object) Integer.valueOf(123)));
+        assertThat(ResultSetUtils.convertValue("123", Integer.class, createMySQLProtocolType()), is((Object) Integer.valueOf(123)));
+    }
+    
+    @Test
+    void assertConvertStringWithWhitespacesToIntegerWithMySQLProtocolType() {
+        assertThrows(UnsupportedDataTypeConversionException.class, () -> ResultSetUtils.convertValue(" 123 ", Integer.class, createMySQLProtocolType()));
     }
     
     @Test
@@ -198,6 +208,21 @@ class ResultSetUtilsTest {
     void assertConvertNumericStringZeroToBooleanWithMySQLProtocolType() throws SQLException {
         assertFalse((boolean) ResultSetUtils.convertValue("0", boolean.class, createMySQLProtocolType()));
     }
+    
+    @Test
+    void assertConvertNumericStringTwoToBooleanWithMySQLProtocolType() throws SQLException {
+        assertTrue((boolean) ResultSetUtils.convertValue("2", boolean.class, createMySQLProtocolType()));
+    }
+    
+    @Test
+    void assertConvertFloatingStringToBooleanWithMySQLProtocolType() throws SQLException {
+        assertTrue((boolean) ResultSetUtils.convertValue("0.1", boolean.class, createMySQLProtocolType()));
+    }
+    
+    @Test
+    void assertConvertExponentStringToBooleanWithMySQLProtocolType() throws SQLException {
+        assertTrue((boolean) ResultSetUtils.convertValue("1e3", boolean.class, createMySQLProtocolType()));
+    }
 
     @Test
     void assertConvertInvalidStringToBooleanWithMySQLProtocolType() {
@@ -206,14 +231,14 @@ class ResultSetUtilsTest {
 
     @Test
     void assertConvertEmptyStringToIntWithMySQLProtocolType() throws SQLException {
-        int actualValue = (int) ResultSetUtils.convertValue("   ", int.class, createMySQLProtocolType());
+        int actualValue = (int) ResultSetUtils.convertValue("", int.class, createMySQLProtocolType());
         int expectedValue = 0;
         assertThat(actualValue, is(expectedValue));
     }
     
     @Test
     void assertConvertEmptyStringToBooleanWithMySQLProtocolType() throws SQLException {
-        boolean actualValue = (boolean) ResultSetUtils.convertValue("   ", boolean.class, createMySQLProtocolType());
+        boolean actualValue = (boolean) ResultSetUtils.convertValue("", boolean.class, createMySQLProtocolType());
         assertFalse(actualValue);
     }
     
