@@ -107,7 +107,7 @@ class ProductionRuntimeLauncherTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> runtimeLauncher.launch(createServerRegistry(), new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"), Map.of())));
-        assertThat(actual.getMessage(), is("`runtimeDatabases` must be configured for the default launch path."));
+        assertThat(actual.getMessage(), is("At least one runtime database must be configured."));
     }
     
     @Test

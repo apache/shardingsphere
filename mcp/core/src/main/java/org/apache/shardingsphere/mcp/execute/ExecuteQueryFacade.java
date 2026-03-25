@@ -90,7 +90,7 @@ public final class ExecuteQueryFacade {
             case TRANSACTION_CONTROL:
             case SAVEPOINT:
                 return recordResult(actualExecutionRequest, transactionCommandExecutor.execute(actualExecutionRequest.getSessionId(),
-                        actualExecutionRequest.getDatabase(), actualExecutionRequest.getDatabaseType(), classificationResult.getNormalizedSql()),
+                        actualExecutionRequest.getDatabase(), actualExecutionRequest.getDatabaseType(), classificationResult),
                         classificationResult.getStatementType());
             case QUERY:
                 return recordResult(actualExecutionRequest, executeQuery(actualExecutionRequest, classificationResult), classificationResult.getStatementType());

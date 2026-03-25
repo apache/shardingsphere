@@ -116,26 +116,22 @@ public final class MetadataToolDispatcher {
         if (toolRequest.getDatabase().isEmpty()) {
             ResourceLoadResult databaseResult = resourceLoader.load(metadataCatalog, new ResourceRequest("", "", MetadataObjectType.DATABASE, "", "", ""));
             for (MetadataObject each : databaseResult.getMetadataObjects()) {
-                result.addAll(filterSearchResults(metadataCatalog, each.getDatabase(), toolRequest));
+                result.addAll(loadSearchResults(metadataCatalog, each.getDatabase(), toolRequest));
             }
         } else {
-            result.addAll(filterSearchResults(metadataCatalog, toolRequest.getDatabase(), toolRequest));
+            result.addAll(loadSearchResults(metadataCatalog, toolRequest.getDatabase(), toolRequest));
         }
         return paginate(result, toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
     }
     
-    private List<MetadataObject> filterSearchResults(final MetadataCatalog metadataCatalog, final String database, final ToolRequest toolRequest) {
+    private List<MetadataObject> loadSearchResults(final MetadataCatalog metadataCatalog, final String database, final ToolRequest toolRequest) {
         List<MetadataObject> result = new LinkedList<>();
         for (MetadataObjectType each : getSearchObjectTypes(toolRequest.getObjectTypes())) {
             ResourceLoadResult loadResult = resourceLoader.load(metadataCatalog, new ResourceRequest(database, toolRequest.getSchema(), each, "", "", ""));
             if (!loadResult.isSuccessful()) {
                 continue;
             }
-            for (MetadataObject metadataObject : loadResult.getMetadataObjects()) {
-                if (matchesSearch(metadataObject, toolRequest.getQuery())) {
-                    result.add(metadataObject);
-                }
-            }
+            result.addAll(loadResult.getMetadataObjects());
         }
         return result;
     }

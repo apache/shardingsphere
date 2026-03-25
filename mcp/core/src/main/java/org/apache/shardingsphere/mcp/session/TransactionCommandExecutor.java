@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.session;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
+import org.apache.shardingsphere.mcp.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
@@ -63,21 +64,41 @@ public final class TransactionCommandExecutor {
      * @return execution response
      */
     public ExecuteQueryResponse execute(final String sessionId, final String database, final String databaseType, final String sql) {
+        String normalizedSql = Objects.requireNonNull(sql, "sql cannot be null").trim().toUpperCase(Locale.ENGLISH);
+        String statementType = resolveStatementType(normalizedSql);
+        return execute(sessionId, database, databaseType, statementType, resolveSavepointName(normalizedSql, statementType));
+    }
+    
+    /**
+     * Execute one transaction-control or savepoint command with pre-classified SQL metadata.
+     *
+     * @param sessionId session identifier
+     * @param database logical database name
+     * @param databaseType database type
+     * @param classificationResult statement classification result
+     * @return execution response
+     */
+    public ExecuteQueryResponse execute(final String sessionId, final String database, final String databaseType, final ClassificationResult classificationResult) {
+        ClassificationResult actualClassificationResult = Objects.requireNonNull(classificationResult, "classificationResult cannot be null");
+        return execute(sessionId, database, databaseType, actualClassificationResult.getStatementType(),
+                actualClassificationResult.getSavepointName().map(each -> each.toUpperCase(Locale.ENGLISH)).orElse(""));
+    }
+    
+    private ExecuteQueryResponse execute(final String sessionId, final String database, final String databaseType, final String statementType, final String savepointName) {
         Optional<DatabaseCapabilityView> databaseCapability = capabilityAssembler.assembleDatabaseCapability(database, databaseType);
         if (databaseCapability.isEmpty()) {
             return ExecuteQueryResponse.error(ErrorCode.NOT_FOUND, "Database capability does not exist.");
         }
-        String normalizedSql = Objects.requireNonNull(sql, "sql cannot be null").trim().toUpperCase(Locale.ENGLISH);
         try {
-            if ("BEGIN".equals(normalizedSql) || "START TRANSACTION".equals(normalizedSql)) {
+            if ("BEGIN".equals(statementType) || "START TRANSACTION".equals(statementType)) {
                 if (!databaseCapability.get().isSupportsTransactionControl()) {
                     return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Transaction control is not supported.");
                 }
                 sessionManager.beginTransaction(sessionId, database);
                 databaseRuntime.beginTransaction(sessionId, database);
-                return ExecuteQueryResponse.statementAck(normalizedSql, "Transaction started.");
+                return ExecuteQueryResponse.statementAck(statementType, "Transaction started.");
             }
-            if ("COMMIT".equals(normalizedSql)) {
+            if ("COMMIT".equals(statementType)) {
                 if (!databaseCapability.get().isSupportsTransactionControl()) {
                     return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Transaction control is not supported.");
                 }
@@ -85,7 +106,7 @@ public final class TransactionCommandExecutor {
                 sessionManager.commitTransaction(sessionId);
                 return ExecuteQueryResponse.statementAck("COMMIT", "Transaction committed.");
             }
-            if ("ROLLBACK".equals(normalizedSql)) {
+            if ("ROLLBACK".equals(statementType)) {
                 if (!databaseCapability.get().isSupportsTransactionControl()) {
                     return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Transaction control is not supported.");
                 }
@@ -93,29 +114,26 @@ public final class TransactionCommandExecutor {
                 sessionManager.rollbackTransaction(sessionId);
                 return ExecuteQueryResponse.statementAck("ROLLBACK", "Transaction rolled back.");
             }
-            if (normalizedSql.startsWith("SAVEPOINT ")) {
+            if ("SAVEPOINT".equals(statementType)) {
                 if (!databaseCapability.get().isSupportsSavepoint()) {
                     return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Savepoint is not supported.");
                 }
-                String savepointName = normalizedSql.substring("SAVEPOINT ".length()).trim();
                 databaseRuntime.createSavepoint(sessionId, savepointName);
                 sessionManager.rememberSavepoint(sessionId, savepointName);
                 return ExecuteQueryResponse.statementAck("SAVEPOINT", "Savepoint created.");
             }
-            if (normalizedSql.startsWith("ROLLBACK TO SAVEPOINT ")) {
+            if ("ROLLBACK TO SAVEPOINT".equals(statementType)) {
                 if (!databaseCapability.get().isSupportsSavepoint()) {
                     return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Savepoint is not supported.");
                 }
-                String savepointName = normalizedSql.substring("ROLLBACK TO SAVEPOINT ".length()).trim();
                 sessionManager.rollbackToSavepoint(sessionId, savepointName);
                 databaseRuntime.rollbackToSavepoint(sessionId, savepointName);
                 return ExecuteQueryResponse.statementAck("ROLLBACK TO SAVEPOINT", "Savepoint rolled back.");
             }
-            if (normalizedSql.startsWith("RELEASE SAVEPOINT ")) {
+            if ("RELEASE SAVEPOINT".equals(statementType)) {
                 if (!databaseCapability.get().isSupportsSavepoint()) {
                     return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Savepoint is not supported.");
                 }
-                String savepointName = normalizedSql.substring("RELEASE SAVEPOINT ".length()).trim();
                 sessionManager.releaseSavepoint(sessionId, savepointName);
                 databaseRuntime.releaseSavepoint(sessionId, savepointName);
                 return ExecuteQueryResponse.statementAck("RELEASE SAVEPOINT", "Savepoint released.");
@@ -124,5 +142,31 @@ public final class TransactionCommandExecutor {
         } catch (final IllegalStateException ex) {
             return ExecuteQueryResponse.error(ErrorCode.TRANSACTION_STATE_ERROR, ex.getMessage());
         }
+    }
+    
+    private String resolveStatementType(final String normalizedSql) {
+        if (normalizedSql.startsWith("ROLLBACK TO SAVEPOINT ")) {
+            return "ROLLBACK TO SAVEPOINT";
+        }
+        if (normalizedSql.startsWith("RELEASE SAVEPOINT ")) {
+            return "RELEASE SAVEPOINT";
+        }
+        if (normalizedSql.startsWith("SAVEPOINT ")) {
+            return "SAVEPOINT";
+        }
+        return normalizedSql;
+    }
+    
+    private String resolveSavepointName(final String normalizedSql, final String statementType) {
+        if ("SAVEPOINT".equals(statementType)) {
+            return normalizedSql.substring("SAVEPOINT ".length()).trim();
+        }
+        if ("ROLLBACK TO SAVEPOINT".equals(statementType)) {
+            return normalizedSql.substring("ROLLBACK TO SAVEPOINT ".length()).trim();
+        }
+        if ("RELEASE SAVEPOINT".equals(statementType)) {
+            return normalizedSql.substring("RELEASE SAVEPOINT ".length()).trim();
+        }
+        return "";
     }
 }

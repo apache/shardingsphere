@@ -56,8 +56,7 @@ public final class MCPRuntimeLauncher {
     public MCPLaunchState launch(final MCPServerRegistry registry, final MCPLaunchConfiguration config) {
         MCPServerRegistry actualRegistry = Objects.requireNonNull(registry, "serverRegistry cannot be null");
         MCPLaunchConfiguration actualConfig = Objects.requireNonNull(config, "launchConfiguration cannot be null");
-        validateTransportConfiguration(actualConfig.getTransport());
-        Map<String, DatabaseConnectionConfiguration> connectionConfigurations = createConnectionConfigurations(actualConfig);
+        Map<String, DatabaseConnectionConfiguration> connectionConfigurations = databaseRuntimeFactory.createConnectionConfigurations(actualConfig.getRuntimeDatabases());
         MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigurations);
         DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, metadataLoader);
         MCPRuntimeServices runtimeServices = new MCPRuntimeServices(actualRegistry.getSessionManager(), metadataCatalog, databaseRuntime);
@@ -113,22 +112,13 @@ public final class MCPRuntimeLauncher {
         }
     }
     
-    private Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final MCPLaunchConfiguration launchConfiguration) {
-        if (launchConfiguration.getRuntimeDatabases().isEmpty()) {
-            throw new IllegalArgumentException("`runtimeDatabases` must be configured for the default launch path.");
-        }
-        return databaseRuntimeFactory.createConnectionConfigurations(launchConfiguration.getRuntimeDatabases());
-    }
-    
     private StreamableHttpMCPServer createHttpServer(final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices,
                                                      final MCPLaunchConfiguration launchConfiguration, final MetadataCatalog metadataCatalog,
                                                      final DatabaseRuntime databaseRuntime) {
         if (!launchConfiguration.getTransport().getHttp().isEnabled()) {
             return null;
         }
-        return new StreamableHttpMCPServer(launchConfiguration.getTransport().getHttp(), Objects.requireNonNull(serverRegistry, "serverRegistry cannot be null"),
-                Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null"), Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null"),
-                Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null"));
+        return new StreamableHttpMCPServer(launchConfiguration.getTransport().getHttp(), serverRegistry, runtimeServices, metadataCatalog, databaseRuntime);
     }
     
     private StdioMCPServer createStdioServer(final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices,

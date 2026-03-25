@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.session;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
@@ -74,6 +75,19 @@ class TransactionCommandExecutorTest {
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
         assertThat(actual.getError().get().getErrorCode(), is(ErrorCode.UNSUPPORTED));
+    }
+    
+    @Test
+    void assertExecuteWithClassificationResult() {
+        MCPSessionManager sessionManager = new MCPSessionManager();
+        sessionManager.createSession("session-1");
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseRuntime());
+        
+        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify("BEGIN"));
+        
+        assertTrue(actual.isSuccessful());
+        assertThat(actual.getStatementType(), is("BEGIN"));
+        assertThat(actual.getMessage(), is("Transaction started."));
     }
     
     @Test
