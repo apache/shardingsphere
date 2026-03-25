@@ -49,16 +49,23 @@ class MCPBootstrapTest {
         Files.writeString(result, "transport:\n"
                 + "  http:\n"
                 + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
                 + "  stdio:\n"
                 + "    enabled: true\n"
                 + "runtimeDatabases:\n"
                 + "  orders:\n"
                 + "    databaseType: H2\n"
                 + "    jdbcUrl: '" + firstJdbcUrl + "'\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n"
                 + "  analytics:\n"
                 + "    databaseType: H2\n"
                 + "    jdbcUrl: '" + secondJdbcUrl + "'\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n");
         return result;
     }

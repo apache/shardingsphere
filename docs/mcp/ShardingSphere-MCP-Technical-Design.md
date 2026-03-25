@@ -579,7 +579,8 @@ flowchart TB
 ### 16.2.1 默认发行包启动面
 - distribution 默认同时启用 HTTP 与 STDIO。
 - 默认 `conf/mcp.yaml` 内置一段 demo JDBC runtime，用于首次启动时验证非空 metadata 和真实 `execute_query` 行为。
-- 真实部署需要替换 `runtimeDatabases` 段为目标逻辑库与 JDBC 连接属性；每个逻辑库条目都需要显式声明所需的 runtime 字段；schema 范围与默认 schema 由 JDBC metadata 自动发现，如需额外 JDBC 驱动，可放入发行包根目录下的 `ext-lib/`。
+- `conf/mcp.yaml` 采用 strict schema：`transport.http.enabled`、`transport.http.bindHost`、`transport.http.port`、`transport.http.endpointPath`、`transport.stdio.enabled` 以及每个 runtime database 的全部字段都必须显式声明。
+- 真实部署需要替换 `runtimeDatabases` 段为目标逻辑库与 JDBC 连接属性；schema 范围与默认 schema 由 JDBC metadata 自动发现，如需额外 JDBC 驱动，可放入发行包根目录下的 `ext-lib/`。
 
 ### 16.3 推荐集群拓扑
 - MCP 服务集群

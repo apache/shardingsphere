@@ -43,7 +43,7 @@ bin/start.sh
 - 发行包运行时会读取 `conf/mcp.yaml` 和 `conf/logback.xml`。
 - 启用 HTTP 时，默认端点是 `http://127.0.0.1:18088/mcp`。
 - 日志会写到 `logs/` 目录。
-- 如果省略 `transport.http.enabled` 或 `transport.stdio.enabled`，默认值都是 `false`。
+- `conf/mcp.yaml` 现在是严格 schema：`transport.http.enabled`、`transport.http.bindHost`、`transport.http.port`、`transport.http.endpointPath`、`transport.stdio.enabled`，以及每个 runtime database 的全部字段都必须显式声明。
 - 发行包内置示例配置会显式启用 HTTP 和 STDIO，这份 quick start 只演示 HTTP 入口。
 - `bin/start.sh` 启动前会校验配置文件、运行时依赖和 Java 环境，并自动创建 `data/`、`logs/`、`ext-lib/` 目录，然后切到发行包根目录启动，确保相对路径可用。
 - 如果启动成功，进程会保持前台运行；如果立刻退出，优先查看终端报错和 `logs/mcp.log`。
@@ -65,10 +65,14 @@ runtimeDatabases:
   orders:
     databaseType: H2
     jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+    username: ""
+    password: ""
     driverClassName: org.h2.Driver
   billing:
     databaseType: H2
     jdbcUrl: "jdbc:h2:file:./data/mcp-demo-billing;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+    username: ""
+    password: ""
     driverClassName: org.h2.Driver
 ```
 

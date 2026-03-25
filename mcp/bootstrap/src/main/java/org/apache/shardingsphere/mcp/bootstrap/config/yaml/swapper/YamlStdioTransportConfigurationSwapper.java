@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlStdioTransportConfiguration;
@@ -25,6 +26,8 @@ import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlStdioTrans
  * YAML STDIO transport configuration swapper.
  */
 public final class YamlStdioTransportConfigurationSwapper implements YamlConfigurationSwapper<YamlStdioTransportConfiguration, StdioTransportConfiguration> {
+    
+    private static final String REQUIRED_CONFIGURATION_ERROR_MESSAGE = "Property `transport.stdio` is required.";
     
     @Override
     public YamlStdioTransportConfiguration swapToYamlConfiguration(final StdioTransportConfiguration data) {
@@ -35,6 +38,8 @@ public final class YamlStdioTransportConfigurationSwapper implements YamlConfigu
     
     @Override
     public StdioTransportConfiguration swapToObject(final YamlStdioTransportConfiguration yamlConfig) {
-        return null == yamlConfig ? new StdioTransportConfiguration() : new StdioTransportConfiguration(yamlConfig.isEnabled());
+        ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException(REQUIRED_CONFIGURATION_ERROR_MESSAGE));
+        ShardingSpherePreconditions.checkNotNull(yamlConfig.getEnabled(), () -> new IllegalArgumentException("Property `transport.stdio.enabled` is required."));
+        return new StdioTransportConfiguration(yamlConfig.getEnabled());
     }
 }

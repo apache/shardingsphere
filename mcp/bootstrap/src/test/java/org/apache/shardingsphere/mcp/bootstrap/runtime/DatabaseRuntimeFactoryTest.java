@@ -55,6 +55,21 @@ class DatabaseRuntimeFactoryTest {
     }
     
     @Test
+    void assertCreateConnectionConfigurationsPreserveConfiguredValues() {
+        DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
+        
+        Map<String, DatabaseConnectionConfiguration> actual = databaseRuntimeFactory.createConnectionConfigurations(Map.of(
+                " logic_db ", new RuntimeDatabaseConfiguration(" H2 ", " jdbc:h2:mem:logic ", " demo ", " secret ", " org.h2.Driver ")));
+        
+        assertThat(actual.get(" logic_db ").getDatabase(), is(" logic_db "));
+        assertThat(actual.get(" logic_db ").getDatabaseType(), is(" H2 "));
+        assertThat(actual.get(" logic_db ").getJdbcUrl(), is(" jdbc:h2:mem:logic "));
+        assertThat(actual.get(" logic_db ").getUsername(), is(" demo "));
+        assertThat(actual.get(" logic_db ").getPassword(), is(" secret "));
+        assertThat(actual.get(" logic_db ").getDriverClassName(), is(" org.h2.Driver "));
+    }
+    
+    @Test
     void assertCreateConnectionConfigurationsWithMissingDatabaseTypeInRuntimeDatabases() {
         DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
         

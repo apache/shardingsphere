@@ -40,29 +40,28 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
     
     @Override
     public RuntimeDatabaseConfiguration swapToObject(final YamlRuntimeDatabaseConfiguration yamlConfig) {
-        return swapToObject("", yamlConfig);
+        ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("Runtime database configuration cannot be null."));
+        return new RuntimeDatabaseConfiguration(resolveRequiredText(yamlConfig.getDatabaseType(), "databaseType"), resolveRequiredText(yamlConfig.getJdbcUrl(), "jdbcUrl"),
+                resolveExplicitText(yamlConfig.getUsername(), "username"), resolveExplicitText(yamlConfig.getPassword(), "password"),
+                resolveExplicitText(yamlConfig.getDriverClassName(), "driverClassName"));
     }
     
-    private RuntimeDatabaseConfiguration swapToObject(final String databaseName, final YamlRuntimeDatabaseConfiguration yamlConfig) {
-        YamlRuntimeDatabaseConfiguration actualYamlConfig = null == yamlConfig ? new YamlRuntimeDatabaseConfiguration() : yamlConfig;
-        return new RuntimeDatabaseConfiguration(resolveRequiredText(actualYamlConfig.getDatabaseType(), "databaseType", databaseName),
-                resolveRequiredText(actualYamlConfig.getJdbcUrl(), "jdbcUrl", databaseName),
-                normalizeText(actualYamlConfig.getUsername()), normalizeText(actualYamlConfig.getPassword()), normalizeText(actualYamlConfig.getDriverClassName()));
+    private String resolveRequiredText(final String value, final String fieldName) {
+        ShardingSpherePreconditions.checkNotNull(value, () -> new IllegalArgumentException(formatRequiredMessage(fieldName)));
+        ShardingSpherePreconditions.checkState(!value.isBlank(), () -> new IllegalArgumentException(formatRequiredMessage(fieldName)));
+        return value;
     }
     
-    private String resolveRequiredText(final String value, final String fieldName, final String databaseName) {
-        String result = normalizeText(value);
-        ShardingSpherePreconditions.checkState(!result.isEmpty(), () -> new IllegalArgumentException(formatRequiredMessage(databaseName, fieldName)));
-        return result;
+    private String resolveExplicitText(final String value, final String fieldName) {
+        ShardingSpherePreconditions.checkNotNull(value, () -> new IllegalArgumentException(formatExplicitMessage(fieldName)));
+        return value;
     }
     
-    private String normalizeText(final Object value) {
-        return null == value ? "" : String.valueOf(value).trim();
+    private String formatRequiredMessage(final String fieldName) {
+        return String.format("Runtime database property `%s` is required.", fieldName);
     }
     
-    private String formatRequiredMessage(final String databaseName, final String fieldName) {
-        return databaseName.isEmpty()
-                ? String.format("Runtime database property `%s` is required.", fieldName)
-                : String.format("Runtime database `%s` property `%s` is required.", databaseName, fieldName);
+    private String formatExplicitMessage(final String fieldName) {
+        return String.format("Runtime database property `%s` is required. Use an empty string when no value is needed.", fieldName);
     }
 }

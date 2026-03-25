@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
@@ -25,6 +26,8 @@ import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTranspo
  * YAML MCP transport configuration swapper.
  */
 public final class YamlMCPTransportConfigurationSwapper implements YamlConfigurationSwapper<YamlMCPTransportConfiguration, MCPTransportConfiguration> {
+    
+    private static final String REQUIRED_ERROR_MESSAGE = "Property `transport` is required.";
     
     private final YamlHttpTransportConfigurationSwapper httpConfigSwapper = new YamlHttpTransportConfigurationSwapper();
     
@@ -40,7 +43,7 @@ public final class YamlMCPTransportConfigurationSwapper implements YamlConfigura
     
     @Override
     public MCPTransportConfiguration swapToObject(final YamlMCPTransportConfiguration yamlConfig) {
-        YamlMCPTransportConfiguration actualYamlConfig = null == yamlConfig ? new YamlMCPTransportConfiguration() : yamlConfig;
-        return new MCPTransportConfiguration(httpConfigSwapper.swapToObject(actualYamlConfig.getHttp()), stdioConfigSwapper.swapToObject(actualYamlConfig.getStdio()));
+        ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException(REQUIRED_ERROR_MESSAGE));
+        return new MCPTransportConfiguration(httpConfigSwapper.swapToObject(yamlConfig.getHttp()), stdioConfigSwapper.swapToObject(yamlConfig.getStdio()));
     }
 }

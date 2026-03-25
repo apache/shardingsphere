@@ -21,23 +21,19 @@ import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguratio
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlStdioTransportConfiguration;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class YamlStdioTransportConfigurationSwapperTest {
     
     private final YamlStdioTransportConfigurationSwapper swapper = new YamlStdioTransportConfigurationSwapper();
     
     @Test
-    void assertSwapToObjectWithDefaults() {
-        StdioTransportConfiguration actual = swapper.swapToObject(new YamlStdioTransportConfiguration());
-        
-        assertFalse(actual.isEnabled());
-    }
-    
-    @Test
     void assertSwapToObject() {
         YamlStdioTransportConfiguration yamlConfig = new YamlStdioTransportConfiguration();
-        yamlConfig.setEnabled(false);
+        yamlConfig.setEnabled(Boolean.FALSE);
         
         StdioTransportConfiguration actual = swapper.swapToObject(yamlConfig);
         
@@ -45,9 +41,23 @@ class YamlStdioTransportConfigurationSwapperTest {
     }
     
     @Test
+    void assertSwapToObjectWithMissingEnabled() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(new YamlStdioTransportConfiguration()));
+        
+        assertThat(actual.getMessage(), is("Property `transport.stdio.enabled` is required."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithNullConfiguration() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(null));
+        
+        assertThat(actual.getMessage(), is("Property `transport.stdio` is required."));
+    }
+    
+    @Test
     void assertSwapToYamlConfiguration() {
         YamlStdioTransportConfiguration actual = swapper.swapToYamlConfiguration(new StdioTransportConfiguration(false));
         
-        assertFalse(actual.isEnabled());
+        assertThat(actual.getEnabled(), is(Boolean.FALSE));
     }
 }

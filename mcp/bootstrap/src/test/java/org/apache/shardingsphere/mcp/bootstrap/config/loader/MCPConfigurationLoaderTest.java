@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -44,9 +45,10 @@ class MCPConfigurationLoaderTest {
                 + "    enabled: true\n"
                 + "    bindHost: 0.0.0.0\n"
                 + "    port: 9090\n"
-                + "    endpointPath: gateway\n"
+                + "    endpointPath: /gateway\n"
                 + "  stdio:\n"
-                + "    enabled: false\n");
+                + "    enabled: false\n"
+                + "runtimeDatabases: {}\n");
         
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         
@@ -59,12 +61,12 @@ class MCPConfigurationLoaderTest {
     }
     
     @Test
-    void assertLoadWithDefaults() throws IOException {
+    void assertLoadWithEmptyContent() throws IOException {
         Path configFile = createConfigFile("");
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
         
-        assertThat(actual.getMessage(), is("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true."));
+        assertThat(actual.getMessage(), is("Property `transport` is required."));
     }
     
     @Test
@@ -73,39 +75,48 @@ class MCPConfigurationLoaderTest {
                 + "  logic_db:\n"
                 + "    databaseType: H2\n"
                 + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n");
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
         
-        assertThat(actual.getMessage(), is("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true."));
+        assertThat(actual.getMessage(), is("Property `transport` is required."));
     }
     
     @Test
-    void assertLoadWithLegacyRuntimeProps() throws IOException {
+    void assertLoadWithUnsupportedLegacyRuntimeSection() throws IOException {
         Path configFile = createConfigFile("runtime:\n"
                 + "  props:\n"
-                + "    databaseName: logic_db\n"
-                + "    databaseType: H2\n"
-                + "    jdbcUrl: jdbc:h2:mem:logic\n");
+                + "    databaseName: logic_db\n");
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
         
-        assertThat(actual.getMessage(), is("`runtime.props` is no longer supported. Configure direct runtime databases with `runtimeDatabases`."));
+        assertThat(actual.getMessage(), is("Unsupported YAML property `runtime`."));
     }
     
     @Test
     void assertLoadWithRuntimeDatabases() throws IOException {
         Path configFile = createConfigFile("transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
                 + "  stdio:\n"
                 + "    enabled: true\n"
                 + "runtimeDatabases:\n"
                 + "  logic_db:\n"
                 + "    databaseType: H2\n"
                 + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n"
                 + "  analytics_db:\n"
                 + "    databaseType: H2\n"
                 + "    jdbcUrl: jdbc:h2:mem:analytics\n"
+                + "    username: analytics\n"
+                + "    password: analytics-pass\n"
                 + "    driverClassName: org.h2.Driver\n");
         
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
@@ -113,52 +124,59 @@ class MCPConfigurationLoaderTest {
         
         assertThat(actualDatabases.size(), is(2));
         assertThat(actualDatabases.get("logic_db").getDatabaseType(), is("H2"));
-        assertThat(actualDatabases.get("logic_db").getDriverClassName(), is("org.h2.Driver"));
-        assertThat(actualDatabases.get("analytics_db").getDatabaseType(), is("H2"));
+        assertThat(actualDatabases.get("logic_db").getUsername(), is(""));
+        assertThat(actualDatabases.get("analytics_db").getUsername(), is("analytics"));
     }
     
     @Test
-    void assertLoadWithLegacyRuntimeDefaults() throws IOException {
-        Path configFile = createConfigFile("runtime:\n"
-                + "  defaults:\n"
-                + "    databaseType: H2\n"
-                + "  databases:\n"
-                + "    logic_db:\n"
-                + "      jdbcUrl: jdbc:h2:mem:logic\n");
+    void assertLoadPackagedDistributionConfiguration() throws IOException {
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load("distribution/mcp/src/main/resources/conf/mcp.yaml");
         
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
-        
-        assertThat(actual.getMessage(), is("`runtime.defaults` is no longer supported. Configure direct runtime databases with `runtimeDatabases`."));
+        assertTrue(actual.getTransport().getHttp().isEnabled());
+        assertTrue(actual.getTransport().getStdio().isEnabled());
+        assertThat(actual.getRuntimeDatabases().size(), is(2));
+        assertThat(actual.getRuntimeDatabases().get("orders").getUsername(), is(""));
+        assertThat(actual.getRuntimeDatabases().get("billing").getPassword(), is(""));
     }
     
     @Test
-    void assertLoadWithLegacyRuntimeDatabaseDefaults() throws IOException {
-        Path configFile = createConfigFile("runtime:\n"
-                + "  databaseDefaults:\n"
-                + "    databaseType: H2\n"
-                + "  databases:\n"
-                + "    logic_db:\n"
-                + "      jdbcUrl: jdbc:h2:mem:logic\n");
-        
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
-        
-        assertThat(actual.getMessage(), is("`runtime.databaseDefaults` is no longer supported. Configure each runtime database explicitly under `runtimeDatabases`."));
-    }
-    
-    @Test
-    void assertLoadIgnoreLegacyRuntimeCapabilityOverride() throws IOException {
+    void assertLoadWithMissingRuntimeDatabasesSection() throws IOException {
         Path configFile = createConfigFile("transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: true\n");
+        
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
+        
+        assertThat(actual.getMessage(), is("Property `runtimeDatabases` is required."));
+    }
+    
+    @Test
+    void assertLoadWithUnsupportedRuntimeDatabaseProperty() throws IOException {
+        Path configFile = createConfigFile("transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
                 + "  stdio:\n"
                 + "    enabled: true\n"
                 + "runtimeDatabases:\n"
                 + "  logic_db:\n"
                 + "    databaseType: H2\n"
                 + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
+                + "    driverClassName: org.h2.Driver\n"
                 + "    supportsCrossSchemaSql: true\n");
         
-        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
         
-        assertThat(actual.getRuntimeDatabases().get("logic_db").getDatabaseType(), is("H2"));
+        assertThat(actual.getMessage(), is("Unsupported YAML property `runtimeDatabases.logic_db.supportsCrossSchemaSql`."));
     }
     
     @Test
@@ -166,28 +184,34 @@ class MCPConfigurationLoaderTest {
         Path configFile = createConfigFile("transport:\n"
                 + "  http:\n"
                 + "    enabled: true\n"
-                + "    port: -1\n");
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: -1\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: false\n"
+                + "runtimeDatabases: {}\n");
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> MCPConfigurationLoader.load(configFile.toString()));
         
-        assertThat(actual.getMessage(), is("MCP server port cannot be negative."));
+        assertThat(actual.getMessage(), is("Property `transport.http.port` cannot be negative."));
     }
     
     @Test
-    void assertLoadWithDisabledHttpIgnoresServerConfiguration() throws IOException {
+    void assertLoadWithDisabledHttpStillValidatesServerConfiguration() throws IOException {
         Path configFile = createConfigFile("transport:\n"
                 + "  http:\n"
                 + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
                 + "    port: -1\n"
+                + "    endpointPath: /mcp\n"
                 + "  stdio:\n"
-                + "    enabled: true\n");
+                + "    enabled: true\n"
+                + "runtimeDatabases: {}\n");
         
-        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
         
-        assertFalse(actual.getTransport().getHttp().isEnabled());
-        assertTrue(actual.getTransport().getStdio().isEnabled());
-        assertThat(actual.getTransport().getHttp().getPort(), is(18088));
+        assertThat(actual.getMessage(), is("Property `transport.http.port` cannot be negative."));
     }
     
     private Path createConfigFile(final String yamlContent) throws IOException {

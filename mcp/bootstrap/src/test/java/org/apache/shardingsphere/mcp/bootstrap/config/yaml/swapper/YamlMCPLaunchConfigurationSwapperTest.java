@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -45,13 +45,16 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    enabled: true\n"
                 + "    bindHost: 0.0.0.0\n"
                 + "    port: 9090\n"
-                + "    endpointPath: gateway\n"
+                + "    endpointPath: /gateway\n"
                 + "  stdio:\n"
                 + "    enabled: false\n"
                 + "runtimeDatabases:\n"
                 + "  logic_db:\n"
                 + "    databaseType: H2\n"
-                + "    jdbcUrl: jdbc:h2:mem:logic\n");
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    username: demo\n"
+                + "    password: secret\n"
+                + "    driverClassName: org.h2.Driver\n");
         
         assertThat(actual.getTransport().getHttp().getBindHost(), is("0.0.0.0"));
         assertThat(actual.getTransport().getHttp().getPort(), is(9090));
@@ -59,17 +62,41 @@ class YamlMCPLaunchConfigurationSwapperTest {
         assertTrue(actual.getTransport().getHttp().isEnabled());
         assertFalse(actual.getTransport().getStdio().isEnabled());
         assertThat(actual.getRuntimeDatabases().get("logic_db").getDatabaseType(), is("H2"));
+        assertThat(actual.getRuntimeDatabases().get("logic_db").getUsername(), is("demo"));
     }
     
     @Test
-    void assertSwapToObjectWithNullSections() {
-        YamlMCPLaunchConfiguration yamlConfig = new YamlMCPLaunchConfiguration();
-        yamlConfig.setTransport(null);
-        yamlConfig.setRuntimeDatabases(null);
+    void assertSwapToObjectWithNullConfiguration() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject((YamlMCPLaunchConfiguration) null));
         
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        assertThat(actual.getMessage(), is("MCP launch configuration cannot be null."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithMissingTransportSection() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
+                + "    driverClassName: org.h2.Driver\n"));
         
-        assertThat(actual.getMessage(), is("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true."));
+        assertThat(actual.getMessage(), is("Property `transport` is required."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithMissingRuntimeDatabasesSection() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"));
+        
+        assertThat(actual.getMessage(), is("Property `runtimeDatabases` is required."));
     }
     
     @Test
@@ -77,22 +104,105 @@ class YamlMCPLaunchConfigurationSwapperTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("transport:\n"
                 + "  http:\n"
                 + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
                 + "  stdio:\n"
-                + "    enabled: false\n"));
+                + "    enabled: false\n"
+                + "runtimeDatabases: {}\n"));
         
         assertThat(actual.getMessage(), is("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true."));
     }
     
     @Test
     void assertSwapToObjectWithRuntimeDatabaseTypeMissing() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("transport:\n"
+        String yamlContent = "transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
                 + "  stdio:\n"
                 + "    enabled: true\n"
                 + "runtimeDatabases:\n"
                 + "  logic_db:\n"
-                + "    jdbcUrl: jdbc:h2:mem:logic\n"));
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
+                + "    driverClassName: org.h2.Driver\n";
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlContent));
         
-        assertThat(actual.getMessage(), is("Runtime database `logic_db` property `databaseType` is required."));
+        assertThat(actual.getMessage(), is("Runtime database property `databaseType` is required."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithNullRuntimeDatabaseConfiguration() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases:\n"
+                + "  logic_db: null\n"));
+        
+        assertThat(actual.getMessage(), is("Property `runtimeDatabases.logic_db` must be a mapping."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithUnsupportedRootProperty() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("runtime:\n"
+                + "  props:\n"
+                + "    databaseName: logic_db\n"));
+        
+        assertThat(actual.getMessage(), is("Unsupported YAML property `runtime`."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithUnsupportedRuntimeDatabaseProperty() {
+        String yamlContent = "transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
+                + "    driverClassName: org.h2.Driver\n"
+                + "    supportsExplainAnalyze: true\n";
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlContent));
+        
+        assertThat(actual.getMessage(), is("Unsupported YAML property `runtimeDatabases.logic_db.supportsExplainAnalyze`."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithNonStringRuntimeDatabaseName() {
+        String yamlContent = "transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases:\n"
+                + "  1:\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
+                + "    driverClassName: org.h2.Driver\n";
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlContent));
+        
+        assertThat(actual.getMessage(), is("Runtime logical database name must be a string."));
     }
     
     @Test
@@ -106,61 +216,8 @@ class YamlMCPLaunchConfigurationSwapperTest {
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
         
         assertThat(actual.getRuntimeDatabases().get("logic_db").getDatabaseType(), is("H2"));
+        assertThat(actual.getRuntimeDatabases().get("logic_db").getUsername(), is(""));
         assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));
+        assertThat(actual.getTransport().getStdio().getEnabled(), is(Boolean.TRUE));
     }
-    
-    @Test
-    void assertSwapToObjectWithLegacyRuntimeProps() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("runtime:\n"
-                + "  props:\n"
-                + "    databaseName: logic_db\n"
-                + "    databaseType: H2\n"
-                + "    jdbcUrl: jdbc:h2:mem:logic\n"));
-        
-        assertThat(actual.getMessage(), is("`runtime.props` is no longer supported. Configure direct runtime databases with `runtimeDatabases`."));
-    }
-    
-    @Test
-    void assertSwapToObjectWithLegacyRuntimeDefaults() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("runtime:\n"
-                + "  defaults:\n"
-                + "    databaseType: H2\n"));
-        
-        assertThat(actual.getMessage(), is("`runtime.defaults` is no longer supported. Configure direct runtime databases with `runtimeDatabases`."));
-    }
-    
-    @Test
-    void assertSwapToObjectWithLegacyRuntimeDatabaseDefaults() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("runtime:\n"
-                + "  databaseDefaults:\n"
-                + "    databaseType: H2\n"));
-        
-        assertThat(actual.getMessage(), is("`runtime.databaseDefaults` is no longer supported. Configure each runtime database explicitly under `runtimeDatabases`."));
-    }
-    
-    @Test
-    void assertSwapToObjectWithLegacyRuntimeDatabases() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject("runtime:\n"
-                + "  databases:\n"
-                + "    logic_db:\n"
-                + "      databaseType: H2\n"
-                + "      jdbcUrl: jdbc:h2:mem:logic\n"));
-        
-        assertThat(actual.getMessage(), is("`runtime.databases` is no longer supported. Configure direct runtime databases with `runtimeDatabases`."));
-    }
-    
-    @Test
-    void assertSwapToObjectIgnoreLegacyRuntimeCapabilityOverride() {
-        MCPLaunchConfiguration actual = swapper.swapToObject("transport:\n"
-                + "  stdio:\n"
-                + "    enabled: true\n"
-                + "runtimeDatabases:\n"
-                + "  logic_db:\n"
-                + "    databaseType: H2\n"
-                + "    jdbcUrl: jdbc:h2:mem:logic\n"
-                + "    supportsExplainAnalyze: true\n");
-        
-        assertThat(actual.getRuntimeDatabases().get("logic_db").getDatabaseType(), is("H2"));
-    }
-    
 }

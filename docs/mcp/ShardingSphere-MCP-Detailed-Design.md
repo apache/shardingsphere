@@ -425,31 +425,32 @@ stateDiagram-v2
 
 ### 11.2 `mcp.yaml` 分层
 - 建议包含以下一级段：
-  - `server`
   - `transport`
+  - `runtimeDatabases`
 
 ### 11.3 配置职责
 
-#### `server`
-- bind host
-- port
-- endpoint path
-
 #### `transport`
-- enableHttp
-- enableStdio
+- `http.enabled`
+- `http.bindHost`
+- `http.port`
+- `http.endpointPath`
+- `stdio.enabled`
+- 所有 transport 字段都必须显式声明，不保留隐式默认值或省略时兜底
 - HTTP transport 固定使用 MCP `2025-11-25` 协议基线，不作为外部配置项暴露
 - distribution 默认配置同时启用 HTTP 与 STDIO；STDIO 仍主要用于本地测试与进程内联调，不作为额外交互式文本 Shell
 
 #### `runtimeDatabases`
 - canonical logical database mapping
-  - JDBC URL / credentials / optional driver override
-- legacy rejected keys
-  - `runtime.props`
-  - `runtime.defaults`
-  - `runtime.databaseDefaults`
-  - `runtime.databases`
-  - per-database capability booleans are rejected with migration guidance, not as the primary operator-facing model
+  - `databaseType`
+  - `jdbcUrl`
+  - `username`
+  - `password`
+  - `driverClassName`
+- schema 采用 strict mapping
+  - unknown key 直接报错
+  - legacy `runtime.*` alias 不再作为专门迁移分支保留
+  - per-database capability booleans 不再接受为 operator-facing 配置
 - distribution 默认配置提供一段 demo JDBC runtime，确保发行包第一次启动即可验证非空 metadata 与真实执行链路；真实部署需替换为目标环境配置
 
 ## 12. 运行边界与审计详细设计

@@ -27,11 +27,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransp
  */
 public final class YamlHttpTransportConfigurationSwapper implements YamlConfigurationSwapper<YamlHttpTransportConfiguration, HttpTransportConfiguration> {
     
-    private static final String DEFAULT_BIND_HOST = "127.0.0.1";
-    
-    private static final int DEFAULT_PORT = 18088;
-    
-    private static final String DEFAULT_ENDPOINT_PATH = "/mcp";
+    private static final String REQUIRED_CONFIGURATION_ERROR_MESSAGE = "Property `transport.http` is required.";
     
     @Override
     public YamlHttpTransportConfiguration swapToYamlConfiguration(final HttpTransportConfiguration data) {
@@ -45,35 +41,31 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     
     @Override
     public HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig) {
-        return null == yamlConfig
-                ? new HttpTransportConfiguration()
-                : new HttpTransportConfiguration(
-                        yamlConfig.isEnabled(), resolveBindHost(yamlConfig.getBindHost()), resolvePort(yamlConfig.getPort()), resolveEndpointPath(yamlConfig.getEndpointPath()));
+        ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException(REQUIRED_CONFIGURATION_ERROR_MESSAGE));
+        return new HttpTransportConfiguration(resolveEnabled(yamlConfig.getEnabled()), resolveRequiredText(yamlConfig.getBindHost(), "transport.http.bindHost"),
+                resolvePort(yamlConfig.getPort()), resolveEndpointPath(yamlConfig.getEndpointPath()));
     }
     
-    private String resolveBindHost(final String bindHost) {
-        String result = normalizeText(bindHost);
-        return result.isEmpty() ? DEFAULT_BIND_HOST : result;
+    private boolean resolveEnabled(final Boolean enabled) {
+        ShardingSpherePreconditions.checkNotNull(enabled, () -> new IllegalArgumentException("Property `transport.http.enabled` is required."));
+        return enabled;
+    }
+    
+    private String resolveRequiredText(final String value, final String propertyName) {
+        ShardingSpherePreconditions.checkNotNull(value, () -> new IllegalArgumentException(String.format("Property `%s` is required.", propertyName)));
+        ShardingSpherePreconditions.checkState(!value.isBlank(), () -> new IllegalArgumentException(String.format("Property `%s` cannot be blank.", propertyName)));
+        return value;
     }
     
     private int resolvePort(final Integer port) {
-        if (null == port) {
-            return DEFAULT_PORT;
-        }
-        ShardingSpherePreconditions.checkState(port >= 0, () -> new IllegalArgumentException("MCP server port cannot be negative."));
+        ShardingSpherePreconditions.checkNotNull(port, () -> new IllegalArgumentException("Property `transport.http.port` is required."));
+        ShardingSpherePreconditions.checkState(port >= 0, () -> new IllegalArgumentException("Property `transport.http.port` cannot be negative."));
         return port;
     }
     
     private String resolveEndpointPath(final String endpointPath) {
-        String result = normalizeText(endpointPath);
-        return result.isEmpty() ? DEFAULT_ENDPOINT_PATH : normalizePath(result);
-    }
-    
-    private String normalizePath(final String endpointPath) {
-        return endpointPath.startsWith("/") ? endpointPath : "/" + endpointPath;
-    }
-    
-    private String normalizeText(final Object value) {
-        return null == value ? "" : String.valueOf(value).trim();
+        String result = resolveRequiredText(endpointPath, "transport.http.endpointPath");
+        ShardingSpherePreconditions.checkState(result.startsWith("/"), () -> new IllegalArgumentException("Property `transport.http.endpointPath` must start with '/'."));
+        return result;
     }
 }

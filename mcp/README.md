@@ -43,7 +43,7 @@ Notes:
 - The packaged runtime reads `conf/mcp.yaml` and `conf/logback.xml`.
 - When HTTP is enabled, the default endpoint is `http://127.0.0.1:18088/mcp`.
 - Logs are written under `logs/`.
-- If `transport.http.enabled` or `transport.stdio.enabled` is omitted, it defaults to `false`.
+- `conf/mcp.yaml` is now strict: `transport.http.enabled`, `transport.http.bindHost`, `transport.http.port`, `transport.http.endpointPath`, `transport.stdio.enabled`, and all runtime database fields must be explicitly declared.
 - The packaged sample configuration explicitly enables both HTTP and STDIO. This quick start exercises the HTTP endpoint only.
 - `bin/start.sh` validates the config file, runtime libraries, and Java availability before startup, creates `data/`, `logs/`, and `ext-lib/`, then starts from the package root so relative runtime paths resolve consistently.
 - If startup succeeds, the process stays running in the foreground. If it exits immediately, inspect the terminal error and `logs/mcp.log` first.
@@ -65,10 +65,14 @@ runtimeDatabases:
   orders:
     databaseType: H2
     jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+    username: ""
+    password: ""
     driverClassName: org.h2.Driver
   billing:
     databaseType: H2
     jdbcUrl: "jdbc:h2:file:./data/mcp-demo-billing;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+    username: ""
+    password: ""
     driverClassName: org.h2.Driver
 ```
 

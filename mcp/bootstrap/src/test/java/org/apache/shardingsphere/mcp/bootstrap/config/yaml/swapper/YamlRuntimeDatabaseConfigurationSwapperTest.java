@@ -35,23 +35,47 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
         
         assertThat(actual.getDatabaseType(), is("H2"));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:logic"));
-        assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
+        assertThat(actual.getUsername(), is(" demo "));
+        assertThat(actual.getPassword(), is(" secret "));
+        assertThat(actual.getDriverClassName(), is(" org.h2.Driver "));
     }
     
     @Test
-    void assertSwapToObjectWithRequiredFieldMissing() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> swapper.swapToObject(new YamlRuntimeDatabaseConfiguration()));
+    void assertSwapToObjectWithDatabaseTypeMissing() {
+        YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
+        yamlConfig.setDatabaseType(null);
+        
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
         
         assertThat(actual.getMessage(), is("Runtime database property `databaseType` is required."));
     }
     
     @Test
+    void assertSwapToObjectWithUsernameMissing() {
+        YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
+        yamlConfig.setUsername(null);
+        
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
+        
+        assertThat(actual.getMessage(), is("Runtime database property `username` is required. Use an empty string when no value is needed."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithNullConfiguration() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(null));
+        
+        assertThat(actual.getMessage(), is("Runtime database configuration cannot be null."));
+    }
+    
+    @Test
     void assertSwapToYamlConfiguration() {
-        YamlRuntimeDatabaseConfiguration actual = swapper.swapToYamlConfiguration(new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"));
+        YamlRuntimeDatabaseConfiguration actual = swapper.swapToYamlConfiguration(
+                new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"));
         
         assertThat(actual.getDatabaseType(), is("H2"));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:logic"));
+        assertThat(actual.getUsername(), is(""));
+        assertThat(actual.getPassword(), is(""));
         assertThat(actual.getDriverClassName(), is("org.h2.Driver"));
     }
     
@@ -59,9 +83,9 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
         YamlRuntimeDatabaseConfiguration result = new YamlRuntimeDatabaseConfiguration();
         result.setDatabaseType("H2");
         result.setJdbcUrl("jdbc:h2:mem:logic");
-        result.setUsername("");
-        result.setPassword("");
-        result.setDriverClassName("org.h2.Driver");
+        result.setUsername(" demo ");
+        result.setPassword(" secret ");
+        result.setDriverClassName(" org.h2.Driver ");
         return result;
     }
 }
