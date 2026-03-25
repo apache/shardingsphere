@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfigurati
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -63,16 +64,13 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException(NULL_CONFIG_ERROR_MESSAGE));
         MCPTransportConfiguration transportConfig = transportConfigSwapper.swapToObject(yamlConfig.getTransport());
         ShardingSpherePreconditions.checkState(transportConfig.hasEnabledTransport(), () -> new IllegalArgumentException(TRANSPORT_VALIDATION_ERROR_MESSAGE));
-        return new MCPLaunchConfiguration(transportConfig, swapToRuntimeDatabases(yamlConfig.getRuntimeDatabases()));
+        return new MCPLaunchConfiguration(transportConfig, swapToRuntimeDatabases(null == yamlConfig.getRuntimeDatabases() ? Collections.emptyMap() : yamlConfig.getRuntimeDatabases()));
     }
     
     private Map<String, RuntimeDatabaseConfiguration> swapToRuntimeDatabases(final Map<String, YamlRuntimeDatabaseConfiguration> yamlRuntimeDatabases) {
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(yamlRuntimeDatabases.size(), 1F);
         for (Entry<String, YamlRuntimeDatabaseConfiguration> entry : yamlRuntimeDatabases.entrySet()) {
-            String databaseName = entry.getKey();
-            ShardingSpherePreconditions.checkNotNull(databaseName, () -> new IllegalArgumentException("Runtime logical database name cannot be null."));
-            ShardingSpherePreconditions.checkState(!databaseName.isBlank(), () -> new IllegalArgumentException("Runtime logical database name cannot be blank."));
-            result.put(databaseName, runtimeDatabaseConfigSwapper.swapToObject(entry.getValue()));
+            result.put(entry.getKey(), runtimeDatabaseConfigSwapper.swapToObject(entry.getValue()));
         }
         return result;
     }

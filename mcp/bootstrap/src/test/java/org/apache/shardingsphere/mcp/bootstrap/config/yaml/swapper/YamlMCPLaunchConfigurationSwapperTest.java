@@ -93,6 +93,18 @@ class YamlMCPLaunchConfigurationSwapperTest {
     }
     
     @Test
+    void assertSwapToObjectWithNullRuntimeDatabases() {
+        YamlMCPLaunchConfiguration yamlConfig = YamlEngine.unmarshal(
+                "transport:\n" + "  http:\n" + "    enabled: false\n" + "    bindHost: 127.0.0.1\n" + "    port: 18088\n" + "    endpointPath: /mcp\n" + "  stdio:\n" + "    enabled: true\n",
+                YamlMCPLaunchConfiguration.class);
+        yamlConfig.setRuntimeDatabases(null);
+        
+        MCPLaunchConfiguration actual = swapper.swapToObject(yamlConfig);
+        
+        assertTrue(actual.getRuntimeDatabases().isEmpty());
+    }
+    
+    @Test
     void assertSwapToObjectWithDisabledTransports() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal("transport:\n"
                 + "  http:\n"
@@ -196,6 +208,50 @@ class YamlMCPLaunchConfigurationSwapperTest {
         MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class));
         
         assertThat(actual.getRuntimeDatabases().get("1").getDatabaseType(), is("H2"));
+    }
+    
+    @Test
+    void assertSwapToObjectWithBlankRuntimeDatabaseName() {
+        String yamlContent = "transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases:\n"
+                + "  '':\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
+                + "    driverClassName: org.h2.Driver\n";
+        ConstructorException actual = assertThrows(ConstructorException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
+        
+        assertThat(actual.getMessage(), containsString("YAML map key cannot be blank."));
+    }
+    
+    @Test
+    void assertSwapToObjectWithNullRuntimeDatabaseName() {
+        String yamlContent = "transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases:\n"
+                + "  null:\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
+                + "    driverClassName: org.h2.Driver\n";
+        ConstructorException actual = assertThrows(ConstructorException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
+        
+        assertThat(actual.getMessage(), containsString("YAML map key cannot be null."));
     }
     
     @Test
