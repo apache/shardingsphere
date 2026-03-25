@@ -104,7 +104,6 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     
     private Map<?, ?> loadYamlRoot(final String yamlContent) {
         LoaderOptions loaderOptions = ShardingSphereYamlConstructor.createLoaderOptions();
-        loaderOptions.setAllowDuplicateKeys(false);
         Object yamlRoot = new Yaml(loaderOptions).load(yamlContent);
         return yamlRoot instanceof Map ? (Map<?, ?>) yamlRoot : Map.of();
     }

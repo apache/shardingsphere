@@ -27,22 +27,26 @@ import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlTarg
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.swapper.YamlPluginsConfigurationSwapper;
 import org.junit.jupiter.api.Test;
+import org.yaml.snakeyaml.constructor.DuplicateKeyException;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.List;
-import java.util.Collections;
-import java.util.Arrays;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class AgentYamlEngineTest {
@@ -64,6 +68,12 @@ class AgentYamlEngineTest {
         InputStream inputStream = getClass().getResourceAsStream("/META-INF/conf/advisors.yaml");
         YamlAdvisorsConfiguration actual = AgentYamlEngine.unmarshalYamlAdvisorsConfiguration(inputStream);
         assertYamlAdvisorConfiguration(actual.getAdvisors().iterator().next());
+    }
+    
+    @Test
+    void assertUnmarshalYamlAgentConfigurationWithDuplicateKeys() {
+        assertThrows(DuplicateKeyException.class, () -> AgentYamlEngine.unmarshalYamlAgentConfiguration(
+                new ByteArrayInputStream("plugins:\n  logging:\n    foo:\n      port: 8080\n  logging:\n    bar:\n      port: 8081\n".getBytes(StandardCharsets.UTF_8))));
     }
     
     private String getResourceURL() throws UnsupportedEncodingException {

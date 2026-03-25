@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.util.yaml.fixture.YamlNullCollectionConfi
 import org.apache.shardingsphere.infra.util.yaml.fixture.shortcuts.YamlShortcutsConfigurationFixture;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.composer.ComposerException;
+import org.yaml.snakeyaml.constructor.DuplicateKeyException;
 
 import java.io.File;
 import java.io.IOException;
@@ -121,6 +122,11 @@ class YamlEngineTest {
     void assertUnmarshalInvalidYaml() {
         String yamlContent = SystemResourceFileUtils.readFile("yaml/accepted-class.yaml");
         assertThrows(ComposerException.class, () -> YamlEngine.unmarshal(yamlContent, Object.class));
+    }
+    
+    @Test
+    void assertUnmarshalWithDuplicateKeys() {
+        assertThrows(DuplicateKeyException.class, () -> YamlEngine.unmarshal("name: foo" + LINE_SEPARATOR + "name: bar", YamlShortcutsConfigurationFixture.class));
     }
     
     @Test

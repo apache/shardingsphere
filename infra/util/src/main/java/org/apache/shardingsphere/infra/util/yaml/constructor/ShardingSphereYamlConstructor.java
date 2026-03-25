@@ -62,6 +62,7 @@ public final class ShardingSphereYamlConstructor extends Constructor {
      */
     public static LoaderOptions createLoaderOptions() {
         LoaderOptions result = new LoaderOptions();
+        result.setAllowDuplicateKeys(false);
         result.setMaxAliasesForCollections(1000);
         result.setCodePointLimit(Integer.MAX_VALUE);
         return result;

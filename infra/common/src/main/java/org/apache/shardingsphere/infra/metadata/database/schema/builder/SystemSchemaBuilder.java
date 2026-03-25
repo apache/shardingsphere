@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigura
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.yaml.constructor.ShardingSphereYamlConstructor;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.yaml.snakeyaml.Yaml;
@@ -79,7 +80,7 @@ public final class SystemSchemaBuilder {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
         SystemTable systemTable = new SystemTable(databaseType);
         for (InputStream each : SystemSchemaManager.getAllInputStreams(databaseType.getType(), schemaName)) {
-            YamlShardingSphereTable metaData = new Yaml().loadAs(each, YamlShardingSphereTable.class);
+            YamlShardingSphereTable metaData = new Yaml(new ShardingSphereYamlConstructor(YamlShardingSphereTable.class)).loadAs(each, YamlShardingSphereTable.class);
             if (isSystemSchemaMetadataEnabled || systemTable.isSupportedSystemTable(schemaName, metaData.getName())) {
                 tables.add(TABLE_SWAPPER.swapToObject(metaData));
             }

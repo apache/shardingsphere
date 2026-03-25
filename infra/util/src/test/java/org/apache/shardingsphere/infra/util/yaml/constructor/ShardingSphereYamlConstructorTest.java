@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.util.yaml.fixture.pojo.YamlConfigurationF
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.composer.ComposerException;
+import org.yaml.snakeyaml.constructor.DuplicateKeyException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,5 +56,11 @@ class ShardingSphereYamlConstructorTest {
         try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("yaml/accepted-class.yaml")) {
             assertThrows(ComposerException.class, () -> new Yaml(new ShardingSphereYamlConstructor(Object.class)).loadAs(inputStream, Object.class));
         }
+    }
+    
+    @Test
+    void assertToObjectWithDuplicateKeys() {
+        assertThrows(DuplicateKeyException.class, () -> new Yaml(new ShardingSphereYamlConstructor(YamlConfigurationFixture.class))
+                .loadAs("value: foo\nvalue: bar\n", YamlConfigurationFixture.class));
     }
 }
