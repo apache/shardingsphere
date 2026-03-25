@@ -48,7 +48,6 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -95,7 +94,7 @@ class WhereClauseShardingConditionEngineTest {
         ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, and);
         BetweenExpression betweenExpression = new BetweenExpression(0, 0, left, betweenSegment, andSegment, false);
         when(whereSegment.getExpr()).thenReturn(betweenExpression);
-        when(rule.findShardingColumn(any(), any())).thenReturn(Optional.of("foo_sharding_col"));
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
         List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
         assertThat(actual.get(0).getStartIndex(), is(0));
         assertThat(actual.get(0).getValues().get(0), isA(RangeShardingConditionValue.class));
@@ -109,7 +108,7 @@ class WhereClauseShardingConditionEngineTest {
         right.getItems().add(literalExpressionSegment);
         InExpression inExpression = new InExpression(0, 0, left, right, false);
         when(whereSegment.getExpr()).thenReturn(inExpression);
-        when(rule.findShardingColumn(any(), any())).thenReturn(Optional.of("foo_sharding_col"));
+        when(rule.findShardingColumn("foo_sharding_col", "")).thenReturn(Optional.of("foo_sharding_col"));
         List<ShardingCondition> actual = shardingConditionEngine.createShardingConditions(sqlStatementContext, Collections.emptyList());
         assertThat(actual.get(0).getStartIndex(), is(0));
         assertThat(actual.get(0).getValues().get(0), isA(ListShardingConditionValue.class));

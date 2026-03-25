@@ -36,9 +36,9 @@ description: |
 
 inputs:
   java-version:
-    description: 'Java version to setup (default: 17)'
+    description: 'Java version to setup (default: 21)'
     required: false
-    default: '17'
+    default: '21'
   distribution:
     description: 'Java distribution (default: temurin)'
     required: false
