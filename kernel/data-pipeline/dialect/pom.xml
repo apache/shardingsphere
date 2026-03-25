@@ -27,14 +27,14 @@
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <java.version>21</java.version>
-        <maven.compiler.release>21</maven.compiler.release>
-    </properties>
-    
     <modules>
         <module>mysql</module>
         <module>postgresql</module>
         <module>opengauss</module>
     </modules>
+    
+    <properties>
+        <java.version>21</java.version>
+        <maven.compiler.release>21</maven.compiler.release>
+    </properties>
 </project>
