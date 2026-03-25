@@ -43,7 +43,9 @@ class YamlMCPLaunchConfigurationSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal("transport:\n" + "  http:\n" + "    enabled: true\n" + "    bindHost: 0.0.0.0\n" + "    port: 9090\n" + "    endpointPath: /gateway\n" + "  stdio:\n" + "    enabled: false\n" + "runtimeDatabases:\n" + "  logic_db:\n" + "    databaseType: H2\n" + "    jdbcUrl: jdbc:h2:mem:logic\n" + "    username: demo\n" + "    password: secret\n" + "    driverClassName: org.h2.Driver\n", YamlMCPLaunchConfiguration.class));
+        MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal("transport:\n" + "  http:\n" + "    enabled: true\n" + "    bindHost: 0.0.0.0\n" + "    port: 9090\n"
+                + "    endpointPath: /gateway\n" + "  stdio:\n" + "    enabled: false\n" + "runtimeDatabases:\n" + "  logic_db:\n" + "    databaseType: H2\n" + "    jdbcUrl: jdbc:h2:mem:logic\n"
+                + "    username: demo\n" + "    password: secret\n" + "    driverClassName: org.h2.Driver\n", YamlMCPLaunchConfiguration.class));
         
         assertThat(actual.getTransport().getHttp().getBindHost(), is("0.0.0.0"));
         assertThat(actual.getTransport().getHttp().getPort(), is(9090));
@@ -83,7 +85,9 @@ class YamlMCPLaunchConfigurationSwapperTest {
     
     @Test
     void assertSwapToObjectWithoutRuntimeDatabasesSection() {
-        MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal("transport:\n" + "  http:\n" + "    enabled: false\n" + "    bindHost: 127.0.0.1\n" + "    port: 18088\n" + "    endpointPath: /mcp\n" + "  stdio:\n" + "    enabled: true\n", YamlMCPLaunchConfiguration.class));
+        MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(
+                "transport:\n" + "  http:\n" + "    enabled: false\n" + "    bindHost: 127.0.0.1\n" + "    port: 18088\n" + "    endpointPath: /mcp\n" + "  stdio:\n" + "    enabled: true\n",
+                YamlMCPLaunchConfiguration.class));
         
         assertTrue(actual.getRuntimeDatabases().isEmpty());
     }

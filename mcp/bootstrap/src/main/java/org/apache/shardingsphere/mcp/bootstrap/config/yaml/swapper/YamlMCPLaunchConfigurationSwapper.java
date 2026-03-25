@@ -72,7 +72,6 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
             String databaseName = entry.getKey();
             ShardingSpherePreconditions.checkNotNull(databaseName, () -> new IllegalArgumentException("Runtime logical database name cannot be null."));
             ShardingSpherePreconditions.checkState(!databaseName.isBlank(), () -> new IllegalArgumentException("Runtime logical database name cannot be blank."));
-            ShardingSpherePreconditions.checkState(!result.containsKey(databaseName), () -> new IllegalArgumentException(String.format("Runtime logical database `%s` is duplicated.", databaseName)));
             result.put(databaseName, runtimeDatabaseConfigSwapper.swapToObject(entry.getValue()));
         }
         return result;
