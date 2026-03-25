@@ -19,9 +19,11 @@ package org.apache.shardingsphere.infra.util.yaml;
 
 import org.apache.shardingsphere.infra.util.file.SystemResourceFileUtils;
 import org.apache.shardingsphere.infra.util.yaml.fixture.YamlNullCollectionConfigurationFixture;
+import org.apache.shardingsphere.infra.util.yaml.fixture.pojo.YamlConfigurationFixture;
 import org.apache.shardingsphere.infra.util.yaml.fixture.shortcuts.YamlShortcutsConfigurationFixture;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.composer.ComposerException;
+import org.yaml.snakeyaml.constructor.ConstructorException;
 import org.yaml.snakeyaml.constructor.DuplicateKeyException;
 
 import java.io.File;
@@ -31,6 +33,7 @@ import java.util.Arrays;
 import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -127,6 +130,18 @@ class YamlEngineTest {
     @Test
     void assertUnmarshalWithDuplicateKeys() {
         assertThrows(DuplicateKeyException.class, () -> YamlEngine.unmarshal("name: foo" + LINE_SEPARATOR + "name: bar", YamlShortcutsConfigurationFixture.class));
+    }
+    
+    @Test
+    void assertUnmarshalWithBlankMapKey() {
+        ConstructorException actual = assertThrows(ConstructorException.class, () -> YamlEngine.unmarshal("map:" + LINE_SEPARATOR + "  '': value", YamlConfigurationFixture.class));
+        assertThat(actual.getMessage(), containsString("YAML map key cannot be blank."));
+    }
+    
+    @Test
+    void assertUnmarshalWithNullMapKey() {
+        ConstructorException actual = assertThrows(ConstructorException.class, () -> YamlEngine.unmarshal("map:" + LINE_SEPARATOR + "  null: value", YamlConfigurationFixture.class));
+        assertThat(actual.getMessage(), containsString("YAML map key cannot be null."));
     }
     
     @Test

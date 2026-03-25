@@ -27,6 +27,7 @@ import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlTarg
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.swapper.YamlPluginsConfigurationSwapper;
 import org.junit.jupiter.api.Test;
+import org.yaml.snakeyaml.constructor.ConstructorException;
 import org.yaml.snakeyaml.constructor.DuplicateKeyException;
 
 import java.io.ByteArrayInputStream;
@@ -45,6 +46,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -74,6 +76,20 @@ class AgentYamlEngineTest {
     void assertUnmarshalYamlAgentConfigurationWithDuplicateKeys() {
         assertThrows(DuplicateKeyException.class, () -> AgentYamlEngine.unmarshalYamlAgentConfiguration(
                 new ByteArrayInputStream("plugins:\n  logging:\n    foo:\n      port: 8080\n  logging:\n    bar:\n      port: 8081\n".getBytes(StandardCharsets.UTF_8))));
+    }
+    
+    @Test
+    void assertUnmarshalYamlAgentConfigurationWithBlankMapKey() {
+        ConstructorException actual = assertThrows(ConstructorException.class, () -> AgentYamlEngine.unmarshalYamlAgentConfiguration(
+                new ByteArrayInputStream("plugins:\n  logging:\n    '':\n      port: 8080\n".getBytes(StandardCharsets.UTF_8))));
+        assertThat(actual.getMessage(), containsString("YAML map key cannot be blank."));
+    }
+    
+    @Test
+    void assertUnmarshalYamlAgentConfigurationWithNullMapKey() {
+        ConstructorException actual = assertThrows(ConstructorException.class, () -> AgentYamlEngine.unmarshalYamlAgentConfiguration(
+                new ByteArrayInputStream("plugins:\n  logging:\n    null:\n      port: 8080\n".getBytes(StandardCharsets.UTF_8))));
+        assertThat(actual.getMessage(), containsString("YAML map key cannot be null."));
     }
     
     private String getResourceURL() throws UnsupportedEncodingException {

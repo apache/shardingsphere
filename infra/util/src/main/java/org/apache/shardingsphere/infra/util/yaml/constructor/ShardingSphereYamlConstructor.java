@@ -77,10 +77,29 @@ public final class ShardingSphereYamlConstructor extends Constructor {
     @Override
     public Object constructObject(final Node node) {
         Object result = super.constructObject(node);
+        if (result instanceof Map) {
+            validateMapKeys((Map<?, ?>) result);
+        }
         if (isMappingNode(node, result)) {
             getPropertyUtils().getProperties(result.getClass()).stream().filter(Property::isWritable).forEach(each -> setEmptyCollectionIfNull(result, each));
         }
         return result;
+    }
+    
+    private void validateMapKeys(final Map<?, ?> map) {
+        for (Object each : map.keySet()) {
+            Preconditions.checkArgument(null != each, "YAML map key cannot be null.");
+            Preconditions.checkArgument(!(each instanceof String) || !isBlank((String) each), "YAML map key cannot be blank.");
+        }
+    }
+    
+    private boolean isBlank(final String value) {
+        for (int i = 0; i < value.length(); i++) {
+            if (!Character.isWhitespace(value.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private static boolean isMappingNode(final Node node, final Object target) {

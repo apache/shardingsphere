@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.util.yaml.fixture.pojo.YamlConfigurationF
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.composer.ComposerException;
+import org.yaml.snakeyaml.constructor.ConstructorException;
 import org.yaml.snakeyaml.constructor.DuplicateKeyException;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -62,5 +64,19 @@ class ShardingSphereYamlConstructorTest {
     void assertToObjectWithDuplicateKeys() {
         assertThrows(DuplicateKeyException.class, () -> new Yaml(new ShardingSphereYamlConstructor(YamlConfigurationFixture.class))
                 .loadAs("value: foo\nvalue: bar\n", YamlConfigurationFixture.class));
+    }
+    
+    @Test
+    void assertToObjectWithBlankMapKey() {
+        ConstructorException actual = assertThrows(ConstructorException.class, () -> new Yaml(new ShardingSphereYamlConstructor(YamlConfigurationFixture.class))
+                .loadAs("map:\n  '': value\n", YamlConfigurationFixture.class));
+        assertThat(actual.getMessage(), containsString("YAML map key cannot be blank."));
+    }
+    
+    @Test
+    void assertToObjectWithNullMapKey() {
+        ConstructorException actual = assertThrows(ConstructorException.class, () -> new Yaml(new ShardingSphereYamlConstructor(YamlConfigurationFixture.class))
+                .loadAs("map:\n  null: value\n", YamlConfigurationFixture.class));
+        assertThat(actual.getMessage(), containsString("YAML map key cannot be null."));
     }
 }

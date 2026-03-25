@@ -20,6 +20,9 @@ package org.apache.shardingsphere.agent.core.yaml;
 import org.apache.shardingsphere.agent.core.preconditions.AgentPreconditions;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.nodes.Node;
+
+import java.util.Map;
 
 /**
  * Agent YAML constructor.
@@ -31,6 +34,31 @@ public final class AgentYamlConstructor extends Constructor {
     public AgentYamlConstructor(final Class<?> rootClass, final LoaderOptions loadingConfig) {
         super(rootClass, loadingConfig);
         this.rootClass = rootClass;
+    }
+    
+    @Override
+    protected Object constructObject(final Node node) {
+        Object result = super.constructObject(node);
+        if (result instanceof Map) {
+            validateMapKeys((Map<?, ?>) result);
+        }
+        return result;
+    }
+    
+    private void validateMapKeys(final Map<?, ?> map) {
+        for (Object each : map.keySet()) {
+            AgentPreconditions.checkArgument(null != each, "YAML map key cannot be null.");
+            AgentPreconditions.checkArgument(!(each instanceof String) || !isBlank((String) each), "YAML map key cannot be blank.");
+        }
+    }
+    
+    private boolean isBlank(final String value) {
+        for (int i = 0; i < value.length(); i++) {
+            if (!Character.isWhitespace(value.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
     
     @Override
