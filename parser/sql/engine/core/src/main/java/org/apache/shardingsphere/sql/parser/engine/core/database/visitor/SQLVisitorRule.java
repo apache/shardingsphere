@@ -596,8 +596,12 @@ public enum SQLVisitorRule {
     ADMIN_CLEAN_TRASH("AdminCleanTrash", SQLStatementType.DAL),
     
     CLEAN_ALL_PROFILE("CleanAllProfile", SQLStatementType.DAL),
-    
+
+    CLEAN_PROFILE("CleanProfile", SQLStatementType.DAL),
+
     PLAN_REPLAYER_PLAY("PlanReplayerPlay", SQLStatementType.DAL),
+
+    CREATE_EXTERNAL_RESOURCE("CreateExternalResource", SQLStatementType.DAL),
     
     CREATE_SQL_BLOCK_RULE("CreateSqlBlockRule", SQLStatementType.DAL),
     
@@ -800,7 +804,9 @@ public enum SQLVisitorRule {
     CREATE_GROUP("CreateGroup", SQLStatementType.DCL),
     
     CREATE_MATERIALIZED_VIEW("CreateMaterializedView", SQLStatementType.DDL),
-    
+
+    DORIS_REFRESH_MATERIALIZED_VIEW("DorisRefreshMaterializedView", SQLStatementType.DDL),
+
     CREATE_MACRO("CreateMacro", SQLStatementType.DDL),
     
     DROP_MACRO("DropMacro", SQLStatementType.DDL),

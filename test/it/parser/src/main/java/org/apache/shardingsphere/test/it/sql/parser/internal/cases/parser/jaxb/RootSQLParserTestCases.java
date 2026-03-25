@@ -23,6 +23,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCleanTrashStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCleanAllProfileStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCleanProfileStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateExternalResourceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisPlanReplayerPlayStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCopyTabletStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaStatusStatementTestCase;
@@ -36,6 +38,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterColocateGroupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropFunctionStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisRefreshMaterializedViewStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseJobStatementTestCase;
@@ -574,6 +577,9 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "rename-table")
     private final List<RenameTableStatementTestCase> renameTableTestCases = new LinkedList<>();
     
+    @XmlElement(name = "doris-refresh-materialized-view")
+    private final List<DorisRefreshMaterializedViewStatementTestCase> dorisRefreshMaterializedViewTestCases = new LinkedList<>();
+
     @XmlElement(name = "resume-job")
     private final List<DorisResumeJobStatementTestCase> resumeJobTestCases = new LinkedList<>();
     
@@ -795,7 +801,13 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "clean-all-profile")
     private final List<DorisCleanAllProfileStatementTestCase> cleanAllProfileTestCases = new LinkedList<>();
-    
+
+    @XmlElement(name = "clean-profile")
+    private final List<DorisCleanProfileStatementTestCase> cleanProfileTestCases = new LinkedList<>();
+
+    @XmlElement(name = "create-external-resource")
+    private final List<DorisCreateExternalResourceStatementTestCase> createExternalResourceTestCases = new LinkedList<>();
+
     @XmlElement(name = "plan-replayer-play")
     private final List<DorisPlanReplayerPlayStatementTestCase> planReplayerPlayTestCases = new LinkedList<>();
     

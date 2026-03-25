@@ -146,6 +146,8 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginP
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCleanTrashContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CleanAllProfileContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CleanProfileContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateExternalResourceContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PlanReplayerPlayContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaStatusContext;
@@ -233,6 +235,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Ot
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCleanTrashStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCleanAllProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCleanProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateExternalResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisPlanReplayerPlayStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaVersionStatement;
@@ -1272,7 +1276,17 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitCleanAllProfile(final CleanAllProfileContext ctx) {
         return new DorisCleanAllProfileStatement(getDatabaseType());
     }
-    
+
+    @Override
+    public ASTNode visitCleanProfile(final CleanProfileContext ctx) {
+        return new DorisCleanProfileStatement(getDatabaseType());
+    }
+
+    @Override
+    public ASTNode visitCreateExternalResource(final CreateExternalResourceContext ctx) {
+        return new DorisCreateExternalResourceStatement(getDatabaseType());
+    }
+
     @Override
     public ASTNode visitPlanReplayerPlay(final PlanReplayerPlayContext ctx) {
         return new DorisPlanReplayerPlayStatement(getDatabaseType(), SQLUtils.getExactlyValue(ctx.DOUBLE_QUOTED_TEXT().getText()));

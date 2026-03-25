@@ -447,8 +447,16 @@ cleanAllProfile
     : CLEAN ALL PROFILE
     ;
 
+cleanProfile
+    : CLEAN PROFILE
+    ;
+
 planReplayerPlay
     : PLAN REPLAYER PLAY DOUBLE_QUOTED_TEXT
+    ;
+
+createExternalResource
+    : CREATE EXTERNAL RESOURCE resourceName PROPERTIES LP_ propertyAssignments RP_
     ;
 // DORIS ADDED END
 
