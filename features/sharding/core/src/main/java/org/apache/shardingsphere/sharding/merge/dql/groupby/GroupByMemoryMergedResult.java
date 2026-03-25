@@ -132,7 +132,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
             IdentifierValue tableName = each.getTableName().getIdentifier();
             ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new NoSuchTableException(tableName.getValue()));
             ShardingSphereTable table = schema.getTable(tableName);
-            String columnName = queryResult.getMetaData().getColumnName(columnIndex);
+            IdentifierValue columnName = new IdentifierValue(queryResult.getMetaData().getColumnName(columnIndex));
             if (table.containsColumn(columnName)) {
                 return table.getColumn(columnName).isCaseSensitive();
             }

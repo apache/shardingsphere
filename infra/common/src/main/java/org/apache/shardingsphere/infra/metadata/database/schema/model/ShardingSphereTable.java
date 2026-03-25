@@ -149,7 +149,7 @@ public final class ShardingSphereTable {
      * @param columnName column name
      * @return column
      */
-    private Optional<ShardingSphereColumn> findColumn(final IdentifierValue columnName) {
+    public Optional<ShardingSphereColumn> findColumn(final IdentifierValue columnName) {
         if (null == columnName || null == columnName.getValue()) {
             return Optional.empty();
         }
@@ -163,7 +163,7 @@ public final class ShardingSphereTable {
      * @return contains column or not
      */
     public boolean containsColumn(final String columnName) {
-        return null != columnName && containsColumn(new IdentifierValue(columnName, QuoteCharacter.NONE));
+        return containsColumn(null == columnName ? null : new IdentifierValue(columnName, QuoteCharacter.NONE));
     }
     
     /**
@@ -172,7 +172,7 @@ public final class ShardingSphereTable {
      * @param columnName column name
      * @return contains column or not
      */
-    private boolean containsColumn(final IdentifierValue columnName) {
+    public boolean containsColumn(final IdentifierValue columnName) {
         return findColumn(columnName).isPresent();
     }
     
@@ -183,7 +183,7 @@ public final class ShardingSphereTable {
      * @return column
      */
     public ShardingSphereColumn getColumn(final String columnName) {
-        return null == columnName ? null : getColumn(new IdentifierValue(columnName, QuoteCharacter.NONE));
+        return getColumn(null == columnName ? null : new IdentifierValue(columnName, QuoteCharacter.NONE));
     }
     
     /**
@@ -192,7 +192,7 @@ public final class ShardingSphereTable {
      * @param columnName column name
      * @return column
      */
-    private ShardingSphereColumn getColumn(final IdentifierValue columnName) {
+    public ShardingSphereColumn getColumn(final IdentifierValue columnName) {
         return findColumn(columnName).orElse(null);
     }
     
