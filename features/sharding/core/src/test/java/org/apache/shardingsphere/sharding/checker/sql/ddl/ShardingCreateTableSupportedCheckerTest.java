@@ -59,7 +59,7 @@ class ShardingCreateTableSupportedCheckerTest {
         CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(schema.containsTable("foo_tbl")).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue("foo_tbl"))).thenReturn(true);
         new ShardingCreateTableSupportedChecker().check(rule, database, schema, sqlStatementContext);
     }
     

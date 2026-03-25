@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -222,11 +223,20 @@ class PostgreSQLBatchedStatementsExecutorTest {
         when(database.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("ds_0"));
         when(database.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
         when(database.containsSchema("public")).thenReturn(true);
-        when(database.getSchema("public").containsTable("t")).thenReturn(true);
-        when(database.getSchema("public").getTable("t").getAllColumns()).thenReturn(Arrays.asList(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false),
+        when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
+        ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
+        when(database.getSchema("public")).thenReturn(schema);
+        when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
+        when(schema.containsTable("t")).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue("t"))).thenReturn(true);
+        when(schema.getTable("t").getAllColumns()).thenReturn(Arrays.asList(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false),
+                new ShardingSphereColumn("col", Types.VARCHAR, false, false, false, true, false, false)));
+        when(schema.getTable(new IdentifierValue("t")).getAllColumns()).thenReturn(Arrays.asList(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("col", Types.VARCHAR, false, false, false, true, false, false)));
         when(result.getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue("db"))).thenReturn(true);
         when(result.getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("db"))).thenReturn(database);
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));

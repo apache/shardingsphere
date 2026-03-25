@@ -79,7 +79,7 @@ public final class InsertStatementBaseContext implements SQLStatementContext {
         schema = getSchema(metaData, currentDatabaseName);
         columnNames = containsInsertColumns()
                 ? insertColumnNames
-                : sqlStatement.getTable().map(optional -> schema.getVisibleColumnNames(optional.getTableName().getIdentifier().getValue())).orElseGet(Collections::emptyList);
+                : sqlStatement.getTable().map(optional -> schema.getVisibleColumnNames(optional.getTableName().getIdentifier())).orElseGet(Collections::emptyList);
         insertColumnNamesAndIndexes = createInsertColumnNamesAndIndexes(insertColumnNames);
     }
     

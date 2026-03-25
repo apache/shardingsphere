@@ -46,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.util.SafeNumberOperationUtils;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 
 import java.util.ArrayList;
@@ -110,16 +111,17 @@ public final class WhereClauseShardingConditionEngine {
         Map<HashColumn, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1F);
         for (ExpressionSegment each : predicates) {
             for (ColumnSegment columnSegment : ColumnExtractor.extract(each)) {
-                String tableName = columnSegment.getColumnBoundInfo().getOriginalTable().getValue();
+                IdentifierValue originalTable = columnSegment.getColumnBoundInfo().getOriginalTable();
+                String tableName = originalTable.getValue();
                 Optional<String> shardingColumn = rule.findShardingColumn(columnSegment.getColumnBoundInfo().getOriginalColumn().getValue(), tableName);
                 if (!shardingColumn.isPresent()) {
                     continue;
                 }
-                String schemaName = columnSegment.getColumnBoundInfo().getOriginalSchema().getValue();
-                ShardingSpherePreconditions.checkState(database.containsSchema(schemaName), () -> new SchemaNotFoundException(schemaName));
-                ShardingSphereSchema schema = database.getSchema(schemaName);
-                ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName));
-                HashColumn column = new HashColumn(shardingColumn.get(), tableName, schema.getTable(tableName).getColumn(shardingColumn.get()).isCaseSensitive());
+                IdentifierValue originalSchema = columnSegment.getColumnBoundInfo().getOriginalSchema();
+                ShardingSpherePreconditions.checkState(database.containsSchema(originalSchema), () -> new SchemaNotFoundException(originalSchema.getValue()));
+                ShardingSphereSchema schema = database.getSchema(originalSchema);
+                ShardingSpherePreconditions.checkState(schema.containsTable(originalTable), () -> new TableNotFoundException(tableName));
+                HashColumn column = new HashColumn(shardingColumn.get(), tableName, schema.getTable(originalTable).getColumn(shardingColumn.get()).isCaseSensitive());
                 Optional<ShardingConditionValue> shardingConditionValue = ConditionValueGeneratorFactory.generate(each, column, params, timestampServiceRule);
                 if (!shardingConditionValue.isPresent()) {
                     continue;

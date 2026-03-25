@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.exclusive;
-
-import java.util.Optional;
+package org.apache.shardingsphere.encrypt.enums;
 
 /**
- * Exclusive operator context.
+ * Encrypt column item type.
  */
-public interface ExclusiveOperatorContext {
+public enum EncryptColumnItemType {
     
-    /**
-     * Start exclusive operation.
-     *
-     * @param operationKey operation key
-     * @param timeoutMillis timeout milliseconds
-     * @return exclusive lock handle
-     */
-    Optional<ExclusiveLockHandle> start(String operationKey, long timeoutMillis);
+    CIPHER, ASSISTED_QUERY, LIKE_QUERY
 }

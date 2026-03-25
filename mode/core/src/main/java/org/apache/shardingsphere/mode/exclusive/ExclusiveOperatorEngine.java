@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerat
 import org.apache.shardingsphere.mode.node.path.type.exclusive.ExclusiveOperationNodePath;
 
 import java.sql.SQLException;
+import java.util.Optional;
 
 /**
  * Exclusive operator engine.
@@ -60,11 +61,10 @@ public final class ExclusiveOperatorEngine {
      */
     public <T> T operateWithResult(final ExclusiveOperation operation, final long timeoutMillis, final ExclusiveOperationCallback<T> callback) throws SQLException {
         String operationKey = NodePathGenerator.toPath(new ExclusiveOperationNodePath(operation.getName()));
-        if (context.start(operationKey, timeoutMillis)) {
-            try {
+        Optional<ExclusiveLockHandle> lockHandle = context.start(operationKey, timeoutMillis);
+        if (lockHandle.isPresent()) {
+            try (ExclusiveLockHandle ignored = lockHandle.get()) {
                 return callback.execute();
-            } finally {
-                context.stop(operationKey);
             }
         }
         return null;

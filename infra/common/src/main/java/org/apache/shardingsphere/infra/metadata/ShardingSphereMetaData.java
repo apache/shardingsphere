@@ -149,7 +149,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @param databaseName database name
      * @return contains database from meta data or not
      */
-    private boolean containsDatabase(final IdentifierValue databaseName) {
+    public boolean containsDatabase(final IdentifierValue databaseName) {
         return findDatabase(databaseName).isPresent();
     }
     
@@ -169,7 +169,7 @@ public final class ShardingSphereMetaData implements AutoCloseable {
      * @param databaseName database name
      * @return meta data database
      */
-    private ShardingSphereDatabase getDatabase(final IdentifierValue databaseName) {
+    public ShardingSphereDatabase getDatabase(final IdentifierValue databaseName) {
         return findDatabase(databaseName).orElse(null);
     }
     

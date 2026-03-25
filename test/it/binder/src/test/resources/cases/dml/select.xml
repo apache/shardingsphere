@@ -1548,7 +1548,7 @@
                     <simple-table alias="o" name="t_order" start-index="23" stop-index="31">
                         <table-bound start-index="0" stop-index="0">
                             <original-database name="foo_db_1" start-index="0" stop-index="0"/>
-                            <original-schema name="foo_db_1" start-index="0" stop-index="0"/>
+                            <original-schema name="FOO_DB_1" start-index="0" stop-index="0"/>
                         </table-bound>
                     </simple-table>
                 </left>
@@ -1556,7 +1556,7 @@
                     <simple-table alias="i" name="t_order_item" start-index="34" stop-index="47">
                         <table-bound start-index="0" stop-index="0">
                             <original-database name="foo_db_1" start-index="0" stop-index="0"/>
-                            <original-schema name="foo_db_1" start-index="0" stop-index="0"/>
+                            <original-schema name="FOO_DB_1" start-index="0" stop-index="0"/>
                         </table-bound>
                     </simple-table>
                 </right>
@@ -1575,7 +1575,7 @@
                             <owner name="o" start-index="55" stop-index="55"/>
                             <column-bound start-index="0" stop-index="0">
                                 <original-database name="foo_db_1" start-index="0" stop-index="0"/>
-                                <original-schema name="foo_db_1" start-index="0" stop-index="0"/>
+                                <original-schema name="FOO_DB_1" start-index="0" stop-index="0"/>
                                 <original-table name="t_order" start-index="0" stop-index="0"/>
                                 <original-column name="order_id" start-delimiter="&quot;" end-delimiter="&quot;" start-index="0" stop-index="0"/>
                                 <table-source-type name="PHYSICAL_TABLE" start-index="0" stop-index="0"/>
@@ -1589,7 +1589,7 @@
                                 <owner name="i" start-index="68" stop-index="68"/>
                                 <column-bound start-index="0" stop-index="0">
                                     <original-database name="foo_db_1" start-index="0" stop-index="0"/>
-                                    <original-schema name="foo_db_1" start-index="0" stop-index="0"/>
+                                    <original-schema name="FOO_DB_1" start-index="0" stop-index="0"/>
                                     <original-table name="t_order_item" start-index="0" stop-index="0"/>
                                     <original-column name="order_id" start-delimiter="&quot;" end-delimiter="&quot;" start-index="0" stop-index="0"/>
                                     <table-source-type name="PHYSICAL_TABLE" start-index="0" stop-index="0"/>

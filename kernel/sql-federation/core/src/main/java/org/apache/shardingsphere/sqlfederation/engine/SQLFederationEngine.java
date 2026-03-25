@@ -54,6 +54,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationCompilerEngine;
 import org.apache.shardingsphere.sqlfederation.compiler.SQLFederationExecutionPlan;
 import org.apache.shardingsphere.sqlfederation.compiler.compiler.SQLStatementCompiler;
@@ -286,11 +287,12 @@ public final class SQLFederationEngine implements AutoCloseable {
         ExecutionPlanCacheKey result = new ExecutionPlanCacheKey(sql, sqlStatementContext.getSqlStatement(), sqlStatementCompiler);
         Collection<SimpleTableSegment> tableSegments = sqlStatementContext.getTablesContext().getSimpleTables();
         for (SimpleTableSegment each : tableSegments) {
-            String originalDatabase = each.getTableName().getTableBoundInfo().map(optional -> optional.getOriginalDatabase().getValue()).orElse(currentDatabaseName);
-            String originalSchema = each.getTableName().getTableBoundInfo().map(optional -> optional.getOriginalSchema().getValue()).orElse(currentSchemaName);
-            ShardingSphereTable table = federationContext.getMetaData().getDatabase(originalDatabase).getSchema(originalSchema).getTable(each.getTableName().getIdentifier().getValue());
-            ShardingSpherePreconditions.checkNotNull(table, () -> new NoSuchTableException(each.getTableName().getIdentifier().getValue()));
-            result.getTableMetaDataVersions().put(Joiner.on(".").join(Arrays.asList(originalDatabase, originalSchema, table.getName())), 0);
+            IdentifierValue originalDatabase = each.getTableName().getTableBoundInfo().map(optional -> optional.getOriginalDatabase()).orElseGet(() -> new IdentifierValue(currentDatabaseName));
+            IdentifierValue originalSchema = each.getTableName().getTableBoundInfo().map(optional -> optional.getOriginalSchema()).orElseGet(() -> new IdentifierValue(currentSchemaName));
+            IdentifierValue tableName = each.getTableName().getIdentifier();
+            ShardingSphereTable table = federationContext.getMetaData().getDatabase(originalDatabase).getSchema(originalSchema).getTable(tableName);
+            ShardingSpherePreconditions.checkNotNull(table, () -> new NoSuchTableException(tableName.getValue()));
+            result.getTableMetaDataVersions().put(Joiner.on(".").join(Arrays.asList(originalDatabase.getValue(), originalSchema.getValue(), table.getName())), 0);
         }
         return result;
     }

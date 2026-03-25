@@ -150,7 +150,7 @@ public final class ShardingSphereDatabase {
      * @param schemaName schema name
      * @return contains schema from database or not
      */
-    private boolean containsSchema(final IdentifierValue schemaName) {
+    public boolean containsSchema(final IdentifierValue schemaName) {
         return findSchema(schemaName).isPresent();
     }
     
@@ -170,7 +170,7 @@ public final class ShardingSphereDatabase {
      * @param schemaName schema name
      * @return schema
      */
-    private ShardingSphereSchema getSchema(final IdentifierValue schemaName) {
+    public ShardingSphereSchema getSchema(final IdentifierValue schemaName) {
         return findSchema(schemaName).orElse(null);
     }
     

@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.encrypt.rewrite.token.comparator.EncryptorComparator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ExpressionProjection;
@@ -61,12 +60,9 @@ public final class InsertSelectColumnsEncryptorChecker {
                 continue;
             }
             ColumnSegmentBoundInfo projectionColumnBoundInfo = getColumnSegmentBoundInfo(projection);
-            EncryptAlgorithm insertColumnEncryptor = encryptRule.findQueryEncryptor(
-                    insertColumnSegment.getColumnBoundInfo().getOriginalTable().getValue(), insertColumnSegment.getColumnBoundInfo().getOriginalColumn().getValue()).orElse(null);
-            EncryptAlgorithm projectionEncryptor =
-                    encryptRule.findQueryEncryptor(projectionColumnBoundInfo.getOriginalTable().getValue(), projectionColumnBoundInfo.getOriginalColumn().getValue()).orElse(null);
-            ShardingSpherePreconditions.checkState(EncryptorComparator.isSame(insertColumnEncryptor, projectionEncryptor), () -> new UnsupportedSQLOperationException(
-                    "Can not use different encryptor for " + insertColumnSegment.getColumnBoundInfo() + " and " + projectionColumnBoundInfo + " in insert select columns"));
+            ShardingSpherePreconditions.checkState(EncryptorComparator.isAllSame(encryptRule, insertColumnSegment.getColumnBoundInfo(), projectionColumnBoundInfo),
+                    () -> new UnsupportedSQLOperationException(
+                            "Can not use different encryptor for " + insertColumnSegment.getColumnBoundInfo() + " and " + projectionColumnBoundInfo + " in insert select columns"));
         }
     }
     
@@ -88,11 +84,7 @@ public final class InsertSelectColumnsEncryptorChecker {
                 continue;
             }
             ColumnSegmentBoundInfo projectionColumnBoundInfo = getColumnSegmentBoundInfo(projection);
-            EncryptAlgorithm insertColumnEncryptor = encryptRule.findQueryEncryptor(
-                    insertColumnSegment.getColumnBoundInfo().getOriginalTable().getValue(), insertColumnSegment.getColumnBoundInfo().getOriginalColumn().getValue()).orElse(null);
-            EncryptAlgorithm projectionEncryptor =
-                    encryptRule.findQueryEncryptor(projectionColumnBoundInfo.getOriginalTable().getValue(), projectionColumnBoundInfo.getOriginalColumn().getValue()).orElse(null);
-            if (!EncryptorComparator.isSame(insertColumnEncryptor, projectionEncryptor)) {
+            if (!EncryptorComparator.isAllSame(encryptRule, insertColumnSegment.getColumnBoundInfo(), projectionColumnBoundInfo)) {
                 return false;
             }
         }

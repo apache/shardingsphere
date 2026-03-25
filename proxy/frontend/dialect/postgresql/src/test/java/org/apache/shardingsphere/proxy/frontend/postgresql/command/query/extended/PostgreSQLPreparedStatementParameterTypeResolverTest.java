@@ -38,6 +38,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -64,6 +65,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -144,20 +146,24 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         when(result.getMetaDataContexts().getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         RuleMetaData globalRuleMetaData = new RuleMetaData(Collections.singleton(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build())));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        when(result.getMetaDataContexts().getMetaData().containsDatabase("postgres")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres").getProtocolType()).thenReturn(databaseType);
+        lenient().when(result.getMetaDataContexts().getMetaData().containsDatabase("postgres")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue("postgres"))).thenReturn(true);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getProtocolType()).thenReturn(databaseType);
         StorageUnit storageUnit = mock(StorageUnit.class, RETURNS_DEEP_STUBS);
         when(storageUnit.getStorageType()).thenReturn(databaseType);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres").getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
+        when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres").containsSchema("public")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres").getSchema("public")).thenReturn(schema);
+        when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
+        when(database.getSchema("public")).thenReturn(schema);
+        when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("k", Types.INTEGER, true, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        when(schema.containsTable("foo_tbl")).thenReturn(true);
-        when(schema.getTable("foo_tbl")).thenReturn(table);
-        ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase("postgres");
+        when(schema.containsTable(new IdentifierValue("foo_tbl"))).thenReturn(true);
+        when(schema.getTable(new IdentifierValue("foo_tbl"))).thenReturn(table);
+        when(result.getMetaDataContexts().getMetaData().getDatabase("postgres")).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("postgres"))).thenReturn(database);
         when(result.getDatabase("postgres")).thenReturn(database);
         return result;
     }

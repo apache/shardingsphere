@@ -393,7 +393,7 @@ public final class ExpressionExtractor {
     private static void extractSubqueryCompareExpressionsFromExpression(final Collection<ExpressionSegment> result, final ExpressionSegment expressionSegment) {
         if (expressionSegment instanceof BinaryOperationExpression) {
             BinaryOperationExpression binaryExpression = (BinaryOperationExpression) expressionSegment;
-            if (isComparisonOperator(binaryExpression.getOperator()) && containsSubquery(binaryExpression)) {
+            if (containsSubquery(binaryExpression)) {
                 result.add(binaryExpression);
             }
             extractSubqueryCompareExpressionsFromExpression(result, binaryExpression.getLeft());
@@ -452,16 +452,6 @@ public final class ExpressionExtractor {
     
     private static boolean containsSubqueryInIn(final InExpression inExpression) {
         return isSubqueryExpression(inExpression.getLeft()) || isSubqueryExpression(inExpression.getRight());
-    }
-    
-    private static boolean isComparisonOperator(final String operator) {
-        if (null == operator) {
-            return false;
-        }
-        String upperOperator = operator.toUpperCase();
-        return "=".equals(upperOperator) || "!=".equals(upperOperator) || "<>".equals(upperOperator)
-                || ">".equals(upperOperator) || "<".equals(upperOperator)
-                || ">=".equals(upperOperator) || "<=".equals(upperOperator);
     }
     
     private static boolean containsSubquery(final BinaryOperationExpression binaryExpression) {

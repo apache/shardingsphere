@@ -18,9 +18,16 @@
 package org.apache.shardingsphere.mode.manager.cluster.exclusive;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.exclusive.ExclusiveLockHandle;
 import org.apache.shardingsphere.mode.exclusive.ExclusiveOperatorContext;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.core.lock.DistributedLockHolder;
+import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
+
+import java.util.Collection;
+import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Cluster exclusive operator context.
@@ -30,13 +37,47 @@ public final class ClusterExclusiveOperatorContext implements ExclusiveOperatorC
     
     private final ClusterPersistRepository repository;
     
-    @Override
-    public boolean start(final String operationKey, final long timeoutMillis) {
-        return DistributedLockHolder.getDistributedLock(operationKey, repository).tryLock(timeoutMillis);
-    }
+    private final Collection<String> exclusiveOperationKeys = new CopyOnWriteArraySet<>();
     
     @Override
-    public void stop(final String operationKey) {
-        DistributedLockHolder.getDistributedLock(operationKey, repository).unlock();
+    public Optional<ExclusiveLockHandle> start(final String operationKey, final long timeoutMillis) {
+        if (!exclusiveOperationKeys.add(operationKey)) {
+            return Optional.empty();
+        }
+        DistributedLock distributedLock = DistributedLockHolder.getDistributedLock(operationKey, repository);
+        if (!distributedLock.tryLock(timeoutMillis)) {
+            exclusiveOperationKeys.remove(operationKey);
+            return Optional.empty();
+        }
+        return Optional.of(new ClusterExclusiveLockHandle(operationKey, distributedLock, exclusiveOperationKeys));
+    }
+    
+    private static final class ClusterExclusiveLockHandle implements ExclusiveLockHandle {
+        
+        private final String operationKey;
+        
+        private final DistributedLock distributedLock;
+        
+        private final Collection<String> exclusiveOperationKeys;
+        
+        private final AtomicBoolean closed = new AtomicBoolean();
+        
+        private ClusterExclusiveLockHandle(final String operationKey, final DistributedLock distributedLock, final Collection<String> exclusiveOperationKeys) {
+            this.operationKey = operationKey;
+            this.distributedLock = distributedLock;
+            this.exclusiveOperationKeys = exclusiveOperationKeys;
+        }
+        
+        @Override
+        public void close() {
+            if (!closed.compareAndSet(false, true)) {
+                return;
+            }
+            try {
+                distributedLock.unlock();
+            } finally {
+                exclusiveOperationKeys.remove(operationKey);
+            }
+        }
     }
 }

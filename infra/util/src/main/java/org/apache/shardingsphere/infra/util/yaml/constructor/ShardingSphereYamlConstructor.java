@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * ShardingSphere YAML constructor.
@@ -94,15 +95,21 @@ public final class ShardingSphereYamlConstructor extends Constructor {
     }
     
     private boolean isBlank(final String value) {
-        for (int i = 0; i < value.length(); i++) {
-            if (!Character.isWhitespace(value.charAt(i))) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.range(0, value.length()).allMatch(i -> Character.isWhitespace(value.charAt(i)));
     }
     
-    private static boolean isMappingNode(final Node node, final Object target) {
+    private void validateMapKeys(final Map<?, ?> map) {
+        for (Object each : map.keySet()) {
+            Preconditions.checkArgument(null != each, "YAML map key cannot be null.");
+            Preconditions.checkArgument(!(each instanceof String) || !isBlank((String) each), "YAML map key cannot be blank.");
+        }
+    }
+    
+    private boolean isBlank(final String value) {
+        return IntStream.range(0, value.length()).allMatch(i -> Character.isWhitespace(value.charAt(i)));
+    }
+    
+    private boolean isMappingNode(final Node node, final Object target) {
         return null != target && node instanceof MappingNode && !(target instanceof Map) && !(target instanceof Collection);
     }
     

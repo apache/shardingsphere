@@ -59,7 +59,10 @@ public final class DatabaseIdentifierContextFactory {
      * @return identifier context
      */
     public static DatabaseIdentifierContext create(final DatabaseType protocolType, final ConfigurationProperties props) {
-        return create(protocolType, getProps(props), null);
+        ConfigurationProperties actualProps = getProps(props);
+        IdentifierCaseRuleResolver resolver = new IdentifierCaseRuleResolver();
+        IdentifierCaseRuleSet protocolRuleSet = resolver.resolve(protocolType, actualProps, null);
+        return new DatabaseIdentifierContext(createScopeAwareRuleSet(protocolRuleSet, protocolRuleSet));
     }
     
     /**
@@ -74,10 +77,6 @@ public final class DatabaseIdentifierContextFactory {
         return new DatabaseIdentifierContext(createRuleSet(protocolType, resourceMetaData, getProps(props)));
     }
     
-    private static DatabaseIdentifierContext create(final DatabaseType protocolType, final ConfigurationProperties props, final DataSource dataSource) {
-        return new DatabaseIdentifierContext(new IdentifierCaseRuleResolver().resolve(protocolType, props, dataSource));
-    }
-    
     /**
      * Refresh identifier context with protocol-aware identifier rules.
      *
@@ -86,7 +85,10 @@ public final class DatabaseIdentifierContextFactory {
      * @param props configuration properties
      */
     public static void refresh(final DatabaseIdentifierContext identifierContext, final DatabaseType protocolType, final ConfigurationProperties props) {
-        refresh(identifierContext, protocolType, null, props);
+        ConfigurationProperties actualProps = getProps(props);
+        IdentifierCaseRuleResolver resolver = new IdentifierCaseRuleResolver();
+        IdentifierCaseRuleSet protocolRuleSet = resolver.resolve(protocolType, actualProps, null);
+        identifierContext.refresh(createScopeAwareRuleSet(protocolRuleSet, protocolRuleSet));
     }
     
     /**
@@ -123,8 +125,13 @@ public final class DatabaseIdentifierContextFactory {
     }
     
     private static IdentifierCaseRuleSet createScopeAwareRuleSet(final IdentifierCaseRuleSet protocolRuleSet, final IdentifierCaseRuleSet storageRuleSet) {
+        IdentifierCaseRuleSet databaseRuleSet = IdentifierCaseRuleSets.newInsensitiveRuleSet();
         Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
         for (IdentifierScope each : IdentifierScope.values()) {
+            if (IdentifierScope.DATABASE == each) {
+                scopedRules.put(each, databaseRuleSet.getRule(each));
+                continue;
+            }
             scopedRules.put(each, IdentifierScope.SCHEMA == each ? protocolRuleSet.getRule(each) : storageRuleSet.getRule(each));
         }
         return new IdentifierCaseRuleSet(storageRuleSet.getRule(IdentifierScope.TABLE), scopedRules);

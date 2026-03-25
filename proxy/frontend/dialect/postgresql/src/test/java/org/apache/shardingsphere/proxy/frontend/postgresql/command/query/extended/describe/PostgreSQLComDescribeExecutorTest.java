@@ -55,6 +55,7 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extende
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -562,9 +563,15 @@ class PostgreSQLComDescribeExecutorTest {
         when(storageUnit.getStorageType()).thenReturn(DATABASE_TYPE);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(result.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).containsSchema("public")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public").containsTable(TABLE_NAME)).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(true);
         ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(database);
+        when(database.containsSchema("public")).thenReturn(true);
+        when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
+        when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
+        when(schema.containsTable(TABLE_NAME)).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue(TABLE_NAME))).thenReturn(true);
+        when(schema.getTable(new IdentifierValue(TABLE_NAME))).thenReturn(new ShardingSphereTable(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList()));
         when(result.getDatabase(DATABASE_NAME)).thenReturn(database);
         return result;
     }
@@ -582,12 +589,18 @@ class PostgreSQLComDescribeExecutorTest {
         when(storageUnit.getStorageType()).thenReturn(DATABASE_TYPE);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(result.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).containsSchema("public")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public")).thenReturn(schema);
-        when(schema.containsTable(table.getName())).thenReturn(true);
-        when(schema.getTable(table.getName())).thenReturn(table);
         ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(database);
+        when(database.containsSchema("public")).thenReturn(true);
+        when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
+        when(database.getSchema("public")).thenReturn(schema);
+        when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
+        when(schema.containsTable(table.getName())).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue(table.getName()))).thenReturn(true);
+        when(schema.getTable(table.getName())).thenReturn(table);
+        when(schema.getTable(new IdentifierValue(table.getName()))).thenReturn(table);
         when(result.getDatabase(DATABASE_NAME)).thenReturn(database);
         return result;
     }

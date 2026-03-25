@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rule.table;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.enums.EncryptColumnItemType;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLogicColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,8 +31,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -120,13 +121,13 @@ class EncryptTableTest {
     }
     
     @Test
-    void assertFindQueryEncryptor() {
+    void assertFindEncryptor() {
         assertTrue(encryptTable.getEncryptColumn("foo_col").getAssistedQuery().isPresent());
-        assertThat(encryptTable.findQueryEncryptor("foo_col"), is(Optional.of(encryptTable.getEncryptColumn("foo_col").getAssistedQuery().get().getEncryptor())));
+        assertThat(encryptTable.findEncryptor("foo_col", EncryptColumnItemType.ASSISTED_QUERY), is(Optional.of(encryptTable.getEncryptColumn("foo_col").getAssistedQuery().get().getEncryptor())));
     }
     
     @Test
-    void assertFindQueryEncryptorWithoutEncryptColumn() {
-        assertThat(encryptTable.findQueryEncryptor("no_col"), is(Optional.empty()));
+    void assertFindEncryptorWithoutEncryptColumn() {
+        assertThat(encryptTable.findEncryptor("no_col", EncryptColumnItemType.ASSISTED_QUERY), is(Optional.empty()));
     }
 }

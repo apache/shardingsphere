@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.checker.sql.projection;
 
+import org.apache.shardingsphere.encrypt.enums.EncryptColumnItemType;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.annotation.HighFrequencyInvocation;
@@ -86,9 +87,11 @@ public final class EncryptSelectProjectionSupportedChecker implements SupportedS
     
     private boolean containsEncryptProjectionInCombineSegment(final EncryptRule rule, final Projection leftProjection, final Projection rightProjection) {
         ColumnSegmentBoundInfo leftColumnInfo = getColumnSegmentBoundInfo(leftProjection);
-        EncryptAlgorithm leftColumnEncryptor = rule.findQueryEncryptor(leftColumnInfo.getOriginalTable().getValue(), leftColumnInfo.getOriginalColumn().getValue()).orElse(null);
+        EncryptAlgorithm leftColumnEncryptor =
+                rule.findEncryptor(leftColumnInfo.getOriginalTable().getValue(), leftColumnInfo.getOriginalColumn().getValue(), EncryptColumnItemType.CIPHER).orElse(null);
         ColumnSegmentBoundInfo rightColumnInfo = getColumnSegmentBoundInfo(rightProjection);
-        EncryptAlgorithm rightColumnEncryptor = rule.findQueryEncryptor(rightColumnInfo.getOriginalTable().getValue(), rightColumnInfo.getOriginalColumn().getValue()).orElse(null);
+        EncryptAlgorithm rightColumnEncryptor =
+                rule.findEncryptor(rightColumnInfo.getOriginalTable().getValue(), rightColumnInfo.getOriginalColumn().getValue(), EncryptColumnItemType.CIPHER).orElse(null);
         return null != leftColumnEncryptor || null != rightColumnEncryptor;
     }
     
