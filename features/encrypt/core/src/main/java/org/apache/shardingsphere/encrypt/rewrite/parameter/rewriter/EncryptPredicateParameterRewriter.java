@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryptQueryAlgorithmException;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionValues;
@@ -58,8 +57,6 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     
     @Override
     public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
-        String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName));
         for (EncryptCondition each : encryptConditions) {
             encryptParameters(paramBuilder, each.getPositionIndexMap(), getEncryptedValues(each, new EncryptConditionValues(each).get(params)));
         }
@@ -81,7 +78,8 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
                 : encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, columnName, originalValues);
     }
     
-    private List<Object> getEncryptedLikeValues(final String databaseName, final String schemaName, final List<Object> originalValues, final EncryptColumn encryptColumn, final String tableName, final String columnName) {
+    private List<Object> getEncryptedLikeValues(final String databaseName, final String schemaName, final List<Object> originalValues, 
+                                                final EncryptColumn encryptColumn, final String tableName, final String columnName) {
         ShardingSpherePreconditions.checkState(encryptColumn.getLikeQuery().isPresent() || encryptColumn.getCipher().getEncryptor().getMetaData().isSupportLike(),
                 () -> new MissingMatchedEncryptQueryAlgorithmException(tableName, columnName, "LIKE"));
         return encryptColumn.getLikeQuery()
