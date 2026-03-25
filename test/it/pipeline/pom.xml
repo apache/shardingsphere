@@ -26,6 +26,10 @@
     <artifactId>shardingsphere-test-it-pipeline</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

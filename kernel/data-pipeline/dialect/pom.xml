@@ -27,6 +27,10 @@
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+    </properties>
+    
     <modules>
         <module>mysql</module>
         <module>postgresql</module>
