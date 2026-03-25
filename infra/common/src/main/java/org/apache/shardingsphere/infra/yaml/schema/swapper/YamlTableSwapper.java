@@ -56,15 +56,15 @@ public final class YamlTableSwapper implements YamlConfigurationSwapper<YamlShar
     }
     
     private Map<String, YamlShardingSphereColumn> swapToYamlColumns(final Collection<ShardingSphereColumn> columns) {
-        return columns.stream().collect(Collectors.toMap(key -> key.getName().toLowerCase(), columnSwapper::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return columns.stream().collect(Collectors.toMap(ShardingSphereColumn::getName, columnSwapper::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, YamlShardingSphereIndex> swapToYamlIndexes(final Collection<ShardingSphereIndex> indexes) {
-        return indexes.stream().collect(Collectors.toMap(key -> key.getName().toLowerCase(), indexSwapper::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return indexes.stream().collect(Collectors.toMap(ShardingSphereIndex::getName, indexSwapper::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     private Map<String, YamlShardingSphereConstraint> swapToYamlConstraints(final Collection<ShardingSphereConstraint> constrains) {
-        return constrains.stream().collect(Collectors.toMap(key -> key.getName().toLowerCase(), constraintSwapper::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
+        return constrains.stream().collect(Collectors.toMap(ShardingSphereConstraint::getName, constraintSwapper::swapToYamlConfiguration, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @Override
