@@ -68,7 +68,7 @@ public final class MCPRuntimeLauncher {
      * Launch the MCP runtime with caller-provided runtime dependencies.
      *
      * @param registry server registry
-     @param config launch configuration
+     * @param config launch configuration
      * @param runtimeServices runtime services
      * @param metadataCatalog metadata catalog
      * @param databaseRuntime database runtime
