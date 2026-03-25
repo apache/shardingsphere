@@ -161,7 +161,6 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     private Map<?, ?> getRequiredMapping(final Map<?, ?> yamlRoot, final String propertyName, final String requiredErrorMessage, final String mappingErrorMessage) {
         ShardingSpherePreconditions.checkState(yamlRoot.containsKey(propertyName), () -> new IllegalArgumentException(requiredErrorMessage));
         ShardingSpherePreconditions.checkState(yamlRoot.get(propertyName) instanceof Map, () -> new IllegalArgumentException(mappingErrorMessage));
@@ -184,7 +183,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     private void validateRootProperties(final Map<?, ?> yamlRoot) {
         for (Object each : yamlRoot.keySet()) {
             String propertyName = String.valueOf(each);
-            ShardingSpherePreconditions.checkState(ROOT_PROPERTIES.contains(propertyName), () -> new IllegalArgumentException(formatUnsupportedPropertyMessage(propertyName)));
+            ShardingSpherePreconditions.checkState(ROOT_PROPERTIES.contains(propertyName), () -> new IllegalArgumentException(String.format("Unsupported YAML property `%s`.", propertyName)));
         }
     }
     
@@ -192,7 +191,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         for (Object each : section.keySet()) {
             String propertyName = String.valueOf(each);
             ShardingSpherePreconditions.checkState(allowedProperties.contains(propertyName),
-                    () -> new IllegalArgumentException(formatUnsupportedPropertyMessage(sectionName + "." + propertyName)));
+                    () -> new IllegalArgumentException(String.format("Unsupported YAML property `%s`.", sectionName + "." + propertyName)));
         }
     }
     
@@ -252,9 +251,5 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
             result.put(databaseName, runtimeDatabaseConfigSwapper.swapToObject(entry.getValue()));
         }
         return result;
-    }
-    
-    private String formatUnsupportedPropertyMessage(final String propertyName) {
-        return String.format("Unsupported YAML property `%s`.", propertyName);
     }
 }
