@@ -284,17 +284,6 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Judge whether contains index.
-     *
-     * @param tableName table name
-     * @param indexName index name
-     * @return contains index or not
-     */
-    public boolean containsIndex(final IdentifierValue tableName, final String indexName) {
-        return containsTable(tableName) && getTable(tableName).containsIndex(indexName);
-    }
-    
-    /**
      * Get visible column names.
      *
      * @param tableName table name
