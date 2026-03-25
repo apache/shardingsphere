@@ -23,7 +23,7 @@ RUN mv /opt/${APP_NAME} /opt/shardingsphere-proxy
 
 WORKDIR /opt/shardingsphere-proxy
 
-FROM eclipse-temurin:8-jdk
+FROM eclipse-temurin:21-jdk
 
 COPY --from=prepare /opt/shardingsphere-proxy /opt/shardingsphere-proxy
 
