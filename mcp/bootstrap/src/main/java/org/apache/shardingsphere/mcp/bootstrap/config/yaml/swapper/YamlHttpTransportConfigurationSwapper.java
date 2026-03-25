@@ -27,8 +27,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransp
  */
 public final class YamlHttpTransportConfigurationSwapper implements YamlConfigurationSwapper<YamlHttpTransportConfiguration, HttpTransportConfiguration> {
     
-    private static final String REQUIRED_CONFIGURATION_ERROR_MESSAGE = "Property `transport.http` is required.";
-    
     @Override
     public YamlHttpTransportConfiguration swapToYamlConfiguration(final HttpTransportConfiguration data) {
         YamlHttpTransportConfiguration result = new YamlHttpTransportConfiguration();
@@ -41,7 +39,7 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     
     @Override
     public HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig) {
-        ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException(REQUIRED_CONFIGURATION_ERROR_MESSAGE));
+        ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("Property `transport.http` is required."));
         return new HttpTransportConfiguration(resolveEnabled(yamlConfig.getEnabled()), resolveRequiredText(yamlConfig.getBindHost(), "transport.http.bindHost"),
                 resolvePort(yamlConfig.getPort()), resolveEndpointPath(yamlConfig.getEndpointPath()));
     }
