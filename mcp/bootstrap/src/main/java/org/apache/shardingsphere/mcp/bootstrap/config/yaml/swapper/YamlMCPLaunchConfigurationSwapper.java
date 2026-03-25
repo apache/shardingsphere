@@ -104,7 +104,6 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         return swapToObject(createYamlConfig(yamlRoot));
     }
     
-    @SuppressWarnings("unchecked")
     private Map<?, ?> loadYamlRoot(final String yamlContent) {
         LoaderOptions loaderOptions = ShardingSphereYamlConstructor.createLoaderOptions();
         loaderOptions.setAllowDuplicateKeys(false);
