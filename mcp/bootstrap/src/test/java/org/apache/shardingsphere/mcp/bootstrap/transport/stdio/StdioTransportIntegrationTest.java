@@ -17,40 +17,20 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
 
-import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
-import org.apache.shardingsphere.mcp.execute.QueryResult;
-import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
-import org.apache.shardingsphere.mcp.resource.MetadataObject;
-import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.tool.ToolDispatchResult;
-import org.apache.shardingsphere.mcp.tool.ToolRequest;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StdioTransportIntegrationTest {
@@ -59,111 +39,53 @@ class StdioTransportIntegrationTest {
     private Path tempDir;
     
     @Test
-    void assertInitializeSession() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, createRuntimeServices(sessionManager));
-        
-        String actual = stdioMCPServer.initializeSession();
-        
-        assertTrue(sessionManager.hasSession(actual));
-        assertThat(sessionManager.findSession(actual).orElseThrow().getSessionId(), is(actual));
+    void assertBootstrapWithStdioTransport() throws Exception {
+        Path configFile = createRuntimeDatabasesConfigFile();
+        try (StdioTransportTestClient client = new StdioTransportTestClient(configFile)) {
+            Map<String, Object> actualInitializeResult = client.request("init-1", "initialize",
+                    Map.of("protocolVersion", MCPTransportConstants.PROTOCOL_VERSION, "capabilities", Map.of(), "clientInfo", Map.of("name", "stdio-test", "version", "1.0.0")));
+            client.notifyServer("notifications/initialized", Map.of());
+            Map<String, Object> actualToolsResult = client.request("tool-list-1", "tools/list", Map.of());
+            Map<String, Object> actualCallToolResult = client.request("tool-call-1", "tools/call", Map.of("name", "list_databases", "arguments", Map.of()));
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> actualTools = (List<Map<String, Object>>) actualToolsResult.get("tools");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> actualStructuredContent = (Map<String, Object>) actualCallToolResult.get("structuredContent");
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> actualItems = (List<Map<String, Object>>) actualStructuredContent.get("items");
+            assertThat(actualInitializeResult.get("protocolVersion"), is(MCPTransportConstants.PROTOCOL_VERSION));
+            assertTrue(actualTools.stream().anyMatch(each -> "list_databases".equals(each.get("name"))));
+            assertThat(actualItems.size(), is(1));
+        }
     }
     
-    @Test
-    void assertInvokeMetadataTool() {
-        StdioMCPServer stdioMCPServer = createStdioServer();
-        String sessionId = stdioMCPServer.initializeSession();
-        
-        ToolDispatchResult actual = stdioMCPServer.invokeMetadataTool(sessionId, createMetadataCatalog(),
-                new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, ""));
-        
-        assertTrue(actual.isSuccessful());
-        assertThat(actual.getMetadataObjects().size(), is(1));
+    private Path createRuntimeDatabasesConfigFile() throws IOException {
+        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "stdio-transport").replace(";DB_CLOSE_DELAY=-1", "");
+        initializeDatabase(jdbcUrl);
+        Path result = tempDir.resolve("mcp-runtime-databases.yaml");
+        Files.writeString(result, "transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases:\n"
+                + "  logic_db:\n"
+                + "    databaseType: H2\n"
+                + "    jdbcUrl: '" + jdbcUrl + "'\n"
+                + "    username: ''\n"
+                + "    password: ''\n"
+                + "    driverClassName: org.h2.Driver\n");
+        return result;
     }
     
-    @Test
-    void assertExecuteQuery() {
-        StdioMCPServer stdioMCPServer = createStdioServer();
-        String sessionId = stdioMCPServer.initializeSession();
-        ExecutionRequest executionRequest = new ExecutionRequest(sessionId, "logic_db", "MySQL", "public", "SELECT * FROM orders",
-                10, 1000, createDatabaseRuntime());
-        
-        ExecuteQueryResponse actual = stdioMCPServer.executeQuery(sessionId, executionRequest);
-        
-        assertTrue(actual.isSuccessful());
-    }
-    
-    @Test
-    void assertCloseSession() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, createRuntimeServices(sessionManager));
-        String sessionId = stdioMCPServer.initializeSession();
-        
-        stdioMCPServer.closeSession(sessionId);
-        
-        assertTrue(sessionManager.findSession(sessionId).isEmpty());
-        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> sessionManager.createSession(sessionId));
-        assertThat(actual.getMessage(), is("Session recovery is not supported."));
-    }
-    
-    @Test
-    void assertLaunch() {
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"), createRuntimeDatabases())));
-    }
-    
-    @Test
-    void assertLaunchWithNoTransport() {
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, false, "/mcp"), createRuntimeDatabases())));
-        
-        assertThat(actual.getMessage(), is("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true."));
-    }
-    
-    private StdioMCPServer createStdioServer() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
-        return new StdioMCPServer(sessionManager, runtimeServices);
-    }
-    
-    private MCPRuntimeServices createRuntimeServices(final MCPSessionManager sessionManager) {
-        return new MCPRuntimeServices(sessionManager, new MetadataCatalog(Map.of(), List.of()), new DatabaseRuntime(Map.of(), Map.of()));
-    }
-    
-    private MetadataCatalog createMetadataCatalog() {
-        Map<String, String> databaseTypes = new LinkedHashMap<>();
-        databaseTypes.put("logic_db", "MySQL");
-        LinkedList<MetadataObject> metadataObjects = new LinkedList<>();
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""));
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""));
-        return new MetadataCatalog(databaseTypes, metadataObjects);
-    }
-    
-    private DatabaseRuntime createDatabaseRuntime() {
-        Map<String, QueryResult> queryResults = new LinkedHashMap<>();
-        LinkedList<ColumnDefinition> columns = new LinkedList<>();
-        columns.add(new ColumnDefinition("order_id", "INTEGER", "INT", false));
-        LinkedList<List<Object>> rows = new LinkedList<>();
-        rows.add(new LinkedList<>(List.of(1)));
-        queryResults.put("logic_db:orders", new QueryResult(columns, rows));
-        Map<String, Integer> updateCounts = new LinkedHashMap<>();
-        updateCounts.put("logic_db:orders", 1);
-        return new DatabaseRuntime(queryResults, updateCounts);
-    }
-    
-    private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "stdio-transport");
+    private void initializeDatabase(final String jdbcUrl) {
         try {
             H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
-        return H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
-    }
-    
-    private MCPTransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {
-        return new MCPTransportConfiguration(new HttpTransportConfiguration(httpEnabled, "127.0.0.1", 0, endpointPath), new StdioTransportConfiguration(stdioEnabled));
     }
 }

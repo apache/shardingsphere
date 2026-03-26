@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfigurationValidator;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
@@ -36,8 +37,6 @@ import java.util.Map.Entry;
 public final class YamlMCPLaunchConfigurationSwapper implements YamlConfigurationSwapper<YamlMCPLaunchConfiguration, MCPLaunchConfiguration> {
     
     private static final String NULL_CONFIG_ERROR_MESSAGE = "MCP launch configuration cannot be null.";
-    
-    private static final String TRANSPORT_VALIDATION_ERROR_MESSAGE = "At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true.";
     
     private final YamlMCPTransportConfigurationSwapper transportConfigSwapper = new YamlMCPTransportConfigurationSwapper();
     
@@ -63,7 +62,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     public MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException(NULL_CONFIG_ERROR_MESSAGE));
         MCPTransportConfiguration transportConfig = transportConfigSwapper.swapToObject(yamlConfig.getTransport());
-        ShardingSpherePreconditions.checkState(transportConfig.hasEnabledTransport(), () -> new IllegalArgumentException(TRANSPORT_VALIDATION_ERROR_MESSAGE));
+        MCPTransportConfigurationValidator.validate(transportConfig);
         return new MCPLaunchConfiguration(transportConfig, swapToRuntimeDatabases(null == yamlConfig.getRuntimeDatabases() ? Collections.emptyMap() : yamlConfig.getRuntimeDatabases()));
     }
     

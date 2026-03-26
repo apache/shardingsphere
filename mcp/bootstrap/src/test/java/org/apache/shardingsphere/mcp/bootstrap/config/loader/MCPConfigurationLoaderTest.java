@@ -135,7 +135,7 @@ class MCPConfigurationLoaderTest {
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load("distribution/mcp/src/main/resources/conf/mcp.yaml");
         
         assertTrue(actual.getTransport().getHttp().isEnabled());
-        assertTrue(actual.getTransport().getStdio().isEnabled());
+        assertFalse(actual.getTransport().getStdio().isEnabled());
         assertThat(actual.getRuntimeDatabases().size(), is(2));
         assertThat(actual.getRuntimeDatabases().get("orders").getUsername(), is(""));
         assertThat(actual.getRuntimeDatabases().get("billing").getPassword(), is(""));

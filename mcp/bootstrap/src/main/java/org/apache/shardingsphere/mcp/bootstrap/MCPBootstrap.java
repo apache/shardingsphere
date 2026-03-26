@@ -19,8 +19,10 @@ package org.apache.shardingsphere.mcp.bootstrap;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
 
 import java.io.IOException;
 
@@ -32,6 +34,8 @@ public final class MCPBootstrap {
     
     private static final String DEFAULT_CONFIG_PATH = "conf/mcp.yaml";
     
+    private static MCPRuntimeTransport runtime;
+    
     /**
      * Main entrance.
      *
@@ -41,7 +45,12 @@ public final class MCPBootstrap {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException {
         // CHECKSTYLE:ON
-        new MCPRuntimeLauncher().launch(MCPConfigurationLoader.load(getConfigurationPath(args)));
+        MCPLaunchConfiguration launchConfiguration = MCPConfigurationLoader.load(getConfigurationPath(args));
+        runtime = new MCPRuntimeLauncher().launch(launchConfiguration);
+        Runtime.getRuntime().addShutdownHook(new Thread(MCPBootstrap::closeRuntime, "shardingsphere-mcp-shutdown"));
+        if (launchConfiguration.getTransport().getStdio().isEnabled()) {
+            awaitRuntimeTermination();
+        }
     }
     
     private static String getConfigurationPath(final String[] args) {
@@ -50,5 +59,28 @@ public final class MCPBootstrap {
         }
         String result = args[0].trim();
         return result.isEmpty() ? DEFAULT_CONFIG_PATH : result;
+    }
+    
+    private static void awaitRuntimeTermination() {
+        MCPRuntimeTransport actualRuntime = runtime;
+        if (null == actualRuntime) {
+            return;
+        }
+        try {
+            actualRuntime.awaitTermination();
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        } finally {
+            closeRuntime();
+        }
+    }
+    
+    private static synchronized void closeRuntime() {
+        MCPRuntimeTransport actualRuntime = runtime;
+        runtime = null;
+        if (null == actualRuntime) {
+            return;
+        }
+        actualRuntime.close();
     }
 }

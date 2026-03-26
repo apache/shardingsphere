@@ -20,7 +20,7 @@ transport:
     port: 18088
     endpointPath: /mcp
   stdio:
-    enabled: true
+    enabled: false
 
 runtimeDatabases:
   # Replace this demo runtime block for real deployments.

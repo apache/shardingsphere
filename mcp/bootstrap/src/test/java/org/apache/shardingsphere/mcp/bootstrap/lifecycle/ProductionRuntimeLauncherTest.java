@@ -19,10 +19,12 @@ package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfigurationValidator;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -42,8 +44,6 @@ import java.util.logging.Logger;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ProductionRuntimeLauncherTest {
@@ -56,28 +56,16 @@ class ProductionRuntimeLauncherTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
+        MCPRuntimeTransport actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"),
                 H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
-    }
-    
-    @Test
-    void assertLaunchReturnsStdioRuntime() throws SQLException {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher-stdio");
-        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        
-        MCPRuntime actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
-                H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
-        
-        assertFalse(actual.getHttpServer().isPresent());
-        assertTrue(actual.getStdioServer().isPresent());
+        actual.close();
     }
     
     @Test
     void assertLaunchWithInvalidRuntimeDatabases() {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
+                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"),
                         Map.of("logic_db", new RuntimeDatabaseConfiguration("", "jdbc:h2:mem:test", "", "", "org.h2.Driver")))));
         assertThat(actual.getMessage(), is("Runtime database `logic_db` property `databaseType` is required."));
     }
@@ -89,15 +77,16 @@ class ProductionRuntimeLauncherTest {
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
         H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
+        MCPRuntimeTransport actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"),
                 Map.of("logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl)))));
+        actual.close();
     }
     
     @Test
     void assertLaunchWithoutRuntimeDatabases() {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"), Map.of())));
+                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"), Map.of())));
         assertThat(actual.getMessage(), is("At least one runtime database must be configured."));
     }
     
@@ -107,12 +96,30 @@ class ProductionRuntimeLauncherTest {
         DriverManager.registerDriver(driver);
         try {
             MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-            assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
+            MCPRuntimeTransport actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"),
                     Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", CountingDriver.JDBC_URL, "", "", "")))));
+            actual.close();
             assertThat(driver.getConnectionCount(), is(1));
         } finally {
             DriverManager.deregisterDriver(driver);
         }
+    }
+    
+    @Test
+    void assertLaunchWithMultipleEnabledTransports() {
+        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(true, true, "/mcp"),
+                        Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:test", "", "", "org.h2.Driver")))));
+        assertThat(actual.getMessage(), is(MCPTransportConfigurationValidator.MULTIPLE_ENABLED_TRANSPORTS_ERROR_MESSAGE));
+    }
+    
+    @Test
+    void assertLaunchWithDisabledTransports() {
+        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, false, "/mcp"), Map.of())));
+        assertThat(actual.getMessage(), is(MCPTransportConfigurationValidator.NO_ENABLED_TRANSPORT_ERROR_MESSAGE));
     }
     
     private MCPTransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {

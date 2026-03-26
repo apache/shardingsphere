@@ -24,6 +24,9 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -43,7 +46,7 @@ import static org.hamcrest.Matchers.is;
 
 abstract class AbstractProductionRuntimeIntegrationTest {
     
-    private static final String PROTOCOL_VERSION = "2025-11-25";
+    private static final String PROTOCOL_VERSION = MCPTransportConstants.PROTOCOL_VERSION;
     
     @TempDir
     private Path tempDir;
@@ -60,7 +63,12 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     
     protected final void launchProductionRuntime() throws SQLException {
         prepareRuntimeFixture();
-        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
+        httpServer = launchHttpServer(createRuntimeConfiguration());
+    }
+    
+    protected final URI createEndpointUri() {
+        int localPort = httpServer.getLocalPort();
+        return URI.create(String.format("http://127.0.0.1:%d/gateway", localPort));
     }
     
     protected final HttpClient createHttpClient() {
@@ -126,9 +134,13 @@ abstract class AbstractProductionRuntimeIntegrationTest {
                 createRuntimeDatabases());
     }
     
-    private URI createEndpointUri() {
-        int localPort = httpServer.getLocalPort();
-        return URI.create(String.format("http://127.0.0.1:%d/gateway", localPort));
+    private StreamableHttpMCPServer launchHttpServer(final MCPLaunchConfiguration launchConfiguration) {
+        MCPRuntimeTransport actual = new MCPRuntimeLauncher().launch(launchConfiguration);
+        if (actual instanceof StreamableHttpMCPServer) {
+            return (StreamableHttpMCPServer) actual;
+        }
+        actual.close();
+        throw new IllegalStateException("HTTP transport must be enabled for HTTP integration tests.");
     }
     
     private Map<String, Object> createInitializeRequestParams() {
@@ -139,12 +151,12 @@ abstract class AbstractProductionRuntimeIntegrationTest {
         return result;
     }
     
-    private Map<String, Object> parseJsonBody(final String responseBody) {
+    protected final Map<String, Object> parseJsonBody(final String responseBody) {
         return JsonUtils.fromJsonString(normalizeJsonBody(responseBody), new TypeReference<>() {
         });
     }
     
-    private Map<String, Object> castToMap(final Object value) {
+    protected final Map<String, Object> castToMap(final Object value) {
         return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
         });
     }
@@ -175,7 +187,8 @@ abstract class AbstractProductionRuntimeIntegrationTest {
         return hasDataLine ? result.toString() : trimmedResponseBody;
     }
     
-    protected abstract void prepareRuntimeFixture() throws SQLException;
+    protected void prepareRuntimeFixture() throws SQLException {
+    }
     
     protected abstract Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases();
     

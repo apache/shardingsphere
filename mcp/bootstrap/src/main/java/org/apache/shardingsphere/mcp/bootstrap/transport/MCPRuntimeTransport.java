@@ -15,19 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.config;
+package org.apache.shardingsphere.mcp.bootstrap.transport;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
 
 /**
- * MCP transport configuration.
+ * Running MCP transport.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MCPTransportConfiguration {
+public interface MCPRuntimeTransport extends AutoCloseable {
     
-    private final HttpTransportConfiguration http;
+    /**
+     * Start transport.
+     *
+     * @throws IOException IO exception
+     */
+    void start() throws IOException;
     
-    private final StdioTransportConfiguration stdio;
+    /**
+     * Wait until transport terminates.
+     *
+     * @throws InterruptedException interrupted exception
+     */
+    default void awaitTermination() throws InterruptedException {
+    }
+    
+    @Override
+    void close();
 }

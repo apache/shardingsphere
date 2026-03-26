@@ -17,25 +17,17 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.http;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
-import org.junit.jupiter.api.AfterEach;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Map;
-import java.nio.file.Path;
 import java.sql.SQLException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,25 +35,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class StreamableHttpRuntimeIntegrationTest {
-    
-    @TempDir
-    private Path tempDir;
-    
-    private StreamableHttpMCPServer httpServer;
-    
-    @AfterEach
-    void tearDown() {
-        if (null != httpServer) {
-            httpServer.stop();
-            httpServer = null;
-        }
-    }
+class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeIntegrationTest {
     
     @Test
-    void assertLaunchHttpServerWithConfiguredEndpoint() throws IOException, InterruptedException {
-        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
-        HttpClient httpClient = HttpClient.newHttpClient();
+    void assertLaunchHttpServerWithConfiguredEndpoint() throws IOException, InterruptedException, SQLException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
         HttpRequest initializeRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json, text/event-stream")
@@ -70,19 +49,23 @@ class StreamableHttpRuntimeIntegrationTest {
         HttpResponse<String> initializeResponse = httpClient.send(initializeRequest, HttpResponse.BodyHandlers.ofString());
         assertThat(initializeResponse.statusCode(), is(200));
         assertTrue(initializeResponse.headers().firstValue("Content-Type").orElse("").startsWith("application/json"));
-        assertThat(initializeResponse.headers().firstValue("MCP-Protocol-Version").orElse(""), is("2025-11-25"));
+        assertThat(initializeResponse.headers().firstValue("MCP-Protocol-Version").orElse(""), is(MCPTransportConstants.PROTOCOL_VERSION));
         Map<String, Object> initializePayload = parseJsonBody(initializeResponse.body());
         assertThat(initializePayload.get("jsonrpc"), is("2.0"));
         Map<String, Object> result = castToMap(initializePayload.get("result"));
-        assertThat(result.get("protocolVersion"), is("2025-11-25"));
+        assertThat(result.get("protocolVersion"), is(MCPTransportConstants.PROTOCOL_VERSION));
         String sessionId = initializeResponse.headers().firstValue("MCP-Session-Id").orElse("");
         assertFalse(sessionId.isEmpty());
         HttpRequest toolCallRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json, text/event-stream")
                 .header("MCP-Session-Id", sessionId)
-                .header("MCP-Protocol-Version", "2025-11-25")
-                .POST(HttpRequest.BodyPublishers.ofString(createToolCallRequestBody()))
+                .header("MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)
+                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
+                        "jsonrpc", "2.0",
+                        "id", "tool-1",
+                        "method", "tools/call",
+                        "params", Map.of("name", "get_capabilities", "arguments", Map.of())))))
                 .build();
         HttpResponse<String> toolCallResponse = httpClient.send(toolCallRequest, HttpResponse.BodyHandlers.ofString());
         assertThat(toolCallResponse.statusCode(), is(200));
@@ -92,15 +75,19 @@ class StreamableHttpRuntimeIntegrationTest {
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json, text/event-stream")
                 .header("MCP-Session-Id", sessionId)
-                .header("MCP-Protocol-Version", "2025-11-25")
-                .POST(HttpRequest.BodyPublishers.ofString(createResourceReadRequestBody()))
+                .header("MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)
+                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
+                        "jsonrpc", "2.0",
+                        "id", "resource-1",
+                        "method", "resources/read",
+                        "params", Map.of("uri", "shardingsphere://capabilities")))))
                 .build();
         HttpResponse<String> resourceReadResponse = httpClient.send(resourceReadRequest, HttpResponse.BodyHandlers.ofString());
         assertThat(resourceReadResponse.statusCode(), is(200));
         assertTrue(resourceReadResponse.body().contains("supportedResources"));
         HttpRequest deleteRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("MCP-Session-Id", sessionId)
-                .header("MCP-Protocol-Version", "2025-11-25")
+                .header("MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)
                 .DELETE()
                 .build();
         HttpResponse<String> deleteResponse = httpClient.send(deleteRequest, HttpResponse.BodyHandlers.ofString());
@@ -108,27 +95,33 @@ class StreamableHttpRuntimeIntegrationTest {
     }
     
     @Test
-    void assertLaunchHttpServerWithoutInitializeProtocolVersion() throws IOException, InterruptedException {
-        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
-        HttpClient httpClient = HttpClient.newHttpClient();
+    void assertLaunchHttpServerWithoutInitializeProtocolVersion() throws IOException, InterruptedException, SQLException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
         HttpRequest initializeRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json, text/event-stream")
-                .POST(HttpRequest.BodyPublishers.ofString(createInitializeRequestBodyWithoutProtocolVersion()))
+                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
+                        "jsonrpc", "2.0",
+                        "id", "init-1",
+                        "method", "initialize",
+                        "params", Map.of(
+                                "capabilities", Map.of(),
+                                "clientInfo", Map.of("name", "integration-test", "version", "1.0.0"))))))
                 .build();
         HttpResponse<String> initializeResponse = httpClient.send(initializeRequest, HttpResponse.BodyHandlers.ofString());
         assertThat(initializeResponse.statusCode(), is(200));
-        assertThat(initializeResponse.headers().firstValue("MCP-Protocol-Version").orElse(""), is("2025-11-25"));
+        assertThat(initializeResponse.headers().firstValue("MCP-Protocol-Version").orElse(""), is(MCPTransportConstants.PROTOCOL_VERSION));
         Map<String, Object> initializePayload = parseJsonBody(initializeResponse.body());
         Map<String, Object> result = castToMap(initializePayload.get("result"));
-        assertThat(result.get("protocolVersion"), is("2025-11-25"));
+        assertThat(result.get("protocolVersion"), is(MCPTransportConstants.PROTOCOL_VERSION));
         assertFalse(initializeResponse.headers().firstValue("MCP-Session-Id").orElse("").isEmpty());
     }
     
     @Test
-    void assertRejectDeleteWithoutSessionHeader() throws IOException, InterruptedException {
-        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
-        HttpClient httpClient = HttpClient.newHttpClient();
+    void assertRejectDeleteWithoutSessionHeader() throws IOException, InterruptedException, SQLException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
         HttpRequest deleteRequest = HttpRequest.newBuilder(createEndpointUri())
                 .DELETE()
                 .build();
@@ -139,12 +132,12 @@ class StreamableHttpRuntimeIntegrationTest {
     }
     
     @Test
-    void assertRejectDeleteWithMissingSession() throws IOException, InterruptedException {
-        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
-        HttpClient httpClient = HttpClient.newHttpClient();
+    void assertRejectDeleteWithMissingSession() throws IOException, InterruptedException, SQLException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
         HttpRequest deleteRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("MCP-Session-Id", "missing-session")
-                .header("MCP-Protocol-Version", "2025-11-25")
+                .header("MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)
                 .DELETE()
                 .build();
         HttpResponse<String> deleteResponse = httpClient.send(deleteRequest, HttpResponse.BodyHandlers.ofString());
@@ -153,9 +146,9 @@ class StreamableHttpRuntimeIntegrationTest {
     }
     
     @Test
-    void assertRejectDeleteWithProtocolVersionMismatch() throws IOException, InterruptedException {
-        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
-        HttpClient httpClient = HttpClient.newHttpClient();
+    void assertRejectDeleteWithProtocolVersionMismatch() throws IOException, InterruptedException, SQLException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpRequest deleteRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("MCP-Session-Id", sessionId)
@@ -168,20 +161,20 @@ class StreamableHttpRuntimeIntegrationTest {
     }
     
     @Test
-    void assertRejectOpenStreamAfterDelete() throws IOException, InterruptedException {
-        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
-        HttpClient httpClient = HttpClient.newHttpClient();
+    void assertRejectOpenStreamAfterDelete() throws IOException, InterruptedException, SQLException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpRequest deleteRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("MCP-Session-Id", sessionId)
-                .header("MCP-Protocol-Version", "2025-11-25")
+                .header("MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)
                 .DELETE()
                 .build();
         httpClient.send(deleteRequest, HttpResponse.BodyHandlers.ofString());
         HttpRequest streamRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("Accept", "text/event-stream")
                 .header("MCP-Session-Id", sessionId)
-                .header("MCP-Protocol-Version", "2025-11-25")
+                .header("MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)
                 .GET()
                 .build();
         HttpResponse<String> streamResponse = httpClient.send(streamRequest, HttpResponse.BodyHandlers.ofString());
@@ -190,9 +183,9 @@ class StreamableHttpRuntimeIntegrationTest {
     }
     
     @Test
-    void assertRejectInitializeWithInvalidOrigin() throws IOException, InterruptedException {
-        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
-        HttpClient httpClient = HttpClient.newHttpClient();
+    void assertRejectInitializeWithInvalidOrigin() throws IOException, InterruptedException, SQLException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
         HttpRequest initializeRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("Origin", "https://evil.example.com")
                 .header("Content-Type", "application/json")
@@ -204,19 +197,9 @@ class StreamableHttpRuntimeIntegrationTest {
         assertTrue(initializeResponse.body().contains("Origin is not allowed"));
     }
     
-    private URI createEndpointUri() {
-        int localPort = httpServer.getLocalPort();
-        return URI.create(String.format("http://127.0.0.1:%d%s", localPort, "/gateway"));
-    }
-    
-    private MCPLaunchConfiguration createRuntimeConfiguration() {
-        return new MCPLaunchConfiguration(
-                new MCPTransportConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, "/gateway"), new StdioTransportConfiguration(false)),
-                createRuntimeDatabases());
-    }
-    
-    private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "streamable-http-runtime");
+    @Override
+    protected Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
+        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "streamable-http-runtime");
         try {
             H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         } catch (final SQLException ex) {
@@ -231,55 +214,9 @@ class StreamableHttpRuntimeIntegrationTest {
                 "id", "init-1",
                 "method", "initialize",
                 "params", Map.of(
-                        "protocolVersion", "2025-11-25",
+                        "protocolVersion", MCPTransportConstants.PROTOCOL_VERSION,
                         "capabilities", Map.of(),
                         "clientInfo", Map.of("name", "integration-test", "version", "1.0.0"))));
     }
     
-    private String createInitializeRequestBodyWithoutProtocolVersion() {
-        return JsonUtils.toJsonString(Map.of(
-                "jsonrpc", "2.0",
-                "id", "init-1",
-                "method", "initialize",
-                "params", Map.of(
-                        "capabilities", Map.of(),
-                        "clientInfo", Map.of("name", "integration-test", "version", "1.0.0"))));
-    }
-    
-    private String createToolCallRequestBody() {
-        return JsonUtils.toJsonString(Map.of(
-                "jsonrpc", "2.0",
-                "id", "tool-1",
-                "method", "tools/call",
-                "params", Map.of("name", "get_capabilities", "arguments", Map.of())));
-    }
-    
-    private String createResourceReadRequestBody() {
-        return JsonUtils.toJsonString(Map.of(
-                "jsonrpc", "2.0",
-                "id", "resource-1",
-                "method", "resources/read",
-                "params", Map.of("uri", "shardingsphere://capabilities")));
-    }
-    
-    private String initializeSession(final HttpClient httpClient) throws IOException, InterruptedException {
-        HttpRequest initializeRequest = HttpRequest.newBuilder(createEndpointUri())
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json, text/event-stream")
-                .POST(HttpRequest.BodyPublishers.ofString(createInitializeRequestBody()))
-                .build();
-        HttpResponse<String> initializeResponse = httpClient.send(initializeRequest, HttpResponse.BodyHandlers.ofString());
-        assertThat(initializeResponse.statusCode(), is(200));
-        return initializeResponse.headers().firstValue("MCP-Session-Id").orElseThrow();
-    }
-    
-    private Map<String, Object> castToMap(final Object value) {
-        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
-        });
-    }
-    
-    private Map<String, Object> parseJsonBody(final String responseBody) {
-        return JsonUtils.fromJsonString(responseBody, new TypeReference<>() {
-        });
-    }
 }

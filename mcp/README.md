@@ -44,7 +44,7 @@ Notes:
 - When HTTP is enabled, the default endpoint is `http://127.0.0.1:18088/mcp`.
 - Logs are written under `logs/`.
 - `conf/mcp.yaml` is now strict: `transport.http.enabled`, `transport.http.bindHost`, `transport.http.port`, `transport.http.endpointPath`, `transport.stdio.enabled`, and all runtime database fields must be explicitly declared.
-- The packaged sample configuration explicitly enables both HTTP and STDIO. This quick start exercises the HTTP endpoint only.
+- Exactly one transport must be enabled per process. The packaged sample configuration enables HTTP only.
 - `bin/start.sh` validates the config file, runtime libraries, and Java availability before startup, creates `data/`, `logs/`, and `ext-lib/`, then starts from the package root so relative runtime paths resolve consistently.
 - If startup succeeds, the process stays running in the foreground. If it exits immediately, inspect the terminal error and `logs/mcp.log` first.
 - The bundled demo runtime exposes two logical databases named `orders` and `billing`, both backed by the packaged H2 driver and seed data under `data/`.
@@ -59,7 +59,7 @@ transport:
     port: 18088
     endpointPath: /mcp
   stdio:
-    enabled: true
+    enabled: false
 
 runtimeDatabases:
   orders:
@@ -178,8 +178,8 @@ Expected result:
 
 ## Using STDIO
 
-The current STDIO support is intended for local Java integration and smoke tests.
-The packaged distribution enables the same runtime, but it does not expose a separate interactive text shell.
+STDIO is implemented as a real MCP stdio transport for local clients that launch the ShardingSphere MCP process as a child process.
+Enable STDIO only when the client will communicate over the process `stdin` and `stdout`.
 
 ### Run with STDIO only
 
@@ -189,6 +189,9 @@ If you want to verify the packaged runtime with HTTP disabled, create a dedicate
 transport:
   http:
     enabled: false
+    bindHost: 127.0.0.1
+    port: 18088
+    endpointPath: /mcp
   stdio:
     enabled: true
 ```
@@ -202,28 +205,14 @@ bin/start.sh conf/mcp-stdio.yaml
 Notes:
 
 - The process still runs in the foreground.
-- If both `transport.http.enabled` and `transport.stdio.enabled` are `false`, or both fields are omitted, startup fails with: "At least one transport must be explicitly enabled. Set transport.http.enabled or transport.stdio.enabled to true."
-- The default `conf/logback.xml` writes logs to stdout and `logs/mcp.log`, so `bin/start.sh` is not a ready-made JSON-RPC-over-stdio shell for external clients.
-
-### Integrate from Java
-
-For local embedding, call `StdioMCPServer` directly:
-
-```java
-MCPSessionManager sessionManager = new MCPSessionManager();
-StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, new MCPRuntimeServices(sessionManager));
-stdioMCPServer.start();
-String sessionId = stdioMCPServer.initializeSession();
-ToolDispatchResult result = stdioMCPServer.invokeMetadataTool(sessionId, metadataCatalog,
-        new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, ""));
-stdioMCPServer.closeSession(sessionId);
-```
-
-Use `executeQuery(sessionId, executionRequest)` when the caller also provides a query execution runtime.
+- If both `transport.http.enabled` and `transport.stdio.enabled` are `false`, startup fails with: "Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true."
+- If both transports are enabled, startup fails with: "HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport."
+- The default `conf/logback.xml` writes console logs to stderr and file logs to `logs/mcp.log`, so stdout stays reserved for MCP protocol messages.
+- STDIO mode is for MCP clients, not for a human-oriented interactive shell. Launch it from an MCP client configuration rather than typing requests manually in the terminal.
 
 Reference:
 
-- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioMCPServer.java`
+- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioTransportMCPServer.java`
 - `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioTransportIntegrationTest.java`
 
 ## Runtime Notes
@@ -232,9 +221,9 @@ Reference:
 - For real deployments, replace the `runtimeDatabases` block with your own logical database mapping and JDBC connection properties. Each logical database entry must declare its own required runtime fields; schema discovery now comes from JDBC metadata, and legacy `runtime.*` aliases are no longer supported.
 - `driverClassName` is optional for JDBC 4 drivers that auto-register through `DriverManager`. Keep it only when your target driver requires an explicit override.
 - If your target database driver is not already packaged, copy the driver jar under `ext-lib/` before running `bin/start.sh`.
-- If `transport.http.enabled` and `transport.stdio.enabled` are both omitted, they default to `false`, so you must explicitly enable at least one transport.
-- For local-only HTTP usage, keep `transport.http.enabled: true` and set `transport.stdio.enabled: false` if you do not need STDIO.
-- For local in-process integration, keep `transport.stdio.enabled: true`. The packaged runtime starts the same STDIO runtime, but it does not expose a separate text shell.
+- Exactly one transport must be enabled for each runtime process.
+- For local-only HTTP usage, keep `transport.http.enabled: true` and `transport.stdio.enabled: false`.
+- For local MCP client integration, keep `transport.http.enabled: false` and `transport.stdio.enabled: true`.
 - If you expose the HTTP endpoint outside localhost, place it behind a trusted network boundary, gateway, or reverse proxy.
 - To start with a custom configuration file, run `bin/start.sh /path/to/mcp.yaml`.
 - To tune the JVM for local experiments, use `JAVA_OPTS`, for example `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`.

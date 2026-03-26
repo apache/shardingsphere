@@ -44,7 +44,7 @@ bin/start.sh
 - 启用 HTTP 时，默认端点是 `http://127.0.0.1:18088/mcp`。
 - 日志会写到 `logs/` 目录。
 - `conf/mcp.yaml` 现在是严格 schema：`transport.http.enabled`、`transport.http.bindHost`、`transport.http.port`、`transport.http.endpointPath`、`transport.stdio.enabled`，以及每个 runtime database 的全部字段都必须显式声明。
-- 发行包内置示例配置会显式启用 HTTP 和 STDIO，这份 quick start 只演示 HTTP 入口。
+- 每个进程必须且只能启用一种 transport。发行包内置示例配置默认只启用 HTTP。
 - `bin/start.sh` 启动前会校验配置文件、运行时依赖和 Java 环境，并自动创建 `data/`、`logs/`、`ext-lib/` 目录，然后切到发行包根目录启动，确保相对路径可用。
 - 如果启动成功，进程会保持前台运行；如果立刻退出，优先查看终端报错和 `logs/mcp.log`。
 - 内置 demo runtime 会暴露两个逻辑库 `orders` 和 `billing`，底层使用发行包自带的 H2 驱动以及 `data/` 下的种子数据。
@@ -59,7 +59,7 @@ transport:
     port: 18088
     endpointPath: /mcp
   stdio:
-    enabled: true
+    enabled: false
 
 runtimeDatabases:
   orders:
@@ -178,8 +178,8 @@ curl -sS -D - -o /dev/null \
 
 ## 使用 STDIO
 
-当前的 STDIO 支持主要面向本地 Java 集成和 smoke test。
-发行包会启用同一套 runtime，但它不会额外暴露独立的交互式文本 Shell。
+STDIO 现在实现为真实的 MCP stdio transport，适用于由本地 MCP client 拉起 ShardingSphere MCP 子进程的场景。
+只有在客户端会通过进程 `stdin` / `stdout` 传输 MCP 协议消息时，才应启用 STDIO。
 
 ### 只启用 STDIO 启动
 
@@ -189,6 +189,9 @@ curl -sS -D - -o /dev/null \
 transport:
   http:
     enabled: false
+    bindHost: 127.0.0.1
+    port: 18088
+    endpointPath: /mcp
   stdio:
     enabled: true
 ```
@@ -202,28 +205,14 @@ bin/start.sh conf/mcp-stdio.yaml
 说明：
 
 - 进程仍然会以前台方式运行。
-- 如果 `transport.http.enabled` 和 `transport.stdio.enabled` 同时为 `false`，或者两个字段都省略，启动会因 "At least one transport must be explicitly enabled. Set transport.http.enabled or transport.stdio.enabled to true." 失败。
-- 默认 `conf/logback.xml` 会把日志写到 stdout 和 `logs/mcp.log`，因此 `bin/start.sh` 目前不是可以直接给外部客户端使用的 JSON-RPC-over-STDIO Shell。
-
-### 在 Java 中集成
-
-如果是本地嵌入调用，可以直接使用 `StdioMCPServer`：
-
-```java
-MCPSessionManager sessionManager = new MCPSessionManager();
-StdioMCPServer stdioMCPServer = new StdioMCPServer(sessionManager, new MCPRuntimeServices(sessionManager));
-stdioMCPServer.start();
-String sessionId = stdioMCPServer.initializeSession();
-ToolDispatchResult result = stdioMCPServer.invokeMetadataTool(sessionId, metadataCatalog,
-        new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, ""));
-stdioMCPServer.closeSession(sessionId);
-```
-
-如果调用方还提供了 query execution runtime，可以继续使用 `executeQuery(sessionId, executionRequest)`。
+- 如果 `transport.http.enabled` 和 `transport.stdio.enabled` 同时为 `false`，启动会因 "Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true." 失败。
+- 如果两个 transport 同时启用，启动会因 "HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport." 失败。
+- 默认 `conf/logback.xml` 会把控制台日志写到 stderr，并把文件日志写到 `logs/mcp.log`，这样 stdout 可以专门用于 MCP 协议消息。
+- STDIO 模式面向 MCP client，不是给人工手输请求的交互式 Shell。推荐在 MCP client 配置里把它作为子进程启动。
 
 参考：
 
-- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioMCPServer.java`
+- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioTransportMCPServer.java`
 - `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioTransportIntegrationTest.java`
 
 ## Runtime 说明
@@ -232,9 +221,9 @@ stdioMCPServer.closeSession(sessionId);
 - 如果要接真实部署，请把 `runtimeDatabases` 段替换成你自己的逻辑库映射和 JDBC 连接属性。每个逻辑库条目都需要显式声明所需的 runtime 字段；schema 发现改为依赖 JDBC metadata，legacy `runtime.*` alias 已不再支持。
 - 对支持 JDBC 4 自动注册的驱动，`driverClassName` 可以不写；只有目标驱动需要显式覆盖时再配置。
 - 如果目标数据库的驱动没有随发行包提供，请先把对应 jar 放到 `ext-lib/`，再执行 `bin/start.sh`。
-- 如果 `transport.http.enabled` 和 `transport.stdio.enabled` 都不写，它们会默认是 `false`，所以至少要显式启用一个 transport。
-- 如果只需要本地 HTTP 调试，保留 `transport.http.enabled: true`，并在不需要 STDIO 时把 `transport.stdio.enabled` 设为 `false`。
-- 如果要做本地进程内集成，保留 `transport.stdio.enabled: true`。发行包会启动同一套 STDIO runtime，但目前不会额外暴露独立的文本 Shell。
+- 每个 runtime 进程必须且只能启用一种 transport。
+- 如果只需要本地 HTTP 调试，保留 `transport.http.enabled: true`，并把 `transport.stdio.enabled` 设为 `false`。
+- 如果要给本地 MCP client 走 stdio，保留 `transport.http.enabled: false`，并把 `transport.stdio.enabled` 设为 `true`。
 - 如果 HTTP 端点要暴露到 localhost 之外，建议放在受信网络、上游网关或反向代理之后。
 - 如果要使用自定义配置文件启动，可以执行 `bin/start.sh /path/to/mcp.yaml`。
 - 如果要调整 JVM 参数，可以使用 `JAVA_OPTS`，例如 `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`。

@@ -28,8 +28,4 @@ import lombok.RequiredArgsConstructor;
 public final class StdioTransportConfiguration {
     
     private final boolean enabled;
-    
-    public StdioTransportConfiguration() {
-        this(false);
-    }
 }

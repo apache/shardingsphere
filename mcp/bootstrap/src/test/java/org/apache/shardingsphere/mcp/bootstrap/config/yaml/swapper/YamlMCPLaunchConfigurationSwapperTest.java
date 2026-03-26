@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfigurationValidator;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
@@ -116,7 +117,22 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    enabled: false\n"
                 + "runtimeDatabases: {}\n", YamlMCPLaunchConfiguration.class)));
         
-        assertThat(actual.getMessage(), is("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true."));
+        assertThat(actual.getMessage(), is(MCPTransportConfigurationValidator.NO_ENABLED_TRANSPORT_ERROR_MESSAGE));
+    }
+    
+    @Test
+    void assertSwapToObjectWithMultipleEnabledTransports() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal("transport:\n"
+                + "  http:\n"
+                + "    enabled: true\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases: {}\n", YamlMCPLaunchConfiguration.class)));
+        
+        assertThat(actual.getMessage(), is(MCPTransportConfigurationValidator.MULTIPLE_ENABLED_TRANSPORTS_ERROR_MESSAGE));
     }
     
     @Test

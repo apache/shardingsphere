@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.config;
+package org.apache.shardingsphere.mcp.bootstrap.transport;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import io.modelcontextprotocol.spec.ProtocolVersions;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * MCP transport configuration.
+ * MCP transport constants.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MCPTransportConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MCPTransportConstants {
     
-    private final HttpTransportConfiguration http;
+    public static final String PROTOCOL_VERSION = ProtocolVersions.MCP_2025_11_25;
     
-    private final StdioTransportConfiguration stdio;
+    public static final String SERVER_NAME = "Apache ShardingSphere MCP";
+    
+    public static final String SERVER_INSTRUCTIONS = "Apache ShardingSphere MCP bootstrap runtime";
 }
