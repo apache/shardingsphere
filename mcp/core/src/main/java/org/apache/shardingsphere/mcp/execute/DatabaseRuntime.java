@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.execute;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 
 import java.util.Collections;
@@ -30,6 +31,7 @@ import java.util.function.Consumer;
 /**
  * In-memory execution runtime for tests and bootstrap adapters.
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class DatabaseRuntime {
     
@@ -61,14 +63,6 @@ public final class DatabaseRuntime {
      */
     public DatabaseRuntime(final ShardingSphereExecutionAdapter executionAdapter, final Consumer<String> metadataRefresher) {
         this(Collections.emptyMap(), Collections.emptyMap(), executionAdapter, metadataRefresher);
-    }
-    
-    private DatabaseRuntime(final Map<String, QueryResult> queryResults, final Map<String, Integer> updateCounts,
-                            final ShardingSphereExecutionAdapter executionAdapter, final Consumer<String> metadataRefresher) {
-        this.queryResults = queryResults;
-        this.updateCounts = updateCounts;
-        this.executionAdapter = executionAdapter;
-        this.metadataRefresher = metadataRefresher;
     }
     
     /**

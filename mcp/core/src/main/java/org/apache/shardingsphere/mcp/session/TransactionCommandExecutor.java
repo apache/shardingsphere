@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.session;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
 import org.apache.shardingsphere.mcp.execute.ClassificationResult;
@@ -32,6 +33,7 @@ import java.util.Optional;
 /**
  * Execute MCP transaction-control and savepoint commands.
  */
+@RequiredArgsConstructor
 public final class TransactionCommandExecutor {
     
     private final DatabaseCapabilityAssembler capabilityAssembler;
@@ -40,19 +42,6 @@ public final class TransactionCommandExecutor {
     
     @Getter
     private final DatabaseRuntime databaseRuntime;
-    
-    /**
-     * Construct a transaction command executor.
-     *
-     * @param capabilityAssembler database capability assembler
-     * @param sessionManager session manager
-     * @param databaseRuntime database runtime
-     */
-    public TransactionCommandExecutor(final DatabaseCapabilityAssembler capabilityAssembler, final MCPSessionManager sessionManager, final DatabaseRuntime databaseRuntime) {
-        this.capabilityAssembler = capabilityAssembler;
-        this.sessionManager = sessionManager;
-        this.databaseRuntime = databaseRuntime;
-    }
     
     /**
      * Execute one transaction-control or savepoint SQL command.

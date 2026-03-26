@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Normalized metadata object for metadata discovery.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MetadataObject {
     
@@ -36,24 +38,4 @@ public final class MetadataObject {
     private final String parentObjectType;
     
     private final String parentObjectName;
-    
-    /**
-     * Construct a normalized metadata object.
-     *
-     * @param database logical database name
-     * @param schema schema name or empty string
-     * @param objectType normalized metadata object type
-     * @param name object name
-     * @param parentObjectType parent object type name or empty string
-     * @param parentObjectName parent object name or empty string
-     */
-    public MetadataObject(final String database, final String schema, final MetadataObjectType objectType,
-                          final String name, final String parentObjectType, final String parentObjectName) {
-        this.database = database;
-        this.schema = schema;
-        this.objectType = objectType;
-        this.name = name;
-        this.parentObjectType = parentObjectType;
-        this.parentObjectName = parentObjectName;
-    }
 }

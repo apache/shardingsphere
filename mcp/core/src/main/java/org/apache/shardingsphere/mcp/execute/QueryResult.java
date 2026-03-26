@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.execute;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
 
 import java.util.List;
@@ -25,21 +26,11 @@ import java.util.List;
 /**
  * Query result definition for the in-memory runtime.
  */
+@RequiredArgsConstructor
 @Getter
 public final class QueryResult {
     
     private final List<ColumnDefinition> columns;
     
     private final List<List<Object>> rows;
-    
-    /**
-     * Construct one query result definition.
-     *
-     * @param columns columns
-     * @param rows rows
-     */
-    public QueryResult(final List<ColumnDefinition> columns, final List<List<Object>> rows) {
-        this.columns = columns;
-        this.rows = rows;
-    }
 }

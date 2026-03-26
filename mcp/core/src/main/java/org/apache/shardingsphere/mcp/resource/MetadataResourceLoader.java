@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
 import org.apache.shardingsphere.mcp.capability.SupportedObjectType;
@@ -32,18 +33,10 @@ import java.util.Optional;
 /**
  * Load normalized metadata resources for the MCP public object model.
  */
+@RequiredArgsConstructor
 public final class MetadataResourceLoader {
     
     private final DatabaseCapabilityAssembler capabilityAssembler;
-    
-    /**
-     * Construct a metadata resource loader with a caller-provided capability assembler.
-     *
-     * @param capabilityAssembler capability assembler
-     */
-    public MetadataResourceLoader(final DatabaseCapabilityAssembler capabilityAssembler) {
-        this.capabilityAssembler = capabilityAssembler;
-    }
     
     /**
      * Load one metadata resource view from the supplied catalog.

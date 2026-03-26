@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
 import org.apache.shardingsphere.mcp.resource.ResourceLoadResult;
 import org.apache.shardingsphere.mcp.resource.ResourceRequest;
 
@@ -37,18 +38,10 @@ import java.util.Set;
 /**
  * Dispatch metadata discovery tools on top of the normalized metadata resource loader.
  */
+@RequiredArgsConstructor
 public final class MetadataToolDispatcher {
     
     private final MetadataResourceLoader resourceLoader;
-    
-    /**
-     * Construct a dispatcher with a caller-provided metadata resource loader.
-     *
-     * @param resourceLoader metadata resource loader
-     */
-    public MetadataToolDispatcher(final MetadataResourceLoader resourceLoader) {
-        this.resourceLoader = resourceLoader;
-    }
     
     /**
      * Dispatch one metadata tool request.
