@@ -139,7 +139,6 @@ public final class StreamableHttpMCPServer {
     
     private McpSyncServer syncServer;
     
-    @Getter
     private boolean running;
     
     /**

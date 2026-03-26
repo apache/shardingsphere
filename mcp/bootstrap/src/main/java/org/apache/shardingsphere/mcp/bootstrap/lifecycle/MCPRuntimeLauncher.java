@@ -64,9 +64,6 @@ public final class MCPRuntimeLauncher {
             if (null != httpServer) {
                 httpServer.start();
             }
-            if (null != stdioServer) {
-                stdioServer.start();
-            }
         } catch (final IOException ex) {
             result.close();
             throw new IllegalStateException("Failed to start HTTP transport.", ex);

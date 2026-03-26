@@ -64,8 +64,6 @@ class MCPRuntimeTest {
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
         StdioMCPServer stdioServer = new StdioMCPServer(sessionManager, runtimeServices);
-        stdioServer.start();
-        
         assertDoesNotThrow(() -> new MCPRuntime(null, stdioServer).close());
     }
     

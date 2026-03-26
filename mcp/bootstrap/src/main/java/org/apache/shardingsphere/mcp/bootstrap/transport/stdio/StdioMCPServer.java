@@ -49,18 +49,6 @@ public final class StdioMCPServer {
     }
     
     /**
-     * Start the STDIO runtime.
-     */
-    public void start() {
-    }
-    
-    /**
-     * Stop the STDIO runtime.
-     */
-    public void stop() {
-    }
-    
-    /**
      * Initialize one local STDIO session.
      *
      * @return session identifier

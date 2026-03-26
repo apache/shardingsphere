@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntime;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
@@ -29,8 +29,8 @@ import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.execute.QueryResult;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
@@ -50,7 +50,6 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -59,20 +58,6 @@ class StdioTransportIntegrationTest {
     
     @TempDir
     private Path tempDir;
-    
-    @Test
-    void assertStart() {
-        StdioMCPServer stdioMCPServer = createStdioServer();
-        
-        assertDoesNotThrow(stdioMCPServer::start);
-    }
-    
-    @Test
-    void assertStop() {
-        StdioMCPServer stdioMCPServer = createStdioServer();
-        
-        assertDoesNotThrow(stdioMCPServer::stop);
-    }
     
     @Test
     void assertInitializeSession() {

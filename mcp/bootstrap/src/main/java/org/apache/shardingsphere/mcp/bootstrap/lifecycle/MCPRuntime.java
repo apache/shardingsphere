@@ -56,8 +56,5 @@ public final class MCPRuntime implements AutoCloseable {
         if (null != httpServer) {
             httpServer.stop();
         }
-        if (null != stdioServer) {
-            stdioServer.stop();
-        }
     }
 }
