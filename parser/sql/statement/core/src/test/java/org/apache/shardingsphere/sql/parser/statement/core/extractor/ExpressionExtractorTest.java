@@ -226,6 +226,17 @@ class ExpressionExtractorTest {
     }
     
     @Test
+    void assertGetParameterMarkerExpressionsFromInExpressionWithSubquery() {
+        ParameterMarkerExpressionSegment expected = new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.QUESTION);
+        SelectStatement selectStatement = SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).build();
+        SubqueryExpressionSegment right = new SubqueryExpressionSegment(new SubquerySegment(0, 0, selectStatement, "(SELECT 1)"));
+        Collection<ExpressionSegment> inExpressions = Collections.singleton(new InExpression(0, 0, expected, right, false));
+        List<ParameterMarkerExpressionSegment> actual = ExpressionExtractor.getParameterMarkerExpressions(inExpressions);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), is(expected));
+    }
+    
+    @Test
     void assertExtractJoinConditions() {
         Collection<BinaryOperationExpression> actual = new LinkedList<>();
         BinaryOperationExpression binaryExpression =

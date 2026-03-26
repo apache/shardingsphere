@@ -171,8 +171,12 @@ public final class ExpressionExtractor {
             if (each instanceof TypeCastExpression) {
                 extractParameterMarkerExpressions(segments, Collections.singleton(((TypeCastExpression) each).getExpression()));
             }
+            if (each instanceof ListExpression) {
+                extractParameterMarkerExpressions(segments, ((ListExpression) each).getItems());
+            }
             if (each instanceof InExpression) {
-                extractParameterMarkerExpressions(segments, ((InExpression) each).getExpressionList());
+                extractParameterMarkerExpressions(segments, Collections.singleton(((InExpression) each).getLeft()));
+                extractParameterMarkerExpressions(segments, Collections.singleton(((InExpression) each).getRight()));
             }
             if (each instanceof CaseWhenExpression) {
                 extractParameterMarkerInCaseWhenExpression(segments, (CaseWhenExpression) each);

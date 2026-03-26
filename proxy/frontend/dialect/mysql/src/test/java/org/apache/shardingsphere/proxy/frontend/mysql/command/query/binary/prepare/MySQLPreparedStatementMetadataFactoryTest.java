@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
-import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
+import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.exception.external.sql.ShardingSphereSQLException;
@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -71,8 +72,7 @@ class MySQLPreparedStatementMetadataFactoryTest {
     @Test
     void assertLoad() throws SQLException {
         PreparedStatement expected = mockPreparedStatement();
-        mockMetaData();
-        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
+        mockMetaDataWithDatabase();
         mockDatabaseConnectionManager(Collections.singletonList(mockBackendConnection(expected, null)));
         try (MockedConstruction<KernelProcessor> ignored = mockKernelProcessor(createExecutionContext(createExecutionUnits()))) {
             assertThat(MySQLPreparedStatementMetadataFactory.load(connectionSession, createPreparedStatement()), is(expected));
@@ -91,8 +91,7 @@ class MySQLPreparedStatementMetadataFactoryTest {
     
     @Test
     void assertLoadWithNoBackendConnection() throws SQLException {
-        mockMetaData();
-        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
+        mockMetaDataWithDatabase();
         mockDatabaseConnectionManager(Collections.emptyList());
         try (MockedConstruction<KernelProcessor> ignored = mockKernelProcessor(createExecutionContext(createExecutionUnits()))) {
             ShardingSphereSQLException actual = assertThrows(PreparedStatementMetadataResolutionException.class,
@@ -104,8 +103,7 @@ class MySQLPreparedStatementMetadataFactoryTest {
     @Test
     void assertLoadWithSQLException() throws SQLException {
         SQLException expected = new SQLException("expected");
-        mockMetaData();
-        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
+        mockMetaDataWithDatabase();
         mockDatabaseConnectionManager(Collections.singletonList(mockBackendConnection(null, expected)));
         try (MockedConstruction<KernelProcessor> ignored = mockKernelProcessor(createExecutionContext(createExecutionUnits()))) {
             assertThat(assertThrows(SQLException.class, () -> MySQLPreparedStatementMetadataFactory.load(connectionSession, createPreparedStatement())), is(expected));
@@ -127,6 +125,15 @@ class MySQLPreparedStatementMetadataFactoryTest {
         when(metaData.getGlobalRuleMetaData()).thenReturn(mock(RuleMetaData.class));
         when(metaData.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+    }
+    
+    private void mockMetaDataWithDatabase() {
+        mockMetaData();
+        ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(metaData.containsDatabase("foo_db")).thenReturn(true);
+        when(metaData.getDatabase("foo_db")).thenReturn(database);
+        when(database.getName()).thenReturn("foo_db");
     }
     
     private MockedConstruction<KernelProcessor> mockKernelProcessor(final ExecutionContext executionContext) {

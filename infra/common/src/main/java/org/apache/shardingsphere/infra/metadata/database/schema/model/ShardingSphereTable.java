@@ -264,7 +264,7 @@ public final class ShardingSphereTable {
      * @param indexName index name
      * @return contains index or not
      */
-    private boolean containsIndex(final IdentifierValue indexName) {
+    public boolean containsIndex(final IdentifierValue indexName) {
         return findIndex(indexName).isPresent();
     }
     
