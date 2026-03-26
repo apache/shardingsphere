@@ -23,10 +23,9 @@ import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfigurati
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPLaunchState;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntime;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.execute.QueryResult;
@@ -116,15 +115,12 @@ class StdioTransportIntegrationTest {
     
     @Test
     void assertLaunch() {
-        MCPServerRegistry serverRegistry = new MCPServerRegistry();
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         
-        MCPLaunchState actual = runtimeLauncher.launch(serverRegistry,
-                new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"), createRuntimeDatabases()));
-        
-        assertTrue(actual.getServerRegistry().isRunning());
-        assertTrue(actual.getStdioServer().isPresent());
-        assertTrue(actual.getStdioServer().get().isRunning());
+        try (MCPRuntime actual = runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"), createRuntimeDatabases()))) {
+            assertTrue(actual.getStdioServer().isPresent());
+            assertTrue(actual.getStdioServer().get().isRunning());
+        }
     }
     
     @Test
@@ -132,8 +128,7 @@ class StdioTransportIntegrationTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new MCPServerRegistry(),
-                        new MCPLaunchConfiguration(createTransportConfiguration(false, false, "/mcp"), createRuntimeDatabases())));
+                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, false, "/mcp"), createRuntimeDatabases())));
         
         assertThat(actual.getMessage(), is("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true."));
     }

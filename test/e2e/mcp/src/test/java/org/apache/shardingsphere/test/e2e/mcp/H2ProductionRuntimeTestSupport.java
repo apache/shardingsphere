@@ -40,6 +40,8 @@ final class H2ProductionRuntimeTestSupport {
         Map<String, String> result = new LinkedHashMap<>();
         result.put("databaseType", "H2");
         result.put("jdbcUrl", jdbcUrl);
+        result.put("username", "");
+        result.put("password", "");
         result.put("driverClassName", "org.h2.Driver");
         return result;
     }
@@ -48,6 +50,8 @@ final class H2ProductionRuntimeTestSupport {
         Map<String, String> result = new LinkedHashMap<>();
         result.put("databaseType", databaseType);
         result.put("jdbcUrl", jdbcUrl);
+        result.put("username", "");
+        result.put("password", "");
         result.put("driverClassName", "org.h2.Driver");
         return result;
     }

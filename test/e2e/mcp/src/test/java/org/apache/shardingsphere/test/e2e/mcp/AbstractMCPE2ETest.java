@@ -20,13 +20,9 @@ package org.apache.shardingsphere.test.e2e.mcp;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPLaunchState;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntime;
+import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.QueryResult;
 import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
@@ -56,19 +52,13 @@ abstract class AbstractMCPE2ETest {
     
     private static final String ENDPOINT_PATH = "/gateway";
     
-    private MCPLaunchState launchState;
+    private MCPRuntime runtime;
     
     @AfterEach
     void tearDown() {
-        if (null != launchState) {
-            if (launchState.getHttpServer().isPresent()) {
-                launchState.getHttpServer().get().stop();
-            }
-            if (launchState.getStdioServer().isPresent()) {
-                launchState.getStdioServer().get().stop();
-            }
-            launchState.getServerRegistry().stop();
-            launchState = null;
+        if (null != runtime) {
+            runtime.close();
+            runtime = null;
         }
     }
     
@@ -77,12 +67,12 @@ abstract class AbstractMCPE2ETest {
         return new MCPRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
     }
     
-    protected final MCPLaunchState launchRuntime() {
+    protected final MCPRuntime launchRuntime() {
         return launchRuntimeInternal();
     }
     
-    protected final MCPLaunchState getLaunchState() {
-        return launchState;
+    protected final MCPRuntime getRuntime() {
+        return runtime;
     }
     
     protected final HttpClient createHttpClient() {
@@ -214,16 +204,21 @@ abstract class AbstractMCPE2ETest {
         return Map.of();
     }
     
-    private MCPLaunchState launchRuntimeInternal() {
-        MCPServerRegistry registry = new MCPServerRegistry();
-        MCPSessionManager sessionManager = registry.getSessionManager();
+    private MCPRuntime launchRuntimeInternal() {
+        MCPSessionManager sessionManager = new MCPSessionManager();
         MetadataCatalog metadataCatalog = createMetadataCatalog();
         DatabaseRuntime databaseRuntime = createDatabaseRuntime();
         MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
-        MCPTransportConfiguration transportConfiguration = new MCPTransportConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH), new StdioTransportConfiguration(false));
-        MCPLaunchConfiguration config = new MCPLaunchConfiguration(transportConfiguration, Map.of());
-        launchState = new MCPRuntimeLauncher().launch(registry, config, runtimeServices, metadataCatalog, databaseRuntime);
-        return launchState;
+        StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH),
+                sessionManager, runtimeServices, metadataCatalog, databaseRuntime);
+        try {
+            httpServer.start();
+        } catch (final IOException ex) {
+            httpServer.stop();
+            throw new IllegalStateException("Failed to start HTTP transport.", ex);
+        }
+        runtime = new MCPRuntime(sessionManager, runtimeServices, httpServer, null);
+        return runtime;
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,
@@ -255,7 +250,7 @@ abstract class AbstractMCPE2ETest {
     }
     
     private URI createEndpointUri() {
-        int localPort = launchState.getHttpServer().get().getLocalPort();
+        int localPort = runtime.getHttpServer().orElseThrow().getLocalPort();
         return URI.create(String.format("http://127.0.0.1:%d%s", localPort, ENDPOINT_PATH));
     }
     

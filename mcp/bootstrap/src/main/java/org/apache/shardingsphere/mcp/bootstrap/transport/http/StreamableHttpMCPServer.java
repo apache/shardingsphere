@@ -50,7 +50,6 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
@@ -118,7 +117,7 @@ public final class StreamableHttpMCPServer {
     
     private final HttpTransportConfiguration transportConfiguration;
     
-    private final MCPServerRegistry serverRegistry;
+    private final MCPSessionManager sessionManager;
     
     private final MCPRuntimeServices runtimeServices;
     
@@ -147,15 +146,15 @@ public final class StreamableHttpMCPServer {
      * Construct one HTTP MCP server with caller-provided runtime metadata.
      *
      * @param transportConfiguration HTTP transport configuration
-     * @param serverRegistry server registry
+     * @param sessionManager session manager
      * @param runtimeServices runtime services
      * @param metadataCatalog metadata catalog
      * @param databaseRuntime database runtime
      */
-    public StreamableHttpMCPServer(final HttpTransportConfiguration transportConfiguration, final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices,
+    public StreamableHttpMCPServer(final HttpTransportConfiguration transportConfiguration, final MCPSessionManager sessionManager, final MCPRuntimeServices runtimeServices,
                                    final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
         this.transportConfiguration = Objects.requireNonNull(transportConfiguration, "transportConfiguration cannot be null");
-        this.serverRegistry = Objects.requireNonNull(serverRegistry, "serverRegistry cannot be null");
+        this.sessionManager = Objects.requireNonNull(sessionManager, "sessionManager cannot be null");
         this.runtimeServices = Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null");
         this.metadataCatalog = Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null");
         this.databaseRuntime = Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null");
@@ -171,7 +170,7 @@ public final class StreamableHttpMCPServer {
         if (running) {
             return;
         }
-        transportProvider = new SdkStreamableHttpServlet(serverRegistry.getSessionManager(), databaseRuntime, metadataRefreshCoordinator, jsonMapper,
+        transportProvider = new SdkStreamableHttpServlet(sessionManager, databaseRuntime, metadataRefreshCoordinator, jsonMapper,
                 transportConfiguration.getBindHost(), transportConfiguration.getEndpointPath());
         syncServer = createSyncServer();
         try {

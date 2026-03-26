@@ -24,9 +24,8 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPLaunchState;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntime;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -51,25 +50,19 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     @TempDir
     private Path tempDir;
     
-    private MCPLaunchState launchState;
+    private MCPRuntime runtime;
     
     @AfterEach
     void tearDown() {
-        if (null != launchState) {
-            if (launchState.getHttpServer().isPresent()) {
-                launchState.getHttpServer().get().stop();
-            }
-            if (launchState.getStdioServer().isPresent()) {
-                launchState.getStdioServer().get().stop();
-            }
-            launchState.getServerRegistry().stop();
-            launchState = null;
+        if (null != runtime) {
+            runtime.close();
+            runtime = null;
         }
     }
     
     protected final void launchProductionRuntime() throws SQLException {
         prepareRuntimeFixture();
-        launchState = new MCPRuntimeLauncher().launch(new MCPServerRegistry(), createRuntimeConfiguration());
+        runtime = new MCPRuntimeLauncher().launch(createRuntimeConfiguration());
     }
     
     protected final HttpClient createHttpClient() {
@@ -136,7 +129,7 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     }
     
     private URI createEndpointUri() {
-        int localPort = launchState.getHttpServer().get().getLocalPort();
+        int localPort = runtime.getHttpServer().orElseThrow().getLocalPort();
         return URI.create(String.format("http://127.0.0.1:%d/gateway", localPort));
     }
     

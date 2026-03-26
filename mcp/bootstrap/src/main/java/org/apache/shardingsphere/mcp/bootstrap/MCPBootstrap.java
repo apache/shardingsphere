@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 
 import java.io.IOException;
 
@@ -42,7 +41,7 @@ public final class MCPBootstrap {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException {
         // CHECKSTYLE:ON
-        new MCPRuntimeLauncher().launch(new MCPServerRegistry(), MCPConfigurationLoader.load(getConfigurationPath(args)));
+        new MCPRuntimeLauncher().launch(MCPConfigurationLoader.load(getConfigurationPath(args)));
     }
     
     private static String getConfigurationPath(final String[] args) {

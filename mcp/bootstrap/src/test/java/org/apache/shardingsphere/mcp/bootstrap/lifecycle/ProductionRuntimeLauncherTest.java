@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfigurati
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -51,19 +50,13 @@ class ProductionRuntimeLauncherTest {
     @TempDir
     private Path tempDir;
     
-    private MCPLaunchState launchState;
+    private MCPRuntime runtime;
     
     @AfterEach
     void tearDown() {
-        if (null != launchState) {
-            if (launchState.getHttpServer().isPresent()) {
-                launchState.getHttpServer().get().stop();
-            }
-            if (launchState.getStdioServer().isPresent()) {
-                launchState.getStdioServer().get().stop();
-            }
-            launchState.getServerRegistry().stop();
-            launchState = null;
+        if (null != runtime) {
+            runtime.close();
+            runtime = null;
         }
     }
     
@@ -72,18 +65,18 @@ class ProductionRuntimeLauncherTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        launchState = runtimeLauncher.launch(createServerRegistry(), new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
+        runtime = runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
                 H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl)));
-        assertTrue(launchState.getStdioServer().isPresent());
-        assertTrue(launchState.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("logic_db", "H2").isPresent());
-        assertTrue(launchState.getRuntimeServices().getCapabilityAssembler().assembleServiceCapability().getSupportedTools().contains("execute_query"));
+        assertTrue(runtime.getStdioServer().isPresent());
+        assertTrue(runtime.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("logic_db", "H2").isPresent());
+        assertTrue(runtime.getRuntimeServices().getCapabilityAssembler().assembleServiceCapability().getSupportedTools().contains("execute_query"));
     }
     
     @Test
     void assertLaunchWithInvalidRuntimeDatabases() {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(createServerRegistry(), new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
+                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
                         Map.of("logic_db", new RuntimeDatabaseConfiguration("", "jdbc:h2:mem:test", "", "", "org.h2.Driver")))));
         assertThat(actual.getMessage(), is("Runtime database `logic_db` property `databaseType` is required."));
     }
@@ -95,17 +88,17 @@ class ProductionRuntimeLauncherTest {
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
         H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        launchState = runtimeLauncher.launch(createServerRegistry(), new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
+        runtime = runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
                 Map.of("logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl))));
-        assertTrue(launchState.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("logic_db", "H2").isPresent());
-        assertTrue(launchState.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("analytics_db", "H2").isPresent());
+        assertTrue(runtime.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("logic_db", "H2").isPresent());
+        assertTrue(runtime.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("analytics_db", "H2").isPresent());
     }
     
     @Test
     void assertLaunchWithoutRuntimeDatabases() {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(createServerRegistry(), new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"), Map.of())));
+                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"), Map.of())));
         assertThat(actual.getMessage(), is("At least one runtime database must be configured."));
     }
     
@@ -115,10 +108,10 @@ class ProductionRuntimeLauncherTest {
         DriverManager.registerDriver(driver);
         try {
             MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-            launchState = runtimeLauncher.launch(createServerRegistry(), new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
+            runtime = runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
                     Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", CountingDriver.JDBC_URL, "", "", ""))));
             assertThat(driver.getConnectionCount(), is(1));
-            assertTrue(launchState.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("logic_db", "H2").isPresent());
+            assertTrue(runtime.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("logic_db", "H2").isPresent());
         } finally {
             DriverManager.deregisterDriver(driver);
         }
@@ -130,10 +123,6 @@ class ProductionRuntimeLauncherTest {
     
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl) {
         return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
-    }
-    
-    private MCPServerRegistry createServerRegistry() {
-        return new MCPServerRegistry();
     }
     
     private static final class CountingDriver implements Driver {

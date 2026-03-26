@@ -41,8 +41,8 @@ class RuntimeAuditE2ETest extends AbstractMCPE2ETest {
                 Map.of("database", "logic_db", "schema", "public", "sql", "CREATE TABLE orders_archive"));
         
         assertThat(actual.statusCode(), is(200));
-        assertFalse(getLaunchState().getRuntimeServices().getAuditRecorder().snapshot().isEmpty());
-        assertTrue(getLaunchState().getRuntimeServices().getMetadataRefreshCoordinator().isVisibleToSession(sessionId, "logic_db"));
+        assertFalse(getRuntime().getRuntimeServices().getAuditRecorder().snapshot().isEmpty());
+        assertTrue(getRuntime().getRuntimeServices().getMetadataRefreshCoordinator().isVisibleToSession(sessionId, "logic_db"));
     }
     
     @Test
@@ -52,8 +52,8 @@ class RuntimeAuditE2ETest extends AbstractMCPE2ETest {
         
         String sessionId = initializeSession(httpClient);
         
-        assertTrue(getLaunchState().getServerRegistry().getSessionManager().hasSession(sessionId));
-        assertThat(getLaunchState().getServerRegistry().getSessionManager().findSession(sessionId).orElseThrow().getSessionId(), is(sessionId));
+        assertTrue(getRuntime().getSessionManager().hasSession(sessionId));
+        assertThat(getRuntime().getSessionManager().findSession(sessionId).orElseThrow().getSessionId(), is(sessionId));
     }
     
     @Test
@@ -63,7 +63,7 @@ class RuntimeAuditE2ETest extends AbstractMCPE2ETest {
         
         String sessionId = initializeSessionWithoutProtocolVersion(httpClient);
         
-        assertTrue(getLaunchState().getServerRegistry().getSessionManager().hasSession(sessionId));
-        assertThat(getLaunchState().getServerRegistry().getSessionManager().findSession(sessionId).orElseThrow().getSessionId(), is(sessionId));
+        assertTrue(getRuntime().getSessionManager().hasSession(sessionId));
+        assertThat(getRuntime().getSessionManager().findSession(sessionId).orElseThrow().getSessionId(), is(sessionId));
     }
 }

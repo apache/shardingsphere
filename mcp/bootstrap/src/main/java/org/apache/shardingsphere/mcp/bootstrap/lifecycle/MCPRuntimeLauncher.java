@@ -23,11 +23,11 @@ import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseConnectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseRuntimeFactory;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.JdbcMetadataLoader;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.stdio.StdioMCPServer;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.io.IOException;
 import java.util.Map;
@@ -45,43 +45,22 @@ public final class MCPRuntimeLauncher {
     /**
      * Launch the MCP runtime on one existing bootstrap instance.
      *
-     * @param registry server registry
      * @param config launch configuration
-     * @return launch state
+     * @return runtime handle
+     * @throws IllegalStateException when HTTP transport startup fails
      */
-    public MCPLaunchState launch(final MCPServerRegistry registry, final MCPLaunchConfiguration config) {
-        MCPServerRegistry actualRegistry = Objects.requireNonNull(registry, "serverRegistry cannot be null");
+    public MCPRuntime launch(final MCPLaunchConfiguration config) {
         MCPLaunchConfiguration actualConfig = Objects.requireNonNull(config, "launchConfiguration cannot be null");
         Map<String, DatabaseConnectionConfiguration> connectionConfigurations = databaseRuntimeFactory.createConnectionConfigurations(actualConfig.getRuntimeDatabases());
         MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigurations);
         DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, metadataLoader);
-        MCPRuntimeServices runtimeServices = new MCPRuntimeServices(actualRegistry.getSessionManager(), metadataCatalog, databaseRuntime);
-        return launch(actualRegistry, actualConfig, runtimeServices, metadataCatalog, databaseRuntime);
-    }
-    
-    /**
-     * Launch the MCP runtime with caller-provided runtime dependencies.
-     *
-     * @param registry server registry
-     * @param config launch configuration
-     * @param runtimeServices runtime services
-     * @param metadataCatalog metadata catalog
-     * @param databaseRuntime database runtime
-     * @return launch state
-     * @throws IllegalStateException when HTTP transport startup fails
-     */
-    public MCPLaunchState launch(final MCPServerRegistry registry, final MCPLaunchConfiguration config, final MCPRuntimeServices runtimeServices,
-                                 final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
-        MCPServerRegistry actualServerRegistry = Objects.requireNonNull(registry, "serverRegistry cannot be null");
-        MCPRuntimeServices actualRuntimeServices = Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null");
-        MCPLaunchConfiguration actualLaunchConfiguration = Objects.requireNonNull(config, "launchConfiguration cannot be null");
-        MetadataCatalog actualMetadataCatalog = Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null");
-        DatabaseRuntime actualDatabaseRuntime = Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null");
-        validateTransportConfiguration(actualLaunchConfiguration.getTransport());
-        StreamableHttpMCPServer httpServer = createHttpServer(actualServerRegistry, actualRuntimeServices, actualLaunchConfiguration, actualMetadataCatalog, actualDatabaseRuntime);
-        StdioMCPServer stdioServer = createStdioServer(actualServerRegistry, actualRuntimeServices, actualLaunchConfiguration);
+        MCPSessionManager sessionManager = new MCPSessionManager();
+        MCPRuntimeServices runtimeServices = new MCPRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
+        validateTransportConfiguration(actualConfig.getTransport());
+        StreamableHttpMCPServer httpServer = createHttpServer(sessionManager, runtimeServices, actualConfig, metadataCatalog, databaseRuntime);
+        StdioMCPServer stdioServer = createStdioServer(sessionManager, runtimeServices, actualConfig);
+        MCPRuntime result = new MCPRuntime(sessionManager, runtimeServices, httpServer, stdioServer);
         try {
-            actualServerRegistry.start();
             if (null != httpServer) {
                 httpServer.start();
             }
@@ -89,16 +68,10 @@ public final class MCPRuntimeLauncher {
                 stdioServer.start();
             }
         } catch (final IOException ex) {
-            if (null != httpServer) {
-                httpServer.stop();
-            }
-            if (null != stdioServer) {
-                stdioServer.stop();
-            }
-            actualServerRegistry.stop();
+            result.close();
             throw new IllegalStateException("Failed to start HTTP transport.", ex);
         }
-        return new MCPLaunchState(actualServerRegistry, actualRuntimeServices, httpServer, stdioServer);
+        return result;
     }
     
     private void validateTransportConfiguration(final MCPTransportConfiguration transportConfig) {
@@ -107,18 +80,18 @@ public final class MCPRuntimeLauncher {
         }
     }
     
-    private StreamableHttpMCPServer createHttpServer(final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices,
+    private StreamableHttpMCPServer createHttpServer(final MCPSessionManager sessionManager, final MCPRuntimeServices runtimeServices,
                                                      final MCPLaunchConfiguration launchConfiguration, final MetadataCatalog metadataCatalog,
                                                      final DatabaseRuntime databaseRuntime) {
         if (!launchConfiguration.getTransport().getHttp().isEnabled()) {
             return null;
         }
-        return new StreamableHttpMCPServer(launchConfiguration.getTransport().getHttp(), serverRegistry, runtimeServices, metadataCatalog, databaseRuntime);
+        return new StreamableHttpMCPServer(launchConfiguration.getTransport().getHttp(), sessionManager, runtimeServices, metadataCatalog, databaseRuntime);
     }
     
-    private StdioMCPServer createStdioServer(final MCPServerRegistry serverRegistry, final MCPRuntimeServices runtimeServices,
+    private StdioMCPServer createStdioServer(final MCPSessionManager sessionManager, final MCPRuntimeServices runtimeServices,
                                              final MCPLaunchConfiguration launchConfiguration) {
-        return launchConfiguration.getTransport().getStdio().isEnabled() ? new StdioMCPServer(serverRegistry.getSessionManager(), runtimeServices) : null;
+        return launchConfiguration.getTransport().getStdio().isEnabled() ? new StdioMCPServer(sessionManager, runtimeServices) : null;
     }
     
 }

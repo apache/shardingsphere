@@ -20,9 +20,8 @@ package org.apache.shardingsphere.test.e2e.mcp;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntime;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPLaunchState;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -48,28 +47,22 @@ abstract class AbstractProductionRuntimeE2ETest {
     @TempDir
     private Path tempDir;
     
-    private MCPLaunchState launchState;
+    private MCPRuntime runtime;
     
     @AfterEach
     void tearDown() {
-        if (null != launchState) {
-            if (launchState.getHttpServer().isPresent()) {
-                launchState.getHttpServer().get().stop();
-            }
-            if (launchState.getStdioServer().isPresent()) {
-                launchState.getStdioServer().get().stop();
-            }
-            launchState.getServerRegistry().stop();
-            launchState = null;
+        if (null != runtime) {
+            runtime.close();
+            runtime = null;
         }
     }
     
-    protected final MCPLaunchState launchProductionRuntime() throws IOException {
+    protected final MCPRuntime launchProductionRuntime() throws IOException {
         prepareRuntimeFixture();
         Path configFile = tempDir.resolve("mcp.yaml");
         Files.writeString(configFile, createConfigurationContent());
-        launchState = new MCPRuntimeLauncher().launch(new MCPServerRegistry(), MCPConfigurationLoader.load(configFile.toString()));
-        return launchState;
+        runtime = new MCPRuntimeLauncher().launch(MCPConfigurationLoader.load(configFile.toString()));
+        return runtime;
     }
     
     protected final HttpClient createHttpClient() {
@@ -186,7 +179,7 @@ abstract class AbstractProductionRuntimeE2ETest {
     }
     
     private URI createEndpointUri() {
-        int localPort = launchState.getHttpServer().get().getLocalPort();
+        int localPort = runtime.getHttpServer().orElseThrow().getLocalPort();
         return URI.create(String.format("http://127.0.0.1:%d%s", localPort, getEndpointPath()));
     }
     
@@ -264,7 +257,7 @@ abstract class AbstractProductionRuntimeE2ETest {
     }
     
     private boolean shouldSkipEntry(final String key, final String value) {
-        return value.isEmpty() || "databaseName".equals(key) || "schemaPattern".equals(key) || "defaultSchema".equals(key)
+        return "databaseName".equals(key) || "schemaPattern".equals(key) || "defaultSchema".equals(key)
                 || "supportsCrossSchemaSql".equals(key) || "supportsExplainAnalyze".equals(key);
     }
     
