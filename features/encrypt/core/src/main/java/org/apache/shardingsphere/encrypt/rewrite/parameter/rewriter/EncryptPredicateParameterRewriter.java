@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryptQueryAlgorithmException;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionValues;
@@ -32,6 +31,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.ParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.builder.impl.StandardParameterBuilder;
 import org.apache.shardingsphere.infra.rewrite.parameter.rewriter.ParameterRewriter;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 
 import java.util.Collection;
 import java.util.List;
@@ -46,8 +46,6 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     
     private final EncryptRule rule;
     
-    private final String databaseName;
-    
     private final Collection<EncryptCondition> encryptConditions;
     
     @Override
@@ -57,27 +55,29 @@ public final class EncryptPredicateParameterRewriter implements ParameterRewrite
     
     @Override
     public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
-        String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(databaseName));
         for (EncryptCondition each : encryptConditions) {
-            encryptParameters(paramBuilder, each.getPositionIndexMap(), getEncryptedValues(schemaName, each, new EncryptConditionValues(each).get(params)));
+            encryptParameters(paramBuilder, each.getPositionIndexMap(), getEncryptedValues(each, new EncryptConditionValues(each).get(params)));
         }
     }
     
-    private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
-        String tableName = encryptCondition.getColumnSegment().getColumnBoundInfo().getOriginalTable().getValue();
-        String columnName = encryptCondition.getColumnSegment().getColumnBoundInfo().getOriginalColumn().getValue();
+    private List<Object> getEncryptedValues(final EncryptCondition encryptCondition, final List<Object> originalValues) {
+        ColumnSegmentBoundInfo columnBoundInfo = encryptCondition.getColumnSegment().getColumnBoundInfo();
+        String databaseName = columnBoundInfo.getOriginalDatabase().getValue();
+        String schemaName = columnBoundInfo.getOriginalSchema().getValue();
+        String tableName = columnBoundInfo.getOriginalTable().getValue();
+        String columnName = columnBoundInfo.getOriginalColumn().getValue();
         EncryptTable encryptTable = rule.getEncryptTable(tableName);
         EncryptColumn encryptColumn = encryptTable.getEncryptColumn(columnName);
         if (encryptCondition instanceof EncryptBinaryCondition && containsLikeOperator((EncryptBinaryCondition) encryptCondition)) {
-            return getEncryptedLikeValues(schemaName, originalValues, encryptColumn, tableName, columnName);
+            return getEncryptedLikeValues(databaseName, schemaName, originalValues, encryptColumn, tableName, columnName);
         }
         return encryptColumn.getAssistedQuery().isPresent()
                 ? encryptColumn.getAssistedQuery().get().encrypt(databaseName, schemaName, tableName, columnName, originalValues)
                 : encryptColumn.getCipher().encrypt(databaseName, schemaName, tableName, columnName, originalValues);
     }
     
-    private List<Object> getEncryptedLikeValues(final String schemaName, final List<Object> originalValues, final EncryptColumn encryptColumn, final String tableName, final String columnName) {
+    private List<Object> getEncryptedLikeValues(final String databaseName, final String schemaName, final List<Object> originalValues,
+                                                final EncryptColumn encryptColumn, final String tableName, final String columnName) {
         ShardingSpherePreconditions.checkState(encryptColumn.getLikeQuery().isPresent() || encryptColumn.getCipher().getEncryptor().getMetaData().isSupportLike(),
                 () -> new MissingMatchedEncryptQueryAlgorithmException(tableName, columnName, "LIKE"));
         return encryptColumn.getLikeQuery()
