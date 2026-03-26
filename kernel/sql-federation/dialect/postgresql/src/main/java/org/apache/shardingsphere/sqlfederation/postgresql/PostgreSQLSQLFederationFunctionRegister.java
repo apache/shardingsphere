@@ -32,7 +32,9 @@ public final class PostgreSQLSQLFederationFunctionRegister implements DialectSQL
         if ("pg_catalog".equalsIgnoreCase(schemaName)) {
             schemaPlus.add("pg_table_is_visible", ScalarFunctionImpl.create(PostgreSQLSystemFunction.class, "pgTableIsVisible"));
             schemaPlus.add("pg_get_userbyid", ScalarFunctionImpl.create(PostgreSQLSystemFunction.class, "pgGetUserById"));
-            schemaPlus.add("version", ScalarFunctionImpl.create(PostgreSQLVersionFunction.class, "version"));
+            if (schemaPlus.getFunctions("version").isEmpty()) {
+                schemaPlus.add("version", ScalarFunctionImpl.create(PostgreSQLVersionFunction.class, "version"));
+            }
         }
     }
     

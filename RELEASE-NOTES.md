@@ -26,6 +26,7 @@
 1. JDBC: Support safe close statement manager - [#38473](https://github.com/apache/shardingsphere/pull/38473)
 1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
 1. Proxy: Support non column projection for MySQL prepared statement in Proxy - [#38507](https://github.com/apache/shardingsphere/pull/38507)
+1. SQL federation: Add support for PostgreSQL version() in SQL federation - [#38564](https://github.com/apache/shardingsphere/pull/38564)
 
 ## Release 5.5.3
 
