@@ -22,27 +22,31 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RuntimeAuditE2ETest extends AbstractMCPE2ETest {
     
     @Test
-    void assertAuditCaptureAndRefreshVisibility() throws IOException, InterruptedException {
+    void assertExecuteDdlAndDeleteSession() throws IOException, InterruptedException {
         launchRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+        HttpResponse<String> executeResponse = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "CREATE TABLE orders_archive"));
+        HttpResponse<String> deleteResponse = sendDeleteRequest(httpClient, createRequestHeaders(), sessionId);
         
-        assertThat(actual.statusCode(), is(200));
-        assertFalse(getRuntime().getRuntimeServices().getAuditRecorder().snapshot().isEmpty());
-        assertTrue(getRuntime().getRuntimeServices().getMetadataRefreshCoordinator().isVisibleToSession(sessionId, "logic_db"));
+        assertThat(executeResponse.statusCode(), is(200));
+        assertThat(String.valueOf(getStructuredContent(executeResponse.body()).get("result_kind")), is("statement_ack"));
+        assertThat(deleteResponse.statusCode(), is(200));
+        HttpResponse<String> missingSessionResponse = sendDeleteRequest(httpClient, createRequestHeaders(), sessionId);
+        assertThat(missingSessionResponse.statusCode(), is(404));
+        assertTrue(missingSessionResponse.body().contains("Session does not exist."));
     }
     
     @Test
@@ -51,9 +55,11 @@ class RuntimeAuditE2ETest extends AbstractMCPE2ETest {
         HttpClient httpClient = createHttpClient();
         
         String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "search_metadata",
+                Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("TABLE")));
         
-        assertTrue(getRuntime().getSessionManager().hasSession(sessionId));
-        assertThat(getRuntime().getSessionManager().findSession(sessionId).orElseThrow().getSessionId(), is(sessionId));
+        assertThat(actual.statusCode(), is(200));
+        assertThat(getPayloadItems(getStructuredContent(actual.body())).size(), is(2));
     }
     
     @Test
@@ -62,8 +68,10 @@ class RuntimeAuditE2ETest extends AbstractMCPE2ETest {
         HttpClient httpClient = createHttpClient();
         
         String sessionId = initializeSessionWithoutProtocolVersion(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT order_id FROM orders"));
         
-        assertTrue(getRuntime().getSessionManager().hasSession(sessionId));
-        assertThat(getRuntime().getSessionManager().findSession(sessionId).orElseThrow().getSessionId(), is(sessionId));
+        assertThat(actual.statusCode(), is(200));
+        assertThat(String.valueOf(getStructuredContent(actual.body()).get("result_kind")), is("result_set"));
     }
 }

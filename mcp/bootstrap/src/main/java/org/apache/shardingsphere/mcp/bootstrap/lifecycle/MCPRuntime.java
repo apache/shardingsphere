@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.stdio.StdioMCPServer;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.util.Optional;
 
@@ -30,12 +27,7 @@ import java.util.Optional;
  * Running MCP runtime handle.
  */
 @RequiredArgsConstructor
-@Getter
 public final class MCPRuntime implements AutoCloseable {
-    
-    private final MCPSessionManager sessionManager;
-    
-    private final MCPRuntimeServices runtimeServices;
     
     private final StreamableHttpMCPServer httpServer;
     

@@ -59,7 +59,7 @@ public final class MCPRuntimeLauncher {
         validateTransportConfiguration(actualConfig.getTransport());
         StreamableHttpMCPServer httpServer = createHttpServer(sessionManager, runtimeServices, actualConfig, metadataCatalog, databaseRuntime);
         StdioMCPServer stdioServer = createStdioServer(sessionManager, runtimeServices, actualConfig);
-        MCPRuntime result = new MCPRuntime(sessionManager, runtimeServices, httpServer, stdioServer);
+        MCPRuntime result = new MCPRuntime(httpServer, stdioServer);
         try {
             if (null != httpServer) {
                 httpServer.start();

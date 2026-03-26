@@ -30,28 +30,10 @@ import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPRuntimeTest {
-    
-    @Test
-    void assertGetSessionManager() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPRuntime actual = new MCPRuntime(sessionManager, createRuntimeServices(sessionManager), null, null);
-        
-        assertThat(actual.getSessionManager(), is(sessionManager));
-    }
-    
-    @Test
-    void assertGetRuntimeServices() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
-        
-        MCPRuntime actual = new MCPRuntime(sessionManager, runtimeServices, null, null);
-        
-        assertThat(actual.getRuntimeServices(), is(runtimeServices));
-    }
     
     @Test
     void assertGetHttpServer() {
@@ -59,7 +41,7 @@ class MCPRuntimeTest {
         MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
         StreamableHttpMCPServer httpServer = createHttpServer(sessionManager, runtimeServices);
         
-        MCPRuntime actual = new MCPRuntime(sessionManager, runtimeServices, httpServer, null);
+        MCPRuntime actual = new MCPRuntime(httpServer, null);
         
         assertTrue(actual.getHttpServer().isPresent());
         assertThat(actual.getHttpServer().get(), is(httpServer));
@@ -71,7 +53,7 @@ class MCPRuntimeTest {
         MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
         StdioMCPServer stdioServer = new StdioMCPServer(sessionManager, runtimeServices);
         
-        MCPRuntime actual = new MCPRuntime(sessionManager, runtimeServices, null, stdioServer);
+        MCPRuntime actual = new MCPRuntime(null, stdioServer);
         
         assertTrue(actual.getStdioServer().isPresent());
         assertThat(actual.getStdioServer().get(), is(stdioServer));
@@ -84,9 +66,7 @@ class MCPRuntimeTest {
         StdioMCPServer stdioServer = new StdioMCPServer(sessionManager, runtimeServices);
         stdioServer.start();
         
-        new MCPRuntime(sessionManager, runtimeServices, null, stdioServer).close();
-        
-        assertFalse(stdioServer.isRunning());
+        assertDoesNotThrow(() -> new MCPRuntime(null, stdioServer).close());
     }
     
     private MCPRuntimeServices createRuntimeServices(final MCPSessionManager sessionManager) {

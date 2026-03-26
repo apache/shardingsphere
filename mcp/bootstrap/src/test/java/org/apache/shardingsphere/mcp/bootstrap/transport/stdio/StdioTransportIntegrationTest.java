@@ -50,6 +50,8 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -62,9 +64,14 @@ class StdioTransportIntegrationTest {
     void assertStart() {
         StdioMCPServer stdioMCPServer = createStdioServer();
         
-        stdioMCPServer.start();
+        assertDoesNotThrow(stdioMCPServer::start);
+    }
+    
+    @Test
+    void assertStop() {
+        StdioMCPServer stdioMCPServer = createStdioServer();
         
-        assertTrue(stdioMCPServer.isRunning());
+        assertDoesNotThrow(stdioMCPServer::stop);
     }
     
     @Test
@@ -119,7 +126,7 @@ class StdioTransportIntegrationTest {
         
         try (MCPRuntime actual = runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"), createRuntimeDatabases()))) {
             assertTrue(actual.getStdioServer().isPresent());
-            assertTrue(actual.getStdioServer().get().isRunning());
+            assertFalse(actual.getStdioServer().orElseThrow().initializeSession().isEmpty());
         }
     }
     

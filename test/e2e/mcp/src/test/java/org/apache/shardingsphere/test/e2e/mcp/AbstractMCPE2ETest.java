@@ -67,12 +67,8 @@ abstract class AbstractMCPE2ETest {
         return new MCPRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
     }
     
-    protected final MCPRuntime launchRuntime() {
-        return launchRuntimeInternal();
-    }
-    
-    protected final MCPRuntime getRuntime() {
-        return runtime;
+    protected final void launchRuntime() {
+        launchRuntimeInternal();
     }
     
     protected final HttpClient createHttpClient() {
@@ -204,7 +200,7 @@ abstract class AbstractMCPE2ETest {
         return Map.of();
     }
     
-    private MCPRuntime launchRuntimeInternal() {
+    private void launchRuntimeInternal() {
         MCPSessionManager sessionManager = new MCPSessionManager();
         MetadataCatalog metadataCatalog = createMetadataCatalog();
         DatabaseRuntime databaseRuntime = createDatabaseRuntime();
@@ -217,8 +213,7 @@ abstract class AbstractMCPE2ETest {
             httpServer.stop();
             throw new IllegalStateException("Failed to start HTTP transport.", ex);
         }
-        runtime = new MCPRuntime(sessionManager, runtimeServices, httpServer, null);
-        return runtime;
+        runtime = new MCPRuntime(httpServer, null);
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,

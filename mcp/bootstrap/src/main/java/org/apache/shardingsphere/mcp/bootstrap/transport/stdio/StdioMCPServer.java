@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
 
-import lombok.Getter;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
@@ -38,9 +37,6 @@ public final class StdioMCPServer {
     
     private final MCPRuntimeServices runtimeServices;
     
-    @Getter
-    private boolean running;
-    
     /**
      * Construct one STDIO MCP server.
      *
@@ -56,14 +52,12 @@ public final class StdioMCPServer {
      * Start the STDIO runtime.
      */
     public void start() {
-        running = true;
     }
     
     /**
      * Stop the STDIO runtime.
      */
     public void stop() {
-        running = false;
     }
     
     /**

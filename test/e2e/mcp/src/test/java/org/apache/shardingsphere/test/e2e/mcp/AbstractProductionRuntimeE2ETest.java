@@ -57,12 +57,11 @@ abstract class AbstractProductionRuntimeE2ETest {
         }
     }
     
-    protected final MCPRuntime launchProductionRuntime() throws IOException {
+    protected final void launchProductionRuntime() throws IOException {
         prepareRuntimeFixture();
         Path configFile = tempDir.resolve("mcp.yaml");
         Files.writeString(configFile, createConfigurationContent());
         runtime = new MCPRuntimeLauncher().launch(MCPConfigurationLoader.load(configFile.toString()));
-        return runtime;
     }
     
     protected final HttpClient createHttpClient() {

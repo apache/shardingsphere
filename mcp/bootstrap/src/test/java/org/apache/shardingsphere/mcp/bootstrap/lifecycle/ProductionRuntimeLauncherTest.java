@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -67,9 +68,9 @@ class ProductionRuntimeLauncherTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         runtime = runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
                 H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl)));
+        assertFalse(runtime.getHttpServer().isPresent());
         assertTrue(runtime.getStdioServer().isPresent());
-        assertTrue(runtime.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("logic_db", "H2").isPresent());
-        assertTrue(runtime.getRuntimeServices().getCapabilityAssembler().assembleServiceCapability().getSupportedTools().contains("execute_query"));
+        assertFalse(runtime.getStdioServer().orElseThrow().initializeSession().isEmpty());
     }
     
     @Test
@@ -90,8 +91,9 @@ class ProductionRuntimeLauncherTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         runtime = runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
                 Map.of("logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl))));
-        assertTrue(runtime.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("logic_db", "H2").isPresent());
-        assertTrue(runtime.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("analytics_db", "H2").isPresent());
+        assertFalse(runtime.getHttpServer().isPresent());
+        assertTrue(runtime.getStdioServer().isPresent());
+        assertFalse(runtime.getStdioServer().orElseThrow().initializeSession().isEmpty());
     }
     
     @Test
@@ -111,7 +113,7 @@ class ProductionRuntimeLauncherTest {
             runtime = runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
                     Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", CountingDriver.JDBC_URL, "", "", ""))));
             assertThat(driver.getConnectionCount(), is(1));
-            assertTrue(runtime.getRuntimeServices().getCapabilityAssembler().assembleDatabaseCapability("logic_db", "H2").isPresent());
+            assertTrue(runtime.getStdioServer().isPresent());
         } finally {
             DriverManager.deregisterDriver(driver);
         }
