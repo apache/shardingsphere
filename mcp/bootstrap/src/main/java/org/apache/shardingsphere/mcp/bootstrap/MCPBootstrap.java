@@ -45,10 +45,10 @@ public final class MCPBootstrap {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException {
         // CHECKSTYLE:ON
-        MCPLaunchConfiguration launchConfiguration = MCPConfigurationLoader.load(getConfigurationPath(args));
-        runtime = new MCPRuntimeLauncher().launch(launchConfiguration);
+        MCPLaunchConfiguration launchConfig = MCPConfigurationLoader.load(getConfigurationPath(args));
+        runtime = new MCPRuntimeLauncher().launch(launchConfig);
         Runtime.getRuntime().addShutdownHook(new Thread(MCPBootstrap::closeRuntime, "shardingsphere-mcp-shutdown"));
-        if (launchConfiguration.getTransport().getStdio().isEnabled()) {
+        if (launchConfig.getTransport().getStdio().isEnabled()) {
             awaitRuntimeTermination();
         }
     }
