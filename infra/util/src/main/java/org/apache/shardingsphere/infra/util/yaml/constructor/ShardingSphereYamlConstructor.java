@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * ShardingSphere YAML constructor.
@@ -62,6 +63,7 @@ public final class ShardingSphereYamlConstructor extends Constructor {
      */
     public static LoaderOptions createLoaderOptions() {
         LoaderOptions result = new LoaderOptions();
+        result.setAllowDuplicateKeys(false);
         result.setMaxAliasesForCollections(1000);
         result.setCodePointLimit(Integer.MAX_VALUE);
         return result;
@@ -76,13 +78,27 @@ public final class ShardingSphereYamlConstructor extends Constructor {
     @Override
     public Object constructObject(final Node node) {
         Object result = super.constructObject(node);
+        if (result instanceof Map) {
+            validateMapKeys((Map<?, ?>) result);
+        }
         if (isMappingNode(node, result)) {
             getPropertyUtils().getProperties(result.getClass()).stream().filter(Property::isWritable).forEach(each -> setEmptyCollectionIfNull(result, each));
         }
         return result;
     }
     
-    private static boolean isMappingNode(final Node node, final Object target) {
+    private void validateMapKeys(final Map<?, ?> map) {
+        for (Object each : map.keySet()) {
+            Preconditions.checkArgument(null != each, "YAML map key cannot be null.");
+            Preconditions.checkArgument(!(each instanceof String) || !isBlank((String) each), "YAML map key cannot be blank.");
+        }
+    }
+    
+    private boolean isBlank(final String value) {
+        return IntStream.range(0, value.length()).allMatch(i -> Character.isWhitespace(value.charAt(i)));
+    }
+    
+    private boolean isMappingNode(final Node node, final Object target) {
         return null != target && node instanceof MappingNode && !(target instanceof Map) && !(target instanceof Collection);
     }
     

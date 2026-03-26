@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.Dro
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.RenameIndexDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.AlterTableStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 
@@ -65,42 +66,42 @@ public final class AlterTableMetadataCheckUtils {
     private static void validateAddColumns(final ShardingSphereTable table, final Collection<AddColumnDefinitionSegment> addColumns) {
         for (AddColumnDefinitionSegment each : addColumns) {
             for (ColumnDefinitionSegment columnDefinition : each.getColumnDefinitions()) {
-                String addColumnName = columnDefinition.getColumnName().getIdentifier().getValue();
-                ShardingSpherePreconditions.checkState(!containsColumn(table, addColumnName), () -> new DuplicateColumnException(addColumnName));
+                IdentifierValue addColumnName = columnDefinition.getColumnName().getIdentifier();
+                ShardingSpherePreconditions.checkState(!containsColumn(table, addColumnName), () -> new DuplicateColumnException(addColumnName.getValue()));
             }
         }
     }
     
     private static void validateModifyColumns(final ShardingSphereTable table, final Collection<ModifyColumnDefinitionSegment> modifyColumns) {
         for (ModifyColumnDefinitionSegment each : modifyColumns) {
-            String columnName = each.getColumnDefinition().getColumnName().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(containsColumn(table, columnName), () -> new ColumnNotFoundException(columnName, table.getName()));
+            IdentifierValue columnName = each.getColumnDefinition().getColumnName().getIdentifier();
+            ShardingSpherePreconditions.checkState(containsColumn(table, columnName), () -> new ColumnNotFoundException(columnName.getValue(), table.getName()));
         }
     }
     
     private static void validateChangeColumns(final ShardingSphereTable table, final Collection<ChangeColumnDefinitionSegment> changeColumnDefinitions) {
         for (ChangeColumnDefinitionSegment each : changeColumnDefinitions) {
-            String newColumnName = each.getColumnDefinition().getColumnName().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(!containsColumn(table, newColumnName), () -> new DuplicateColumnException(newColumnName));
-            String oldColumnName = each.getPreviousColumn().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(containsColumn(table, oldColumnName), () -> new ColumnNotFoundException(oldColumnName, table.getName()));
+            IdentifierValue newColumnName = each.getColumnDefinition().getColumnName().getIdentifier();
+            ShardingSpherePreconditions.checkState(!containsColumn(table, newColumnName), () -> new DuplicateColumnException(newColumnName.getValue()));
+            IdentifierValue oldColumnName = each.getPreviousColumn().getIdentifier();
+            ShardingSpherePreconditions.checkState(containsColumn(table, oldColumnName), () -> new ColumnNotFoundException(oldColumnName.getValue(), table.getName()));
         }
     }
     
     private static void validateRenameColumns(final ShardingSphereTable table, final Collection<RenameColumnSegment> renameColumns) {
         for (RenameColumnSegment each : renameColumns) {
-            String newColumnName = each.getColumnName().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(!containsColumn(table, newColumnName), () -> new DuplicateColumnException(newColumnName));
-            String oldColumnName = each.getOldColumnName().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(containsColumn(table, oldColumnName), () -> new ColumnNotFoundException(oldColumnName, table.getName()));
+            IdentifierValue newColumnName = each.getColumnName().getIdentifier();
+            ShardingSpherePreconditions.checkState(!containsColumn(table, newColumnName), () -> new DuplicateColumnException(newColumnName.getValue()));
+            IdentifierValue oldColumnName = each.getOldColumnName().getIdentifier();
+            ShardingSpherePreconditions.checkState(containsColumn(table, oldColumnName), () -> new ColumnNotFoundException(oldColumnName.getValue(), table.getName()));
         }
     }
     
     private static void validateDropColumns(final ShardingSphereTable table, final Collection<DropColumnDefinitionSegment> dropColumns) {
         for (DropColumnDefinitionSegment each : dropColumns) {
             for (ColumnSegment column : each.getColumns()) {
-                String columnName = column.getIdentifier().getValue();
-                ShardingSpherePreconditions.checkState(containsColumn(table, columnName), () -> new ColumnNotFoundException(columnName, table.getName()));
+                IdentifierValue columnName = column.getIdentifier();
+                ShardingSpherePreconditions.checkState(containsColumn(table, columnName), () -> new ColumnNotFoundException(columnName.getValue(), table.getName()));
             }
         }
     }
@@ -131,7 +132,7 @@ public final class AlterTableMetadataCheckUtils {
         }
     }
     
-    private static boolean containsColumn(final ShardingSphereTable table, final String columnName) {
+    private static boolean containsColumn(final ShardingSphereTable table, final IdentifierValue columnName) {
         return table.containsColumn(columnName);
     }
     

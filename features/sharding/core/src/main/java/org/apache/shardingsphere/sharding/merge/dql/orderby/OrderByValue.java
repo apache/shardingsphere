@@ -75,7 +75,7 @@ public final class OrderByValue implements Comparable<OrderByValue> {
             ShardingSphereTable table = schema.getTable(tableName);
             OrderByItemSegment orderByItemSegment = eachOrderByItem.getSegment();
             if (orderByItemSegment instanceof ColumnOrderByItemSegment) {
-                String columnName = ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue();
+                IdentifierValue columnName = ((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier();
                 if (table.containsColumn(columnName)) {
                     return table.getColumn(columnName).isCaseSensitive();
                 }
