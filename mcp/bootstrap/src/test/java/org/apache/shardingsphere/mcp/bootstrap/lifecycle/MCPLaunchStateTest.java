@@ -42,7 +42,7 @@ class MCPLaunchStateTest {
         MCPServerRegistry serverRegistry = new MCPServerRegistry(sessionManager);
         MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
         
-        MCPLaunchState actual = new MCPLaunchState(serverRegistry, runtimeServices, Collections.emptyList(), Collections.emptyList());
+        MCPLaunchState actual = new MCPLaunchState(serverRegistry, runtimeServices, null, null);
         
         assertThat(actual.getServerRegistry(), is(serverRegistry));
     }
@@ -53,7 +53,7 @@ class MCPLaunchStateTest {
         MCPServerRegistry serverRegistry = new MCPServerRegistry(sessionManager);
         MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
         
-        MCPLaunchState actual = new MCPLaunchState(serverRegistry, runtimeServices, Collections.emptyList(), Collections.emptyList());
+        MCPLaunchState actual = new MCPLaunchState(serverRegistry, runtimeServices, null, null);
         
         assertThat(actual.getRuntimeServices(), is(runtimeServices));
     }
@@ -65,7 +65,7 @@ class MCPLaunchStateTest {
         MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
         StreamableHttpMCPServer httpServer = createHttpServer(serverRegistry, runtimeServices);
         
-        MCPLaunchState actual = new MCPLaunchState(serverRegistry, runtimeServices, Collections.singletonList(httpServer), Collections.emptyList());
+        MCPLaunchState actual = new MCPLaunchState(serverRegistry, runtimeServices, httpServer, null);
         
         assertTrue(actual.getHttpServer().isPresent());
         assertThat(actual.getHttpServer().get(), is(httpServer));
@@ -74,7 +74,7 @@ class MCPLaunchStateTest {
     @Test
     void assertGetHttpServerWhenAbsent() {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPLaunchState actual = new MCPLaunchState(new MCPServerRegistry(sessionManager), createRuntimeServices(sessionManager), Collections.emptyList(), Collections.emptyList());
+        MCPLaunchState actual = new MCPLaunchState(new MCPServerRegistry(sessionManager), createRuntimeServices(sessionManager), null, null);
         
         assertFalse(actual.getHttpServer().isPresent());
     }
@@ -86,7 +86,7 @@ class MCPLaunchStateTest {
         MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
         StdioMCPServer stdioServer = new StdioMCPServer(sessionManager, runtimeServices);
         
-        MCPLaunchState actual = new MCPLaunchState(serverRegistry, runtimeServices, Collections.emptyList(), Collections.singletonList(stdioServer));
+        MCPLaunchState actual = new MCPLaunchState(serverRegistry, runtimeServices, null, stdioServer);
         
         assertTrue(actual.getStdioServer().isPresent());
         assertThat(actual.getStdioServer().get(), is(stdioServer));
@@ -95,7 +95,7 @@ class MCPLaunchStateTest {
     @Test
     void assertGetStdioServerWhenAbsent() {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPLaunchState actual = new MCPLaunchState(new MCPServerRegistry(sessionManager), createRuntimeServices(sessionManager), Collections.emptyList(), Collections.emptyList());
+        MCPLaunchState actual = new MCPLaunchState(new MCPServerRegistry(sessionManager), createRuntimeServices(sessionManager), null, null);
         
         assertFalse(actual.getStdioServer().isPresent());
     }

@@ -22,7 +22,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,7 +38,7 @@ public final class DatabaseRuntime {
     private final Map<String, Integer> updateCounts;
     
     @Getter(AccessLevel.NONE)
-    private final List<ShardingSphereExecutionAdapter> executionAdapters;
+    private final ShardingSphereExecutionAdapter executionAdapter;
     
     private final Consumer<String> metadataRefresher;
     
@@ -50,7 +49,7 @@ public final class DatabaseRuntime {
      * @param updateCounts update counts keyed by {@code database:object}
      */
     public DatabaseRuntime(final Map<String, QueryResult> queryResults, final Map<String, Integer> updateCounts) {
-        this(queryResults, updateCounts, Collections.emptyList(), ignored -> {
+        this(queryResults, updateCounts, null, ignored -> {
         });
     }
     
@@ -61,15 +60,14 @@ public final class DatabaseRuntime {
      * @param metadataRefresher metadata refresh callback
      */
     public DatabaseRuntime(final ShardingSphereExecutionAdapter executionAdapter, final Consumer<String> metadataRefresher) {
-        this(Collections.emptyMap(), Collections.emptyMap(), Collections.singletonList(Objects.requireNonNull(executionAdapter, "executionAdapter cannot be null")),
-                metadataRefresher);
+        this(Collections.emptyMap(), Collections.emptyMap(), Objects.requireNonNull(executionAdapter, "executionAdapter cannot be null"), metadataRefresher);
     }
     
     private DatabaseRuntime(final Map<String, QueryResult> queryResults, final Map<String, Integer> updateCounts,
-                            final List<ShardingSphereExecutionAdapter> executionAdapters, final Consumer<String> metadataRefresher) {
+                            final ShardingSphereExecutionAdapter executionAdapter, final Consumer<String> metadataRefresher) {
         this.queryResults = queryResults;
         this.updateCounts = updateCounts;
-        this.executionAdapters = executionAdapters;
+        this.executionAdapter = executionAdapter;
         this.metadataRefresher = Objects.requireNonNull(metadataRefresher, "metadataRefresher cannot be null");
     }
     
@@ -101,7 +99,7 @@ public final class DatabaseRuntime {
      * @return {@code true} when backed by one execution adapter
      */
     public boolean isAdapterBacked() {
-        return !executionAdapters.isEmpty();
+        return null != executionAdapter;
     }
     
     /**
@@ -209,7 +207,7 @@ public final class DatabaseRuntime {
         if (!isAdapterBacked()) {
             throw new IllegalStateException("Execution adapter does not exist.");
         }
-        return executionAdapters.get(0);
+        return executionAdapter;
     }
     
     private String buildKey(final String database, final String objectName) {

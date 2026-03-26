@@ -30,8 +30,6 @@ import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -103,7 +101,7 @@ public final class MCPRuntimeLauncher {
             actualServerRegistry.stop();
             throw new IllegalStateException("Failed to start HTTP transport.", ex);
         }
-        return new MCPLaunchState(actualServerRegistry, actualRuntimeServices, toTransportList(httpServer), toTransportList(stdioServer));
+        return new MCPLaunchState(actualServerRegistry, actualRuntimeServices, httpServer, stdioServer);
     }
     
     private void validateTransportConfiguration(final MCPTransportConfiguration transportConfig) {
@@ -126,7 +124,4 @@ public final class MCPRuntimeLauncher {
         return launchConfiguration.getTransport().getStdio().isEnabled() ? new StdioMCPServer(serverRegistry.getSessionManager(), runtimeServices) : null;
     }
     
-    private static <T> List<T> toTransportList(final T transport) {
-        return null == transport ? Collections.emptyList() : Collections.singletonList(transport);
-    }
 }
