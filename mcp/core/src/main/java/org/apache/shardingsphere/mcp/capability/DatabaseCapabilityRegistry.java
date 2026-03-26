@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.mcp.capability;
 
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -71,16 +69,6 @@ public final class DatabaseCapabilityRegistry {
     }
     
     /**
-     * Find a capability definition by database type.
-     *
-     * @param databaseType database type
-     * @return capability definition when present
-     */
-    public Optional<DatabaseCapability> find(final String databaseType) {
-        return find(databaseType, "");
-    }
-    
-    /**
      * Find a capability definition by database type and version.
      *
      * @param databaseType database type
@@ -89,15 +77,6 @@ public final class DatabaseCapabilityRegistry {
      */
     public Optional<DatabaseCapability> find(final String databaseType, final String databaseVersion) {
         return Optional.ofNullable(capabilities.get(normalizeDatabaseType(databaseType))).map(each -> applyVersionAwareOverrides(each, databaseVersion));
-    }
-    
-    /**
-     * Get a stable snapshot of the registered capabilities.
-     *
-     * @return capability collection
-     */
-    public Collection<DatabaseCapability> getRegisteredCapabilities() {
-        return new LinkedList<>(capabilities.values());
     }
     
     static String normalizeDatabaseType(final String databaseType) {

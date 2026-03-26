@@ -36,68 +36,6 @@ public final class AuditRecorder {
     private final List<AuditRecord> records = Collections.synchronizedList(new LinkedList<>());
     
     /**
-     * Record one resource-read audit event.
-     *
-     * @param sessionId session identifier
-     * @param database logical database name
-     * @param resourcePath resource path
-     * @param success success flag
-     * @param transactionMarker optional transaction marker
-     * @return recorded audit entry
-     */
-    public AuditRecord recordResourceRead(final String sessionId, final String database, final String resourcePath, final boolean success,
-                                          final String transactionMarker) {
-        return record(sessionId, database, OperationClass.RESOURCE_READ, resourcePath, success, false, ErrorCode.INVALID_REQUEST, transactionMarker);
-    }
-    
-    /**
-     * Record one resource-read audit event with one error code.
-     *
-     * @param sessionId session identifier
-     * @param database logical database name
-     * @param resourcePath resource path
-     * @param success success flag
-     * @param errorCode error code
-     * @param transactionMarker optional transaction marker
-     * @return recorded audit entry
-     */
-    public AuditRecord recordResourceRead(final String sessionId, final String database, final String resourcePath, final boolean success,
-                                          final ErrorCode errorCode, final String transactionMarker) {
-        return record(sessionId, database, OperationClass.RESOURCE_READ, resourcePath, success, true, errorCode, transactionMarker);
-    }
-    
-    /**
-     * Record one metadata-tool audit event.
-     *
-     * @param sessionId session identifier
-     * @param database logical database name
-     * @param toolCallSummary tool call summary
-     * @param success success flag
-     * @param transactionMarker optional transaction marker
-     * @return recorded audit entry
-     */
-    public AuditRecord recordMetadataTool(final String sessionId, final String database, final String toolCallSummary, final boolean success,
-                                          final String transactionMarker) {
-        return record(sessionId, database, OperationClass.METADATA_TOOL, toolCallSummary, success, false, ErrorCode.INVALID_REQUEST, transactionMarker);
-    }
-    
-    /**
-     * Record one metadata-tool audit event with one error code.
-     *
-     * @param sessionId session identifier
-     * @param database logical database name
-     * @param toolCallSummary tool call summary
-     * @param success success flag
-     * @param errorCode error code
-     * @param transactionMarker optional transaction marker
-     * @return recorded audit entry
-     */
-    public AuditRecord recordMetadataTool(final String sessionId, final String database, final String toolCallSummary, final boolean success,
-                                          final ErrorCode errorCode, final String transactionMarker) {
-        return record(sessionId, database, OperationClass.METADATA_TOOL, toolCallSummary, success, true, errorCode, transactionMarker);
-    }
-    
-    /**
      * Record one query-execution audit event.
      *
      * @param sessionId session identifier
@@ -126,17 +64,6 @@ public final class AuditRecorder {
     public AuditRecord recordQueryExecution(final String sessionId, final String database, final String sql, final boolean success,
                                             final ErrorCode errorCode, final String transactionMarker) {
         return record(sessionId, database, OperationClass.QUERY_EXECUTION, sql, success, true, errorCode, transactionMarker);
-    }
-    
-    /**
-     * Get a stable snapshot of audit records.
-     *
-     * @return audit record snapshot
-     */
-    public List<AuditRecord> snapshot() {
-        synchronized (records) {
-            return new LinkedList<>(records);
-        }
     }
     
     private AuditRecord record(final String sessionId, final String database, final OperationClass operationClass, final String operationSource,

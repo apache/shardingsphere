@@ -51,8 +51,10 @@ class SupportedDatabaseBaselineTest {
         expectedDatabaseTypes.add("H2");
         DatabaseCapabilityRegistry registry = DatabaseCapabilityRegistry.createDefault();
         Set<String> actualDatabaseTypes = new LinkedHashSet<>();
-        for (DatabaseCapability each : registry.getRegisteredCapabilities()) {
-            actualDatabaseTypes.add(each.getDatabaseType());
+        for (String each : expectedDatabaseTypes) {
+            if (registry.find(each, "").isPresent()) {
+                actualDatabaseTypes.add(each);
+            }
         }
         
         assertThat(actualDatabaseTypes.size(), is(12));
@@ -65,7 +67,7 @@ class SupportedDatabaseBaselineTest {
                                               final boolean expectedSupportsSavepoint, final Set<String> expectedTransactionStatements) {
         DatabaseCapabilityRegistry registry = DatabaseCapabilityRegistry.createDefault();
         
-        Optional<DatabaseCapability> actualCapability = registry.find(databaseType);
+        Optional<DatabaseCapability> actualCapability = registry.find(databaseType, "");
         
         assertTrue(actualCapability.isPresent(), caseName);
         assertThat(actualCapability.get().isSupportsTransactionControl(), is(expectedSupportsTransactionControl));

@@ -154,16 +154,6 @@ public final class MCPSessionManager {
     }
     
     /**
-     * Determine whether the session identifier belongs to a closed session.
-     *
-     * @param sessionId session identifier
-     * @return {@code true} when the session is already closed
-     */
-    public boolean isClosedSession(final String sessionId) {
-        return closedSessionIds.contains(normalizeValue(sessionId, "sessionId"));
-    }
-    
-    /**
      * Close the session and rollback any pending work.
      *
      * @param sessionId session identifier

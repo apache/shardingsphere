@@ -22,32 +22,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AuditRecorderTest {
-    
-    @Test
-    void assertRecordResourceRead() {
-        AuditRecorder auditRecorder = new AuditRecorder();
-        
-        AuditRecord actual = auditRecorder.recordResourceRead("session-1", "logic_db", "shardingsphere://databases", true, "QUERY");
-        
-        assertThat(actual.getOperationClass(), is(OperationClass.RESOURCE_READ));
-        assertTrue(actual.isSuccess());
-        assertThat(actual.getOperationDigest().length(), is(64));
-    }
-    
-    @Test
-    void assertRecordMetadataTool() {
-        AuditRecorder auditRecorder = new AuditRecorder();
-        
-        AuditRecord actual = auditRecorder.recordMetadataTool("session-1", "logic_db", "list_tables", false, ErrorCode.INVALID_REQUEST, "QUERY");
-        
-        assertThat(actual.getOperationClass(), is(OperationClass.METADATA_TOOL));
-        assertFalse(actual.isSuccess());
-        assertTrue(actual.getErrorCode().isPresent());
-    }
     
     @Test
     void assertRecordQueryExecution() {
@@ -56,16 +33,19 @@ class AuditRecorderTest {
         AuditRecord actual = auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", true, "QUERY");
         
         assertThat(actual.getOperationClass(), is(OperationClass.QUERY_EXECUTION));
+        assertTrue(actual.isSuccess());
         assertThat(actual.getDatabase(), is("logic_db"));
+        assertThat(actual.getOperationDigest().length(), is(64));
     }
     
     @Test
-    void assertSnapshot() {
+    void assertRecordQueryExecutionWithErrorCode() {
         AuditRecorder auditRecorder = new AuditRecorder();
-        auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", true, "QUERY");
         
-        int actual = auditRecorder.snapshot().size();
+        AuditRecord actual = auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", false, ErrorCode.INVALID_REQUEST, "QUERY");
         
-        assertThat(actual, is(1));
+        assertThat(actual.getOperationClass(), is(OperationClass.QUERY_EXECUTION));
+        assertTrue(actual.getErrorCode().isPresent());
+        assertThat(actual.getErrorCode().get(), is(ErrorCode.INVALID_REQUEST));
     }
 }

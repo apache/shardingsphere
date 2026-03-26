@@ -160,15 +160,6 @@ class MCPSessionManagerTest {
     }
     
     @Test
-    void assertIsClosedSession() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        sessionManager.createSession("session-1");
-        sessionManager.closeSession("session-1");
-        
-        assertTrue(sessionManager.isClosedSession("session-1"));
-    }
-    
-    @Test
     void assertCreateSessionWithClosedSessionId() {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");

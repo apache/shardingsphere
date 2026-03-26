@@ -42,6 +42,8 @@ import java.util.logging.Logger;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ProductionRuntimeLauncherTest {
@@ -56,6 +58,19 @@ class ProductionRuntimeLauncherTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
                 H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
+    }
+    
+    @Test
+    void assertLaunchReturnsStdioRuntime() throws SQLException {
+        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher-stdio");
+        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
+        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
+        
+        MCPRuntime actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
+                H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
+        
+        assertFalse(actual.getHttpServer().isPresent());
+        assertTrue(actual.getStdioServer().isPresent());
     }
     
     @Test

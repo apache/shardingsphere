@@ -44,21 +44,6 @@ public final class TransactionCommandExecutor {
     private final DatabaseRuntime databaseRuntime;
     
     /**
-     * Execute one transaction-control or savepoint SQL command.
-     *
-     * @param sessionId session identifier
-     * @param database logical database name
-     * @param databaseType database type
-     * @param sql SQL text
-     * @return execution response
-     */
-    public ExecuteQueryResponse execute(final String sessionId, final String database, final String databaseType, final String sql) {
-        String normalizedSql = Objects.requireNonNull(sql, "sql cannot be null").trim().toUpperCase(Locale.ENGLISH);
-        String statementType = resolveStatementType(normalizedSql);
-        return execute(sessionId, database, databaseType, statementType, resolveSavepointName(normalizedSql, statementType));
-    }
-    
-    /**
      * Execute one transaction-control or savepoint command with pre-classified SQL metadata.
      *
      * @param sessionId session identifier
@@ -131,31 +116,5 @@ public final class TransactionCommandExecutor {
         } catch (final IllegalStateException ex) {
             return ExecuteQueryResponse.error(ErrorCode.TRANSACTION_STATE_ERROR, ex.getMessage());
         }
-    }
-    
-    private String resolveStatementType(final String normalizedSql) {
-        if (normalizedSql.startsWith("ROLLBACK TO SAVEPOINT ")) {
-            return "ROLLBACK TO SAVEPOINT";
-        }
-        if (normalizedSql.startsWith("RELEASE SAVEPOINT ")) {
-            return "RELEASE SAVEPOINT";
-        }
-        if (normalizedSql.startsWith("SAVEPOINT ")) {
-            return "SAVEPOINT";
-        }
-        return normalizedSql;
-    }
-    
-    private String resolveSavepointName(final String normalizedSql, final String statementType) {
-        if ("SAVEPOINT".equals(statementType)) {
-            return normalizedSql.substring("SAVEPOINT ".length()).trim();
-        }
-        if ("ROLLBACK TO SAVEPOINT".equals(statementType)) {
-            return normalizedSql.substring("ROLLBACK TO SAVEPOINT ".length()).trim();
-        }
-        if ("RELEASE SAVEPOINT".equals(statementType)) {
-            return normalizedSql.substring("RELEASE SAVEPOINT ".length()).trim();
-        }
-        return "";
     }
 }

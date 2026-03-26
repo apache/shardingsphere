@@ -46,7 +46,7 @@ class TransactionCommandExecutorTest {
         prepareTransactionState(sessionManager, sql);
         TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseRuntime());
         
-        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", sql);
+        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify(sql));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getStatementType(), is(expectedStatementType));
@@ -70,7 +70,7 @@ class TransactionCommandExecutorTest {
         sessionManager.beginTransaction("session-1", "warehouse");
         TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseRuntime());
         
-        ExecuteQueryResponse actual = executor.execute("session-1", "warehouse", "Hive", "SAVEPOINT sp_1");
+        ExecuteQueryResponse actual = executor.execute("session-1", "warehouse", "Hive", new StatementClassifier().classify("SAVEPOINT sp_1"));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
@@ -96,7 +96,7 @@ class TransactionCommandExecutorTest {
         sessionManager.createSession("session-1");
         TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseRuntime());
         
-        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", "SELECT 1");
+        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify("SELECT 1"));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
@@ -109,7 +109,7 @@ class TransactionCommandExecutorTest {
         sessionManager.createSession("session-1");
         TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseRuntime());
         
-        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", "COMMIT");
+        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify("COMMIT"));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());

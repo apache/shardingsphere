@@ -101,7 +101,9 @@ class StdioTransportIntegrationTest {
         
         stdioMCPServer.closeSession(sessionId);
         
-        assertTrue(sessionManager.isClosedSession(sessionId));
+        assertTrue(sessionManager.findSession(sessionId).isEmpty());
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> sessionManager.createSession(sessionId));
+        assertThat(actual.getMessage(), is("Session recovery is not supported."));
     }
     
     @Test

@@ -22,7 +22,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -41,8 +40,10 @@ class DatabaseCapabilityRegistryTest {
         
         registry.register(createCapability());
         
-        assertThat(registry.getRegisteredCapabilities().size(), is(1));
-        assertTrue(registry.find("MYSQL").isPresent());
+        Optional<DatabaseCapability> actual = registry.find("MYSQL", "");
+        
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getDatabaseType(), is("MYSQL"));
     }
     
     @Test
@@ -59,7 +60,7 @@ class DatabaseCapabilityRegistryTest {
         DatabaseCapabilityRegistry registry = new DatabaseCapabilityRegistry();
         registry.register(createCapability());
         
-        Optional<DatabaseCapability> actual = registry.find(" mysql ");
+        Optional<DatabaseCapability> actual = registry.find(" mysql ", "");
         
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDatabaseType(), is("MYSQL"));
@@ -70,7 +71,7 @@ class DatabaseCapabilityRegistryTest {
         DatabaseCapabilityRegistry registry = new DatabaseCapabilityRegistry();
         registry.register(createCapability());
         
-        Optional<DatabaseCapability> actual = registry.find("postgresql");
+        Optional<DatabaseCapability> actual = registry.find("postgresql", "");
         
         assertFalse(actual.isPresent());
     }
@@ -79,20 +80,9 @@ class DatabaseCapabilityRegistryTest {
     void assertFindWithNullDatabaseType() {
         DatabaseCapabilityRegistry registry = new DatabaseCapabilityRegistry();
         
-        NullPointerException actual = assertThrows(NullPointerException.class, () -> registry.find(null));
+        NullPointerException actual = assertThrows(NullPointerException.class, () -> registry.find(null, ""));
         
         assertThat(actual.getMessage(), is("databaseType cannot be null"));
-    }
-    
-    @Test
-    void assertGetRegisteredCapabilities() {
-        DatabaseCapabilityRegistry registry = new DatabaseCapabilityRegistry();
-        registry.register(createCapability());
-        
-        Collection<DatabaseCapability> actual = registry.getRegisteredCapabilities();
-        actual.clear();
-        
-        assertThat(registry.getRegisteredCapabilities().size(), is(1));
     }
     
     @ParameterizedTest(name = "{0}")

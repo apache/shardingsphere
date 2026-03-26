@@ -146,7 +146,7 @@ class ExecuteQueryFacadeTest {
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ResultKind.STATEMENT_ACK));
-        assertTrue(metadataRefreshCoordinator.isVisibleToSession("session-1", "logic_db"));
+        assertThat(actual.getMessage(), is("Statement executed."));
     }
     
     @Test
@@ -158,7 +158,7 @@ class ExecuteQueryFacadeTest {
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ResultKind.STATEMENT_ACK));
-        assertTrue(metadataRefreshCoordinator.isVisibleToSession("session-1", "logic_db"));
+        assertThat(actual.getMessage(), is("Statement executed."));
     }
     
     @Test
