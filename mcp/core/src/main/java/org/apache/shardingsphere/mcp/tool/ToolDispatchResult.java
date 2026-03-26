@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mcp.resource.ResourceLoadResult;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -49,10 +48,10 @@ public final class ToolDispatchResult {
     private ToolDispatchResult(final List<MetadataObject> metadataObjects, final String nextPageToken,
                                final boolean errorCodePresent, final ErrorCode errorCode, final String message) {
         this.metadataObjects = metadataObjects;
-        this.nextPageToken = Objects.requireNonNull(nextPageToken, "nextPageToken cannot be null");
+        this.nextPageToken = nextPageToken;
         this.errorCodePresent = errorCodePresent;
-        this.errorCode = Objects.requireNonNull(errorCode, "errorCode cannot be null");
-        this.message = Objects.requireNonNull(message, "message cannot be null");
+        this.errorCode = errorCode;
+        this.message = message;
     }
     
     /**

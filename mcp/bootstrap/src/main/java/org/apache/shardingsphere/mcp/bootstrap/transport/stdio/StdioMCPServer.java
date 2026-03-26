@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.tool.ToolDispatchResult;
 import org.apache.shardingsphere.mcp.tool.ToolRequest;
 
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -44,8 +43,8 @@ public final class StdioMCPServer {
      * @param runtimeServices runtime services
      */
     public StdioMCPServer(final MCPSessionManager sessionManager, final MCPRuntimeServices runtimeServices) {
-        this.sessionManager = Objects.requireNonNull(sessionManager, "sessionManager cannot be null");
-        this.runtimeServices = Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null");
+        this.sessionManager = sessionManager;
+        this.runtimeServices = runtimeServices;
     }
     
     /**

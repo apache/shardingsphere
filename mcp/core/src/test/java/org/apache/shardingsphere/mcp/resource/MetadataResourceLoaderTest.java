@@ -31,7 +31,9 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,8 +41,8 @@ class MetadataResourceLoaderTest {
     
     @Test
     void assertConstructWithNullCapabilityAssembler() {
-        NullPointerException actual = assertThrows(NullPointerException.class, () -> new MetadataResourceLoader(null));
-        assertThat(actual.getMessage(), is("capabilityAssembler cannot be null"));
+        MetadataResourceLoader actual = assertDoesNotThrow(() -> new MetadataResourceLoader(null));
+        assertNotNull(actual);
     }
     
     @Test

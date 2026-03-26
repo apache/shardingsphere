@@ -56,11 +56,11 @@ public final class ExecuteQueryFacade {
     public ExecuteQueryFacade(final StatementClassifier statementClassifier, final DatabaseCapabilityAssembler capabilityAssembler,
                               final TransactionCommandExecutor transactionCommandExecutor,
                               final AuditRecorder auditRecorder, final MetadataRefreshCoordinator metadataRefreshCoordinator) {
-        this.statementClassifier = Objects.requireNonNull(statementClassifier, "statementClassifier cannot be null");
-        this.capabilityAssembler = Objects.requireNonNull(capabilityAssembler, "capabilityAssembler cannot be null");
-        this.transactionCommandExecutor = Objects.requireNonNull(transactionCommandExecutor, "transactionCommandExecutor cannot be null");
-        this.auditRecorder = Objects.requireNonNull(auditRecorder, "auditRecorder cannot be null");
-        this.metadataRefreshCoordinator = Objects.requireNonNull(metadataRefreshCoordinator, "metadataRefreshCoordinator cannot be null");
+        this.statementClassifier = statementClassifier;
+        this.capabilityAssembler = capabilityAssembler;
+        this.transactionCommandExecutor = transactionCommandExecutor;
+        this.auditRecorder = auditRecorder;
+        this.metadataRefreshCoordinator = metadataRefreshCoordinator;
     }
     
     /**

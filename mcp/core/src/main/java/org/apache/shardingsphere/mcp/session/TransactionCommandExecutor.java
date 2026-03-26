@@ -49,9 +49,9 @@ public final class TransactionCommandExecutor {
      * @param databaseRuntime database runtime
      */
     public TransactionCommandExecutor(final DatabaseCapabilityAssembler capabilityAssembler, final MCPSessionManager sessionManager, final DatabaseRuntime databaseRuntime) {
-        this.capabilityAssembler = Objects.requireNonNull(capabilityAssembler, "capabilityAssembler cannot be null");
-        this.sessionManager = Objects.requireNonNull(sessionManager, "sessionManager cannot be null");
-        this.databaseRuntime = Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null");
+        this.capabilityAssembler = capabilityAssembler;
+        this.sessionManager = sessionManager;
+        this.databaseRuntime = databaseRuntime;
     }
     
     /**

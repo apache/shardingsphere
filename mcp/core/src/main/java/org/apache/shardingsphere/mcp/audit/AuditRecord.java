@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -65,15 +64,15 @@ public final class AuditRecord {
      */
     public AuditRecord(final String sessionId, final String database, final OperationClass operationClass, final String operationDigest,
                        final boolean success, final boolean errorCodePresent, final ErrorCode errorCode, final String transactionMarker, final String timestamp) {
-        this.sessionId = Objects.requireNonNull(sessionId, "sessionId cannot be null");
-        this.database = Objects.requireNonNull(database, "database cannot be null");
-        this.operationClass = Objects.requireNonNull(operationClass, "operationClass cannot be null");
-        this.operationDigest = Objects.requireNonNull(operationDigest, "operationDigest cannot be null");
+        this.sessionId = sessionId;
+        this.database = database;
+        this.operationClass = operationClass;
+        this.operationDigest = operationDigest;
         this.success = success;
         this.errorCodePresent = errorCodePresent;
-        this.errorCode = Objects.requireNonNull(errorCode, "errorCode cannot be null");
-        this.transactionMarker = Objects.requireNonNull(transactionMarker, "transactionMarker cannot be null");
-        this.timestamp = Objects.requireNonNull(timestamp, "timestamp cannot be null");
+        this.errorCode = errorCode;
+        this.transactionMarker = transactionMarker;
+        this.timestamp = timestamp;
     }
     
     /**

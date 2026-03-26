@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mcp.resource;
 
 import lombok.Getter;
 
-import java.util.Objects;
-
 /**
  * Normalized metadata object for metadata discovery.
  */
@@ -51,11 +49,11 @@ public final class MetadataObject {
      */
     public MetadataObject(final String database, final String schema, final MetadataObjectType objectType,
                           final String name, final String parentObjectType, final String parentObjectName) {
-        this.database = Objects.requireNonNull(database, "database cannot be null");
-        this.schema = Objects.requireNonNull(schema, "schema cannot be null");
-        this.objectType = Objects.requireNonNull(objectType, "objectType cannot be null");
-        this.name = Objects.requireNonNull(name, "name cannot be null");
-        this.parentObjectType = Objects.requireNonNull(parentObjectType, "parentObjectType cannot be null");
-        this.parentObjectName = Objects.requireNonNull(parentObjectName, "parentObjectName cannot be null");
+        this.database = database;
+        this.schema = schema;
+        this.objectType = objectType;
+        this.name = name;
+        this.parentObjectType = parentObjectType;
+        this.parentObjectName = parentObjectName;
     }
 }

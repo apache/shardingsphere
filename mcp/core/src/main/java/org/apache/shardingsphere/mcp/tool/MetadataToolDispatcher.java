@@ -47,7 +47,7 @@ public final class MetadataToolDispatcher {
      * @param resourceLoader metadata resource loader
      */
     public MetadataToolDispatcher(final MetadataResourceLoader resourceLoader) {
-        this.resourceLoader = Objects.requireNonNull(resourceLoader, "resourceLoader cannot be null");
+        this.resourceLoader = resourceLoader;
     }
     
     /**

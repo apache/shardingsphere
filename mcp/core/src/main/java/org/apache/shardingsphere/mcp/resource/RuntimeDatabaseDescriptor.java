@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.resource;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.capability.SupportedObjectType;
 
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -50,10 +49,10 @@ public final class RuntimeDatabaseDescriptor {
      */
     public RuntimeDatabaseDescriptor(final String database, final String databaseType, final Set<SupportedObjectType> supportedObjectTypes,
                                      final String databaseVersion, final String defaultSchema) {
-        this.database = Objects.requireNonNull(database, "database cannot be null");
-        this.databaseType = Objects.requireNonNull(databaseType, "databaseType cannot be null");
-        this.databaseVersion = Objects.requireNonNull(databaseVersion, "databaseVersion cannot be null");
+        this.database = database;
+        this.databaseType = databaseType;
+        this.databaseVersion = databaseVersion;
         this.supportedObjectTypes = supportedObjectTypes;
-        this.defaultSchema = Objects.requireNonNull(defaultSchema, "defaultSchema cannot be null");
+        this.defaultSchema = defaultSchema;
     }
 }

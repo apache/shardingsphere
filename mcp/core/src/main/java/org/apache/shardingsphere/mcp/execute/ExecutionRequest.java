@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mcp.execute;
 
 import lombok.Getter;
 
-import java.util.Objects;
-
 /**
  * Execute-query request contract.
  */
@@ -57,13 +55,13 @@ public final class ExecutionRequest {
      */
     public ExecutionRequest(final String sessionId, final String database, final String databaseType, final String schema,
                             final String sql, final int maxRows, final int timeoutMs, final DatabaseRuntime databaseRuntime) {
-        this.sessionId = Objects.requireNonNull(sessionId, "sessionId cannot be null");
-        this.database = Objects.requireNonNull(database, "database cannot be null");
-        this.databaseType = Objects.requireNonNull(databaseType, "databaseType cannot be null");
-        this.schema = Objects.requireNonNull(schema, "schema cannot be null");
-        this.sql = Objects.requireNonNull(sql, "sql cannot be null");
+        this.sessionId = sessionId;
+        this.database = database;
+        this.databaseType = databaseType;
+        this.schema = schema;
+        this.sql = sql;
         this.maxRows = maxRows;
         this.timeoutMs = timeoutMs;
-        this.databaseRuntime = Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null");
+        this.databaseRuntime = databaseRuntime;
     }
 }

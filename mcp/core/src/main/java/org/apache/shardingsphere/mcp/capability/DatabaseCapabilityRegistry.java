@@ -104,10 +104,6 @@ public final class DatabaseCapabilityRegistry {
         return Objects.requireNonNull(databaseType, "databaseType cannot be null").trim().toUpperCase(Locale.ENGLISH);
     }
     
-    static <T> T requireNonNull(final T value, final String message) {
-        return Objects.requireNonNull(value, message);
-    }
-    
     private DatabaseCapability applyVersionAwareOverrides(final DatabaseCapability capability, final String databaseVersion) {
         boolean supportsExplainAnalyze = isExplainAnalyzeSupported(capability.getDatabaseType(), databaseVersion);
         if (supportsExplainAnalyze == capability.isSupportsExplainAnalyze()) {

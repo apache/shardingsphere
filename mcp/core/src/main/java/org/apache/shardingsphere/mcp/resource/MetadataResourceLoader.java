@@ -42,7 +42,7 @@ public final class MetadataResourceLoader {
      * @param capabilityAssembler capability assembler
      */
     public MetadataResourceLoader(final DatabaseCapabilityAssembler capabilityAssembler) {
-        this.capabilityAssembler = Objects.requireNonNull(capabilityAssembler, "capabilityAssembler cannot be null");
+        this.capabilityAssembler = capabilityAssembler;
     }
     
     /**

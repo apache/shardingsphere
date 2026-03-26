@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
 import lombok.Getter;
 
-import java.util.Objects;
-
 /**
  * JDBC connection configuration for one logical database.
  */
@@ -51,11 +49,11 @@ public final class DatabaseConnectionConfiguration {
      */
     public DatabaseConnectionConfiguration(final String database, final String databaseType, final String jdbcUrl, final String username,
                                            final String password, final String driverClassName) {
-        this.database = Objects.requireNonNull(database, "database cannot be null");
-        this.databaseType = Objects.requireNonNull(databaseType, "databaseType cannot be null");
-        this.jdbcUrl = Objects.requireNonNull(jdbcUrl, "jdbcUrl cannot be null");
-        this.username = Objects.requireNonNull(username, "username cannot be null");
-        this.password = Objects.requireNonNull(password, "password cannot be null");
-        this.driverClassName = Objects.requireNonNull(driverClassName, "driverClassName cannot be null");
+        this.database = database;
+        this.databaseType = databaseType;
+        this.jdbcUrl = jdbcUrl;
+        this.username = username;
+        this.password = password;
+        this.driverClassName = driverClassName;
     }
 }

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -45,8 +44,8 @@ public final class ResourceLoadResult {
     private ResourceLoadResult(final List<MetadataObject> metadataObjects, final boolean errorCodePresent, final ErrorCode errorCode, final String message) {
         this.metadataObjects = metadataObjects;
         this.errorCodePresent = errorCodePresent;
-        this.errorCode = Objects.requireNonNull(errorCode, "errorCode cannot be null");
-        this.message = Objects.requireNonNull(message, "message cannot be null");
+        this.errorCode = errorCode;
+        this.message = message;
     }
     
     /**

@@ -78,7 +78,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -152,11 +151,11 @@ public final class StreamableHttpMCPServer {
      */
     public StreamableHttpMCPServer(final HttpTransportConfiguration transportConfiguration, final MCPSessionManager sessionManager, final MCPRuntimeServices runtimeServices,
                                    final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
-        this.transportConfiguration = Objects.requireNonNull(transportConfiguration, "transportConfiguration cannot be null");
-        this.sessionManager = Objects.requireNonNull(sessionManager, "sessionManager cannot be null");
-        this.runtimeServices = Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null");
-        this.metadataCatalog = Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null");
-        this.databaseRuntime = Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null");
+        this.transportConfiguration = transportConfiguration;
+        this.sessionManager = sessionManager;
+        this.runtimeServices = runtimeServices;
+        this.metadataCatalog = metadataCatalog;
+        this.databaseRuntime = databaseRuntime;
         metadataRefreshCoordinator = runtimeServices.getMetadataRefreshCoordinator();
     }
     
@@ -811,13 +810,13 @@ public final class StreamableHttpMCPServer {
         private SdkStreamableHttpServlet(final MCPSessionManager sessionManager, final DatabaseRuntime databaseRuntime,
                                          final MetadataRefreshCoordinator metadataRefreshCoordinator,
                                          final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
-            this.sessionManager = Objects.requireNonNull(sessionManager, "sessionManager cannot be null");
-            this.databaseRuntime = Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null");
-            this.metadataRefreshCoordinator = Objects.requireNonNull(metadataRefreshCoordinator, "metadataRefreshCoordinator cannot be null");
-            this.bindHost = Objects.requireNonNull(bindHost, "bindHost cannot be null");
+            this.sessionManager = sessionManager;
+            this.databaseRuntime = databaseRuntime;
+            this.metadataRefreshCoordinator = metadataRefreshCoordinator;
+            this.bindHost = bindHost;
             delegate = HttpServletStreamableServerTransportProvider.builder()
-                    .jsonMapper(Objects.requireNonNull(jsonMapper, "jsonMapper cannot be null"))
-                    .mcpEndpoint(Objects.requireNonNull(endpointPath, "endpointPath cannot be null"))
+                    .jsonMapper(jsonMapper)
+                    .mcpEndpoint(endpointPath)
                     .contextExtractor(this::createTransportContext)
                     .build();
         }
@@ -1075,7 +1074,7 @@ public final class StreamableHttpMCPServer {
         
         private ResponseStatus(final int statusCode, final String message) {
             this.statusCode = statusCode;
-            this.message = Objects.requireNonNull(message, "message cannot be null");
+            this.message = message;
         }
     }
     

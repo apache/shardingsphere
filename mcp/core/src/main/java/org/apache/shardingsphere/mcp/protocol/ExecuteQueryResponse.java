@@ -22,7 +22,6 @@ import lombok.Getter;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -55,16 +54,16 @@ public final class ExecuteQueryResponse {
     
     private ExecuteQueryResponse(final ResultKind resultKind, final List<ColumnDefinition> columns, final List<List<Object>> rows, final int affectedRows,
                                  final String statementType, final String status, final String message, final boolean truncated, final boolean errorPresent, final ErrorDetail error) {
-        this.resultKind = Objects.requireNonNull(resultKind, "resultKind cannot be null");
+        this.resultKind = resultKind;
         this.columns = columns;
-        this.rows = Objects.requireNonNull(rows, "rows cannot be null");
+        this.rows = rows;
         this.affectedRows = affectedRows;
-        this.statementType = Objects.requireNonNull(statementType, "statementType cannot be null");
-        this.status = Objects.requireNonNull(status, "status cannot be null");
-        this.message = Objects.requireNonNull(message, "message cannot be null");
+        this.statementType = statementType;
+        this.status = status;
+        this.message = message;
         this.truncated = truncated;
         this.errorPresent = errorPresent;
-        this.error = Objects.requireNonNull(error, "error cannot be null");
+        this.error = error;
     }
     
     /**

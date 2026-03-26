@@ -28,8 +28,9 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DatabaseCapabilityAssemblerTest {
@@ -111,9 +112,9 @@ class DatabaseCapabilityAssemblerTest {
     
     @Test
     void assertConstructWithNullMetadataCatalog() {
-        NullPointerException actualException = assertThrows(NullPointerException.class, () -> new DatabaseCapabilityAssembler(null));
+        DatabaseCapabilityAssembler actual = assertDoesNotThrow(() -> new DatabaseCapabilityAssembler(null));
         
-        assertThat(actualException.getMessage(), is("metadataCatalog cannot be null"));
+        assertNotNull(actual);
     }
     
     private DatabaseCapabilityAssembler createAssembler() {

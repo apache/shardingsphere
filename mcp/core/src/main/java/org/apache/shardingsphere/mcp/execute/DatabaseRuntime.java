@@ -60,7 +60,7 @@ public final class DatabaseRuntime {
      * @param metadataRefresher metadata refresh callback
      */
     public DatabaseRuntime(final ShardingSphereExecutionAdapter executionAdapter, final Consumer<String> metadataRefresher) {
-        this(Collections.emptyMap(), Collections.emptyMap(), Objects.requireNonNull(executionAdapter, "executionAdapter cannot be null"), metadataRefresher);
+        this(Collections.emptyMap(), Collections.emptyMap(), executionAdapter, metadataRefresher);
     }
     
     private DatabaseRuntime(final Map<String, QueryResult> queryResults, final Map<String, Integer> updateCounts,
@@ -68,7 +68,7 @@ public final class DatabaseRuntime {
         this.queryResults = queryResults;
         this.updateCounts = updateCounts;
         this.executionAdapter = executionAdapter;
-        this.metadataRefresher = Objects.requireNonNull(metadataRefresher, "metadataRefresher cannot be null");
+        this.metadataRefresher = metadataRefresher;
     }
     
     /**

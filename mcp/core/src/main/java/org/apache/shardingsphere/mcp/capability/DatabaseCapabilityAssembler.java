@@ -74,7 +74,7 @@ public final class DatabaseCapabilityAssembler {
      */
     public DatabaseCapabilityAssembler(final MetadataCatalog metadataCatalog) {
         registry = DatabaseCapabilityRegistry.createDefault();
-        this.metadataCatalog = Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null");
+        this.metadataCatalog = metadataCatalog;
     }
     
     /**

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.tool;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -63,14 +62,14 @@ public final class ToolRequest {
     public ToolRequest(final String toolName, final String database, final String schema, final String objectName,
                        final String parentObjectType, final String query, final Set<MetadataObjectType> objectTypes,
                        final int pageSize, final String pageToken) {
-        this.toolName = Objects.requireNonNull(toolName, "toolName cannot be null");
-        this.database = Objects.requireNonNull(database, "database cannot be null");
-        this.schema = Objects.requireNonNull(schema, "schema cannot be null");
-        this.objectName = Objects.requireNonNull(objectName, "objectName cannot be null");
-        this.parentObjectType = Objects.requireNonNull(parentObjectType, "parentObjectType cannot be null");
-        this.query = Objects.requireNonNull(query, "query cannot be null");
+        this.toolName = toolName;
+        this.database = database;
+        this.schema = schema;
+        this.objectName = objectName;
+        this.parentObjectType = parentObjectType;
+        this.query = query;
         this.objectTypes = objectTypes;
         this.pageSize = pageSize;
-        this.pageToken = Objects.requireNonNull(pageToken, "pageToken cannot be null");
+        this.pageToken = pageToken;
     }
 }

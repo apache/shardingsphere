@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.capability.StatementClass;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -53,11 +52,11 @@ public final class ClassificationResult {
      */
     public ClassificationResult(final StatementClass statementClass, final String statementType, final String normalizedSql,
                                 final String targetObjectName, final String savepointName) {
-        this.statementClass = Objects.requireNonNull(statementClass, "statementClass cannot be null");
-        this.statementType = Objects.requireNonNull(statementType, "statementType cannot be null");
-        this.normalizedSql = Objects.requireNonNull(normalizedSql, "normalizedSql cannot be null");
-        this.targetObjectName = Objects.requireNonNull(targetObjectName, "targetObjectName cannot be null");
-        this.savepointName = Objects.requireNonNull(savepointName, "savepointName cannot be null");
+        this.statementClass = statementClass;
+        this.statementType = statementType;
+        this.normalizedSql = normalizedSql;
+        this.targetObjectName = targetObjectName;
+        this.savepointName = savepointName;
     }
     
     /**

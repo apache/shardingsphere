@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.capability;
 
 import lombok.Getter;
 
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -71,9 +70,9 @@ public final class DatabaseCapabilityView {
                            final boolean supportsExplainAnalyze, final TransactionBoundaryBehavior ddlTransactionBehavior,
                            final TransactionBoundaryBehavior dclTransactionBehavior, final ResultBehavior explainAnalyzeResultBehavior,
                            final TransactionBoundaryBehavior explainAnalyzeTransactionBehavior) {
-        this.database = Objects.requireNonNull(database, "database cannot be null");
-        this.databaseType = Objects.requireNonNull(databaseType, "databaseType cannot be null");
-        this.minSupportedVersion = Objects.requireNonNull(minSupportedVersion, "minSupportedVersion cannot be null");
+        this.database = database;
+        this.databaseType = databaseType;
+        this.minSupportedVersion = minSupportedVersion;
         this.supportedObjectTypes = supportedObjectTypes;
         this.supportedStatementClasses = supportedStatementClasses;
         this.supportsTransactionControl = supportsTransactionControl;
@@ -82,12 +81,12 @@ public final class DatabaseCapabilityView {
         this.defaultAutocommit = defaultAutocommit;
         this.maxRowsDefault = maxRowsDefault;
         this.maxTimeoutMsDefault = maxTimeoutMsDefault;
-        this.defaultSchemaSemantics = Objects.requireNonNull(defaultSchemaSemantics, "defaultSchemaSemantics cannot be null");
+        this.defaultSchemaSemantics = defaultSchemaSemantics;
         this.supportsCrossSchemaSql = supportsCrossSchemaSql;
         this.supportsExplainAnalyze = supportsExplainAnalyze;
-        this.ddlTransactionBehavior = Objects.requireNonNull(ddlTransactionBehavior, "ddlTransactionBehavior cannot be null");
-        this.dclTransactionBehavior = Objects.requireNonNull(dclTransactionBehavior, "dclTransactionBehavior cannot be null");
-        this.explainAnalyzeResultBehavior = Objects.requireNonNull(explainAnalyzeResultBehavior, "explainAnalyzeResultBehavior cannot be null");
-        this.explainAnalyzeTransactionBehavior = Objects.requireNonNull(explainAnalyzeTransactionBehavior, "explainAnalyzeTransactionBehavior cannot be null");
+        this.ddlTransactionBehavior = ddlTransactionBehavior;
+        this.dclTransactionBehavior = dclTransactionBehavior;
+        this.explainAnalyzeResultBehavior = explainAnalyzeResultBehavior;
+        this.explainAnalyzeTransactionBehavior = explainAnalyzeTransactionBehavior;
     }
 }

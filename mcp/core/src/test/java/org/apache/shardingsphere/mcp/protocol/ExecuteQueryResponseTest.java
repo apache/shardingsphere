@@ -24,7 +24,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ExecuteQueryResponseTest {
@@ -84,8 +84,8 @@ class ExecuteQueryResponseTest {
     
     @Test
     void assertResultSetWithNullRows() {
-        NullPointerException actual = assertThrows(NullPointerException.class, () -> ExecuteQueryResponse.resultSet(List.of(), null, false));
+        ExecuteQueryResponse actual = ExecuteQueryResponse.resultSet(List.of(), null, false);
         
-        assertThat(actual.getMessage(), is("rows cannot be null"));
+        assertNull(actual.getRows());
     }
 }

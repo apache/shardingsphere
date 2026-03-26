@@ -110,22 +110,22 @@ public final class DatabaseCapability {
                               final TransactionBoundaryBehavior dclTransactionBehavior, final ResultBehavior explainAnalyzeResultBehavior,
                               final TransactionBoundaryBehavior explainAnalyzeTransactionBehavior) {
         this.databaseType = DatabaseCapabilityRegistry.normalizeDatabaseType(databaseType);
-        this.minSupportedVersion = DatabaseCapabilityRegistry.requireNonNull(minSupportedVersion, "minSupportedVersion cannot be null");
+        this.minSupportedVersion = minSupportedVersion;
         this.supportedObjectTypes = supportedObjectTypes;
         this.supportedStatementClasses = supportedStatementClasses;
-        this.transactionCapability = DatabaseCapabilityRegistry.requireNonNull(transactionCapability, "transactionCapability cannot be null");
+        this.transactionCapability = transactionCapability;
         supportsTransactionControl = TransactionCapability.NONE != transactionCapability;
         supportsSavepoint = TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability;
         this.supportedTransactionStatements = supportedTransactionStatements;
         this.defaultAutocommit = defaultAutocommit;
         this.maxRowsDefault = maxRowsDefault;
         this.maxTimeoutMsDefault = maxTimeoutMsDefault;
-        this.defaultSchemaSemantics = DatabaseCapabilityRegistry.requireNonNull(defaultSchemaSemantics, "defaultSchemaSemantics cannot be null");
+        this.defaultSchemaSemantics = defaultSchemaSemantics;
         this.crossSchemaQuerySupported = crossSchemaQuerySupported;
         this.supportsExplainAnalyze = supportsExplainAnalyze;
-        this.ddlTransactionBehavior = DatabaseCapabilityRegistry.requireNonNull(ddlTransactionBehavior, "ddlTransactionBehavior cannot be null");
-        this.dclTransactionBehavior = DatabaseCapabilityRegistry.requireNonNull(dclTransactionBehavior, "dclTransactionBehavior cannot be null");
-        this.explainAnalyzeResultBehavior = DatabaseCapabilityRegistry.requireNonNull(explainAnalyzeResultBehavior, "explainAnalyzeResultBehavior cannot be null");
-        this.explainAnalyzeTransactionBehavior = DatabaseCapabilityRegistry.requireNonNull(explainAnalyzeTransactionBehavior, "explainAnalyzeTransactionBehavior cannot be null");
+        this.ddlTransactionBehavior = ddlTransactionBehavior;
+        this.dclTransactionBehavior = dclTransactionBehavior;
+        this.explainAnalyzeResultBehavior = explainAnalyzeResultBehavior;
+        this.explainAnalyzeTransactionBehavior = explainAnalyzeTransactionBehavior;
     }
 }
