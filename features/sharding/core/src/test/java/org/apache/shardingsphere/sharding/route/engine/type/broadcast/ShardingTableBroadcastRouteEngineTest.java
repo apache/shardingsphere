@@ -32,17 +32,18 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -80,15 +81,14 @@ class ShardingTableBroadcastRouteEngineTest {
     @Test
     void assertRouteForDropIndexStatement() {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
+        IdentifierValue indexName = new IdentifierValue("t_order");
         when(table.getName()).thenReturn("t_order");
-        when(table.containsIndex("t_order")).thenReturn(true);
+        when(table.containsIndex(indexName)).thenReturn(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
         when(schema.getName()).thenReturn("foo_db");
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
         when(schema.getTable(anyString()).containsIndex(anyString())).thenReturn(true);
-        IndexSegment segment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
-        when(segment.getIndexName().getIdentifier().getValue()).thenReturn("t_order");
-        when(segment.getOwner()).thenReturn(Optional.empty());
+        IndexSegment segment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, indexName));
         DropIndexStatement sqlStatement = DropIndexStatement.builder().databaseType(databaseType).indexes(Collections.singleton(segment)).build();
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singleton(schema));
         ShardingTableBroadcastRouteEngine shardingTableBroadcastRouteEngine = new ShardingTableBroadcastRouteEngine(database, sqlStatement, Collections.emptyList());
