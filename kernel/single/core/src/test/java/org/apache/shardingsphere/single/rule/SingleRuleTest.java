@@ -35,9 +35,11 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -345,16 +347,15 @@ class SingleRuleTest {
     }
     
     private static IndexSQLStatementAttribute createIndexAttribute(final ShardingSphereDatabase database, final String schemaName) {
-        IndexSegment indexSegment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
-        when(indexSegment.getOwner()).thenReturn(Optional.empty());
-        when(indexSegment.getIndexName().getIdentifier().getValue()).thenReturn("idx_employee");
+        IdentifierValue identifierValue = new IdentifierValue("idx_employee");
+        IndexSegment indexSegment = new IndexSegment(1, 3, new IndexNameSegment(1, 3, identifierValue));
         IndexSQLStatementAttribute result = mock(IndexSQLStatementAttribute.class);
         when(result.getIndexes()).thenReturn(Collections.singleton(indexSegment));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema(schemaName)).thenReturn(schema);
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
-        when(table.containsIndex("idx_employee")).thenReturn(true);
+        when(table.containsIndex(identifierValue)).thenReturn(true);
         when(table.getName()).thenReturn("employee");
         return result;
     }

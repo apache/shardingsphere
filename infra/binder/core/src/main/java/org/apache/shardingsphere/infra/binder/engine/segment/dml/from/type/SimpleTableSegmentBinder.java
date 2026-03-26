@@ -227,15 +227,15 @@ public final class SimpleTableSegmentBinder {
         }
         if (binderContext.getSqlStatement() instanceof CreateIndexStatement) {
             ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName.getValue()));
-            String indexName = ((CreateIndexStatement) binderContext.getSqlStatement()).getIndex().getIndexName().getIdentifier().getValue();
-            ShardingSpherePreconditions.checkState(!shardingSphereTable.containsIndex(indexName), () -> new DuplicateIndexException(indexName));
+            IdentifierValue indexName = ((CreateIndexStatement) binderContext.getSqlStatement()).getIndex().getIndexName().getIdentifier();
+            ShardingSpherePreconditions.checkState(!shardingSphereTable.containsIndex(indexName), () -> new DuplicateIndexException(indexName.getValue()));
             return;
         }
         if (binderContext.getSqlStatement() instanceof DropIndexStatement) {
             ShardingSpherePreconditions.checkState(schema.containsTable(tableName), () -> new TableNotFoundException(tableName.getValue()));
             ((DropIndexStatement) binderContext.getSqlStatement()).getIndexes().forEach(each -> {
-                String indexName = each.getIndexName().getIdentifier().getValue();
-                ShardingSpherePreconditions.checkState(shardingSphereTable.containsIndex(indexName), () -> new IndexNotFoundException(schemaName, indexName));
+                IdentifierValue indexName = each.getIndexName().getIdentifier();
+                ShardingSpherePreconditions.checkState(shardingSphereTable.containsIndex(indexName), () -> new IndexNotFoundException(schemaName, indexName.getValue()));
             });
         }
     }
