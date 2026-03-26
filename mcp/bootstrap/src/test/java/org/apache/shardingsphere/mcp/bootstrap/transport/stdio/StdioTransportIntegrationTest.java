@@ -96,7 +96,7 @@ class StdioTransportIntegrationTest {
         StdioMCPServer stdioMCPServer = createStdioServer();
         String sessionId = stdioMCPServer.initializeSession();
         ExecutionRequest executionRequest = new ExecutionRequest(sessionId, "logic_db", "MySQL", "public", "SELECT * FROM orders",
-                10, 1000, createDatabaseRuntime(), System.currentTimeMillis());
+                10, 1000, createDatabaseRuntime());
         
         ExecuteQueryResponse actual = stdioMCPServer.executeQuery(sessionId, executionRequest);
         
@@ -134,7 +134,7 @@ class StdioTransportIntegrationTest {
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> runtimeLauncher.launch(new MCPServerRegistry(new MCPSessionManager()),
-                        new MCPLaunchConfiguration(createTransportConfiguration(false, false, "/mcp"), Map.of())));
+                        new MCPLaunchConfiguration(createTransportConfiguration(false, false, "/mcp"), createRuntimeDatabases())));
         
         assertThat(actual.getMessage(), is("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true."));
     }

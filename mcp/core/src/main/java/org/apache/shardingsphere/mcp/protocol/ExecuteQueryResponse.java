@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.protocol;
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -57,8 +56,8 @@ public final class ExecuteQueryResponse {
     private ExecuteQueryResponse(final ResultKind resultKind, final List<ColumnDefinition> columns, final List<List<Object>> rows, final int affectedRows,
                                  final String statementType, final String status, final String message, final boolean truncated, final boolean errorPresent, final ErrorDetail error) {
         this.resultKind = Objects.requireNonNull(resultKind, "resultKind cannot be null");
-        this.columns = Collections.unmodifiableList(new ArrayList<>(columns));
-        this.rows = toImmutableRows(rows);
+        this.columns = columns;
+        this.rows = Objects.requireNonNull(rows, "rows cannot be null");
         this.affectedRows = affectedRows;
         this.statementType = Objects.requireNonNull(statementType, "statementType cannot be null");
         this.status = Objects.requireNonNull(status, "status cannot be null");
@@ -89,7 +88,7 @@ public final class ExecuteQueryResponse {
      */
     public static ExecuteQueryResponse updateCount(final String statementType, final int affectedRows) {
         return new ExecuteQueryResponse(ResultKind.UPDATE_COUNT, Collections.emptyList(), Collections.emptyList(), affectedRows,
-                Objects.requireNonNull(statementType, "statementType cannot be null"), "OK", "", false, false, createAbsentErrorDetail());
+                statementType, "OK", "", false, false, createAbsentErrorDetail());
     }
     
     /**
@@ -101,7 +100,7 @@ public final class ExecuteQueryResponse {
      */
     public static ExecuteQueryResponse statementAck(final String statementType, final String message) {
         return new ExecuteQueryResponse(ResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
-                Objects.requireNonNull(statementType, "statementType cannot be null"), "OK", Objects.requireNonNull(message, "message cannot be null"), false, false, createAbsentErrorDetail());
+                statementType, "OK", message, false, false, createAbsentErrorDetail());
     }
     
     /**
@@ -133,14 +132,6 @@ public final class ExecuteQueryResponse {
      */
     public Optional<ErrorDetail> getError() {
         return errorPresent ? Optional.of(error) : Optional.empty();
-    }
-    
-    private static List<List<Object>> toImmutableRows(final List<List<Object>> rows) {
-        List<List<Object>> result = new ArrayList<>(Objects.requireNonNull(rows, "rows cannot be null").size());
-        for (List<Object> each : rows) {
-            result.add(Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(each, "row cannot be null"))));
-        }
-        return Collections.unmodifiableList(result);
     }
     
     private static ErrorDetail createAbsentErrorDetail() {

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.capability.SupportedObjectType;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -141,6 +140,6 @@ public final class MetadataResourceLoader {
                 .thenComparing(each -> each.getObjectType().name())
                 .thenComparing(MetadataObject::getParentObjectName)
                 .thenComparing(MetadataObject::getName));
-        return Collections.unmodifiableList(result);
+        return result;
     }
 }

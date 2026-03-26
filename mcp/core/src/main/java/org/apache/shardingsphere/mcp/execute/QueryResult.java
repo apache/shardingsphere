@@ -20,9 +20,6 @@ package org.apache.shardingsphere.mcp.execute;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -41,8 +38,8 @@ public final class QueryResult {
      * @param columns columns
      * @param rows rows
      */
-    public QueryResult(final Collection<ColumnDefinition> columns, final Collection<List<Object>> rows) {
-        this.columns = Collections.unmodifiableList(new LinkedList<>(columns));
-        this.rows = Collections.unmodifiableList(new LinkedList<>(rows));
+    public QueryResult(final List<ColumnDefinition> columns, final List<List<Object>> rows) {
+        this.columns = columns;
+        this.rows = rows;
     }
 }

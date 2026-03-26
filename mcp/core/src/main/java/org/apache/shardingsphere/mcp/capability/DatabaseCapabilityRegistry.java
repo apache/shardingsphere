@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.mcp.capability;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -95,21 +94,14 @@ public final class DatabaseCapabilityRegistry {
     /**
      * Get a stable snapshot of the registered capabilities.
      *
-     * @return immutable capability collection
+     * @return capability collection
      */
     public Collection<DatabaseCapability> getRegisteredCapabilities() {
-        return Collections.unmodifiableCollection(capabilities.values());
+        return new LinkedList<>(capabilities.values());
     }
     
     static String normalizeDatabaseType(final String databaseType) {
         return Objects.requireNonNull(databaseType, "databaseType cannot be null").trim().toUpperCase(Locale.ENGLISH);
-    }
-    
-    static <T extends Enum<T>> Set<T> toImmutableEnumSet(final Set<T> values, final Class<T> enumType) {
-        if (null == values || values.isEmpty()) {
-            return Collections.unmodifiableSet(EnumSet.noneOf(enumType));
-        }
-        return Collections.unmodifiableSet(EnumSet.copyOf(values));
     }
     
     static <T> T requireNonNull(final T value, final String message) {
@@ -122,11 +114,22 @@ public final class DatabaseCapabilityRegistry {
             return capability;
         }
         return new DatabaseCapability(capability.getDatabaseType(), capability.getMinSupportedVersion(), capability.getSupportedObjectTypes(),
-                capability.getSupportedStatementClasses(), capability.getTransactionCapability(), capability.getSupportedTransactionStatements(),
+                adjustSupportedStatementClasses(capability.getSupportedStatementClasses(), supportsExplainAnalyze), capability.getTransactionCapability(),
+                capability.getSupportedTransactionStatements(),
                 capability.isDefaultAutocommit(), capability.getMaxRowsDefault(), capability.getMaxTimeoutMsDefault(), capability.getDefaultSchemaSemantics(),
                 capability.isCrossSchemaQuerySupported(), supportsExplainAnalyze, capability.getDdlTransactionBehavior(), capability.getDclTransactionBehavior(),
                 supportsExplainAnalyze ? ResultBehavior.RESULT_SET : ResultBehavior.UNSUPPORTED,
                 supportsExplainAnalyze ? TransactionBoundaryBehavior.NATIVE : TransactionBoundaryBehavior.UNSUPPORTED);
+    }
+    
+    private Set<StatementClass> adjustSupportedStatementClasses(final Set<StatementClass> supportedStatementClasses, final boolean supportsExplainAnalyze) {
+        Set<StatementClass> result = new LinkedHashSet<>(supportedStatementClasses);
+        if (supportsExplainAnalyze) {
+            result.add(StatementClass.EXPLAIN_ANALYZE);
+        } else {
+            result.remove(StatementClass.EXPLAIN_ANALYZE);
+        }
+        return result;
     }
     
     private boolean isExplainAnalyzeSupported(final String databaseType, final String databaseVersion) {
@@ -216,11 +219,4 @@ public final class DatabaseCapabilityRegistry {
         return result;
     }
     
-    static Set<String> toImmutableStrings(final Set<String> values) {
-        Set<String> result = new LinkedHashSet<>(Objects.requireNonNull(values, "supportedTransactionStatements" + " cannot be null").size());
-        for (String each : values) {
-            result.add(Objects.requireNonNull(each, "supportedTransactionStatements" + " cannot contain null"));
-        }
-        return Collections.unmodifiableSet(result);
-    }
 }

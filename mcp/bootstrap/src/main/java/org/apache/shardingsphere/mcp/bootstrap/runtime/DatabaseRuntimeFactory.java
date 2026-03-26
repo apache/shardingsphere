@@ -61,7 +61,7 @@ public final class DatabaseRuntimeFactory {
             }
             result.put(databaseName, createConnectionConfiguration(databaseName, entry.getValue()));
         }
-        return Collections.unmodifiableMap(result);
+        return result;
     }
     
     /**

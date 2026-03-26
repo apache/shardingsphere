@@ -20,8 +20,6 @@ package org.apache.shardingsphere.mcp.tool;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -71,7 +69,7 @@ public final class ToolRequest {
         this.objectName = Objects.requireNonNull(objectName, "objectName cannot be null");
         this.parentObjectType = Objects.requireNonNull(parentObjectType, "parentObjectType cannot be null");
         this.query = Objects.requireNonNull(query, "query cannot be null");
-        this.objectTypes = Collections.unmodifiableSet(new LinkedHashSet<>(objectTypes));
+        this.objectTypes = objectTypes;
         this.pageSize = pageSize;
         this.pageToken = Objects.requireNonNull(pageToken, "pageToken cannot be null");
     }

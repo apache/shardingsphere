@@ -21,10 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -69,10 +66,10 @@ public final class DatabaseRuntime {
     }
     
     private DatabaseRuntime(final Map<String, QueryResult> queryResults, final Map<String, Integer> updateCounts,
-                            final Collection<ShardingSphereExecutionAdapter> executionAdapters, final Consumer<String> metadataRefresher) {
-        this.queryResults = Collections.unmodifiableMap(new LinkedHashMap<>(queryResults));
-        this.updateCounts = Collections.unmodifiableMap(new LinkedHashMap<>(updateCounts));
-        this.executionAdapters = Collections.unmodifiableList(new ArrayList<>(executionAdapters));
+                            final List<ShardingSphereExecutionAdapter> executionAdapters, final Consumer<String> metadataRefresher) {
+        this.queryResults = queryResults;
+        this.updateCounts = updateCounts;
+        this.executionAdapters = executionAdapters;
         this.metadataRefresher = Objects.requireNonNull(metadataRefresher, "metadataRefresher cannot be null");
     }
     

@@ -111,12 +111,12 @@ public final class DatabaseCapability {
                               final TransactionBoundaryBehavior explainAnalyzeTransactionBehavior) {
         this.databaseType = DatabaseCapabilityRegistry.normalizeDatabaseType(databaseType);
         this.minSupportedVersion = DatabaseCapabilityRegistry.requireNonNull(minSupportedVersion, "minSupportedVersion cannot be null");
-        this.supportedObjectTypes = DatabaseCapabilityRegistry.toImmutableEnumSet(supportedObjectTypes, SupportedObjectType.class);
-        this.supportedStatementClasses = DatabaseCapabilityRegistry.toImmutableEnumSet(supportedStatementClasses, StatementClass.class);
+        this.supportedObjectTypes = supportedObjectTypes;
+        this.supportedStatementClasses = supportedStatementClasses;
         this.transactionCapability = DatabaseCapabilityRegistry.requireNonNull(transactionCapability, "transactionCapability cannot be null");
         supportsTransactionControl = TransactionCapability.NONE != transactionCapability;
         supportsSavepoint = TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability;
-        this.supportedTransactionStatements = DatabaseCapabilityRegistry.toImmutableStrings(supportedTransactionStatements);
+        this.supportedTransactionStatements = supportedTransactionStatements;
         this.defaultAutocommit = defaultAutocommit;
         this.maxRowsDefault = maxRowsDefault;
         this.maxTimeoutMsDefault = maxTimeoutMsDefault;

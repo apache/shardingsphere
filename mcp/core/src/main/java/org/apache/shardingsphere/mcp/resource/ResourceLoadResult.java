@@ -21,8 +21,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -44,8 +42,8 @@ public final class ResourceLoadResult {
     
     private final String message;
     
-    private ResourceLoadResult(final Collection<MetadataObject> metadataObjects, final boolean errorCodePresent, final ErrorCode errorCode, final String message) {
-        this.metadataObjects = Collections.unmodifiableList(new ArrayList<>(metadataObjects));
+    private ResourceLoadResult(final List<MetadataObject> metadataObjects, final boolean errorCodePresent, final ErrorCode errorCode, final String message) {
+        this.metadataObjects = metadataObjects;
         this.errorCodePresent = errorCodePresent;
         this.errorCode = Objects.requireNonNull(errorCode, "errorCode cannot be null");
         this.message = Objects.requireNonNull(message, "message cannot be null");
@@ -66,7 +64,7 @@ public final class ResourceLoadResult {
      * @param metadataObjects loaded metadata objects
      * @return successful resource load result
      */
-    public static ResourceLoadResult success(final Collection<MetadataObject> metadataObjects) {
+    public static ResourceLoadResult success(final List<MetadataObject> metadataObjects) {
         return new ResourceLoadResult(metadataObjects, false, ErrorCode.INVALID_REQUEST, "");
     }
     
@@ -78,7 +76,7 @@ public final class ResourceLoadResult {
      * @return failed resource load result
      */
     public static ResourceLoadResult error(final ErrorCode errorCode, final String message) {
-        return new ResourceLoadResult(Collections.emptyList(), true, Objects.requireNonNull(errorCode, "errorCode cannot be null"), message);
+        return new ResourceLoadResult(Collections.emptyList(), true, errorCode, message);
     }
     
     /**

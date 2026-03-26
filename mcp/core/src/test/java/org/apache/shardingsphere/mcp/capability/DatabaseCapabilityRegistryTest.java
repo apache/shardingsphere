@@ -90,9 +90,9 @@ class DatabaseCapabilityRegistryTest {
         registry.register(createCapability());
         
         Collection<DatabaseCapability> actual = registry.getRegisteredCapabilities();
+        actual.clear();
         
-        assertThat(actual.size(), is(1));
-        assertThrows(UnsupportedOperationException.class, actual::clear);
+        assertThat(registry.getRegisteredCapabilities().size(), is(1));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -104,6 +104,7 @@ class DatabaseCapabilityRegistryTest {
         
         assertTrue(actual.isPresent(), caseName);
         assertThat(actual.get().isSupportsExplainAnalyze(), is(expected));
+        assertThat(actual.get().getSupportedStatementClasses().contains(StatementClass.EXPLAIN_ANALYZE), is(expected));
     }
     
     private DatabaseCapability createCapability() {

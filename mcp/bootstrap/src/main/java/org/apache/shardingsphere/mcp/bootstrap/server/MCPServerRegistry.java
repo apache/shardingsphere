@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -93,7 +92,7 @@ public final class MCPServerRegistry {
     }
     
     /**
-     * Immutable registration snapshot.
+     * Registration snapshot.
      */
     @Getter
     public static final class RegistrationSnapshot {
@@ -112,8 +111,8 @@ public final class MCPServerRegistry {
          * @param running runtime state
          */
         public RegistrationSnapshot(final Set<String> resources, final Set<String> tools, final boolean running) {
-            this.resources = Collections.unmodifiableSet(new LinkedHashSet<>(resources));
-            this.tools = Collections.unmodifiableSet(new LinkedHashSet<>(tools));
+            this.resources = new LinkedHashSet<>(resources);
+            this.tools = new LinkedHashSet<>(tools);
             this.running = running;
         }
     }

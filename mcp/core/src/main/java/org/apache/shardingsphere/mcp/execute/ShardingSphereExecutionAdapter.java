@@ -30,8 +30,6 @@ import java.sql.SQLSyntaxErrorException;
 import java.sql.SQLTimeoutException;
 import java.sql.Savepoint;
 import java.sql.Statement;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +52,7 @@ public final class ShardingSphereExecutionAdapter {
      * @param connectionProviders connection providers keyed by logical database
      */
     public ShardingSphereExecutionAdapter(final Map<String, ConnectionProvider> connectionProviders) {
-        this.connectionProviders = Collections.unmodifiableMap(new LinkedHashMap<>(connectionProviders));
+        this.connectionProviders = connectionProviders;
     }
     
     /**

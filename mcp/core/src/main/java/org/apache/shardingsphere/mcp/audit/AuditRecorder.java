@@ -63,7 +63,7 @@ public final class AuditRecorder {
      */
     public AuditRecord recordResourceRead(final String sessionId, final String database, final String resourcePath, final boolean success,
                                           final ErrorCode errorCode, final String transactionMarker) {
-        return record(sessionId, database, OperationClass.RESOURCE_READ, resourcePath, success, true, Objects.requireNonNull(errorCode, "errorCode cannot be null"), transactionMarker);
+        return record(sessionId, database, OperationClass.RESOURCE_READ, resourcePath, success, true, errorCode, transactionMarker);
     }
     
     /**
@@ -94,7 +94,7 @@ public final class AuditRecorder {
      */
     public AuditRecord recordMetadataTool(final String sessionId, final String database, final String toolCallSummary, final boolean success,
                                           final ErrorCode errorCode, final String transactionMarker) {
-        return record(sessionId, database, OperationClass.METADATA_TOOL, toolCallSummary, success, true, Objects.requireNonNull(errorCode, "errorCode cannot be null"), transactionMarker);
+        return record(sessionId, database, OperationClass.METADATA_TOOL, toolCallSummary, success, true, errorCode, transactionMarker);
     }
     
     /**
@@ -125,17 +125,17 @@ public final class AuditRecorder {
      */
     public AuditRecord recordQueryExecution(final String sessionId, final String database, final String sql, final boolean success,
                                             final ErrorCode errorCode, final String transactionMarker) {
-        return record(sessionId, database, OperationClass.QUERY_EXECUTION, sql, success, true, Objects.requireNonNull(errorCode, "errorCode cannot be null"), transactionMarker);
+        return record(sessionId, database, OperationClass.QUERY_EXECUTION, sql, success, true, errorCode, transactionMarker);
     }
     
     /**
      * Get a stable snapshot of audit records.
      *
-     * @return immutable audit record snapshot
+     * @return audit record snapshot
      */
     public List<AuditRecord> snapshot() {
         synchronized (records) {
-            return Collections.unmodifiableList(new LinkedList<>(records));
+            return new LinkedList<>(records);
         }
     }
     

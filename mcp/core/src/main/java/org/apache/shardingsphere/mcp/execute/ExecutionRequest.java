@@ -43,8 +43,6 @@ public final class ExecutionRequest {
     
     private final DatabaseRuntime databaseRuntime;
     
-    private final long nowMillis;
-    
     /**
      * Construct an execute-query request.
      *
@@ -56,10 +54,9 @@ public final class ExecutionRequest {
      * @param maxRows max rows
      * @param timeoutMs timeout milliseconds
      * @param databaseRuntime database runtime
-     * @param nowMillis current time
      */
     public ExecutionRequest(final String sessionId, final String database, final String databaseType, final String schema,
-                            final String sql, final int maxRows, final int timeoutMs, final DatabaseRuntime databaseRuntime, final long nowMillis) {
+                            final String sql, final int maxRows, final int timeoutMs, final DatabaseRuntime databaseRuntime) {
         this.sessionId = Objects.requireNonNull(sessionId, "sessionId cannot be null");
         this.database = Objects.requireNonNull(database, "database cannot be null");
         this.databaseType = Objects.requireNonNull(databaseType, "databaseType cannot be null");
@@ -68,6 +65,5 @@ public final class ExecutionRequest {
         this.maxRows = maxRows;
         this.timeoutMs = timeoutMs;
         this.databaseRuntime = Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null");
-        this.nowMillis = nowMillis;
     }
 }

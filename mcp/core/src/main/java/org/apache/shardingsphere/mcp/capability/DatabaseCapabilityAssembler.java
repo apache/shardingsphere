@@ -20,11 +20,6 @@ package org.apache.shardingsphere.mcp.capability;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -35,7 +30,7 @@ import java.util.Set;
  */
 public final class DatabaseCapabilityAssembler {
     
-    private static final List<String> SUPPORTED_RESOURCES = toImmutableList(List.of(
+    private static final List<String> SUPPORTED_RESOURCES = List.of(
             "shardingsphere://capabilities",
             "shardingsphere://databases",
             "shardingsphere://databases/{database}",
@@ -51,9 +46,9 @@ public final class DatabaseCapabilityAssembler {
             "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns",
             "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
             "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
-            "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
+            "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}");
     
-    private static final List<String> SUPPORTED_TOOLS = toImmutableList(List.of(
+    private static final List<String> SUPPORTED_TOOLS = List.of(
             "list_databases",
             "list_schemas",
             "list_tables",
@@ -64,9 +59,9 @@ public final class DatabaseCapabilityAssembler {
             "describe_table",
             "describe_view",
             "get_capabilities",
-            "execute_query"));
+            "execute_query");
     
-    private static final Set<StatementClass> SUPPORTED_STATEMENT_CLASSES = Collections.unmodifiableSet(EnumSet.allOf(StatementClass.class));
+    private static final Set<StatementClass> SUPPORTED_STATEMENT_CLASSES = Set.of(StatementClass.values());
     
     private final DatabaseCapabilityRegistry registry;
     
@@ -137,22 +132,4 @@ public final class DatabaseCapabilityAssembler {
                 capability.getExplainAnalyzeResultBehavior(), capability.getExplainAnalyzeTransactionBehavior());
     }
     
-    static <T> List<T> toImmutableList(final Collection<T> values) {
-        return Collections.unmodifiableList(new LinkedList<>(Objects.requireNonNull(values, "values cannot be null")));
-    }
-    
-    static <T extends Enum<T>> Set<T> toImmutableEnumSet(final Set<T> values, final Class<T> enumType) {
-        if (values.isEmpty()) {
-            return Collections.unmodifiableSet(EnumSet.noneOf(enumType));
-        }
-        return Collections.unmodifiableSet(EnumSet.copyOf(values));
-    }
-    
-    static Set<String> toImmutableStrings(final Collection<String> values) {
-        Set<String> result = new LinkedHashSet<>(Objects.requireNonNull(values, "supportedTransactionStatements" + " cannot be null").size());
-        for (String each : values) {
-            result.add(Objects.requireNonNull(each, "supportedTransactionStatements" + " cannot contain null"));
-        }
-        return Collections.unmodifiableSet(result);
-    }
 }

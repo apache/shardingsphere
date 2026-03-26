@@ -23,8 +23,6 @@ import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.ResourceLoadResult;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -48,9 +46,9 @@ public final class ToolDispatchResult {
     
     private final String message;
     
-    private ToolDispatchResult(final Collection<MetadataObject> metadataObjects, final String nextPageToken,
+    private ToolDispatchResult(final List<MetadataObject> metadataObjects, final String nextPageToken,
                                final boolean errorCodePresent, final ErrorCode errorCode, final String message) {
-        this.metadataObjects = Collections.unmodifiableList(new ArrayList<>(metadataObjects));
+        this.metadataObjects = metadataObjects;
         this.nextPageToken = Objects.requireNonNull(nextPageToken, "nextPageToken cannot be null");
         this.errorCodePresent = errorCodePresent;
         this.errorCode = Objects.requireNonNull(errorCode, "errorCode cannot be null");
@@ -66,12 +64,12 @@ public final class ToolDispatchResult {
         return !errorCodePresent;
     }
     
-    static ToolDispatchResult success(final Collection<MetadataObject> metadataObjects, final String nextPageToken) {
+    static ToolDispatchResult success(final List<MetadataObject> metadataObjects, final String nextPageToken) {
         return new ToolDispatchResult(metadataObjects, nextPageToken, false, ErrorCode.INVALID_REQUEST, "");
     }
     
     static ToolDispatchResult error(final ErrorCode errorCode, final String message) {
-        return new ToolDispatchResult(Collections.emptyList(), "", true, Objects.requireNonNull(errorCode, "errorCode cannot be null"), message);
+        return new ToolDispatchResult(Collections.emptyList(), "", true, errorCode, message);
     }
     
     static ToolDispatchResult fromResourceLoadResult(final ResourceLoadResult loadResult) {

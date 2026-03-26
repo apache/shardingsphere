@@ -35,8 +35,8 @@ public final class ServiceCapability {
     private final Set<StatementClass> supportedStatementClasses;
     
     ServiceCapability(final List<String> supportedResources, final List<String> supportedTools, final Set<StatementClass> supportedStatementClasses) {
-        this.supportedResources = DatabaseCapabilityAssembler.toImmutableList(supportedResources);
-        this.supportedTools = DatabaseCapabilityAssembler.toImmutableList(supportedTools);
-        this.supportedStatementClasses = DatabaseCapabilityAssembler.toImmutableEnumSet(supportedStatementClasses, StatementClass.class);
+        this.supportedResources = supportedResources;
+        this.supportedTools = supportedTools;
+        this.supportedStatementClasses = supportedStatementClasses;
     }
 }

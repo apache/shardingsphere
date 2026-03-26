@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.session;
 
 import lombok.Getter;
 
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -207,8 +206,6 @@ public final class MCPSessionManager {
         
         private String boundDatabase = "";
         
-        private long transactionStartedAtMillis;
-        
         private boolean closed;
         
         private SessionContext(final String sessionId) {
@@ -218,10 +215,10 @@ public final class MCPSessionManager {
         /**
          * Get the registered savepoint names.
          *
-         * @return immutable savepoint snapshot
+         * @return savepoint snapshot
          */
         public Set<String> getSavepoints() {
-            return Collections.unmodifiableSet(savepoints);
+            return new LinkedHashSet<>(savepoints);
         }
         
         private void bindDatabase(final String databaseName) {
@@ -234,7 +231,6 @@ public final class MCPSessionManager {
             }
             autocommit = false;
             transactionState = TransactionState.ACTIVE;
-            transactionStartedAtMillis = System.currentTimeMillis();
         }
         
         private void rememberSavepoint(final String savepointName) {
@@ -271,7 +267,6 @@ public final class MCPSessionManager {
             transactionState = TransactionState.IDLE;
             savepoints.clear();
             boundDatabase = "";
-            transactionStartedAtMillis = 0L;
         }
         
         private void requireActiveTransaction() {

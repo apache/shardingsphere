@@ -482,8 +482,7 @@ public final class StreamableHttpMCPServer {
             return errorToolResult("not_found", "Database capability does not exist.");
         }
         ExecutionRequest executionRequest = new ExecutionRequest(sessionId, database, databaseType, getStringArgument(arguments, "schema"),
-                sql, getIntegerArgument(arguments, "max_rows", 0), getIntegerArgument(arguments, "timeout_ms", 0), databaseRuntime,
-                System.currentTimeMillis());
+                sql, getIntegerArgument(arguments, "max_rows", 0), getIntegerArgument(arguments, "timeout_ms", 0), databaseRuntime);
         ExecuteQueryResponse response = runtimeServices.getExecuteQueryFacade().execute(executionRequest);
         return response.isSuccessful() ? successToolResult(toExecuteQueryPayload(response))
                 : errorToolResult(toDomainErrorCode(response.getError().get().getErrorCode()), response.getError().get().getMessage(), toExecuteQueryPayload(response));
