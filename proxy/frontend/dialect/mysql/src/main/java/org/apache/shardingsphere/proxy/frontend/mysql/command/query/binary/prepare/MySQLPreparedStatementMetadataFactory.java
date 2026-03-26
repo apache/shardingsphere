@@ -62,7 +62,7 @@ public final class MySQLPreparedStatementMetadataFactory {
         ExecutionUnit executionUnit = executionContext.getExecutionUnits().iterator().next();
         ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
         List<Connection> connections = databaseConnectionManager.getConnections(
-                connectionSession.getUsedDatabaseName(), executionUnit.getDataSourceName(), 0, 1, ConnectionMode.CONNECTION_STRICTLY);
+                queryContext.getUsedDatabase().getName(), executionUnit.getDataSourceName(), 0, 1, ConnectionMode.CONNECTION_STRICTLY);
         ShardingSpherePreconditions.checkNotEmpty(connections,
                 () -> new PreparedStatementMetadataResolutionException("no backend connection was acquired"));
         return connections.iterator().next().prepareStatement(executionUnit.getSqlUnit().getSql());
