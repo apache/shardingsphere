@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoa
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPLaunchState;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -69,7 +68,7 @@ abstract class AbstractProductionRuntimeE2ETest {
         prepareRuntimeFixture();
         Path configFile = tempDir.resolve("mcp.yaml");
         Files.writeString(configFile, createConfigurationContent());
-        launchState = new MCPRuntimeLauncher().launch(new MCPServerRegistry(new MCPSessionManager()), MCPConfigurationLoader.load(configFile.toString()));
+        launchState = new MCPRuntimeLauncher().launch(new MCPServerRegistry(), MCPConfigurationLoader.load(configFile.toString()));
         return launchState;
     }
     

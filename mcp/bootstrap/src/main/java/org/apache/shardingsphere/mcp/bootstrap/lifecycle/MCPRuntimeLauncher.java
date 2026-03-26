@@ -78,7 +78,6 @@ public final class MCPRuntimeLauncher {
         MetadataCatalog actualMetadataCatalog = Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null");
         DatabaseRuntime actualDatabaseRuntime = Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null");
         validateTransportConfiguration(actualLaunchConfiguration.getTransport());
-        actualRuntimeServices.registerDefaults(actualServerRegistry);
         StreamableHttpMCPServer httpServer = createHttpServer(actualServerRegistry, actualRuntimeServices, actualLaunchConfiguration, actualMetadataCatalog, actualDatabaseRuntime);
         StdioMCPServer stdioServer = createStdioServer(actualServerRegistry, actualRuntimeServices, actualLaunchConfiguration);
         try {

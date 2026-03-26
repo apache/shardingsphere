@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguratio
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -134,7 +133,7 @@ class ProductionRuntimeLauncherTest {
     }
     
     private MCPServerRegistry createServerRegistry() {
-        return new MCPServerRegistry(new MCPSessionManager());
+        return new MCPServerRegistry();
     }
     
     private static final class CountingDriver implements Driver {

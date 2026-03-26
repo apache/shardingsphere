@@ -19,9 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.context;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
-import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
@@ -32,10 +30,8 @@ import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
 import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher;
 
-import java.util.Objects;
-
 /**
- * Assemble and expose MCP runtime services, resources, and tools.
+ * Assemble and expose MCP runtime services.
  */
 @Getter
 public final class MCPRuntimeServices {
@@ -69,21 +65,5 @@ public final class MCPRuntimeServices {
         auditRecorder = new AuditRecorder();
         metadataRefreshCoordinator = new MetadataRefreshCoordinator();
         executeQueryFacade = new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler, transactionCommandExecutor, auditRecorder, metadataRefreshCoordinator);
-    }
-    
-    /**
-     * Register the full public MCP surface with the server registry.
-     *
-     * @param serverRegistry server registry
-     */
-    public void registerDefaults(final MCPServerRegistry serverRegistry) {
-        MCPServerRegistry actualServerRegistry = Objects.requireNonNull(serverRegistry, "serverRegistry cannot be null");
-        ServiceCapability serviceCapability = capabilityAssembler.assembleServiceCapability();
-        for (String each : serviceCapability.getSupportedResources()) {
-            actualServerRegistry.registerResource(each);
-        }
-        for (String each : serviceCapability.getSupportedTools()) {
-            actualServerRegistry.registerTool(each);
-        }
     }
 }

@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPLaunchState;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -70,7 +69,7 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     
     protected final void launchProductionRuntime() throws SQLException {
         prepareRuntimeFixture();
-        launchState = new MCPRuntimeLauncher().launch(new MCPServerRegistry(new MCPSessionManager()), createRuntimeConfiguration());
+        launchState = new MCPRuntimeLauncher().launch(new MCPServerRegistry(), createRuntimeConfiguration());
     }
     
     protected final HttpClient createHttpClient() {

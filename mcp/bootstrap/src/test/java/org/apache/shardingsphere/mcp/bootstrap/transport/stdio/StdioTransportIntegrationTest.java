@@ -116,8 +116,7 @@ class StdioTransportIntegrationTest {
     
     @Test
     void assertLaunch() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPServerRegistry serverRegistry = new MCPServerRegistry(sessionManager);
+        MCPServerRegistry serverRegistry = new MCPServerRegistry();
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         
         MCPLaunchState actual = runtimeLauncher.launch(serverRegistry,
@@ -133,7 +132,7 @@ class StdioTransportIntegrationTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new MCPServerRegistry(new MCPSessionManager()),
+                () -> runtimeLauncher.launch(new MCPServerRegistry(),
                         new MCPLaunchConfiguration(createTransportConfiguration(false, false, "/mcp"), createRuntimeDatabases())));
         
         assertThat(actual.getMessage(), is("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true."));

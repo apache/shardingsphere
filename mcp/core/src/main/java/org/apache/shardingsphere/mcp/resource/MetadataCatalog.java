@@ -93,7 +93,9 @@ public final class MetadataCatalog {
      */
     public void replaceSnapshot(final Map<String, String> databaseTypes, final Collection<MetadataObject> metadataObjects,
                                 final Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors) {
-        snapshot = new Snapshot(databaseTypes, metadataObjects, runtimeDatabaseDescriptors);
+        snapshot = new Snapshot(Collections.unmodifiableMap(new LinkedHashMap<>(databaseTypes)),
+                Collections.unmodifiableList(new LinkedList<>(metadataObjects)),
+                Collections.unmodifiableMap(new LinkedHashMap<>(runtimeDatabaseDescriptors)));
     }
     
     /**
@@ -148,11 +150,11 @@ public final class MetadataCatalog {
         
         private final Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors;
         
-        private Snapshot(final Map<String, String> databaseTypes, final Collection<MetadataObject> metadataObjects,
+        private Snapshot(final Map<String, String> databaseTypes, final List<MetadataObject> metadataObjects,
                          final Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors) {
-            this.databaseTypes = Collections.unmodifiableMap(new LinkedHashMap<>(databaseTypes));
-            this.metadataObjects = Collections.unmodifiableList(new LinkedList<>(metadataObjects));
-            this.runtimeDatabaseDescriptors = Collections.unmodifiableMap(new LinkedHashMap<>(runtimeDatabaseDescriptors));
+            this.databaseTypes = databaseTypes;
+            this.metadataObjects = metadataObjects;
+            this.runtimeDatabaseDescriptors = runtimeDatabaseDescriptors;
         }
     }
 }

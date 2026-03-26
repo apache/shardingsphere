@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.context;
 
-import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
+import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
@@ -25,8 +25,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -46,18 +44,12 @@ class MCPRuntimeServicesTest {
     }
     
     @Test
-    void assertRegisterDefaults() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager);
-        MCPServerRegistry serverRegistry = new MCPServerRegistry(sessionManager);
+    void assertAssembleServiceCapability() {
+        MCPRuntimeServices runtimeServices = createRuntimeServices(new MCPSessionManager());
+        ServiceCapability actual = runtimeServices.getCapabilityAssembler().assembleServiceCapability();
         
-        runtimeServices.registerDefaults(serverRegistry);
-        MCPServerRegistry.RegistrationSnapshot actual = serverRegistry.snapshot();
-        
-        assertThat(actual.getResources().size(), is(runtimeServices.getCapabilityAssembler().assembleServiceCapability().getSupportedResources().size()));
-        assertThat(actual.getTools().size(), is(runtimeServices.getCapabilityAssembler().assembleServiceCapability().getSupportedTools().size()));
-        assertTrue(actual.getResources().contains("shardingsphere://capabilities"));
-        assertTrue(actual.getTools().contains("execute_query"));
+        assertTrue(actual.getSupportedResources().contains("shardingsphere://capabilities"));
+        assertTrue(actual.getSupportedTools().contains("execute_query"));
     }
     
     private MCPRuntimeServices createRuntimeServices(final MCPSessionManager sessionManager) {

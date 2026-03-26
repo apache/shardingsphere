@@ -215,8 +215,8 @@ abstract class AbstractMCPE2ETest {
     }
     
     private MCPLaunchState launchRuntimeInternal() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPServerRegistry registry = new MCPServerRegistry(sessionManager);
+        MCPServerRegistry registry = new MCPServerRegistry();
+        MCPSessionManager sessionManager = registry.getSessionManager();
         MetadataCatalog metadataCatalog = createMetadataCatalog();
         DatabaseRuntime databaseRuntime = createDatabaseRuntime();
         MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);

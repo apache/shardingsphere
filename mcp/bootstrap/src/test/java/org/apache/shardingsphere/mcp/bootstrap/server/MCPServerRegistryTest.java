@@ -17,46 +17,24 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.server;
 
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPServerRegistryTest {
     
     @Test
     void assertGetSessionManager() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPServerRegistry serverRegistry = new MCPServerRegistry(sessionManager);
+        MCPServerRegistry serverRegistry = new MCPServerRegistry();
         
-        assertThat(serverRegistry.getSessionManager(), is(sessionManager));
-    }
-    
-    @Test
-    void assertRegisterResource() {
-        MCPServerRegistry serverRegistry = new MCPServerRegistry(new MCPSessionManager());
-        
-        serverRegistry.registerResource(" capability ");
-        
-        assertTrue(serverRegistry.snapshot().getResources().contains("capability"));
-    }
-    
-    @Test
-    void assertRegisterTool() {
-        MCPServerRegistry serverRegistry = new MCPServerRegistry(new MCPSessionManager());
-        
-        serverRegistry.registerTool(" execute_query ");
-        
-        assertTrue(serverRegistry.snapshot().getTools().contains("execute_query"));
+        assertNotNull(serverRegistry.getSessionManager());
     }
     
     @Test
     void assertStart() {
-        MCPServerRegistry serverRegistry = new MCPServerRegistry(new MCPSessionManager());
+        MCPServerRegistry serverRegistry = new MCPServerRegistry();
         
         serverRegistry.start();
         
@@ -65,43 +43,11 @@ class MCPServerRegistryTest {
     
     @Test
     void assertStop() {
-        MCPServerRegistry serverRegistry = new MCPServerRegistry(new MCPSessionManager());
+        MCPServerRegistry serverRegistry = new MCPServerRegistry();
         serverRegistry.start();
         
         serverRegistry.stop();
         
         assertFalse(serverRegistry.isRunning());
-    }
-    
-    @Test
-    void assertSnapshot() {
-        MCPServerRegistry serverRegistry = new MCPServerRegistry(new MCPSessionManager());
-        serverRegistry.registerResource("capability");
-        serverRegistry.registerTool("execute_query");
-        serverRegistry.start();
-        
-        MCPServerRegistry.RegistrationSnapshot actual = serverRegistry.snapshot();
-        
-        assertThat(actual.getResources().size(), is(1));
-        assertThat(actual.getTools().size(), is(1));
-        assertTrue(actual.isRunning());
-    }
-    
-    @Test
-    void assertRegisterResourceWithEmptyName() {
-        MCPServerRegistry serverRegistry = new MCPServerRegistry(new MCPSessionManager());
-        
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> serverRegistry.registerResource("   "));
-        
-        assertThat(actual.getMessage(), is("resourceName cannot be empty."));
-    }
-    
-    @Test
-    void assertRegisterToolWithEmptyName() {
-        MCPServerRegistry serverRegistry = new MCPServerRegistry(new MCPSessionManager());
-        
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> serverRegistry.registerTool("   "));
-        
-        assertThat(actual.getMessage(), is("toolName cannot be empty."));
     }
 }
