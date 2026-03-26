@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Query result definition for the in-memory runtime.
@@ -43,7 +42,7 @@ public final class QueryResult {
      * @param rows rows
      */
     public QueryResult(final Collection<ColumnDefinition> columns, final Collection<List<Object>> rows) {
-        this.columns = Collections.unmodifiableList(new LinkedList<>(Objects.requireNonNull(columns, "columns cannot be null")));
-        this.rows = Collections.unmodifiableList(new LinkedList<>(Objects.requireNonNull(rows, "rows cannot be null")));
+        this.columns = Collections.unmodifiableList(new LinkedList<>(columns));
+        this.rows = Collections.unmodifiableList(new LinkedList<>(rows));
     }
 }

@@ -24,9 +24,7 @@ import org.apache.shardingsphere.mcp.bootstrap.server.MCPServerRegistry;
 import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.stdio.StdioMCPServer;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -59,8 +57,8 @@ public final class MCPLaunchState {
                           final Collection<StreamableHttpMCPServer> httpServers, final Collection<StdioMCPServer> stdioServers) {
         this.serverRegistry = Objects.requireNonNull(serverRegistry, "serverRegistry cannot be null");
         this.runtimeServices = Objects.requireNonNull(runtimeServices, "runtimeServices cannot be null");
-        this.httpServers = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(httpServers, "httpServers cannot be null")));
-        this.stdioServers = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(stdioServers, "stdioServers cannot be null")));
+        this.httpServers = List.copyOf(httpServers);
+        this.stdioServers = List.copyOf(stdioServers);
     }
     
     /**

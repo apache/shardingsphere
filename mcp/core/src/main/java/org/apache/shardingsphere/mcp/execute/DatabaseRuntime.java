@@ -65,14 +65,14 @@ public final class DatabaseRuntime {
      */
     public DatabaseRuntime(final ShardingSphereExecutionAdapter executionAdapter, final Consumer<String> metadataRefresher) {
         this(Collections.emptyMap(), Collections.emptyMap(), Collections.singletonList(Objects.requireNonNull(executionAdapter, "executionAdapter cannot be null")),
-                Objects.requireNonNull(metadataRefresher, "metadataRefresher cannot be null"));
+                metadataRefresher);
     }
     
     private DatabaseRuntime(final Map<String, QueryResult> queryResults, final Map<String, Integer> updateCounts,
                             final Collection<ShardingSphereExecutionAdapter> executionAdapters, final Consumer<String> metadataRefresher) {
-        this.queryResults = Collections.unmodifiableMap(new LinkedHashMap<>(Objects.requireNonNull(queryResults, "queryResults cannot be null")));
-        this.updateCounts = Collections.unmodifiableMap(new LinkedHashMap<>(Objects.requireNonNull(updateCounts, "updateCounts cannot be null")));
-        this.executionAdapters = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(executionAdapters, "executionAdapters cannot be null")));
+        this.queryResults = Collections.unmodifiableMap(new LinkedHashMap<>(queryResults));
+        this.updateCounts = Collections.unmodifiableMap(new LinkedHashMap<>(updateCounts));
+        this.executionAdapters = Collections.unmodifiableList(new ArrayList<>(executionAdapters));
         this.metadataRefresher = Objects.requireNonNull(metadataRefresher, "metadataRefresher cannot be null");
     }
     

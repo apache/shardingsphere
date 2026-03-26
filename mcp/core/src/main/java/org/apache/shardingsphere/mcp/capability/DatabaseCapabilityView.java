@@ -74,10 +74,8 @@ public final class DatabaseCapabilityView {
         this.database = Objects.requireNonNull(database, "database cannot be null");
         this.databaseType = Objects.requireNonNull(databaseType, "databaseType cannot be null");
         this.minSupportedVersion = Objects.requireNonNull(minSupportedVersion, "minSupportedVersion cannot be null");
-        this.supportedObjectTypes = DatabaseCapabilityAssembler.toImmutableEnumSet(Objects.requireNonNull(supportedObjectTypes, "supportedObjectTypes cannot be null"),
-                SupportedObjectType.class);
-        this.supportedStatementClasses = DatabaseCapabilityAssembler.toImmutableEnumSet(Objects.requireNonNull(supportedStatementClasses, "supportedStatementClasses cannot be null"),
-                StatementClass.class);
+        this.supportedObjectTypes = DatabaseCapabilityAssembler.toImmutableEnumSet(supportedObjectTypes, SupportedObjectType.class);
+        this.supportedStatementClasses = DatabaseCapabilityAssembler.toImmutableEnumSet(supportedStatementClasses, StatementClass.class);
         this.supportsTransactionControl = supportsTransactionControl;
         this.supportsSavepoint = supportsSavepoint;
         this.supportedTransactionStatements = DatabaseCapabilityAssembler.toImmutableStrings(supportedTransactionStatements);

@@ -62,11 +62,10 @@ public final class MCPRuntimeServices {
      * @param databaseRuntime database runtime
      */
     public MCPRuntimeServices(final MCPSessionManager sessionManager, final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
-        capabilityAssembler = new DatabaseCapabilityAssembler(Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null"));
+        capabilityAssembler = new DatabaseCapabilityAssembler(metadataCatalog);
         metadataResourceLoader = new MetadataResourceLoader(capabilityAssembler);
         metadataToolDispatcher = new MetadataToolDispatcher(metadataResourceLoader);
-        transactionCommandExecutor = new TransactionCommandExecutor(capabilityAssembler, Objects.requireNonNull(sessionManager, "sessionManager cannot be null"),
-                Objects.requireNonNull(databaseRuntime, "databaseRuntime cannot be null"));
+        transactionCommandExecutor = new TransactionCommandExecutor(capabilityAssembler, sessionManager, databaseRuntime);
         auditRecorder = new AuditRecorder();
         metadataRefreshCoordinator = new MetadataRefreshCoordinator();
         executeQueryFacade = new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler, transactionCommandExecutor, auditRecorder, metadataRefreshCoordinator);

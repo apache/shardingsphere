@@ -150,10 +150,9 @@ public final class MetadataCatalog {
         
         private Snapshot(final Map<String, String> databaseTypes, final Collection<MetadataObject> metadataObjects,
                          final Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors) {
-            this.databaseTypes = Collections.unmodifiableMap(new LinkedHashMap<>(Objects.requireNonNull(databaseTypes, "databaseTypes cannot be null")));
-            this.metadataObjects = Collections.unmodifiableList(new LinkedList<>(Objects.requireNonNull(metadataObjects, "metadataObjects cannot be null")));
-            this.runtimeDatabaseDescriptors = Collections.unmodifiableMap(
-                    new LinkedHashMap<>(Objects.requireNonNull(runtimeDatabaseDescriptors, "runtimeDatabaseDescriptors cannot be null")));
+            this.databaseTypes = Collections.unmodifiableMap(new LinkedHashMap<>(databaseTypes));
+            this.metadataObjects = Collections.unmodifiableList(new LinkedList<>(metadataObjects));
+            this.runtimeDatabaseDescriptors = Collections.unmodifiableMap(new LinkedHashMap<>(runtimeDatabaseDescriptors));
         }
     }
 }

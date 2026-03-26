@@ -71,7 +71,7 @@ public final class ToolRequest {
         this.objectName = Objects.requireNonNull(objectName, "objectName cannot be null");
         this.parentObjectType = Objects.requireNonNull(parentObjectType, "parentObjectType cannot be null");
         this.query = Objects.requireNonNull(query, "query cannot be null");
-        this.objectTypes = Collections.unmodifiableSet(new LinkedHashSet<>(Objects.requireNonNull(objectTypes, "objectTypes cannot be null")));
+        this.objectTypes = Collections.unmodifiableSet(new LinkedHashSet<>(objectTypes));
         this.pageSize = pageSize;
         this.pageToken = Objects.requireNonNull(pageToken, "pageToken cannot be null");
     }

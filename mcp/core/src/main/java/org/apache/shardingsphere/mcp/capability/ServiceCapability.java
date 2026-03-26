@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.capability;
 import lombok.Getter;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -38,7 +37,6 @@ public final class ServiceCapability {
     ServiceCapability(final List<String> supportedResources, final List<String> supportedTools, final Set<StatementClass> supportedStatementClasses) {
         this.supportedResources = DatabaseCapabilityAssembler.toImmutableList(supportedResources);
         this.supportedTools = DatabaseCapabilityAssembler.toImmutableList(supportedTools);
-        this.supportedStatementClasses = DatabaseCapabilityAssembler.toImmutableEnumSet(
-                Objects.requireNonNull(supportedStatementClasses, "supportedStatementClasses cannot be null"), StatementClass.class);
+        this.supportedStatementClasses = DatabaseCapabilityAssembler.toImmutableEnumSet(supportedStatementClasses, StatementClass.class);
     }
 }

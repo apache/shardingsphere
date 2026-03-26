@@ -45,7 +45,7 @@ public final class ResourceLoadResult {
     private final String message;
     
     private ResourceLoadResult(final Collection<MetadataObject> metadataObjects, final boolean errorCodePresent, final ErrorCode errorCode, final String message) {
-        this.metadataObjects = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(metadataObjects, "metadataObjects cannot be null")));
+        this.metadataObjects = Collections.unmodifiableList(new ArrayList<>(metadataObjects));
         this.errorCodePresent = errorCodePresent;
         this.errorCode = Objects.requireNonNull(errorCode, "errorCode cannot be null");
         this.message = Objects.requireNonNull(message, "message cannot be null");

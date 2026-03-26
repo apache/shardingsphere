@@ -54,7 +54,7 @@ public final class ShardingSphereExecutionAdapter {
      * @param connectionProviders connection providers keyed by logical database
      */
     public ShardingSphereExecutionAdapter(final Map<String, ConnectionProvider> connectionProviders) {
-        this.connectionProviders = Collections.unmodifiableMap(new LinkedHashMap<>(Objects.requireNonNull(connectionProviders, "connectionProviders cannot be null")));
+        this.connectionProviders = Collections.unmodifiableMap(new LinkedHashMap<>(connectionProviders));
     }
     
     /**

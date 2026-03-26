@@ -57,7 +57,7 @@ public final class ExecuteQueryResponse {
     private ExecuteQueryResponse(final ResultKind resultKind, final List<ColumnDefinition> columns, final List<List<Object>> rows, final int affectedRows,
                                  final String statementType, final String status, final String message, final boolean truncated, final boolean errorPresent, final ErrorDetail error) {
         this.resultKind = Objects.requireNonNull(resultKind, "resultKind cannot be null");
-        this.columns = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(columns, "columns cannot be null")));
+        this.columns = Collections.unmodifiableList(new ArrayList<>(columns));
         this.rows = toImmutableRows(rows);
         this.affectedRows = affectedRows;
         this.statementType = Objects.requireNonNull(statementType, "statementType cannot be null");

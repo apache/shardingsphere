@@ -56,7 +56,7 @@ public final class RuntimeDatabaseDescriptor {
         this.database = Objects.requireNonNull(database, "database cannot be null");
         this.databaseType = Objects.requireNonNull(databaseType, "databaseType cannot be null");
         this.databaseVersion = Objects.requireNonNull(databaseVersion, "databaseVersion cannot be null");
-        this.supportedObjectTypes = Collections.unmodifiableSet(new LinkedHashSet<>(Objects.requireNonNull(supportedObjectTypes, "supportedObjectTypes cannot be null")));
+        this.supportedObjectTypes = Collections.unmodifiableSet(new LinkedHashSet<>(supportedObjectTypes));
         this.defaultSchema = Objects.requireNonNull(defaultSchema, "defaultSchema cannot be null");
     }
 }

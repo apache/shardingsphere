@@ -112,8 +112,8 @@ public final class MCPServerRegistry {
          * @param running runtime state
          */
         public RegistrationSnapshot(final Set<String> resources, final Set<String> tools, final boolean running) {
-            this.resources = Collections.unmodifiableSet(new LinkedHashSet<>(Objects.requireNonNull(resources, "resources cannot be null")));
-            this.tools = Collections.unmodifiableSet(new LinkedHashSet<>(Objects.requireNonNull(tools, "tools cannot be null")));
+            this.resources = Collections.unmodifiableSet(new LinkedHashSet<>(resources));
+            this.tools = Collections.unmodifiableSet(new LinkedHashSet<>(tools));
             this.running = running;
         }
     }

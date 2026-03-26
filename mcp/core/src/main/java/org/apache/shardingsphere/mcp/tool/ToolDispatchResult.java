@@ -50,7 +50,7 @@ public final class ToolDispatchResult {
     
     private ToolDispatchResult(final Collection<MetadataObject> metadataObjects, final String nextPageToken,
                                final boolean errorCodePresent, final ErrorCode errorCode, final String message) {
-        this.metadataObjects = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(metadataObjects, "metadataObjects cannot be null")));
+        this.metadataObjects = Collections.unmodifiableList(new ArrayList<>(metadataObjects));
         this.nextPageToken = Objects.requireNonNull(nextPageToken, "nextPageToken cannot be null");
         this.errorCodePresent = errorCodePresent;
         this.errorCode = Objects.requireNonNull(errorCode, "errorCode cannot be null");
