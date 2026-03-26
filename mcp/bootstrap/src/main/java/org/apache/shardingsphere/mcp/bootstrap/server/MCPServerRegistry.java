@@ -31,7 +31,7 @@ import java.util.Set;
 public final class MCPServerRegistry {
     
     @Getter
-    private final MCPSessionManager sessionManager;
+    private final MCPSessionManager sessionManager = new MCPSessionManager();
     
     private final Set<String> registeredResources = new LinkedHashSet<>();
     
@@ -39,10 +39,6 @@ public final class MCPServerRegistry {
     
     @Getter
     private boolean running;
-    
-    public MCPServerRegistry(final MCPSessionManager sessionManager) {
-        this.sessionManager = Objects.requireNonNull(sessionManager, "sessionManager cannot be null");
-    }
     
     /**
      * Register a public MCP resource identifier.

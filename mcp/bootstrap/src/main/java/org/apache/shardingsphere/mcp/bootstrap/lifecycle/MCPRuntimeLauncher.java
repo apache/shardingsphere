@@ -38,8 +38,6 @@ import java.util.Objects;
  */
 public final class MCPRuntimeLauncher {
     
-    private static final String TRANSPORT_VALIDATION_ERROR_MESSAGE = "At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true.";
-    
     private final DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
     
     private final JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
@@ -106,7 +104,7 @@ public final class MCPRuntimeLauncher {
     
     private void validateTransportConfiguration(final MCPTransportConfiguration transportConfig) {
         if (!transportConfig.hasEnabledTransport()) {
-            throw new IllegalArgumentException(TRANSPORT_VALIDATION_ERROR_MESSAGE);
+            throw new IllegalArgumentException("At least one transport must be explicitly enabled. Set `transport.http.enabled` or `transport.stdio.enabled` to true.");
         }
     }
     
