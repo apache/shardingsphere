@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.execute;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.StatementClass;
 
 import java.util.Optional;
@@ -26,6 +27,7 @@ import java.util.Optional;
 /**
  * Statement classification result.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ClassificationResult {
     
@@ -40,24 +42,6 @@ public final class ClassificationResult {
     
     @Getter(AccessLevel.NONE)
     private final String savepointName;
-    
-    /**
-     * Construct a statement classification result.
-     *
-     * @param statementClass statement class
-     * @param statementType statement type
-     * @param normalizedSql normalized SQL
-     * @param targetObjectName target object name
-     * @param savepointName savepoint name
-     */
-    public ClassificationResult(final StatementClass statementClass, final String statementType, final String normalizedSql,
-                                final String targetObjectName, final String savepointName) {
-        this.statementClass = statementClass;
-        this.statementType = statementType;
-        this.normalizedSql = normalizedSql;
-        this.targetObjectName = targetObjectName;
-        this.savepointName = savepointName;
-    }
     
     /**
      * Get the target object name when one exists.

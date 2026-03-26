@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.mcp.execute;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Execute-query request contract.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ExecutionRequest {
     
@@ -40,28 +42,4 @@ public final class ExecutionRequest {
     private final int timeoutMs;
     
     private final DatabaseRuntime databaseRuntime;
-    
-    /**
-     * Construct an execute-query request.
-     *
-     * @param sessionId session identifier
-     * @param database logical database name
-     * @param databaseType database type
-     * @param schema schema name
-     * @param sql SQL text
-     * @param maxRows max rows
-     * @param timeoutMs timeout milliseconds
-     * @param databaseRuntime database runtime
-     */
-    public ExecutionRequest(final String sessionId, final String database, final String databaseType, final String schema,
-                            final String sql, final int maxRows, final int timeoutMs, final DatabaseRuntime databaseRuntime) {
-        this.sessionId = sessionId;
-        this.database = database;
-        this.databaseType = databaseType;
-        this.schema = schema;
-        this.sql = sql;
-        this.maxRows = maxRows;
-        this.timeoutMs = timeoutMs;
-        this.databaseRuntime = databaseRuntime;
-    }
 }

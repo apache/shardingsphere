@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfigurati
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -42,35 +41,21 @@ import java.util.logging.Logger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProductionRuntimeLauncherTest {
     
     @TempDir
     private Path tempDir;
     
-    private MCPRuntime runtime;
-    
-    @AfterEach
-    void tearDown() {
-        if (null != runtime) {
-            runtime.close();
-            runtime = null;
-        }
-    }
-    
     @Test
     void assertLaunchWithH2Runtime() throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        runtime = runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
-                H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl)));
-        assertFalse(runtime.getHttpServer().isPresent());
-        assertTrue(runtime.getStdioServer().isPresent());
-        assertFalse(runtime.getStdioServer().orElseThrow().initializeSession().isEmpty());
+        assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
+                H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
     }
     
     @Test
@@ -89,11 +74,8 @@ class ProductionRuntimeLauncherTest {
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
         H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        runtime = runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
-                Map.of("logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl))));
-        assertFalse(runtime.getHttpServer().isPresent());
-        assertTrue(runtime.getStdioServer().isPresent());
-        assertFalse(runtime.getStdioServer().orElseThrow().initializeSession().isEmpty());
+        assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
+                Map.of("logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl)))));
     }
     
     @Test
@@ -110,10 +92,9 @@ class ProductionRuntimeLauncherTest {
         DriverManager.registerDriver(driver);
         try {
             MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-            runtime = runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
-                    Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", CountingDriver.JDBC_URL, "", "", ""))));
+            assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, true, "/mcp"),
+                    Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", CountingDriver.JDBC_URL, "", "", "")))));
             assertThat(driver.getConnectionCount(), is(1));
-            assertTrue(runtime.getStdioServer().isPresent());
         } finally {
             DriverManager.deregisterDriver(driver);
         }

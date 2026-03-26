@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.SupportedObjectType;
 
 import java.util.Set;
@@ -25,6 +26,7 @@ import java.util.Set;
 /**
  * Runtime metadata facts for one logical database.
  */
+@RequiredArgsConstructor
 @Getter
 public final class RuntimeDatabaseDescriptor {
     
@@ -37,22 +39,4 @@ public final class RuntimeDatabaseDescriptor {
     private final Set<SupportedObjectType> supportedObjectTypes;
     
     private final String defaultSchema;
-    
-    /**
-     * Construct one runtime database descriptor.
-     *
-     * @param database logical database name
-     * @param databaseType database type
-     * @param databaseVersion database version
-     * @param supportedObjectTypes supported object types
-     * @param defaultSchema default schema
-     */
-    public RuntimeDatabaseDescriptor(final String database, final String databaseType, final Set<SupportedObjectType> supportedObjectTypes,
-                                     final String databaseVersion, final String defaultSchema) {
-        this.database = database;
-        this.databaseType = databaseType;
-        this.databaseVersion = databaseVersion;
-        this.supportedObjectTypes = supportedObjectTypes;
-        this.defaultSchema = defaultSchema;
-    }
 }

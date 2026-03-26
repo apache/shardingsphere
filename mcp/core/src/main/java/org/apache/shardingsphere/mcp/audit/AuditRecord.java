@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.audit;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 
 import java.util.Optional;
@@ -26,6 +27,7 @@ import java.util.Optional;
 /**
  * Audit record projection.
  */
+@RequiredArgsConstructor
 @Getter
 public final class AuditRecord {
     
@@ -48,32 +50,6 @@ public final class AuditRecord {
     private final String transactionMarker;
     
     private final String timestamp;
-    
-    /**
-     * Construct an audit record projection.
-     *
-     * @param sessionId session identifier
-     * @param database logical database name
-     * @param operationClass operation class
-     * @param operationDigest operation digest
-     * @param success success flag
-     * @param errorCodePresent error-code presence flag
-     * @param errorCode error code
-     * @param transactionMarker transaction marker
-     * @param timestamp timestamp
-     */
-    public AuditRecord(final String sessionId, final String database, final OperationClass operationClass, final String operationDigest,
-                       final boolean success, final boolean errorCodePresent, final ErrorCode errorCode, final String transactionMarker, final String timestamp) {
-        this.sessionId = sessionId;
-        this.database = database;
-        this.operationClass = operationClass;
-        this.operationDigest = operationDigest;
-        this.success = success;
-        this.errorCodePresent = errorCodePresent;
-        this.errorCode = errorCode;
-        this.transactionMarker = transactionMarker;
-        this.timestamp = timestamp;
-    }
     
     /**
      * Get the error code when one exists.

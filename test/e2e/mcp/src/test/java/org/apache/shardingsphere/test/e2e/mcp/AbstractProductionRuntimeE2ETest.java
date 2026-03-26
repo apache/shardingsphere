@@ -19,9 +19,16 @@ package org.apache.shardingsphere.test.e2e.mcp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntime;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
+import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseConnectionConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseRuntimeFactory;
+import org.apache.shardingsphere.mcp.bootstrap.runtime.JdbcMetadataLoader;
+import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
+import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -47,13 +54,13 @@ abstract class AbstractProductionRuntimeE2ETest {
     @TempDir
     private Path tempDir;
     
-    private MCPRuntime runtime;
+    private StreamableHttpMCPServer httpServer;
     
     @AfterEach
     void tearDown() {
-        if (null != runtime) {
-            runtime.close();
-            runtime = null;
+        if (null != httpServer) {
+            httpServer.stop();
+            httpServer = null;
         }
     }
     
@@ -61,7 +68,7 @@ abstract class AbstractProductionRuntimeE2ETest {
         prepareRuntimeFixture();
         Path configFile = tempDir.resolve("mcp.yaml");
         Files.writeString(configFile, createConfigurationContent());
-        runtime = new MCPRuntimeLauncher().launch(MCPConfigurationLoader.load(configFile.toString()));
+        httpServer = createStartedHttpServer(configFile);
     }
     
     protected final HttpClient createHttpClient() {
@@ -178,8 +185,27 @@ abstract class AbstractProductionRuntimeE2ETest {
     }
     
     private URI createEndpointUri() {
-        int localPort = runtime.getHttpServer().orElseThrow().getLocalPort();
+        int localPort = httpServer.getLocalPort();
         return URI.create(String.format("http://127.0.0.1:%d%s", localPort, getEndpointPath()));
+    }
+    
+    private StreamableHttpMCPServer createStartedHttpServer(final Path configFile) throws IOException {
+        MCPLaunchConfiguration launchConfiguration = MCPConfigurationLoader.load(configFile.toString());
+        DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
+        JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
+        Map<String, DatabaseConnectionConfiguration> connectionConfigurations = databaseRuntimeFactory.createConnectionConfigurations(launchConfiguration.getRuntimeDatabases());
+        MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigurations);
+        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, metadataLoader);
+        MCPSessionManager sessionManager = new MCPSessionManager();
+        MCPRuntimeServices runtimeServices = new MCPRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
+        StreamableHttpMCPServer result = new StreamableHttpMCPServer(launchConfiguration.getTransport().getHttp(), sessionManager, runtimeServices, metadataCatalog, databaseRuntime);
+        try {
+            result.start();
+        } catch (final IOException ex) {
+            result.stop();
+            throw new IllegalStateException("Failed to start HTTP transport.", ex);
+        }
+        return result;
     }
     
     private Map<String, Object> createInitializeRequestParams() {
@@ -248,14 +274,14 @@ abstract class AbstractProductionRuntimeE2ETest {
     
     private void appendDatabaseProperties(final StringBuilder result, final String indent, final Map<String, String> properties) {
         for (Entry<String, String> entry : properties.entrySet()) {
-            if (shouldSkipEntry(entry.getKey(), entry.getValue())) {
+            if (shouldSkipEntry(entry.getKey())) {
                 continue;
             }
             result.append(indent).append(entry.getKey()).append(": ").append(toYamlScalar(entry.getValue())).append('\n');
         }
     }
     
-    private boolean shouldSkipEntry(final String key, final String value) {
+    private boolean shouldSkipEntry(final String key) {
         return "databaseName".equals(key) || "schemaPattern".equals(key) || "defaultSchema".equals(key)
                 || "supportsCrossSchemaSql".equals(key) || "supportsExplainAnalyze".equals(key);
     }

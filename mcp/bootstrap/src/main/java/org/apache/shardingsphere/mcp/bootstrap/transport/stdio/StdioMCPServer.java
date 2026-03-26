@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
@@ -30,22 +31,12 @@ import java.util.UUID;
 /**
  * In-memory STDIO MCP runtime for local integration and smoke tests.
  */
+@RequiredArgsConstructor
 public final class StdioMCPServer {
     
     private final MCPSessionManager sessionManager;
     
     private final MCPRuntimeServices runtimeServices;
-    
-    /**
-     * Construct one STDIO MCP server.
-     *
-     * @param sessionManager session manager
-     * @param runtimeServices runtime services
-     */
-    public StdioMCPServer(final MCPSessionManager sessionManager, final MCPRuntimeServices runtimeServices) {
-        this.sessionManager = sessionManager;
-        this.runtimeServices = runtimeServices;
-    }
     
     /**
      * Initialize one local STDIO session.

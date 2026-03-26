@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Request contract for one metadata resource load.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ResourceRequest {
     
@@ -36,24 +38,4 @@ public final class ResourceRequest {
     private final String parentObjectType;
     
     private final String parentObjectName;
-    
-    /**
-     * Construct a resource request.
-     *
-     * @param database logical database name or empty string
-     * @param schema schema name or empty string
-     * @param objectType target object type
-     * @param objectName target object name or empty string
-     * @param parentObjectType parent object type name or empty string
-     * @param parentObjectName parent object name or empty string
-     */
-    public ResourceRequest(final String database, final String schema, final MetadataObjectType objectType,
-                           final String objectName, final String parentObjectType, final String parentObjectName) {
-        this.database = database;
-        this.schema = schema;
-        this.objectType = objectType;
-        this.objectName = objectName;
-        this.parentObjectType = parentObjectType;
-        this.parentObjectName = parentObjectName;
-    }
 }

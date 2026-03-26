@@ -21,7 +21,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntime;
 import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.QueryResult;
@@ -52,13 +51,13 @@ abstract class AbstractMCPE2ETest {
     
     private static final String ENDPOINT_PATH = "/gateway";
     
-    private MCPRuntime runtime;
+    private StreamableHttpMCPServer httpServer;
     
     @AfterEach
     void tearDown() {
-        if (null != runtime) {
-            runtime.close();
-            runtime = null;
+        if (null != httpServer) {
+            httpServer.stop();
+            httpServer = null;
         }
     }
     
@@ -213,7 +212,7 @@ abstract class AbstractMCPE2ETest {
             httpServer.stop();
             throw new IllegalStateException("Failed to start HTTP transport.", ex);
         }
-        runtime = new MCPRuntime(httpServer, null);
+        this.httpServer = httpServer;
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,
@@ -245,7 +244,7 @@ abstract class AbstractMCPE2ETest {
     }
     
     private URI createEndpointUri() {
-        int localPort = runtime.getHttpServer().orElseThrow().getLocalPort();
+        int localPort = httpServer.getLocalPort();
         return URI.create(String.format("http://127.0.0.1:%d%s", localPort, ENDPOINT_PATH));
     }
     

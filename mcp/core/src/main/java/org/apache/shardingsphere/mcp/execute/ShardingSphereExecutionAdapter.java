@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
@@ -40,20 +41,12 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Real JDBC-backed execution adapter for the MCP runtime.
  */
+@RequiredArgsConstructor
 public final class ShardingSphereExecutionAdapter {
     
     private final Map<String, ConnectionProvider> connectionProviders;
     
     private final Map<String, SessionConnectionContext> sessionConnections = new ConcurrentHashMap<>();
-    
-    /**
-     * Construct one execution adapter.
-     *
-     * @param connectionProviders connection providers keyed by logical database
-     */
-    public ShardingSphereExecutionAdapter(final Map<String, ConnectionProvider> connectionProviders) {
-        this.connectionProviders = connectionProviders;
-    }
     
     /**
      * Execute one classified request.

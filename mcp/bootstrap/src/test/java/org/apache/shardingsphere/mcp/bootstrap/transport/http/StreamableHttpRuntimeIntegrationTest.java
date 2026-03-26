@@ -24,8 +24,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntime;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -50,21 +48,19 @@ class StreamableHttpRuntimeIntegrationTest {
     @TempDir
     private Path tempDir;
     
-    private MCPRuntime runtime;
+    private StreamableHttpMCPServer httpServer;
     
     @AfterEach
     void tearDown() {
-        if (null != runtime) {
-            runtime.close();
-            runtime = null;
+        if (null != httpServer) {
+            httpServer.stop();
+            httpServer = null;
         }
     }
     
     @Test
     void assertLaunchHttpServerWithConfiguredEndpoint() throws IOException, InterruptedException {
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPLaunchConfiguration runtimeConfiguration = createRuntimeConfiguration();
-        runtime = runtimeLauncher.launch(runtimeConfiguration);
+        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest initializeRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
@@ -113,9 +109,7 @@ class StreamableHttpRuntimeIntegrationTest {
     
     @Test
     void assertLaunchHttpServerWithoutInitializeProtocolVersion() throws IOException, InterruptedException {
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPLaunchConfiguration runtimeConfiguration = createRuntimeConfiguration();
-        runtime = runtimeLauncher.launch(runtimeConfiguration);
+        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest initializeRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
@@ -133,9 +127,7 @@ class StreamableHttpRuntimeIntegrationTest {
     
     @Test
     void assertRejectDeleteWithoutSessionHeader() throws IOException, InterruptedException {
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPLaunchConfiguration runtimeConfiguration = createRuntimeConfiguration();
-        runtime = runtimeLauncher.launch(runtimeConfiguration);
+        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest deleteRequest = HttpRequest.newBuilder(createEndpointUri())
                 .DELETE()
@@ -148,9 +140,7 @@ class StreamableHttpRuntimeIntegrationTest {
     
     @Test
     void assertRejectDeleteWithMissingSession() throws IOException, InterruptedException {
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPLaunchConfiguration runtimeConfiguration = createRuntimeConfiguration();
-        runtime = runtimeLauncher.launch(runtimeConfiguration);
+        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest deleteRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("MCP-Session-Id", "missing-session")
@@ -164,9 +154,7 @@ class StreamableHttpRuntimeIntegrationTest {
     
     @Test
     void assertRejectDeleteWithProtocolVersionMismatch() throws IOException, InterruptedException {
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPLaunchConfiguration runtimeConfiguration = createRuntimeConfiguration();
-        runtime = runtimeLauncher.launch(runtimeConfiguration);
+        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpRequest deleteRequest = HttpRequest.newBuilder(createEndpointUri())
@@ -181,9 +169,7 @@ class StreamableHttpRuntimeIntegrationTest {
     
     @Test
     void assertRejectOpenStreamAfterDelete() throws IOException, InterruptedException {
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPLaunchConfiguration runtimeConfiguration = createRuntimeConfiguration();
-        runtime = runtimeLauncher.launch(runtimeConfiguration);
+        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpRequest deleteRequest = HttpRequest.newBuilder(createEndpointUri())
@@ -205,9 +191,7 @@ class StreamableHttpRuntimeIntegrationTest {
     
     @Test
     void assertRejectInitializeWithInvalidOrigin() throws IOException, InterruptedException {
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPLaunchConfiguration runtimeConfiguration = createRuntimeConfiguration();
-        runtime = runtimeLauncher.launch(runtimeConfiguration);
+        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpRequest initializeRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("Origin", "https://evil.example.com")
@@ -221,7 +205,7 @@ class StreamableHttpRuntimeIntegrationTest {
     }
     
     private URI createEndpointUri() {
-        int localPort = runtime.getHttpServer().orElseThrow().getLocalPort();
+        int localPort = httpServer.getLocalPort();
         return URI.create(String.format("http://127.0.0.1:%d%s", localPort, "/gateway"));
     }
     

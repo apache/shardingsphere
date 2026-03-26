@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * JDBC connection configuration for one logical database.
  */
+@RequiredArgsConstructor
 @Getter
 public final class DatabaseConnectionConfiguration {
     
@@ -36,24 +38,4 @@ public final class DatabaseConnectionConfiguration {
     private final String password;
     
     private final String driverClassName;
-    
-    /**
-     * Construct one JDBC connection configuration.
-     *
-     * @param database logical database name
-     * @param databaseType database type
-     * @param jdbcUrl JDBC URL
-     * @param username username
-     * @param password password
-     * @param driverClassName driver class name
-     */
-    public DatabaseConnectionConfiguration(final String database, final String databaseType, final String jdbcUrl, final String username,
-                                           final String password, final String driverClassName) {
-        this.database = database;
-        this.databaseType = databaseType;
-        this.jdbcUrl = jdbcUrl;
-        this.username = username;
-        this.password = password;
-        this.driverClassName = driverClassName;
-    }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
@@ -32,6 +33,7 @@ import java.util.Optional;
 /**
  * Execute the unified MCP {@code execute_query} contract against an in-memory runtime model.
  */
+@RequiredArgsConstructor
 public final class ExecuteQueryFacade {
     
     private final StatementClassifier statementClassifier;
@@ -43,25 +45,6 @@ public final class ExecuteQueryFacade {
     private final AuditRecorder auditRecorder;
     
     private final MetadataRefreshCoordinator metadataRefreshCoordinator;
-    
-    /**
-     * Construct an execute-query facade.
-     *
-     * @param statementClassifier statement classifier
-     * @param capabilityAssembler database capability assembler
-     * @param transactionCommandExecutor transaction command executor
-     * @param auditRecorder audit recorder
-     * @param metadataRefreshCoordinator metadata refresh coordinator
-     */
-    public ExecuteQueryFacade(final StatementClassifier statementClassifier, final DatabaseCapabilityAssembler capabilityAssembler,
-                              final TransactionCommandExecutor transactionCommandExecutor,
-                              final AuditRecorder auditRecorder, final MetadataRefreshCoordinator metadataRefreshCoordinator) {
-        this.statementClassifier = statementClassifier;
-        this.capabilityAssembler = capabilityAssembler;
-        this.transactionCommandExecutor = transactionCommandExecutor;
-        this.auditRecorder = auditRecorder;
-        this.metadataRefreshCoordinator = metadataRefreshCoordinator;
-    }
     
     /**
      * Execute one MCP SQL request.

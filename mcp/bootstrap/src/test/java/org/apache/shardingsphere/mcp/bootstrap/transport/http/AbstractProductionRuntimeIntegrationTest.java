@@ -24,8 +24,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntime;
-import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -50,19 +48,19 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     @TempDir
     private Path tempDir;
     
-    private MCPRuntime runtime;
+    private StreamableHttpMCPServer httpServer;
     
     @AfterEach
     void tearDown() {
-        if (null != runtime) {
-            runtime.close();
-            runtime = null;
+        if (null != httpServer) {
+            httpServer.stop();
+            httpServer = null;
         }
     }
     
     protected final void launchProductionRuntime() throws SQLException {
         prepareRuntimeFixture();
-        runtime = new MCPRuntimeLauncher().launch(createRuntimeConfiguration());
+        httpServer = StreamableHttpServerTestUtils.start(createRuntimeConfiguration());
     }
     
     protected final HttpClient createHttpClient() {
@@ -129,7 +127,7 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     }
     
     private URI createEndpointUri() {
-        int localPort = runtime.getHttpServer().orElseThrow().getLocalPort();
+        int localPort = httpServer.getLocalPort();
         return URI.create(String.format("http://127.0.0.1:%d/gateway", localPort));
     }
     

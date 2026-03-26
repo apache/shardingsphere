@@ -113,11 +113,9 @@ class MetadataResourceLoaderTest {
     @Test
     void assertReplaceDatabaseSnapshot() {
         MetadataCatalog metadataCatalog = createMetadataCatalog();
-        
         metadataCatalog.replaceDatabaseSnapshot("logic_db", "MySQL",
                 List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders_archive", "", "")),
-                new RuntimeDatabaseDescriptor("logic_db", "MySQL", Set.of(SupportedObjectType.DATABASE, SupportedObjectType.TABLE), "", "public"));
-        
+                new RuntimeDatabaseDescriptor("logic_db", "MySQL", "", Set.of(SupportedObjectType.DATABASE, SupportedObjectType.TABLE), "public"));
         assertThat(metadataCatalog.getDatabaseTypes().size(), is(3));
         assertThat(metadataCatalog.getMetadataObjects().stream().filter(each -> "logic_db".equals(each.getDatabase())).map(MetadataObject::getName).toList(),
                 is(List.of("orders_archive")));

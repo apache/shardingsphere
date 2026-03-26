@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 
 import java.util.Set;
@@ -25,6 +26,7 @@ import java.util.Set;
 /**
  * Tool request contract for metadata discovery.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ToolRequest {
     
@@ -45,31 +47,4 @@ public final class ToolRequest {
     private final int pageSize;
     
     private final String pageToken;
-    
-    /**
-     * Construct a metadata tool request.
-     *
-     * @param toolName tool identifier
-     * @param database logical database name or empty string
-     * @param schema schema name or empty string
-     * @param objectName object name or parent object name depending on the tool
-     * @param parentObjectType parent object type name or empty string
-     * @param query search query or empty string
-     * @param objectTypes object type filter for search or empty set
-     * @param pageSize requested page size
-     * @param pageToken requested page token or empty string
-     */
-    public ToolRequest(final String toolName, final String database, final String schema, final String objectName,
-                       final String parentObjectType, final String query, final Set<MetadataObjectType> objectTypes,
-                       final int pageSize, final String pageToken) {
-        this.toolName = toolName;
-        this.database = database;
-        this.schema = schema;
-        this.objectName = objectName;
-        this.parentObjectType = parentObjectType;
-        this.query = query;
-        this.objectTypes = objectTypes;
-        this.pageSize = pageSize;
-        this.pageToken = pageToken;
-    }
 }
