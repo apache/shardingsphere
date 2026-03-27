@@ -27,3 +27,6 @@ org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingKeyGenerat
 org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingAuditorExecutor
 org.apache.shardingsphere.sharding.distsql.handler.update.AlterDefaultShardingStrategyExecutor
 org.apache.shardingsphere.sharding.distsql.handler.update.DropDefaultShardingStrategyExecutor
+org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingKeyGenerateStrategyExecutor
+org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingKeyGenerateStrategyExecutor
+org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingKeyGenerateStrategyExecutor

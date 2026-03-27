@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.InUsedAlgorithmException;
 import org.apache.shardingsphere.infra.algorithm.core.exception.UnregisteredAlgorithmException;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -80,6 +81,18 @@ class DropShardingKeyGeneratorExecutorTest {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("UUID", null));
         currentRuleConfig.getAutoTables().add(createShardingAutoTableRuleConfiguration());
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(currentRuleConfig);
+        executor.setRule(rule);
+        DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(false, Collections.singleton("uuid_key_generator"));
+        assertThrows(InUsedAlgorithmException.class, () -> executor.checkBeforeUpdate(sqlStatement));
+    }
+    
+    @Test
+    void assertExecuteWithUsedByKeyGenerateStrategy() {
+        ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
+        currentRuleConfig.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("UUID", null));
+        currentRuleConfig.getKeyGenerateStrategies().put("order_strategy", new ColumnKeyGenerateStrategiesRuleConfiguration("uuid_key_generator", "t_order", "order_id"));
         ShardingRule rule = mock(ShardingRule.class);
         when(rule.getConfiguration()).thenReturn(currentRuleConfig);
         executor.setRule(rule);

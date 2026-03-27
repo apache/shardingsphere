@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Time;
@@ -37,8 +38,8 @@ import java.time.Month;
 import java.time.OffsetDateTime;
 import java.util.Date;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -305,6 +306,12 @@ class ResultSetUtilsTest {
         String value = "test string";
         String result = (String) ResultSetUtils.convertValue(value, String.class);
         assertThat(result, is("test string"));
+    }
+    
+    @Test
+    void assertConvertStringValueToBytes() throws SQLException {
+        byte[] actualBytes = (byte[]) ResultSetUtils.convertValue("张三", byte[].class);
+        assertThat(actualBytes, is("张三".getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test

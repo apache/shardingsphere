@@ -63,6 +63,18 @@ dropShardingKeyGenerator
     : DROP SHARDING KEY GENERATOR ifExists? keyGeneratorName (COMMA_ keyGeneratorName)*
     ;
 
+createShardingKeyGenerateStrategy
+    : CREATE SHARDING KEY GENERATE STRATEGY ifNotExists? keyGenerateStrategyName LP_ keyGenerateStrategyDefinition RP_
+    ;
+
+alterShardingKeyGenerateStrategy
+    : ALTER SHARDING KEY GENERATE STRATEGY keyGenerateStrategyName LP_ keyGenerateStrategyDefinition RP_
+    ;
+
+dropShardingKeyGenerateStrategy
+    : DROP SHARDING KEY GENERATE STRATEGY ifExists? keyGenerateStrategyName (COMMA_ keyGenerateStrategyName)*
+    ;
+
 dropShardingAuditor
     : DROP SHARDING AUDITOR ifExists? auditorName (COMMA_ auditorName)*
     ;
@@ -125,6 +137,28 @@ tableStrategy
 
 keyGenerateDefinition
     : KEY_GENERATE_STRATEGY LP_ COLUMN EQ_ columnName COMMA_ algorithmDefinition RP_
+    ;
+
+keyGenerateStrategyDefinition
+    : columnKeyGenerateStrategyDefinition
+    | sequenceKeyGenerateStrategyDefinition
+    ;
+
+columnKeyGenerateStrategyDefinition
+    : TABLE EQ_ tableName COMMA_ COLUMN EQ_ columnName COMMA_ keyGenerateAlgorithmDefinition
+    ;
+
+sequenceKeyGenerateStrategyDefinition
+    : SEQUENCE EQ_ sequenceName COMMA_ keyGenerateAlgorithmDefinition
+    ;
+
+sequenceName
+    : IDENTIFIER_ | STRING_
+    ;
+
+keyGenerateAlgorithmDefinition
+    : algorithmDefinition
+    | GENERATOR EQ_ keyGeneratorName
     ;
 
 auditDefinition
