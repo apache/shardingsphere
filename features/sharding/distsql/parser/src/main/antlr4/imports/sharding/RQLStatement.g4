@@ -43,6 +43,10 @@ showShardingKeyGenerators
     : SHOW SHARDING KEY GENERATORS (FROM databaseName)?
     ;
 
+showShardingKeyGenerateStrategies
+    : SHOW SHARDING KEY GENERATE (STRATEGY keyGenerateStrategyName | STRATEGIES) (FROM databaseName)?
+    ;
+
 showDefaultShardingStrategy
     : SHOW DEFAULT SHARDING STRATEGY (FROM databaseName)?
     ;

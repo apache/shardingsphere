@@ -23,9 +23,15 @@ rules:
         keyGeneratorName: snowflake
         logicTable: t_order
         keyGenerateColumn: order_id
+      order_sequence_strategy:
+        keyGenerateType: sequence
+        keyGeneratorName: uuid
+        keyGenerateSequence: order_seq
 
     keyGenerators:
       snowflake:
         type: SNOWFLAKE
+        props:
+          worker-id: 1
       uuid:
         type: UUID

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -67,14 +68,26 @@ public final class UnusedAlgorithmFinder {
      * @return found unused key generators
      */
     public static Collection<String> findUnusedKeyGenerator(final ShardingRuleConfiguration ruleConfig) {
-        Collection<String> inUsedKeyGenerators = ruleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
-                .map(KeyGenerateStrategyConfiguration::getKeyGeneratorName).collect(Collectors.toSet());
-        inUsedKeyGenerators.addAll(ruleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
-                .map(KeyGenerateStrategyConfiguration::getKeyGeneratorName).collect(Collectors.toSet()));
-        if (null != ruleConfig.getDefaultKeyGenerateStrategy()) {
-            inUsedKeyGenerators.add(ruleConfig.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
-        }
+        Collection<String> inUsedKeyGenerators = findInUsedKeyGenerator(ruleConfig);
         return ruleConfig.getKeyGenerators().keySet().stream().filter(each -> !inUsedKeyGenerators.contains(each)).collect(Collectors.toSet());
+    }
+    
+    /**
+     * Find in used key generators.
+     *
+     * @param ruleConfig sharding rule configuration
+     * @return found in used key generators
+     */
+    public static Collection<String> findInUsedKeyGenerator(final ShardingRuleConfiguration ruleConfig) {
+        Collection<String> result = ruleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
+                .map(KeyGenerateStrategyConfiguration::getKeyGeneratorName).collect(Collectors.toSet());
+        result.addAll(ruleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
+                .map(KeyGenerateStrategyConfiguration::getKeyGeneratorName).collect(Collectors.toSet()));
+        result.addAll(ruleConfig.getKeyGenerateStrategies().values().stream().map(KeyGenerateStrategiesConfiguration::getKeyGeneratorName).collect(Collectors.toSet()));
+        if (null != ruleConfig.getDefaultKeyGenerateStrategy()) {
+            result.add(ruleConfig.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
+        }
+        return result;
     }
     
     /**
