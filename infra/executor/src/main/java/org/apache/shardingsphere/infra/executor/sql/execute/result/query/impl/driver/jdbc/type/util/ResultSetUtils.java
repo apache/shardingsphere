@@ -29,6 +29,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -113,6 +114,9 @@ public final class ResultSetUtils {
     }
     
     private static Optional<Object> convertStringValue(final String value, final Class<?> convertType) {
+        if (byte[].class.equals(convertType)) {
+            return Optional.of(value.getBytes(StandardCharsets.UTF_8));
+        }
         if (Timestamp.class.equals(convertType)) {
             TemporalAccessor temporalAccessor = LOOSE_DATE_TIME_FORMATTER.parseBest(value, LocalDateTime::from, LocalDate::from);
             LocalDateTime localDateTime = (temporalAccessor instanceof LocalDateTime) ? (LocalDateTime) temporalAccessor : ((LocalDate) temporalAccessor).atStartOfDay();
