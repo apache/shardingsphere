@@ -75,54 +75,53 @@ public final class MCPJdbcMetadataLoader {
                                                                 final String databaseType, final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
         List<MetadataObject> metadataObjects = new LinkedList<>();
         Set<SupportedObjectType> supportedObjectTypes = new LinkedHashSet<>();
-        Set<String> discoveredSchemas = new LinkedHashSet<>();
+        Set<String> foundSchemas = new LinkedHashSet<>();
         supportedObjectTypes.add(SupportedObjectType.DATABASE);
-        loadTables(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
-        loadViews(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
-        return new RuntimeMetadataSnapshot(metadataObjects,
-                new RuntimeDatabaseDescriptor(databaseName, databaseType, resolveDatabaseVersion(databaseMetaData), supportedObjectTypes, resolveDefaultSchema(connection, discoveredSchemas)));
+        loadTables(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, foundSchemas);
+        loadViews(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, foundSchemas);
+        String databaseVersion = normalize(databaseMetaData.getDatabaseProductVersion());
+        return new RuntimeMetadataSnapshot(
+                metadataObjects, new RuntimeDatabaseDescriptor(databaseName, databaseType, databaseVersion, supportedObjectTypes, resolveDefaultSchema(connection, foundSchemas)));
     }
     
     private void loadTables(final String databaseName, final DatabaseMetaData databaseMetaData,
                             final Collection<MetadataObject> metadataObjects, final Collection<SupportedObjectType> supportedObjectTypes,
-                            final Collection<String> discoveredSchemas) throws SQLException {
+                            final Collection<String> foundSchemas) throws SQLException {
         try (ResultSet tables = databaseMetaData.getTables(null, null, "%", new String[]{"TABLE"})) {
             while (tables.next()) {
-                String schema = normalizeSchema(tables.getString("TABLE_SCHEM"));
-                if (isSystemSchema(schema)) {
+                String schemaName = normalize(tables.getString("TABLE_SCHEM"));
+                if (isSystemSchema(schemaName)) {
                     continue;
                 }
-                String tableName = tables.getString("TABLE_NAME");
-                if (null == tableName || tableName.trim().isEmpty()) {
+                String tableName = normalize(tables.getString("TABLE_NAME"));
+                if (tableName.isEmpty()) {
                     continue;
                 }
-                registerSchema(databaseName, schema, metadataObjects, supportedObjectTypes, discoveredSchemas);
-                String actualTableName = tableName.trim();
-                metadataObjects.add(new MetadataObject(databaseName, schema, MetadataObjectType.TABLE, actualTableName, "", ""));
+                registerSchema(databaseName, schemaName, metadataObjects, supportedObjectTypes, foundSchemas);
+                metadataObjects.add(new MetadataObject(databaseName, schemaName, MetadataObjectType.TABLE, tableName, "", ""));
                 supportedObjectTypes.add(SupportedObjectType.TABLE);
-                loadColumns(databaseName, databaseMetaData, schema, actualTableName, "TABLE", metadataObjects, supportedObjectTypes);
-                loadIndexes(databaseName, databaseMetaData, schema, actualTableName, metadataObjects, supportedObjectTypes);
+                loadColumns(databaseName, databaseMetaData, schemaName, tableName, "TABLE", metadataObjects, supportedObjectTypes);
+                loadIndexes(databaseName, databaseMetaData, schemaName, tableName, metadataObjects, supportedObjectTypes);
             }
         }
     }
     
     private void loadViews(final String databaseName, final DatabaseMetaData databaseMetaData,
-                           final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes, final Set<String> discoveredSchemas) throws SQLException {
+                           final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes, final Set<String> foundSchemas) throws SQLException {
         try (ResultSet views = databaseMetaData.getTables(null, null, "%", new String[]{"VIEW"})) {
             while (views.next()) {
-                String schema = normalizeSchema(views.getString("TABLE_SCHEM"));
-                if (isSystemSchema(schema)) {
+                String schemaName = normalize(views.getString("TABLE_SCHEM"));
+                if (isSystemSchema(schemaName)) {
                     continue;
                 }
-                String viewName = views.getString("TABLE_NAME");
-                if (null == viewName || viewName.trim().isEmpty()) {
+                String viewName = normalize(views.getString("TABLE_NAME"));
+                if (viewName.trim().isEmpty()) {
                     continue;
                 }
-                registerSchema(databaseName, schema, metadataObjects, supportedObjectTypes, discoveredSchemas);
-                String actualViewName = viewName.trim();
-                metadataObjects.add(new MetadataObject(databaseName, schema, MetadataObjectType.VIEW, actualViewName, "", ""));
+                registerSchema(databaseName, schemaName, metadataObjects, supportedObjectTypes, foundSchemas);
+                metadataObjects.add(new MetadataObject(databaseName, schemaName, MetadataObjectType.VIEW, viewName, "", ""));
                 supportedObjectTypes.add(SupportedObjectType.VIEW);
-                loadColumns(databaseName, databaseMetaData, schema, actualViewName, "VIEW", metadataObjects, supportedObjectTypes);
+                loadColumns(databaseName, databaseMetaData, schemaName, viewName, "VIEW", metadataObjects, supportedObjectTypes);
             }
         }
     }
@@ -132,78 +131,63 @@ public final class MCPJdbcMetadataLoader {
         return "INFORMATION_SCHEMA".equals(upperSchemaName) || "PG_CATALOG".equals(upperSchemaName) || "SYSTEM_LOBS".equals(upperSchemaName);
     }
     
-    private void loadColumns(final String databaseName, final DatabaseMetaData databaseMetaData, final String schema,
-                             final String objectName, final String parentObjectType, final Collection<MetadataObject> metadataObjects,
-                             final Collection<SupportedObjectType> supportedObjectTypes) throws SQLException {
-        try (ResultSet columns = databaseMetaData.getColumns(null, getSchemaPattern(schema), objectName, "%")) {
-            while (columns.next()) {
-                String columnName = columns.getString("COLUMN_NAME");
-                if (null == columnName || columnName.trim().isEmpty()) {
-                    continue;
-                }
-                metadataObjects.add(new MetadataObject(databaseName, schema, MetadataObjectType.COLUMN, columnName.trim(),
-                        parentObjectType, objectName));
-                supportedObjectTypes.add(SupportedObjectType.COLUMN);
-            }
-        }
-    }
-    
-    private void loadIndexes(final String databaseName, final DatabaseMetaData databaseMetaData, final String schema,
-                             final String tableName, final Collection<MetadataObject> metadataObjects, final Collection<SupportedObjectType> supportedObjectTypes) throws SQLException {
-        Set<String> indexNames = new LinkedHashSet<>();
-        try (ResultSet indexes = databaseMetaData.getIndexInfo(null, getSchemaPattern(schema), tableName, false, false)) {
-            while (indexes.next()) {
-                String indexName = indexes.getString("INDEX_NAME");
-                if (null == indexName || indexName.trim().isEmpty()) {
-                    continue;
-                }
-                if (!indexNames.add(indexName.trim())) {
-                    continue;
-                }
-                metadataObjects.add(new MetadataObject(databaseName, schema, MetadataObjectType.INDEX, indexName.trim(), "TABLE", tableName));
-                supportedObjectTypes.add(SupportedObjectType.INDEX);
-            }
-        }
-    }
-    
     private void registerSchema(final String databaseName, final String schema,
-                                final Collection<MetadataObject> metadataObjects, final Collection<SupportedObjectType> supportedObjectTypes, final Collection<String> discoveredSchemas) {
-        if (schema.isEmpty() || !discoveredSchemas.add(schema)) {
+                                final Collection<MetadataObject> metadataObjects, final Collection<SupportedObjectType> supportedObjectTypes, final Collection<String> foundSchemas) {
+        if (schema.isEmpty() || !foundSchemas.add(schema)) {
             return;
         }
         supportedObjectTypes.add(SupportedObjectType.SCHEMA);
         metadataObjects.add(new MetadataObject(databaseName, schema, MetadataObjectType.SCHEMA, schema, "", ""));
     }
     
-    private String resolveDefaultSchema(final Connection connection, final Set<String> schemas) throws SQLException {
-        String currentSchema = normalizeSchema(connection.getSchema());
-        if (!currentSchema.isEmpty()) {
-            return resolveMatchingSchema(currentSchema, schemas);
-        }
-        return schemas.isEmpty() ? "" : schemas.iterator().next();
-    }
-    
-    private String resolveMatchingSchema(final String currentSchema, final Set<String> availableSchemas) {
-        for (String each : availableSchemas) {
-            if (currentSchema.equalsIgnoreCase(each)) {
-                return each;
+    private void loadColumns(final String databaseName, final DatabaseMetaData databaseMetaData, final String schemaName,
+                             final String objectName, final String parentObjectType, final Collection<MetadataObject> metadataObjects,
+                             final Collection<SupportedObjectType> supportedObjectTypes) throws SQLException {
+        try (ResultSet columns = databaseMetaData.getColumns(null, getSchemaPattern(schemaName), objectName, "%")) {
+            while (columns.next()) {
+                String columnName = normalize(columns.getString("COLUMN_NAME"));
+                if (columnName.isEmpty()) {
+                    continue;
+                }
+                supportedObjectTypes.add(SupportedObjectType.COLUMN);
+                metadataObjects.add(new MetadataObject(databaseName, schemaName, MetadataObjectType.COLUMN, columnName, parentObjectType, objectName));
             }
         }
-        return currentSchema;
     }
     
-    private String resolveDatabaseVersion(final DatabaseMetaData databaseMetaData) throws SQLException {
-        String result = databaseMetaData.getDatabaseProductVersion();
-        return null == result ? "" : result.trim();
-    }
-    
-    private String normalizeSchema(final String schema) {
-        return null == schema ? "" : schema.trim();
+    private void loadIndexes(final String databaseName, final DatabaseMetaData databaseMetaData, final String schemaName,
+                             final String tableName, final Collection<MetadataObject> metadataObjects, final Collection<SupportedObjectType> supportedObjectTypes) throws SQLException {
+        Set<String> indexNames = new LinkedHashSet<>();
+        try (ResultSet indexes = databaseMetaData.getIndexInfo(null, getSchemaPattern(schemaName), tableName, false, false)) {
+            while (indexes.next()) {
+                String indexName = normalize(indexes.getString("INDEX_NAME"));
+                if (indexName.isEmpty()) {
+                    continue;
+                }
+                if (!indexNames.add(indexName)) {
+                    continue;
+                }
+                supportedObjectTypes.add(SupportedObjectType.INDEX);
+                metadataObjects.add(new MetadataObject(databaseName, schemaName, MetadataObjectType.INDEX, indexName.trim(), "TABLE", tableName));
+            }
+        }
     }
     
     private String getSchemaPattern(final String schema) {
-        String result = normalizeSchema(schema);
+        String result = normalize(schema);
         return result.isEmpty() ? null : result;
+    }
+    
+    private String resolveDefaultSchema(final Connection connection, final Collection<String> schemas) throws SQLException {
+        String currentSchema = normalize(connection.getSchema());
+        if (currentSchema.isEmpty()) {
+            return schemas.isEmpty() ? "" : schemas.iterator().next();
+        }
+        return schemas.stream().filter(currentSchema::equalsIgnoreCase).findFirst().orElse(currentSchema);
+    }
+    
+    private String normalize(final String value) {
+        return null == value ? "" : value.trim();
     }
     
     @RequiredArgsConstructor
