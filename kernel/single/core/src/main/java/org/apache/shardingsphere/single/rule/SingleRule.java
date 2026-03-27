@@ -163,7 +163,7 @@ public final class SingleRule implements DatabaseRule {
     
     private boolean containsDataNode(final QualifiedTable qualifiedTable, final Collection<DataNode> dataNodes) {
         for (DataNode each : dataNodes) {
-            if (qualifiedTable.getSchemaName().equalsIgnoreCase(each.getSchemaName())) {
+            if (qualifiedTable.getSchemaName().equals(each.getSchemaName())) {
                 return true;
             }
         }

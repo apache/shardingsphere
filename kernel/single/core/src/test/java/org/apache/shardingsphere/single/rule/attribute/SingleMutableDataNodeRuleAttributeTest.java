@@ -79,10 +79,25 @@ class SingleMutableDataNodeRuleAttributeTest {
         Map<String, Collection<DataNode>> singleTableDataNodes = createSingleTableDataNodes(Collections.singleton(dataNode));
         SingleTableMapperRuleAttribute tableMapperRuleAttribute = new SingleTableMapperRuleAttribute(singleTableDataNodes.values());
         SingleMutableDataNodeRuleAttribute ruleAttribute = createRuleAttribute(ruleConfig, Collections.singleton("foo_ds"), singleTableDataNodes, tableMapperRuleAttribute);
-        ruleAttribute.remove("foo_schema".toUpperCase(), "foo_tbl");
+        ruleAttribute.remove("foo_schema", "foo_tbl");
         assertFalse(singleTableDataNodes.containsKey("foo_tbl"));
         assertFalse(ruleConfig.getTables().contains(SingleTableLoadUtils.getDataNodeString(DATABASE_TYPE, "foo_ds", "foo_schema", "foo_tbl")));
         assertFalse(tableMapperRuleAttribute.getLogicTableNames().contains("foo_tbl"));
+    }
+    
+    @Test
+    void assertRemoveWithSchemaNameDifferentCase() {
+        DataNode dataNode = new DataNode("foo_ds", "foo_schema", "foo_tbl");
+        String dataNodeString = SingleTableLoadUtils.getDataNodeString(DATABASE_TYPE, "foo_ds", "foo_schema", "foo_tbl");
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(new LinkedList<>(Collections.singleton(dataNodeString)), null);
+        Map<String, Collection<DataNode>> singleTableDataNodes = createSingleTableDataNodes(Collections.singleton(dataNode));
+        SingleTableMapperRuleAttribute tableMapperRuleAttribute = new SingleTableMapperRuleAttribute(singleTableDataNodes.values());
+        SingleMutableDataNodeRuleAttribute ruleAttribute = createRuleAttribute(ruleConfig, Collections.singleton("foo_ds"), singleTableDataNodes, tableMapperRuleAttribute);
+        ruleAttribute.remove("FOO_SCHEMA", "foo_tbl");
+        assertTrue(singleTableDataNodes.containsKey("foo_tbl"));
+        assertThat(singleTableDataNodes.get("foo_tbl").size(), is(1));
+        assertTrue(ruleConfig.getTables().contains(dataNodeString));
+        assertTrue(tableMapperRuleAttribute.getLogicTableNames().contains("foo_tbl"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -181,6 +196,8 @@ class SingleMutableDataNodeRuleAttributeTest {
         return Stream.of(
                 Arguments.of("keep data node when schema not matched", Collections.singleton(fooDataNode), Collections.singleton("baz_schema"), 1,
                         Collections.singleton(SingleTableLoadUtils.getDataNodeString(DATABASE_TYPE, "foo_ds", "foo_schema", "foo_tbl")), true, true),
+                Arguments.of("keep data node when schema differs only by case", Collections.singleton(fooDataNode), Collections.singleton("FOO_SCHEMA"), 1,
+                        Collections.singleton(SingleTableLoadUtils.getDataNodeString(DATABASE_TYPE, "foo_ds", "foo_schema", "foo_tbl")), true, true),
                 Arguments.of("remove matched schema and keep others", Arrays.asList(fooDataNode, barDataNode), Collections.singleton("foo_schema"), 1,
                         Collections.singleton(SingleTableLoadUtils.getDataNodeString(DATABASE_TYPE, "foo_ds", "bar_schema", "foo_tbl")), true, true),
                 Arguments.of("remove all matched schemas", Collections.singleton(fooDataNode), Collections.singleton("foo_schema"), 0, Collections.emptyList(), false, false));
@@ -189,7 +206,8 @@ class SingleMutableDataNodeRuleAttributeTest {
     private static Stream<Arguments> findTableDataNodeArguments() {
         DataNode dataNode = new DataNode("foo_ds", "foo_schema", "foo_tbl");
         return Stream.of(
-                Arguments.of("return data node when schema matched", Collections.singleton(dataNode), "foo_schema".toUpperCase(), "foo_tbl".toUpperCase(), true, "foo_ds"),
+                Arguments.of("return data node when schema matched", Collections.singleton(dataNode), "foo_schema", "foo_tbl".toUpperCase(), true, "foo_ds"),
+                Arguments.of("return empty when schema differs only by case", Collections.singleton(dataNode), "FOO_SCHEMA", "foo_tbl", false, ""),
                 Arguments.of("return empty when schema mismatched", Collections.singleton(dataNode), "bar_schema", "foo_tbl", false, ""),
                 Arguments.of("return empty when table not exists", Collections.emptyList(), "foo_schema", "bar_table", false, ""));
     }

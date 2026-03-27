@@ -54,8 +54,8 @@ class ShardingTableTest {
         ShardingTable actual = new ShardingTable(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), null);
         assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(2));
-        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", (String) null, "LOGIC_TABLE")));
-        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", (String) null, "LOGIC_TABLE")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", (String) null, "logic_table")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", (String) null, "logic_table")));
     }
     
     @Test
@@ -90,10 +90,10 @@ class ShardingTableTest {
         ShardingTable actual = new ShardingTable(shardingAutoTableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
         assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(4));
-        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", (String) null, "logic_table_0")));
-        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", (String) null, "logic_table_1")));
-        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", (String) null, "logic_table_2")));
-        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", (String) null, "logic_table_3")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", (String) null, "LOGIC_TABLE_0")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", (String) null, "LOGIC_TABLE_1")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", (String) null, "LOGIC_TABLE_2")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", (String) null, "LOGIC_TABLE_3")));
     }
     
     @Test
@@ -104,10 +104,10 @@ class ShardingTableTest {
         ShardingTable actual = new ShardingTable(shardingAutoTableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
         assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(4));
-        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", (String) null, "logic_table_0")));
-        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", (String) null, "logic_table_1")));
-        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds2", (String) null, "logic_table_2")));
-        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", (String) null, "logic_table_3")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", (String) null, "LOGIC_TABLE_0")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds1", (String) null, "LOGIC_TABLE_1")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds2", (String) null, "LOGIC_TABLE_2")));
+        assertTrue(actual.getActualDataNodes().contains(new DataNode("ds0", (String) null, "LOGIC_TABLE_3")));
     }
     
     @Test

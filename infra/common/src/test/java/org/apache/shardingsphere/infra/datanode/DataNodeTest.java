@@ -25,6 +25,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -101,6 +103,14 @@ class DataNodeTest {
         assertThat(dataNode.hashCode(), is(other.hashCode()));
     }
     
+    @Test
+    void assertCaseSensitiveDataNodesRemainDistinctInSet() {
+        Collection<DataNode> actual = new LinkedHashSet<>();
+        actual.add(new DataNode("foo_ds", "public", "Test3"));
+        actual.add(new DataNode("foo_ds", "public", "test3"));
+        assertThat(actual.size(), is(2));
+    }
+    
     private static Stream<Arguments> dataNodeWithoutSchemaArguments() {
         return Stream.of(
                 Arguments.of("simple_names", "ds_0.tbl_0", "ds_0", "tbl_0"),
@@ -160,7 +170,7 @@ class DataNodeTest {
                 Arguments.of("self", self, self, true),
                 Arguments.of("null_object", new DataNode("ds_0.tbl_0"), null, false),
                 Arguments.of("different_type", new DataNode("ds_0.tbl_0"), "ds.tbl", false),
-                Arguments.of("ignore_case", new DataNode("ds_0.tbl_0"), new DataNode("DS_0.TBL_0"), true),
+                Arguments.of("different_case", new DataNode("ds_0.tbl_0"), new DataNode("DS_0.TBL_0"), false),
                 Arguments.of("different_data_source", new DataNode("ds_0.tbl_0"), new DataNode("ds_1.tbl_0"), false),
                 Arguments.of("different_table", new DataNode("ds_0.tbl_0"), new DataNode("ds_0.tbl_1"), false),
                 Arguments.of("different_schema", new DataNode("ds", "schema1", "tbl"), new DataNode("ds", "schema2", "tbl"), false));
@@ -168,8 +178,8 @@ class DataNodeTest {
     
     private static Stream<Arguments> hashCodeArguments() {
         return Stream.of(
-                Arguments.of("without_schema_ignore_case", new DataNode("ds_0.tbl_0"), new DataNode("DS_0.TBL_0")),
-                Arguments.of("with_schema_ignore_case", new DataNode("ds_0.db_0.tbl_0"), new DataNode("DS_0.DB_0.TBL_0")),
-                Arguments.of("manual_constructor_ignore_case", new DataNode("DS", "SCHEMA", "TBL"), new DataNode("ds", "schema", "tbl")));
+                Arguments.of("without_schema", new DataNode("ds_0.tbl_0"), new DataNode("ds_0.tbl_0")),
+                Arguments.of("with_schema", new DataNode("ds_0.db_0.tbl_0"), new DataNode("ds_0.db_0.tbl_0")),
+                Arguments.of("manual_constructor", new DataNode("ds", "schema", "tbl"), new DataNode("ds", "schema", "tbl")));
     }
 }
