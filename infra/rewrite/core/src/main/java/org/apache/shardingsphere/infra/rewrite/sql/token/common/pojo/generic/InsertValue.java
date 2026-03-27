@@ -108,10 +108,7 @@ public class InsertValue {
      */
     public String getValue(final int index) {
         SQLToken substitutedSQLToken = substitutedSQLTokens.get(index);
-        if (null != substitutedSQLToken) {
-            return substitutedSQLToken.toString();
-        }
-        return doGetValue(values.get(index));
+        return null == substitutedSQLToken ? doGetValue(values.get(index)) : substitutedSQLToken.toString();
     }
     
     private String doGetValue(final ExpressionSegment expressionSegment) {
