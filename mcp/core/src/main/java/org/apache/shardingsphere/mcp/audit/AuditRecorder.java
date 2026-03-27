@@ -26,7 +26,6 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Record MCP audit events for metadata and query activity.
@@ -76,7 +75,7 @@ public final class AuditRecorder {
     private String digest(final String value) {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
-            byte[] actualDigest = messageDigest.digest(Objects.requireNonNull(value, "value cannot be null").trim().getBytes(StandardCharsets.UTF_8));
+            byte[] actualDigest = messageDigest.digest(value.trim().getBytes(StandardCharsets.UTF_8));
             StringBuilder result = new StringBuilder(actualDigest.length * 2);
             for (byte each : actualDigest) {
                 result.append(String.format("%02x", each));

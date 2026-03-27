@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -94,11 +93,10 @@ public final class DatabaseCapabilityAssembler {
      * @return database-level capability when the database type is supported
      */
     public Optional<DatabaseCapabilityView> assembleDatabaseCapability(final String database, final String databaseType) {
-        String actualDatabase = Objects.requireNonNull(database, "database cannot be null");
-        Optional<RuntimeDatabaseDescriptor> runtimeDescriptor = metadataCatalog.findRuntimeDatabaseDescriptor(actualDatabase);
+        Optional<RuntimeDatabaseDescriptor> runtimeDescriptor = metadataCatalog.findRuntimeDatabaseDescriptor(database);
         String actualDatabaseType = runtimeDescriptor.map(RuntimeDatabaseDescriptor::getDatabaseType).orElse(databaseType);
         String actualDatabaseVersion = runtimeDescriptor.map(RuntimeDatabaseDescriptor::getDatabaseVersion).orElse("");
-        return registry.find(actualDatabaseType, actualDatabaseVersion).map(each -> overlayRuntimeFacts(createDatabaseCapability(actualDatabase, each)));
+        return registry.find(actualDatabaseType, actualDatabaseVersion).map(each -> overlayRuntimeFacts(createDatabaseCapability(database, each)));
     }
     
     private DatabaseCapabilityView overlayRuntimeFacts(final DatabaseCapabilityView databaseCapabilityView) {

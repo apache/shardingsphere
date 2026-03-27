@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -53,63 +52,62 @@ public final class ExecuteQueryFacade {
      * @return execution response
      */
     public ExecuteQueryResponse execute(final ExecutionRequest executionRequest) {
-        ExecutionRequest actualExecutionRequest = Objects.requireNonNull(executionRequest, "executionRequest cannot be null");
-        Optional<DatabaseCapabilityView> databaseCapability = capabilityAssembler.assembleDatabaseCapability(actualExecutionRequest.getDatabase(), actualExecutionRequest.getDatabaseType());
+        Optional<DatabaseCapabilityView> databaseCapability = capabilityAssembler.assembleDatabaseCapability(executionRequest.getDatabase(), executionRequest.getDatabaseType());
         if (databaseCapability.isEmpty()) {
-            return recordFailure(actualExecutionRequest, "QUERY", ErrorCode.NOT_FOUND, "Database capability does not exist.");
+            return recordFailure(executionRequest, "QUERY", ErrorCode.NOT_FOUND, "Database capability does not exist.");
         }
         ClassificationResult classificationResult;
         try {
-            classificationResult = statementClassifier.classify(actualExecutionRequest.getSql());
+            classificationResult = statementClassifier.classify(executionRequest.getSql());
         } catch (final UnsupportedOperationException ex) {
-            return recordFailure(actualExecutionRequest, "QUERY", ErrorCode.UNSUPPORTED, ex.getMessage());
+            return recordFailure(executionRequest, "QUERY", ErrorCode.UNSUPPORTED, ex.getMessage());
         } catch (final IllegalArgumentException ex) {
-            return recordFailure(actualExecutionRequest, "QUERY", ErrorCode.INVALID_REQUEST, ex.getMessage());
+            return recordFailure(executionRequest, "QUERY", ErrorCode.INVALID_REQUEST, ex.getMessage());
         }
         if (!databaseCapability.get().getSupportedStatementClasses().contains(classificationResult.getStatementClass())) {
-            return recordFailure(actualExecutionRequest, classificationResult.getStatementType(), ErrorCode.UNSUPPORTED, "Statement class is not supported.");
+            return recordFailure(executionRequest, classificationResult.getStatementType(), ErrorCode.UNSUPPORTED, "Statement class is not supported.");
         }
         switch (classificationResult.getStatementClass()) {
             case TRANSACTION_CONTROL:
             case SAVEPOINT:
-                return recordResult(actualExecutionRequest, transactionCommandExecutor.execute(actualExecutionRequest.getSessionId(),
-                        actualExecutionRequest.getDatabase(), actualExecutionRequest.getDatabaseType(), classificationResult),
+                return recordResult(executionRequest, transactionCommandExecutor.execute(executionRequest.getSessionId(),
+                        executionRequest.getDatabase(), executionRequest.getDatabaseType(), classificationResult),
                         classificationResult.getStatementType());
             case QUERY:
-                return recordResult(actualExecutionRequest, executeQuery(actualExecutionRequest, classificationResult), classificationResult.getStatementType());
+                return recordResult(executionRequest, executeQuery(executionRequest, classificationResult), classificationResult.getStatementType());
             case DML:
-                return recordResult(actualExecutionRequest, executeUpdate(actualExecutionRequest, classificationResult), classificationResult.getStatementType());
+                return recordResult(executionRequest, executeUpdate(executionRequest, classificationResult), classificationResult.getStatementType());
             case DDL:
-                if (actualExecutionRequest.getDatabaseRuntime().isAdapterBacked()) {
-                    ExecuteQueryResponse ddlResponse = actualExecutionRequest.getDatabaseRuntime().execute(actualExecutionRequest, classificationResult);
+                if (executionRequest.getDatabaseRuntime().isAdapterBacked()) {
+                    ExecuteQueryResponse ddlResponse = executionRequest.getDatabaseRuntime().execute(executionRequest, classificationResult);
                     if (ddlResponse.isSuccessful()) {
-                        actualExecutionRequest.getDatabaseRuntime().refreshMetadata(actualExecutionRequest.getDatabase());
-                        metadataRefreshCoordinator.markStructureChangeCommitted(actualExecutionRequest.getSessionId(), actualExecutionRequest.getDatabase());
+                        executionRequest.getDatabaseRuntime().refreshMetadata(executionRequest.getDatabase());
+                        metadataRefreshCoordinator.markStructureChangeCommitted(executionRequest.getSessionId(), executionRequest.getDatabase());
                     }
-                    return recordResult(actualExecutionRequest, ddlResponse, classificationResult.getStatementType());
+                    return recordResult(executionRequest, ddlResponse, classificationResult.getStatementType());
                 }
-                metadataRefreshCoordinator.markStructureChangeCommitted(actualExecutionRequest.getSessionId(), actualExecutionRequest.getDatabase());
-                return recordResult(actualExecutionRequest, ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed."),
+                metadataRefreshCoordinator.markStructureChangeCommitted(executionRequest.getSessionId(), executionRequest.getDatabase());
+                return recordResult(executionRequest, ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed."),
                         classificationResult.getStatementType());
             case DCL:
-                if (actualExecutionRequest.getDatabaseRuntime().isAdapterBacked()) {
-                    ExecuteQueryResponse dclResponse = actualExecutionRequest.getDatabaseRuntime().execute(actualExecutionRequest, classificationResult);
+                if (executionRequest.getDatabaseRuntime().isAdapterBacked()) {
+                    ExecuteQueryResponse dclResponse = executionRequest.getDatabaseRuntime().execute(executionRequest, classificationResult);
                     if (dclResponse.isSuccessful()) {
-                        actualExecutionRequest.getDatabaseRuntime().refreshMetadata(actualExecutionRequest.getDatabase());
-                        metadataRefreshCoordinator.markDclChangeCommitted(actualExecutionRequest.getSessionId(), actualExecutionRequest.getDatabase());
+                        executionRequest.getDatabaseRuntime().refreshMetadata(executionRequest.getDatabase());
+                        metadataRefreshCoordinator.markDclChangeCommitted(executionRequest.getSessionId(), executionRequest.getDatabase());
                     }
-                    return recordResult(actualExecutionRequest, dclResponse, classificationResult.getStatementType());
+                    return recordResult(executionRequest, dclResponse, classificationResult.getStatementType());
                 }
-                metadataRefreshCoordinator.markDclChangeCommitted(actualExecutionRequest.getSessionId(), actualExecutionRequest.getDatabase());
-                return recordResult(actualExecutionRequest, ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed."),
+                metadataRefreshCoordinator.markDclChangeCommitted(executionRequest.getSessionId(), executionRequest.getDatabase());
+                return recordResult(executionRequest, ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed."),
                         classificationResult.getStatementType());
             case EXPLAIN_ANALYZE:
                 if (!databaseCapability.get().isSupportsExplainAnalyze()) {
-                    return recordFailure(actualExecutionRequest, classificationResult.getStatementType(), ErrorCode.UNSUPPORTED, "EXPLAIN ANALYZE is not supported.");
+                    return recordFailure(executionRequest, classificationResult.getStatementType(), ErrorCode.UNSUPPORTED, "EXPLAIN ANALYZE is not supported.");
                 }
-                return recordResult(actualExecutionRequest, executeQuery(actualExecutionRequest, classificationResult), classificationResult.getStatementType());
+                return recordResult(executionRequest, executeQuery(executionRequest, classificationResult), classificationResult.getStatementType());
             default:
-                return recordFailure(actualExecutionRequest, classificationResult.getStatementType(), ErrorCode.UNSUPPORTED, "Statement class is not supported.");
+                return recordFailure(executionRequest, classificationResult.getStatementType(), ErrorCode.UNSUPPORTED, "Statement class is not supported.");
         }
     }
     

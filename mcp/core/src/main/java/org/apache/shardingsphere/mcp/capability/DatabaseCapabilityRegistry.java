@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -64,8 +63,7 @@ public final class DatabaseCapabilityRegistry {
      * @param capability capability definition
      */
     public void register(final DatabaseCapability capability) {
-        DatabaseCapability actualCapability = Objects.requireNonNull(capability, "capability cannot be null");
-        capabilities.put(actualCapability.getDatabaseType(), actualCapability);
+        capabilities.put(capability.getDatabaseType(), capability);
     }
     
     /**
@@ -80,7 +78,7 @@ public final class DatabaseCapabilityRegistry {
     }
     
     static String normalizeDatabaseType(final String databaseType) {
-        return Objects.requireNonNull(databaseType, "databaseType cannot be null").trim().toUpperCase(Locale.ENGLISH);
+        return databaseType.trim().toUpperCase(Locale.ENGLISH);
     }
     
     private DatabaseCapability applyVersionAwareOverrides(final DatabaseCapability capability, final String databaseVersion) {

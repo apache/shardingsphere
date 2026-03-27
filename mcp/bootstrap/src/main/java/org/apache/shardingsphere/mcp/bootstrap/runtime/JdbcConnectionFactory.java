@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.bootstrap.runtime;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -29,17 +28,16 @@ import java.util.Properties;
 final class JdbcConnectionFactory {
     
     Connection openConnection(final DatabaseConnectionConfiguration connectionConfiguration) throws SQLException {
-        DatabaseConnectionConfiguration actualConnectionConfiguration = Objects.requireNonNull(connectionConfiguration, "connectionConfiguration cannot be null");
-        loadDriver(actualConnectionConfiguration);
+        loadDriver(connectionConfiguration);
         Properties props = new Properties();
-        if (!actualConnectionConfiguration.getUsername().isEmpty()) {
-            props.setProperty("user", actualConnectionConfiguration.getUsername());
+        if (!connectionConfiguration.getUsername().isEmpty()) {
+            props.setProperty("user", connectionConfiguration.getUsername());
         }
-        if (!actualConnectionConfiguration.getPassword().isEmpty()) {
-            props.setProperty("password", actualConnectionConfiguration.getPassword());
+        if (!connectionConfiguration.getPassword().isEmpty()) {
+            props.setProperty("password", connectionConfiguration.getPassword());
         }
-        return props.isEmpty() ? DriverManager.getConnection(actualConnectionConfiguration.getJdbcUrl())
-                : DriverManager.getConnection(actualConnectionConfiguration.getJdbcUrl(), props);
+        return props.isEmpty() ? DriverManager.getConnection(connectionConfiguration.getJdbcUrl())
+                : DriverManager.getConnection(connectionConfiguration.getJdbcUrl(), props);
     }
     
     private void loadDriver(final DatabaseConnectionConfiguration connectionConfiguration) {

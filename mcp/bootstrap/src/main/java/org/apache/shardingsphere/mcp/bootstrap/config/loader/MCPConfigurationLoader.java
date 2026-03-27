@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
 
 /**
  * MCP configuration loader.
@@ -52,7 +51,7 @@ public final class MCPConfigurationLoader {
     }
     
     private static File resolveConfigurationFile(final String configPath) throws FileNotFoundException {
-        String actualConfigPath = Objects.requireNonNull(configPath, "MCP configuration == path cannot be null.").trim();
+        String actualConfigPath = configPath.trim();
         ShardingSpherePreconditions.checkNotEmpty(actualConfigPath, () -> new FileNotFoundException("MCP configuration path cannot be blank."));
         Path directPath = Paths.get(actualConfigPath).normalize();
         if (Files.exists(directPath)) {

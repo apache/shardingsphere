@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -183,7 +182,7 @@ public final class DatabaseRuntime {
      * @param database logical database name
      */
     public void refreshMetadata(final String database) {
-        metadataRefresher.accept(Objects.requireNonNull(database, "database cannot be null"));
+        metadataRefresher.accept(database);
     }
     
     /**

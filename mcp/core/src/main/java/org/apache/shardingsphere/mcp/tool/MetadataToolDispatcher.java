@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -51,39 +50,37 @@ public final class MetadataToolDispatcher {
      * @return tool dispatch result
      */
     public ToolDispatchResult dispatch(final MetadataCatalog metadataCatalog, final ToolRequest toolRequest) {
-        Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null");
-        ToolRequest actualToolRequest = Objects.requireNonNull(toolRequest, "toolRequest cannot be null");
-        switch (actualToolRequest.getToolName()) {
+        switch (toolRequest.getToolName()) {
             case "list_databases":
                 return paginate(resourceLoader.load(metadataCatalog, new ResourceRequest("", "", MetadataObjectType.DATABASE, "", "", "")),
-                        actualToolRequest.getQuery(), actualToolRequest.getPageSize(), actualToolRequest.getPageToken());
+                        toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "list_schemas":
-                return paginate(validateAndLoad(metadataCatalog, actualToolRequest, MetadataObjectType.SCHEMA, "", true, false),
-                        actualToolRequest.getQuery(), actualToolRequest.getPageSize(), actualToolRequest.getPageToken());
+                return paginate(validateAndLoad(metadataCatalog, toolRequest, MetadataObjectType.SCHEMA, "", true, false),
+                        toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "list_tables":
-                return paginate(validateAndLoad(metadataCatalog, actualToolRequest, MetadataObjectType.TABLE, "", true, true),
-                        actualToolRequest.getQuery(), actualToolRequest.getPageSize(), actualToolRequest.getPageToken());
+                return paginate(validateAndLoad(metadataCatalog, toolRequest, MetadataObjectType.TABLE, "", true, true),
+                        toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "list_views":
-                return paginate(validateAndLoad(metadataCatalog, actualToolRequest, MetadataObjectType.VIEW, "", true, true),
-                        actualToolRequest.getQuery(), actualToolRequest.getPageSize(), actualToolRequest.getPageToken());
+                return paginate(validateAndLoad(metadataCatalog, toolRequest, MetadataObjectType.VIEW, "", true, true),
+                        toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "list_columns":
-                if (actualToolRequest.getObjectName().isEmpty() || actualToolRequest.getParentObjectType().isEmpty()) {
+                if (toolRequest.getObjectName().isEmpty() || toolRequest.getParentObjectType().isEmpty()) {
                     return ToolDispatchResult.error(ErrorCode.INVALID_REQUEST, "Parent object type and object name are required.");
                 }
-                return paginate(validateAndLoad(metadataCatalog, actualToolRequest, MetadataObjectType.COLUMN, actualToolRequest.getParentObjectType(), true, true),
-                        actualToolRequest.getQuery(), actualToolRequest.getPageSize(), actualToolRequest.getPageToken());
+                return paginate(validateAndLoad(metadataCatalog, toolRequest, MetadataObjectType.COLUMN, toolRequest.getParentObjectType(), true, true),
+                        toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "list_indexes":
-                if (actualToolRequest.getObjectName().isEmpty()) {
+                if (toolRequest.getObjectName().isEmpty()) {
                     return ToolDispatchResult.error(ErrorCode.INVALID_REQUEST, "Table name is required.");
                 }
-                return paginate(validateAndLoad(metadataCatalog, actualToolRequest, MetadataObjectType.INDEX, "TABLE", true, true),
-                        actualToolRequest.getQuery(), actualToolRequest.getPageSize(), actualToolRequest.getPageToken());
+                return paginate(validateAndLoad(metadataCatalog, toolRequest, MetadataObjectType.INDEX, "TABLE", true, true),
+                        toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "search_metadata":
-                return searchMetadata(metadataCatalog, actualToolRequest);
+                return searchMetadata(metadataCatalog, toolRequest);
             case "describe_table":
-                return describeObject(metadataCatalog, actualToolRequest, MetadataObjectType.TABLE);
+                return describeObject(metadataCatalog, toolRequest, MetadataObjectType.TABLE);
             case "describe_view":
-                return describeObject(metadataCatalog, actualToolRequest, MetadataObjectType.VIEW);
+                return describeObject(metadataCatalog, toolRequest, MetadataObjectType.VIEW);
             default:
                 return ToolDispatchResult.error(ErrorCode.INVALID_REQUEST, "Unsupported metadata tool.");
         }

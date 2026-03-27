@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mcp.protocol;
 
 import lombok.Getter;
 
-import java.util.Objects;
-
 /**
  * Column metadata definition for result sets.
  */
@@ -44,9 +42,9 @@ public final class ColumnDefinition {
      * @param nullable nullable flag
      */
     public ColumnDefinition(final String columnName, final String logicalType, final String nativeType, final boolean nullable) {
-        this.columnName = Objects.requireNonNull(columnName, "columnName cannot be null");
-        this.logicalType = Objects.requireNonNull(logicalType, "logicalType cannot be null");
-        this.nativeType = Objects.requireNonNull(nativeType, "nativeType cannot be null");
+        this.columnName = columnName;
+        this.logicalType = logicalType;
+        this.nativeType = nativeType;
         this.nullable = nullable;
     }
 }

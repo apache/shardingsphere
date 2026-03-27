@@ -33,7 +33,6 @@ import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Launch the MCP runtime bootstrap process.
@@ -52,15 +51,14 @@ public final class MCPRuntimeLauncher {
      * @throws IllegalStateException when the active transport startup fails
      */
     public MCPRuntimeTransport launch(final MCPLaunchConfiguration config) {
-        MCPLaunchConfiguration actualConfig = Objects.requireNonNull(config, "launchConfiguration cannot be null");
-        MCPTransportConfiguration transportConfig = actualConfig.getTransport();
+        MCPTransportConfiguration transportConfig = config.getTransport();
         MCPTransportConfigurationValidator.validate(transportConfig);
-        Map<String, DatabaseConnectionConfiguration> connectionConfigurations = databaseRuntimeFactory.createConnectionConfigurations(actualConfig.getRuntimeDatabases());
+        Map<String, DatabaseConnectionConfiguration> connectionConfigurations = databaseRuntimeFactory.createConnectionConfigurations(config.getRuntimeDatabases());
         MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigurations);
         DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, metadataLoader);
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPRuntimeServices runtimeServices = new MCPRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
-        MCPRuntimeTransport transport = createTransport(sessionManager, runtimeServices, actualConfig, metadataCatalog, databaseRuntime);
+        MCPRuntimeTransport transport = createTransport(sessionManager, runtimeServices, config, metadataCatalog, databaseRuntime);
         try {
             transport.start();
         } catch (final IOException ex) {

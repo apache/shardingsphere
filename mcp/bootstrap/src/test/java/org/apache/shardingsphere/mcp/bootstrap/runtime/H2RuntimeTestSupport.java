@@ -26,7 +26,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Shared H2-backed runtime test support.
@@ -86,7 +85,7 @@ public final class H2RuntimeTestSupport {
      */
     public static void executeStatements(final String jdbcUrl, final String... sqls) throws SQLException {
         try (
-                Connection connection = DriverManager.getConnection(Objects.requireNonNull(jdbcUrl, "jdbcUrl cannot be null"));
+                Connection connection = DriverManager.getConnection(jdbcUrl);
                 Statement statement = connection.createStatement()) {
             for (String each : sqls) {
                 statement.execute(each);

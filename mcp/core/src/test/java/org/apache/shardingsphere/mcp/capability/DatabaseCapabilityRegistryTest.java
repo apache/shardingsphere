@@ -50,9 +50,7 @@ class DatabaseCapabilityRegistryTest {
     void assertRegisterWithNull() {
         DatabaseCapabilityRegistry registry = new DatabaseCapabilityRegistry();
         
-        NullPointerException actual = assertThrows(NullPointerException.class, () -> registry.register(null));
-        
-        assertThat(actual.getMessage(), is("capability cannot be null"));
+        assertThrows(NullPointerException.class, () -> registry.register(null));
     }
     
     @Test
@@ -80,9 +78,7 @@ class DatabaseCapabilityRegistryTest {
     void assertFindWithNullDatabaseType() {
         DatabaseCapabilityRegistry registry = new DatabaseCapabilityRegistry();
         
-        NullPointerException actual = assertThrows(NullPointerException.class, () -> registry.find(null, ""));
-        
-        assertThat(actual.getMessage(), is("databaseType cannot be null"));
+        assertThrows(NullPointerException.class, () -> registry.find(null, ""));
     }
     
     @ParameterizedTest(name = "{0}")

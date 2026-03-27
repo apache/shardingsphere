@@ -32,7 +32,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -53,7 +52,7 @@ public final class JdbcMetadataLoader {
         Map<String, String> databaseTypes = new LinkedHashMap<>(connectionConfigurations.size(), 1F);
         List<MetadataObject> metadataObjects = new LinkedList<>();
         Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors = new LinkedHashMap<>(connectionConfigurations.size(), 1F);
-        for (DatabaseConnectionConfiguration each : Objects.requireNonNull(connectionConfigurations, "connectionConfigurations cannot be null").values()) {
+        for (DatabaseConnectionConfiguration each : connectionConfigurations.values()) {
             try (Connection connection = openConnection(each)) {
                 DatabaseMetaData databaseMetaData = connection.getMetaData();
                 databaseTypes.put(each.getDatabase(), each.getDatabaseType());

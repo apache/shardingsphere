@@ -25,7 +25,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -108,22 +107,21 @@ public final class MetadataCatalog {
      */
     public void replaceDatabaseSnapshot(final String database, final String databaseType, final Collection<MetadataObject> metadataObjects,
                                         final RuntimeDatabaseDescriptor runtimeDatabaseDescriptor) {
-        String actualDatabase = Objects.requireNonNull(database, "database cannot be null");
         Map<String, String> databaseTypes = new LinkedHashMap<>(snapshot.getDatabaseTypes());
-        databaseTypes.put(actualDatabase, Objects.requireNonNull(databaseType, "databaseType cannot be null"));
+        databaseTypes.put(database, databaseType);
         LinkedList<MetadataObject> actualMetadataObjects = new LinkedList<>();
         for (MetadataObject each : snapshot.getMetadataObjects()) {
-            if (!actualDatabase.equals(each.getDatabase())) {
+            if (!database.equals(each.getDatabase())) {
                 actualMetadataObjects.add(each);
             }
         }
-        for (MetadataObject each : Objects.requireNonNull(metadataObjects, "metadataObjects cannot be null")) {
-            if (actualDatabase.equals(each.getDatabase())) {
+        for (MetadataObject each : metadataObjects) {
+            if (database.equals(each.getDatabase())) {
                 actualMetadataObjects.add(each);
             }
         }
         Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors = new LinkedHashMap<>(snapshot.getRuntimeDatabaseDescriptors());
-        runtimeDatabaseDescriptors.put(actualDatabase, Objects.requireNonNull(runtimeDatabaseDescriptor, "runtimeDatabaseDescriptor cannot be null"));
+        runtimeDatabaseDescriptors.put(database, runtimeDatabaseDescriptor);
         replaceSnapshot(databaseTypes, actualMetadataObjects, runtimeDatabaseDescriptors);
     }
     

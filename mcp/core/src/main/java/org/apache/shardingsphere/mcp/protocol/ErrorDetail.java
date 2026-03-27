@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mcp.protocol;
 
 import lombok.Getter;
 
-import java.util.Objects;
-
 /**
  * Unified error detail payload.
  */
@@ -38,7 +36,7 @@ public final class ErrorDetail {
      * @param message error message
      */
     public ErrorDetail(final ErrorCode errorCode, final String message) {
-        this.errorCode = Objects.requireNonNull(errorCode, "errorCode cannot be null");
-        this.message = Objects.requireNonNull(message, "message cannot be null");
+        this.errorCode = errorCode;
+        this.message = message;
     }
 }

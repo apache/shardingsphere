@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mcp.execute;
 
 import org.apache.shardingsphere.mcp.capability.StatementClass;
 
-import java.util.Objects;
-
 /**
  * Classify one SQL statement into the MCP statement classes.
  */
@@ -65,7 +63,7 @@ public final class StatementClassifier {
     }
     
     private String normalizeSingleStatement(final String sql) {
-        String result = Objects.requireNonNull(sql, "sql cannot be null").trim();
+        String result = sql.trim();
         if (result.isEmpty()) {
             throw new IllegalArgumentException("sql cannot be empty.");
         }

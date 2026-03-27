@@ -45,11 +45,10 @@ public final class DatabaseRuntimeFactory {
      * @throws IllegalArgumentException when no runtime database is configured
      */
     public Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        Map<String, RuntimeDatabaseConfiguration> actualRuntimeDatabases = Objects.requireNonNull(runtimeDatabases, "runtimeDatabases cannot be null");
-        if (actualRuntimeDatabases.isEmpty()) {
+        if (runtimeDatabases.isEmpty()) {
             throw new IllegalArgumentException("At least one runtime database must be configured.");
         }
-        return buildConnectionConfigurations(actualRuntimeDatabases);
+        return buildConnectionConfigurations(runtimeDatabases);
     }
     
     private Map<String, DatabaseConnectionConfiguration> buildConnectionConfigurations(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
@@ -83,10 +82,9 @@ public final class DatabaseRuntimeFactory {
     }
     
     private DatabaseConnectionConfiguration createConnectionConfiguration(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfiguration) {
-        RuntimeDatabaseConfiguration actualRuntimeDatabaseConfiguration = Objects.requireNonNull(runtimeDatabaseConfiguration, "runtimeDatabaseConfiguration cannot be null");
-        return new DatabaseConnectionConfiguration(databaseName, validateRequiredValue(actualRuntimeDatabaseConfiguration.getDatabaseType(), databaseName, "databaseType"),
-                validateRequiredValue(actualRuntimeDatabaseConfiguration.getJdbcUrl(), databaseName, "jdbcUrl"), actualRuntimeDatabaseConfiguration.getUsername(),
-                actualRuntimeDatabaseConfiguration.getPassword(), actualRuntimeDatabaseConfiguration.getDriverClassName());
+        return new DatabaseConnectionConfiguration(databaseName, validateRequiredValue(runtimeDatabaseConfiguration.getDatabaseType(), databaseName, "databaseType"),
+                validateRequiredValue(runtimeDatabaseConfiguration.getJdbcUrl(), databaseName, "jdbcUrl"), runtimeDatabaseConfiguration.getUsername(),
+                runtimeDatabaseConfiguration.getPassword(), runtimeDatabaseConfiguration.getDriverClassName());
     }
     
     private void refreshMetadata(final String database, final Map<String, DatabaseConnectionConfiguration> connectionConfigurations,
@@ -100,14 +98,14 @@ public final class DatabaseRuntimeFactory {
     }
     
     private String validateDatabaseName(final String databaseName) {
-        if (Objects.requireNonNull(databaseName, "databaseName cannot be null").isBlank()) {
+        if (databaseName.isBlank()) {
             throw new IllegalArgumentException("Runtime logical database name cannot be blank.");
         }
         return databaseName;
     }
     
     private String validateRequiredValue(final String value, final String databaseName, final String fieldName) {
-        if (Objects.requireNonNull(value, fieldName + " cannot be null").isBlank()) {
+        if (value.isBlank()) {
             throw new IllegalArgumentException(String.format("Runtime database `%s` property `%s` is required.", databaseName, fieldName));
         }
         return value;

@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -53,9 +52,8 @@ public final class TransactionCommandExecutor {
      * @return execution response
      */
     public ExecuteQueryResponse execute(final String sessionId, final String database, final String databaseType, final ClassificationResult classificationResult) {
-        ClassificationResult actualClassificationResult = Objects.requireNonNull(classificationResult, "classificationResult cannot be null");
-        return execute(sessionId, database, databaseType, actualClassificationResult.getStatementType(),
-                actualClassificationResult.getSavepointName().map(each -> each.toUpperCase(Locale.ENGLISH)).orElse(""));
+        return execute(sessionId, database, databaseType, classificationResult.getStatementType(),
+                classificationResult.getSavepointName().map(each -> each.toUpperCase(Locale.ENGLISH)).orElse(""));
     }
     
     private ExecuteQueryResponse execute(final String sessionId, final String database, final String databaseType, final String statementType, final String savepointName) {

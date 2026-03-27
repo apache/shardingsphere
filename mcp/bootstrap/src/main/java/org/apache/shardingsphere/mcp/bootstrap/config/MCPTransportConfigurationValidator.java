@@ -20,8 +20,6 @@ package org.apache.shardingsphere.mcp.bootstrap.config;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.Objects;
-
 /**
  * MCP transport configuration validator.
  */
@@ -39,9 +37,8 @@ public final class MCPTransportConfigurationValidator {
      * @throws IllegalArgumentException when zero or multiple transports are enabled
      */
     public static void validate(final MCPTransportConfiguration transportConfig) {
-        MCPTransportConfiguration actualTransportConfig = Objects.requireNonNull(transportConfig, "transportConfiguration cannot be null");
-        boolean httpEnabled = actualTransportConfig.getHttp().isEnabled();
-        boolean stdioEnabled = actualTransportConfig.getStdio().isEnabled();
+        boolean httpEnabled = transportConfig.getHttp().isEnabled();
+        boolean stdioEnabled = transportConfig.getStdio().isEnabled();
         if (!httpEnabled && !stdioEnabled) {
             throw new IllegalArgumentException(NO_ENABLED_TRANSPORT_ERROR_MESSAGE);
         }

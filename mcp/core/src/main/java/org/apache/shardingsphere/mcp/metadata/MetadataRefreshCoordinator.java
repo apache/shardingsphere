@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.metadata;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -68,6 +67,6 @@ public final class MetadataRefreshCoordinator {
     }
     
     private String normalize(final String value, final String fieldName) {
-        return Objects.requireNonNull(value, fieldName + " cannot be null").trim();
+        return value.trim();
     }
 }

@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -46,17 +45,15 @@ public final class MetadataResourceLoader {
      * @return loaded metadata resource result
      */
     public ResourceLoadResult load(final MetadataCatalog metadataCatalog, final ResourceRequest resourceRequest) {
-        MetadataCatalog actualMetadataCatalog = Objects.requireNonNull(metadataCatalog, "metadataCatalog cannot be null");
-        ResourceRequest actualResourceRequest = Objects.requireNonNull(resourceRequest, "resourceRequest cannot be null");
-        if (MetadataObjectType.DATABASE == actualResourceRequest.getObjectType()) {
-            return ResourceLoadResult.success(filterDatabases(actualMetadataCatalog, actualResourceRequest));
+        if (MetadataObjectType.DATABASE == resourceRequest.getObjectType()) {
+            return ResourceLoadResult.success(filterDatabases(metadataCatalog, resourceRequest));
         }
-        String databaseType = actualMetadataCatalog.findDatabaseType(actualResourceRequest.getDatabase())
+        String databaseType = metadataCatalog.findDatabaseType(resourceRequest.getDatabase())
                 .orElseThrow(() -> new IllegalStateException("Database does not exist."));
-        if (MetadataObjectType.INDEX == actualResourceRequest.getObjectType() && !supportsObjectType(actualResourceRequest.getDatabase(), databaseType, SupportedObjectType.INDEX)) {
+        if (MetadataObjectType.INDEX == resourceRequest.getObjectType() && !supportsObjectType(resourceRequest.getDatabase(), databaseType, SupportedObjectType.INDEX)) {
             return ResourceLoadResult.error(ErrorCode.UNSUPPORTED, "Index resources are not supported for the current database.");
         }
-        return ResourceLoadResult.success(filterMetadataObjects(actualMetadataCatalog, actualResourceRequest, databaseType));
+        return ResourceLoadResult.success(filterMetadataObjects(metadataCatalog, resourceRequest, databaseType));
     }
     
     private List<MetadataObject> filterDatabases(final MetadataCatalog metadataCatalog, final ResourceRequest resourceRequest) {

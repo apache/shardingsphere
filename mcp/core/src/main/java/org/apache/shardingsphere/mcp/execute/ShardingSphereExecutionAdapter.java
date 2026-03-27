@@ -34,7 +34,6 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -264,7 +263,7 @@ public final class ShardingSphereExecutionAdapter {
     }
     
     private Optional<SessionConnectionContext> findSessionConnection(final String sessionId) {
-        return Optional.ofNullable(sessionConnections.get(Objects.requireNonNull(sessionId, "sessionId cannot be null")));
+        return Optional.ofNullable(sessionConnections.get(sessionId));
     }
     
     private SessionConnectionContext getRequiredSessionConnection(final String sessionId) {

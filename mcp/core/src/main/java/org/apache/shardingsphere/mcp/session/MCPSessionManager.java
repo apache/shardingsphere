@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.session;
 import lombok.Getter;
 
 import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -173,7 +172,7 @@ public final class MCPSessionManager {
     }
     
     private static String normalizeValue(final String value, final String fieldName) {
-        String result = Objects.requireNonNull(value, fieldName + " cannot be null").trim();
+        String result = value.trim();
         if (result.isEmpty()) {
             throw new IllegalArgumentException(fieldName + " cannot be empty.");
         }
