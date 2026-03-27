@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * MCP bootstrap entrance.
@@ -33,8 +34,6 @@ import java.io.IOException;
 public final class MCPBootstrap {
     
     private static final String DEFAULT_CONFIG_PATH = "conf/mcp.yaml";
-    
-    private static MCPRuntimeTransport runtime;
     
     /**
      * Main entrance.
@@ -46,10 +45,10 @@ public final class MCPBootstrap {
     public static void main(final String[] args) throws IOException {
         // CHECKSTYLE:ON
         MCPLaunchConfiguration launchConfig = MCPConfigurationLoader.load(getConfigurationPath(args));
-        runtime = new MCPRuntimeLauncher().launch(launchConfig);
-        Runtime.getRuntime().addShutdownHook(new Thread(MCPBootstrap::closeRuntime, "shardingsphere-mcp-shutdown"));
+        AtomicReference<MCPRuntimeTransport> runtimeTransportReference = new AtomicReference<>(new MCPRuntimeLauncher().launch(launchConfig));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> closeRuntimeTransport(runtimeTransportReference), "shardingsphere-mcp-shutdown"));
         if (launchConfig.getTransport().getStdio().isEnabled()) {
-            awaitRuntimeTermination();
+            awaitRuntimeTransportTermination(runtimeTransportReference);
         }
     }
     
@@ -61,26 +60,24 @@ public final class MCPBootstrap {
         return result.isEmpty() ? DEFAULT_CONFIG_PATH : result;
     }
     
-    private static void awaitRuntimeTermination() {
-        MCPRuntimeTransport actualRuntime = runtime;
-        if (null == actualRuntime) {
+    private static void awaitRuntimeTransportTermination(final AtomicReference<MCPRuntimeTransport> runtimeTransportReference) {
+        MCPRuntimeTransport runtimeTransport = runtimeTransportReference.get();
+        if (null == runtimeTransport) {
             return;
         }
         try {
-            actualRuntime.awaitTermination();
+            runtimeTransport.awaitTermination();
         } catch (final InterruptedException ex) {
             Thread.currentThread().interrupt();
         } finally {
-            closeRuntime();
+            closeRuntimeTransport(runtimeTransportReference);
         }
     }
     
-    private static synchronized void closeRuntime() {
-        MCPRuntimeTransport actualRuntime = runtime;
-        runtime = null;
-        if (null == actualRuntime) {
-            return;
+    private static void closeRuntimeTransport(final AtomicReference<MCPRuntimeTransport> runtimeTransportReference) {
+        MCPRuntimeTransport runtimeTransport = runtimeTransportReference.getAndSet(null);
+        if (null != runtimeTransport) {
+            runtimeTransport.close();
         }
-        actualRuntime.close();
     }
 }
