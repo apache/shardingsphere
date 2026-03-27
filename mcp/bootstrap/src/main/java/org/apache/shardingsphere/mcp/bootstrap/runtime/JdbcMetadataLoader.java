@@ -38,7 +38,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * Load runtime metadata from one real JDBC-backed source.
+ * Jdbc metadata loader.
  */
 public final class JdbcMetadataLoader {
     
@@ -56,34 +56,34 @@ public final class JdbcMetadataLoader {
         List<MetadataObject> metadataObjects = new LinkedList<>();
         Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors = new LinkedHashMap<>(connectionConfigs.size(), 1F);
         for (Entry<String, RuntimeDatabaseConfiguration> entry : connectionConfigs.entrySet()) {
-            try (Connection connection = jdbcConnectionFactory.openConnection(entry.getKey(), entry.getValue())) {
-                databaseTypes.put(entry.getKey(), entry.getValue().getDatabaseType());
-                RuntimeMetadataSnapshot runtimeMetadataSnapshot = loadRuntimeMetadataSnapshot(entry.getKey(), entry.getValue(), connection, connection.getMetaData());
+            String databaseName = entry.getKey();
+            String databaseType = entry.getValue().getDatabaseType();
+            try (Connection connection = jdbcConnectionFactory.openConnection(databaseName, entry.getValue())) {
+                databaseTypes.put(databaseName, databaseType);
+                RuntimeMetadataSnapshot runtimeMetadataSnapshot = loadRuntimeMetadataSnapshot(databaseName, databaseType, connection, connection.getMetaData());
                 metadataObjects.addAll(runtimeMetadataSnapshot.getMetadataObjects());
-                runtimeDatabaseDescriptors.put(entry.getKey(), runtimeMetadataSnapshot.getRuntimeDatabaseDescriptor());
+                runtimeDatabaseDescriptors.put(databaseName, runtimeMetadataSnapshot.getRuntimeDatabaseDescriptor());
             } catch (final SQLException ex) {
-                throw new IllegalStateException(String.format("Failed to load runtime metadata for database `%s`.", entry.getKey()), ex);
+                throw new IllegalStateException(String.format("Failed to load runtime metadata for database `%s`.", databaseName), ex);
             }
         }
         return new MetadataCatalog(databaseTypes, metadataObjects, runtimeDatabaseDescriptors);
     }
     
-    private RuntimeMetadataSnapshot loadRuntimeMetadataSnapshot(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
-                                                                final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
+    private RuntimeMetadataSnapshot loadRuntimeMetadataSnapshot(final String databaseName,
+                                                                final String databaseType, final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
         LinkedList<MetadataObject> metadataObjects = new LinkedList<>();
         Set<SupportedObjectType> supportedObjectTypes = new LinkedHashSet<>();
         Set<String> discoveredSchemas = new LinkedHashSet<>();
         supportedObjectTypes.add(SupportedObjectType.DATABASE);
-        loadMetadataObjects(databaseName, runtimeDatabaseConfig, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
-        RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = new RuntimeDatabaseDescriptor(databaseName,
-                runtimeDatabaseConfig.getDatabaseType(), resolveDatabaseVersion(databaseMetaData), supportedObjectTypes, resolveDefaultSchema(connection, discoveredSchemas));
-        return new RuntimeMetadataSnapshot(metadataObjects, runtimeDatabaseDescriptor);
+        loadMetadataObjects(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
+        return new RuntimeMetadataSnapshot(metadataObjects,
+                new RuntimeDatabaseDescriptor(databaseName, databaseType, resolveDatabaseVersion(databaseMetaData), supportedObjectTypes, resolveDefaultSchema(connection, discoveredSchemas)));
     }
     
-    private void loadMetadataObjects(final String databaseName,
-                                     final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final DatabaseMetaData databaseMetaData, final List<MetadataObject> metadataObjects,
+    private void loadMetadataObjects(final String databaseName, final DatabaseMetaData databaseMetaData, final List<MetadataObject> metadataObjects,
                                      final Set<SupportedObjectType> supportedObjectTypes, final Set<String> discoveredSchemas) throws SQLException {
-        loadTables(databaseName, runtimeDatabaseConfig, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
+        loadTables(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
         loadViews(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
     }
     
@@ -92,7 +92,7 @@ public final class JdbcMetadataLoader {
         return "INFORMATION_SCHEMA".equals(upperSchemaName) || "PG_CATALOG".equals(upperSchemaName) || "SYSTEM_LOBS".equals(upperSchemaName);
     }
     
-    private void loadTables(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final DatabaseMetaData databaseMetaData,
+    private void loadTables(final String databaseName, final DatabaseMetaData databaseMetaData,
                             final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes,
                             final Set<String> discoveredSchemas) throws SQLException {
         try (ResultSet tables = databaseMetaData.getTables(null, null, "%", new String[]{"TABLE"})) {
