@@ -59,9 +59,6 @@ public final class ShardingSphereTable {
     private final Map<String, Integer> visibleColumnAndIndexMap = new CaseInsensitiveMap<>();
     
     @Getter(AccessLevel.NONE)
-    private DatabaseIdentifierContext identifierContext;
-    
-    @Getter(AccessLevel.NONE)
     private IdentifierIndex<ShardingSphereColumn> columnIndex;
     
     @Getter(AccessLevel.NONE)
@@ -101,7 +98,7 @@ public final class ShardingSphereTable {
     public ShardingSphereTable(final String name, final Collection<ShardingSphereColumn> columns,
                                final Collection<ShardingSphereIndex> indexes, final Collection<ShardingSphereConstraint> constraints, final TableType type) {
         this.name = name;
-        identifierContext = DatabaseIdentifierContextFactory.createDefault();
+        final DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.createDefault();
         columnIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.COLUMN);
         indexIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.INDEX);
         constraintIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.CONSTRAINT);
@@ -383,7 +380,6 @@ public final class ShardingSphereTable {
         final Collection<ShardingSphereColumn> columns = new LinkedList<>(columnIndex.getAll());
         final Collection<ShardingSphereIndex> indexes = new LinkedList<>(indexIdentifierIndex.getAll());
         final Collection<ShardingSphereConstraint> constraints = new LinkedList<>(constraintIdentifierIndex.getAll());
-        this.identifierContext = identifierContext;
         columnIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.COLUMN);
         indexIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.INDEX);
         constraintIdentifierIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.CONSTRAINT);
