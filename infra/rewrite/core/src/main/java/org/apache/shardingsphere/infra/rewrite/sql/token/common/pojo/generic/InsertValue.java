@@ -43,13 +43,7 @@ public class InsertValue {
     
     private final Map<Integer, SQLToken> substitutedSQLTokens = new HashMap<>();
     
-    private final Map<Integer, Collection<SQLToken>> addedSQLTokens = new HashMap<>();
-    
-    private final Map<Integer, Collection<AddedItem>> orderedAddedItems = new HashMap<>();
-    
-    private int addedValuesCount;
-    
-    private int addedParameterMarkerExpressionCount;
+    private final Map<Integer, Collection<Object>> orderedAddedItems = new HashMap<>();
     
     public InsertValue(final List<ExpressionSegment> values) {
         ShardingSpherePreconditions.checkNotEmpty(values, () -> new UnsupportedSQLOperationException("Insert values can not be empty"));
@@ -71,13 +65,9 @@ public class InsertValue {
      *
      * @param index index
      * @param sqlToken SQL token
-     * @param parameterMarkerCount parameter marker count
      */
-    public void addAddedSQLToken(final int index, final SQLToken sqlToken, final int parameterMarkerCount) {
-        addedValuesCount += 1;
-        addedParameterMarkerExpressionCount += parameterMarkerCount;
-        addedSQLTokens.computeIfAbsent(index, unused -> new LinkedList<>()).add(sqlToken);
-        orderedAddedItems.computeIfAbsent(index, unused -> new LinkedList<>()).add(AddedItem.valueOf(sqlToken));
+    public void addAddedSQLToken(final int index, final SQLToken sqlToken) {
+        orderedAddedItems.computeIfAbsent(index, unused -> new LinkedList<>()).add(sqlToken);
     }
     
     @Override
@@ -91,12 +81,23 @@ public class InsertValue {
     }
     
     private void getAddedItems(final int index, final StringJoiner joiner) {
-        Collection<AddedItem> currentAddedItems = orderedAddedItems.get(index);
-        if (null != currentAddedItems) {
-            for (AddedItem each : currentAddedItems) {
-                joiner.add(each.isExpressionSegment() ? doGetValue(each.getExpressionSegment()) : each.getSqlToken().toString());
-            }
+        Collection<Object> currentAddedItems = orderedAddedItems.get(index);
+        if (null == currentAddedItems) {
+            return;
         }
+        for (Object each : currentAddedItems) {
+            joiner.add(getItemValue(each));
+        }
+    }
+    
+    private String getItemValue(final Object value) {
+        if (value instanceof ExpressionSegment) {
+            return doGetValue((ExpressionSegment) value);
+        }
+        if (value instanceof SQLToken) {
+            return value.toString();
+        }
+        throw new IllegalStateException("Unsupported type: " + value.getClass().getName());
     }
     
     /**
@@ -130,26 +131,5 @@ public class InsertValue {
             return "NULL";
         }
         return literals instanceof String ? "'" + expressionSegment.getLiterals() + "'" : String.valueOf(literals);
-    }
-    
-    @Getter
-    private static final class AddedItem {
-        
-        private final ExpressionSegment expressionSegment;
-        
-        private final SQLToken sqlToken;
-        
-        private AddedItem(final ExpressionSegment expressionSegment, final SQLToken sqlToken) {
-            this.expressionSegment = expressionSegment;
-            this.sqlToken = sqlToken;
-        }
-        
-        private static AddedItem valueOf(final SQLToken sqlToken) {
-            return new AddedItem(null, sqlToken);
-        }
-        
-        private boolean isExpressionSegment() {
-            return null != expressionSegment;
-        }
     }
 }
