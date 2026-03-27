@@ -170,7 +170,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                 continue;
             }
             if (each instanceof Attachable) {
-                insertValueToken.addAddedSQLToken(each.getColumnIndex(), each, each.getParameterMarkerCount());
+                insertValueToken.addAddedSQLToken(each.getColumnIndex(), each);
             }
         }
     }
