@@ -49,26 +49,25 @@ public final class MCPRuntimeLauncher {
      * @throws IllegalStateException when the active transport startup fails
      */
     public MCPRuntimeTransport launch(final MCPLaunchConfiguration config) {
-        Map<String, DatabaseConnectionConfiguration> connectionConfigurations = databaseRuntimeFactory.createConnectionConfigurations(config.getRuntimeDatabases());
-        MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigurations);
-        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, metadataLoader);
+        Map<String, DatabaseConnectionConfiguration> connectionConfigs = databaseRuntimeFactory.createConnectionConfigurations(config.getRuntimeDatabases());
+        MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigs);
+        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigs, metadataCatalog, metadataLoader);
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPRuntimeServices runtimeServices = new MCPRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
-        MCPRuntimeTransport transport = createTransport(sessionManager, runtimeServices, config, metadataCatalog, databaseRuntime);
+        MCPRuntimeTransport result = createTransport(config, sessionManager, runtimeServices, metadataCatalog, databaseRuntime);
         try {
-            transport.start();
+            result.start();
         } catch (final IOException ex) {
-            transport.close();
-            throw new IllegalStateException(config.getTransport().getHttp().isEnabled() ? "Failed to start HTTP transport." : "Failed to start STDIO transport.", ex);
+            result.close();
+            throw new IllegalStateException(String.format("Failed to start %s transport.", config.getTransport().getHttp().isEnabled() ? "HTTP" : "STDIO"), ex);
         }
-        return transport;
+        return result;
     }
     
-    private MCPRuntimeTransport createTransport(final MCPSessionManager sessionManager, final MCPRuntimeServices runtimeServices,
-                                                final MCPLaunchConfiguration launchConfiguration, final MetadataCatalog metadataCatalog,
-                                                final DatabaseRuntime databaseRuntime) {
-        return launchConfiguration.getTransport().getHttp().isEnabled()
-                ? new StreamableHttpMCPServer(launchConfiguration.getTransport().getHttp(), sessionManager, runtimeServices, metadataCatalog, databaseRuntime)
+    private MCPRuntimeTransport createTransport(final MCPLaunchConfiguration config, final MCPSessionManager sessionManager,
+                                                final MCPRuntimeServices runtimeServices, final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
+        return config.getTransport().getHttp().isEnabled()
+                ? new StreamableHttpMCPServer(config.getTransport().getHttp(), sessionManager, runtimeServices, metadataCatalog, databaseRuntime)
                 : new StdioTransportMCPServer(sessionManager, runtimeServices, metadataCatalog, databaseRuntime);
     }
 }
