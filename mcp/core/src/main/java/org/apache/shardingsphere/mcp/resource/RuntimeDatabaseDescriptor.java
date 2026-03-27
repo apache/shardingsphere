@@ -30,7 +30,7 @@ import java.util.Set;
 @Getter
 public final class RuntimeDatabaseDescriptor {
     
-    private final String database;
+    private final String databaseName;
     
     private final String databaseType;
     

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.capability.SupportedObjectType;
@@ -190,19 +192,12 @@ public final class MCPJdbcMetadataLoader {
         return null == value ? "" : value.trim();
     }
     
-    @RequiredArgsConstructor
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter(AccessLevel.PRIVATE)
     private static final class RuntimeMetadataSnapshot {
         
         private final List<MetadataObject> metadataObjects;
         
         private final RuntimeDatabaseDescriptor runtimeDatabaseDescriptor;
-        
-        private List<MetadataObject> getMetadataObjects() {
-            return metadataObjects;
-        }
-        
-        private RuntimeDatabaseDescriptor getRuntimeDatabaseDescriptor() {
-            return runtimeDatabaseDescriptor;
-        }
     }
 }
