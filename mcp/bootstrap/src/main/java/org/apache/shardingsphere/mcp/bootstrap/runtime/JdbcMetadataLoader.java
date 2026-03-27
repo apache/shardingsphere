@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.capability.SupportedObjectType;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
@@ -33,6 +34,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -49,39 +51,40 @@ public final class JdbcMetadataLoader {
      * @return metadata catalog
      * @throws IllegalStateException when runtime metadata cannot be loaded from one configured database
      */
-    public MetadataCatalog load(final Map<String, DatabaseConnectionConfiguration> connectionConfigs) {
+    public MetadataCatalog load(final Map<String, RuntimeDatabaseConfiguration> connectionConfigs) {
         Map<String, String> databaseTypes = new LinkedHashMap<>(connectionConfigs.size(), 1F);
         List<MetadataObject> metadataObjects = new LinkedList<>();
         Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors = new LinkedHashMap<>(connectionConfigs.size(), 1F);
-        for (DatabaseConnectionConfiguration each : connectionConfigs.values()) {
-            try (Connection connection = jdbcConnectionFactory.openConnection(each)) {
-                databaseTypes.put(each.getDatabase(), each.getDatabaseType());
-                RuntimeMetadataSnapshot runtimeMetadataSnapshot = loadRuntimeMetadataSnapshot(each, connection, connection.getMetaData());
+        for (Entry<String, RuntimeDatabaseConfiguration> entry : connectionConfigs.entrySet()) {
+            try (Connection connection = jdbcConnectionFactory.openConnection(entry.getKey(), entry.getValue())) {
+                databaseTypes.put(entry.getKey(), entry.getValue().getDatabaseType());
+                RuntimeMetadataSnapshot runtimeMetadataSnapshot = loadRuntimeMetadataSnapshot(entry.getKey(), entry.getValue(), connection, connection.getMetaData());
                 metadataObjects.addAll(runtimeMetadataSnapshot.getMetadataObjects());
-                runtimeDatabaseDescriptors.put(each.getDatabase(), runtimeMetadataSnapshot.getRuntimeDatabaseDescriptor());
+                runtimeDatabaseDescriptors.put(entry.getKey(), runtimeMetadataSnapshot.getRuntimeDatabaseDescriptor());
             } catch (final SQLException ex) {
-                throw new IllegalStateException(String.format("Failed to load runtime metadata for database `%s`.", each.getDatabase()), ex);
+                throw new IllegalStateException(String.format("Failed to load runtime metadata for database `%s`.", entry.getKey()), ex);
             }
         }
         return new MetadataCatalog(databaseTypes, metadataObjects, runtimeDatabaseDescriptors);
     }
     
-    private RuntimeMetadataSnapshot loadRuntimeMetadataSnapshot(final DatabaseConnectionConfiguration connectionConfiguration,
+    private RuntimeMetadataSnapshot loadRuntimeMetadataSnapshot(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
                                                                 final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
         LinkedList<MetadataObject> metadataObjects = new LinkedList<>();
         Set<SupportedObjectType> supportedObjectTypes = new LinkedHashSet<>();
         Set<String> discoveredSchemas = new LinkedHashSet<>();
         supportedObjectTypes.add(SupportedObjectType.DATABASE);
-        loadMetadataObjects(connectionConfiguration, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
-        RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = new RuntimeDatabaseDescriptor(connectionConfiguration.getDatabase(),
-                connectionConfiguration.getDatabaseType(), resolveDatabaseVersion(databaseMetaData), supportedObjectTypes, resolveDefaultSchema(connection, discoveredSchemas));
+        loadMetadataObjects(databaseName, runtimeDatabaseConfig, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
+        RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = new RuntimeDatabaseDescriptor(databaseName,
+                runtimeDatabaseConfig.getDatabaseType(), resolveDatabaseVersion(databaseMetaData), supportedObjectTypes, resolveDefaultSchema(connection, discoveredSchemas));
         return new RuntimeMetadataSnapshot(metadataObjects, runtimeDatabaseDescriptor);
     }
     
-    private void loadMetadataObjects(final DatabaseConnectionConfiguration connectionConfiguration, final DatabaseMetaData databaseMetaData, final List<MetadataObject> metadataObjects,
+    private void loadMetadataObjects(final String databaseName,
+                                     final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final DatabaseMetaData databaseMetaData, final List<MetadataObject> metadataObjects,
                                      final Set<SupportedObjectType> supportedObjectTypes, final Set<String> discoveredSchemas) throws SQLException {
-        loadTables(connectionConfiguration, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
-        loadViews(connectionConfiguration, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
+        loadTables(databaseName, runtimeDatabaseConfig, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
+        loadViews(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
     }
     
     private boolean isSystemSchema(final String schemaName) {
@@ -89,7 +92,7 @@ public final class JdbcMetadataLoader {
         return "INFORMATION_SCHEMA".equals(upperSchemaName) || "PG_CATALOG".equals(upperSchemaName) || "SYSTEM_LOBS".equals(upperSchemaName);
     }
     
-    private void loadTables(final DatabaseConnectionConfiguration connectionConfiguration, final DatabaseMetaData databaseMetaData,
+    private void loadTables(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final DatabaseMetaData databaseMetaData,
                             final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes,
                             final Set<String> discoveredSchemas) throws SQLException {
         try (ResultSet tables = databaseMetaData.getTables(null, null, "%", new String[]{"TABLE"})) {
@@ -102,19 +105,18 @@ public final class JdbcMetadataLoader {
                 if (null == tableName || tableName.trim().isEmpty()) {
                     continue;
                 }
-                registerSchema(connectionConfiguration, schema, metadataObjects, supportedObjectTypes, discoveredSchemas);
+                registerSchema(databaseName, schema, metadataObjects, supportedObjectTypes, discoveredSchemas);
                 String actualTableName = tableName.trim();
-                metadataObjects.add(new MetadataObject(connectionConfiguration.getDatabase(), schema, MetadataObjectType.TABLE, actualTableName, "", ""));
+                metadataObjects.add(new MetadataObject(databaseName, schema, MetadataObjectType.TABLE, actualTableName, "", ""));
                 supportedObjectTypes.add(SupportedObjectType.TABLE);
-                loadColumns(connectionConfiguration, databaseMetaData, schema, actualTableName, "TABLE", metadataObjects, supportedObjectTypes);
-                loadIndexes(connectionConfiguration, databaseMetaData, schema, actualTableName, metadataObjects, supportedObjectTypes);
+                loadColumns(databaseName, databaseMetaData, schema, actualTableName, "TABLE", metadataObjects, supportedObjectTypes);
+                loadIndexes(databaseName, databaseMetaData, schema, actualTableName, metadataObjects, supportedObjectTypes);
             }
         }
     }
     
-    private void loadViews(final DatabaseConnectionConfiguration connectionConfiguration, final DatabaseMetaData databaseMetaData,
-                           final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes,
-                           final Set<String> discoveredSchemas) throws SQLException {
+    private void loadViews(final String databaseName, final DatabaseMetaData databaseMetaData,
+                           final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes, final Set<String> discoveredSchemas) throws SQLException {
         try (ResultSet views = databaseMetaData.getTables(null, null, "%", new String[]{"VIEW"})) {
             while (views.next()) {
                 String schema = normalizeSchema(views.getString("TABLE_SCHEM"));
@@ -125,16 +127,16 @@ public final class JdbcMetadataLoader {
                 if (null == viewName || viewName.trim().isEmpty()) {
                     continue;
                 }
-                registerSchema(connectionConfiguration, schema, metadataObjects, supportedObjectTypes, discoveredSchemas);
+                registerSchema(databaseName, schema, metadataObjects, supportedObjectTypes, discoveredSchemas);
                 String actualViewName = viewName.trim();
-                metadataObjects.add(new MetadataObject(connectionConfiguration.getDatabase(), schema, MetadataObjectType.VIEW, actualViewName, "", ""));
+                metadataObjects.add(new MetadataObject(databaseName, schema, MetadataObjectType.VIEW, actualViewName, "", ""));
                 supportedObjectTypes.add(SupportedObjectType.VIEW);
-                loadColumns(connectionConfiguration, databaseMetaData, schema, actualViewName, "VIEW", metadataObjects, supportedObjectTypes);
+                loadColumns(databaseName, databaseMetaData, schema, actualViewName, "VIEW", metadataObjects, supportedObjectTypes);
             }
         }
     }
     
-    private void loadColumns(final DatabaseConnectionConfiguration connectionConfiguration, final DatabaseMetaData databaseMetaData, final String schema,
+    private void loadColumns(final String databaseName, final DatabaseMetaData databaseMetaData, final String schema,
                              final String objectName, final String parentObjectType, final List<MetadataObject> metadataObjects,
                              final Set<SupportedObjectType> supportedObjectTypes) throws SQLException {
         try (ResultSet columns = databaseMetaData.getColumns(null, getSchemaPattern(schema), objectName, "%")) {
@@ -143,14 +145,14 @@ public final class JdbcMetadataLoader {
                 if (null == columnName || columnName.trim().isEmpty()) {
                     continue;
                 }
-                metadataObjects.add(new MetadataObject(connectionConfiguration.getDatabase(), schema, MetadataObjectType.COLUMN, columnName.trim(),
+                metadataObjects.add(new MetadataObject(databaseName, schema, MetadataObjectType.COLUMN, columnName.trim(),
                         parentObjectType, objectName));
                 supportedObjectTypes.add(SupportedObjectType.COLUMN);
             }
         }
     }
     
-    private void loadIndexes(final DatabaseConnectionConfiguration connectionConfiguration, final DatabaseMetaData databaseMetaData, final String schema,
+    private void loadIndexes(final String databaseName, final DatabaseMetaData databaseMetaData, final String schema,
                              final String tableName, final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes) throws SQLException {
         Set<String> indexNames = new LinkedHashSet<>();
         try (ResultSet indexes = databaseMetaData.getIndexInfo(null, getSchemaPattern(schema), tableName, false, false)) {
@@ -162,19 +164,19 @@ public final class JdbcMetadataLoader {
                 if (!indexNames.add(indexName.trim())) {
                     continue;
                 }
-                metadataObjects.add(new MetadataObject(connectionConfiguration.getDatabase(), schema, MetadataObjectType.INDEX, indexName.trim(), "TABLE", tableName));
+                metadataObjects.add(new MetadataObject(databaseName, schema, MetadataObjectType.INDEX, indexName.trim(), "TABLE", tableName));
                 supportedObjectTypes.add(SupportedObjectType.INDEX);
             }
         }
     }
     
-    private void registerSchema(final DatabaseConnectionConfiguration connectionConfiguration, final String schema, final List<MetadataObject> metadataObjects,
-                                final Set<SupportedObjectType> supportedObjectTypes, final Set<String> discoveredSchemas) {
+    private void registerSchema(final String databaseName,
+                                final String schema, final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes, final Set<String> discoveredSchemas) {
         if (schema.isEmpty() || !discoveredSchemas.add(schema)) {
             return;
         }
         supportedObjectTypes.add(SupportedObjectType.SCHEMA);
-        metadataObjects.add(new MetadataObject(connectionConfiguration.getDatabase(), schema, MetadataObjectType.SCHEMA, schema, "", ""));
+        metadataObjects.add(new MetadataObject(databaseName, schema, MetadataObjectType.SCHEMA, schema, "", ""));
     }
     
     private String resolveDefaultSchema(final Connection connection, final Set<String> schemas) throws SQLException {

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -25,30 +27,37 @@ import java.util.Properties;
 /**
  * Open JDBC connections for one runtime database configuration.
  */
-final class JdbcConnectionFactory {
+public final class JdbcConnectionFactory {
     
-    Connection openConnection(final DatabaseConnectionConfiguration connectionConfiguration) throws SQLException {
-        loadDriver(connectionConfiguration);
+    /**
+     * Open connection.
+     * 
+     * @param databaseName database name
+     * @param runtimeDatabaseConfig runtime database configuration
+     * @return connection
+     * @throws SQLException SQL exception
+     */
+    public Connection openConnection(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) throws SQLException {
+        loadDriver(databaseName, runtimeDatabaseConfig);
         Properties props = new Properties();
-        if (!connectionConfiguration.getUsername().isEmpty()) {
-            props.setProperty("user", connectionConfiguration.getUsername());
+        if (!runtimeDatabaseConfig.getUsername().isEmpty()) {
+            props.setProperty("user", runtimeDatabaseConfig.getUsername());
         }
-        if (!connectionConfiguration.getPassword().isEmpty()) {
-            props.setProperty("password", connectionConfiguration.getPassword());
+        if (!runtimeDatabaseConfig.getPassword().isEmpty()) {
+            props.setProperty("password", runtimeDatabaseConfig.getPassword());
         }
-        return props.isEmpty() ? DriverManager.getConnection(connectionConfiguration.getJdbcUrl())
-                : DriverManager.getConnection(connectionConfiguration.getJdbcUrl(), props);
+        return props.isEmpty() ? DriverManager.getConnection(runtimeDatabaseConfig.getJdbcUrl())
+                : DriverManager.getConnection(runtimeDatabaseConfig.getJdbcUrl(), props);
     }
     
-    private void loadDriver(final DatabaseConnectionConfiguration connectionConfiguration) {
-        if (connectionConfiguration.getDriverClassName().isEmpty()) {
+    private void loadDriver(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
+        if (runtimeDatabaseConfig.getDriverClassName().isEmpty()) {
             return;
         }
         try {
-            Class.forName(connectionConfiguration.getDriverClassName());
+            Class.forName(runtimeDatabaseConfig.getDriverClassName());
         } catch (final ClassNotFoundException ex) {
-            throw new IllegalStateException(String.format("JDBC driver `%s` is not available for database `%s`.",
-                    connectionConfiguration.getDriverClassName(), connectionConfiguration.getDatabase()), ex);
+            throw new IllegalStateException(String.format("JDBC driver `%s` is not available for database `%s`.", runtimeDatabaseConfig.getDriverClassName(), databaseName), ex);
         }
     }
 }

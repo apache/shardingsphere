@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.capability.SupportedObjectType;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
@@ -34,7 +35,6 @@ import java.sql.DriverPropertyInfo;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -61,7 +61,7 @@ class JdbcMetadataLoaderTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
-        MetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createConnectionConfiguration("logic_db", jdbcUrl)));
+        MetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
         assertThat(actual.getDatabaseTypes().get("logic_db"), is("H2"));
         assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "orders"));
         assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "order_items"));
@@ -82,9 +82,8 @@ class JdbcMetadataLoaderTest {
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
         H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
-        Map<String, DatabaseConnectionConfiguration> connectionConfigs = new LinkedHashMap<>();
-        connectionConfigs.put("logic_db", createConnectionConfiguration("logic_db", firstJdbcUrl));
-        connectionConfigs.put("analytics_db", createConnectionConfiguration("analytics_db", secondJdbcUrl));
+        Map<String, RuntimeDatabaseConfiguration> connectionConfigs = Map.of(
+                "logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl));
         MetadataCatalog actual = metadataLoader.load(connectionConfigs);
         assertThat(actual.getDatabaseTypes().size(), is(2));
         assertThat(actual.getRuntimeDatabaseDescriptors().size(), is(2));
@@ -97,8 +96,7 @@ class JdbcMetadataLoaderTest {
         Driver mockDriver = new MockDriver("jdbc:mock:no-schema", createConnectionWithoutSchema());
         DriverManager.registerDriver(mockDriver);
         try {
-            MetadataCatalog actual = metadataLoader.load(Map.of("logic_db",
-                    new DatabaseConnectionConfiguration("logic_db", "MySQL", "jdbc:mock:no-schema", "", "", "")));
+            MetadataCatalog actual = metadataLoader.load(Map.of("logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mock:no-schema", "", "", "")));
             assertFalse(actual.getMetadataObjects().stream().anyMatch(each -> MetadataObjectType.SCHEMA == each.getObjectType()));
             assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "orders"));
             assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.COLUMN, "order_id"));
@@ -111,8 +109,8 @@ class JdbcMetadataLoaderTest {
         }
     }
     
-    private DatabaseConnectionConfiguration createConnectionConfiguration(final String database, final String jdbcUrl) {
-        return new DatabaseConnectionConfiguration(database, "H2", jdbcUrl, "", "", "org.h2.Driver");
+    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl) {
+        return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
     }
     
     private Connection createConnectionWithoutSchema() throws SQLException {

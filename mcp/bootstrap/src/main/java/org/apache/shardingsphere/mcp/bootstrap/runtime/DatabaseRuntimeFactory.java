@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ShardingSphereExecutionAdapter;
@@ -39,50 +38,26 @@ public final class DatabaseRuntimeFactory {
     private final JdbcConnectionFactory jdbcConnectionFactory = new JdbcConnectionFactory();
     
     /**
-     * Create connection configurations.
-     *
-     * @param runtimeDatabases runtime databases
-     * @return connection configurations keyed by logical database
-     */
-    public Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        ShardingSpherePreconditions.checkNotEmpty(runtimeDatabases, () -> new IllegalArgumentException("At least one runtime database must be configured."));
-        Map<String, DatabaseConnectionConfiguration> result = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
-        for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
-            result.put(entry.getKey(), createConnectionConfiguration(entry.getKey(), entry.getValue()));
-        }
-        return result;
-    }
-    
-    private DatabaseConnectionConfiguration createConnectionConfiguration(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
-        return new DatabaseConnectionConfiguration(databaseName, runtimeDatabaseConfig.getDatabaseType(),
-                runtimeDatabaseConfig.getJdbcUrl(), runtimeDatabaseConfig.getUsername(), runtimeDatabaseConfig.getPassword(), runtimeDatabaseConfig.getDriverClassName());
-    }
-    
-    /**
      * Create one adapter-backed database runtime.
      *
-     * @param connectionConfigurations connection configurations
+     * @param runtimeDatabases runtime databases
      * @param metadataCatalog metadata catalog
      * @param metadataLoader metadata loader
      * @return database runtime
      */
-    public DatabaseRuntime createDatabaseRuntime(final Map<String, DatabaseConnectionConfiguration> connectionConfigurations,
+    public DatabaseRuntime createDatabaseRuntime(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
                                                  final MetadataCatalog metadataCatalog, final JdbcMetadataLoader metadataLoader) {
-        Map<String, ConnectionProvider> connectionProviders = new LinkedHashMap<>(connectionConfigurations.size(), 1F);
-        for (DatabaseConnectionConfiguration each : connectionConfigurations.values()) {
-            connectionProviders.put(each.getDatabase(), () -> jdbcConnectionFactory.openConnection(each));
+        Map<String, ConnectionProvider> connectionProviders = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
+        for (Entry<String, RuntimeDatabaseConfiguration> each : runtimeDatabases.entrySet()) {
+            connectionProviders.put(each.getKey(), () -> jdbcConnectionFactory.openConnection(each.getKey(), each.getValue()));
         }
         ShardingSphereExecutionAdapter executionAdapter = new ShardingSphereExecutionAdapter(connectionProviders);
-        return new DatabaseRuntime(executionAdapter, database -> refreshMetadata(database, connectionConfigurations, metadataCatalog, metadataLoader));
+        return new DatabaseRuntime(executionAdapter, database -> refreshMetadata(database, runtimeDatabases.get(database), metadataCatalog, metadataLoader));
     }
     
-    private void refreshMetadata(final String database, final Map<String, DatabaseConnectionConfiguration> connectionConfigurations,
-                                 final MetadataCatalog metadataCatalog, final JdbcMetadataLoader metadataLoader) {
-        DatabaseConnectionConfiguration connectionConfiguration = Objects.requireNonNull(connectionConfigurations.get(database),
-                String.format("Database `%s` is not configured.", database));
-        MetadataCatalog refreshedCatalog = metadataLoader.load(Collections.singletonMap(database, connectionConfiguration));
-        RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = Objects.requireNonNull(refreshedCatalog.getRuntimeDatabaseDescriptors().get(database),
-                "runtimeDatabaseDescriptor cannot be null");
+    private void refreshMetadata(final String database, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final MetadataCatalog metadataCatalog, final JdbcMetadataLoader metadataLoader) {
+        MetadataCatalog refreshedCatalog = metadataLoader.load(Collections.singletonMap(database, runtimeDatabaseConfig));
+        RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = Objects.requireNonNull(refreshedCatalog.getRuntimeDatabaseDescriptors().get(database), "runtimeDatabaseDescriptor cannot be null");
         metadataCatalog.replaceDatabaseSnapshot(database, refreshedCatalog.getDatabaseTypes().get(database), refreshedCatalog.getMetadataObjects(), runtimeDatabaseDescriptor);
     }
 }

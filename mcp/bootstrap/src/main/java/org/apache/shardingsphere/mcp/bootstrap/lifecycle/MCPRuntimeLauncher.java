@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
-import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseConnectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseRuntimeFactory;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.JdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * MCP runtime launcher.
@@ -46,10 +44,9 @@ public final class MCPRuntimeLauncher {
      */
     public MCPRuntimeTransport launch(final MCPLaunchConfiguration config) {
         DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
-        Map<String, DatabaseConnectionConfiguration> connectionConfigs = databaseRuntimeFactory.createConnectionConfigurations(config.getRuntimeDatabases());
         JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
-        MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigs);
-        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigs, metadataCatalog, metadataLoader);
+        MetadataCatalog metadataCatalog = metadataLoader.load(config.getRuntimeDatabases());
+        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(config.getRuntimeDatabases(), metadataCatalog, metadataLoader);
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPRuntimeServices runtimeServices = new MCPRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
         MCPRuntimeTransport result = createTransport(config, sessionManager, runtimeServices, metadataCatalog, databaseRuntime);

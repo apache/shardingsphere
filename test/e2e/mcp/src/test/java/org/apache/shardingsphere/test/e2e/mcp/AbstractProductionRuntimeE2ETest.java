@@ -19,10 +19,9 @@ package org.apache.shardingsphere.test.e2e.mcp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
-import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseConnectionConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseRuntimeFactory;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.JdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
@@ -193,9 +192,8 @@ abstract class AbstractProductionRuntimeE2ETest {
         MCPLaunchConfiguration launchConfiguration = MCPConfigurationLoader.load(configFile.toString());
         DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
         JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
-        Map<String, DatabaseConnectionConfiguration> connectionConfigurations = databaseRuntimeFactory.createConnectionConfigurations(launchConfiguration.getRuntimeDatabases());
-        MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigurations);
-        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, metadataLoader);
+        MetadataCatalog metadataCatalog = metadataLoader.load(launchConfiguration.getRuntimeDatabases());
+        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(launchConfiguration.getRuntimeDatabases(), metadataCatalog, metadataLoader);
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPRuntimeServices runtimeServices = new MCPRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
         StreamableHttpMCPServer result = new StreamableHttpMCPServer(launchConfiguration.getTransport().getHttp(), sessionManager, runtimeServices, metadataCatalog, databaseRuntime);

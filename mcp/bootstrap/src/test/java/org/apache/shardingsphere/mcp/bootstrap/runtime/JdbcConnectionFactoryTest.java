@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
+import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -42,7 +43,7 @@ class JdbcConnectionFactoryTest {
         JdbcConnectionFactory connectionFactory = new JdbcConnectionFactory();
         
         try (
-                Connection actual = connectionFactory.openConnection(new DatabaseConnectionConfiguration("logic_db", "H2", jdbcUrl, "", "", ""))) {
+                Connection actual = connectionFactory.openConnection("logic_db", new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", ""))) {
             assertNotNull(actual);
             assertFalse(actual.isClosed());
         }
@@ -51,10 +52,8 @@ class JdbcConnectionFactoryTest {
     @Test
     void assertOpenConnectionWithUnavailableDriverClassName() {
         JdbcConnectionFactory connectionFactory = new JdbcConnectionFactory();
-        
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> connectionFactory.openConnection(
-                new DatabaseConnectionConfiguration("logic_db", "H2", "jdbc:h2:mem:missing-driver", "", "", "org.example.MissingDriver")));
-        
+                "logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:missing-driver", "", "", "org.example.MissingDriver")));
         assertThat(actual.getMessage(), is("JDBC driver `org.example.MissingDriver` is not available for database `logic_db`."));
     }
 }
