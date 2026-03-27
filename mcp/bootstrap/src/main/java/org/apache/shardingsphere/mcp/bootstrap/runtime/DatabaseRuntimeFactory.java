@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ShardingSphereExecutionAdapter;
@@ -38,25 +39,23 @@ public final class DatabaseRuntimeFactory {
     private final JdbcConnectionFactory jdbcConnectionFactory = new JdbcConnectionFactory();
     
     /**
-     * Create connection configurations from runtime databases.
+     * Create connection configurations.
      *
      * @param runtimeDatabases runtime databases
      * @return connection configurations keyed by logical database
-     * @throws IllegalArgumentException when no runtime database is configured
      */
     public Map<String, DatabaseConnectionConfiguration> createConnectionConfigurations(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        if (runtimeDatabases.isEmpty()) {
-            throw new IllegalArgumentException("At least one runtime database must be configured.");
-        }
-        return buildConnectionConfigurations(runtimeDatabases);
-    }
-    
-    private Map<String, DatabaseConnectionConfiguration> buildConnectionConfigurations(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        ShardingSpherePreconditions.checkNotEmpty(runtimeDatabases, () -> new IllegalArgumentException("At least one runtime database must be configured."));
         Map<String, DatabaseConnectionConfiguration> result = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
         for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
             result.put(entry.getKey(), createConnectionConfiguration(entry.getKey(), entry.getValue()));
         }
         return result;
+    }
+    
+    private DatabaseConnectionConfiguration createConnectionConfiguration(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
+        return new DatabaseConnectionConfiguration(databaseName, runtimeDatabaseConfig.getDatabaseType(),
+                runtimeDatabaseConfig.getJdbcUrl(), runtimeDatabaseConfig.getUsername(), runtimeDatabaseConfig.getPassword(), runtimeDatabaseConfig.getDriverClassName());
     }
     
     /**
@@ -75,11 +74,6 @@ public final class DatabaseRuntimeFactory {
         }
         ShardingSphereExecutionAdapter executionAdapter = new ShardingSphereExecutionAdapter(connectionProviders);
         return new DatabaseRuntime(executionAdapter, database -> refreshMetadata(database, connectionConfigurations, metadataCatalog, metadataLoader));
-    }
-    
-    private DatabaseConnectionConfiguration createConnectionConfiguration(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfiguration) {
-        return new DatabaseConnectionConfiguration(databaseName, runtimeDatabaseConfiguration.getDatabaseType(), runtimeDatabaseConfiguration.getJdbcUrl(), runtimeDatabaseConfiguration.getUsername(),
-                runtimeDatabaseConfiguration.getPassword(), runtimeDatabaseConfiguration.getDriverClassName());
     }
     
     private void refreshMetadata(final String database, final Map<String, DatabaseConnectionConfiguration> connectionConfigurations,
