@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
-import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseRuntimeFactory;
-import org.apache.shardingsphere.mcp.bootstrap.runtime.JdbcMetadataLoader;
+import org.apache.shardingsphere.mcp.bootstrap.runtime.MCPDatabaseRuntimeFactory;
+import org.apache.shardingsphere.mcp.bootstrap.runtime.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
 import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.stdio.StdioTransportMCPServer;
@@ -43,8 +43,8 @@ public final class MCPRuntimeLauncher {
      * @throws IllegalStateException when the active transport startup fails
      */
     public MCPRuntimeTransport launch(final MCPLaunchConfiguration config) {
-        DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
-        JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
+        MCPDatabaseRuntimeFactory databaseRuntimeFactory = new MCPDatabaseRuntimeFactory();
+        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         MetadataCatalog metadataCatalog = metadataLoader.load(config.getRuntimeDatabases());
         DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(config.getRuntimeDatabases(), metadataCatalog, metadataLoader);
         MCPSessionManager sessionManager = new MCPSessionManager();

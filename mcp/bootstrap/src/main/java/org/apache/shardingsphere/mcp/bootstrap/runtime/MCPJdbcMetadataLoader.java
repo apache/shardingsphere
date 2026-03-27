@@ -38,11 +38,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * Jdbc metadata loader.
+ * MCP JDBC metadata loader.
  */
-public final class JdbcMetadataLoader {
+public final class MCPJdbcMetadataLoader {
     
-    private final JdbcConnectionFactory jdbcConnectionFactory = new JdbcConnectionFactory();
+    private final MCPJdbcConnectionFactory jdbcConnectionFactory = new MCPJdbcConnectionFactory();
     
     /**
      * Load metadata catalog.
@@ -72,7 +72,7 @@ public final class JdbcMetadataLoader {
     
     private RuntimeMetadataSnapshot loadRuntimeMetadataSnapshot(final String databaseName,
                                                                 final String databaseType, final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
-        LinkedList<MetadataObject> metadataObjects = new LinkedList<>();
+        List<MetadataObject> metadataObjects = new LinkedList<>();
         Set<SupportedObjectType> supportedObjectTypes = new LinkedHashSet<>();
         Set<String> discoveredSchemas = new LinkedHashSet<>();
         supportedObjectTypes.add(SupportedObjectType.DATABASE);

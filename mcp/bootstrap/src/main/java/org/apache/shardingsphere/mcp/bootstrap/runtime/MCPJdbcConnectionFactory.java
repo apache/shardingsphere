@@ -25,13 +25,13 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Open JDBC connections for one runtime database configuration.
+ * MCP JDBC connection factory.
  */
-public final class JdbcConnectionFactory {
+public final class MCPJdbcConnectionFactory {
     
     /**
      * Open connection.
-     * 
+     *
      * @param databaseName database name
      * @param runtimeDatabaseConfig runtime database configuration
      * @return connection

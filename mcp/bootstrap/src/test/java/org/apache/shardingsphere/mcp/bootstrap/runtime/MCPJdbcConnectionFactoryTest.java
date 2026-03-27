@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class JdbcConnectionFactoryTest {
+class MCPJdbcConnectionFactoryTest {
     
     @TempDir
     private Path tempDir;
@@ -40,7 +40,7 @@ class JdbcConnectionFactoryTest {
     void assertOpenConnectionWithoutDriverClassName() throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "connection-factory");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        JdbcConnectionFactory connectionFactory = new JdbcConnectionFactory();
+        MCPJdbcConnectionFactory connectionFactory = new MCPJdbcConnectionFactory();
         
         try (
                 Connection actual = connectionFactory.openConnection("logic_db", new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", ""))) {
@@ -51,7 +51,7 @@ class JdbcConnectionFactoryTest {
     
     @Test
     void assertOpenConnectionWithUnavailableDriverClassName() {
-        JdbcConnectionFactory connectionFactory = new JdbcConnectionFactory();
+        MCPJdbcConnectionFactory connectionFactory = new MCPJdbcConnectionFactory();
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> connectionFactory.openConnection(
                 "logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:missing-driver", "", "", "org.example.MissingDriver")));
         assertThat(actual.getMessage(), is("JDBC driver `org.example.MissingDriver` is not available for database `logic_db`."));

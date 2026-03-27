@@ -33,7 +33,7 @@ public final class MCPTransportConfiguration {
     
     /**
      * Whether valid configuration.
-     * 
+     *
      * @return is valid or invalid configuration
      */
     public boolean isValid() {

@@ -38,15 +38,15 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class DatabaseRuntimeFactoryTest {
+class MCPDatabaseRuntimeFactoryTest {
     
     @TempDir
     private Path tempDir;
     
     @Test
     void assertCreateDatabaseRuntimeRefreshMetadataForTargetDatabase() throws SQLException {
-        DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
-        JdbcMetadataLoader jdbcMetadataLoader = new JdbcMetadataLoader();
+        MCPDatabaseRuntimeFactory databaseRuntimeFactory = new MCPDatabaseRuntimeFactory();
+        MCPJdbcMetadataLoader jdbcMetadataLoader = new MCPJdbcMetadataLoader();
         String firstJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "factory-refresh-first");
         String secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "factory-refresh-second");
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
@@ -65,8 +65,8 @@ class DatabaseRuntimeFactoryTest {
     
     @Test
     void assertCreateDatabaseRuntimePreserveSnapshotWhenRefreshFails() {
-        DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
-        JdbcMetadataLoader jdbcMetadataLoader = mock(JdbcMetadataLoader.class);
+        MCPDatabaseRuntimeFactory databaseRuntimeFactory = new MCPDatabaseRuntimeFactory();
+        MCPJdbcMetadataLoader jdbcMetadataLoader = mock(MCPJdbcMetadataLoader.class);
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabaseConfigs = Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"));
         MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of("logic_db", "H2"), List.of());
         DatabaseRuntime actual = databaseRuntimeFactory.createDatabaseRuntime(runtimeDatabaseConfigs, metadataCatalog, jdbcMetadataLoader);

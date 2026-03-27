@@ -31,11 +31,11 @@ import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
- * Create production database runtimes from runtime databases.
+ * MCP database runtime factory.
  */
-public final class DatabaseRuntimeFactory {
+public final class MCPDatabaseRuntimeFactory {
     
-    private final JdbcConnectionFactory jdbcConnectionFactory = new JdbcConnectionFactory();
+    private final MCPJdbcConnectionFactory jdbcConnectionFactory = new MCPJdbcConnectionFactory();
     
     /**
      * Create one adapter-backed database runtime.
@@ -46,7 +46,7 @@ public final class DatabaseRuntimeFactory {
      * @return database runtime
      */
     public DatabaseRuntime createDatabaseRuntime(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
-                                                 final MetadataCatalog metadataCatalog, final JdbcMetadataLoader metadataLoader) {
+                                                 final MetadataCatalog metadataCatalog, final MCPJdbcMetadataLoader metadataLoader) {
         Map<String, ConnectionProvider> connectionProviders = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
         for (Entry<String, RuntimeDatabaseConfiguration> each : runtimeDatabases.entrySet()) {
             connectionProviders.put(each.getKey(), () -> jdbcConnectionFactory.openConnection(each.getKey(), each.getValue()));
@@ -55,7 +55,8 @@ public final class DatabaseRuntimeFactory {
         return new DatabaseRuntime(executionAdapter, database -> refreshMetadata(database, runtimeDatabases.get(database), metadataCatalog, metadataLoader));
     }
     
-    private void refreshMetadata(final String database, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final MetadataCatalog metadataCatalog, final JdbcMetadataLoader metadataLoader) {
+    private void refreshMetadata(final String database, final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
+                                 final MetadataCatalog metadataCatalog, final MCPJdbcMetadataLoader metadataLoader) {
         MetadataCatalog refreshedCatalog = metadataLoader.load(Collections.singletonMap(database, runtimeDatabaseConfig));
         RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = Objects.requireNonNull(refreshedCatalog.getRuntimeDatabaseDescriptors().get(database), "runtimeDatabaseDescriptor cannot be null");
         metadataCatalog.replaceDatabaseSnapshot(database, refreshedCatalog.getDatabaseTypes().get(database), refreshedCatalog.getMetadataObjects(), runtimeDatabaseDescriptor);

@@ -51,7 +51,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class JdbcMetadataLoaderTest {
+class MCPJdbcMetadataLoaderTest {
     
     @TempDir
     private Path tempDir;
@@ -60,7 +60,7 @@ class JdbcMetadataLoaderTest {
     void assertLoad() throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
+        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         MetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
         assertThat(actual.getDatabaseTypes().get("logic_db"), is("H2"));
         assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "orders"));
@@ -81,7 +81,7 @@ class JdbcMetadataLoaderTest {
         String secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader-second");
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
         H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
-        JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
+        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         Map<String, RuntimeDatabaseConfiguration> connectionConfigs = Map.of(
                 "logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl));
         MetadataCatalog actual = metadataLoader.load(connectionConfigs);
@@ -92,7 +92,7 @@ class JdbcMetadataLoaderTest {
     
     @Test
     void assertLoadWithoutSchemaObjects() throws SQLException {
-        JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
+        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         Driver mockDriver = new MockDriver("jdbc:mock:no-schema", createConnectionWithoutSchema());
         DriverManager.registerDriver(mockDriver);
         try {
