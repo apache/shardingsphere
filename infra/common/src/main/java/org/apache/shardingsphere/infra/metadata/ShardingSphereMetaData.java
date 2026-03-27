@@ -55,9 +55,6 @@ import java.util.stream.Collectors;
 public final class ShardingSphereMetaData implements AutoCloseable {
     
     @Getter(AccessLevel.NONE)
-    private final DatabaseIdentifierContext identifierContext;
-    
-    @Getter(AccessLevel.NONE)
     private final IdentifierIndex<ShardingSphereDatabase> databaseIndex;
     
     private final ResourceMetaData globalResourceMetaData;
@@ -109,7 +106,6 @@ public final class ShardingSphereMetaData implements AutoCloseable {
         this.props = props;
         temporaryProps = new TemporaryConfigurationProperties(props.getProps());
         this.protocolType = protocolType;
-        this.identifierContext = identifierContext;
         databaseIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.DATABASE);
         databaseIndex.rebuild(new LinkedHashMap<>(databases.stream().collect(Collectors.toMap(ShardingSphereDatabase::getName, each -> each))));
     }
