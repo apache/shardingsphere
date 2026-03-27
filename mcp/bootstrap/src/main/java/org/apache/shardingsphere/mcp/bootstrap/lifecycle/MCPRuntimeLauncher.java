@@ -37,10 +37,6 @@ import java.util.Map;
  */
 public final class MCPRuntimeLauncher {
     
-    private final DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
-    
-    private final JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
-    
     /**
      * Launch.
      *
@@ -49,7 +45,9 @@ public final class MCPRuntimeLauncher {
      * @throws IllegalStateException when the active transport startup fails
      */
     public MCPRuntimeTransport launch(final MCPLaunchConfiguration config) {
+        DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
         Map<String, DatabaseConnectionConfiguration> connectionConfigs = databaseRuntimeFactory.createConnectionConfigurations(config.getRuntimeDatabases());
+        JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
         MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigs);
         DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigs, metadataCatalog, metadataLoader);
         MCPSessionManager sessionManager = new MCPSessionManager();
