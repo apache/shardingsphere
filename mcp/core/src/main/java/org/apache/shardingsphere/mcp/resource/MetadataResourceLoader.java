@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.resource;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
-import org.apache.shardingsphere.mcp.capability.SupportedObjectType;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 
 import java.util.Collection;
@@ -50,7 +49,7 @@ public final class MetadataResourceLoader {
         }
         String databaseType = metadataCatalog.findDatabaseType(resourceRequest.getDatabase())
                 .orElseThrow(() -> new IllegalStateException("Database does not exist."));
-        if (MetadataObjectType.INDEX == resourceRequest.getObjectType() && !supportsObjectType(resourceRequest.getDatabase(), databaseType, SupportedObjectType.INDEX)) {
+        if (MetadataObjectType.INDEX == resourceRequest.getObjectType() && !supportsObjectType(resourceRequest.getDatabase(), databaseType, MetadataObjectType.INDEX)) {
             return ResourceLoadResult.error(ErrorCode.UNSUPPORTED, "Index resources are not supported for the current database.");
         }
         return ResourceLoadResult.success(filterMetadataObjects(metadataCatalog, resourceRequest, databaseType));
@@ -95,32 +94,12 @@ public final class MetadataResourceLoader {
     }
     
     private boolean isVisiblePublicObject(final String database, final String databaseType, final MetadataObject metadataObject) {
-        Optional<SupportedObjectType> supportedObjectType = toSupportedObjectType(metadataObject.getObjectType());
-        return supportedObjectType.isPresent() && supportsObjectType(database, databaseType, supportedObjectType.get());
+        return supportsObjectType(database, databaseType, metadataObject.getObjectType());
     }
     
-    private boolean supportsObjectType(final String database, final String databaseType, final SupportedObjectType supportedObjectType) {
+    private boolean supportsObjectType(final String database, final String databaseType, final MetadataObjectType metadataObjectType) {
         Optional<DatabaseCapabilityView> databaseCapability = capabilityAssembler.assembleDatabaseCapability(database, databaseType);
-        return databaseCapability.isPresent() && databaseCapability.get().getSupportedObjectTypes().contains(supportedObjectType);
-    }
-    
-    private Optional<SupportedObjectType> toSupportedObjectType(final MetadataObjectType metadataObjectType) {
-        switch (metadataObjectType) {
-            case DATABASE:
-                return Optional.of(SupportedObjectType.DATABASE);
-            case SCHEMA:
-                return Optional.of(SupportedObjectType.SCHEMA);
-            case TABLE:
-                return Optional.of(SupportedObjectType.TABLE);
-            case VIEW:
-                return Optional.of(SupportedObjectType.VIEW);
-            case COLUMN:
-                return Optional.of(SupportedObjectType.COLUMN);
-            case INDEX:
-                return Optional.of(SupportedObjectType.INDEX);
-            default:
-                return Optional.empty();
-        }
+        return databaseCapability.isPresent() && databaseCapability.get().getSupportedMetadataObjectTypes().contains(metadataObjectType);
     }
     
     private List<MetadataObject> sortMetadataObjects(final Collection<MetadataObject> metadataObjects) {

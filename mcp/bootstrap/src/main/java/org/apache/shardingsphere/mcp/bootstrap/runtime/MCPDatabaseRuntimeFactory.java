@@ -37,7 +37,7 @@ public final class MCPDatabaseRuntimeFactory {
     
     private final MCPJdbcConnectionFactory jdbcConnectionFactory = new MCPJdbcConnectionFactory();
     
-    private final MCPJdbcMetadataLoader metadataLoader  = new MCPJdbcMetadataLoader();
+    private final MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
     
     /**
      * Create one adapter-backed database runtime.

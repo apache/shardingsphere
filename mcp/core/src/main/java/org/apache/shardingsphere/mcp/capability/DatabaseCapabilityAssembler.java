@@ -104,16 +104,13 @@ public final class DatabaseCapabilityAssembler {
         if (runtimeDescriptor.isEmpty()) {
             return databaseCapabilityView;
         }
-        Set<SupportedObjectType> supportedObjectTypes = runtimeDescriptor.get().getSupportedObjectTypes().isEmpty()
-                ? databaseCapabilityView.getSupportedObjectTypes()
-                : runtimeDescriptor.get().getSupportedObjectTypes();
         boolean supportsCrossSchemaSql = databaseCapabilityView.isSupportsCrossSchemaSql();
         boolean supportsExplainAnalyze = databaseCapabilityView.isSupportsExplainAnalyze();
         ResultBehavior explainAnalyzeResultBehavior = supportsExplainAnalyze ? ResultBehavior.RESULT_SET : ResultBehavior.UNSUPPORTED;
         TransactionBoundaryBehavior explainAnalyzeTransactionBehavior = supportsExplainAnalyze ? TransactionBoundaryBehavior.NATIVE
                 : TransactionBoundaryBehavior.UNSUPPORTED;
         return new DatabaseCapabilityView(databaseCapabilityView.getDatabase(), runtimeDescriptor.get().getDatabaseType(),
-                databaseCapabilityView.getMinSupportedVersion(), supportedObjectTypes, databaseCapabilityView.getSupportedStatementClasses(),
+                databaseCapabilityView.getMinSupportedVersion(), databaseCapabilityView.getSupportedMetadataObjectTypes(), databaseCapabilityView.getSupportedStatementClasses(),
                 databaseCapabilityView.isSupportsTransactionControl(), databaseCapabilityView.isSupportsSavepoint(),
                 databaseCapabilityView.getSupportedTransactionStatements(), databaseCapabilityView.isDefaultAutocommit(),
                 databaseCapabilityView.getMaxRowsDefault(), databaseCapabilityView.getMaxTimeoutMsDefault(),
@@ -122,7 +119,7 @@ public final class DatabaseCapabilityAssembler {
     }
     
     private static DatabaseCapabilityView createDatabaseCapability(final String database, final DatabaseCapability capability) {
-        return new DatabaseCapabilityView(database, capability.getDatabaseType(), capability.getMinSupportedVersion(), capability.getSupportedObjectTypes(),
+        return new DatabaseCapabilityView(database, capability.getDatabaseType(), capability.getMinSupportedVersion(), capability.getSupportedMetadataObjectTypes(),
                 capability.getSupportedStatementClasses(), capability.isSupportsTransactionControl(), capability.isSupportsSavepoint(),
                 capability.getSupportedTransactionStatements(), capability.isDefaultAutocommit(), capability.getMaxRowsDefault(),
                 capability.getMaxTimeoutMsDefault(), capability.getDefaultSchemaSemantics(), capability.isCrossSchemaQuerySupported(),

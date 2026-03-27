@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.capability;
 
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
 import org.junit.jupiter.api.Test;
 
@@ -59,9 +60,8 @@ class DatabaseCapabilityAssemblerTest {
         assertThat(actualCapability.get().getDatabase(), is("logic_db"));
         assertThat(actualCapability.get().getDatabaseType(), is("MYSQL"));
         assertThat(actualCapability.get().getMinSupportedVersion(), is("BASELINE"));
-        assertThat(actualCapability.get().getSupportedObjectTypes(),
-                is(EnumSet.of(SupportedObjectType.DATABASE, SupportedObjectType.SCHEMA, SupportedObjectType.TABLE,
-                        SupportedObjectType.VIEW, SupportedObjectType.COLUMN, SupportedObjectType.INDEX, SupportedObjectType.CAPABILITY)));
+        assertThat(actualCapability.get().getSupportedMetadataObjectTypes(),
+                is(EnumSet.of(MetadataObjectType.SCHEMA, MetadataObjectType.TABLE, MetadataObjectType.VIEW, MetadataObjectType.COLUMN, MetadataObjectType.INDEX)));
         assertTrue(actualCapability.get().isSupportsTransactionControl());
         assertTrue(actualCapability.get().isSupportsSavepoint());
         assertThat(actualCapability.get().getSupportedTransactionStatements().size(), is(7));
@@ -79,7 +79,7 @@ class DatabaseCapabilityAssemblerTest {
         Optional<DatabaseCapabilityView> actualCapability = assembler.assembleDatabaseCapability("warehouse", "hive");
         
         assertTrue(actualCapability.isPresent());
-        assertFalse(actualCapability.get().getSupportedObjectTypes().contains(SupportedObjectType.INDEX));
+        assertFalse(actualCapability.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
         assertFalse(actualCapability.get().isSupportsTransactionControl());
         assertFalse(actualCapability.get().isSupportsSavepoint());
         assertThat(actualCapability.get().getSupportedTransactionStatements().size(), is(0));
@@ -89,14 +89,13 @@ class DatabaseCapabilityAssemblerTest {
     @Test
     void assertAssembleDatabaseCapabilityWithRuntimeOverlay() {
         MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of("logic_db", "MySQL"), Collections.emptyList(), Map.of(
-                "logic_db", new RuntimeDatabaseDescriptor("logic_db", "MySQL", "8.0.32", EnumSet.of(SupportedObjectType.DATABASE, SupportedObjectType.SCHEMA,
-                        SupportedObjectType.TABLE, SupportedObjectType.COLUMN, SupportedObjectType.CAPABILITY), "public")));
+                "logic_db", new RuntimeDatabaseDescriptor("MySQL", "8.0.32", EnumSet.of(MetadataObjectType.TABLE, MetadataObjectType.COLUMN), "public")));
         DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler(metadataCatalog);
         
         Optional<DatabaseCapabilityView> actualCapability = assembler.assembleDatabaseCapability("logic_db", "mysql");
         
         assertTrue(actualCapability.isPresent());
-        assertFalse(actualCapability.get().getSupportedObjectTypes().contains(SupportedObjectType.INDEX));
+        assertTrue(actualCapability.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
         assertFalse(actualCapability.get().isSupportsCrossSchemaSql());
         assertTrue(actualCapability.get().isSupportsExplainAnalyze());
     }

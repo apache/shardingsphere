@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.resource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.capability.SupportedObjectType;
 
 import java.util.Set;
 
@@ -34,7 +33,7 @@ public final class RuntimeDatabaseDescriptor {
     
     private final String databaseVersion;
     
-    private final Set<SupportedObjectType> supportedObjectTypes;
+    private final Set<MetadataObjectType> discoveredMetadataObjectTypes;
     
     private final String defaultSchema;
 }

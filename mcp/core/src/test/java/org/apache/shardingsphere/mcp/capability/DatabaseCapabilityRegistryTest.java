@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.capability;
 
+import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -94,7 +95,7 @@ class DatabaseCapabilityRegistryTest {
     }
     
     private DatabaseCapability createCapability() {
-        return new DatabaseCapability("mysql", EnumSet.of(SupportedObjectType.TABLE), EnumSet.of(StatementClass.QUERY),
+        return new DatabaseCapability("mysql", EnumSet.of(MetadataObjectType.TABLE), EnumSet.of(StatementClass.QUERY),
                 TransactionCapability.LOCAL_WITH_SAVEPOINT, true, false);
     }
     

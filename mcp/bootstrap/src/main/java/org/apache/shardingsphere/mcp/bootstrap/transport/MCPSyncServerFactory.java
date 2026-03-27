@@ -342,7 +342,7 @@ public final class MCPSyncServerFactory {
             return errorToolResult("not_found", "Database capability does not exist.");
         }
         Optional<DatabaseCapabilityView> capability = runtimeServices.getCapabilityAssembler().assembleDatabaseCapability(database, databaseType);
-        return capability.isPresent() ? successToolResult(capability.get()) : errorToolResult("not_found", "Database capability does not exist.");
+        return capability.isPresent() ? successToolResult(toDatabaseCapabilityPayload(capability.get())) : errorToolResult("not_found", "Database capability does not exist.");
     }
     
     private McpSchema.CallToolResult handleExecuteQuery(final String sessionId, final Map<String, Object> arguments) {
@@ -387,6 +387,29 @@ public final class MCPSyncServerFactory {
             payload.put("error", error);
         }
         return payload;
+    }
+    
+    private Map<String, Object> toDatabaseCapabilityPayload(final DatabaseCapabilityView capability) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("database", capability.getDatabase());
+        result.put("databaseType", capability.getDatabaseType());
+        result.put("minSupportedVersion", capability.getMinSupportedVersion());
+        result.put("supportedObjectTypes", capability.getSupportedMetadataObjectTypes());
+        result.put("supportedStatementClasses", capability.getSupportedStatementClasses());
+        result.put("supportsTransactionControl", capability.isSupportsTransactionControl());
+        result.put("supportsSavepoint", capability.isSupportsSavepoint());
+        result.put("supportedTransactionStatements", capability.getSupportedTransactionStatements());
+        result.put("defaultAutocommit", capability.isDefaultAutocommit());
+        result.put("maxRowsDefault", capability.getMaxRowsDefault());
+        result.put("maxTimeoutMsDefault", capability.getMaxTimeoutMsDefault());
+        result.put("defaultSchemaSemantics", capability.getDefaultSchemaSemantics());
+        result.put("supportsCrossSchemaSql", capability.isSupportsCrossSchemaSql());
+        result.put("supportsExplainAnalyze", capability.isSupportsExplainAnalyze());
+        result.put("ddlTransactionBehavior", capability.getDdlTransactionBehavior());
+        result.put("dclTransactionBehavior", capability.getDclTransactionBehavior());
+        result.put("explainAnalyzeResultBehavior", capability.getExplainAnalyzeResultBehavior());
+        result.put("explainAnalyzeTransactionBehavior", capability.getExplainAnalyzeTransactionBehavior());
+        return result;
     }
     
     private McpSchema.CallToolResult successToolResult(final Object payload) {
@@ -467,7 +490,7 @@ public final class MCPSyncServerFactory {
                 return createErrorPayload("not_found", "Database capability does not exist.");
             }
             Optional<DatabaseCapabilityView> capability = runtimeServices.getCapabilityAssembler().assembleDatabaseCapability(database, databaseType);
-            return capability.isPresent() ? capability.get() : createErrorPayload("not_found", "Database capability does not exist.");
+            return capability.isPresent() ? toDatabaseCapabilityPayload(capability.get()) : createErrorPayload("not_found", "Database capability does not exist.");
         }
         Optional<ResourceRequest> resourceRequest = createMetadataResourceRequest(segments);
         return resourceRequest.isPresent() ? toResourcePayload(runtimeServices.getMetadataResourceLoader().load(metadataCatalog, resourceRequest.get()))

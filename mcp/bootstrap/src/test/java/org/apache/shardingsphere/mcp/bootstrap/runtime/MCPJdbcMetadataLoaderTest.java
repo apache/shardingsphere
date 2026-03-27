@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.capability.SupportedObjectType;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
@@ -70,9 +69,9 @@ class MCPJdbcMetadataLoaderTest {
         assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.INDEX, "idx_orders_status"));
         RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = actual.findRuntimeDatabaseDescriptor("logic_db").orElseThrow();
         assertThat(runtimeDatabaseDescriptor.getDefaultSchema(), is("public"));
-        assertTrue(runtimeDatabaseDescriptor.getSupportedObjectTypes().contains(SupportedObjectType.TABLE));
-        assertTrue(runtimeDatabaseDescriptor.getSupportedObjectTypes().contains(SupportedObjectType.VIEW));
-        assertTrue(runtimeDatabaseDescriptor.getSupportedObjectTypes().contains(SupportedObjectType.INDEX));
+        assertTrue(runtimeDatabaseDescriptor.getDiscoveredMetadataObjectTypes().contains(MetadataObjectType.TABLE));
+        assertTrue(runtimeDatabaseDescriptor.getDiscoveredMetadataObjectTypes().contains(MetadataObjectType.VIEW));
+        assertTrue(runtimeDatabaseDescriptor.getDiscoveredMetadataObjectTypes().contains(MetadataObjectType.INDEX));
     }
     
     @Test
@@ -102,8 +101,8 @@ class MCPJdbcMetadataLoaderTest {
             assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.COLUMN, "order_id"));
             RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = actual.findRuntimeDatabaseDescriptor("logic_db").orElseThrow();
             assertThat(runtimeDatabaseDescriptor.getDefaultSchema(), is(""));
-            assertFalse(runtimeDatabaseDescriptor.getSupportedObjectTypes().contains(SupportedObjectType.SCHEMA));
-            assertTrue(runtimeDatabaseDescriptor.getSupportedObjectTypes().contains(SupportedObjectType.TABLE));
+            assertFalse(runtimeDatabaseDescriptor.getDiscoveredMetadataObjectTypes().contains(MetadataObjectType.SCHEMA));
+            assertTrue(runtimeDatabaseDescriptor.getDiscoveredMetadataObjectTypes().contains(MetadataObjectType.TABLE));
         } finally {
             DriverManager.deregisterDriver(mockDriver);
         }

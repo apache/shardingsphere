@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.capability;
 
 import lombok.Getter;
+import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 
 import java.util.Set;
 
@@ -31,7 +32,7 @@ public final class DatabaseCapability {
     
     private final String minSupportedVersion;
     
-    private final Set<SupportedObjectType> supportedObjectTypes;
+    private final Set<MetadataObjectType> supportedMetadataObjectTypes;
     
     private final Set<StatementClass> supportedStatementClasses;
     
@@ -67,15 +68,15 @@ public final class DatabaseCapability {
      * Construct a database capability definition.
      *
      * @param databaseType database type
-     * @param supportedObjectTypes supported object types
+     * @param supportedMetadataObjectTypes supported metadata object types
      * @param supportedStatementClasses supported statement classes
      * @param transactionCapability transaction capability
      * @param defaultAutocommit default autocommit flag
      * @param crossSchemaQuerySupported cross-schema query support flag
      */
-    public DatabaseCapability(final String databaseType, final Set<SupportedObjectType> supportedObjectTypes, final Set<StatementClass> supportedStatementClasses,
+    public DatabaseCapability(final String databaseType, final Set<MetadataObjectType> supportedMetadataObjectTypes, final Set<StatementClass> supportedStatementClasses,
                               final TransactionCapability transactionCapability, final boolean defaultAutocommit, final boolean crossSchemaQuerySupported) {
-        this(databaseType, "BASELINE", supportedObjectTypes, supportedStatementClasses, transactionCapability,
+        this(databaseType, "BASELINE", supportedMetadataObjectTypes, supportedStatementClasses, transactionCapability,
                 DatabaseCapabilityRegistry.createSupportedTransactionStatements(transactionCapability), defaultAutocommit, 1000, 30000,
                 SchemaSemantics.NATIVE_SCHEMA, crossSchemaQuerySupported,
                 null != supportedStatementClasses && supportedStatementClasses.contains(StatementClass.EXPLAIN_ANALYZE),
@@ -87,7 +88,7 @@ public final class DatabaseCapability {
      *
      * @param databaseType database type
      * @param minSupportedVersion minimum supported version label
-     * @param supportedObjectTypes supported object types
+     * @param supportedMetadataObjectTypes supported metadata object types
      * @param supportedStatementClasses supported statement classes
      * @param transactionCapability transaction capability
      * @param supportedTransactionStatements supported transaction statements
@@ -102,7 +103,7 @@ public final class DatabaseCapability {
      * @param explainAnalyzeResultBehavior explain-analyze result behavior
      * @param explainAnalyzeTransactionBehavior explain-analyze transaction behavior
      */
-    public DatabaseCapability(final String databaseType, final String minSupportedVersion, final Set<SupportedObjectType> supportedObjectTypes,
+    public DatabaseCapability(final String databaseType, final String minSupportedVersion, final Set<MetadataObjectType> supportedMetadataObjectTypes,
                               final Set<StatementClass> supportedStatementClasses, final TransactionCapability transactionCapability,
                               final Set<String> supportedTransactionStatements, final boolean defaultAutocommit, final int maxRowsDefault,
                               final int maxTimeoutMsDefault, final SchemaSemantics defaultSchemaSemantics, final boolean crossSchemaQuerySupported,
@@ -111,7 +112,7 @@ public final class DatabaseCapability {
                               final TransactionBoundaryBehavior explainAnalyzeTransactionBehavior) {
         this.databaseType = DatabaseCapabilityRegistry.normalizeDatabaseType(databaseType);
         this.minSupportedVersion = minSupportedVersion;
-        this.supportedObjectTypes = supportedObjectTypes;
+        this.supportedMetadataObjectTypes = supportedMetadataObjectTypes;
         this.supportedStatementClasses = supportedStatementClasses;
         this.transactionCapability = transactionCapability;
         supportsTransactionControl = TransactionCapability.NONE != transactionCapability;

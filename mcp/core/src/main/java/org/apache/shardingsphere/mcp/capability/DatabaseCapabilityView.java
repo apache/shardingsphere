@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.capability;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 
 import java.util.Set;
 
@@ -35,7 +36,7 @@ public final class DatabaseCapabilityView {
     
     private final String minSupportedVersion;
     
-    private final Set<SupportedObjectType> supportedObjectTypes;
+    private final Set<MetadataObjectType> supportedMetadataObjectTypes;
     
     private final Set<StatementClass> supportedStatementClasses;
     

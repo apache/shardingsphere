@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.capability.SupportedObjectType;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
@@ -76,18 +75,17 @@ public final class MCPJdbcMetadataLoader {
     private RuntimeMetadataSnapshot loadRuntimeMetadataSnapshot(final String databaseName,
                                                                 final String databaseType, final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
         List<MetadataObject> metadataObjects = new LinkedList<>();
-        Set<SupportedObjectType> supportedObjectTypes = new LinkedHashSet<>();
+        Set<MetadataObjectType> discoveredMetadataObjectTypes = new LinkedHashSet<>();
         Set<String> foundSchemas = new LinkedHashSet<>();
-        supportedObjectTypes.add(SupportedObjectType.DATABASE);
-        loadTables(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, foundSchemas);
-        loadViews(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, foundSchemas);
+        loadTables(databaseName, databaseMetaData, metadataObjects, discoveredMetadataObjectTypes, foundSchemas);
+        loadViews(databaseName, databaseMetaData, metadataObjects, discoveredMetadataObjectTypes, foundSchemas);
         String databaseVersion = normalize(databaseMetaData.getDatabaseProductVersion());
         return new RuntimeMetadataSnapshot(
-                metadataObjects, new RuntimeDatabaseDescriptor(databaseType, databaseVersion, supportedObjectTypes, resolveDefaultSchema(connection, foundSchemas)));
+                metadataObjects, new RuntimeDatabaseDescriptor(databaseType, databaseVersion, discoveredMetadataObjectTypes, resolveDefaultSchema(connection, foundSchemas)));
     }
     
     private void loadTables(final String databaseName, final DatabaseMetaData databaseMetaData,
-                            final Collection<MetadataObject> metadataObjects, final Collection<SupportedObjectType> supportedObjectTypes,
+                            final Collection<MetadataObject> metadataObjects, final Collection<MetadataObjectType> discoveredMetadataObjectTypes,
                             final Collection<String> foundSchemas) throws SQLException {
         try (ResultSet tables = databaseMetaData.getTables(null, null, "%", new String[]{"TABLE"})) {
             while (tables.next()) {
@@ -99,17 +97,17 @@ public final class MCPJdbcMetadataLoader {
                 if (tableName.isEmpty()) {
                     continue;
                 }
-                registerSchema(databaseName, schemaName, metadataObjects, supportedObjectTypes, foundSchemas);
+                registerSchema(databaseName, schemaName, metadataObjects, discoveredMetadataObjectTypes, foundSchemas);
                 metadataObjects.add(new MetadataObject(databaseName, schemaName, MetadataObjectType.TABLE, tableName, "", ""));
-                supportedObjectTypes.add(SupportedObjectType.TABLE);
-                loadColumns(databaseName, databaseMetaData, schemaName, tableName, "TABLE", metadataObjects, supportedObjectTypes);
-                loadIndexes(databaseName, databaseMetaData, schemaName, tableName, metadataObjects, supportedObjectTypes);
+                discoveredMetadataObjectTypes.add(MetadataObjectType.TABLE);
+                loadColumns(databaseName, databaseMetaData, schemaName, tableName, "TABLE", metadataObjects, discoveredMetadataObjectTypes);
+                loadIndexes(databaseName, databaseMetaData, schemaName, tableName, metadataObjects, discoveredMetadataObjectTypes);
             }
         }
     }
     
     private void loadViews(final String databaseName, final DatabaseMetaData databaseMetaData,
-                           final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes, final Set<String> foundSchemas) throws SQLException {
+                           final List<MetadataObject> metadataObjects, final Set<MetadataObjectType> discoveredMetadataObjectTypes, final Set<String> foundSchemas) throws SQLException {
         try (ResultSet views = databaseMetaData.getTables(null, null, "%", new String[]{"VIEW"})) {
             while (views.next()) {
                 String schemaName = normalize(views.getString("TABLE_SCHEM"));
@@ -120,10 +118,10 @@ public final class MCPJdbcMetadataLoader {
                 if (viewName.trim().isEmpty()) {
                     continue;
                 }
-                registerSchema(databaseName, schemaName, metadataObjects, supportedObjectTypes, foundSchemas);
+                registerSchema(databaseName, schemaName, metadataObjects, discoveredMetadataObjectTypes, foundSchemas);
                 metadataObjects.add(new MetadataObject(databaseName, schemaName, MetadataObjectType.VIEW, viewName, "", ""));
-                supportedObjectTypes.add(SupportedObjectType.VIEW);
-                loadColumns(databaseName, databaseMetaData, schemaName, viewName, "VIEW", metadataObjects, supportedObjectTypes);
+                discoveredMetadataObjectTypes.add(MetadataObjectType.VIEW);
+                loadColumns(databaseName, databaseMetaData, schemaName, viewName, "VIEW", metadataObjects, discoveredMetadataObjectTypes);
             }
         }
     }
@@ -134,31 +132,31 @@ public final class MCPJdbcMetadataLoader {
     }
     
     private void registerSchema(final String databaseName, final String schema,
-                                final Collection<MetadataObject> metadataObjects, final Collection<SupportedObjectType> supportedObjectTypes, final Collection<String> foundSchemas) {
+                                final Collection<MetadataObject> metadataObjects, final Collection<MetadataObjectType> discoveredMetadataObjectTypes, final Collection<String> foundSchemas) {
         if (schema.isEmpty() || !foundSchemas.add(schema)) {
             return;
         }
-        supportedObjectTypes.add(SupportedObjectType.SCHEMA);
+        discoveredMetadataObjectTypes.add(MetadataObjectType.SCHEMA);
         metadataObjects.add(new MetadataObject(databaseName, schema, MetadataObjectType.SCHEMA, schema, "", ""));
     }
     
     private void loadColumns(final String databaseName, final DatabaseMetaData databaseMetaData, final String schemaName,
                              final String objectName, final String parentObjectType, final Collection<MetadataObject> metadataObjects,
-                             final Collection<SupportedObjectType> supportedObjectTypes) throws SQLException {
+                             final Collection<MetadataObjectType> discoveredMetadataObjectTypes) throws SQLException {
         try (ResultSet columns = databaseMetaData.getColumns(null, getSchemaPattern(schemaName), objectName, "%")) {
             while (columns.next()) {
                 String columnName = normalize(columns.getString("COLUMN_NAME"));
                 if (columnName.isEmpty()) {
                     continue;
                 }
-                supportedObjectTypes.add(SupportedObjectType.COLUMN);
+                discoveredMetadataObjectTypes.add(MetadataObjectType.COLUMN);
                 metadataObjects.add(new MetadataObject(databaseName, schemaName, MetadataObjectType.COLUMN, columnName, parentObjectType, objectName));
             }
         }
     }
     
     private void loadIndexes(final String databaseName, final DatabaseMetaData databaseMetaData, final String schemaName,
-                             final String tableName, final Collection<MetadataObject> metadataObjects, final Collection<SupportedObjectType> supportedObjectTypes) throws SQLException {
+                             final String tableName, final Collection<MetadataObject> metadataObjects, final Collection<MetadataObjectType> discoveredMetadataObjectTypes) throws SQLException {
         Set<String> indexNames = new LinkedHashSet<>();
         try (ResultSet indexes = databaseMetaData.getIndexInfo(null, getSchemaPattern(schemaName), tableName, false, false)) {
             while (indexes.next()) {
@@ -169,7 +167,7 @@ public final class MCPJdbcMetadataLoader {
                 if (!indexNames.add(indexName)) {
                     continue;
                 }
-                supportedObjectTypes.add(SupportedObjectType.INDEX);
+                discoveredMetadataObjectTypes.add(MetadataObjectType.INDEX);
                 metadataObjects.add(new MetadataObject(databaseName, schemaName, MetadataObjectType.INDEX, indexName.trim(), "TABLE", tableName));
             }
         }

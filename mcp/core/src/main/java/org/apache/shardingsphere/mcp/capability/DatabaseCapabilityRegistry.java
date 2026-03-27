@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.capability;
 
+import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Locale;
@@ -86,7 +88,7 @@ public final class DatabaseCapabilityRegistry {
         if (supportsExplainAnalyze == capability.isSupportsExplainAnalyze()) {
             return capability;
         }
-        return new DatabaseCapability(capability.getDatabaseType(), capability.getMinSupportedVersion(), capability.getSupportedObjectTypes(),
+        return new DatabaseCapability(capability.getDatabaseType(), capability.getMinSupportedVersion(), capability.getSupportedMetadataObjectTypes(),
                 adjustSupportedStatementClasses(capability.getSupportedStatementClasses(), supportsExplainAnalyze), capability.getTransactionCapability(),
                 capability.getSupportedTransactionStatements(),
                 capability.isDefaultAutocommit(), capability.getMaxRowsDefault(), capability.getMaxTimeoutMsDefault(), capability.getDefaultSchemaSemantics(),
@@ -140,24 +142,22 @@ public final class DatabaseCapabilityRegistry {
     private static DatabaseCapability createDefaultCapability(final String databaseType, final TransactionCapability transactionCapability,
                                                               final boolean indexSupported, final SchemaSemantics defaultSchemaSemantics,
                                                               final boolean crossSchemaQuerySupported) {
-        Set<SupportedObjectType> supportedObjectTypes = createSupportedObjectTypes(indexSupported);
+        Set<MetadataObjectType> supportedMetadataObjectTypes = createSupportedMetadataObjectTypes(indexSupported);
         Set<StatementClass> supportedStatementClasses = createSupportedStatementClasses(transactionCapability);
-        return new DatabaseCapability(databaseType, "BASELINE", supportedObjectTypes, supportedStatementClasses, transactionCapability,
+        return new DatabaseCapability(databaseType, "BASELINE", supportedMetadataObjectTypes, supportedStatementClasses, transactionCapability,
                 createSupportedTransactionStatements(transactionCapability), true, 1000, 30000, defaultSchemaSemantics, crossSchemaQuerySupported,
                 false, TransactionBoundaryBehavior.NATIVE, TransactionBoundaryBehavior.NATIVE, ResultBehavior.UNSUPPORTED, TransactionBoundaryBehavior.UNSUPPORTED);
     }
     
-    private static Set<SupportedObjectType> createSupportedObjectTypes(final boolean indexSupported) {
-        Set<SupportedObjectType> result = new LinkedHashSet<>();
-        result.add(SupportedObjectType.DATABASE);
-        result.add(SupportedObjectType.SCHEMA);
-        result.add(SupportedObjectType.TABLE);
-        result.add(SupportedObjectType.VIEW);
-        result.add(SupportedObjectType.COLUMN);
+    private static Set<MetadataObjectType> createSupportedMetadataObjectTypes(final boolean indexSupported) {
+        Set<MetadataObjectType> result = new LinkedHashSet<>();
+        result.add(MetadataObjectType.SCHEMA);
+        result.add(MetadataObjectType.TABLE);
+        result.add(MetadataObjectType.VIEW);
+        result.add(MetadataObjectType.COLUMN);
         if (indexSupported) {
-            result.add(SupportedObjectType.INDEX);
+            result.add(MetadataObjectType.INDEX);
         }
-        result.add(SupportedObjectType.CAPABILITY);
         return result;
     }
     
