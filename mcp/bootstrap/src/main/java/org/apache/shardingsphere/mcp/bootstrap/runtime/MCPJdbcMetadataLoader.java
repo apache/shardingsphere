@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -76,25 +77,15 @@ public final class MCPJdbcMetadataLoader {
         Set<SupportedObjectType> supportedObjectTypes = new LinkedHashSet<>();
         Set<String> discoveredSchemas = new LinkedHashSet<>();
         supportedObjectTypes.add(SupportedObjectType.DATABASE);
-        loadMetadataObjects(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
+        loadTables(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
+        loadViews(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
         return new RuntimeMetadataSnapshot(metadataObjects,
                 new RuntimeDatabaseDescriptor(databaseName, databaseType, resolveDatabaseVersion(databaseMetaData), supportedObjectTypes, resolveDefaultSchema(connection, discoveredSchemas)));
     }
     
-    private void loadMetadataObjects(final String databaseName, final DatabaseMetaData databaseMetaData, final List<MetadataObject> metadataObjects,
-                                     final Set<SupportedObjectType> supportedObjectTypes, final Set<String> discoveredSchemas) throws SQLException {
-        loadTables(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
-        loadViews(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, discoveredSchemas);
-    }
-    
-    private boolean isSystemSchema(final String schemaName) {
-        String upperSchemaName = schemaName.toUpperCase();
-        return "INFORMATION_SCHEMA".equals(upperSchemaName) || "PG_CATALOG".equals(upperSchemaName) || "SYSTEM_LOBS".equals(upperSchemaName);
-    }
-    
     private void loadTables(final String databaseName, final DatabaseMetaData databaseMetaData,
-                            final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes,
-                            final Set<String> discoveredSchemas) throws SQLException {
+                            final Collection<MetadataObject> metadataObjects, final Collection<SupportedObjectType> supportedObjectTypes,
+                            final Collection<String> discoveredSchemas) throws SQLException {
         try (ResultSet tables = databaseMetaData.getTables(null, null, "%", new String[]{"TABLE"})) {
             while (tables.next()) {
                 String schema = normalizeSchema(tables.getString("TABLE_SCHEM"));
@@ -136,9 +127,14 @@ public final class MCPJdbcMetadataLoader {
         }
     }
     
+    private boolean isSystemSchema(final String schemaName) {
+        String upperSchemaName = schemaName.toUpperCase();
+        return "INFORMATION_SCHEMA".equals(upperSchemaName) || "PG_CATALOG".equals(upperSchemaName) || "SYSTEM_LOBS".equals(upperSchemaName);
+    }
+    
     private void loadColumns(final String databaseName, final DatabaseMetaData databaseMetaData, final String schema,
-                             final String objectName, final String parentObjectType, final List<MetadataObject> metadataObjects,
-                             final Set<SupportedObjectType> supportedObjectTypes) throws SQLException {
+                             final String objectName, final String parentObjectType, final Collection<MetadataObject> metadataObjects,
+                             final Collection<SupportedObjectType> supportedObjectTypes) throws SQLException {
         try (ResultSet columns = databaseMetaData.getColumns(null, getSchemaPattern(schema), objectName, "%")) {
             while (columns.next()) {
                 String columnName = columns.getString("COLUMN_NAME");
@@ -153,7 +149,7 @@ public final class MCPJdbcMetadataLoader {
     }
     
     private void loadIndexes(final String databaseName, final DatabaseMetaData databaseMetaData, final String schema,
-                             final String tableName, final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes) throws SQLException {
+                             final String tableName, final Collection<MetadataObject> metadataObjects, final Collection<SupportedObjectType> supportedObjectTypes) throws SQLException {
         Set<String> indexNames = new LinkedHashSet<>();
         try (ResultSet indexes = databaseMetaData.getIndexInfo(null, getSchemaPattern(schema), tableName, false, false)) {
             while (indexes.next()) {
@@ -170,8 +166,8 @@ public final class MCPJdbcMetadataLoader {
         }
     }
     
-    private void registerSchema(final String databaseName,
-                                final String schema, final List<MetadataObject> metadataObjects, final Set<SupportedObjectType> supportedObjectTypes, final Set<String> discoveredSchemas) {
+    private void registerSchema(final String databaseName, final String schema,
+                                final Collection<MetadataObject> metadataObjects, final Collection<SupportedObjectType> supportedObjectTypes, final Collection<String> discoveredSchemas) {
         if (schema.isEmpty() || !discoveredSchemas.add(schema)) {
             return;
         }
