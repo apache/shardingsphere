@@ -40,7 +40,9 @@ import java.util.stream.Collectors;
  */
 @Setter
 public final class ShowShardingKeyGenerateStrategiesExecutor
-        implements DistSQLQueryExecutor<ShowShardingKeyGenerateStrategiesStatement>, DistSQLExecutorRuleAware<ShardingRule> {
+        implements
+            DistSQLQueryExecutor<ShowShardingKeyGenerateStrategiesStatement>,
+            DistSQLExecutorRuleAware<ShardingRule> {
     
     private ShardingRule rule;
     

@@ -43,7 +43,7 @@ public final class ShardingKeyGenerateStrategyStatementConverter {
     public static KeyGenerateStrategiesConfiguration createKeyGenerateStrategiesConfig(final AbstractKeyGenerateStrategyDefinitionSegment keyGenerateStrategySegment, final String keyGeneratorName) {
         return keyGenerateStrategySegment instanceof ColumnKeyGenerateStrategyDefinitionSegment
                 ? new ColumnKeyGenerateStrategiesRuleConfiguration(keyGeneratorName, ((ColumnKeyGenerateStrategyDefinitionSegment) keyGenerateStrategySegment).getTableName(),
-                ((ColumnKeyGenerateStrategyDefinitionSegment) keyGenerateStrategySegment).getColumnName())
+                        ((ColumnKeyGenerateStrategyDefinitionSegment) keyGenerateStrategySegment).getColumnName())
                 : new SequenceKeyGenerateStrategiesRuleConfiguration(keyGeneratorName, ((SequenceKeyGenerateStrategyDefinitionSegment) keyGenerateStrategySegment).getSequenceName());
     }
     

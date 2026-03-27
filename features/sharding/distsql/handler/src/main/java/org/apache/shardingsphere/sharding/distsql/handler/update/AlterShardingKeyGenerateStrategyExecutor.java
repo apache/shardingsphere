@@ -44,7 +44,8 @@ import java.util.LinkedHashSet;
 @DistSQLExecutorCurrentRuleRequired(ShardingRule.class)
 @Setter
 public final class AlterShardingKeyGenerateStrategyExecutor
-        implements DatabaseRuleAlterExecutor<AlterShardingKeyGenerateStrategyStatement, ShardingRule, ShardingRuleConfiguration> {
+        implements
+            DatabaseRuleAlterExecutor<AlterShardingKeyGenerateStrategyStatement, ShardingRule, ShardingRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     

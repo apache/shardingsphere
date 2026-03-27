@@ -38,7 +38,8 @@ import java.util.Collections;
  */
 @Setter
 public final class CreateShardingKeyGenerateStrategyExecutor
-        implements DatabaseRuleCreateExecutor<CreateShardingKeyGenerateStrategyStatement, ShardingRule, ShardingRuleConfiguration> {
+        implements
+            DatabaseRuleCreateExecutor<CreateShardingKeyGenerateStrategyStatement, ShardingRule, ShardingRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     

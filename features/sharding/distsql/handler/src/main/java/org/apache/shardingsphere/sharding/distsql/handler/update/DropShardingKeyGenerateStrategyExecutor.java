@@ -37,7 +37,8 @@ import java.util.stream.Collectors;
 @DistSQLExecutorCurrentRuleRequired(ShardingRule.class)
 @Setter
 public final class DropShardingKeyGenerateStrategyExecutor
-        implements DatabaseRuleDropExecutor<DropShardingKeyGenerateStrategyStatement, ShardingRule, ShardingRuleConfiguration> {
+        implements
+            DatabaseRuleDropExecutor<DropShardingKeyGenerateStrategyStatement, ShardingRule, ShardingRuleConfiguration> {
     
     private ShardingSphereDatabase database;
     

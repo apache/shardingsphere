@@ -145,7 +145,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitCreateShardingTableReferenceRule(final CreateShardingTableReferenceRuleContext ctx) {
         return new CreateShardingTableReferenceRuleStatement(null != ctx.ifNotExists(), getTableReferenceRuleSegments(ctx.tableReferenceRuleDefinition()));
     }
-
+    
     @Override
     public ASTNode visitCreateShardingKeyGenerateStrategy(final CreateShardingKeyGenerateStrategyContext ctx) {
         String name = IdentifierValueUtils.getValue(ctx.keyGenerateStrategyName());
@@ -246,7 +246,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitDropShardingAlgorithm(final DropShardingAlgorithmContext ctx) {
         return new DropShardingAlgorithmStatement(null != ctx.ifExists(), ctx.shardingAlgorithmName().stream().map(IdentifierValueUtils::getValue).collect(Collectors.toList()));
     }
-
+    
     @Override
     public ASTNode visitDropShardingKeyGenerateStrategy(final DropShardingKeyGenerateStrategyContext ctx) {
         return new DropShardingKeyGenerateStrategyStatement(null != ctx.ifExists(),
@@ -263,7 +263,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitShowShardingAlgorithms(final ShowShardingAlgorithmsContext ctx) {
         return new ShowShardingAlgorithmsStatement(null == ctx.databaseName() ? null : new FromDatabaseSegment(ctx.FROM().getSymbol().getStartIndex(), (DatabaseSegment) visit(ctx.databaseName())));
     }
-
+    
     @Override
     public ASTNode visitShowShardingKeyGenerateStrategies(final ShowShardingKeyGenerateStrategiesContext ctx) {
         return new ShowShardingKeyGenerateStrategiesStatement(null == ctx.keyGenerateStrategyName() ? null : IdentifierValueUtils.getValue(ctx.keyGenerateStrategyName()),
@@ -351,11 +351,11 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
         return new AlgorithmSegment(IdentifierValueUtils.getValue(ctx.algorithmTypeName()), getProperties(ctx.propertiesDefinition()));
     }
-
+    
     private String getKeyGeneratorName(final KeyGenerateAlgorithmDefinitionContext ctx) {
         return null == ctx.keyGeneratorName() ? null : IdentifierValueUtils.getValue(ctx.keyGeneratorName());
     }
-
+    
     private AlgorithmSegment getAlgorithmSegment(final KeyGenerateAlgorithmDefinitionContext ctx) {
         return null == ctx.algorithmDefinition() ? null : (AlgorithmSegment) visit(ctx.algorithmDefinition());
     }
