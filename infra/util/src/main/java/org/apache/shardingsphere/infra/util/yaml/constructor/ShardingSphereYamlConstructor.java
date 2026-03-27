@@ -98,17 +98,6 @@ public final class ShardingSphereYamlConstructor extends Constructor {
         return IntStream.range(0, value.length()).allMatch(i -> Character.isWhitespace(value.charAt(i)));
     }
     
-    private void validateMapKeys(final Map<?, ?> map) {
-        for (Object each : map.keySet()) {
-            Preconditions.checkArgument(null != each, "YAML map key cannot be null.");
-            Preconditions.checkArgument(!(each instanceof String) || !isBlank((String) each), "YAML map key cannot be blank.");
-        }
-    }
-    
-    private boolean isBlank(final String value) {
-        return IntStream.range(0, value.length()).allMatch(i -> Character.isWhitespace(value.charAt(i)));
-    }
-    
     private boolean isMappingNode(final Node node, final Object target) {
         return null != target && node instanceof MappingNode && !(target instanceof Map) && !(target instanceof Collection);
     }

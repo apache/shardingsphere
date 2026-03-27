@@ -70,16 +70,6 @@ class DatabaseRuntimeFactoryTest {
     }
     
     @Test
-    void assertCreateConnectionConfigurationsWithMissingDatabaseTypeInRuntimeDatabases() {
-        DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
-        
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> databaseRuntimeFactory.createConnectionConfigurations(
-                Map.of("logic_db", new RuntimeDatabaseConfiguration("", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"))));
-        
-        assertThat(actual.getMessage(), is("Runtime database `logic_db` property `databaseType` is required."));
-    }
-    
-    @Test
     void assertCreateConnectionConfigurationsWithNoRuntimeDatabases() {
         DatabaseRuntimeFactory databaseRuntimeFactory = new DatabaseRuntimeFactory();
         

@@ -61,15 +61,6 @@ class ProductionRuntimeLauncherTest {
     }
     
     @Test
-    void assertLaunchWithInvalidRuntimeDatabases() {
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"),
-                        Map.of("logic_db", new RuntimeDatabaseConfiguration("", "jdbc:h2:mem:test", "", "", "org.h2.Driver")))));
-        assertThat(actual.getMessage(), is("Runtime database `logic_db` property `databaseType` is required."));
-    }
-    
-    @Test
     void assertLaunchWithRuntimeDatabases() throws SQLException {
         String firstJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher-first");
         String secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher-second");
@@ -102,23 +93,6 @@ class ProductionRuntimeLauncherTest {
         } finally {
             DriverManager.deregisterDriver(driver);
         }
-    }
-    
-    @Test
-    void assertLaunchWithMultipleEnabledTransports() {
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(true, true, "/mcp"),
-                        Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:test", "", "", "org.h2.Driver")))));
-        assertThat(actual.getMessage(), is("HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport."));
-    }
-    
-    @Test
-    void assertLaunchWithDisabledTransports() {
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, false, "/mcp"), Map.of())));
-        assertThat(actual.getMessage(), is("Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true."));
     }
     
     private MCPTransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {

@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfigurationValidator;
 import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseConnectionConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.DatabaseRuntimeFactory;
@@ -51,8 +49,6 @@ public final class MCPRuntimeLauncher {
      * @throws IllegalStateException when the active transport startup fails
      */
     public MCPRuntimeTransport launch(final MCPLaunchConfiguration config) {
-        MCPTransportConfiguration transportConfig = config.getTransport();
-        MCPTransportConfigurationValidator.validate(transportConfig);
         Map<String, DatabaseConnectionConfiguration> connectionConfigurations = databaseRuntimeFactory.createConnectionConfigurations(config.getRuntimeDatabases());
         MetadataCatalog metadataCatalog = metadataLoader.load(connectionConfigurations);
         DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, metadataLoader);
@@ -63,7 +59,7 @@ public final class MCPRuntimeLauncher {
             transport.start();
         } catch (final IOException ex) {
             transport.close();
-            throw new IllegalStateException(transportConfig.getHttp().isEnabled() ? "Failed to start HTTP transport." : "Failed to start STDIO transport.", ex);
+            throw new IllegalStateException(config.getTransport().getHttp().isEnabled() ? "Failed to start HTTP transport." : "Failed to start STDIO transport.", ex);
         }
         return transport;
     }

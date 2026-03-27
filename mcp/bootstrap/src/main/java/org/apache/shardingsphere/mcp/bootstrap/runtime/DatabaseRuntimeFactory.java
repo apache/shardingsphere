@@ -54,11 +54,7 @@ public final class DatabaseRuntimeFactory {
     private Map<String, DatabaseConnectionConfiguration> buildConnectionConfigurations(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         Map<String, DatabaseConnectionConfiguration> result = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
         for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
-            String databaseName = validateDatabaseName(entry.getKey());
-            if (result.containsKey(databaseName)) {
-                throw new IllegalArgumentException(String.format("Runtime logical database `%s` is duplicated.", databaseName));
-            }
-            result.put(databaseName, createConnectionConfiguration(databaseName, entry.getValue()));
+            result.put(entry.getKey(), createConnectionConfiguration(entry.getKey(), entry.getValue()));
         }
         return result;
     }
@@ -82,8 +78,7 @@ public final class DatabaseRuntimeFactory {
     }
     
     private DatabaseConnectionConfiguration createConnectionConfiguration(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfiguration) {
-        return new DatabaseConnectionConfiguration(databaseName, validateRequiredValue(runtimeDatabaseConfiguration.getDatabaseType(), databaseName, "databaseType"),
-                validateRequiredValue(runtimeDatabaseConfiguration.getJdbcUrl(), databaseName, "jdbcUrl"), runtimeDatabaseConfiguration.getUsername(),
+        return new DatabaseConnectionConfiguration(databaseName, runtimeDatabaseConfiguration.getDatabaseType(), runtimeDatabaseConfiguration.getJdbcUrl(), runtimeDatabaseConfiguration.getUsername(),
                 runtimeDatabaseConfiguration.getPassword(), runtimeDatabaseConfiguration.getDriverClassName());
     }
     
@@ -95,19 +90,5 @@ public final class DatabaseRuntimeFactory {
         RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = Objects.requireNonNull(refreshedCatalog.getRuntimeDatabaseDescriptors().get(database),
                 "runtimeDatabaseDescriptor cannot be null");
         metadataCatalog.replaceDatabaseSnapshot(database, refreshedCatalog.getDatabaseTypes().get(database), refreshedCatalog.getMetadataObjects(), runtimeDatabaseDescriptor);
-    }
-    
-    private String validateDatabaseName(final String databaseName) {
-        if (databaseName.isBlank()) {
-            throw new IllegalArgumentException("Runtime logical database name cannot be blank.");
-        }
-        return databaseName;
-    }
-    
-    private String validateRequiredValue(final String value, final String databaseName, final String fieldName) {
-        if (value.isBlank()) {
-            throw new IllegalArgumentException(String.format("Runtime database `%s` property `%s` is required.", databaseName, fieldName));
-        }
-        return value;
     }
 }
