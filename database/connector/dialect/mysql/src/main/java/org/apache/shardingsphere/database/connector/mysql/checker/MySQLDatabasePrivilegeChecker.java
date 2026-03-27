@@ -103,7 +103,8 @@ public final class MySQLDatabasePrivilegeChecker implements DialectDatabasePrivi
     }
     
     private boolean matchPrivileges(final String grantedPrivileges, final String[][] requiredPrivileges) {
-        return Arrays.stream(requiredPrivileges).anyMatch(each -> Arrays.stream(each).allMatch(grantedPrivileges::contains));
+        String normalizedGrantedPrivileges = grantedPrivileges.replace("\\", "");
+        return Arrays.stream(requiredPrivileges).anyMatch(each -> Arrays.stream(each).allMatch(normalizedGrantedPrivileges::contains));
     }
     
     @Override
