@@ -87,15 +87,22 @@ public final class EncryptPredicateValueTokenGenerator implements CollectionSQLT
         Map<Integer, Object> indexValues = getPositionValues(encryptCondition.getPositionValueMap().keySet(),
                 getEncryptedValues(schemaName, encryptTable, encryptCondition, new EncryptConditionValues(encryptCondition).get(parameters)));
         Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
-        if (encryptCondition instanceof EncryptBinaryCondition && ((EncryptBinaryCondition) encryptCondition).getExpressionSegment() instanceof FunctionSegment) {
-            FunctionSegment functionSegment = (FunctionSegment) ((EncryptBinaryCondition) encryptCondition).getExpressionSegment();
-            return Optional.of(new EncryptPredicateFunctionRightValueToken(startIndex, stopIndex, functionSegment.getFunctionName(), functionSegment.getParameters(), indexValues,
-                    parameterMarkerIndexes));
+        if (encryptCondition instanceof EncryptBinaryCondition) {
+            return Optional.of(generateBinarySQLTokens((EncryptBinaryCondition) encryptCondition, startIndex, stopIndex, indexValues, parameterMarkerIndexes));
         }
-        
         return encryptCondition instanceof EncryptInCondition
                 ? Optional.of(new EncryptPredicateInRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes))
                 : Optional.of(new EncryptPredicateEqualRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes));
+    }
+    
+    private SQLToken generateBinarySQLTokens(final EncryptBinaryCondition encryptCondition, final int startIndex, final int stopIndex,
+                                             final Map<Integer, Object> indexValues, final Collection<Integer> parameterMarkerIndexes) {
+        if (encryptCondition.getExpressionSegment() instanceof FunctionSegment) {
+            FunctionSegment functionSegment = (FunctionSegment) encryptCondition.getExpressionSegment();
+            return new EncryptPredicateFunctionRightValueToken(startIndex, stopIndex,
+                    functionSegment.getFunctionName(), functionSegment.getParameters(), indexValues, parameterMarkerIndexes);
+        }
+        return new EncryptPredicateEqualRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes);
     }
     
     private List<Object> getEncryptedValues(final String schemaName, final EncryptTable encryptTable, final EncryptCondition encryptCondition, final List<Object> originalValues) {
