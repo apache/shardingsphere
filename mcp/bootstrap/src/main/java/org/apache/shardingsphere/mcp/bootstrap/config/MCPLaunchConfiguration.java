@@ -20,16 +20,16 @@ package org.apache.shardingsphere.mcp.bootstrap.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
-
 /**
  * MCP launch configuration.
+ *
+ * @param <T> runtime configuration type
  */
 @RequiredArgsConstructor
 @Getter
-public final class MCPLaunchConfiguration {
+public final class MCPLaunchConfiguration<T> {
     
     private final MCPTransportConfiguration transport;
     
-    private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
+    private final T runtimeConfiguration;
 }

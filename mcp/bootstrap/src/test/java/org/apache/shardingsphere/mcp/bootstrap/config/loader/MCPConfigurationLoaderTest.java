@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.config.loader;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.yaml.snakeyaml.constructor.ConstructorException;
@@ -52,14 +52,14 @@ class MCPConfigurationLoaderTest {
                 + "    enabled: false\n"
                 + "runtimeDatabases: {}\n");
         
-        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
+        MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> actual = MCPConfigurationLoader.load(configFile.toString());
         
         assertTrue(actual.getTransport().getHttp().isEnabled());
         assertFalse(actual.getTransport().getStdio().isEnabled());
         assertThat(actual.getTransport().getHttp().getBindHost(), is("0.0.0.0"));
         assertThat(actual.getTransport().getHttp().getPort(), is(9090));
         assertThat(actual.getTransport().getHttp().getEndpointPath(), is("/gateway"));
-        assertTrue(actual.getRuntimeDatabases().isEmpty());
+        assertTrue(actual.getRuntimeConfiguration().isEmpty());
     }
     
     @Test
@@ -121,8 +121,8 @@ class MCPConfigurationLoaderTest {
                 + "    password: analytics-pass\n"
                 + "    driverClassName: org.h2.Driver\n");
         
-        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
-        Map<String, RuntimeDatabaseConfiguration> actualDatabases = actual.getRuntimeDatabases();
+        MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> actual = MCPConfigurationLoader.load(configFile.toString());
+        Map<String, RuntimeDatabaseConfiguration> actualDatabases = actual.getRuntimeConfiguration();
         
         assertThat(actualDatabases.size(), is(2));
         assertThat(actualDatabases.get("logic_db").getDatabaseType(), is("H2"));
@@ -132,13 +132,13 @@ class MCPConfigurationLoaderTest {
     
     @Test
     void assertLoadPackagedDistributionConfiguration() throws IOException {
-        MCPLaunchConfiguration actual = MCPConfigurationLoader.load("distribution/mcp/src/main/resources/conf/mcp.yaml");
+        MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> actual = MCPConfigurationLoader.load("distribution/mcp/src/main/resources/conf/mcp.yaml");
         
         assertTrue(actual.getTransport().getHttp().isEnabled());
         assertFalse(actual.getTransport().getStdio().isEnabled());
-        assertThat(actual.getRuntimeDatabases().size(), is(2));
-        assertThat(actual.getRuntimeDatabases().get("orders").getUsername(), is(""));
-        assertThat(actual.getRuntimeDatabases().get("billing").getPassword(), is(""));
+        assertThat(actual.getRuntimeConfiguration().size(), is(2));
+        assertThat(actual.getRuntimeConfiguration().get("orders").getUsername(), is(""));
+        assertThat(actual.getRuntimeConfiguration().get("billing").getPassword(), is(""));
     }
     
     @Test
@@ -152,9 +152,9 @@ class MCPConfigurationLoaderTest {
                 + "  stdio:\n"
                 + "    enabled: true\n");
         
-        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
+        MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> actual = MCPConfigurationLoader.load(configFile.toString());
         
-        assertTrue(actual.getRuntimeDatabases().isEmpty());
+        assertTrue(actual.getRuntimeConfiguration().isEmpty());
     }
     
     @Test
@@ -176,9 +176,9 @@ class MCPConfigurationLoaderTest {
                 + "    driverClassName: org.h2.Driver\n"
                 + "    supportsCrossSchemaSql: true\n");
         
-        ConstructorException actual = assertThrows(ConstructorException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
         
-        assertThat(actual.getMessage(), containsString("Unable to find property 'supportsCrossSchemaSql'"));
+        assertThat(actual.getMessage(), is("Unsupported runtime database property `supportsCrossSchemaSql`."));
     }
     
     @Test

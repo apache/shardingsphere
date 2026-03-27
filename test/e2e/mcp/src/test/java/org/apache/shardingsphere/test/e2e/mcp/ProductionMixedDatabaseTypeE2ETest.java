@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp;
 
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.runtime.H2RuntimeTestSupport;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -35,17 +37,17 @@ class ProductionMixedDatabaseTypeE2ETest extends AbstractProductionRuntimeE2ETes
     
     private String secondJdbcUrl;
     
-    protected Map<String, Map<String, String>> getRuntimeDatabases() {
-        Map<String, Map<String, String>> result = new LinkedHashMap<>();
-        result.put("logic_db", H2ProductionRuntimeTestSupport.createRuntimeDatabase(firstJdbcUrl, "MySQL"));
-        result.put("analytics_db", H2ProductionRuntimeTestSupport.createRuntimeDatabase(secondJdbcUrl, "PostgreSQL"));
+    protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
+        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>();
+        result.put("logic_db", new RuntimeDatabaseConfiguration("MySQL", firstJdbcUrl, "", "", "org.h2.Driver"));
+        result.put("analytics_db", new RuntimeDatabaseConfiguration("PostgreSQL", secondJdbcUrl, "", "", "org.h2.Driver"));
         return result;
     }
     
     @Override
     protected void prepareRuntimeFixture() throws IOException {
-        firstJdbcUrl = H2ProductionRuntimeTestSupport.createJdbcUrl(getTempDir(), "mixed-type-first");
-        secondJdbcUrl = H2ProductionRuntimeTestSupport.createJdbcUrl(getTempDir(), "mixed-type-second");
+        firstJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "mixed-type-first");
+        secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "mixed-type-second");
         initializeDatabase(firstJdbcUrl);
         initializeDatabase(secondJdbcUrl);
     }
@@ -67,7 +69,7 @@ class ProductionMixedDatabaseTypeE2ETest extends AbstractProductionRuntimeE2ETes
     
     private void initializeDatabase(final String jdbcUrl) {
         try {
-            H2ProductionRuntimeTestSupport.initializeDatabase(jdbcUrl);
+            H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }

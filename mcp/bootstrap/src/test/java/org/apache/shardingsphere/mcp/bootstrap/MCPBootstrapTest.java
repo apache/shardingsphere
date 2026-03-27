@@ -30,6 +30,7 @@ import org.mockito.MockedStatic;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -50,7 +51,7 @@ class MCPBootstrapTest {
     
     @Test
     void assertMainWithDefaultConfigPath() throws IOException {
-        MCPLaunchConfiguration launchConfig = createLaunchConfiguration(false);
+        MCPLaunchConfiguration<Map<String, Object>> launchConfig = createLaunchConfiguration(false);
         MCPRuntimeTransport runtimeTransport = mock(MCPRuntimeTransport.class);
         Runtime runtime = mock(Runtime.class);
         try (
@@ -71,7 +72,7 @@ class MCPBootstrapTest {
     
     @Test
     void assertMainWithTrimmedConfigPath() throws IOException {
-        MCPLaunchConfiguration launchConfig = createLaunchConfiguration(false);
+        MCPLaunchConfiguration<Map<String, Object>> launchConfig = createLaunchConfiguration(false);
         MCPRuntimeTransport runtimeTransport = mock(MCPRuntimeTransport.class);
         Runtime runtime = mock(Runtime.class);
         try (
@@ -92,7 +93,7 @@ class MCPBootstrapTest {
     
     @Test
     void assertMainSkipAwaitWhenShutdownHookClosedTransportBeforeStdioWait() throws IOException {
-        MCPLaunchConfiguration launchConfig = createLaunchConfiguration(true);
+        MCPLaunchConfiguration<Map<String, Object>> launchConfig = createLaunchConfiguration(true);
         MCPRuntimeTransport runtimeTransport = mock(MCPRuntimeTransport.class);
         Runtime runtime = mock(Runtime.class);
         try (
@@ -117,7 +118,7 @@ class MCPBootstrapTest {
     
     @Test
     void assertMainCloseTransportOnceWhenShutdownHookRunsDuringAwaitTermination() throws IOException, InterruptedException {
-        MCPLaunchConfiguration launchConfig = createLaunchConfiguration(true);
+        MCPLaunchConfiguration<Map<String, Object>> launchConfig = createLaunchConfiguration(true);
         MCPRuntimeTransport runtimeTransport = mock(MCPRuntimeTransport.class);
         Runtime runtime = mock(Runtime.class);
         AtomicReference<Thread> shutdownHook = new AtomicReference<>();
@@ -148,7 +149,7 @@ class MCPBootstrapTest {
     
     @Test
     void assertMainInterruptCurrentThreadWhenAwaitTerminationInterrupted() throws IOException, InterruptedException {
-        MCPLaunchConfiguration launchConfig = createLaunchConfiguration(true);
+        MCPLaunchConfiguration<Map<String, Object>> launchConfig = createLaunchConfiguration(true);
         MCPRuntimeTransport runtimeTransport = mock(MCPRuntimeTransport.class);
         Runtime runtime = mock(Runtime.class);
         try (
@@ -172,8 +173,8 @@ class MCPBootstrapTest {
         verifyNoMoreInteractions(runtimeTransport);
     }
     
-    private MCPLaunchConfiguration createLaunchConfiguration(final boolean stdioEnabled) {
-        return new MCPLaunchConfiguration(
+    private MCPLaunchConfiguration<Map<String, Object>> createLaunchConfiguration(final boolean stdioEnabled) {
+        return new MCPLaunchConfiguration<>(
                 new MCPTransportConfiguration(new HttpTransportConfiguration(!stdioEnabled, "127.0.0.1", 18080, "/mcp"), new StdioTransportConfiguration(stdioEnabled)), Collections.emptyMap());
     }
 }

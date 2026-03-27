@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp;
 
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.runtime.H2RuntimeTestSupport;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -37,16 +39,16 @@ class ProductionRefreshVisibilityE2ETest extends AbstractProductionRuntimeE2ETes
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         try {
-            jdbcUrl = H2ProductionRuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-refresh");
-            H2ProductionRuntimeTestSupport.initializeDatabase(jdbcUrl);
+            jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-refresh");
+            H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         } catch (final SQLException ex) {
             throw new IOException(ex);
         }
     }
     
     @Override
-    protected Map<String, Map<String, String>> getRuntimeDatabases() {
-        return Map.of("logic_db", H2ProductionRuntimeTestSupport.createRuntimeDatabase(jdbcUrl));
+    protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
+        return H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
     }
     
     @Test

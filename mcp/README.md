@@ -230,8 +230,9 @@ Reference:
 
 ## Development Pointers
 
-- `mcp/core`: capability, metadata, session, audit, and execute-query contracts
-- `mcp/bootstrap`: MCP Java SDK based bootstrap, HTTP / STDIO transport, and runtime wiring
+- `mcp/core`: capability, metadata, session, audit, execute-query contracts, and shared runtime service assembly
+- `mcp/jdbc`: JDBC runtime configuration, metadata discovery, `DatabaseRuntime` assembly, and the JDBC-backed runtime context factory
+- `mcp/bootstrap`: MCP Java SDK based bootstrap, HTTP / STDIO transport, top-level config loading, and lifecycle management
 - `distribution/mcp`: standalone packaging, scripts, config, Dockerfile
 - `test/e2e/mcp`: end-to-end contract validation
 

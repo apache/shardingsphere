@@ -29,6 +29,7 @@
     
     <modules>
         <module>core</module>
+        <module>jdbc</module>
         <module>bootstrap</module>
     </modules>
     

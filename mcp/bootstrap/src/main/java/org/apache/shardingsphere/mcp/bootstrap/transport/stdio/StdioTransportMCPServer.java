@@ -22,15 +22,15 @@ import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
 import io.modelcontextprotocol.spec.McpServerSession;
 import io.modelcontextprotocol.spec.McpServerTransportProvider;
-import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSyncServerFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSessionCloser;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
+import java.io.IOException;
 import java.io.FilterInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -42,9 +42,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public final class StdioTransportMCPServer implements MCPRuntimeTransport {
     
-    private final MCPSessionManager sessionManager;
-    
-    private final DatabaseRuntime databaseRuntime;
+    private final MCPRuntimeContext runtimeContext;
     
     private final MetadataRefreshCoordinator metadataRefreshCoordinator;
     
@@ -61,26 +59,19 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
     /**
      * Construct one STDIO MCP transport server.
      *
-     * @param sessionManager session manager
-     * @param runtimeServices runtime services
-     * @param metadataCatalog metadata catalog
-     * @param databaseRuntime database runtime
+     * @param runtimeContext runtime context
      */
-    public StdioTransportMCPServer(final MCPSessionManager sessionManager, final MCPRuntimeServices runtimeServices,
-                                   final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
-        this(sessionManager, runtimeServices, metadataCatalog, databaseRuntime, System.in, System.out);
+    public StdioTransportMCPServer(final MCPRuntimeContext runtimeContext) {
+        this(runtimeContext, System.in, System.out);
     }
     
-    StdioTransportMCPServer(final MCPSessionManager sessionManager, final MCPRuntimeServices runtimeServices,
-                            final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime,
-                            final InputStream inputStream, final OutputStream outputStream) {
-        this.sessionManager = sessionManager;
-        this.databaseRuntime = databaseRuntime;
-        metadataRefreshCoordinator = runtimeServices.getMetadataRefreshCoordinator();
-        McpJsonMapper jsonMapper = MCPSyncServerFactory.createJsonMapper();
-        transportProvider = new ManagedStdioTransportProvider(sessionManager, databaseRuntime, metadataRefreshCoordinator,
+    StdioTransportMCPServer(final MCPRuntimeContext runtimeContext, final InputStream inputStream, final OutputStream outputStream) {
+        this.runtimeContext = runtimeContext;
+        metadataRefreshCoordinator = runtimeContext.getMetadataRefreshCoordinator();
+        McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
+        transportProvider = new ManagedStdioTransportProvider(runtimeContext, new MCPSessionCloser(runtimeContext, metadataRefreshCoordinator),
                 jsonMapper, new LifecycleAwareInputStream(inputStream, this::signalTermination), outputStream, this::signalTermination);
-        syncServerFactory = new MCPSyncServerFactory(runtimeServices, jsonMapper, metadataCatalog, databaseRuntime);
+        syncServerFactory = new MCPSyncServerFactory(runtimeContext, jsonMapper);
     }
     
     /**
@@ -123,11 +114,9 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
     
     private static final class ManagedStdioTransportProvider implements McpServerTransportProvider {
         
-        private final MCPSessionManager sessionManager;
+        private final MCPRuntimeContext runtimeContext;
         
-        private final DatabaseRuntime databaseRuntime;
-        
-        private final MetadataRefreshCoordinator metadataRefreshCoordinator;
+        private final MCPSessionCloser sessionCloser;
         
         private final StdioServerTransportProvider delegate;
         
@@ -135,12 +124,10 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
         
         private String activeSessionId;
         
-        private ManagedStdioTransportProvider(final MCPSessionManager sessionManager, final DatabaseRuntime databaseRuntime,
-                                              final MetadataRefreshCoordinator metadataRefreshCoordinator, final McpJsonMapper jsonMapper,
+        private ManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final MCPSessionCloser sessionCloser, final McpJsonMapper jsonMapper,
                                               final InputStream inputStream, final OutputStream outputStream, final Runnable closeCallback) {
-            this.sessionManager = sessionManager;
-            this.databaseRuntime = databaseRuntime;
-            this.metadataRefreshCoordinator = metadataRefreshCoordinator;
+            this.runtimeContext = runtimeContext;
+            this.sessionCloser = sessionCloser;
             this.closeCallback = closeCallback;
             delegate = new StdioServerTransportProvider(jsonMapper, inputStream, outputStream);
         }
@@ -155,7 +142,7 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
             delegate.setSessionFactory(transport -> {
                 McpServerSession result = sessionFactory.create(transport);
                 activeSessionId = result.getId();
-                sessionManager.createSession(activeSessionId);
+                runtimeContext.getSessionManager().createSession(activeSessionId);
                 return result;
             });
         }
@@ -182,9 +169,7 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
             if (null == activeSessionId || activeSessionId.isEmpty()) {
                 return;
             }
-            metadataRefreshCoordinator.clearSession(activeSessionId);
-            databaseRuntime.closeSession(activeSessionId);
-            sessionManager.closeSession(activeSessionId);
+            sessionCloser.closeSession(activeSessionId);
             activeSessionId = null;
         }
         
@@ -200,7 +185,7 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
         }
         
         @Override
-        public int read() throws java.io.IOException {
+        public int read() throws IOException {
             int result = super.read();
             if (-1 == result) {
                 closeCallback.run();
@@ -209,7 +194,7 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
         }
         
         @Override
-        public int read(final byte[] bytes, final int offset, final int length) throws java.io.IOException {
+        public int read(final byte[] bytes, final int offset, final int length) throws IOException {
             int result = super.read(bytes, offset, length);
             if (-1 == result) {
                 closeCallback.run();
@@ -218,7 +203,7 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
         }
         
         @Override
-        public void close() throws java.io.IOException {
+        public void close() throws IOException {
             try {
                 super.close();
             } finally {

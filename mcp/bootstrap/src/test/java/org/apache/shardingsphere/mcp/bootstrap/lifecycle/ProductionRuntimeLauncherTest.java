@@ -20,10 +20,16 @@ package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContextBuilder;
+import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.runtime.H2RuntimeTestSupport;
+import org.apache.shardingsphere.mcp.runtime.MCPRuntimeProvider;
+import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -36,6 +42,7 @@ import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -55,7 +62,7 @@ class ProductionRuntimeLauncherTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPRuntimeTransport actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"),
+        MCPRuntimeTransport actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration<>(createTransportConfiguration(true, false, "/mcp"),
                 H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
         actual.close();
     }
@@ -67,7 +74,7 @@ class ProductionRuntimeLauncherTest {
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
         H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPRuntimeTransport actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"),
+        MCPRuntimeTransport actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration<>(createTransportConfiguration(true, false, "/mcp"),
                 Map.of("logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl)))));
         actual.close();
     }
@@ -76,8 +83,15 @@ class ProductionRuntimeLauncherTest {
     void assertLaunchWithoutRuntimeDatabases() {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"), Map.of())));
+                () -> runtimeLauncher.launch(new MCPLaunchConfiguration<>(createTransportConfiguration(true, false, "/mcp"), Map.of())));
         assertThat(actual.getMessage(), is("At least one runtime database must be configured."));
+    }
+    
+    @Test
+    void assertLaunchWithInjectedRuntimeProvider() {
+        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher(new InlineRuntimeProvider());
+        MCPRuntimeTransport actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration<>(createTransportConfiguration(true, false, "/mcp"), "in-memory")));
+        actual.close();
     }
     
     @Test
@@ -86,7 +100,7 @@ class ProductionRuntimeLauncherTest {
         DriverManager.registerDriver(driver);
         try {
             MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-            MCPRuntimeTransport actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(true, false, "/mcp"),
+            MCPRuntimeTransport actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration<>(createTransportConfiguration(true, false, "/mcp"),
                     Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", CountingDriver.JDBC_URL, "", "", "")))));
             actual.close();
             assertThat(driver.getConnectionCount(), is(1));
@@ -101,6 +115,34 @@ class ProductionRuntimeLauncherTest {
     
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl) {
         return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
+    }
+    
+    private static final class InlineRuntimeProvider implements MCPRuntimeProvider {
+        
+        @Override
+        public MCPRuntimeContext createRuntimeContext(final MCPSessionManager sessionManager, final Object runtimeConfiguration) {
+            return new MCPRuntimeContextBuilder().build(sessionManager, new MetadataCatalog(Map.of(), List.of()), new DatabaseRuntime(Map.of(), Map.of()));
+        }
+        
+        @Override
+        public Object swapToObject(final Map<String, Map<String, Object>> yamlRuntimeConfiguration) {
+            return null;
+        }
+        
+        @Override
+        public Map<String, Map<String, Object>> swapToYamlConfiguration(final Object runtimeConfiguration) {
+            return Map.of();
+        }
+        
+        @Override
+        public String getType() {
+            return "INLINE";
+        }
+        
+        @Override
+        public boolean isDefault() {
+            return false;
+        }
     }
     
     private static final class CountingDriver implements Driver {

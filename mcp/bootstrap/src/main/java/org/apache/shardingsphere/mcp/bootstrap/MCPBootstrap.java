@@ -44,7 +44,7 @@ public final class MCPBootstrap {
     // CHECKSTYLE:OFF
     public static void main(final String[] args) throws IOException {
         // CHECKSTYLE:ON
-        MCPLaunchConfiguration launchConfig = MCPConfigurationLoader.load(getConfigurationPath(args));
+        MCPLaunchConfiguration<?> launchConfig = MCPConfigurationLoader.load(getConfigurationPath(args));
         AtomicReference<MCPRuntimeTransport> runtimeTransportReference = new AtomicReference<>(new MCPRuntimeLauncher().launch(launchConfig));
         Runtime.getRuntime().addShutdownHook(new Thread(() -> closeRuntimeTransport(runtimeTransportReference), "shardingsphere-mcp-shutdown"));
         if (launchConfig.getTransport().getStdio().isEnabled()) {

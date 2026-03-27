@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.e2e.mcp;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
 import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.QueryResult;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.AfterEach;
 
 import java.io.IOException;
@@ -51,6 +49,8 @@ abstract class AbstractMCPE2ETest {
     
     private static final String ENDPOINT_PATH = "/gateway";
     
+    private final MCPRuntimeContextTestBuilder runtimeContextTestBuilder = new MCPRuntimeContextTestBuilder();
+    
     private StreamableHttpMCPServer httpServer;
     
     @AfterEach
@@ -59,11 +59,6 @@ abstract class AbstractMCPE2ETest {
             httpServer.stop();
             httpServer = null;
         }
-    }
-    
-    protected final MCPRuntimeServices createRuntimeServices(final MCPSessionManager sessionManager, final MetadataCatalog metadataCatalog,
-                                                             final DatabaseRuntime databaseRuntime) {
-        return new MCPRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
     }
     
     protected final void launchRuntime() {
@@ -200,12 +195,10 @@ abstract class AbstractMCPE2ETest {
     }
     
     private void launchRuntimeInternal() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
         MetadataCatalog metadataCatalog = createMetadataCatalog();
         DatabaseRuntime databaseRuntime = createDatabaseRuntime();
-        MCPRuntimeServices runtimeServices = createRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
         StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH),
-                sessionManager, runtimeServices, metadataCatalog, databaseRuntime);
+                runtimeContextTestBuilder.build(metadataCatalog, databaseRuntime));
         try {
             httpServer.start();
         } catch (final IOException ex) {

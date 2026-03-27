@@ -19,15 +19,17 @@ package org.apache.shardingsphere.test.e2e.mcp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
-import org.apache.shardingsphere.mcp.bootstrap.context.MCPRuntimeServices;
-import org.apache.shardingsphere.mcp.bootstrap.runtime.MCPDatabaseRuntimeFactory;
-import org.apache.shardingsphere.mcp.bootstrap.runtime.MCPJdbcMetadataLoader;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
+import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
 import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -149,7 +151,7 @@ abstract class AbstractProductionRuntimeE2ETest {
         return "/gateway";
     }
     
-    protected Map<String, Map<String, String>> getRuntimeDatabases() {
+    protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
         return Map.of();
     }
     
@@ -189,21 +191,13 @@ abstract class AbstractProductionRuntimeE2ETest {
     }
     
     private StreamableHttpMCPServer createStartedHttpServer(final Path configFile) throws IOException {
-        MCPLaunchConfiguration launchConfiguration = MCPConfigurationLoader.load(configFile.toString());
-        MCPDatabaseRuntimeFactory databaseRuntimeFactory = new MCPDatabaseRuntimeFactory();
-        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-        MetadataCatalog metadataCatalog = metadataLoader.load(launchConfiguration.getRuntimeDatabases());
-        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(launchConfiguration.getRuntimeDatabases(), metadataCatalog);
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPRuntimeServices runtimeServices = new MCPRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
-        StreamableHttpMCPServer result = new StreamableHttpMCPServer(launchConfiguration.getTransport().getHttp(), sessionManager, runtimeServices, metadataCatalog, databaseRuntime);
-        try {
-            result.start();
-        } catch (final IOException ex) {
-            result.stop();
-            throw new IllegalStateException("Failed to start HTTP transport.", ex);
+        MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> launchConfiguration = MCPConfigurationLoader.load(configFile.toString());
+        MCPRuntimeTransport runtimeTransport = new MCPRuntimeLauncher().launch(launchConfiguration);
+        if (!(runtimeTransport instanceof StreamableHttpMCPServer)) {
+            runtimeTransport.close();
+            throw new IllegalStateException("HTTP transport must be enabled for production runtime E2E tests.");
         }
-        return result;
+        return (StreamableHttpMCPServer) runtimeTransport;
     }
     
     private Map<String, Object> createInitializeRequestParams() {
@@ -246,45 +240,8 @@ abstract class AbstractProductionRuntimeE2ETest {
     }
     
     private String createConfigurationContent() {
-        StringBuilder result = new StringBuilder();
-        result.append("transport:\n");
-        result.append("  http:\n");
-        result.append("    enabled: true\n");
-        result.append("    bindHost: 127.0.0.1\n");
-        result.append("    port: 0\n");
-        result.append("    endpointPath: ").append(toYamlScalar(getEndpointPath())).append('\n');
-        result.append("  stdio:\n");
-        result.append("    enabled: false\n");
-        Map<String, Map<String, String>> runtimeDatabases = getRuntimeDatabases();
-        if (!runtimeDatabases.isEmpty()) {
-            result.append("runtimeDatabases:\n");
-            for (Entry<String, Map<String, String>> databaseEntry : runtimeDatabases.entrySet()) {
-                appendDatabaseEntry(result, databaseEntry.getKey(), databaseEntry.getValue());
-            }
-        }
-        return result.toString();
-    }
-    
-    private void appendDatabaseEntry(final StringBuilder result, final String databaseName, final Map<String, String> properties) {
-        result.append("  ").append(databaseName).append(":\n");
-        appendDatabaseProperties(result, "    ", properties);
-    }
-    
-    private void appendDatabaseProperties(final StringBuilder result, final String indent, final Map<String, String> properties) {
-        for (Entry<String, String> entry : properties.entrySet()) {
-            if (shouldSkipEntry(entry.getKey())) {
-                continue;
-            }
-            result.append(indent).append(entry.getKey()).append(": ").append(toYamlScalar(entry.getValue())).append('\n');
-        }
-    }
-    
-    private boolean shouldSkipEntry(final String key) {
-        return "databaseName".equals(key) || "schemaPattern".equals(key) || "defaultSchema".equals(key)
-                || "supportsCrossSchemaSql".equals(key) || "supportsExplainAnalyze".equals(key);
-    }
-    
-    private String toYamlScalar(final String value) {
-        return '\'' + value.replace("'", "''") + '\'';
+        return YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(new MCPLaunchConfiguration<>(
+                new MCPTransportConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, getEndpointPath()), new StdioTransportConfiguration(false)),
+                getRuntimeDatabases())));
     }
 }

@@ -32,11 +32,16 @@ public final class MCPTransportConfiguration {
     private final StdioTransportConfiguration stdio;
     
     /**
-     * Whether valid configuration.
+     * Validate transport configuration.
      *
-     * @return is valid or invalid configuration
+     * @throws IllegalArgumentException when the configuration enables both transports or disables both transports
      */
-    public boolean isValid() {
-        return http.isEnabled() && !stdio.isEnabled() || !http.isEnabled() && stdio.isEnabled();
+    public void validate() {
+        if (http.isEnabled() && stdio.isEnabled()) {
+            throw new IllegalArgumentException("HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport.");
+        }
+        if (!http.isEnabled() && !stdio.isEnabled()) {
+            throw new IllegalArgumentException("Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true.");
+        }
     }
 }

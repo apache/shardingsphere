@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp;
 
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.runtime.H2RuntimeTestSupport;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -35,16 +37,16 @@ class ProductionExecuteQueryE2ETest extends AbstractProductionRuntimeE2ETest {
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         try {
-            jdbcUrl = H2ProductionRuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-execute");
-            H2ProductionRuntimeTestSupport.initializeDatabase(jdbcUrl);
+            jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-execute");
+            H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         } catch (final SQLException ex) {
             throw new IOException(ex);
         }
     }
     
     @Override
-    protected Map<String, Map<String, String>> getRuntimeDatabases() {
-        return Map.of("logic_db", H2ProductionRuntimeTestSupport.createRuntimeDatabase(jdbcUrl));
+    protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
+        return H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
     }
     
     @Test
@@ -73,7 +75,7 @@ class ProductionExecuteQueryE2ETest extends AbstractProductionRuntimeE2ETest {
                 Map.of("database", "logic_db", "schema", "public", "sql", "COMMIT"));
         
         assertThat(actual.statusCode(), is(200));
-        assertThat(H2ProductionRuntimeTestSupport.querySingleString(jdbcUrl), is("PROCESSING"));
+        assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("PROCESSING"));
     }
     
     @Test
@@ -88,6 +90,6 @@ class ProductionExecuteQueryE2ETest extends AbstractProductionRuntimeE2ETest {
         HttpResponse<String> actual = sendDeleteRequest(httpClient, sessionId);
         
         assertThat(actual.statusCode(), is(200));
-        assertThat(H2ProductionRuntimeTestSupport.querySingleString(jdbcUrl), is("NEW"));
+        assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
     }
 }

@@ -32,5 +32,5 @@ public final class YamlMCPLaunchConfiguration implements YamlConfiguration {
     
     private YamlMCPTransportConfiguration transport;
     
-    private Map<String, YamlRuntimeDatabaseConfiguration> runtimeDatabases;
+    private Map<String, Map<String, Object>> runtimeDatabases;
 }

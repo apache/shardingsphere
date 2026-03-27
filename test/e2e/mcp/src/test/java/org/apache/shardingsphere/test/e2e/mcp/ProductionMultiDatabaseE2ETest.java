@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp;
 
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.runtime.H2RuntimeTestSupport;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -42,19 +44,19 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         try {
-            firstJdbcUrl = H2ProductionRuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-multi-first");
-            secondJdbcUrl = H2ProductionRuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-multi-second");
-            H2ProductionRuntimeTestSupport.initializeDatabase(firstJdbcUrl);
-            H2ProductionRuntimeTestSupport.initializeDatabase(secondJdbcUrl);
+            firstJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-multi-first");
+            secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-multi-second");
+            H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
+            H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         } catch (final SQLException ex) {
             throw new IOException(ex);
         }
     }
     
-    protected Map<String, Map<String, String>> getRuntimeDatabases() {
-        Map<String, Map<String, String>> result = new LinkedHashMap<>();
-        result.put("logic_db", H2ProductionRuntimeTestSupport.createRuntimeDatabase(firstJdbcUrl));
-        result.put("analytics_db", H2ProductionRuntimeTestSupport.createRuntimeDatabase(secondJdbcUrl));
+    protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
+        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>();
+        result.put("logic_db", new RuntimeDatabaseConfiguration("H2", firstJdbcUrl, "", "", "org.h2.Driver"));
+        result.put("analytics_db", new RuntimeDatabaseConfiguration("H2", secondJdbcUrl, "", "", "org.h2.Driver"));
         return result;
     }
     

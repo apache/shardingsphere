@@ -17,59 +17,48 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.runtime.MCPRuntimeProvider;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * YAML MCP launch configuration swapper.
  */
-public final class YamlMCPLaunchConfigurationSwapper implements YamlConfigurationSwapper<YamlMCPLaunchConfiguration, MCPLaunchConfiguration> {
+public final class YamlMCPLaunchConfigurationSwapper implements YamlConfigurationSwapper<YamlMCPLaunchConfiguration, MCPLaunchConfiguration<?>> {
     
     private static final String NULL_CONFIG_ERROR_MESSAGE = "MCP launch configuration cannot be null.";
     
+    private final MCPRuntimeProvider runtimeProvider;
+    
     private final YamlMCPTransportConfigurationSwapper transportConfigSwapper = new YamlMCPTransportConfigurationSwapper();
     
-    private final YamlRuntimeDatabaseConfigurationSwapper runtimeDatabaseConfigSwapper = new YamlRuntimeDatabaseConfigurationSwapper();
+    public YamlMCPLaunchConfigurationSwapper() {
+        this(TypedSPILoader.getService(MCPRuntimeProvider.class, null));
+    }
+    
+    public YamlMCPLaunchConfigurationSwapper(final MCPRuntimeProvider runtimeProvider) {
+        this.runtimeProvider = runtimeProvider;
+    }
     
     @Override
-    public YamlMCPLaunchConfiguration swapToYamlConfiguration(final MCPLaunchConfiguration data) {
+    public YamlMCPLaunchConfiguration swapToYamlConfiguration(final MCPLaunchConfiguration<?> data) {
         YamlMCPLaunchConfiguration result = new YamlMCPLaunchConfiguration();
         result.setTransport(transportConfigSwapper.swapToYamlConfiguration(data.getTransport()));
-        result.setRuntimeDatabases(swapToYamlRuntimeDatabases(data.getRuntimeDatabases()));
-        return result;
-    }
-    
-    private Map<String, YamlRuntimeDatabaseConfiguration> swapToYamlRuntimeDatabases(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        Map<String, YamlRuntimeDatabaseConfiguration> result = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
-        for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
-            result.put(entry.getKey(), runtimeDatabaseConfigSwapper.swapToYamlConfiguration(entry.getValue()));
-        }
+        result.setRuntimeDatabases(runtimeProvider.swapToYamlConfiguration(data.getRuntimeConfiguration()));
         return result;
     }
     
     @Override
-    public MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
+    public MCPLaunchConfiguration<?> swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException(NULL_CONFIG_ERROR_MESSAGE));
         MCPTransportConfiguration transportConfig = transportConfigSwapper.swapToObject(yamlConfig.getTransport());
-        ShardingSpherePreconditions.checkState(transportConfig.isValid(), () -> new IllegalArgumentException("HTTP and STDIO transport should enable one."));
-        return new MCPLaunchConfiguration(transportConfig, swapToRuntimeDatabases(null == yamlConfig.getRuntimeDatabases() ? Collections.emptyMap() : yamlConfig.getRuntimeDatabases()));
-    }
-    
-    private Map<String, RuntimeDatabaseConfiguration> swapToRuntimeDatabases(final Map<String, YamlRuntimeDatabaseConfiguration> yamlRuntimeDatabases) {
-        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(yamlRuntimeDatabases.size(), 1F);
-        for (Entry<String, YamlRuntimeDatabaseConfiguration> entry : yamlRuntimeDatabases.entrySet()) {
-            result.put(entry.getKey(), runtimeDatabaseConfigSwapper.swapToObject(entry.getValue()));
-        }
-        return result;
+        transportConfig.validate();
+        return new MCPLaunchConfiguration<>(transportConfig, runtimeProvider.swapToObject(null == yamlConfig.getRuntimeDatabases() ? Collections.emptyMap() : yamlConfig.getRuntimeDatabases()));
     }
 }

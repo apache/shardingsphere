@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.http;
 
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
+import org.apache.shardingsphere.mcp.jdbc.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Map;
 import java.sql.SQLException;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
