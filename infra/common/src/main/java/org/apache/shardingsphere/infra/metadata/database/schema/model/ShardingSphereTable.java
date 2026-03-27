@@ -372,11 +372,11 @@ public final class ShardingSphereTable {
     }
     
     /**
-     * Attach shared database identifier context.
+     * Refresh shared database identifier context.
      *
      * @param identifierContext database identifier context
      */
-    public void attachIdentifierContext(final DatabaseIdentifierContext identifierContext) {
+    public void refreshIdentifierContext(final DatabaseIdentifierContext identifierContext) {
         final Collection<ShardingSphereColumn> columns = new LinkedList<>(columnIndex.getAll());
         final Collection<ShardingSphereIndex> indexes = new LinkedList<>(indexIdentifierIndex.getAll());
         final Collection<ShardingSphereConstraint> constraints = new LinkedList<>(constraintIdentifierIndex.getAll());
