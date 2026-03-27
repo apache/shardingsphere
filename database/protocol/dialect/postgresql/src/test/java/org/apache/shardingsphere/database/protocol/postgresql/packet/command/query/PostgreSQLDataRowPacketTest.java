@@ -33,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.stream.Stream;
 
@@ -140,6 +141,17 @@ class PostgreSQLDataRowPacketTest {
         return Stream.of(
                 Arguments.of("boolean_true", true, "t".getBytes(StandardCharsets.UTF_8)),
                 Arguments.of("boolean_false", false, "f".getBytes(StandardCharsets.UTF_8)),
-                Arguments.of("string_value", "value", "value".getBytes(StandardCharsets.UTF_8)));
+                Arguments.of("string_value", "value", "value".getBytes(StandardCharsets.UTF_8)),
+                Arguments.of("timestamp_no_fractional", Timestamp.valueOf("1973-06-03 10:30:01"), "1973-06-03 10:30:01".getBytes(StandardCharsets.UTF_8)),
+                Arguments.of("timestamp_with_fractional", Timestamp.valueOf("2024-01-15 14:30:45.123"), "2024-01-15 14:30:45.123".getBytes(StandardCharsets.UTF_8)),
+                Arguments.of("timestamp_trailing_zeros_stripped", Timestamp.valueOf("2024-01-15 14:30:45.120"), "2024-01-15 14:30:45.12".getBytes(StandardCharsets.UTF_8)),
+                Arguments.of("timestamp_microsecond_precision", Timestamp.valueOf("2024-01-15 14:30:45.123456"), "2024-01-15 14:30:45.123456".getBytes(StandardCharsets.UTF_8)),
+                Arguments.of("timestamp_sub_microsecond_nanos", createTimestampWithSubMicrosecondNanos(), "1973-06-03 10:30:01".getBytes(StandardCharsets.UTF_8)));
+    }
+
+    private static Timestamp createTimestampWithSubMicrosecondNanos() {
+        Timestamp result = Timestamp.valueOf("1973-06-03 10:30:01");
+        result.setNanos(500);
+        return result;
     }
 }

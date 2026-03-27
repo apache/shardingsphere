@@ -30,6 +30,8 @@ import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQL
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
 /**
@@ -40,6 +42,8 @@ import java.util.Collection;
 public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
     
     private static final byte[] HEX_DIGITS = "0123456789abcdef".getBytes(StandardCharsets.US_ASCII);
+
+    private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     private final Collection<Object> data;
     
@@ -79,6 +83,10 @@ public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
             byte[] columnData = ((Boolean) each ? "t" : "f").getBytes(payload.getCharset());
             payload.writeInt4(columnData.length);
             payload.writeBytes(columnData);
+        } else if (each instanceof Timestamp) {
+            byte[] columnData = formatTimestamp((Timestamp) each).getBytes(payload.getCharset());
+            payload.writeInt4(columnData.length);
+            payload.writeBytes(columnData);
         } else {
             byte[] columnData = each.toString().getBytes(payload.getCharset());
             payload.writeInt4(columnData.length);
@@ -86,6 +94,22 @@ public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
         }
     }
     
+    private String formatTimestamp(final Timestamp timestamp) {
+        String baseTime = timestamp.toLocalDateTime().format(TIMESTAMP_FORMATTER);
+        int micros = timestamp.getNanos() / 1000;
+        if (0 == micros) {
+            return baseTime;
+        }
+        StringBuilder result = new StringBuilder(baseTime).append('.');
+        result.append(String.format("%06d", micros));
+        int length = result.length();
+        while (result.charAt(length - 1) == '0') {
+            length--;
+        }
+        result.setLength(length);
+        return result.toString();
+    }
+
     private byte[] encodeByteaText(final byte[] value) {
         byte[] result = new byte[value.length * 2 + 2];
         result[0] = '\\';
