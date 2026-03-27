@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.mcp.capability;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Set;
 
 /**
  * Database-level capability view.
  */
+@RequiredArgsConstructor
 @Getter
 public final class DatabaseCapabilityView {
     
@@ -62,31 +64,4 @@ public final class DatabaseCapabilityView {
     private final ResultBehavior explainAnalyzeResultBehavior;
     
     private final TransactionBoundaryBehavior explainAnalyzeTransactionBehavior;
-    
-    DatabaseCapabilityView(final String database, final String databaseType, final String minSupportedVersion, final Set<SupportedObjectType> supportedObjectTypes,
-                           final Set<StatementClass> supportedStatementClasses, final boolean supportsTransactionControl, final boolean supportsSavepoint,
-                           final Set<String> supportedTransactionStatements, final boolean defaultAutocommit, final int maxRowsDefault,
-                           final int maxTimeoutMsDefault, final SchemaSemantics defaultSchemaSemantics, final boolean supportsCrossSchemaSql,
-                           final boolean supportsExplainAnalyze, final TransactionBoundaryBehavior ddlTransactionBehavior,
-                           final TransactionBoundaryBehavior dclTransactionBehavior, final ResultBehavior explainAnalyzeResultBehavior,
-                           final TransactionBoundaryBehavior explainAnalyzeTransactionBehavior) {
-        this.database = database;
-        this.databaseType = databaseType;
-        this.minSupportedVersion = minSupportedVersion;
-        this.supportedObjectTypes = supportedObjectTypes;
-        this.supportedStatementClasses = supportedStatementClasses;
-        this.supportsTransactionControl = supportsTransactionControl;
-        this.supportsSavepoint = supportsSavepoint;
-        this.supportedTransactionStatements = supportedTransactionStatements;
-        this.defaultAutocommit = defaultAutocommit;
-        this.maxRowsDefault = maxRowsDefault;
-        this.maxTimeoutMsDefault = maxTimeoutMsDefault;
-        this.defaultSchemaSemantics = defaultSchemaSemantics;
-        this.supportsCrossSchemaSql = supportsCrossSchemaSql;
-        this.supportsExplainAnalyze = supportsExplainAnalyze;
-        this.ddlTransactionBehavior = ddlTransactionBehavior;
-        this.dclTransactionBehavior = dclTransactionBehavior;
-        this.explainAnalyzeResultBehavior = explainAnalyzeResultBehavior;
-        this.explainAnalyzeTransactionBehavior = explainAnalyzeTransactionBehavior;
-    }
 }

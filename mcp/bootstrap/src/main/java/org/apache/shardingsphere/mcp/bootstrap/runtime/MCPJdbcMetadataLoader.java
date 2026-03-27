@@ -83,7 +83,7 @@ public final class MCPJdbcMetadataLoader {
         loadViews(databaseName, databaseMetaData, metadataObjects, supportedObjectTypes, foundSchemas);
         String databaseVersion = normalize(databaseMetaData.getDatabaseProductVersion());
         return new RuntimeMetadataSnapshot(
-                metadataObjects, new RuntimeDatabaseDescriptor(databaseName, databaseType, databaseVersion, supportedObjectTypes, resolveDefaultSchema(connection, foundSchemas)));
+                metadataObjects, new RuntimeDatabaseDescriptor(databaseType, databaseVersion, supportedObjectTypes, resolveDefaultSchema(connection, foundSchemas)));
     }
     
     private void loadTables(final String databaseName, final DatabaseMetaData databaseMetaData,

@@ -24,13 +24,11 @@ import org.apache.shardingsphere.mcp.capability.SupportedObjectType;
 import java.util.Set;
 
 /**
- * Runtime metadata facts for one logical database.
+ * Runtime database descriptor.
  */
 @RequiredArgsConstructor
 @Getter
 public final class RuntimeDatabaseDescriptor {
-    
-    private final String databaseName;
     
     private final String databaseType;
     
