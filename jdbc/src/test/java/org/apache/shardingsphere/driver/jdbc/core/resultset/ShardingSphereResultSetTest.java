@@ -33,6 +33,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.Clob;
@@ -52,8 +53,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -264,6 +265,12 @@ class ShardingSphereResultSetTest {
     void assertGetBytesWithColumnLabel() throws SQLException {
         when(mergeResultSet.getValue(1, byte[].class)).thenReturn(new byte[]{(byte) 1});
         assertThat(shardingSphereResultSet.getBytes("label"), is(new byte[]{(byte) 1}));
+    }
+    
+    @Test
+    void assertGetBytesWithStringValue() throws SQLException {
+        when(mergeResultSet.getValue(1, byte[].class)).thenReturn("张三");
+        assertThat(shardingSphereResultSet.getBytes(1), is("张三".getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test
