@@ -30,4 +30,13 @@ public final class MCPTransportConfiguration {
     private final HttpTransportConfiguration http;
     
     private final StdioTransportConfiguration stdio;
+    
+    /**
+     * Whether valid configuration.
+     * 
+     * @return is valid or invalid configuration
+     */
+    public boolean isValid() {
+        return http.isEnabled() && !stdio.isEnabled() || !http.isEnabled() && stdio.isEnabled();
+    }
 }

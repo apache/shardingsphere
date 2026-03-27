@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfigurationValidator;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
@@ -62,7 +61,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     public MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException(NULL_CONFIG_ERROR_MESSAGE));
         MCPTransportConfiguration transportConfig = transportConfigSwapper.swapToObject(yamlConfig.getTransport());
-        MCPTransportConfigurationValidator.validate(transportConfig);
+        ShardingSpherePreconditions.checkState(transportConfig.isValid(), () -> new IllegalArgumentException("HTTP and STDIO transport should enable one."));
         return new MCPLaunchConfiguration(transportConfig, swapToRuntimeDatabases(null == yamlConfig.getRuntimeDatabases() ? Collections.emptyMap() : yamlConfig.getRuntimeDatabases()));
     }
     
