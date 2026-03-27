@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.runtime;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.SupportedObjectType;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
@@ -42,21 +43,20 @@ public final class JdbcMetadataLoader {
     private final JdbcConnectionFactory jdbcConnectionFactory = new JdbcConnectionFactory();
     
     /**
-     * Load one metadata catalog from runtime connections.
+     * Load metadata catalog.
      *
-     * @param connectionConfigurations connection configurations
+     * @param connectionConfigs connection configurations
      * @return metadata catalog
      * @throws IllegalStateException when runtime metadata cannot be loaded from one configured database
      */
-    public MetadataCatalog load(final Map<String, DatabaseConnectionConfiguration> connectionConfigurations) {
-        Map<String, String> databaseTypes = new LinkedHashMap<>(connectionConfigurations.size(), 1F);
+    public MetadataCatalog load(final Map<String, DatabaseConnectionConfiguration> connectionConfigs) {
+        Map<String, String> databaseTypes = new LinkedHashMap<>(connectionConfigs.size(), 1F);
         List<MetadataObject> metadataObjects = new LinkedList<>();
-        Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors = new LinkedHashMap<>(connectionConfigurations.size(), 1F);
-        for (DatabaseConnectionConfiguration each : connectionConfigurations.values()) {
-            try (Connection connection = openConnection(each)) {
-                DatabaseMetaData databaseMetaData = connection.getMetaData();
+        Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors = new LinkedHashMap<>(connectionConfigs.size(), 1F);
+        for (DatabaseConnectionConfiguration each : connectionConfigs.values()) {
+            try (Connection connection = jdbcConnectionFactory.openConnection(each)) {
                 databaseTypes.put(each.getDatabase(), each.getDatabaseType());
-                RuntimeMetadataSnapshot runtimeMetadataSnapshot = loadRuntimeMetadataSnapshot(each, connection, databaseMetaData);
+                RuntimeMetadataSnapshot runtimeMetadataSnapshot = loadRuntimeMetadataSnapshot(each, connection, connection.getMetaData());
                 metadataObjects.addAll(runtimeMetadataSnapshot.getMetadataObjects());
                 runtimeDatabaseDescriptors.put(each.getDatabase(), runtimeMetadataSnapshot.getRuntimeDatabaseDescriptor());
             } catch (final SQLException ex) {
@@ -168,10 +168,6 @@ public final class JdbcMetadataLoader {
         }
     }
     
-    private Connection openConnection(final DatabaseConnectionConfiguration connectionConfiguration) throws SQLException {
-        return jdbcConnectionFactory.openConnection(connectionConfiguration);
-    }
-    
     private void registerSchema(final DatabaseConnectionConfiguration connectionConfiguration, final String schema, final List<MetadataObject> metadataObjects,
                                 final Set<SupportedObjectType> supportedObjectTypes, final Set<String> discoveredSchemas) {
         if (schema.isEmpty() || !discoveredSchemas.add(schema)) {
@@ -212,16 +208,12 @@ public final class JdbcMetadataLoader {
         return result.isEmpty() ? null : result;
     }
     
+    @RequiredArgsConstructor
     private static final class RuntimeMetadataSnapshot {
         
         private final List<MetadataObject> metadataObjects;
         
         private final RuntimeDatabaseDescriptor runtimeDatabaseDescriptor;
-        
-        private RuntimeMetadataSnapshot(final List<MetadataObject> metadataObjects, final RuntimeDatabaseDescriptor runtimeDatabaseDescriptor) {
-            this.metadataObjects = metadataObjects;
-            this.runtimeDatabaseDescriptor = runtimeDatabaseDescriptor;
-        }
         
         private List<MetadataObject> getMetadataObjects() {
             return metadataObjects;
