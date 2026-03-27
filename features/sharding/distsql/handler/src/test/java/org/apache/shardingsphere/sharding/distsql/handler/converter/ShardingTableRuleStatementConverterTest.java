@@ -75,12 +75,12 @@ class ShardingTableRuleStatementConverterTest {
         assertThat(config.getKeyGenerators().get("t_order_snowflake").getType(), is("snowflake"));
         assertThat(config.getKeyGenerators().get("t_order_snowflake").getProps().getProperty(""), is(""));
         assertThat(config.getKeyGenerateStrategies().size(), is(2));
-        assertThat(config.getKeyGenerateStrategies().get("t_order").getKeyGeneratorName(), is("t_order_snowflake"));
-        assertThat(((ColumnKeyGenerateStrategiesRuleConfiguration) config.getKeyGenerateStrategies().get("t_order")).getLogicTable(), is("t_order"));
-        assertThat(((ColumnKeyGenerateStrategiesRuleConfiguration) config.getKeyGenerateStrategies().get("t_order")).getKeyGenerateColumn(), is("order_id"));
-        assertThat(config.getKeyGenerateStrategies().get("t_order_2").getKeyGeneratorName(), is("t_order_2_snowflake"));
-        assertThat(((ColumnKeyGenerateStrategiesRuleConfiguration) config.getKeyGenerateStrategies().get("t_order_2")).getLogicTable(), is("t_order_2"));
-        assertThat(((ColumnKeyGenerateStrategiesRuleConfiguration) config.getKeyGenerateStrategies().get("t_order_2")).getKeyGenerateColumn(), is("order_id"));
+        assertThat(config.getKeyGenerateStrategies().get("t_order_order_id").getKeyGeneratorName(), is("t_order_snowflake"));
+        assertThat(((ColumnKeyGenerateStrategiesRuleConfiguration) config.getKeyGenerateStrategies().get("t_order_order_id")).getLogicTable(), is("t_order"));
+        assertThat(((ColumnKeyGenerateStrategiesRuleConfiguration) config.getKeyGenerateStrategies().get("t_order_order_id")).getKeyGenerateColumn(), is("order_id"));
+        assertThat(config.getKeyGenerateStrategies().get("t_order_2_order_id").getKeyGeneratorName(), is("t_order_2_snowflake"));
+        assertThat(((ColumnKeyGenerateStrategiesRuleConfiguration) config.getKeyGenerateStrategies().get("t_order_2_order_id")).getLogicTable(), is("t_order_2"));
+        assertThat(((ColumnKeyGenerateStrategiesRuleConfiguration) config.getKeyGenerateStrategies().get("t_order_2_order_id")).getKeyGenerateColumn(), is("order_id"));
         assertThat(config.getAuditors().get("sharding_key_required_auditor").getType(), is("DML_SHARDING_CONDITIONS"));
     }
     
@@ -94,7 +94,7 @@ class ShardingTableRuleStatementConverterTest {
         assertThat(tableRule.getDatabaseShardingStrategy().getType(), is(""));
         assertThat(tableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_snowflake"));
         assertThat(tableRule.getKeyGenerateStrategy().getColumn(), is("order_id"));
-        assertThat(config.getKeyGenerateStrategies().get("t_order").getKeyGeneratorName(), is("t_order_snowflake"));
+        assertThat(config.getKeyGenerateStrategies().get("t_order_order_id").getKeyGeneratorName(), is("t_order_snowflake"));
     }
     
     @Test
