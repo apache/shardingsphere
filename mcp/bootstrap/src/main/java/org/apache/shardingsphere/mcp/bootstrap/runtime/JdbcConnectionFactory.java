@@ -46,8 +46,7 @@ public final class JdbcConnectionFactory {
         if (!runtimeDatabaseConfig.getPassword().isEmpty()) {
             props.setProperty("password", runtimeDatabaseConfig.getPassword());
         }
-        return props.isEmpty() ? DriverManager.getConnection(runtimeDatabaseConfig.getJdbcUrl())
-                : DriverManager.getConnection(runtimeDatabaseConfig.getJdbcUrl(), props);
+        return props.isEmpty() ? DriverManager.getConnection(runtimeDatabaseConfig.getJdbcUrl()) : DriverManager.getConnection(runtimeDatabaseConfig.getJdbcUrl(), props);
     }
     
     private void loadDriver(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
