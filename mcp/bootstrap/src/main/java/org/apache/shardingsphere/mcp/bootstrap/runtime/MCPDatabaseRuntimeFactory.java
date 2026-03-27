@@ -37,16 +37,17 @@ public final class MCPDatabaseRuntimeFactory {
     
     private final MCPJdbcConnectionFactory jdbcConnectionFactory = new MCPJdbcConnectionFactory();
     
+    private final MCPJdbcMetadataLoader metadataLoader  = new MCPJdbcMetadataLoader();
+    
     /**
      * Create one adapter-backed database runtime.
      *
      * @param runtimeDatabases runtime databases
      * @param metadataCatalog metadata catalog
-     * @param metadataLoader metadata loader
      * @return database runtime
      */
     public DatabaseRuntime createDatabaseRuntime(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
-                                                 final MetadataCatalog metadataCatalog, final MCPJdbcMetadataLoader metadataLoader) {
+                                                 final MetadataCatalog metadataCatalog) {
         Map<String, ConnectionProvider> connectionProviders = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
         for (Entry<String, RuntimeDatabaseConfiguration> each : runtimeDatabases.entrySet()) {
             connectionProviders.put(each.getKey(), () -> jdbcConnectionFactory.openConnection(each.getKey(), each.getValue()));

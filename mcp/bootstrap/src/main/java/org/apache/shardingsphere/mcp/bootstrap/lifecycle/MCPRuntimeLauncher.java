@@ -44,9 +44,8 @@ public final class MCPRuntimeLauncher {
      */
     public MCPRuntimeTransport launch(final MCPLaunchConfiguration config) {
         MCPDatabaseRuntimeFactory databaseRuntimeFactory = new MCPDatabaseRuntimeFactory();
-        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-        MetadataCatalog metadataCatalog = metadataLoader.load(config.getRuntimeDatabases());
-        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(config.getRuntimeDatabases(), metadataCatalog, metadataLoader);
+        MetadataCatalog metadataCatalog = new MCPJdbcMetadataLoader().load(config.getRuntimeDatabases());
+        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(config.getRuntimeDatabases(), metadataCatalog);
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPRuntimeServices runtimeServices = new MCPRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
         MCPRuntimeTransport result = createTransport(config, sessionManager, runtimeServices, metadataCatalog, databaseRuntime);

@@ -193,7 +193,7 @@ abstract class AbstractProductionRuntimeE2ETest {
         MCPDatabaseRuntimeFactory databaseRuntimeFactory = new MCPDatabaseRuntimeFactory();
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         MetadataCatalog metadataCatalog = metadataLoader.load(launchConfiguration.getRuntimeDatabases());
-        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(launchConfiguration.getRuntimeDatabases(), metadataCatalog, metadataLoader);
+        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(launchConfiguration.getRuntimeDatabases(), metadataCatalog);
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPRuntimeServices runtimeServices = new MCPRuntimeServices(sessionManager, metadataCatalog, databaseRuntime);
         StreamableHttpMCPServer result = new StreamableHttpMCPServer(launchConfiguration.getTransport().getHttp(), sessionManager, runtimeServices, metadataCatalog, databaseRuntime);

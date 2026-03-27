@@ -55,7 +55,7 @@ class MCPDatabaseRuntimeFactoryTest {
                 "logic_db", new RuntimeDatabaseConfiguration("H2", firstJdbcUrl, "", "", "org.h2.Driver"),
                 "analytics_db", new RuntimeDatabaseConfiguration("H2", secondJdbcUrl, "", "", "org.h2.Driver"));
         MetadataCatalog metadataCatalog = jdbcMetadataLoader.load(connectionConfigurations);
-        DatabaseRuntime actual = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog, jdbcMetadataLoader);
+        DatabaseRuntime actual = databaseRuntimeFactory.createDatabaseRuntime(connectionConfigurations, metadataCatalog);
         H2RuntimeTestSupport.executeStatements(firstJdbcUrl, "CREATE TABLE public.orders_archive (order_id INT PRIMARY KEY)");
         actual.refreshMetadata("logic_db");
         assertTrue(metadataCatalog.getDatabaseTypes().containsKey("analytics_db"));
@@ -69,7 +69,7 @@ class MCPDatabaseRuntimeFactoryTest {
         MCPJdbcMetadataLoader jdbcMetadataLoader = mock(MCPJdbcMetadataLoader.class);
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabaseConfigs = Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"));
         MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of("logic_db", "H2"), List.of());
-        DatabaseRuntime actual = databaseRuntimeFactory.createDatabaseRuntime(runtimeDatabaseConfigs, metadataCatalog, jdbcMetadataLoader);
+        DatabaseRuntime actual = databaseRuntimeFactory.createDatabaseRuntime(runtimeDatabaseConfigs, metadataCatalog);
         when(jdbcMetadataLoader.load(anyMap())).thenThrow(new IllegalStateException("refresh failed"));
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> actual.refreshMetadata("logic_db"));
         assertThat(ex.getMessage(), is("refresh failed"));
