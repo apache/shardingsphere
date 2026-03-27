@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfigurationValidator;
 import org.apache.shardingsphere.mcp.bootstrap.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.runtime.H2RuntimeTestSupport;
@@ -111,7 +110,7 @@ class ProductionRuntimeLauncherTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(true, true, "/mcp"),
                         Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:test", "", "", "org.h2.Driver")))));
-        assertThat(actual.getMessage(), is(MCPTransportConfigurationValidator.MULTIPLE_ENABLED_TRANSPORTS_ERROR_MESSAGE));
+        assertThat(actual.getMessage(), is("HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport."));
     }
     
     @Test
@@ -119,7 +118,7 @@ class ProductionRuntimeLauncherTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createTransportConfiguration(false, false, "/mcp"), Map.of())));
-        assertThat(actual.getMessage(), is(MCPTransportConfigurationValidator.NO_ENABLED_TRANSPORT_ERROR_MESSAGE));
+        assertThat(actual.getMessage(), is("Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true."));
     }
     
     private MCPTransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {

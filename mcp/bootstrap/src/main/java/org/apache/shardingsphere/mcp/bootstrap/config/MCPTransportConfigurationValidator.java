@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 /**
  * MCP transport configuration validator.
@@ -26,24 +27,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPTransportConfigurationValidator {
     
-    public static final String NO_ENABLED_TRANSPORT_ERROR_MESSAGE = "Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true.";
-    
-    public static final String MULTIPLE_ENABLED_TRANSPORTS_ERROR_MESSAGE = "HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport.";
-    
     /**
      * Validate transport configuration.
      *
      * @param transportConfig transport configuration
-     * @throws IllegalArgumentException when zero or multiple transports are enabled
      */
     public static void validate(final MCPTransportConfiguration transportConfig) {
-        boolean httpEnabled = transportConfig.getHttp().isEnabled();
-        boolean stdioEnabled = transportConfig.getStdio().isEnabled();
-        if (!httpEnabled && !stdioEnabled) {
-            throw new IllegalArgumentException(NO_ENABLED_TRANSPORT_ERROR_MESSAGE);
-        }
-        if (httpEnabled && stdioEnabled) {
-            throw new IllegalArgumentException(MULTIPLE_ENABLED_TRANSPORTS_ERROR_MESSAGE);
-        }
+        ShardingSpherePreconditions.checkState(isTransportConfiguration(transportConfig.getHttp().isEnabled(), transportConfig.getStdio().isEnabled()),
+                () -> new IllegalArgumentException("HTTP and STDIO transport should enable one."));
+    }
+    
+    private static boolean isTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled) {
+        return httpEnabled && !stdioEnabled || !httpEnabled && stdioEnabled;
     }
 }

@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Launch the MCP runtime bootstrap process.
+ * MCP runtime launcher.
  */
 public final class MCPRuntimeLauncher {
     
@@ -44,10 +44,10 @@ public final class MCPRuntimeLauncher {
     private final JdbcMetadataLoader metadataLoader = new JdbcMetadataLoader();
     
     /**
-     * Launch the MCP runtime on one existing bootstrap instance.
+     * Launch.
      *
      * @param config launch configuration
-     * @return active transport handle
+     * @return MCP runtime transport
      * @throws IllegalStateException when the active transport startup fails
      */
     public MCPRuntimeTransport launch(final MCPLaunchConfiguration config) {
