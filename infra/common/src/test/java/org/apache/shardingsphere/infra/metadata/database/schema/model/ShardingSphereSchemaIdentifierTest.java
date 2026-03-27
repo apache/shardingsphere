@@ -40,7 +40,7 @@ class ShardingSphereSchemaIdentifierTest {
     void assertContainsTable() {
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
-        schema.attachIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
+        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
         assertTrue(schema.containsTable("FOO_TBL"));
     }
     
@@ -48,7 +48,7 @@ class ShardingSphereSchemaIdentifierTest {
     void assertContainsTableWithOracleRule() {
         ShardingSphereTable table = new ShardingSphereTable("FOO_TBL", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", oracleDatabaseType, Collections.singleton(table), Collections.emptyList());
-        schema.attachIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newUpperCaseRuleSet()));
+        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newUpperCaseRuleSet()));
         assertTrue(schema.containsTable("foo_tbl"));
     }
     
@@ -56,7 +56,7 @@ class ShardingSphereSchemaIdentifierTest {
     void assertGetTable() {
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
-        schema.attachIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
+        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
         assertThat(schema.getTable("FOO_TBL"), is(table));
     }
     
@@ -64,7 +64,7 @@ class ShardingSphereSchemaIdentifierTest {
     void assertContainsView() {
         ShardingSphereView view = new ShardingSphereView("foo_view", "SELECT 1");
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.emptyList(), Collections.singleton(view));
-        schema.attachIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
+        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
         assertTrue(schema.containsView("FOO_VIEW"));
     }
     
@@ -72,7 +72,7 @@ class ShardingSphereSchemaIdentifierTest {
     void assertContainsViewWithOracleRule() {
         ShardingSphereView view = new ShardingSphereView("FOO_VIEW", "SELECT 1");
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", oracleDatabaseType, Collections.emptyList(), Collections.singleton(view));
-        schema.attachIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newUpperCaseRuleSet()));
+        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newUpperCaseRuleSet()));
         assertTrue(schema.containsView("foo_view"));
     }
     
@@ -80,7 +80,7 @@ class ShardingSphereSchemaIdentifierTest {
     void assertGetView() {
         ShardingSphereView view = new ShardingSphereView("foo_view", "SELECT 1");
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.emptyList(), Collections.singleton(view));
-        schema.attachIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
+        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
         assertThat(schema.getView("FOO_VIEW"), is(view));
     }
     
@@ -89,7 +89,7 @@ class ShardingSphereSchemaIdentifierTest {
         ShardingSphereTable table = new ShardingSphereTable("Foo_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
         assertTrue(schema.containsTable("FOO_TBL"));
-        schema.attachIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
+        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
         assertFalse(schema.containsTable("FOO_TBL"));
     }
     
@@ -98,7 +98,7 @@ class ShardingSphereSchemaIdentifierTest {
         ShardingSphereColumn column = new ShardingSphereColumn("Foo_Col", java.sql.Types.INTEGER, false, true, false, true, false, false);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
-        schema.attachIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
+        schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
         assertFalse(schema.getTable("foo_tbl").containsColumn("FOO_COL"));
     }
 }

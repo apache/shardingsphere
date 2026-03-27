@@ -88,7 +88,7 @@ public final class ShardingSphereSchema {
         this(name, protocolType);
         Map<String, ShardingSphereTable> tableMap = createTableMap(tables);
         Map<String, ShardingSphereView> viewMap = createViewMap(views);
-        tableMap.values().forEach(this::attachTableIdentifierContext);
+        tableMap.values().forEach(this::refreshTableIdentifierContext);
         tableIndex.rebuild(tableMap);
         viewIndex.rebuild(viewMap);
     }
@@ -158,7 +158,7 @@ public final class ShardingSphereSchema {
      * @param table table
      */
     public void putTable(final ShardingSphereTable table) {
-        attachTableIdentifierContext(table);
+        refreshTableIdentifierContext(table);
         tableIndex.put(table.getName(), table);
     }
     
@@ -257,17 +257,17 @@ public final class ShardingSphereSchema {
     }
     
     /**
-     * Attach shared database identifier context.
+     * Refresh shared database identifier context.
      *
      * @param identifierContext database identifier context
      */
-    public void attachIdentifierContext(final DatabaseIdentifierContext identifierContext) {
+    public void refreshIdentifierContext(final DatabaseIdentifierContext identifierContext) {
         final Collection<ShardingSphereTable> tables = new LinkedList<>(tableIndex.getAll());
         final Collection<ShardingSphereView> views = new LinkedList<>(viewIndex.getAll());
         this.identifierContext = identifierContext;
         tableIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.TABLE);
         viewIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.VIEW);
-        tables.forEach(this::attachTableIdentifierContext);
+        tables.forEach(this::refreshTableIdentifierContext);
         tableIndex.rebuild(createTableMap(tables));
         viewIndex.rebuild(createViewMap(views));
     }
@@ -332,8 +332,8 @@ public final class ShardingSphereSchema {
         return tableIndex.isEmpty() && viewIndex.isEmpty();
     }
     
-    private void attachTableIdentifierContext(final ShardingSphereTable table) {
-        table.attachIdentifierContext(identifierContext);
+    private void refreshTableIdentifierContext(final ShardingSphereTable table) {
+        table.refreshIdentifierContext(identifierContext);
     }
     
     private Map<String, ShardingSphereTable> createTableMap(final Collection<ShardingSphereTable> tables) {

@@ -111,7 +111,7 @@ public final class ShardingSphereDatabase {
         this.identifierContext = identifierContext;
         schemaIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.SCHEMA);
         Map<String, ShardingSphereSchema> schemaMap = createSchemaMap(schemas);
-        schemaMap.values().forEach(this::attachSchemaIdentifierContext);
+        schemaMap.values().forEach(this::refreshSchemaIdentifierContext);
         schemaIndex.rebuild(schemaMap);
     }
     
@@ -180,7 +180,7 @@ public final class ShardingSphereDatabase {
      * @param schema schema
      */
     public void addSchema(final ShardingSphereSchema schema) {
-        attachSchemaIdentifierContext(schema);
+        refreshSchemaIdentifierContext(schema);
         schemaIndex.put(schema.getName(), schema);
     }
     
@@ -255,7 +255,7 @@ public final class ShardingSphereDatabase {
         DatabaseIdentifierContextFactory.refresh(identifierContext, protocolType, resourceMetaData, props);
         Map<String, ShardingSphereSchema> schemaMap = new LinkedHashMap<>(schemaIndex.size(), 1F);
         schemaIndex.getAll().forEach(each -> {
-            attachSchemaIdentifierContext(each);
+            refreshSchemaIdentifierContext(each);
             schemaMap.put(each.getName(), each);
         });
         schemaIndex.rebuild(schemaMap);
@@ -278,8 +278,8 @@ public final class ShardingSphereDatabase {
         return decorator.get().decorate(name, dataSources, ruleMetaData.getRules(), ruleConfig);
     }
     
-    private void attachSchemaIdentifierContext(final ShardingSphereSchema schema) {
-        schema.attachIdentifierContext(identifierContext);
+    private void refreshSchemaIdentifierContext(final ShardingSphereSchema schema) {
+        schema.refreshIdentifierContext(identifierContext);
     }
     
     private Map<String, ShardingSphereSchema> createSchemaMap(final Collection<ShardingSphereSchema> schemas) {
