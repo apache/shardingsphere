@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config;
 
-import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -30,27 +30,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MCPLaunchConfigurationTest {
     
     @Test
-    void assertGetTransport() {
-        MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> launchConfiguration = createLaunchConfiguration(Map.of());
+    void assertGetTransports() {
+        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(Map.of());
         
-        assertTrue(launchConfiguration.getTransport().getHttp().isEnabled());
-        assertFalse(launchConfiguration.getTransport().getStdio().isEnabled());
-        assertThat(launchConfiguration.getTransport().getHttp().getEndpointPath(), is("/mcp"));
+        assertTrue(launchConfiguration.getHttpTransport().isEnabled());
+        assertFalse(launchConfiguration.getStdioTransport().isEnabled());
+        assertThat(launchConfiguration.getHttpTransport().getEndpointPath(), is("/mcp"));
     }
     
     @Test
     void assertGetRuntimeConfiguration() {
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"));
-        MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> launchConfiguration = createLaunchConfiguration(runtimeDatabases);
+        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(runtimeDatabases);
         
         assertThat(launchConfiguration.getRuntimeConfiguration().get("logic_db").getDatabaseType(), is("H2"));
     }
     
-    private MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> createLaunchConfiguration(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        return new MCPLaunchConfiguration<>(createTransportConfiguration(true, false, "/mcp"), runtimeDatabases);
-    }
-    
-    private MCPTransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final String endpointPath) {
-        return new MCPTransportConfiguration(new HttpTransportConfiguration(httpEnabled, "127.0.0.1", 0, endpointPath), new StdioTransportConfiguration(stdioEnabled));
+    private MCPLaunchConfiguration createLaunchConfiguration(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        return new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, "/mcp"), new StdioTransportConfiguration(false), runtimeDatabases);
     }
 }

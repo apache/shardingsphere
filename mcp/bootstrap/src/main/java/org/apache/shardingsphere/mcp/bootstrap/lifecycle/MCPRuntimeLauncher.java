@@ -17,30 +17,32 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
 import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.stdio.StdioTransportMCPServer;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.runtime.MCPRuntimeProvider;
+import org.apache.shardingsphere.mcp.jdbc.runtime.MCPJdbcRuntimeContextFactory;
+import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.function.BiFunction;
 
 /**
  * MCP runtime launcher.
  */
 public final class MCPRuntimeLauncher {
     
-    private final MCPRuntimeProvider runtimeProvider;
+    private final BiFunction<MCPSessionManager, Map<String, RuntimeDatabaseConfiguration>, MCPRuntimeContext> runtimeContextCreator;
     
     public MCPRuntimeLauncher() {
-        this(TypedSPILoader.getService(MCPRuntimeProvider.class, null));
+        this(new MCPJdbcRuntimeContextFactory()::create);
     }
     
-    MCPRuntimeLauncher(final MCPRuntimeProvider runtimeProvider) {
-        this.runtimeProvider = runtimeProvider;
+    MCPRuntimeLauncher(final BiFunction<MCPSessionManager, Map<String, RuntimeDatabaseConfiguration>, MCPRuntimeContext> runtimeContextCreator) {
+        this.runtimeContextCreator = runtimeContextCreator;
     }
     
     /**
@@ -50,22 +52,22 @@ public final class MCPRuntimeLauncher {
      * @return MCP runtime transport
      * @throws IllegalStateException when the active transport startup fails
      */
-    public MCPRuntimeTransport launch(final MCPLaunchConfiguration<?> config) {
+    public MCPRuntimeTransport launch(final MCPLaunchConfiguration config) {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPRuntimeContext runtimeContext = runtimeProvider.createRuntimeContext(sessionManager, config.getRuntimeConfiguration());
+        MCPRuntimeContext runtimeContext = runtimeContextCreator.apply(sessionManager, config.getRuntimeConfiguration());
         MCPRuntimeTransport result = createTransport(config, runtimeContext);
         try {
             result.start();
         } catch (final IOException ex) {
             result.close();
-            throw new IllegalStateException(String.format("Failed to start %s transport.", config.getTransport().getHttp().isEnabled() ? "HTTP" : "STDIO"), ex);
+            throw new IllegalStateException(String.format("Failed to start %s transport.", config.getHttpTransport().isEnabled() ? "HTTP" : "STDIO"), ex);
         }
         return result;
     }
     
-    private MCPRuntimeTransport createTransport(final MCPLaunchConfiguration<?> config, final MCPRuntimeContext runtimeContext) {
-        return config.getTransport().getHttp().isEnabled()
-                ? new StreamableHttpMCPServer(config.getTransport().getHttp(), runtimeContext)
+    private MCPRuntimeTransport createTransport(final MCPLaunchConfiguration config, final MCPRuntimeContext runtimeContext) {
+        return config.getHttpTransport().isEnabled()
+                ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext)
                 : new StdioTransportMCPServer(runtimeContext);
     }
 }

@@ -18,16 +18,13 @@
 package org.apache.shardingsphere.test.e2e.mcp;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContextBuilder;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 final class MCPRuntimeContextTestBuilder {
     
-    private final MCPRuntimeContextBuilder runtimeContextBuilder = new MCPRuntimeContextBuilder();
-    
     MCPRuntimeContext build(final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
-        return runtimeContextBuilder.build(new MCPSessionManager(), metadataCatalog, databaseRuntime);
+        return MCPRuntimeContext.create(new MCPSessionManager(), metadataCatalog, databaseRuntime);
     }
 }

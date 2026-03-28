@@ -22,11 +22,10 @@ import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -128,13 +127,12 @@ abstract class AbstractProductionRuntimeIntegrationTest {
         return castToMap(parseJsonBody(responseBody).get("result"));
     }
     
-    private MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> createRuntimeConfiguration() {
-        return new MCPLaunchConfiguration<>(
-                new MCPTransportConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, "/gateway"), new StdioTransportConfiguration(false)),
-                createRuntimeDatabases());
+    private MCPLaunchConfiguration createRuntimeConfiguration() {
+        return new MCPLaunchConfiguration(
+                new HttpTransportConfiguration(true, "127.0.0.1", 0, "/gateway"), new StdioTransportConfiguration(false), createRuntimeDatabases());
     }
     
-    private StreamableHttpMCPServer launchHttpServer(final MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> launchConfiguration) {
+    private StreamableHttpMCPServer launchHttpServer(final MCPLaunchConfiguration launchConfiguration) {
         MCPRuntimeTransport actual = new MCPRuntimeLauncher().launch(launchConfiguration);
         if (actual instanceof StreamableHttpMCPServer) {
             return (StreamableHttpMCPServer) actual;

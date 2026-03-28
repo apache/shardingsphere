@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.config.loader;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.yaml.snakeyaml.constructor.ConstructorException;
@@ -52,13 +52,13 @@ class MCPConfigurationLoaderTest {
                 + "    enabled: false\n"
                 + "runtimeDatabases: {}\n");
         
-        MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> actual = MCPConfigurationLoader.load(configFile.toString());
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         
-        assertTrue(actual.getTransport().getHttp().isEnabled());
-        assertFalse(actual.getTransport().getStdio().isEnabled());
-        assertThat(actual.getTransport().getHttp().getBindHost(), is("0.0.0.0"));
-        assertThat(actual.getTransport().getHttp().getPort(), is(9090));
-        assertThat(actual.getTransport().getHttp().getEndpointPath(), is("/gateway"));
+        assertTrue(actual.getHttpTransport().isEnabled());
+        assertFalse(actual.getStdioTransport().isEnabled());
+        assertThat(actual.getHttpTransport().getBindHost(), is("0.0.0.0"));
+        assertThat(actual.getHttpTransport().getPort(), is(9090));
+        assertThat(actual.getHttpTransport().getEndpointPath(), is("/gateway"));
         assertTrue(actual.getRuntimeConfiguration().isEmpty());
     }
     
@@ -121,7 +121,7 @@ class MCPConfigurationLoaderTest {
                 + "    password: analytics-pass\n"
                 + "    driverClassName: org.h2.Driver\n");
         
-        MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> actual = MCPConfigurationLoader.load(configFile.toString());
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         Map<String, RuntimeDatabaseConfiguration> actualDatabases = actual.getRuntimeConfiguration();
         
         assertThat(actualDatabases.size(), is(2));
@@ -132,10 +132,10 @@ class MCPConfigurationLoaderTest {
     
     @Test
     void assertLoadPackagedDistributionConfiguration() throws IOException {
-        MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> actual = MCPConfigurationLoader.load("distribution/mcp/src/main/resources/conf/mcp.yaml");
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load("distribution/mcp/src/main/resources/conf/mcp.yaml");
         
-        assertTrue(actual.getTransport().getHttp().isEnabled());
-        assertFalse(actual.getTransport().getStdio().isEnabled());
+        assertTrue(actual.getHttpTransport().isEnabled());
+        assertFalse(actual.getStdioTransport().isEnabled());
         assertThat(actual.getRuntimeConfiguration().size(), is(2));
         assertThat(actual.getRuntimeConfiguration().get("orders").getUsername(), is(""));
         assertThat(actual.getRuntimeConfiguration().get("billing").getPassword(), is(""));
@@ -152,7 +152,7 @@ class MCPConfigurationLoaderTest {
                 + "  stdio:\n"
                 + "    enabled: true\n");
         
-        MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> actual = MCPConfigurationLoader.load(configFile.toString());
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         
         assertTrue(actual.getRuntimeConfiguration().isEmpty());
     }

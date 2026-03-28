@@ -62,8 +62,6 @@ public final class DatabaseCapabilityAssembler {
     
     private static final Set<StatementClass> SUPPORTED_STATEMENT_CLASSES = Set.of(StatementClass.values());
     
-    private final DatabaseCapabilityRegistry registry;
-    
     private final MetadataCatalog metadataCatalog;
     
     /**
@@ -72,7 +70,6 @@ public final class DatabaseCapabilityAssembler {
      * @param metadataCatalog metadata catalog
      */
     public DatabaseCapabilityAssembler(final MetadataCatalog metadataCatalog) {
-        registry = DatabaseCapabilityRegistry.createDefault();
         this.metadataCatalog = metadataCatalog;
     }
     
@@ -92,39 +89,10 @@ public final class DatabaseCapabilityAssembler {
      * @param databaseType database type
      * @return database-level capability when the database type is supported
      */
-    public Optional<DatabaseCapabilityView> assembleDatabaseCapability(final String database, final String databaseType) {
+    public Optional<DatabaseCapability> assembleDatabaseCapability(final String database, final String databaseType) {
         Optional<RuntimeDatabaseDescriptor> runtimeDescriptor = metadataCatalog.findRuntimeDatabaseDescriptor(database);
         String actualDatabaseType = runtimeDescriptor.map(RuntimeDatabaseDescriptor::getDatabaseType).orElse(databaseType);
         String actualDatabaseVersion = runtimeDescriptor.map(RuntimeDatabaseDescriptor::getDatabaseVersion).orElse("");
-        return registry.find(actualDatabaseType, actualDatabaseVersion).map(each -> overlayRuntimeFacts(createDatabaseCapability(database, each)));
+        return DatabaseCapabilityCatalog.find(database, actualDatabaseType, actualDatabaseVersion);
     }
-    
-    private DatabaseCapabilityView overlayRuntimeFacts(final DatabaseCapabilityView databaseCapabilityView) {
-        Optional<RuntimeDatabaseDescriptor> runtimeDescriptor = metadataCatalog.findRuntimeDatabaseDescriptor(databaseCapabilityView.getDatabase());
-        if (runtimeDescriptor.isEmpty()) {
-            return databaseCapabilityView;
-        }
-        boolean supportsCrossSchemaSql = databaseCapabilityView.isSupportsCrossSchemaSql();
-        boolean supportsExplainAnalyze = databaseCapabilityView.isSupportsExplainAnalyze();
-        ResultBehavior explainAnalyzeResultBehavior = supportsExplainAnalyze ? ResultBehavior.RESULT_SET : ResultBehavior.UNSUPPORTED;
-        TransactionBoundaryBehavior explainAnalyzeTransactionBehavior = supportsExplainAnalyze ? TransactionBoundaryBehavior.NATIVE
-                : TransactionBoundaryBehavior.UNSUPPORTED;
-        return new DatabaseCapabilityView(databaseCapabilityView.getDatabase(), runtimeDescriptor.get().getDatabaseType(),
-                databaseCapabilityView.getMinSupportedVersion(), databaseCapabilityView.getSupportedMetadataObjectTypes(), databaseCapabilityView.getSupportedStatementClasses(),
-                databaseCapabilityView.isSupportsTransactionControl(), databaseCapabilityView.isSupportsSavepoint(),
-                databaseCapabilityView.getSupportedTransactionStatements(), databaseCapabilityView.isDefaultAutocommit(),
-                databaseCapabilityView.getMaxRowsDefault(), databaseCapabilityView.getMaxTimeoutMsDefault(),
-                databaseCapabilityView.getDefaultSchemaSemantics(), supportsCrossSchemaSql, supportsExplainAnalyze, databaseCapabilityView.getDdlTransactionBehavior(),
-                databaseCapabilityView.getDclTransactionBehavior(), explainAnalyzeResultBehavior, explainAnalyzeTransactionBehavior);
-    }
-    
-    private static DatabaseCapabilityView createDatabaseCapability(final String database, final DatabaseCapability capability) {
-        return new DatabaseCapabilityView(database, capability.getDatabaseType(), capability.getMinSupportedVersion(), capability.getSupportedMetadataObjectTypes(),
-                capability.getSupportedStatementClasses(), capability.isSupportsTransactionControl(), capability.isSupportsSavepoint(),
-                capability.getSupportedTransactionStatements(), capability.isDefaultAutocommit(), capability.getMaxRowsDefault(),
-                capability.getMaxTimeoutMsDefault(), capability.getDefaultSchemaSemantics(), capability.isCrossSchemaQuerySupported(),
-                capability.isSupportsExplainAnalyze(), capability.getDdlTransactionBehavior(), capability.getDclTransactionBehavior(),
-                capability.getExplainAnalyzeResultBehavior(), capability.getExplainAnalyzeTransactionBehavior());
-    }
-    
 }

@@ -17,48 +17,59 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.runtime.MCPRuntimeProvider;
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.config.yaml.swapper.YamlRuntimeDatabaseConfigurationsSwapper;
 
 import java.util.Collections;
 
 /**
  * YAML MCP launch configuration swapper.
  */
-public final class YamlMCPLaunchConfigurationSwapper implements YamlConfigurationSwapper<YamlMCPLaunchConfiguration, MCPLaunchConfiguration<?>> {
+public final class YamlMCPLaunchConfigurationSwapper implements YamlConfigurationSwapper<YamlMCPLaunchConfiguration, MCPLaunchConfiguration> {
     
     private static final String NULL_CONFIG_ERROR_MESSAGE = "MCP launch configuration cannot be null.";
     
-    private final MCPRuntimeProvider runtimeProvider;
+    private final YamlHttpTransportConfigurationSwapper httpTransportConfigSwapper = new YamlHttpTransportConfigurationSwapper();
     
-    private final YamlMCPTransportConfigurationSwapper transportConfigSwapper = new YamlMCPTransportConfigurationSwapper();
+    private final YamlStdioTransportConfigurationSwapper stdioTransportConfigSwapper = new YamlStdioTransportConfigurationSwapper();
     
-    public YamlMCPLaunchConfigurationSwapper() {
-        this(TypedSPILoader.getService(MCPRuntimeProvider.class, null));
-    }
-    
-    public YamlMCPLaunchConfigurationSwapper(final MCPRuntimeProvider runtimeProvider) {
-        this.runtimeProvider = runtimeProvider;
-    }
+    private final YamlRuntimeDatabaseConfigurationsSwapper runtimeDatabasesSwapper = new YamlRuntimeDatabaseConfigurationsSwapper();
     
     @Override
-    public YamlMCPLaunchConfiguration swapToYamlConfiguration(final MCPLaunchConfiguration<?> data) {
+    public YamlMCPLaunchConfiguration swapToYamlConfiguration(final MCPLaunchConfiguration data) {
         YamlMCPLaunchConfiguration result = new YamlMCPLaunchConfiguration();
-        result.setTransport(transportConfigSwapper.swapToYamlConfiguration(data.getTransport()));
-        result.setRuntimeDatabases(runtimeProvider.swapToYamlConfiguration(data.getRuntimeConfiguration()));
+        result.setTransport(createYamlTransportConfiguration(data.getHttpTransport(), data.getStdioTransport()));
+        result.setRuntimeDatabases(runtimeDatabasesSwapper.swapToYamlConfiguration(data.getRuntimeConfiguration()));
         return result;
     }
     
     @Override
-    public MCPLaunchConfiguration<?> swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
+    public MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException(NULL_CONFIG_ERROR_MESSAGE));
-        MCPTransportConfiguration transportConfig = transportConfigSwapper.swapToObject(yamlConfig.getTransport());
-        transportConfig.validate();
-        return new MCPLaunchConfiguration<>(transportConfig, runtimeProvider.swapToObject(null == yamlConfig.getRuntimeDatabases() ? Collections.emptyMap() : yamlConfig.getRuntimeDatabases()));
+        YamlMCPTransportConfiguration yamlTransportConfig = resolveRequiredTransportConfiguration(yamlConfig);
+        MCPLaunchConfiguration result = new MCPLaunchConfiguration(httpTransportConfigSwapper.swapToObject(yamlTransportConfig.getHttp()),
+                stdioTransportConfigSwapper.swapToObject(yamlTransportConfig.getStdio()),
+                runtimeDatabasesSwapper.swapToObject(null == yamlConfig.getRuntimeDatabases() ? Collections.emptyMap() : yamlConfig.getRuntimeDatabases()));
+        result.validate();
+        return result;
+    }
+    
+    private YamlMCPTransportConfiguration createYamlTransportConfiguration(final HttpTransportConfiguration httpTransport, final StdioTransportConfiguration stdioTransport) {
+        YamlMCPTransportConfiguration result = new YamlMCPTransportConfiguration();
+        result.setHttp(httpTransportConfigSwapper.swapToYamlConfiguration(httpTransport));
+        result.setStdio(stdioTransportConfigSwapper.swapToYamlConfiguration(stdioTransport));
+        return result;
+    }
+    
+    private YamlMCPTransportConfiguration resolveRequiredTransportConfiguration(final YamlMCPLaunchConfiguration yamlConfig) {
+        YamlMCPTransportConfiguration result = yamlConfig.getTransport();
+        ShardingSpherePreconditions.checkNotNull(result, () -> new IllegalArgumentException("Property `transport` is required."));
+        return result;
     }
 }

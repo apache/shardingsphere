@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport;
 
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.ResultBehavior;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.StatementClass;
@@ -39,7 +39,7 @@ class MCPTransportPayloadBuilderTest {
     
     @Test
     void assertCreateDatabaseCapabilityPayload() {
-        DatabaseCapabilityView capability = new DatabaseCapabilityView("logic_db", "H2", "2.2",
+        DatabaseCapability capability = new DatabaseCapability("logic_db", "H2", "2.2",
                 Set.of(MetadataObjectType.TABLE), Set.of(StatementClass.QUERY), true, true, Set.of("BEGIN"),
                 true, 100, 3000, SchemaSemantics.NATIVE_SCHEMA, true, false,
                 TransactionBoundaryBehavior.UNIFORM, TransactionBoundaryBehavior.NATIVE,

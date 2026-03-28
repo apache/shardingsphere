@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.mcp.capability;
 
-import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.EnumSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,67 +35,51 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DatabaseCapabilityRegistryTest {
     
     @Test
-    void assertRegister() {
-        DatabaseCapabilityRegistry registry = new DatabaseCapabilityRegistry();
-        
-        registry.register(createCapability());
-        
-        Optional<DatabaseCapability> actual = registry.find("MYSQL", "");
-        
-        assertTrue(actual.isPresent());
-        assertThat(actual.get().getDatabaseType(), is("MYSQL"));
-    }
-    
-    @Test
-    void assertRegisterWithNull() {
-        DatabaseCapabilityRegistry registry = new DatabaseCapabilityRegistry();
-        
-        assertThrows(NullPointerException.class, () -> registry.register(null));
-    }
-    
-    @Test
     void assertFind() {
-        DatabaseCapabilityRegistry registry = new DatabaseCapabilityRegistry();
-        registry.register(createCapability());
-        
-        Optional<DatabaseCapability> actual = registry.find(" mysql ", "");
+        Optional<DatabaseCapability> actual = DatabaseCapabilityCatalog.find("logic_db", " mysql ", "");
         
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDatabaseType(), is("MYSQL"));
+        assertThat(actual.get().getDatabase(), is("logic_db"));
+    }
+    
+    @Test
+    void assertGetSupportedDatabaseTypes() {
+        assertThat(DatabaseCapabilityCatalog.getSupportedDatabaseTypes(), is(Set.of(
+                "MYSQL", "POSTGRESQL", "OPENGAUSS", "SQLSERVER", "MARIADB", "ORACLE", "CLICKHOUSE", "DORIS", "HIVE", "PRESTO", "FIREBIRD", "H2")));
     }
     
     @Test
     void assertFindWithUnknownDatabaseType() {
-        DatabaseCapabilityRegistry registry = new DatabaseCapabilityRegistry();
-        registry.register(createCapability());
-        
-        Optional<DatabaseCapability> actual = registry.find("postgresql", "");
+        Optional<DatabaseCapability> actual = DatabaseCapabilityCatalog.find("logic_db", "sqlite", "");
         
         assertFalse(actual.isPresent());
     }
     
     @Test
     void assertFindWithNullDatabaseType() {
-        DatabaseCapabilityRegistry registry = new DatabaseCapabilityRegistry();
-        
-        assertThrows(NullPointerException.class, () -> registry.find(null, ""));
+        assertThrows(NullPointerException.class, () -> DatabaseCapabilityCatalog.find("logic_db", null, ""));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("versionAwareExplainAnalyzeCases")
     void assertFindWithVersionAwareExplainAnalyze(final String caseName, final String databaseType, final String databaseVersion, final boolean expected) {
-        DatabaseCapabilityRegistry registry = DatabaseCapabilityRegistry.createDefault();
-        
-        Optional<DatabaseCapability> actual = registry.find(databaseType, databaseVersion);
+        Optional<DatabaseCapability> actual = DatabaseCapabilityCatalog.find("logic_db", databaseType, databaseVersion);
         
         assertTrue(actual.isPresent(), caseName);
         assertThat(actual.get().isSupportsExplainAnalyze(), is(expected));
         assertThat(actual.get().getSupportedStatementClasses().contains(StatementClass.EXPLAIN_ANALYZE), is(expected));
     }
     
-    private DatabaseCapability createCapability() {
-        return new DatabaseCapability("mysql", EnumSet.of(MetadataObjectType.TABLE), EnumSet.of(StatementClass.QUERY),
-                TransactionCapability.LOCAL_WITH_SAVEPOINT, true, false);
+    @Test
+    void assertNormalizeDatabaseType() {
+        assertThat(DatabaseCapabilityCatalog.normalizeDatabaseType(" mysql "), is("MYSQL"));
+    }
+    
+    @Test
+    void assertCreateSupportedTransactionStatements() {
+        assertThat(DatabaseCapabilityCatalog.createSupportedTransactionStatements(TransactionCapability.LOCAL_WITH_SAVEPOINT),
+                is(Set.of("BEGIN", "START TRANSACTION", "COMMIT", "ROLLBACK", "SAVEPOINT", "ROLLBACK TO SAVEPOINT", "RELEASE SAVEPOINT")));
     }
     
     private static Stream<Arguments> versionAwareExplainAnalyzeCases() {

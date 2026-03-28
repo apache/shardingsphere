@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
@@ -82,7 +82,7 @@ final class MCPToolCallHandler {
         if (null == databaseType) {
             return errorToolResult("not_found", "Database capability does not exist.");
         }
-        Optional<DatabaseCapabilityView> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(database, databaseType);
+        Optional<DatabaseCapability> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(database, databaseType);
         return capability.isPresent() ? successToolResult(payloadBuilder.createDatabaseCapabilityPayload(capability.get())) : errorToolResult("not_found", "Database capability does not exist.");
     }
     

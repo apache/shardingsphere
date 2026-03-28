@@ -49,25 +49,16 @@ class SupportedDatabaseBaselineTest {
         expectedDatabaseTypes.add("PRESTO");
         expectedDatabaseTypes.add("FIREBIRD");
         expectedDatabaseTypes.add("H2");
-        DatabaseCapabilityRegistry registry = DatabaseCapabilityRegistry.createDefault();
-        Set<String> actualDatabaseTypes = new LinkedHashSet<>();
-        for (String each : expectedDatabaseTypes) {
-            if (registry.find(each, "").isPresent()) {
-                actualDatabaseTypes.add(each);
-            }
-        }
-        
+        Set<String> actualDatabaseTypes = DatabaseCapabilityCatalog.getSupportedDatabaseTypes();
         assertThat(actualDatabaseTypes.size(), is(12));
         assertThat(actualDatabaseTypes, is(expectedDatabaseTypes));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("transactionMatrixCases")
-    void assertCreateDefaultTransactionMatrix(final String caseName, final String databaseType, final boolean expectedSupportsTransactionControl,
-                                              final boolean expectedSupportsSavepoint, final Set<String> expectedTransactionStatements) {
-        DatabaseCapabilityRegistry registry = DatabaseCapabilityRegistry.createDefault();
-        
-        Optional<DatabaseCapability> actualCapability = registry.find(databaseType, "");
+    void assertTransactionMatrix(final String caseName, final String databaseType, final boolean expectedSupportsTransactionControl,
+                                 final boolean expectedSupportsSavepoint, final Set<String> expectedTransactionStatements) {
+        Optional<DatabaseCapability> actualCapability = DatabaseCapabilityCatalog.find("logic_db", databaseType, "");
         
         assertTrue(actualCapability.isPresent(), caseName);
         assertThat(actualCapability.get().isSupportsTransactionControl(), is(expectedSupportsTransactionControl));

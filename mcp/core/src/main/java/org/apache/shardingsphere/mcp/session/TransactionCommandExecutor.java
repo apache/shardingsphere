@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.session;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
@@ -57,7 +57,7 @@ public final class TransactionCommandExecutor {
     }
     
     private ExecuteQueryResponse execute(final String sessionId, final String database, final String databaseType, final String statementType, final String savepointName) {
-        Optional<DatabaseCapabilityView> databaseCapability = capabilityAssembler.assembleDatabaseCapability(database, databaseType);
+        Optional<DatabaseCapability> databaseCapability = capabilityAssembler.assembleDatabaseCapability(database, databaseType);
         if (databaseCapability.isEmpty()) {
             return ExecuteQueryResponse.error(ErrorCode.NOT_FOUND, "Database capability does not exist.");
         }

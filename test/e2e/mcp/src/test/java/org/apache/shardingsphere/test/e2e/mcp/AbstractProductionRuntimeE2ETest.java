@@ -20,16 +20,15 @@ package org.apache.shardingsphere.test.e2e.mcp;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
 import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
-import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -191,7 +190,7 @@ abstract class AbstractProductionRuntimeE2ETest {
     }
     
     private StreamableHttpMCPServer createStartedHttpServer(final Path configFile) throws IOException {
-        MCPLaunchConfiguration<Map<String, RuntimeDatabaseConfiguration>> launchConfiguration = MCPConfigurationLoader.load(configFile.toString());
+        MCPLaunchConfiguration launchConfiguration = MCPConfigurationLoader.load(configFile.toString());
         MCPRuntimeTransport runtimeTransport = new MCPRuntimeLauncher().launch(launchConfiguration);
         if (!(runtimeTransport instanceof StreamableHttpMCPServer)) {
             runtimeTransport.close();
@@ -240,8 +239,7 @@ abstract class AbstractProductionRuntimeE2ETest {
     }
     
     private String createConfigurationContent() {
-        return YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(new MCPLaunchConfiguration<>(
-                new MCPTransportConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, getEndpointPath()), new StdioTransportConfiguration(false)),
-                getRuntimeDatabases())));
+        return YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(new MCPLaunchConfiguration(
+                new HttpTransportConfiguration(true, "127.0.0.1", 0, getEndpointPath()), new StdioTransportConfiguration(false), getRuntimeDatabases())));
     }
 }

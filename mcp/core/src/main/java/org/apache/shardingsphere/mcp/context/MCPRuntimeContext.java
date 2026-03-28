@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
+import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
@@ -34,7 +35,7 @@ import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher;
 /**
  * MCP runtime context.
  */
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class MCPRuntimeContext {
     
@@ -57,4 +58,25 @@ public final class MCPRuntimeContext {
     private final MetadataRefreshCoordinator metadataRefreshCoordinator;
     
     private final ExecuteQueryFacade executeQueryFacade;
+    
+    /**
+     * Create MCP runtime context.
+     *
+     * @param sessionManager session manager
+     * @param metadataCatalog metadata catalog
+     * @param databaseRuntime database runtime
+     * @return MCP runtime context
+     */
+    public static MCPRuntimeContext create(final MCPSessionManager sessionManager, final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
+        DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(metadataCatalog);
+        MetadataResourceLoader metadataResourceLoader = new MetadataResourceLoader(capabilityAssembler);
+        MetadataToolDispatcher metadataToolDispatcher = new MetadataToolDispatcher(metadataResourceLoader);
+        TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(capabilityAssembler, sessionManager, databaseRuntime);
+        AuditRecorder auditRecorder = new AuditRecorder();
+        MetadataRefreshCoordinator metadataRefreshCoordinator = new MetadataRefreshCoordinator();
+        ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(
+                new StatementClassifier(), capabilityAssembler, transactionCommandExecutor, auditRecorder, metadataRefreshCoordinator);
+        return new MCPRuntimeContext(sessionManager, metadataCatalog, databaseRuntime, capabilityAssembler,
+                metadataResourceLoader, metadataToolDispatcher, transactionCommandExecutor, auditRecorder, metadataRefreshCoordinator, executeQueryFacade);
+    }
 }

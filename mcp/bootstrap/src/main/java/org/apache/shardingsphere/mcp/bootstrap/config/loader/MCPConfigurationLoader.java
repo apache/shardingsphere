@@ -20,12 +20,10 @@ package org.apache.shardingsphere.mcp.bootstrap.config.loader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
-import org.apache.shardingsphere.mcp.runtime.MCPRuntimeProvider;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -43,20 +41,13 @@ public final class MCPConfigurationLoader {
     /**
      * Load one MCP launch configuration from YAML.
      *
-     * @param <T> runtime configuration type
      * @param configPath configuration path
      * @return launch configuration
      * @throws IOException when the file cannot be read
      */
-    public static <T> MCPLaunchConfiguration<T> load(final String configPath) throws IOException {
+    public static MCPLaunchConfiguration load(final String configPath) throws IOException {
         String yamlContent = Files.readString(resolveConfigurationFile(configPath).toPath());
-        return castLaunchConfiguration(new YamlMCPLaunchConfigurationSwapper(TypedSPILoader.getService(MCPRuntimeProvider.class, null))
-                .swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
-    }
-    
-    @SuppressWarnings("unchecked")
-    private static <T> MCPLaunchConfiguration<T> castLaunchConfiguration(final MCPLaunchConfiguration<?> launchConfiguration) {
-        return (MCPLaunchConfiguration<T>) launchConfiguration;
+        return new YamlMCPLaunchConfigurationSwapper().swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class));
     }
     
     private static File resolveConfigurationFile(final String configPath) throws FileNotFoundException {

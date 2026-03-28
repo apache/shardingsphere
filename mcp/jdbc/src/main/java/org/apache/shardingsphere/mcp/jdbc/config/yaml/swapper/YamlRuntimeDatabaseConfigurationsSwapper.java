@@ -15,15 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.jdbc.runtime;
+package org.apache.shardingsphere.mcp.jdbc.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.jdbc.config.yaml.config.YamlRuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.jdbc.config.yaml.swapper.YamlRuntimeDatabaseConfigurationSwapper;
-import org.apache.shardingsphere.mcp.runtime.MCPRuntimeProvider;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,33 +27,21 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * JDBC runtime provider.
+ * YAML runtime databases configuration swapper.
  */
-public final class MCPJdbcRuntimeProvider implements MCPRuntimeProvider {
+public final class YamlRuntimeDatabaseConfigurationsSwapper {
     
     private static final Set<String> SUPPORTED_RUNTIME_DATABASE_PROPERTIES = Set.of("databaseType", "jdbcUrl", "username", "password", "driverClassName");
     
-    private final MCPJdbcRuntimeContextFactory runtimeContextFactory = new MCPJdbcRuntimeContextFactory();
-    
     private final YamlRuntimeDatabaseConfigurationSwapper runtimeDatabaseConfigSwapper = new YamlRuntimeDatabaseConfigurationSwapper();
     
-    @Override
-    public String getType() {
-        return "JDBC";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
-    
-    @Override
-    public MCPRuntimeContext createRuntimeContext(final MCPSessionManager sessionManager, final Object runtimeConfiguration) {
-        return runtimeContextFactory.create(sessionManager, castRuntimeDatabases(runtimeConfiguration));
-    }
-    
-    @Override
-    public Object swapToObject(final Map<String, Map<String, Object>> yamlRuntimeConfiguration) {
+    /**
+     * Swap YAML runtime configuration to runtime configuration object.
+     *
+     * @param yamlRuntimeConfiguration YAML runtime configuration
+     * @return runtime configuration object
+     */
+    public Map<String, RuntimeDatabaseConfiguration> swapToObject(final Map<String, Map<String, Object>> yamlRuntimeConfiguration) {
         ShardingSpherePreconditions.checkNotNull(yamlRuntimeConfiguration, () -> new IllegalArgumentException("Runtime configuration cannot be null."));
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(yamlRuntimeConfiguration.size(), 1F);
         for (Entry<String, Map<String, Object>> entry : yamlRuntimeConfiguration.entrySet()) {
@@ -67,21 +51,19 @@ public final class MCPJdbcRuntimeProvider implements MCPRuntimeProvider {
         return result;
     }
     
-    @Override
-    public Map<String, Map<String, Object>> swapToYamlConfiguration(final Object runtimeConfiguration) {
-        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = castRuntimeDatabases(runtimeConfiguration);
-        Map<String, Map<String, Object>> result = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
-        for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
+    /**
+     * Swap runtime configuration object to YAML runtime configuration.
+     *
+     * @param runtimeConfiguration runtime configuration
+     * @return YAML runtime configuration
+     */
+    public Map<String, Map<String, Object>> swapToYamlConfiguration(final Map<String, RuntimeDatabaseConfiguration> runtimeConfiguration) {
+        Map<String, Map<String, Object>> result = new LinkedHashMap<>(runtimeConfiguration.size(), 1F);
+        for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeConfiguration.entrySet()) {
             ShardingSpherePreconditions.checkNotNull(entry.getValue(), () -> new IllegalArgumentException("Runtime database configuration cannot be null."));
             result.put(entry.getKey(), createYamlRuntimeDatabaseConfiguration(runtimeDatabaseConfigSwapper.swapToYamlConfiguration(entry.getValue())));
         }
         return result;
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Map<String, RuntimeDatabaseConfiguration> castRuntimeDatabases(final Object runtimeConfiguration) {
-        ShardingSpherePreconditions.checkState(runtimeConfiguration instanceof Map, () -> new IllegalArgumentException("Runtime configuration must be a map of runtime databases."));
-        return (Map<String, RuntimeDatabaseConfiguration>) runtimeConfiguration;
     }
     
     private YamlRuntimeDatabaseConfiguration createYamlRuntimeDatabaseConfiguration(final Map<String, Object> yamlProperties) {

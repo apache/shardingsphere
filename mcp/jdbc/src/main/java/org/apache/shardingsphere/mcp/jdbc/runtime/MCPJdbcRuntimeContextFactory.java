@@ -19,10 +19,8 @@ package org.apache.shardingsphere.mcp.jdbc.runtime;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContextBuilder;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContextFactory;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
@@ -31,22 +29,19 @@ import java.util.Map;
 /**
  * Build one JDBC-backed MCP runtime context.
  */
-public final class MCPJdbcRuntimeContextFactory implements MCPRuntimeContextFactory<Map<String, RuntimeDatabaseConfiguration>> {
+public final class MCPJdbcRuntimeContextFactory {
     
     private final MCPJdbcMetadataLoader metadataLoader;
     
     private final MCPDatabaseRuntimeFactory databaseRuntimeFactory;
     
-    private final MCPRuntimeContextBuilder runtimeContextBuilder;
-    
     public MCPJdbcRuntimeContextFactory() {
-        this(new MCPJdbcMetadataLoader(), new MCPDatabaseRuntimeFactory(), new MCPRuntimeContextBuilder());
+        this(new MCPJdbcMetadataLoader(), new MCPDatabaseRuntimeFactory());
     }
     
-    MCPJdbcRuntimeContextFactory(final MCPJdbcMetadataLoader metadataLoader, final MCPDatabaseRuntimeFactory databaseRuntimeFactory, final MCPRuntimeContextBuilder runtimeContextBuilder) {
+    MCPJdbcRuntimeContextFactory(final MCPJdbcMetadataLoader metadataLoader, final MCPDatabaseRuntimeFactory databaseRuntimeFactory) {
         this.metadataLoader = metadataLoader;
         this.databaseRuntimeFactory = databaseRuntimeFactory;
-        this.runtimeContextBuilder = runtimeContextBuilder;
     }
     
     /**
@@ -56,11 +51,10 @@ public final class MCPJdbcRuntimeContextFactory implements MCPRuntimeContextFact
      * @param runtimeDatabases runtime databases
      * @return runtime context
      */
-    @Override
     public MCPRuntimeContext create(final MCPSessionManager sessionManager, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         ShardingSpherePreconditions.checkState(!runtimeDatabases.isEmpty(), () -> new IllegalArgumentException("At least one runtime database must be configured."));
         MetadataCatalog metadataCatalog = metadataLoader.load(runtimeDatabases);
         DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(runtimeDatabases, metadataCatalog);
-        return runtimeContextBuilder.build(sessionManager, metadataCatalog, databaseRuntime);
+        return MCPRuntimeContext.create(sessionManager, metadataCatalog, databaseRuntime);
     }
 }

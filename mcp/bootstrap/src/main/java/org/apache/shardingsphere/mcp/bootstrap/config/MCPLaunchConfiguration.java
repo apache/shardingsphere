@@ -19,17 +19,37 @@ package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
+
+import java.util.Map;
 
 /**
  * MCP launch configuration.
- *
- * @param <T> runtime configuration type
  */
 @RequiredArgsConstructor
 @Getter
-public final class MCPLaunchConfiguration<T> {
+public final class MCPLaunchConfiguration {
     
-    private final MCPTransportConfiguration transport;
+    private final HttpTransportConfiguration httpTransport;
     
-    private final T runtimeConfiguration;
+    private final StdioTransportConfiguration stdioTransport;
+    
+    private final Map<String, RuntimeDatabaseConfiguration> runtimeConfiguration;
+    
+    /**
+     * Validate transport configuration.
+     *
+     * @throws IllegalArgumentException when the configuration enables both transports or disables both transports
+     */
+    public void validate() {
+        ShardingSpherePreconditions.checkNotNull(httpTransport, () -> new IllegalArgumentException("Property `transport.http` is required."));
+        ShardingSpherePreconditions.checkNotNull(stdioTransport, () -> new IllegalArgumentException("Property `transport.stdio` is required."));
+        if (httpTransport.isEnabled() && stdioTransport.isEnabled()) {
+            throw new IllegalArgumentException("HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport.");
+        }
+        if (!httpTransport.isEnabled() && !stdioTransport.isEnabled()) {
+            throw new IllegalArgumentException("Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true.");
+        }
+    }
 }

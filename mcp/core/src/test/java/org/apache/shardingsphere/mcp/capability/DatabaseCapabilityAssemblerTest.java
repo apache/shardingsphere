@@ -54,7 +54,7 @@ class DatabaseCapabilityAssemblerTest {
     void assertAssembleDatabaseCapability() {
         DatabaseCapabilityAssembler assembler = createAssembler();
         
-        Optional<DatabaseCapabilityView> actualCapability = assembler.assembleDatabaseCapability("logic_db", "mysql");
+        Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db", "mysql");
         
         assertTrue(actualCapability.isPresent());
         assertThat(actualCapability.get().getDatabase(), is("logic_db"));
@@ -76,7 +76,7 @@ class DatabaseCapabilityAssemblerTest {
     void assertAssembleDatabaseCapabilityWithoutIndex() {
         DatabaseCapabilityAssembler assembler = createAssembler();
         
-        Optional<DatabaseCapabilityView> actualCapability = assembler.assembleDatabaseCapability("warehouse", "hive");
+        Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("warehouse", "hive");
         
         assertTrue(actualCapability.isPresent());
         assertFalse(actualCapability.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
@@ -92,7 +92,7 @@ class DatabaseCapabilityAssemblerTest {
                 "logic_db", new RuntimeDatabaseDescriptor("MySQL", "8.0.32", EnumSet.of(MetadataObjectType.TABLE, MetadataObjectType.COLUMN), "public")));
         DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler(metadataCatalog);
         
-        Optional<DatabaseCapabilityView> actualCapability = assembler.assembleDatabaseCapability("logic_db", "mysql");
+        Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db", "mysql");
         
         assertTrue(actualCapability.isPresent());
         assertTrue(actualCapability.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
@@ -104,7 +104,7 @@ class DatabaseCapabilityAssemblerTest {
     void assertAssembleDatabaseCapabilityWithUnknownDatabaseType() {
         DatabaseCapabilityAssembler assembler = createAssembler();
         
-        Optional<DatabaseCapabilityView> actualCapability = assembler.assembleDatabaseCapability("logic_db", "unknown");
+        Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db", "unknown");
         
         assertFalse(actualCapability.isPresent());
     }

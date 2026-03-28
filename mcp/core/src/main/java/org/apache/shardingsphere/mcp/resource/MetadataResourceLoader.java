@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.resource;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 
 import java.util.Collection;
@@ -98,7 +98,7 @@ public final class MetadataResourceLoader {
     }
     
     private boolean supportsObjectType(final String database, final String databaseType, final MetadataObjectType metadataObjectType) {
-        Optional<DatabaseCapabilityView> databaseCapability = capabilityAssembler.assembleDatabaseCapability(database, databaseType);
+        Optional<DatabaseCapability> databaseCapability = capabilityAssembler.assembleDatabaseCapability(database, databaseType);
         return databaseCapability.isPresent() && databaseCapability.get().getSupportedMetadataObjectTypes().contains(metadataObjectType);
     }
     

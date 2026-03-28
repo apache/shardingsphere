@@ -28,24 +28,42 @@ class MCPTransportConfigurationTest {
     
     @Test
     void assertValidate() {
-        assertDoesNotThrow(() -> createTransportConfiguration(true, false).validate());
+        assertDoesNotThrow(() -> createLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, "/mcp"), new StdioTransportConfiguration(false)).validate());
     }
     
     @Test
     void assertValidateWithMultipleEnabledTransports() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> createTransportConfiguration(true, true).validate());
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> createLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, "/mcp"), new StdioTransportConfiguration(true)).validate());
         
         assertThat(actual.getMessage(), is("HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport."));
     }
     
     @Test
     void assertValidateWithDisabledTransports() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> createTransportConfiguration(false, false).validate());
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> createLaunchConfiguration(new HttpTransportConfiguration(false, "127.0.0.1", 0, "/mcp"), new StdioTransportConfiguration(false)).validate());
         
         assertThat(actual.getMessage(), is("Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true."));
     }
     
-    private MCPTransportConfiguration createTransportConfiguration(final boolean httpEnabled, final boolean stdioEnabled) {
-        return new MCPTransportConfiguration(new HttpTransportConfiguration(httpEnabled, "127.0.0.1", 0, "/mcp"), new StdioTransportConfiguration(stdioEnabled));
+    @Test
+    void assertValidateWithMissingHttpTransport() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> createLaunchConfiguration(null, new StdioTransportConfiguration(true)).validate());
+        
+        assertThat(actual.getMessage(), is("Property `transport.http` is required."));
+    }
+    
+    @Test
+    void assertValidateWithMissingStdioTransport() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> createLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, "/mcp"), null).validate());
+        
+        assertThat(actual.getMessage(), is("Property `transport.stdio` is required."));
+    }
+    
+    private MCPLaunchConfiguration createLaunchConfiguration(final HttpTransportConfiguration httpTransport, final StdioTransportConfiguration stdioTransport) {
+        return new MCPLaunchConfiguration(httpTransport, stdioTransport, java.util.Collections.emptyMap());
     }
 }

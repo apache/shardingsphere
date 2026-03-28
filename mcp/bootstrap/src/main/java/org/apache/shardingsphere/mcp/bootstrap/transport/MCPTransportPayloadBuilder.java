@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport;
 
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 
 import java.util.LinkedHashMap;
@@ -26,7 +26,7 @@ import java.util.Map;
 
 final class MCPTransportPayloadBuilder {
     
-    Map<String, Object> createDatabaseCapabilityPayload(final DatabaseCapabilityView capability) {
+    Map<String, Object> createDatabaseCapabilityPayload(final DatabaseCapability capability) {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("database", capability.getDatabase());
         result.put("databaseType", capability.getDatabaseType());

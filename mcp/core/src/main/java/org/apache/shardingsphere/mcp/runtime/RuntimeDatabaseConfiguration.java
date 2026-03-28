@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.context;
+package org.apache.shardingsphere.mcp.runtime;
 
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * MCP runtime context factory.
- *
- * @param <T> runtime source type
+ * Runtime database configuration for one logical database binding.
  */
-public interface MCPRuntimeContextFactory<T> {
+@RequiredArgsConstructor
+@Getter
+public final class RuntimeDatabaseConfiguration {
     
-    /**
-     * Create runtime context.
-     *
-     * @param sessionManager session manager
-     * @param runtimeSource runtime source
-     * @return runtime context
-     */
-    MCPRuntimeContext create(MCPSessionManager sessionManager, T runtimeSource);
+    private final String databaseType;
+    
+    private final String jdbcUrl;
+    
+    private final String username;
+    
+    private final String password;
+    
+    private final String driverClassName;
 }

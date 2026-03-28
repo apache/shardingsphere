@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.execute;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
@@ -52,7 +52,7 @@ public final class ExecuteQueryFacade {
      * @return execution response
      */
     public ExecuteQueryResponse execute(final ExecutionRequest executionRequest) {
-        Optional<DatabaseCapabilityView> databaseCapability = capabilityAssembler.assembleDatabaseCapability(executionRequest.getDatabase(), executionRequest.getDatabaseType());
+        Optional<DatabaseCapability> databaseCapability = capabilityAssembler.assembleDatabaseCapability(executionRequest.getDatabase(), executionRequest.getDatabaseType());
         if (databaseCapability.isEmpty()) {
             return recordFailure(executionRequest, "QUERY", ErrorCode.NOT_FOUND, "Database capability does not exist.");
         }

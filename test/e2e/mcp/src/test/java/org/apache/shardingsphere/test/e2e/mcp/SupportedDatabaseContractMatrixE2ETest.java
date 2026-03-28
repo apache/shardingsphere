@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,7 +39,7 @@ class SupportedDatabaseContractMatrixE2ETest {
     void assertCapabilityMatrix(final String name, final String databaseType, final boolean expectedTransactionControl,
                                 final boolean expectedSavepoint, final boolean expectedIndexSupport) {
         DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler(new MetadataCatalog(Map.of(), List.of()));
-        DatabaseCapabilityView actual = assembler.assembleDatabaseCapability("logic_db", databaseType).get();
+        DatabaseCapability actual = assembler.assembleDatabaseCapability("logic_db", databaseType).get();
         assertThat(actual.isSupportsTransactionControl(), is(expectedTransactionControl));
         assertThat(actual.isSupportsSavepoint(), is(expectedSavepoint));
         assertThat(actual.getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX), is(expectedIndexSupport));

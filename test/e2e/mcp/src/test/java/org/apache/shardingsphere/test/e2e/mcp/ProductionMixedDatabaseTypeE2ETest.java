@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp;
 
-import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.jdbc.runtime.H2RuntimeTestSupport;
 import org.junit.jupiter.api.Test;
 
@@ -38,14 +38,14 @@ class ProductionMixedDatabaseTypeE2ETest extends AbstractProductionRuntimeE2ETes
     private String secondJdbcUrl;
     
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>();
+        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(2, 1F);
         result.put("logic_db", new RuntimeDatabaseConfiguration("MySQL", firstJdbcUrl, "", "", "org.h2.Driver"));
         result.put("analytics_db", new RuntimeDatabaseConfiguration("PostgreSQL", secondJdbcUrl, "", "", "org.h2.Driver"));
         return result;
     }
     
     @Override
-    protected void prepareRuntimeFixture() throws IOException {
+    protected void prepareRuntimeFixture() {
         firstJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "mixed-type-first");
         secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "mixed-type-second");
         initializeDatabase(firstJdbcUrl);

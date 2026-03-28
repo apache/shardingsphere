@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MCPRuntimeContextBuilderTest {
     
     @Test
-    void assertBuild() {
+    void assertCreate() {
         MCPRuntimeContext actual = createRuntimeContext(new MCPSessionManager());
         
         assertNotNull(actual.getCapabilityAssembler());
@@ -53,7 +53,7 @@ class MCPRuntimeContextBuilderTest {
     }
     
     private MCPRuntimeContext createRuntimeContext(final MCPSessionManager sessionManager) {
-        return new MCPRuntimeContextBuilder().build(sessionManager, new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()),
+        return MCPRuntimeContext.create(sessionManager, new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()),
                 new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
     }
 }

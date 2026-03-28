@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport;
 
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityView;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
@@ -59,8 +59,8 @@ final class MCPResourcePayloadResolver {
             return resolveDatabaseCapabilityPayload(segments.get(1));
         }
         Optional<ResourceRequest> resourceRequest = createMetadataResourceRequest(segments);
-        return resourceRequest.isPresent() ? toResourcePayload(runtimeContext.getMetadataResourceLoader().load(runtimeContext.getMetadataCatalog(), resourceRequest.get()))
-                : payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI.");
+        return resourceRequest.map(optional -> toResourcePayload(runtimeContext.getMetadataResourceLoader().load(runtimeContext.getMetadataCatalog(), optional)))
+                .orElseGet(() -> payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI."));
     }
     
     private Object resolveDatabaseCapabilityPayload(final String database) {
@@ -68,8 +68,8 @@ final class MCPResourcePayloadResolver {
         if (null == databaseType) {
             return payloadBuilder.createErrorPayload("not_found", "Database capability does not exist.");
         }
-        Optional<DatabaseCapabilityView> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(database, databaseType);
-        return capability.isPresent() ? payloadBuilder.createDatabaseCapabilityPayload(capability.get()) : payloadBuilder.createErrorPayload("not_found", "Database capability does not exist.");
+        Optional<DatabaseCapability> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(database, databaseType);
+        return capability.map(payloadBuilder::createDatabaseCapabilityPayload).orElseGet(() -> payloadBuilder.createErrorPayload("not_found", "Database capability does not exist."));
     }
     
     private Object toResourcePayload(final ResourceLoadResult loadResult) {
