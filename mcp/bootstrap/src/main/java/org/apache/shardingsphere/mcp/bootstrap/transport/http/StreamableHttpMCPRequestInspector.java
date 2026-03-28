@@ -32,7 +32,7 @@ import java.util.Optional;
  * Streamable HTTP MCP request inspector.
  */
 @RequiredArgsConstructor
-final class StreamableHttpMCPRequestInspector {
+public final class StreamableHttpMCPRequestInspector {
     
     private static final String PROTOCOL_HEADER = "MCP-Protocol-Version";
     
@@ -42,7 +42,14 @@ final class StreamableHttpMCPRequestInspector {
     
     private final String bindHost;
     
-    Optional<ResponseStatus> validate(final HttpServletRequest request, final String sessionId) {
+    /**
+     * Validate request.
+     * 
+     * @param request request
+     * @param sessionId session ID
+     * @return response status
+     */
+    public Optional<ResponseStatus> validate(final HttpServletRequest request, final String sessionId) {
         if (sessionId.isEmpty()) {
             return Optional.of(new ResponseStatus(400, "Session ID required in mcp-session-id header"));
         }
@@ -60,7 +67,13 @@ final class StreamableHttpMCPRequestInspector {
         return Optional.empty();
     }
     
-    Optional<ResponseStatus> validateOrigin(final HttpServletRequest request) {
+    /**
+     * Validate origin.
+     * 
+     * @param request request
+     * @return response status
+     */
+    public Optional<ResponseStatus> validateOrigin(final HttpServletRequest request) {
         if (!isLoopbackHost(bindHost)) {
             return Optional.empty();
         }
