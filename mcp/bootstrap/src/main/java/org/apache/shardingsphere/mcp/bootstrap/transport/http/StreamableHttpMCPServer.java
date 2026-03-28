@@ -55,7 +55,7 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
     
     private Path baseDirectory;
     
-    private SdkStreamableHttpServlet transportProvider;
+    private StreamableHttpMCPServlet transportProvider;
     
     private McpSyncServer syncServer;
     
@@ -73,7 +73,7 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
         if (running) {
             return;
         }
-        transportProvider = new SdkStreamableHttpServlet(runtimeContext, jsonMapper, config.getBindHost(), config.getEndpointPath());
+        transportProvider = new StreamableHttpMCPServlet(runtimeContext, jsonMapper, config.getBindHost(), config.getEndpointPath());
         syncServer = syncServerFactory.create(transportProvider);
         try {
             tomcat = new Tomcat();
