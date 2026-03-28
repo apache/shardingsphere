@@ -43,10 +43,7 @@ public final class StreamableHttpMCPRequestValidator {
      * @return response status
      */
     public Optional<ResponseStatus> validateSessionId(final String sessionId) {
-        if (sessionId.isEmpty()) {
-            return Optional.of(new ResponseStatus(400, "Session ID required in mcp-session-id header"));
-        }
-        return Optional.empty();
+        return sessionId.isEmpty() ? Optional.of(new ResponseStatus(400, "Session ID required in mcp-session-id header")) : Optional.empty();
     }
     
     /**

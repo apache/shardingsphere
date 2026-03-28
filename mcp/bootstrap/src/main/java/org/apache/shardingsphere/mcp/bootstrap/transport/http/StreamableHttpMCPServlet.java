@@ -37,6 +37,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPR
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -67,19 +68,20 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final HttpServletStreamableServerTransportProvider delegate;
     
-    private final AtomicBoolean closed = new AtomicBoolean();
-    
     private final StreamableHttpMCPRequestValidator requestValidator;
     
     private final ManagedSessionRegistry managedSessions;
     
     private final ServerTransportSecurityValidator securityValidator;
     
+    private final AtomicBoolean closed;
+    
     StreamableHttpMCPServlet(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
+        delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).securityValidator(ServerTransportSecurityValidator.NOOP).build();
         requestValidator = new StreamableHttpMCPRequestValidator(runtimeContext);
         managedSessions = new ManagedSessionRegistry(runtimeContext);
         securityValidator = LoopbackOriginSecurityValidator.create(bindHost);
-        delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).securityValidator(ServerTransportSecurityValidator.NOOP).build();
+        closed = new AtomicBoolean();
     }
     
     @Override
@@ -150,8 +152,9 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     }
     
     private Map<String, List<String>> extractHeaders(final HttpServletRequest request) {
-        Map<String, List<String>> result = new LinkedHashMap<>();
-        for (String each : Collections.list(request.getHeaderNames())) {
+        Collection<String> headerNames = Collections.list(request.getHeaderNames());
+        Map<String, List<String>> result = new LinkedHashMap<>(headerNames.size(), 1F);
+        for (String each : headerNames) {
             result.put(each, Collections.list(request.getHeaders(each)));
         }
         return result;
