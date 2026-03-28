@@ -24,7 +24,9 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPLaunchConfigurationTest {
@@ -46,7 +48,41 @@ class MCPLaunchConfigurationTest {
         assertThat(launchConfiguration.getRuntimeConfiguration().get("logic_db").getDatabaseType(), is("H2"));
     }
     
+    @Test
+    void assertValidateWhenHttpTransportEnabled() {
+        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(true, false, Map.of());
+        
+        assertDoesNotThrow(launchConfiguration::validate);
+    }
+    
+    @Test
+    void assertValidateWhenStdioTransportEnabled() {
+        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(false, true, Map.of());
+        
+        assertDoesNotThrow(launchConfiguration::validate);
+    }
+    
+    @Test
+    void assertValidateWhenBothTransportsEnabled() {
+        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(true, true, Map.of());
+        
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, launchConfiguration::validate);
+        assertThat(actual.getMessage(), is("HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport."));
+    }
+    
+    @Test
+    void assertValidateWhenBothTransportsDisabled() {
+        MCPLaunchConfiguration launchConfiguration = createLaunchConfiguration(false, false, Map.of());
+        
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, launchConfiguration::validate);
+        assertThat(actual.getMessage(), is("Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true."));
+    }
+    
     private MCPLaunchConfiguration createLaunchConfiguration(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        return new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, "/mcp"), new StdioTransportConfiguration(false), runtimeDatabases);
+        return createLaunchConfiguration(true, false, runtimeDatabases);
+    }
+    
+    private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled, final boolean stdioEnabled, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        return new MCPLaunchConfiguration(new HttpTransportConfiguration(httpEnabled, "127.0.0.1", 0, "/mcp"), new StdioTransportConfiguration(stdioEnabled), runtimeDatabases);
     }
 }

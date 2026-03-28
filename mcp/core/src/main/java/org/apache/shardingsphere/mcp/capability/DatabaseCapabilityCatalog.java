@@ -45,42 +45,43 @@ public final class DatabaseCapabilityCatalog {
      * @return capability definition when present
      */
     public static Optional<DatabaseCapability> find(final String database, final String databaseType, final String databaseVersion) {
-        switch (normalizeDatabaseType(databaseType)) {
+        String normalizedDatabaseType = normalizeDatabaseType(databaseType);
+        switch (normalizedDatabaseType) {
             case "MYSQL":
-                return Optional.of(createDefaultCapability(database, "MYSQL", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
+                return Optional.of(createDefaultCapability(database, getCanonicalDatabaseType(normalizedDatabaseType), TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                         SchemaSemantics.DATABASE_AS_SCHEMA, false, databaseVersion));
             case "POSTGRESQL":
-                return Optional.of(createDefaultCapability(database, "POSTGRESQL", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
+                return Optional.of(createDefaultCapability(database, getCanonicalDatabaseType(normalizedDatabaseType), TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                         SchemaSemantics.NATIVE_SCHEMA, true, databaseVersion));
             case "OPENGAUSS":
-                return Optional.of(createDefaultCapability(database, "OPENGAUSS", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
+                return Optional.of(createDefaultCapability(database, getCanonicalDatabaseType(normalizedDatabaseType), TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                         SchemaSemantics.NATIVE_SCHEMA, true, databaseVersion));
             case "SQLSERVER":
-                return Optional.of(createDefaultCapability(database, "SQLSERVER", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
+                return Optional.of(createDefaultCapability(database, getCanonicalDatabaseType(normalizedDatabaseType), TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                         SchemaSemantics.NATIVE_SCHEMA, true, databaseVersion));
             case "MARIADB":
-                return Optional.of(createDefaultCapability(database, "MARIADB", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
+                return Optional.of(createDefaultCapability(database, getCanonicalDatabaseType(normalizedDatabaseType), TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                         SchemaSemantics.DATABASE_AS_SCHEMA, false, databaseVersion));
             case "ORACLE":
-                return Optional.of(createDefaultCapability(database, "ORACLE", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
+                return Optional.of(createDefaultCapability(database, getCanonicalDatabaseType(normalizedDatabaseType), TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                         SchemaSemantics.NATIVE_SCHEMA, true, databaseVersion));
             case "CLICKHOUSE":
-                return Optional.of(createDefaultCapability(database, "CLICKHOUSE", TransactionCapability.NONE, false,
+                return Optional.of(createDefaultCapability(database, getCanonicalDatabaseType(normalizedDatabaseType), TransactionCapability.NONE, false,
                         SchemaSemantics.DATABASE_AS_SCHEMA, false, databaseVersion));
             case "DORIS":
-                return Optional.of(createDefaultCapability(database, "DORIS", TransactionCapability.LOCAL, true,
+                return Optional.of(createDefaultCapability(database, getCanonicalDatabaseType(normalizedDatabaseType), TransactionCapability.LOCAL, true,
                         SchemaSemantics.DATABASE_AS_SCHEMA, false, databaseVersion));
             case "HIVE":
-                return Optional.of(createDefaultCapability(database, "HIVE", TransactionCapability.NONE, false,
+                return Optional.of(createDefaultCapability(database, getCanonicalDatabaseType(normalizedDatabaseType), TransactionCapability.NONE, false,
                         SchemaSemantics.DATABASE_AS_SCHEMA, false, databaseVersion));
             case "PRESTO":
-                return Optional.of(createDefaultCapability(database, "PRESTO", TransactionCapability.LOCAL, false,
+                return Optional.of(createDefaultCapability(database, getCanonicalDatabaseType(normalizedDatabaseType), TransactionCapability.LOCAL, false,
                         SchemaSemantics.NATIVE_SCHEMA, true, databaseVersion));
             case "FIREBIRD":
-                return Optional.of(createDefaultCapability(database, "FIREBIRD", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
+                return Optional.of(createDefaultCapability(database, getCanonicalDatabaseType(normalizedDatabaseType), TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                         SchemaSemantics.NATIVE_SCHEMA, true, databaseVersion));
             case "H2":
-                return Optional.of(createDefaultCapability(database, "H2", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
+                return Optional.of(createDefaultCapability(database, getCanonicalDatabaseType(normalizedDatabaseType), TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
                         SchemaSemantics.NATIVE_SCHEMA, true, databaseVersion));
             default:
                 return Optional.empty();
@@ -94,23 +95,54 @@ public final class DatabaseCapabilityCatalog {
      */
     public static Set<String> getSupportedDatabaseTypes() {
         Set<String> result = new LinkedHashSet<>();
-        result.add("MYSQL");
-        result.add("POSTGRESQL");
-        result.add("OPENGAUSS");
-        result.add("SQLSERVER");
-        result.add("MARIADB");
-        result.add("ORACLE");
-        result.add("CLICKHOUSE");
-        result.add("DORIS");
-        result.add("HIVE");
-        result.add("PRESTO");
-        result.add("FIREBIRD");
-        result.add("H2");
+        result.add(getCanonicalDatabaseType("MYSQL"));
+        result.add(getCanonicalDatabaseType("POSTGRESQL"));
+        result.add(getCanonicalDatabaseType("OPENGAUSS"));
+        result.add(getCanonicalDatabaseType("SQLSERVER"));
+        result.add(getCanonicalDatabaseType("MARIADB"));
+        result.add(getCanonicalDatabaseType("ORACLE"));
+        result.add(getCanonicalDatabaseType("CLICKHOUSE"));
+        result.add(getCanonicalDatabaseType("DORIS"));
+        result.add(getCanonicalDatabaseType("HIVE"));
+        result.add(getCanonicalDatabaseType("PRESTO"));
+        result.add(getCanonicalDatabaseType("FIREBIRD"));
+        result.add(getCanonicalDatabaseType("H2"));
         return result;
     }
     
     static String normalizeDatabaseType(final String databaseType) {
         return databaseType.trim().toUpperCase(Locale.ENGLISH);
+    }
+    
+    private static String getCanonicalDatabaseType(final String normalizedDatabaseType) {
+        switch (normalizedDatabaseType) {
+            case "MYSQL":
+                return "MySQL";
+            case "POSTGRESQL":
+                return "PostgreSQL";
+            case "OPENGAUSS":
+                return "openGauss";
+            case "SQLSERVER":
+                return "SQLServer";
+            case "MARIADB":
+                return "MariaDB";
+            case "ORACLE":
+                return "Oracle";
+            case "CLICKHOUSE":
+                return "ClickHouse";
+            case "DORIS":
+                return "Doris";
+            case "HIVE":
+                return "Hive";
+            case "PRESTO":
+                return "Presto";
+            case "FIREBIRD":
+                return "Firebird";
+            case "H2":
+                return "H2";
+            default:
+                return normalizedDatabaseType;
+        }
     }
     
     static Set<String> createSupportedTransactionStatements(final TransactionCapability transactionCapability) {

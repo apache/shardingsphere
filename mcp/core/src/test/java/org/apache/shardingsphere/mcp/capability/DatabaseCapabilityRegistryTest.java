@@ -39,14 +39,14 @@ class DatabaseCapabilityRegistryTest {
         Optional<DatabaseCapability> actual = DatabaseCapabilityCatalog.find("logic_db", " mysql ", "");
         
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getDatabaseType(), is("MYSQL"));
+        assertThat(actual.get().getDatabaseType(), is("MySQL"));
         assertThat(actual.get().getDatabase(), is("logic_db"));
     }
     
     @Test
     void assertGetSupportedDatabaseTypes() {
         assertThat(DatabaseCapabilityCatalog.getSupportedDatabaseTypes(), is(Set.of(
-                "MYSQL", "POSTGRESQL", "OPENGAUSS", "SQLSERVER", "MARIADB", "ORACLE", "CLICKHOUSE", "DORIS", "HIVE", "PRESTO", "FIREBIRD", "H2")));
+                "MySQL", "PostgreSQL", "openGauss", "SQLServer", "MariaDB", "Oracle", "ClickHouse", "Doris", "Hive", "Presto", "Firebird", "H2")));
     }
     
     @Test

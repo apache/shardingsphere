@@ -51,6 +51,8 @@ abstract class AbstractProductionRuntimeE2ETest {
     
     private static final String PROTOCOL_VERSION = "2025-11-25";
     
+    private static final String ENDPOINT_PATH = "/gateway";
+    
     @TempDir
     private Path tempDir;
     
@@ -94,18 +96,6 @@ abstract class AbstractProductionRuntimeE2ETest {
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
-    protected final HttpResponse<String> sendResourceReadRequest(final HttpClient httpClient, final String sessionId,
-                                                                 final String resourceUri) throws IOException, InterruptedException {
-        HttpRequest request = createJsonRequestBuilder(sessionId)
-                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
-                        "jsonrpc", "2.0",
-                        "id", "resource-1",
-                        "method", "resources/read",
-                        "params", Map.of("uri", resourceUri)))))
-                .build();
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-    }
-    
     protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
                 .header("MCP-Session-Id", sessionId)
@@ -115,27 +105,18 @@ abstract class AbstractProductionRuntimeE2ETest {
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
-    protected final Map<String, Object> parseJsonBody(final String responseBody) {
+    private Map<String, Object> parseJsonBody(final String responseBody) {
         return JsonUtils.fromJsonString(normalizeJsonBody(responseBody), new TypeReference<>() {
         });
     }
     
-    protected final Map<String, Object> getJsonRpcResult(final String responseBody) {
+    private Map<String, Object> getJsonRpcResult(final String responseBody) {
         return castToMap(parseJsonBody(responseBody).get("result"));
     }
     
     protected final Map<String, Object> getStructuredContent(final String responseBody) {
         Map<String, Object> result = getJsonRpcResult(responseBody);
         return result.containsKey("structuredContent") ? castToMap(result.get("structuredContent")) : Map.of();
-    }
-    
-    protected final List<Map<String, Object>> getResultContents(final String responseBody) {
-        return castToList(getJsonRpcResult(responseBody).get("content"));
-    }
-    
-    protected final Map<String, Object> getFirstResourcePayload(final String responseBody) {
-        List<Map<String, Object>> contents = castToList(getJsonRpcResult(responseBody).get("contents"));
-        return parseJsonBody(String.valueOf(contents.get(0).get("text")));
     }
     
     protected final List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {
@@ -146,16 +127,9 @@ abstract class AbstractProductionRuntimeE2ETest {
         return castToMap(payload.get(key));
     }
     
-    protected String getEndpointPath() {
-        return "/gateway";
-    }
+    protected abstract Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases();
     
-    protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        return Map.of();
-    }
-    
-    protected void prepareRuntimeFixture() throws IOException {
-    }
+    protected abstract void prepareRuntimeFixture() throws IOException;
     
     protected final Path getTempDir() {
         return tempDir;
@@ -186,7 +160,7 @@ abstract class AbstractProductionRuntimeE2ETest {
     
     private URI createEndpointUri() {
         int localPort = httpServer.getLocalPort();
-        return URI.create(String.format("http://127.0.0.1:%d%s", localPort, getEndpointPath()));
+        return URI.create(String.format("http://127.0.0.1:%d%s", localPort, ENDPOINT_PATH));
     }
     
     private StreamableHttpMCPServer createStartedHttpServer(final Path configFile) throws IOException {
@@ -240,6 +214,6 @@ abstract class AbstractProductionRuntimeE2ETest {
     
     private String createConfigurationContent() {
         return YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(new MCPLaunchConfiguration(
-                new HttpTransportConfiguration(true, "127.0.0.1", 0, getEndpointPath()), new StdioTransportConfiguration(false), getRuntimeDatabases())));
+                new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH), new StdioTransportConfiguration(false), getRuntimeDatabases())));
     }
 }

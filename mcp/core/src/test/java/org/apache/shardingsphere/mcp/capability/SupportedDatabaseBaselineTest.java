@@ -37,17 +37,17 @@ class SupportedDatabaseBaselineTest {
     @Test
     void assertCreateDefault() {
         Set<String> expectedDatabaseTypes = new LinkedHashSet<>();
-        expectedDatabaseTypes.add("MYSQL");
-        expectedDatabaseTypes.add("POSTGRESQL");
-        expectedDatabaseTypes.add("OPENGAUSS");
-        expectedDatabaseTypes.add("SQLSERVER");
-        expectedDatabaseTypes.add("MARIADB");
-        expectedDatabaseTypes.add("ORACLE");
-        expectedDatabaseTypes.add("CLICKHOUSE");
-        expectedDatabaseTypes.add("DORIS");
-        expectedDatabaseTypes.add("HIVE");
-        expectedDatabaseTypes.add("PRESTO");
-        expectedDatabaseTypes.add("FIREBIRD");
+        expectedDatabaseTypes.add("MySQL");
+        expectedDatabaseTypes.add("PostgreSQL");
+        expectedDatabaseTypes.add("openGauss");
+        expectedDatabaseTypes.add("SQLServer");
+        expectedDatabaseTypes.add("MariaDB");
+        expectedDatabaseTypes.add("Oracle");
+        expectedDatabaseTypes.add("ClickHouse");
+        expectedDatabaseTypes.add("Doris");
+        expectedDatabaseTypes.add("Hive");
+        expectedDatabaseTypes.add("Presto");
+        expectedDatabaseTypes.add("Firebird");
         expectedDatabaseTypes.add("H2");
         Set<String> actualDatabaseTypes = DatabaseCapabilityCatalog.getSupportedDatabaseTypes();
         assertThat(actualDatabaseTypes.size(), is(12));

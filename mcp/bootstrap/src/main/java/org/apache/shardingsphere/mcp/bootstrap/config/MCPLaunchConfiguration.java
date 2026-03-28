@@ -43,13 +43,9 @@ public final class MCPLaunchConfiguration {
      * @throws IllegalArgumentException when the configuration enables both transports or disables both transports
      */
     public void validate() {
-        ShardingSpherePreconditions.checkNotNull(httpTransport, () -> new IllegalArgumentException("Property `transport.http` is required."));
-        ShardingSpherePreconditions.checkNotNull(stdioTransport, () -> new IllegalArgumentException("Property `transport.stdio` is required."));
-        if (httpTransport.isEnabled() && stdioTransport.isEnabled()) {
-            throw new IllegalArgumentException("HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport.");
-        }
-        if (!httpTransport.isEnabled() && !stdioTransport.isEnabled()) {
-            throw new IllegalArgumentException("Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true.");
-        }
+        ShardingSpherePreconditions.checkState(!httpTransport.isEnabled() || !stdioTransport.isEnabled(),
+                () -> new IllegalArgumentException("HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport."));
+        ShardingSpherePreconditions.checkState(httpTransport.isEnabled() || stdioTransport.isEnabled(),
+                () -> new IllegalArgumentException("Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true."));
     }
 }

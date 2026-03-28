@@ -47,22 +47,6 @@ class MCPTransportConfigurationTest {
         assertThat(actual.getMessage(), is("Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true."));
     }
     
-    @Test
-    void assertValidateWithMissingHttpTransport() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> createLaunchConfiguration(null, new StdioTransportConfiguration(true)).validate());
-        
-        assertThat(actual.getMessage(), is("Property `transport.http` is required."));
-    }
-    
-    @Test
-    void assertValidateWithMissingStdioTransport() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> createLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, "/mcp"), null).validate());
-        
-        assertThat(actual.getMessage(), is("Property `transport.stdio` is required."));
-    }
-    
     private MCPLaunchConfiguration createLaunchConfiguration(final HttpTransportConfiguration httpTransport, final StdioTransportConfiguration stdioTransport) {
         return new MCPLaunchConfiguration(httpTransport, stdioTransport, java.util.Collections.emptyMap());
     }

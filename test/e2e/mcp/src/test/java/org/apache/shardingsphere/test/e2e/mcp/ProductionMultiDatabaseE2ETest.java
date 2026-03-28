@@ -53,6 +53,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
         }
     }
     
+    @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>();
         result.put("logic_db", new RuntimeDatabaseConfiguration("H2", firstJdbcUrl, "", "", "org.h2.Driver"));
