@@ -48,6 +48,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 final class SdkStreamableHttpServlet extends HttpServlet implements McpStreamableServerTransportProvider {
     
+    private static final long serialVersionUID = -2320345528569140021L;
+    
     private static final String SESSION_HEADER = "MCP-Session-Id";
     
     private static final String PROTOCOL_HEADER = "MCP-Protocol-Version";
@@ -74,11 +76,7 @@ final class SdkStreamableHttpServlet extends HttpServlet implements McpStreamabl
         this.runtimeContext = runtimeContext;
         requestValidator = new MCPHttpRequestValidator(runtimeContext, bindHost);
         sessionCloser = new MCPSessionCloser(runtimeContext);
-        delegate = HttpServletStreamableServerTransportProvider.builder()
-                .jsonMapper(jsonMapper)
-                .mcpEndpoint(endpointPath)
-                .contextExtractor(this::createTransportContext)
-                .build();
+        delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).contextExtractor(this::createTransportContext).build();
     }
     
     @Override

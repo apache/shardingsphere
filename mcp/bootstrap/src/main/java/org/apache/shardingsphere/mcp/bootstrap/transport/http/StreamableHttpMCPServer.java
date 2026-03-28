@@ -77,12 +77,12 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
         syncServer = syncServerFactory.create(transportProvider);
         try {
             tomcat = new Tomcat();
-            baseDirectory = Files.createTempDirectory("shardingsphere-mcp-tomcat");
             connector = new Connector();
             connector.setPort(config.getPort());
             connector.setProperty("address", config.getBindHost());
-            tomcat.setBaseDir(baseDirectory.toString());
             tomcat.setConnector(connector);
+            baseDirectory = Files.createTempDirectory("shardingsphere-mcp-tomcat");
+            tomcat.setBaseDir(baseDirectory.toString());
             Context context = tomcat.addContext("", baseDirectory.toString());
             ((StandardContext) context).setClearReferencesRmiTargets(false);
             Wrapper servletWrapper = Tomcat.addServlet(context, "mcp-streamable-http", transportProvider);
@@ -104,15 +104,6 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
         connector = null;
         deleteBaseDirectory();
         running = false;
-    }
-    
-    /**
-     * Get the local port that the listener actually bound to.
-     *
-     * @return bound port
-     */
-    public int getLocalPort() {
-        return null == connector ? config.getPort() : connector.getLocalPort();
     }
     
     private void closeSyncServer() {
@@ -153,5 +144,14 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
         } catch (final IOException ignored) {
         }
         baseDirectory = null;
+    }
+    
+    /**
+     * Get the local port that the listener actually bound to.
+     *
+     * @return bound port
+     */
+    public int getLocalPort() {
+        return null == connector ? config.getPort() : connector.getLocalPort();
     }
 }
