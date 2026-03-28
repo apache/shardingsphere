@@ -24,14 +24,14 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.jackson2.JacksonMcpJsonMapper;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * MCP transport JSON mapper factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPTransportJsonMapperFactory {
-    
-    private MCPTransportJsonMapperFactory() {
-    }
     
     /**
      * Create MCP JSON mapper.

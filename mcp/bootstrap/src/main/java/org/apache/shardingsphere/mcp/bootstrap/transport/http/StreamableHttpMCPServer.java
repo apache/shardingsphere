@@ -37,7 +37,7 @@ import java.nio.file.Path;
 import java.util.Comparator;
 
 /**
- * SDK-backed HTTP listener for the MCP Streamable HTTP runtime.
+ * Streamable HTTP MCP server.
  */
 public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
     
@@ -61,12 +61,6 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
     
     private boolean running;
     
-    /**
-     * Construct one HTTP MCP server with caller-provided runtime metadata.
-     *
-     * @param config HTTP transport configuration
-     * @param runtimeContext runtime context
-     */
     public StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPRuntimeContext runtimeContext) {
         this.config = config;
         this.runtimeContext = runtimeContext;
@@ -74,11 +68,6 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
         syncServerFactory = new MCPSyncServerFactory(runtimeContext, jsonMapper);
     }
     
-    /**
-     * Start the HTTP listener.
-     *
-     * @throws IOException when the listener cannot be created
-     */
     @Override
     public void start() throws IOException {
         if (running) {
@@ -107,9 +96,7 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
         }
     }
     
-    /**
-     * Stop the HTTP listener.
-     */
+    @Override
     public void stop() {
         closeSyncServer();
         transportProvider = null;
@@ -117,11 +104,6 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
         connector = null;
         deleteBaseDirectory();
         running = false;
-    }
-    
-    @Override
-    public void close() {
-        stop();
     }
     
     /**

@@ -22,7 +22,7 @@ import java.io.IOException;
 /**
  * Running MCP transport.
  */
-public interface MCPRuntimeTransport extends AutoCloseable {
+public interface MCPRuntimeTransport {
     
     /**
      * Start transport.
@@ -32,13 +32,15 @@ public interface MCPRuntimeTransport extends AutoCloseable {
     void start() throws IOException;
     
     /**
+     * Stop transport.
+     */
+    void stop();
+    
+    /**
      * Wait until transport terminates.
      *
      * @throws InterruptedException interrupted exception
      */
     default void awaitTermination() throws InterruptedException {
     }
-    
-    @Override
-    void close();
 }

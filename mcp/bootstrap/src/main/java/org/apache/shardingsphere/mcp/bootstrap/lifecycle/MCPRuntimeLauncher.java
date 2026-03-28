@@ -44,7 +44,7 @@ public final class MCPRuntimeLauncher {
         try {
             result.start();
         } catch (final IOException ex) {
-            result.close();
+            result.stop();
             throw new IOException(String.format("Failed to start %s transport.", config.getHttpTransport().isEnabled() ? "HTTP" : "STDIO"), ex);
         }
         return result;

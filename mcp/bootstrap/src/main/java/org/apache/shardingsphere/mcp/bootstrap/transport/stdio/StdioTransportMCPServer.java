@@ -70,9 +70,7 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
         running = true;
     }
     
-    /**
-     * Stop the STDIO transport.
-     */
+    @Override
     public void stop() {
         if (null != syncServer) {
             syncServer.closeGracefully();
@@ -85,11 +83,6 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
     @Override
     public void awaitTermination() throws InterruptedException {
         terminationLatch.await();
-    }
-    
-    @Override
-    public void close() {
-        stop();
     }
     
     private void signalTermination() {
