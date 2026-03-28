@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.http;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -32,6 +33,7 @@ import java.util.Optional;
 /**
  * HTTP request validator for streamable MCP transport.
  */
+@RequiredArgsConstructor
 final class MCPHttpRequestValidator {
     
     private static final String SESSION_HEADER = "MCP-Session-Id";
@@ -40,20 +42,9 @@ final class MCPHttpRequestValidator {
     
     private static final String ORIGIN_HEADER = "Origin";
     
-    private static final String MISSING_SESSION_MESSAGE = "Session ID required in mcp-session-id header";
-    
-    private static final String PROTOCOL_MISMATCH_MESSAGE = "Protocol version mismatch.";
-    
-    private static final String INVALID_ORIGIN_MESSAGE = "Origin is not allowed for the current binding.";
-    
     private final MCPRuntimeContext runtimeContext;
     
     private final String bindHost;
-    
-    MCPHttpRequestValidator(final MCPRuntimeContext runtimeContext, final String bindHost) {
-        this.runtimeContext = runtimeContext;
-        this.bindHost = bindHost;
-    }
     
     Map<String, String> extractHeaders(final HttpServletRequest request) {
         Map<String, String> result = new LinkedHashMap<>();
@@ -88,7 +79,7 @@ final class MCPHttpRequestValidator {
     Optional<ResponseStatus> validateFollowUpRequest(final Map<String, String> headers) {
         String sessionId = getHeader(headers, SESSION_HEADER);
         if (sessionId.isEmpty()) {
-            return Optional.of(new ResponseStatus(400, MISSING_SESSION_MESSAGE));
+            return Optional.of(new ResponseStatus(400, "Session ID required in mcp-session-id header"));
         }
         Optional<ResponseStatus> originFailure = validateOrigin(headers);
         if (originFailure.isPresent()) {
@@ -99,7 +90,7 @@ final class MCPHttpRequestValidator {
         }
         String actualProtocolVersion = normalizeProtocolVersion(getHeader(headers, PROTOCOL_HEADER));
         if (!MCPTransportConstants.PROTOCOL_VERSION.equals(actualProtocolVersion)) {
-            return Optional.of(new ResponseStatus(400, PROTOCOL_MISMATCH_MESSAGE));
+            return Optional.of(new ResponseStatus(400, "Protocol version mismatch."));
         }
         return Optional.empty();
     }
@@ -114,9 +105,9 @@ final class MCPHttpRequestValidator {
         }
         try {
             String host = Optional.ofNullable(URI.create(origin).getHost()).orElse("");
-            return isLoopbackHost(host) ? Optional.empty() : Optional.of(new ResponseStatus(403, INVALID_ORIGIN_MESSAGE));
+            return isLoopbackHost(host) ? Optional.empty() : Optional.of(new ResponseStatus(403, "Origin is not allowed for the current binding."));
         } catch (final IllegalArgumentException ignored) {
-            return Optional.of(new ResponseStatus(403, INVALID_ORIGIN_MESSAGE));
+            return Optional.of(new ResponseStatus(403, "Origin is not allowed for the current binding."));
         }
     }
     
@@ -130,16 +121,12 @@ final class MCPHttpRequestValidator {
         return actualProtocolVersion.isEmpty() ? MCPTransportConstants.PROTOCOL_VERSION : actualProtocolVersion;
     }
     
+    @RequiredArgsConstructor
     @Getter
     static final class ResponseStatus {
         
         private final int statusCode;
         
         private final String message;
-        
-        private ResponseStatus(final int statusCode, final String message) {
-            this.statusCode = statusCode;
-            this.message = message;
-        }
     }
 }
