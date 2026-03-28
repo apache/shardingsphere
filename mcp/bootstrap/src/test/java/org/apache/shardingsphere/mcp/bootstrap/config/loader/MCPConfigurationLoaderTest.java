@@ -59,7 +59,7 @@ class MCPConfigurationLoaderTest {
         assertThat(actual.getHttpTransport().getBindHost(), is("0.0.0.0"));
         assertThat(actual.getHttpTransport().getPort(), is(9090));
         assertThat(actual.getHttpTransport().getEndpointPath(), is("/gateway"));
-        assertTrue(actual.getRuntimeConfiguration().isEmpty());
+        assertTrue(actual.getDatabases().isEmpty());
     }
     
     @Test
@@ -122,7 +122,7 @@ class MCPConfigurationLoaderTest {
                 + "    driverClassName: org.h2.Driver\n");
         
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
-        Map<String, RuntimeDatabaseConfiguration> actualDatabases = actual.getRuntimeConfiguration();
+        Map<String, RuntimeDatabaseConfiguration> actualDatabases = actual.getDatabases();
         
         assertThat(actualDatabases.size(), is(2));
         assertThat(actualDatabases.get("logic_db").getDatabaseType(), is("H2"));
@@ -136,9 +136,9 @@ class MCPConfigurationLoaderTest {
         
         assertTrue(actual.getHttpTransport().isEnabled());
         assertFalse(actual.getStdioTransport().isEnabled());
-        assertThat(actual.getRuntimeConfiguration().size(), is(2));
-        assertThat(actual.getRuntimeConfiguration().get("orders").getUsername(), is(""));
-        assertThat(actual.getRuntimeConfiguration().get("billing").getPassword(), is(""));
+        assertThat(actual.getDatabases().size(), is(2));
+        assertThat(actual.getDatabases().get("orders").getUsername(), is(""));
+        assertThat(actual.getDatabases().get("billing").getPassword(), is(""));
     }
     
     @Test
@@ -154,7 +154,7 @@ class MCPConfigurationLoaderTest {
         
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         
-        assertTrue(actual.getRuntimeConfiguration().isEmpty());
+        assertTrue(actual.getDatabases().isEmpty());
     }
     
     @Test

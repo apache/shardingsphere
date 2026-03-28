@@ -64,8 +64,8 @@ class YamlMCPLaunchConfigurationSwapperTest {
         assertThat(actual.getHttpTransport().getEndpointPath(), is("/gateway"));
         assertTrue(actual.getHttpTransport().isEnabled());
         assertFalse(actual.getStdioTransport().isEnabled());
-        assertThat(actual.getRuntimeConfiguration().get("logic_db").getDatabaseType(), is("H2"));
-        assertThat(actual.getRuntimeConfiguration().get("logic_db").getUsername(), is("demo"));
+        assertThat(actual.getDatabases().get("logic_db").getDatabaseType(), is("H2"));
+        assertThat(actual.getDatabases().get("logic_db").getUsername(), is("demo"));
     }
     
     @Test
@@ -101,7 +101,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 "transport:\n" + "  http:\n" + "    enabled: false\n" + "    bindHost: 127.0.0.1\n" + "    port: 18088\n" + "    endpointPath: /mcp\n" + "  stdio:\n" + "    enabled: true\n",
                 YamlMCPLaunchConfiguration.class));
         
-        assertTrue(actual.getRuntimeConfiguration().isEmpty());
+        assertTrue(actual.getDatabases().isEmpty());
     }
     
     @Test
@@ -113,7 +113,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
         
         MCPLaunchConfiguration actual = swapper.swapToObject(yamlConfig);
         
-        assertTrue(actual.getRuntimeConfiguration().isEmpty());
+        assertTrue(actual.getDatabases().isEmpty());
     }
     
     @Test
@@ -249,7 +249,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    driverClassName: org.h2.Driver\n";
         MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class));
         
-        assertThat(actual.getRuntimeConfiguration().get("1").getDatabaseType(), is("H2"));
+        assertThat(actual.getDatabases().get("1").getDatabaseType(), is("H2"));
     }
     
     @Test

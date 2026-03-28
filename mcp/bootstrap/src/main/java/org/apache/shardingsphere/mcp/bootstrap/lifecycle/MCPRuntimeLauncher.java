@@ -54,7 +54,7 @@ public final class MCPRuntimeLauncher {
      */
     public MCPRuntimeTransport launch(final MCPLaunchConfiguration config) {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPRuntimeContext runtimeContext = runtimeContextCreator.apply(sessionManager, config.getRuntimeConfiguration());
+        MCPRuntimeContext runtimeContext = runtimeContextCreator.apply(sessionManager, config.getDatabases());
         MCPRuntimeTransport result = createTransport(config, runtimeContext);
         try {
             result.start();

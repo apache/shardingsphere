@@ -45,7 +45,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     public YamlMCPLaunchConfiguration swapToYamlConfiguration(final MCPLaunchConfiguration data) {
         YamlMCPLaunchConfiguration result = new YamlMCPLaunchConfiguration();
         result.setTransport(createYamlTransportConfiguration(data.getHttpTransport(), data.getStdioTransport()));
-        result.setRuntimeDatabases(runtimeDatabasesSwapper.swapToYamlConfiguration(data.getRuntimeConfiguration()));
+        result.setRuntimeDatabases(runtimeDatabasesSwapper.swapToYamlConfiguration(data.getDatabases()));
         return result;
     }
     

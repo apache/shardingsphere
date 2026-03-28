@@ -35,7 +35,7 @@ public final class MCPLaunchConfiguration {
     
     private final StdioTransportConfiguration stdioTransport;
     
-    private final Map<String, RuntimeDatabaseConfiguration> runtimeConfiguration;
+    private final Map<String, RuntimeDatabaseConfiguration> databases;
     
     /**
      * Validate transport configuration.
