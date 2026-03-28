@@ -35,7 +35,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public final class StdioTransportMCPServer implements MCPRuntimeTransport {
     
-    private final ManagedStdioTransportProvider transportProvider;
+    private final SessionManagedStdioTransportProvider transportProvider;
     
     private final MCPSyncServerFactory syncServerFactory;
     
@@ -51,8 +51,8 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
         syncServerFactory = new MCPSyncServerFactory(runtimeContext, jsonMapper);
     }
     
-    private ManagedStdioTransportProvider createTransportProvider(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
-        return new ManagedStdioTransportProvider(runtimeContext, new MCPSessionCloser(runtimeContext), jsonMapper,
+    private SessionManagedStdioTransportProvider createTransportProvider(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
+        return new SessionManagedStdioTransportProvider(runtimeContext, new MCPSessionCloser(runtimeContext), jsonMapper,
                 new LifecycleAwareInputStream(System.in, terminationLatch::countDown), System.out, terminationLatch::countDown);
     }
     

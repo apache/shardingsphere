@@ -21,7 +21,6 @@ import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
 import io.modelcontextprotocol.spec.McpServerSession;
 import io.modelcontextprotocol.spec.McpServerTransport;
-import io.modelcontextprotocol.spec.McpServerTransportProvider;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSessionCloser;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
@@ -32,30 +31,23 @@ import java.io.OutputStream;
 import java.util.List;
 
 /**
- * STDIO transport provider with session lifecycle management.
+ * Session managed stdio transport provider.
  */
-final class ManagedStdioTransportProvider implements McpServerTransportProvider {
+final class SessionManagedStdioTransportProvider extends StdioServerTransportProvider {
     
     private final MCPRuntimeContext runtimeContext;
     
     private final MCPSessionCloser sessionCloser;
     
-    private final McpServerTransportProvider delegate;
-    
     private final Runnable closeCallback;
     
     private String activeSessionId;
     
-    ManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final MCPSessionCloser sessionCloser, final McpJsonMapper jsonMapper,
-                                  final InputStream inputStream, final OutputStream outputStream, final Runnable closeCallback) {
-        this(runtimeContext, sessionCloser, new StdioServerTransportProvider(jsonMapper, inputStream, outputStream), closeCallback);
-    }
-    
-    ManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final MCPSessionCloser sessionCloser,
-                                  final McpServerTransportProvider delegate, final Runnable closeCallback) {
+    SessionManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final MCPSessionCloser sessionCloser, final McpJsonMapper jsonMapper,
+                                         final InputStream inputStream, final OutputStream outputStream, final Runnable closeCallback) {
+        super(jsonMapper, inputStream, outputStream);
         this.runtimeContext = runtimeContext;
         this.sessionCloser = sessionCloser;
-        this.delegate = delegate;
         this.closeCallback = closeCallback;
     }
     
@@ -66,7 +58,7 @@ final class ManagedStdioTransportProvider implements McpServerTransportProvider 
     
     @Override
     public void setSessionFactory(final McpServerSession.Factory sessionFactory) {
-        delegate.setSessionFactory(transport -> createManagedSession(sessionFactory, transport));
+        super.setSessionFactory(transport -> createManagedSession(sessionFactory, transport));
     }
     
     private McpServerSession createManagedSession(final McpServerSession.Factory sessionFactory, final McpServerTransport transport) {
@@ -77,18 +69,8 @@ final class ManagedStdioTransportProvider implements McpServerTransportProvider 
     }
     
     @Override
-    public Mono<Void> notifyClients(final String method, final Object params) {
-        return delegate.notifyClients(method, params);
-    }
-    
-    @Override
-    public Mono<Void> notifyClient(final String sessionId, final String method, final Object params) {
-        return delegate.notifyClient(sessionId, method, params);
-    }
-    
-    @Override
     public Mono<Void> closeGracefully() {
-        return delegate.closeGracefully().doFinally(ignored -> {
+        return super.closeGracefully().doFinally(ignored -> {
             closeManagedSession();
             closeCallback.run();
         });
