@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfigurati
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.rule.PartialRuleUpdateSupported;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -44,6 +43,7 @@ import java.util.LinkedList;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
@@ -56,7 +56,7 @@ import static org.mockito.Mockito.withSettings;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({DatabaseRulesBuilder.class, TypedSPILoader.class})
+@StaticMockSettings(TypedSPILoader.class)
 class DatabaseRuleConfigurationManagerTest {
     
     private static final String DATABASE_NAME = "foo_db";
@@ -69,16 +69,17 @@ class DatabaseRuleConfigurationManagerTest {
         PartialRuleUpdateSupported updater = (PartialRuleUpdateSupported) closableRule;
         when(updater.partialUpdate(ruleConfig)).thenReturn(true);
         ShardingSphereRule nonClosableRule = mock(ShardingSphereRule.class);
-        when(nonClosableRule.getConfiguration()).thenReturn(mock(RuleConfiguration.class, withSettings().extraInterfaces(Cloneable.class)));
+        RuleConfiguration otherRuleConfig = mock(RuleConfiguration.class, withSettings().extraInterfaces(Cloneable.class));
+        when(nonClosableRule.getConfiguration()).thenReturn(otherRuleConfig);
         RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(Arrays.asList(closableRule, nonClosableRule)));
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
-        ShardingSphereRule rebuiltRule = mock(ShardingSphereRule.class);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
-            when(DatabaseRulesBuilder.build(eq(DATABASE_NAME), any(), any(), eq(ruleConfig), any(), any())).thenReturn(rebuiltRule);
             new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
+            verify(ignored.constructed().iterator().next()).createByAlterRule(eq(DATABASE_NAME), eq(false),
+                    argThat(actual -> 2 == actual.size() && actual.contains(ruleConfig) && actual.contains(otherRuleConfig)), eq(metaDataContexts));
             verify((PartialRuleUpdateSupported) closableRule).updateConfiguration(ruleConfig);
             verify(metaDataContexts).update(any(MetaDataContexts.class));
             assertDoesNotThrow(() -> verify((AutoCloseable) closableRule).close());
@@ -109,6 +110,7 @@ class DatabaseRuleConfigurationManagerTest {
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
             new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
+            verify(ignored.constructed().iterator().next()).createByAlterRule(eq(DATABASE_NAME), eq(false), argThat(Collection::isEmpty), eq(metaDataContexts));
             verify((PartialRuleUpdateSupported) partialRule, never()).partialUpdate(ruleConfig);
             verify((PartialRuleUpdateSupported) partialRule, never()).updateConfiguration(ruleConfig);
             verify(metaDataContexts).update(any(MetaDataContexts.class));
@@ -129,6 +131,8 @@ class DatabaseRuleConfigurationManagerTest {
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
             new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
+            verify(ignored.constructed().iterator().next()).createByAlterRule(eq(DATABASE_NAME), eq(false),
+                    argThat(actual -> 1 == actual.size() && actual.contains(ruleConfig)), eq(metaDataContexts));
             verify(metaDataContexts).update(any(MetaDataContexts.class));
             verify(updater).updateConfiguration(ruleConfig);
         }
@@ -138,16 +142,17 @@ class DatabaseRuleConfigurationManagerTest {
     void assertRefreshWithoutExistingRule() throws SQLException {
         DatabaseRuleConfiguration ruleConfig = mockDatabaseRuleConfiguration(false);
         ShardingSphereRule otherRule = mock(ShardingSphereRule.class);
-        when(otherRule.getConfiguration()).thenReturn(mock(RuleConfiguration.class, withSettings().extraInterfaces(Cloneable.class)));
+        RuleConfiguration otherRuleConfig = mock(RuleConfiguration.class, withSettings().extraInterfaces(Cloneable.class));
+        when(otherRule.getConfiguration()).thenReturn(otherRuleConfig);
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(otherRule));
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
-        ShardingSphereRule rebuiltRule = mock(ShardingSphereRule.class);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
-            when(DatabaseRulesBuilder.build(eq(DATABASE_NAME), any(), any(), eq(ruleConfig), any(), any())).thenReturn(rebuiltRule);
             new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
+            verify(ignored.constructed().iterator().next()).createByAlterRule(eq(DATABASE_NAME), eq(false),
+                    argThat(actual -> 2 == actual.size() && actual.contains(ruleConfig) && actual.contains(otherRuleConfig)), eq(metaDataContexts));
             verify(metaDataContexts).update(any(MetaDataContexts.class));
         }
     }
@@ -160,12 +165,12 @@ class DatabaseRuleConfigurationManagerTest {
         RuleMetaData ruleMetaData = new RuleMetaData(Collections.singleton(existingRule));
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getDatabase(DATABASE_NAME).getRuleMetaData()).thenReturn(ruleMetaData);
-        ShardingSphereRule rebuiltRule = mock(ShardingSphereRule.class);
         try (
                 MockedConstruction<MetaDataContextsFactory> ignored = mockConstruction(MetaDataContextsFactory.class,
                         (mock, context) -> when(mock.createByAlterRule(eq(DATABASE_NAME), eq(false), any(Collection.class), eq(metaDataContexts))).thenReturn(mock(MetaDataContexts.class)))) {
-            when(DatabaseRulesBuilder.build(eq(DATABASE_NAME), any(), any(), eq(ruleConfig), any(), any())).thenReturn(rebuiltRule);
             new DatabaseRuleConfigurationManager(metaDataContexts, mock(), mock()).refresh(DATABASE_NAME, ruleConfig);
+            verify(ignored.constructed().iterator().next()).createByAlterRule(eq(DATABASE_NAME), eq(false),
+                    argThat(actual -> 1 == actual.size() && actual.contains(ruleConfig)), eq(metaDataContexts));
             verify(metaDataContexts).update(any(MetaDataContexts.class));
         }
     }
