@@ -132,7 +132,7 @@ class MySQLComStmtExecutePacketTest {
     private static Stream<Arguments> stringDecodingArguments() {
         return Stream.of(
                 Arguments.of("string-column", MySQLBinaryColumnType.STRING, Collections.singletonList(MySQLBinaryColumnType.STRING), true),
-                Arguments.of("var-string-column", MySQLBinaryColumnType.STRING, Collections.singletonList(MySQLBinaryColumnType.VAR_STRING), true),
+                Arguments.of("variable-string-column", MySQLBinaryColumnType.STRING, Collections.singletonList(MySQLBinaryColumnType.VAR_STRING), true),
                 Arguments.of("varchar-column", MySQLBinaryColumnType.STRING, Collections.singletonList(MySQLBinaryColumnType.VARCHAR), true),
                 Arguments.of("blob-column", MySQLBinaryColumnType.STRING, Collections.singletonList(MySQLBinaryColumnType.BLOB), false),
                 Arguments.of("missing-column-type", MySQLBinaryColumnType.STRING, Collections.emptyList(), false),

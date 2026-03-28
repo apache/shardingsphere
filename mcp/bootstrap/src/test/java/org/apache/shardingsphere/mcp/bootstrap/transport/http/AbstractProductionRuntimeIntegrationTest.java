@@ -137,12 +137,12 @@ abstract class AbstractProductionRuntimeIntegrationTest {
         if (actual instanceof StreamableHttpMCPServer) {
             return (StreamableHttpMCPServer) actual;
         }
-        actual.close();
+        actual.stop();
         throw new IllegalStateException("HTTP transport must be enabled for HTTP integration tests.");
     }
     
     private Map<String, Object> createInitializeRequestParams() {
-        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("protocolVersion", PROTOCOL_VERSION);
         result.put("capabilities", Map.of());
         result.put("clientInfo", Map.of("name", "production-runtime-integration", "version", "1.0.0"));

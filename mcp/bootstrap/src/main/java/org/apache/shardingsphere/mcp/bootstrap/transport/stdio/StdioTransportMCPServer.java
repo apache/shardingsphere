@@ -54,13 +54,10 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
     public StdioTransportMCPServer(final MCPRuntimeContext runtimeContext) {
         McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
         transportProvider = new ManagedStdioTransportProvider(
-                runtimeContext, new MCPSessionCloser(runtimeContext), jsonMapper, new LifecycleAwareInputStream(System.in, this::signalTermination), System.out, this::signalTermination);
+                runtimeContext, new MCPSessionCloser(runtimeContext), jsonMapper, new LifecycleAwareInputStream(System.in, () -> terminationLatch.countDown()), System.out, () -> terminationLatch.countDown());
         syncServerFactory = new MCPSyncServerFactory(runtimeContext, jsonMapper);
     }
     
-    /**
-     * Start the STDIO transport.
-     */
     @Override
     public void start() {
         if (running) {
@@ -77,16 +74,12 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
             syncServer = null;
         }
         running = false;
-        signalTermination();
+        terminationLatch.countDown();
     }
     
     @Override
     public void awaitTermination() throws InterruptedException {
         terminationLatch.await();
-    }
-    
-    private void signalTermination() {
-        terminationLatch.countDown();
     }
     
     private static final class ManagedStdioTransportProvider implements McpServerTransportProvider {

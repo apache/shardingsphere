@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport;
 
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
@@ -33,16 +34,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 final class MCPToolCallHandler {
     
     private final MCPRuntimeContext runtimeContext;
     
     private final MCPTransportPayloadBuilder payloadBuilder;
-    
-    MCPToolCallHandler(final MCPRuntimeContext runtimeContext, final MCPTransportPayloadBuilder payloadBuilder) {
-        this.runtimeContext = runtimeContext;
-        this.payloadBuilder = payloadBuilder;
-    }
     
     McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
         Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Collections.emptyMap());

@@ -110,7 +110,7 @@ class MCPBootstrapTest {
             MCPRuntimeLauncher actualLauncher = mockedConstruction.constructed().iterator().next();
             verify(actualLauncher).launch(launchConfig);
         }
-        verify(runtimeTransport).close();
+        verify(runtimeTransport).stop();
         verifyNoMoreInteractions(runtimeTransport);
     }
     
@@ -141,7 +141,7 @@ class MCPBootstrapTest {
             verify(actualLauncher).launch(launchConfig);
         }
         verify(runtimeTransport).awaitTermination();
-        verify(runtimeTransport).close();
+        verify(runtimeTransport).stop();
         verifyNoMoreInteractions(runtimeTransport);
     }
     
@@ -167,7 +167,7 @@ class MCPBootstrapTest {
             Thread.interrupted();
         }
         verify(runtimeTransport).awaitTermination();
-        verify(runtimeTransport).close();
+        verify(runtimeTransport).stop();
         verifyNoMoreInteractions(runtimeTransport);
     }
     

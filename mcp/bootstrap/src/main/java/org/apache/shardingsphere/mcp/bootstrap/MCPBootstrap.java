@@ -77,7 +77,7 @@ public final class MCPBootstrap {
     private static void closeRuntimeTransport(final AtomicReference<MCPRuntimeTransport> runtimeTransportReference) {
         MCPRuntimeTransport runtimeTransport = runtimeTransportReference.getAndSet(null);
         if (null != runtimeTransport) {
-            runtimeTransport.close();
+            runtimeTransport.stop();
         }
     }
 }

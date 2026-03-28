@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 import java.net.URI;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -48,7 +49,7 @@ final class StreamableHttpMCPRequestInspector {
     
     Map<String, String> extractHeaders(final HttpServletRequest request) {
         Map<String, String> result = new LinkedHashMap<>();
-        var headerNames = request.getHeaderNames();
+        Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String each = headerNames.nextElement();
             String value = request.getHeader(each);
