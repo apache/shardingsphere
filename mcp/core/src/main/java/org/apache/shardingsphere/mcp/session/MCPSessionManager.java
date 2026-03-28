@@ -44,13 +44,10 @@ public final class MCPSessionManager {
      */
     public SessionContext createSession(final String sessionId) {
         String actualSessionId = normalizeValue(sessionId, "sessionId");
-        if (closedSessionIds.contains(actualSessionId)) {
-            throw new IllegalStateException("Session recovery is not supported.");
-        }
-        SessionContext sessionContext = new SessionContext(actualSessionId);
-        SessionContext result = sessions.putIfAbsent(actualSessionId, sessionContext);
-        ShardingSpherePreconditions.checkState(null == result, () -> new IllegalStateException("Session already exists."));
-        return sessionContext;
+        ShardingSpherePreconditions.checkState(!closedSessionIds.contains(actualSessionId), () -> new IllegalStateException("Session recovery is not supported."));
+        SessionContext result = new SessionContext(actualSessionId);
+        ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(actualSessionId, result), () -> new IllegalStateException("Session already exists."));
+        return result;
     }
     
     /**
