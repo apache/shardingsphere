@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import java.util.Optional;
 
 /**
- * Shared sync MCP server factory for HTTP and STDIO transports.
+ * MCP sync server factory.
  */
 public final class MCPSyncServerFactory {
     
@@ -78,10 +78,7 @@ public final class MCPSyncServerFactory {
     }
     
     private ServerCapabilities createServerCapabilities() {
-        return McpSchema.ServerCapabilities.builder()
-                .resources(Boolean.FALSE, Boolean.FALSE)
-                .tools(Boolean.FALSE)
-                .build();
+        return McpSchema.ServerCapabilities.builder().resources(Boolean.FALSE, Boolean.FALSE).tools(Boolean.FALSE).build();
     }
     
     private String resolveServerVersion() {
