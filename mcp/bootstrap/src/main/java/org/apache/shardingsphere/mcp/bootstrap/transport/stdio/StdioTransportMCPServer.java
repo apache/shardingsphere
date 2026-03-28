@@ -43,18 +43,16 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
     
     @Override
     public void start() {
-        if (null != syncServer) {
-            return;
+        if (null == syncServer) {
+            syncServer = syncServerFactory.create(transportProvider);
         }
-        syncServer = syncServerFactory.create(transportProvider);
     }
     
     @Override
     public void stop() {
-        if (null == syncServer) {
-            return;
+        if (null != syncServer) {
+            syncServer.closeGracefully();
+            syncServer = null;
         }
-        syncServer.closeGracefully();
-        syncServer = null;
     }
 }
