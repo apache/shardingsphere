@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.session;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.LinkedHashSet;
 import java.util.Optional;
@@ -26,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * In-memory session manager for the MCP runtime skeleton.
+ * MCP session manager.
  */
 public final class MCPSessionManager {
     
@@ -48,9 +49,7 @@ public final class MCPSessionManager {
         }
         SessionContext sessionContext = new SessionContext(actualSessionId);
         SessionContext result = sessions.putIfAbsent(actualSessionId, sessionContext);
-        if (null != result) {
-            throw new IllegalStateException("Session already exists.");
-        }
+        ShardingSpherePreconditions.checkState(null == result, () -> new IllegalStateException("Session already exists."));
         return sessionContext;
     }
     

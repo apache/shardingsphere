@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.session;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -65,8 +64,6 @@ public final class MCPSessionRegistry {
      * Close all sessions.
      */
     public void closeAll() {
-        for (String each : new LinkedHashSet<>(activeSessionIds)) {
-            close(each);
-        }
+        activeSessionIds.forEach(this::close);
     }
 }
