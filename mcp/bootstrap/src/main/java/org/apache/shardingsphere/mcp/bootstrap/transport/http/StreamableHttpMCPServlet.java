@@ -69,13 +69,13 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final AtomicBoolean closed = new AtomicBoolean();
     
-    private final StreamableHttpMCPRequestInspector requestValidator;
+    private final StreamableHttpMCPRequestInspector requestInspector;
     
     private final MCPSessionCloser sessionCloser;
     
     StreamableHttpMCPServlet(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
         this.runtimeContext = runtimeContext;
-        requestValidator = new StreamableHttpMCPRequestInspector(runtimeContext, bindHost);
+        requestInspector = new StreamableHttpMCPRequestInspector(runtimeContext, bindHost);
         sessionCloser = new MCPSessionCloser(runtimeContext);
         delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).contextExtractor(request -> McpTransportContext.create(Collections.emptyMap())).build();
     }
@@ -120,8 +120,8 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        Map<String, String> headers = requestValidator.extractHeaders(request);
-        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestValidator.validateFollowUpRequest(headers);
+        Map<String, String> headers = requestInspector.extractHeaders(request);
+        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validateFollowUpRequest(headers);
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
         } else {
@@ -131,10 +131,10 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        Map<String, String> headers = requestValidator.extractHeaders(request);
-        String sessionId = requestValidator.getHeader(headers, SESSION_HEADER);
+        Map<String, String> headers = requestInspector.extractHeaders(request);
+        String sessionId = requestInspector.getHeader(headers, SESSION_HEADER);
         if (!sessionId.isEmpty()) {
-            Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestValidator.validateFollowUpRequest(headers);
+            Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validateFollowUpRequest(headers);
             if (validationFailure.isPresent()) {
                 writeResponse(response, validationFailure.get());
             } else {
@@ -142,7 +142,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
             }
             return;
         }
-        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> initializationFailure = requestValidator.validateInitializeRequest(headers);
+        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> initializationFailure = requestInspector.validateInitializeRequest(headers);
         if (initializationFailure.isPresent()) {
             writeResponse(response, initializationFailure.get());
         } else {
@@ -152,13 +152,13 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doDelete(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        Map<String, String> headers = requestValidator.extractHeaders(request);
-        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestValidator.validateFollowUpRequest(headers);
+        Map<String, String> headers = requestInspector.extractHeaders(request);
+        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validateFollowUpRequest(headers);
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
             return;
         }
-        String sessionId = requestValidator.getHeader(headers, SESSION_HEADER);
+        String sessionId = requestInspector.getHeader(headers, SESSION_HEADER);
         serviceWithApplicationClassLoader(withDefaultAcceptHeader(request), response);
         if (200 == response.getStatus() && activeSessionIds.remove(sessionId)) {
             sessionCloser.closeSession(sessionId);
