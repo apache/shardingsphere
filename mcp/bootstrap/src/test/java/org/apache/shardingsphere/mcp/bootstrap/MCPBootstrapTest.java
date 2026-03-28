@@ -33,10 +33,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
@@ -90,10 +88,11 @@ class MCPBootstrapTest {
     }
     
     @Test
-    void assertMainSkipAwaitWhenShutdownHookClosedTransportBeforeStdioWait() throws IOException {
+    void assertMainCloseTransportWhenShutdownHookRuns() throws IOException {
         MCPLaunchConfiguration launchConfig = createLaunchConfiguration(true);
         MCPRuntimeTransport runtimeTransport = mock(MCPRuntimeTransport.class);
         Runtime runtime = mock(Runtime.class);
+        AtomicReference<Thread> shutdownHook = new AtomicReference<>();
         try (
                 MockedStatic<MCPConfigurationLoader> mockedConfigurationLoader = mockStatic(MCPConfigurationLoader.class);
                 MockedStatic<Runtime> mockedRuntime = mockStatic(Runtime.class);
@@ -102,20 +101,21 @@ class MCPBootstrapTest {
             mockedRuntime.when(Runtime::getRuntime).thenReturn(runtime);
             mockedConfigurationLoader.when(() -> MCPConfigurationLoader.load("conf/mcp.yaml")).thenReturn(launchConfig);
             doAnswer(invocation -> {
-                invocation.getArgument(0, Thread.class).run();
+                shutdownHook.set(invocation.getArgument(0, Thread.class));
                 return null;
             }).when(runtime).addShutdownHook(any(Thread.class));
             MCPBootstrap.main(new String[0]);
             assertThat(mockedConstruction.constructed().size(), is(1));
             MCPRuntimeLauncher actualLauncher = mockedConstruction.constructed().iterator().next();
             verify(actualLauncher).launch(launchConfig);
+            shutdownHook.get().run();
         }
         verify(runtimeTransport).stop();
         verifyNoMoreInteractions(runtimeTransport);
     }
     
     @Test
-    void assertMainCloseTransportOnceWhenShutdownHookRunsDuringAwaitTermination() throws IOException, InterruptedException {
+    void assertMainCloseTransportOnceWhenShutdownHookRunsRepeatedly() throws IOException {
         MCPLaunchConfiguration launchConfig = createLaunchConfiguration(true);
         MCPRuntimeTransport runtimeTransport = mock(MCPRuntimeTransport.class);
         Runtime runtime = mock(Runtime.class);
@@ -131,42 +131,13 @@ class MCPBootstrapTest {
                 shutdownHook.set(invocation.getArgument(0, Thread.class));
                 return null;
             }).when(runtime).addShutdownHook(any(Thread.class));
-            doAnswer(invocation -> {
-                shutdownHook.get().run();
-                return null;
-            }).when(runtimeTransport).awaitTermination();
             MCPBootstrap.main(new String[]{"stdio.yaml"});
             assertThat(mockedConstruction.constructed().size(), is(1));
             MCPRuntimeLauncher actualLauncher = mockedConstruction.constructed().iterator().next();
             verify(actualLauncher).launch(launchConfig);
+            shutdownHook.get().run();
+            shutdownHook.get().run();
         }
-        verify(runtimeTransport).awaitTermination();
-        verify(runtimeTransport).stop();
-        verifyNoMoreInteractions(runtimeTransport);
-    }
-    
-    @Test
-    void assertMainInterruptCurrentThreadWhenAwaitTerminationInterrupted() throws IOException, InterruptedException {
-        MCPLaunchConfiguration launchConfig = createLaunchConfiguration(true);
-        MCPRuntimeTransport runtimeTransport = mock(MCPRuntimeTransport.class);
-        Runtime runtime = mock(Runtime.class);
-        try (
-                MockedStatic<MCPConfigurationLoader> mockedConfigurationLoader = mockStatic(MCPConfigurationLoader.class);
-                MockedStatic<Runtime> mockedRuntime = mockStatic(Runtime.class);
-                MockedConstruction<MCPRuntimeLauncher> mockedConstruction = mockConstruction(MCPRuntimeLauncher.class,
-                        (mock, context) -> when(mock.launch(launchConfig)).thenReturn(runtimeTransport))) {
-            mockedRuntime.when(Runtime::getRuntime).thenReturn(runtime);
-            mockedConfigurationLoader.when(() -> MCPConfigurationLoader.load("interrupt.yaml")).thenReturn(launchConfig);
-            doThrow(new InterruptedException("mock")).when(runtimeTransport).awaitTermination();
-            MCPBootstrap.main(new String[]{"interrupt.yaml"});
-            assertThat(mockedConstruction.constructed().size(), is(1));
-            MCPRuntimeLauncher actualLauncher = mockedConstruction.constructed().iterator().next();
-            verify(actualLauncher).launch(launchConfig);
-            assertTrue(Thread.currentThread().isInterrupted());
-        } finally {
-            Thread.interrupted();
-        }
-        verify(runtimeTransport).awaitTermination();
         verify(runtimeTransport).stop();
         verifyNoMoreInteractions(runtimeTransport);
     }

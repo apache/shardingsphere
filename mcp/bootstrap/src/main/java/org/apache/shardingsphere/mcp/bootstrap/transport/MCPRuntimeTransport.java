@@ -36,11 +36,4 @@ public interface MCPRuntimeTransport {
      */
     void stop();
     
-    /**
-     * Wait until transport terminates.
-     *
-     * @throws InterruptedException interrupted exception
-     */
-    default void awaitTermination() throws InterruptedException {
-    }
 }

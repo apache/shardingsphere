@@ -47,9 +47,6 @@ public final class MCPBootstrap {
         MCPLaunchConfiguration launchConfig = MCPConfigurationLoader.load(getConfigurationPath(args));
         AtomicReference<MCPRuntimeTransport> runtimeTransportReference = new AtomicReference<>(new MCPRuntimeLauncher().launch(launchConfig));
         Runtime.getRuntime().addShutdownHook(new Thread(() -> closeRuntimeTransport(runtimeTransportReference), "shardingsphere-mcp-shutdown"));
-        if (launchConfig.getStdioTransport().isEnabled()) {
-            awaitRuntimeTransportTermination(runtimeTransportReference);
-        }
     }
     
     private static String getConfigurationPath(final String[] args) {
@@ -58,20 +55,6 @@ public final class MCPBootstrap {
         }
         String result = args[0].trim();
         return result.isEmpty() ? DEFAULT_CONFIG_PATH : result;
-    }
-    
-    private static void awaitRuntimeTransportTermination(final AtomicReference<MCPRuntimeTransport> runtimeTransportReference) {
-        MCPRuntimeTransport runtimeTransport = runtimeTransportReference.get();
-        if (null == runtimeTransport) {
-            return;
-        }
-        try {
-            runtimeTransport.awaitTermination();
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        } finally {
-            closeRuntimeTransport(runtimeTransportReference);
-        }
     }
     
     private static void closeRuntimeTransport(final AtomicReference<MCPRuntimeTransport> runtimeTransportReference) {

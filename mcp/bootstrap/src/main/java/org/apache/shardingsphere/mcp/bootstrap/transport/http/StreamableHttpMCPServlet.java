@@ -29,7 +29,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSessionCloser;
+import org.apache.shardingsphere.mcp.bootstrap.transport.ManagedSessionRegistry;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -61,22 +60,17 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private static final String DEFAULT_ACCEPT = "application/json, text/event-stream";
     
-    private final MCPRuntimeContext runtimeContext;
-    
     private final HttpServletStreamableServerTransportProvider delegate;
-    
-    private final Set<String> activeSessionIds = ConcurrentHashMap.newKeySet();
     
     private final AtomicBoolean closed = new AtomicBoolean();
     
     private final StreamableHttpMCPRequestInspector requestInspector;
     
-    private final MCPSessionCloser sessionCloser;
+    private final ManagedSessionRegistry managedSessions;
     
     StreamableHttpMCPServlet(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
-        this.runtimeContext = runtimeContext;
         requestInspector = new StreamableHttpMCPRequestInspector(runtimeContext, bindHost);
-        sessionCloser = new MCPSessionCloser(runtimeContext);
+        managedSessions = new ManagedSessionRegistry(runtimeContext);
         delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath)
                 .contextExtractor(request -> McpTransportContext.create(Collections.emptyMap())).build();
     }
@@ -91,8 +85,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         delegate.setSessionFactory(initializeRequest -> {
             McpStreamableServerSession.McpStreamableServerSessionInit result = sessionFactory.startSession(normalizeInitializeRequest(initializeRequest));
             String sessionId = result.session().getId();
-            runtimeContext.getSessionManager().createSession(sessionId);
-            activeSessionIds.add(sessionId);
+            managedSessions.createSession(sessionId);
             return result;
         });
     }
@@ -161,8 +154,8 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         }
         String sessionId = requestInspector.getHeader(headers, SESSION_HEADER);
         serviceWithApplicationClassLoader(withDefaultAcceptHeader(request), response);
-        if (200 == response.getStatus() && activeSessionIds.remove(sessionId)) {
-            sessionCloser.closeSession(sessionId);
+        if (200 == response.getStatus()) {
+            managedSessions.closeSession(sessionId);
         }
     }
     
@@ -190,15 +183,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     public reactor.core.publisher.Mono<Void> closeGracefully() {
-        return closed.compareAndSet(false, true) ? delegate.closeGracefully().doFinally(ignored -> closeManagedSessions()) : reactor.core.publisher.Mono.empty();
-    }
-    
-    private void closeManagedSessions() {
-        Set<String> sessionIds = new LinkedHashSet<>(activeSessionIds);
-        activeSessionIds.clear();
-        for (String each : sessionIds) {
-            sessionCloser.closeSession(each);
-        }
+        return closed.compareAndSet(false, true) ? delegate.closeGracefully().doFinally(ignored -> managedSessions.closeSessions()) : reactor.core.publisher.Mono.empty();
     }
     
     @Override

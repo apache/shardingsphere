@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
+import io.modelcontextprotocol.json.TypeRef;
 import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
 import io.modelcontextprotocol.spec.McpServerSession;
 import io.modelcontextprotocol.spec.McpServerTransport;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSessionCloser;
+import io.modelcontextprotocol.spec.McpSchema.JSONRPCMessage;
+import org.apache.shardingsphere.mcp.bootstrap.transport.ManagedSessionRegistry;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import reactor.core.publisher.Mono;
@@ -29,26 +31,21 @@ import reactor.core.publisher.Mono;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Session managed stdio transport provider.
  */
 final class SessionManagedStdioTransportProvider extends StdioServerTransportProvider {
     
-    private final MCPRuntimeContext runtimeContext;
+    private final ManagedSessionRegistry managedSessions;
     
-    private final MCPSessionCloser sessionCloser;
+    private final AtomicReference<String> activeSessionId = new AtomicReference<>();
     
-    private final Runnable closeCallback;
-    
-    private String activeSessionId;
-    
-    SessionManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final MCPSessionCloser sessionCloser, final McpJsonMapper jsonMapper,
-                                         final InputStream inputStream, final OutputStream outputStream, final Runnable closeCallback) {
+    SessionManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper,
+                                         final InputStream inputStream, final OutputStream outputStream) {
         super(jsonMapper, inputStream, outputStream);
-        this.runtimeContext = runtimeContext;
-        this.sessionCloser = sessionCloser;
-        this.closeCallback = closeCallback;
+        managedSessions = new ManagedSessionRegistry(runtimeContext);
     }
     
     @Override
@@ -58,29 +55,59 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
     
     @Override
     public void setSessionFactory(final McpServerSession.Factory sessionFactory) {
-        super.setSessionFactory(transport -> createManagedSession(sessionFactory, transport));
+        super.setSessionFactory(transport -> createManagedSession(sessionFactory, createManagedTransport(transport)));
     }
     
     private McpServerSession createManagedSession(final McpServerSession.Factory sessionFactory, final McpServerTransport transport) {
         McpServerSession result = sessionFactory.create(transport);
-        activeSessionId = result.getId();
-        runtimeContext.getSessionManager().createSession(activeSessionId);
+        String sessionId = result.getId();
+        managedSessions.createSession(sessionId);
+        activeSessionId.set(sessionId);
         return result;
     }
     
-    @Override
-    public Mono<Void> closeGracefully() {
-        return super.closeGracefully().doFinally(ignored -> {
-            closeManagedSession();
-            closeCallback.run();
-        });
+    private McpServerTransport createManagedTransport(final McpServerTransport transport) {
+        return new SessionClosingTransport(transport);
     }
     
     private void closeManagedSession() {
-        if (null == activeSessionId || activeSessionId.isEmpty()) {
+        String sessionId = activeSessionId.getAndSet(null);
+        if (null == sessionId || sessionId.isEmpty()) {
             return;
         }
-        sessionCloser.closeSession(activeSessionId);
-        activeSessionId = null;
+        managedSessions.closeSession(sessionId);
+    }
+    
+    private final class SessionClosingTransport implements McpServerTransport {
+        
+        private final McpServerTransport delegate;
+        
+        private SessionClosingTransport(final McpServerTransport delegate) {
+            this.delegate = delegate;
+        }
+        
+        @Override
+        public Mono<Void> closeGracefully() {
+            return delegate.closeGracefully().doFinally(ignored -> closeManagedSession());
+        }
+        
+        @Override
+        public void close() {
+            try {
+                delegate.close();
+            } finally {
+                closeManagedSession();
+            }
+        }
+        
+        @Override
+        public Mono<Void> sendMessage(final JSONRPCMessage message) {
+            return delegate.sendMessage(message);
+        }
+        
+        @Override
+        public <T> T unmarshalFrom(final Object data, final TypeRef<T> typeRef) {
+            return delegate.unmarshalFrom(data, typeRef);
+        }
     }
 }
