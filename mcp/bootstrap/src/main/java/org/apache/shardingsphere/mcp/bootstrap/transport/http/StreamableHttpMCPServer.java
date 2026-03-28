@@ -41,7 +41,7 @@ import java.util.Comparator;
  */
 public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
     
-    private final HttpTransportConfiguration transportConfiguration;
+    private final HttpTransportConfiguration config;
     
     private final MCPRuntimeContext runtimeContext;
     
@@ -64,11 +64,11 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
     /**
      * Construct one HTTP MCP server with caller-provided runtime metadata.
      *
-     * @param transportConfiguration HTTP transport configuration
+     * @param config HTTP transport configuration
      * @param runtimeContext runtime context
      */
-    public StreamableHttpMCPServer(final HttpTransportConfiguration transportConfiguration, final MCPRuntimeContext runtimeContext) {
-        this.transportConfiguration = transportConfiguration;
+    public StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPRuntimeContext runtimeContext) {
+        this.config = config;
         this.runtimeContext = runtimeContext;
         jsonMapper = MCPTransportJsonMapperFactory.create();
         syncServerFactory = new MCPSyncServerFactory(runtimeContext, jsonMapper);
@@ -84,21 +84,21 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
         if (running) {
             return;
         }
-        transportProvider = new SdkStreamableHttpServlet(runtimeContext, jsonMapper, transportConfiguration.getBindHost(), transportConfiguration.getEndpointPath());
+        transportProvider = new SdkStreamableHttpServlet(runtimeContext, jsonMapper, config.getBindHost(), config.getEndpointPath());
         syncServer = syncServerFactory.create(transportProvider);
         try {
             tomcat = new Tomcat();
             baseDirectory = Files.createTempDirectory("shardingsphere-mcp-tomcat");
             connector = new Connector();
-            connector.setPort(transportConfiguration.getPort());
-            connector.setProperty("address", transportConfiguration.getBindHost());
+            connector.setPort(config.getPort());
+            connector.setProperty("address", config.getBindHost());
             tomcat.setBaseDir(baseDirectory.toString());
             tomcat.setConnector(connector);
             Context context = tomcat.addContext("", baseDirectory.toString());
             ((StandardContext) context).setClearReferencesRmiTargets(false);
             Wrapper servletWrapper = Tomcat.addServlet(context, "mcp-streamable-http", transportProvider);
             servletWrapper.setAsyncSupported(true);
-            context.addServletMappingDecoded(transportConfiguration.getEndpointPath(), "mcp-streamable-http");
+            context.addServletMappingDecoded(config.getEndpointPath(), "mcp-streamable-http");
             tomcat.start();
             running = true;
         } catch (final LifecycleException ex) {
@@ -130,7 +130,7 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
      * @return bound port
      */
     public int getLocalPort() {
-        return null == connector ? transportConfiguration.getPort() : connector.getLocalPort();
+        return null == connector ? config.getPort() : connector.getLocalPort();
     }
     
     private void closeSyncServer() {
