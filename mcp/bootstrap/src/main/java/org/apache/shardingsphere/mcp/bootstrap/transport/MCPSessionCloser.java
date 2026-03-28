@@ -17,22 +17,16 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 
 /**
- * Close one managed MCP session.
+ * MCP session closer.
  */
+@RequiredArgsConstructor
 public final class MCPSessionCloser {
     
     private final MCPRuntimeContext runtimeContext;
-    
-    private final MetadataRefreshCoordinator metadataRefreshCoordinator;
-    
-    public MCPSessionCloser(final MCPRuntimeContext runtimeContext, final MetadataRefreshCoordinator metadataRefreshCoordinator) {
-        this.runtimeContext = runtimeContext;
-        this.metadataRefreshCoordinator = metadataRefreshCoordinator;
-    }
     
     /**
      * Close one session.
@@ -43,7 +37,7 @@ public final class MCPSessionCloser {
         if (null == sessionId || sessionId.isEmpty()) {
             return;
         }
-        metadataRefreshCoordinator.clearSession(sessionId);
+        runtimeContext.getMetadataRefreshCoordinator().clearSession(sessionId);
         runtimeContext.getDatabaseRuntime().closeSession(sessionId);
         runtimeContext.getSessionManager().closeSession(sessionId);
     }

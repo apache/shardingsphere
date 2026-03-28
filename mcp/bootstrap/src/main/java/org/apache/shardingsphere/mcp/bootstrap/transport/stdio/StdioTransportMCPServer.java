@@ -22,16 +22,15 @@ import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
 import io.modelcontextprotocol.spec.McpServerSession;
 import io.modelcontextprotocol.spec.McpServerTransportProvider;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSyncServerFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSessionCloser;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSyncServerFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 
-import java.io.IOException;
 import java.io.FilterInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -41,10 +40,6 @@ import java.util.concurrent.CountDownLatch;
  * SDK-backed STDIO MCP transport server.
  */
 public final class StdioTransportMCPServer implements MCPRuntimeTransport {
-    
-    private final MCPRuntimeContext runtimeContext;
-    
-    private final MetadataRefreshCoordinator metadataRefreshCoordinator;
     
     private final ManagedStdioTransportProvider transportProvider;
     
@@ -56,21 +51,10 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
     
     private boolean running;
     
-    /**
-     * Construct one STDIO MCP transport server.
-     *
-     * @param runtimeContext runtime context
-     */
     public StdioTransportMCPServer(final MCPRuntimeContext runtimeContext) {
-        this(runtimeContext, System.in, System.out);
-    }
-    
-    StdioTransportMCPServer(final MCPRuntimeContext runtimeContext, final InputStream inputStream, final OutputStream outputStream) {
-        this.runtimeContext = runtimeContext;
-        metadataRefreshCoordinator = runtimeContext.getMetadataRefreshCoordinator();
         McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
-        transportProvider = new ManagedStdioTransportProvider(runtimeContext, new MCPSessionCloser(runtimeContext, metadataRefreshCoordinator),
-                jsonMapper, new LifecycleAwareInputStream(inputStream, this::signalTermination), outputStream, this::signalTermination);
+        transportProvider = new ManagedStdioTransportProvider(
+                runtimeContext, new MCPSessionCloser(runtimeContext), jsonMapper, new LifecycleAwareInputStream(System.in, this::signalTermination), System.out, this::signalTermination);
         syncServerFactory = new MCPSyncServerFactory(runtimeContext, jsonMapper);
     }
     

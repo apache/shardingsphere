@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSessionCloser;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -44,6 +43,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * SDK-backed streamable HTTP servlet.
+ */
 final class SdkStreamableHttpServlet extends HttpServlet implements McpStreamableServerTransportProvider {
     
     private static final String SESSION_HEADER = "MCP-Session-Id";
@@ -68,11 +70,10 @@ final class SdkStreamableHttpServlet extends HttpServlet implements McpStreamabl
     
     private final MCPSessionCloser sessionCloser;
     
-    SdkStreamableHttpServlet(final MCPRuntimeContext runtimeContext, final MetadataRefreshCoordinator metadataRefreshCoordinator,
-                             final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
+    SdkStreamableHttpServlet(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
         this.runtimeContext = runtimeContext;
         requestValidator = new MCPHttpRequestValidator(runtimeContext, bindHost);
-        sessionCloser = new MCPSessionCloser(runtimeContext, metadataRefreshCoordinator);
+        sessionCloser = new MCPSessionCloser(runtimeContext);
         delegate = HttpServletStreamableServerTransportProvider.builder()
                 .jsonMapper(jsonMapper)
                 .mcpEndpoint(endpointPath)

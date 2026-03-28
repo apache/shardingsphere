@@ -30,7 +30,6 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSyncServerFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -45,8 +44,6 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
     private final HttpTransportConfiguration transportConfiguration;
     
     private final MCPRuntimeContext runtimeContext;
-    
-    private final MetadataRefreshCoordinator metadataRefreshCoordinator;
     
     private final McpJsonMapper jsonMapper;
     
@@ -73,7 +70,6 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
     public StreamableHttpMCPServer(final HttpTransportConfiguration transportConfiguration, final MCPRuntimeContext runtimeContext) {
         this.transportConfiguration = transportConfiguration;
         this.runtimeContext = runtimeContext;
-        metadataRefreshCoordinator = runtimeContext.getMetadataRefreshCoordinator();
         jsonMapper = MCPTransportJsonMapperFactory.create();
         syncServerFactory = new MCPSyncServerFactory(runtimeContext, jsonMapper);
     }
@@ -88,8 +84,7 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
         if (running) {
             return;
         }
-        transportProvider = new SdkStreamableHttpServlet(runtimeContext, metadataRefreshCoordinator, jsonMapper,
-                transportConfiguration.getBindHost(), transportConfiguration.getEndpointPath());
+        transportProvider = new SdkStreamableHttpServlet(runtimeContext, jsonMapper, transportConfiguration.getBindHost(), transportConfiguration.getEndpointPath());
         syncServer = syncServerFactory.create(transportProvider);
         try {
             tomcat = new Tomcat();

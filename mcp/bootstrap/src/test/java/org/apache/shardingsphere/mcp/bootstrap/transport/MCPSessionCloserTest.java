@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mcp.bootstrap.transport;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -32,29 +32,23 @@ class MCPSessionCloserTest {
     
     @Test
     void assertCloseSession() {
-        MetadataRefreshCoordinator metadataRefreshCoordinator = mock(MetadataRefreshCoordinator.class);
-        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
+        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
         DatabaseRuntime databaseRuntime = mock(DatabaseRuntime.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         when(runtimeContext.getDatabaseRuntime()).thenReturn(databaseRuntime);
         when(runtimeContext.getSessionManager()).thenReturn(sessionManager);
-        MCPSessionCloser sessionCloser = new MCPSessionCloser(runtimeContext, metadataRefreshCoordinator);
-        
+        MCPSessionCloser sessionCloser = new MCPSessionCloser(runtimeContext);
         sessionCloser.closeSession("session-id");
-        
-        verify(metadataRefreshCoordinator).clearSession("session-id");
+        verify(runtimeContext.getMetadataRefreshCoordinator()).clearSession("session-id");
         verify(databaseRuntime).closeSession("session-id");
         verify(sessionManager).closeSession("session-id");
     }
     
     @Test
     void assertCloseSessionWithEmptySessionId() {
-        MetadataRefreshCoordinator metadataRefreshCoordinator = mock(MetadataRefreshCoordinator.class);
-        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
-        MCPSessionCloser sessionCloser = new MCPSessionCloser(runtimeContext, metadataRefreshCoordinator);
-        
+        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
+        MCPSessionCloser sessionCloser = new MCPSessionCloser(runtimeContext);
         sessionCloser.closeSession("");
-        
-        verifyNoInteractions(metadataRefreshCoordinator, runtimeContext);
+        verifyNoInteractions(runtimeContext.getMetadataRefreshCoordinator(), runtimeContext);
     }
 }
