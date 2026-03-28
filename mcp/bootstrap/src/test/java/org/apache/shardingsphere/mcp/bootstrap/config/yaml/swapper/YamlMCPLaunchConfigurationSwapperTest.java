@@ -58,7 +58,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    password: secret\n"
                 + "    driverClassName: org.h2.Driver\n";
         MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class));
-        
         assertThat(actual.getHttpTransport().getBindHost(), is("0.0.0.0"));
         assertThat(actual.getHttpTransport().getPort(), is(9090));
         assertThat(actual.getHttpTransport().getEndpointPath(), is("/gateway"));
@@ -71,14 +70,12 @@ class YamlMCPLaunchConfigurationSwapperTest {
     @Test
     void assertSwapToObjectWithNullConfiguration() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject((YamlMCPLaunchConfiguration) null));
-        
         assertThat(actual.getMessage(), is("MCP launch configuration cannot be null."));
     }
     
     @Test
     void assertSwapToObjectWithEmptyContent() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal("", YamlMCPLaunchConfiguration.class)));
-        
         assertThat(actual.getMessage(), is("Property `transport` is required."));
     }
     
@@ -91,7 +88,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    username: ''\n"
                 + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n", YamlMCPLaunchConfiguration.class)));
-        
         assertThat(actual.getMessage(), is("Property `transport` is required."));
     }
     
@@ -100,7 +96,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
         MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(
                 "transport:\n" + "  http:\n" + "    enabled: false\n" + "    bindHost: 127.0.0.1\n" + "    port: 18088\n" + "    endpointPath: /mcp\n" + "  stdio:\n" + "    enabled: true\n",
                 YamlMCPLaunchConfiguration.class));
-        
         assertTrue(actual.getDatabases().isEmpty());
     }
     
@@ -110,9 +105,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 "transport:\n" + "  http:\n" + "    enabled: false\n" + "    bindHost: 127.0.0.1\n" + "    port: 18088\n" + "    endpointPath: /mcp\n" + "  stdio:\n" + "    enabled: true\n",
                 YamlMCPLaunchConfiguration.class);
         yamlConfig.setRuntimeDatabases(null);
-        
         MCPLaunchConfiguration actual = swapper.swapToObject(yamlConfig);
-        
         assertTrue(actual.getDatabases().isEmpty());
     }
     
@@ -127,7 +120,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  stdio:\n"
                 + "    enabled: false\n"
                 + "runtimeDatabases: {}\n", YamlMCPLaunchConfiguration.class)));
-        
         assertThat(actual.getMessage(), is("Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true."));
     }
     
@@ -142,7 +134,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  stdio:\n"
                 + "    enabled: true\n"
                 + "runtimeDatabases: {}\n", YamlMCPLaunchConfiguration.class)));
-        
         assertThat(actual.getMessage(), is("HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport."));
     }
     
@@ -156,7 +147,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "  stdio:\n"
                 + "    enabled: true\n"
                 + "runtimeDatabases: {}\n", YamlMCPLaunchConfiguration.class));
-        
         assertFalse(actual.getHttpTransport().isEnabled());
         assertTrue(actual.getStdioTransport().isEnabled());
     }
@@ -178,7 +168,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n";
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
-        
         assertThat(actual.getMessage(), is("Runtime database property `databaseType` is required."));
     }
     
@@ -194,7 +183,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    enabled: true\n"
                 + "runtimeDatabases:\n"
                 + "  logic_db: null\n", YamlMCPLaunchConfiguration.class)));
-        
         assertThat(actual.getMessage(), is("Runtime database configuration cannot be null."));
     }
     
@@ -203,7 +191,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
         ConstructorException actual = assertThrows(ConstructorException.class, () -> swapper.swapToObject(YamlEngine.unmarshal("runtime:\n"
                 + "  props:\n"
                 + "    databaseName: logic_db\n", YamlMCPLaunchConfiguration.class)));
-        
         assertThat(actual.getMessage(), containsString("Unable to find property 'runtime'"));
     }
     
@@ -226,7 +213,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    driverClassName: org.h2.Driver\n"
                 + "    supportsExplainAnalyze: true\n";
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
-        
         assertThat(actual.getMessage(), is("Unsupported runtime database property `supportsExplainAnalyze`."));
     }
     
@@ -248,7 +234,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n";
         MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class));
-        
         assertThat(actual.getDatabases().get("1").getDatabaseType(), is("H2"));
     }
     
@@ -270,7 +255,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n";
         ConstructorException actual = assertThrows(ConstructorException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
-        
         assertThat(actual.getMessage(), containsString("YAML map key cannot be blank."));
     }
     
@@ -292,7 +276,6 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n";
         ConstructorException actual = assertThrows(ConstructorException.class, () -> swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class)));
-        
         assertThat(actual.getMessage(), containsString("YAML map key cannot be null."));
     }
     
@@ -302,9 +285,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
         databases.put("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"));
         MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(
                 new HttpTransportConfiguration(true, "127.0.0.1", 18088, "/mcp"), new StdioTransportConfiguration(true), databases);
-        
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
-        
         assertThat(String.valueOf(actual.getRuntimeDatabases().get("logic_db").get("databaseType")), is("H2"));
         assertThat(String.valueOf(actual.getRuntimeDatabases().get("logic_db").get("username")), is(""));
         assertThat(actual.getTransport().getHttp().getBindHost(), is("127.0.0.1"));

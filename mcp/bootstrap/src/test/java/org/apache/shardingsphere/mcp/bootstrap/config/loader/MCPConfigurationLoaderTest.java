@@ -53,7 +53,6 @@ class MCPConfigurationLoaderTest {
                 + "runtimeDatabases: {}\n");
         
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
-        
         assertTrue(actual.getHttpTransport().isEnabled());
         assertFalse(actual.getStdioTransport().isEnabled());
         assertThat(actual.getHttpTransport().getBindHost(), is("0.0.0.0"));
@@ -65,9 +64,7 @@ class MCPConfigurationLoaderTest {
     @Test
     void assertLoadWithEmptyContent() throws IOException {
         Path configFile = createConfigFile("");
-        
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
-        
         assertThat(actual.getMessage(), is("Property `transport` is required."));
     }
     
@@ -80,9 +77,7 @@ class MCPConfigurationLoaderTest {
                 + "    username: ''\n"
                 + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n");
-        
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
-        
         assertThat(actual.getMessage(), is("Property `transport` is required."));
     }
     
@@ -91,9 +86,7 @@ class MCPConfigurationLoaderTest {
         Path configFile = createConfigFile("runtime:\n"
                 + "  props:\n"
                 + "    databaseName: logic_db\n");
-        
         ConstructorException actual = assertThrows(ConstructorException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
-        
         assertThat(actual.getMessage(), containsString("Unable to find property 'runtime'"));
     }
     
@@ -120,10 +113,8 @@ class MCPConfigurationLoaderTest {
                 + "    username: analytics\n"
                 + "    password: analytics-pass\n"
                 + "    driverClassName: org.h2.Driver\n");
-        
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         Map<String, RuntimeDatabaseConfiguration> actualDatabases = actual.getDatabases();
-        
         assertThat(actualDatabases.size(), is(2));
         assertThat(actualDatabases.get("logic_db").getDatabaseType(), is("H2"));
         assertThat(actualDatabases.get("logic_db").getUsername(), is(""));
@@ -133,7 +124,6 @@ class MCPConfigurationLoaderTest {
     @Test
     void assertLoadPackagedDistributionConfiguration() throws IOException {
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load("distribution/mcp/src/main/resources/conf/mcp.yaml");
-        
         assertTrue(actual.getHttpTransport().isEnabled());
         assertFalse(actual.getStdioTransport().isEnabled());
         assertThat(actual.getDatabases().size(), is(2));
@@ -151,9 +141,7 @@ class MCPConfigurationLoaderTest {
                 + "    endpointPath: /mcp\n"
                 + "  stdio:\n"
                 + "    enabled: true\n");
-        
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
-        
         assertTrue(actual.getDatabases().isEmpty());
     }
     
@@ -175,9 +163,7 @@ class MCPConfigurationLoaderTest {
                 + "    password: ''\n"
                 + "    driverClassName: org.h2.Driver\n"
                 + "    supportsCrossSchemaSql: true\n");
-        
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
-        
         assertThat(actual.getMessage(), is("Unsupported runtime database property `supportsCrossSchemaSql`."));
     }
     
@@ -192,10 +178,8 @@ class MCPConfigurationLoaderTest {
                 + "  stdio:\n"
                 + "    enabled: false\n"
                 + "runtimeDatabases: {}\n");
-        
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> MCPConfigurationLoader.load(configFile.toString()));
-        
         assertThat(actual.getMessage(), is("Property `transport.http.port` cannot be negative."));
     }
     
@@ -210,9 +194,7 @@ class MCPConfigurationLoaderTest {
                 + "  stdio:\n"
                 + "    enabled: true\n"
                 + "runtimeDatabases: {}\n");
-        
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
-        
         assertThat(actual.getMessage(), is("Property `transport.http.port` cannot be negative."));
     }
     

@@ -35,30 +35,22 @@ class YamlStdioTransportConfigurationSwapperTest {
     void assertSwapToObject() {
         YamlStdioTransportConfiguration yamlConfig = new YamlStdioTransportConfiguration();
         yamlConfig.setEnabled(true);
-        
         StdioTransportConfiguration actual = swapper.swapToObject(yamlConfig);
-        
         assertTrue(actual.isEnabled());
     }
     
     @Test
     void assertSwapToObjectWithOmittedEnabled() {
-        StdioTransportConfiguration actual = swapper.swapToObject(new YamlStdioTransportConfiguration());
-        
-        assertFalse(actual.isEnabled());
+        assertFalse(swapper.swapToObject(new YamlStdioTransportConfiguration()).isEnabled());
     }
     
     @Test
     void assertSwapToObjectWithNullConfiguration() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(null));
-        
-        assertThat(actual.getMessage(), is("Property `transport.stdio` is required."));
+        assertThat(assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(null)).getMessage(), is("Property `transport.stdio` is required."));
     }
     
     @Test
     void assertSwapToYamlConfiguration() {
-        YamlStdioTransportConfiguration actual = swapper.swapToYamlConfiguration(new StdioTransportConfiguration(false));
-        
-        assertFalse(actual.isEnabled());
+        assertFalse(swapper.swapToYamlConfiguration(new StdioTransportConfiguration(false)).isEnabled());
     }
 }

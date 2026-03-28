@@ -38,9 +38,7 @@ public final class MCPLaunchConfiguration {
     private final Map<String, RuntimeDatabaseConfiguration> databases;
     
     /**
-     * Validate transport configuration.
-     *
-     * @throws IllegalArgumentException when the configuration enables both transports or disables both transports
+     * Validate launch configuration.
      */
     public void validate() {
         ShardingSpherePreconditions.checkState(!httpTransport.isEnabled() || !stdioTransport.isEnabled(),

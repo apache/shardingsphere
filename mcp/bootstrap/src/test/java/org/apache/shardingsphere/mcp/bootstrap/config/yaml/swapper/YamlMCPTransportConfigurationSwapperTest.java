@@ -42,9 +42,7 @@ class YamlMCPTransportConfigurationSwapperTest {
     void assertSwapToObjectWithMissingHttp() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig();
         yamlConfig.getTransport().setHttp(null);
-        
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        
         assertThat(actual.getMessage(), is("Property `transport.http` is required."));
     }
     
@@ -52,16 +50,13 @@ class YamlMCPTransportConfigurationSwapperTest {
     void assertSwapToObjectWithMissingStdio() {
         YamlMCPLaunchConfiguration yamlConfig = createYamlConfig();
         yamlConfig.getTransport().setStdio(null);
-        
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        
         assertThat(actual.getMessage(), is("Property `transport.stdio` is required."));
     }
     
     @Test
     void assertSwapToObject() {
         MCPLaunchConfiguration actual = swapper.swapToObject(createYamlConfig());
-        
         assertFalse(actual.getHttpTransport().isEnabled());
         assertThat(actual.getHttpTransport().getBindHost(), is("127.0.0.1"));
         assertThat(actual.getHttpTransport().getPort(), is(18088));
@@ -73,7 +68,6 @@ class YamlMCPTransportConfigurationSwapperTest {
     void assertSwapToYamlConfiguration() {
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(
                 new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 18088, "/mcp"), new StdioTransportConfiguration(false), Map.of()));
-        
         assertTrue(actual.getTransport().getHttp().isEnabled());
         assertThat(actual.getTransport().getHttp().getPort(), is(18088));
         assertFalse(actual.getTransport().getStdio().isEnabled());
