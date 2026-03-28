@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
+package org.apache.shardingsphere.mcp.bootstrap.transport.type.stdio;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.TypeRef;
@@ -26,7 +26,7 @@ import io.modelcontextprotocol.spec.McpServerTransport;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.bootstrap.transport.ManagedSessionRegistry;
+import org.apache.shardingsphere.mcp.bootstrap.transport.session.ManagedSessionRegistry;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import reactor.core.publisher.Mono;
 

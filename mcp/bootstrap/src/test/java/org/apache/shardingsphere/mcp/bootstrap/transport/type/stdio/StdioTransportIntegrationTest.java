@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
+package org.apache.shardingsphere.mcp.bootstrap.transport.type.stdio;
 
 import org.apache.shardingsphere.mcp.jdbc.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;

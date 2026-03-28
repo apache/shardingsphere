@@ -15,27 +15,42 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport;
+package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadBuilder;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
-final class MCPToolSpecificationFactory {
+/**
+ * MCP tool specification factory.
+ */
+public final class MCPToolSpecificationFactory {
     
     private final MCPRuntimeContext runtimeContext;
     
     private final MCPToolCallHandler toolCallHandler;
     
-    MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext, final MCPTransportPayloadBuilder payloadBuilder) {
+    /**
+     * Create MCP tool specification factory.
+     *
+     * @param runtimeContext runtime context
+     * @param payloadBuilder payload builder
+     */
+    public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext, final MCPTransportPayloadBuilder payloadBuilder) {
         this.runtimeContext = runtimeContext;
         toolCallHandler = new MCPToolCallHandler(runtimeContext, payloadBuilder);
     }
     
-    List<SyncToolSpecification> createToolSpecifications() {
+    /**
+     * Create MCP tool specifications.
+     *
+     * @return tool specifications
+     */
+    public List<SyncToolSpecification> createToolSpecifications() {
         List<SyncToolSpecification> result = new ArrayList<>();
         for (String each : runtimeContext.getCapabilityAssembler().assembleServiceCapability().getSupportedTools()) {
             MCPToolDefinition toolDefinition = MCPToolDefinition.findByName(each)

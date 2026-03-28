@@ -24,9 +24,18 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-final class MCPTransportPayloadBuilder {
+/**
+ * Builder for transport payloads shared across MCP handlers.
+ */
+public final class MCPTransportPayloadBuilder {
     
-    Map<String, Object> createDatabaseCapabilityPayload(final DatabaseCapability capability) {
+    /**
+     * Create database capability payload.
+     *
+     * @param capability database capability
+     * @return payload
+     */
+    public Map<String, Object> createDatabaseCapabilityPayload(final DatabaseCapability capability) {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("database", capability.getDatabase());
         result.put("databaseType", capability.getDatabaseType());
@@ -49,11 +58,24 @@ final class MCPTransportPayloadBuilder {
         return result;
     }
     
-    Map<String, Object> createErrorPayload(final String errorCode, final String message) {
+    /**
+     * Create error payload.
+     *
+     * @param errorCode error code
+     * @param message error message
+     * @return payload
+     */
+    public Map<String, Object> createErrorPayload(final String errorCode, final String message) {
         return Map.of("error_code", errorCode, "message", message);
     }
     
-    String toDomainErrorCode(final ErrorCode errorCode) {
+    /**
+     * Convert protocol error code to transport domain error code.
+     *
+     * @param errorCode protocol error code
+     * @return domain error code
+     */
+    public String toDomainErrorCode(final ErrorCode errorCode) {
         return errorCode.name().toLowerCase(Locale.ENGLISH);
     }
 }

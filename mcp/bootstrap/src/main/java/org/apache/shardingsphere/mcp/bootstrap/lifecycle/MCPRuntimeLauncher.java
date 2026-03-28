@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
-import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
-import org.apache.shardingsphere.mcp.bootstrap.transport.stdio.StdioTransportMCPServer;
+import org.apache.shardingsphere.mcp.bootstrap.transport.type.http.StreamableHttpMCPServer;
+import org.apache.shardingsphere.mcp.bootstrap.transport.type.stdio.StdioTransportMCPServer;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.jdbc.runtime.MCPJdbcRuntimeContextFactory;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;

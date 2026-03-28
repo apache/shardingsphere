@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport;
+package org.apache.shardingsphere.mcp.bootstrap.transport.resource;
 
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadBuilder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;

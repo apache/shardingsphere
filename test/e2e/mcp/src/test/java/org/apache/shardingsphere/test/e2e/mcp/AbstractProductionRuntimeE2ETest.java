@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoa
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
-import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPServer;
+import org.apache.shardingsphere.mcp.bootstrap.transport.type.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;

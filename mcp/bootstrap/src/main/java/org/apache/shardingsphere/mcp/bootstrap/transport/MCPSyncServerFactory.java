@@ -24,6 +24,8 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ServerCapabilities;
 import io.modelcontextprotocol.spec.McpServerTransportProvider;
 import io.modelcontextprotocol.spec.McpStreamableServerTransportProvider;
+import org.apache.shardingsphere.mcp.bootstrap.transport.resource.MCPResourceSpecificationFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.tool.MCPToolSpecificationFactory;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 import java.util.Optional;

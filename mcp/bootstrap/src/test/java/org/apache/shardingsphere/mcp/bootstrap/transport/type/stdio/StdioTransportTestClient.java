@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
+package org.apache.shardingsphere.mcp.bootstrap.transport.type.stdio;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap;

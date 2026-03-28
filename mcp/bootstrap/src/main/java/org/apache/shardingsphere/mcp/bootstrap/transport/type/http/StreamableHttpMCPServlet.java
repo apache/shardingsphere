@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.http;
+package org.apache.shardingsphere.mcp.bootstrap.transport.type.http;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.transport.HttpServletStreamableServerTransportProvider;
@@ -32,8 +32,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.bootstrap.transport.ManagedSessionRegistry;
-import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPRequestValidator.ResponseStatus;
+import org.apache.shardingsphere.mcp.bootstrap.transport.session.ManagedSessionRegistry;
+import org.apache.shardingsphere.mcp.bootstrap.transport.type.http.StreamableHttpMCPRequestValidator.ResponseStatus;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 import java.io.IOException;

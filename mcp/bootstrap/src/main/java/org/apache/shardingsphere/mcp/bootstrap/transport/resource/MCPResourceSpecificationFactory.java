@@ -15,19 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport;
+package org.apache.shardingsphere.mcp.bootstrap.transport.resource;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadBuilder;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 import java.util.ArrayList;
 import java.util.List;
 
-final class MCPResourceSpecificationFactory {
+/**
+ * MCP resource specification factory.
+ */
+public final class MCPResourceSpecificationFactory {
     
     private static final String JSON_CONTENT_TYPE = "application/json";
     
@@ -35,12 +39,23 @@ final class MCPResourceSpecificationFactory {
     
     private final MCPResourcePayloadResolver resourcePayloadResolver;
     
-    MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext, final MCPTransportPayloadBuilder payloadBuilder) {
+    /**
+     * Create MCP resource specification factory.
+     *
+     * @param runtimeContext runtime context
+     * @param payloadBuilder payload builder
+     */
+    public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext, final MCPTransportPayloadBuilder payloadBuilder) {
         this.runtimeContext = runtimeContext;
         resourcePayloadResolver = new MCPResourcePayloadResolver(runtimeContext, payloadBuilder);
     }
     
-    List<SyncResourceSpecification> createResourceSpecifications() {
+    /**
+     * Create MCP resource specifications.
+     *
+     * @return resource specifications
+     */
+    public List<SyncResourceSpecification> createResourceSpecifications() {
         List<SyncResourceSpecification> result = new ArrayList<>();
         for (String each : runtimeContext.getCapabilityAssembler().assembleServiceCapability().getSupportedResources()) {
             if (!isTemplatedResource(each)) {
@@ -50,7 +65,12 @@ final class MCPResourceSpecificationFactory {
         return result;
     }
     
-    List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
+    /**
+     * Create MCP resource template specifications.
+     *
+     * @return resource template specifications
+     */
+    public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
         List<SyncResourceTemplateSpecification> result = new ArrayList<>();
         for (String each : runtimeContext.getCapabilityAssembler().assembleServiceCapability().getSupportedResources()) {
             if (isTemplatedResource(each)) {

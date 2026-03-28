@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
-import org.apache.shardingsphere.mcp.bootstrap.transport.stdio.StdioTransportMCPServer;
+import org.apache.shardingsphere.mcp.bootstrap.transport.type.stdio.StdioTransportMCPServer;
 import org.apache.shardingsphere.mcp.jdbc.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
