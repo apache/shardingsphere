@@ -24,6 +24,7 @@ import io.modelcontextprotocol.spec.McpSchema.JSONRPCMessage;
 import io.modelcontextprotocol.spec.McpServerSession;
 import io.modelcontextprotocol.spec.McpServerTransport;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.ManagedSessionRegistry;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
@@ -59,20 +60,18 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
     }
     
     private McpServerSession createManagedSession(final McpServerSession.Factory sessionFactory, final McpServerTransport transport) {
-        if (!activeSession.compareAndSet(false, true)) {
-            throw new IllegalStateException("STDIO transport supports only one active session at a time.");
-        }
+        ShardingSpherePreconditions.checkState(activeSession.compareAndSet(false, true), () -> new IllegalStateException("STDIO transport supports only one active session at a time."));
         SessionClosingTransport managedTransport = new SessionClosingTransport(transport);
-        boolean success = false;
+        boolean failed = true;
         try {
             McpServerSession result = sessionFactory.create(managedTransport);
             String sessionId = result.getId();
             managedSessions.createSession(sessionId);
             managedTransport.bindSessionId(sessionId);
-            success = true;
+            failed = false;
             return result;
         } finally {
-            if (!success) {
+            if (failed) {
                 activeSession.set(false);
             }
         }
@@ -88,9 +87,7 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
         private final AtomicBoolean closed = new AtomicBoolean();
         
         private void bindSessionId(final String sessionId) {
-            if (!this.sessionId.compareAndSet(null, sessionId)) {
-                throw new IllegalStateException("STDIO session ID has already been bound.");
-            }
+            ShardingSpherePreconditions.checkState(this.sessionId.compareAndSet(null, sessionId), () -> new IllegalStateException("STDIO session ID has already been bound."));
         }
         
         @Override
