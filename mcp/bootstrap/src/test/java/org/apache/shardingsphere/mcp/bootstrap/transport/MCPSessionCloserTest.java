@@ -46,9 +46,9 @@ class MCPSessionCloserTest {
     
     @Test
     void assertCloseSessionWithEmptySessionId() {
-        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
+        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
         MCPSessionCloser sessionCloser = new MCPSessionCloser(runtimeContext);
         sessionCloser.closeSession("");
-        verifyNoInteractions(runtimeContext.getMetadataRefreshCoordinator(), runtimeContext);
+        verifyNoInteractions(runtimeContext);
     }
 }
