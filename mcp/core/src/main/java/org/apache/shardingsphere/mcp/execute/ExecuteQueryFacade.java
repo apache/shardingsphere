@@ -52,10 +52,11 @@ public final class ExecuteQueryFacade {
      * @return execution response
      */
     public ExecuteQueryResponse execute(final ExecutionRequest executionRequest) {
-        Optional<DatabaseCapability> databaseCapability = capabilityAssembler.assembleDatabaseCapability(executionRequest.getDatabase(), executionRequest.getDatabaseType());
+        Optional<DatabaseCapability> databaseCapability = capabilityAssembler.assembleDatabaseCapability(executionRequest.getDatabase());
         if (databaseCapability.isEmpty()) {
             return recordFailure(executionRequest, "QUERY", ErrorCode.NOT_FOUND, "Database capability does not exist.");
         }
+        DatabaseCapability actualDatabaseCapability = databaseCapability.get();
         ClassificationResult classificationResult;
         try {
             classificationResult = statementClassifier.classify(executionRequest.getSql());
@@ -64,17 +65,17 @@ public final class ExecuteQueryFacade {
         } catch (final IllegalArgumentException ex) {
             return recordFailure(executionRequest, "QUERY", ErrorCode.INVALID_REQUEST, ex.getMessage());
         }
-        if (!databaseCapability.get().getSupportedStatementClasses().contains(classificationResult.getStatementClass())) {
+        if (!actualDatabaseCapability.getSupportedStatementClasses().contains(classificationResult.getStatementClass())) {
             return recordFailure(executionRequest, classificationResult.getStatementType(), ErrorCode.UNSUPPORTED, "Statement class is not supported.");
         }
         switch (classificationResult.getStatementClass()) {
             case TRANSACTION_CONTROL:
             case SAVEPOINT:
                 return recordResult(executionRequest, transactionCommandExecutor.execute(executionRequest.getSessionId(),
-                        executionRequest.getDatabase(), executionRequest.getDatabaseType(), classificationResult),
+                        executionRequest.getDatabase(), actualDatabaseCapability, classificationResult),
                         classificationResult.getStatementType());
             case QUERY:
-                return recordResult(executionRequest, executeQuery(executionRequest, classificationResult), classificationResult.getStatementType());
+                return recordResult(executionRequest, executeQuery(executionRequest, classificationResult, actualDatabaseCapability), classificationResult.getStatementType());
             case DML:
                 return recordResult(executionRequest, executeUpdate(executionRequest, classificationResult), classificationResult.getStatementType());
             case DDL:
@@ -102,16 +103,16 @@ public final class ExecuteQueryFacade {
                 return recordResult(executionRequest, ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed."),
                         classificationResult.getStatementType());
             case EXPLAIN_ANALYZE:
-                if (!databaseCapability.get().isSupportsExplainAnalyze()) {
+                if (!actualDatabaseCapability.isSupportsExplainAnalyze()) {
                     return recordFailure(executionRequest, classificationResult.getStatementType(), ErrorCode.UNSUPPORTED, "EXPLAIN ANALYZE is not supported.");
                 }
-                return recordResult(executionRequest, executeQuery(executionRequest, classificationResult), classificationResult.getStatementType());
+                return recordResult(executionRequest, executeQuery(executionRequest, classificationResult, actualDatabaseCapability), classificationResult.getStatementType());
             default:
                 return recordFailure(executionRequest, classificationResult.getStatementType(), ErrorCode.UNSUPPORTED, "Statement class is not supported.");
         }
     }
     
-    private ExecuteQueryResponse executeQuery(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
+    private ExecuteQueryResponse executeQuery(final ExecutionRequest executionRequest, final ClassificationResult classificationResult, final DatabaseCapability databaseCapability) {
         if (executionRequest.getDatabaseRuntime().isAdapterBacked()) {
             return executionRequest.getDatabaseRuntime().execute(executionRequest, classificationResult);
         }
@@ -120,7 +121,7 @@ public final class ExecuteQueryFacade {
         if (queryResult.isEmpty()) {
             return ExecuteQueryResponse.error(ErrorCode.NOT_FOUND, "Query target does not exist.");
         }
-        int effectiveMaxRows = getEffectiveMaxRows(executionRequest);
+        int effectiveMaxRows = getEffectiveMaxRows(executionRequest, databaseCapability);
         List<List<Object>> rows = queryResult.get().getRows();
         boolean truncated = rows.size() > effectiveMaxRows;
         List<List<Object>> actualRows = truncated ? rows.subList(0, effectiveMaxRows) : rows;
@@ -137,10 +138,10 @@ public final class ExecuteQueryFacade {
                 .orElseGet(() -> ExecuteQueryResponse.error(ErrorCode.NOT_FOUND, "Update target does not exist."));
     }
     
-    private int getEffectiveMaxRows(final ExecutionRequest executionRequest) {
+    private int getEffectiveMaxRows(final ExecutionRequest executionRequest, final DatabaseCapability databaseCapability) {
         int result = executionRequest.getMaxRows();
         if (0 >= result) {
-            result = capabilityAssembler.assembleDatabaseCapability(executionRequest.getDatabase(), executionRequest.getDatabaseType()).get().getMaxRowsDefault();
+            result = databaseCapability.getMaxRowsDefault();
         }
         return result;
     }

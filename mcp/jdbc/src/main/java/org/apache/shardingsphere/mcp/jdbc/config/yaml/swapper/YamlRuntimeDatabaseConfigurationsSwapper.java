@@ -21,17 +21,15 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.jdbc.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * YAML runtime databases configuration swapper.
  */
 public final class YamlRuntimeDatabaseConfigurationsSwapper {
-    
-    private static final Set<String> SUPPORTED_RUNTIME_DATABASE_PROPERTIES = Set.of("databaseType", "jdbcUrl", "username", "password", "driverClassName");
     
     private final YamlRuntimeDatabaseConfigurationSwapper runtimeDatabaseConfigSwapper = new YamlRuntimeDatabaseConfigurationSwapper();
     
@@ -42,7 +40,9 @@ public final class YamlRuntimeDatabaseConfigurationsSwapper {
      * @return runtime configuration object
      */
     public Map<String, RuntimeDatabaseConfiguration> swapToObject(final Map<String, Map<String, Object>> yamlRuntimeConfiguration) {
-        ShardingSpherePreconditions.checkNotNull(yamlRuntimeConfiguration, () -> new IllegalArgumentException("Runtime configuration cannot be null."));
+        if (null == yamlRuntimeConfiguration) {
+            return Collections.emptyMap();
+        }
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(yamlRuntimeConfiguration.size(), 1F);
         for (Entry<String, Map<String, Object>> entry : yamlRuntimeConfiguration.entrySet()) {
             validateYamlRuntimeDatabaseConfiguration(entry.getValue());
@@ -67,29 +67,30 @@ public final class YamlRuntimeDatabaseConfigurationsSwapper {
     }
     
     private YamlRuntimeDatabaseConfiguration createYamlRuntimeDatabaseConfiguration(final Map<String, Object> yamlProperties) {
+        if (null == yamlProperties) {
+            return null;
+        }
         YamlRuntimeDatabaseConfiguration result = new YamlRuntimeDatabaseConfiguration();
-        result.setDatabaseType(getYamlText(yamlProperties, "databaseType"));
-        result.setJdbcUrl(getYamlText(yamlProperties, "jdbcUrl"));
-        result.setUsername(getYamlText(yamlProperties, "username"));
-        result.setPassword(getYamlText(yamlProperties, "password"));
-        result.setDriverClassName(getYamlText(yamlProperties, "driverClassName"));
+        for (RuntimeDatabaseProperty each : RuntimeDatabaseProperty.values()) {
+            each.setter.setValue(result, getYamlText(yamlProperties, each.key));
+        }
         return result;
     }
     
     private Map<String, Object> createYamlRuntimeDatabaseConfiguration(final YamlRuntimeDatabaseConfiguration yamlRuntimeDatabaseConfig) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
-        result.put("databaseType", yamlRuntimeDatabaseConfig.getDatabaseType());
-        result.put("jdbcUrl", yamlRuntimeDatabaseConfig.getJdbcUrl());
-        result.put("username", yamlRuntimeDatabaseConfig.getUsername());
-        result.put("password", yamlRuntimeDatabaseConfig.getPassword());
-        result.put("driverClassName", yamlRuntimeDatabaseConfig.getDriverClassName());
+        Map<String, Object> result = new LinkedHashMap<>(RuntimeDatabaseProperty.values().length, 1F);
+        for (RuntimeDatabaseProperty each : RuntimeDatabaseProperty.values()) {
+            result.put(each.key, each.getter.getValue(yamlRuntimeDatabaseConfig));
+        }
         return result;
     }
     
     private void validateYamlRuntimeDatabaseConfiguration(final Map<String, Object> yamlProperties) {
-        ShardingSpherePreconditions.checkNotNull(yamlProperties, () -> new IllegalArgumentException("Runtime database configuration cannot be null."));
+        if (null == yamlProperties) {
+            return;
+        }
         for (String each : yamlProperties.keySet()) {
-            ShardingSpherePreconditions.checkState(SUPPORTED_RUNTIME_DATABASE_PROPERTIES.contains(each),
+            ShardingSpherePreconditions.checkState(RuntimeDatabaseProperty.contains(each),
                     () -> new IllegalArgumentException(String.format("Unsupported runtime database property `%s`.", each)));
         }
     }
@@ -97,5 +98,51 @@ public final class YamlRuntimeDatabaseConfigurationsSwapper {
     private String getYamlText(final Map<String, Object> yamlProperties, final String key) {
         Object result = yamlProperties.get(key);
         return null == result ? null : result.toString();
+    }
+    
+    private enum RuntimeDatabaseProperty {
+        
+        DATABASE_TYPE("databaseType", YamlRuntimeDatabaseConfiguration::setDatabaseType, YamlRuntimeDatabaseConfiguration::getDatabaseType),
+        
+        JDBC_URL("jdbcUrl", YamlRuntimeDatabaseConfiguration::setJdbcUrl, YamlRuntimeDatabaseConfiguration::getJdbcUrl),
+        
+        USERNAME("username", YamlRuntimeDatabaseConfiguration::setUsername, YamlRuntimeDatabaseConfiguration::getUsername),
+        
+        PASSWORD("password", YamlRuntimeDatabaseConfiguration::setPassword, YamlRuntimeDatabaseConfiguration::getPassword),
+        
+        DRIVER_CLASS_NAME("driverClassName", YamlRuntimeDatabaseConfiguration::setDriverClassName, YamlRuntimeDatabaseConfiguration::getDriverClassName);
+        
+        private final String key;
+        
+        private final YamlRuntimeDatabasePropertySetter setter;
+        
+        private final YamlRuntimeDatabasePropertyGetter getter;
+        
+        RuntimeDatabaseProperty(final String key, final YamlRuntimeDatabasePropertySetter setter, final YamlRuntimeDatabasePropertyGetter getter) {
+            this.key = key;
+            this.setter = setter;
+            this.getter = getter;
+        }
+        
+        private static boolean contains(final String key) {
+            for (RuntimeDatabaseProperty each : values()) {
+                if (each.key.equals(key)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+    
+    @FunctionalInterface
+    private interface YamlRuntimeDatabasePropertySetter {
+        
+        void setValue(YamlRuntimeDatabaseConfiguration yamlRuntimeDatabaseConfiguration, String value);
+    }
+    
+    @FunctionalInterface
+    private interface YamlRuntimeDatabasePropertyGetter {
+        
+        String getValue(YamlRuntimeDatabaseConfiguration yamlRuntimeDatabaseConfiguration);
     }
 }

@@ -21,11 +21,9 @@ import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.bootstrap.transport.stdio.StdioTransportMCPServer;
 import org.apache.shardingsphere.mcp.jdbc.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -38,13 +36,13 @@ import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -86,11 +84,14 @@ class MCPRuntimeLauncherTest {
     }
     
     @Test
-    void assertLaunchWithInjectedRuntimeContextCreator() {
-        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher(
-                (sessionManager, runtimeConfiguration) -> MCPRuntimeContext.create(sessionManager, new MetadataCatalog(Map.of(), List.of()), new DatabaseRuntime(Map.of(), Map.of())));
+    void assertLaunchWithStdioTransport() throws SQLException {
+        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher-stdio");
+        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
+        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         MCPRuntimeTransport actual = assertDoesNotThrow(
-                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createHttpTransportConfiguration(true, "/mcp"), new StdioTransportConfiguration(false), Map.of())));
+                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createHttpTransportConfiguration(false, "/mcp"), new StdioTransportConfiguration(true),
+                        H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
+        assertThat(actual, isA(StdioTransportMCPServer.class));
         actual.close();
     }
     

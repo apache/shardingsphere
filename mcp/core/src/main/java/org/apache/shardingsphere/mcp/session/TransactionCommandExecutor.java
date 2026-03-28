@@ -52,18 +52,31 @@ public final class TransactionCommandExecutor {
      * @return execution response
      */
     public ExecuteQueryResponse execute(final String sessionId, final String database, final String databaseType, final ClassificationResult classificationResult) {
-        return execute(sessionId, database, databaseType, classificationResult.getStatementType(),
-                classificationResult.getSavepointName().map(each -> each.toUpperCase(Locale.ENGLISH)).orElse(""));
-    }
-    
-    private ExecuteQueryResponse execute(final String sessionId, final String database, final String databaseType, final String statementType, final String savepointName) {
         Optional<DatabaseCapability> databaseCapability = capabilityAssembler.assembleDatabaseCapability(database, databaseType);
         if (databaseCapability.isEmpty()) {
             return ExecuteQueryResponse.error(ErrorCode.NOT_FOUND, "Database capability does not exist.");
         }
+        return execute(sessionId, database, databaseCapability.get(), classificationResult);
+    }
+    
+    /**
+     * Execute one transaction-control or savepoint command with resolved database capability.
+     *
+     * @param sessionId session identifier
+     * @param database logical database name
+     * @param databaseCapability resolved database capability
+     * @param classificationResult statement classification result
+     * @return execution response
+     */
+    public ExecuteQueryResponse execute(final String sessionId, final String database, final DatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
+        return execute(sessionId, database, databaseCapability, classificationResult.getStatementType(),
+                classificationResult.getSavepointName().map(each -> each.toUpperCase(Locale.ENGLISH)).orElse(""));
+    }
+    
+    private ExecuteQueryResponse execute(final String sessionId, final String database, final DatabaseCapability databaseCapability, final String statementType, final String savepointName) {
         try {
             if ("BEGIN".equals(statementType) || "START TRANSACTION".equals(statementType)) {
-                if (!databaseCapability.get().isSupportsTransactionControl()) {
+                if (!databaseCapability.isSupportsTransactionControl()) {
                     return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Transaction control is not supported.");
                 }
                 sessionManager.beginTransaction(sessionId, database);
@@ -71,7 +84,7 @@ public final class TransactionCommandExecutor {
                 return ExecuteQueryResponse.statementAck(statementType, "Transaction started.");
             }
             if ("COMMIT".equals(statementType)) {
-                if (!databaseCapability.get().isSupportsTransactionControl()) {
+                if (!databaseCapability.isSupportsTransactionControl()) {
                     return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Transaction control is not supported.");
                 }
                 databaseRuntime.commitTransaction(sessionId);
@@ -79,7 +92,7 @@ public final class TransactionCommandExecutor {
                 return ExecuteQueryResponse.statementAck("COMMIT", "Transaction committed.");
             }
             if ("ROLLBACK".equals(statementType)) {
-                if (!databaseCapability.get().isSupportsTransactionControl()) {
+                if (!databaseCapability.isSupportsTransactionControl()) {
                     return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Transaction control is not supported.");
                 }
                 databaseRuntime.rollbackTransaction(sessionId);
@@ -87,7 +100,7 @@ public final class TransactionCommandExecutor {
                 return ExecuteQueryResponse.statementAck("ROLLBACK", "Transaction rolled back.");
             }
             if ("SAVEPOINT".equals(statementType)) {
-                if (!databaseCapability.get().isSupportsSavepoint()) {
+                if (!databaseCapability.isSupportsSavepoint()) {
                     return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Savepoint is not supported.");
                 }
                 databaseRuntime.createSavepoint(sessionId, savepointName);
@@ -95,7 +108,7 @@ public final class TransactionCommandExecutor {
                 return ExecuteQueryResponse.statementAck("SAVEPOINT", "Savepoint created.");
             }
             if ("ROLLBACK TO SAVEPOINT".equals(statementType)) {
-                if (!databaseCapability.get().isSupportsSavepoint()) {
+                if (!databaseCapability.isSupportsSavepoint()) {
                     return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Savepoint is not supported.");
                 }
                 sessionManager.rollbackToSavepoint(sessionId, savepointName);
@@ -103,7 +116,7 @@ public final class TransactionCommandExecutor {
                 return ExecuteQueryResponse.statementAck("ROLLBACK TO SAVEPOINT", "Savepoint rolled back.");
             }
             if ("RELEASE SAVEPOINT".equals(statementType)) {
-                if (!databaseCapability.get().isSupportsSavepoint()) {
+                if (!databaseCapability.isSupportsSavepoint()) {
                     return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Savepoint is not supported.");
                 }
                 sessionManager.releaseSavepoint(sessionId, savepointName);

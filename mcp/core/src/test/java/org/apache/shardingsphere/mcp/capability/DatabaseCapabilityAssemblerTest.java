@@ -54,7 +54,7 @@ class DatabaseCapabilityAssemblerTest {
     void assertAssembleDatabaseCapability() {
         DatabaseCapabilityAssembler assembler = createAssembler();
         
-        Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db", "mysql");
+        Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db");
         
         assertTrue(actualCapability.isPresent());
         assertThat(actualCapability.get().getDatabase(), is("logic_db"));
@@ -76,7 +76,7 @@ class DatabaseCapabilityAssemblerTest {
     void assertAssembleDatabaseCapabilityWithoutIndex() {
         DatabaseCapabilityAssembler assembler = createAssembler();
         
-        Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("warehouse", "hive");
+        Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("warehouse");
         
         assertTrue(actualCapability.isPresent());
         assertFalse(actualCapability.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
@@ -89,10 +89,10 @@ class DatabaseCapabilityAssemblerTest {
     @Test
     void assertAssembleDatabaseCapabilityWithRuntimeOverlay() {
         MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of("logic_db", "MySQL"), Collections.emptyList(), Map.of(
-                "logic_db", new RuntimeDatabaseDescriptor("MySQL", "8.0.32", EnumSet.of(MetadataObjectType.TABLE, MetadataObjectType.COLUMN), "public")));
+                "logic_db", new RuntimeDatabaseDescriptor("8.0.32", EnumSet.of(MetadataObjectType.TABLE, MetadataObjectType.COLUMN), "public")));
         DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler(metadataCatalog);
         
-        Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db", "mysql");
+        Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db");
         
         assertTrue(actualCapability.isPresent());
         assertTrue(actualCapability.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
@@ -117,6 +117,6 @@ class DatabaseCapabilityAssemblerTest {
     }
     
     private DatabaseCapabilityAssembler createAssembler() {
-        return new DatabaseCapabilityAssembler(new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()));
+        return new DatabaseCapabilityAssembler(new MetadataCatalog(Map.of("logic_db", "MySQL", "warehouse", "Hive"), Collections.emptyList()));
     }
 }

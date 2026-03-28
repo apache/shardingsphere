@@ -69,7 +69,7 @@ public final class MCPRuntimeContext {
      */
     public static MCPRuntimeContext create(final MCPSessionManager sessionManager, final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
         DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(metadataCatalog);
-        MetadataResourceLoader metadataResourceLoader = new MetadataResourceLoader(capabilityAssembler);
+        MetadataResourceLoader metadataResourceLoader = new MetadataResourceLoader();
         MetadataToolDispatcher metadataToolDispatcher = new MetadataToolDispatcher(metadataResourceLoader);
         TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(capabilityAssembler, sessionManager, databaseRuntime);
         AuditRecorder auditRecorder = new AuditRecorder();

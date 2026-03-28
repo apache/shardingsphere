@@ -125,7 +125,13 @@ public final class MetadataCatalog {
         replaceSnapshot(databaseTypes, actualMetadataObjects, runtimeDatabaseDescriptors);
     }
     
-    Optional<String> findDatabaseType(final String database) {
+    /**
+     * Find one database type.
+     *
+     * @param database logical database name
+     * @return database type when present
+     */
+    public Optional<String> findDatabaseType(final String database) {
         return Optional.ofNullable(snapshot.getDatabaseTypes().get(database));
     }
     

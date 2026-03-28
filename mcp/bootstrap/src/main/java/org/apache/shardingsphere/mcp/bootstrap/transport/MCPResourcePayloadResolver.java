@@ -64,11 +64,7 @@ final class MCPResourcePayloadResolver {
     }
     
     private Object resolveDatabaseCapabilityPayload(final String database) {
-        String databaseType = runtimeContext.getMetadataCatalog().getDatabaseTypes().get(database);
-        if (null == databaseType) {
-            return payloadBuilder.createErrorPayload("not_found", "Database capability does not exist.");
-        }
-        Optional<DatabaseCapability> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(database, databaseType);
+        Optional<DatabaseCapability> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(database);
         return capability.map(payloadBuilder::createDatabaseCapabilityPayload).orElseGet(() -> payloadBuilder.createErrorPayload("not_found", "Database capability does not exist."));
     }
     

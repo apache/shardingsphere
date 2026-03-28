@@ -29,8 +29,6 @@ import java.util.Set;
 @Getter
 public final class RuntimeDatabaseDescriptor {
     
-    private final String databaseType;
-    
     private final String databaseVersion;
     
     private final Set<MetadataObjectType> discoveredMetadataObjectTypes;

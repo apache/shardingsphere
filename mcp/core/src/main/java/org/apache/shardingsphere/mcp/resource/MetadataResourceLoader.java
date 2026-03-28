@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 
 import java.util.Collection;
@@ -31,10 +30,7 @@ import java.util.Optional;
 /**
  * Load normalized metadata resources for the MCP public object model.
  */
-@RequiredArgsConstructor
 public final class MetadataResourceLoader {
-    
-    private final DatabaseCapabilityAssembler capabilityAssembler;
     
     /**
      * Load one metadata resource view from the supplied catalog.
@@ -47,12 +43,11 @@ public final class MetadataResourceLoader {
         if (MetadataObjectType.DATABASE == resourceRequest.getObjectType()) {
             return ResourceLoadResult.success(filterDatabases(metadataCatalog, resourceRequest));
         }
-        String databaseType = metadataCatalog.findDatabaseType(resourceRequest.getDatabase())
-                .orElseThrow(() -> new IllegalStateException("Database does not exist."));
-        if (MetadataObjectType.INDEX == resourceRequest.getObjectType() && !supportsObjectType(resourceRequest.getDatabase(), databaseType, MetadataObjectType.INDEX)) {
+        Optional<DatabaseCapability> databaseCapability = resolveDatabaseCapability(metadataCatalog, resourceRequest.getDatabase());
+        if (MetadataObjectType.INDEX == resourceRequest.getObjectType() && !supportsObjectType(databaseCapability, MetadataObjectType.INDEX)) {
             return ResourceLoadResult.error(ErrorCode.UNSUPPORTED, "Index resources are not supported for the current database.");
         }
-        return ResourceLoadResult.success(filterMetadataObjects(metadataCatalog, resourceRequest, databaseType));
+        return ResourceLoadResult.success(filterMetadataObjects(metadataCatalog, resourceRequest, databaseCapability));
     }
     
     private List<MetadataObject> filterDatabases(final MetadataCatalog metadataCatalog, final ResourceRequest resourceRequest) {
@@ -65,7 +60,13 @@ public final class MetadataResourceLoader {
         return sortMetadataObjects(result);
     }
     
-    private List<MetadataObject> filterMetadataObjects(final MetadataCatalog metadataCatalog, final ResourceRequest resourceRequest, final String databaseType) {
+    private Optional<DatabaseCapability> resolveDatabaseCapability(final MetadataCatalog metadataCatalog, final String database) {
+        metadataCatalog.findDatabaseType(database).orElseThrow(() -> new IllegalStateException("Database does not exist."));
+        return new DatabaseCapabilityAssembler(metadataCatalog).assembleDatabaseCapability(database);
+    }
+    
+    private List<MetadataObject> filterMetadataObjects(final MetadataCatalog metadataCatalog, final ResourceRequest resourceRequest,
+                                                       final Optional<DatabaseCapability> databaseCapability) {
         List<MetadataObject> result = new LinkedList<>();
         for (MetadataObject each : metadataCatalog.getMetadataObjects()) {
             if (!resourceRequest.getDatabase().equals(each.getDatabase())) {
@@ -86,19 +87,14 @@ public final class MetadataResourceLoader {
             if (!resourceRequest.getParentObjectName().isEmpty() && !resourceRequest.getParentObjectName().equals(each.getParentObjectName())) {
                 continue;
             }
-            if (isVisiblePublicObject(resourceRequest.getDatabase(), databaseType, each)) {
+            if (supportsObjectType(databaseCapability, each.getObjectType())) {
                 result.add(each);
             }
         }
         return sortMetadataObjects(result);
     }
     
-    private boolean isVisiblePublicObject(final String database, final String databaseType, final MetadataObject metadataObject) {
-        return supportsObjectType(database, databaseType, metadataObject.getObjectType());
-    }
-    
-    private boolean supportsObjectType(final String database, final String databaseType, final MetadataObjectType metadataObjectType) {
-        Optional<DatabaseCapability> databaseCapability = capabilityAssembler.assembleDatabaseCapability(database, databaseType);
+    private boolean supportsObjectType(final Optional<DatabaseCapability> databaseCapability, final MetadataObjectType metadataObjectType) {
         return databaseCapability.isPresent() && databaseCapability.get().getSupportedMetadataObjectTypes().contains(metadataObjectType);
     }
     

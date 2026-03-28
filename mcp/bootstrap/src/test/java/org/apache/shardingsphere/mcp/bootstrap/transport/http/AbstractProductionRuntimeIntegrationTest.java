@@ -60,7 +60,7 @@ abstract class AbstractProductionRuntimeIntegrationTest {
         }
     }
     
-    protected final void launchProductionRuntime() throws SQLException {
+    protected final void launchProductionRuntime() throws SQLException, IOException {
         prepareRuntimeFixture();
         httpServer = launchHttpServer(createRuntimeConfiguration());
     }
@@ -132,7 +132,7 @@ abstract class AbstractProductionRuntimeIntegrationTest {
                 new HttpTransportConfiguration(true, "127.0.0.1", 0, "/gateway"), new StdioTransportConfiguration(false), createRuntimeDatabases());
     }
     
-    private StreamableHttpMCPServer launchHttpServer(final MCPLaunchConfiguration launchConfiguration) {
+    private StreamableHttpMCPServer launchHttpServer(final MCPLaunchConfiguration launchConfiguration) throws IOException {
         MCPRuntimeTransport actual = new MCPRuntimeLauncher().launch(launchConfiguration);
         if (actual instanceof StreamableHttpMCPServer) {
             return (StreamableHttpMCPServer) actual;

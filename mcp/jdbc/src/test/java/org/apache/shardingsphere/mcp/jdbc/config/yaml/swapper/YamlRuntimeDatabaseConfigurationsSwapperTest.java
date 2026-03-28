@@ -25,6 +25,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class YamlRuntimeDatabaseConfigurationsSwapperTest {
@@ -46,9 +47,9 @@ class YamlRuntimeDatabaseConfigurationsSwapperTest {
     
     @Test
     void assertSwapToObjectWithNullRuntimeConfiguration() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(null));
+        Map<String, RuntimeDatabaseConfiguration> actual = swapper.swapToObject(null);
         
-        assertThat(actual.getMessage(), is("Runtime configuration cannot be null."));
+        assertTrue(actual.isEmpty());
     }
     
     @Test

@@ -26,8 +26,6 @@ import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPLaunchC
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlMCPTransportConfiguration;
 import org.apache.shardingsphere.mcp.jdbc.config.yaml.swapper.YamlRuntimeDatabaseConfigurationsSwapper;
 
-import java.util.Collections;
-
 /**
  * YAML MCP launch configuration swapper.
  */
@@ -52,8 +50,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("MCP launch configuration cannot be null."));
         YamlMCPTransportConfiguration yamlTransportConfig = resolveRequiredTransportConfiguration(yamlConfig);
         MCPLaunchConfiguration result = new MCPLaunchConfiguration(httpTransportConfigSwapper.swapToObject(yamlTransportConfig.getHttp()),
-                stdioTransportConfigSwapper.swapToObject(yamlTransportConfig.getStdio()),
-                runtimeDatabasesSwapper.swapToObject(null == yamlConfig.getRuntimeDatabases() ? Collections.emptyMap() : yamlConfig.getRuntimeDatabases()));
+                stdioTransportConfigSwapper.swapToObject(yamlTransportConfig.getStdio()), runtimeDatabasesSwapper.swapToObject(yamlConfig.getRuntimeDatabases()));
         result.validate();
         return result;
     }

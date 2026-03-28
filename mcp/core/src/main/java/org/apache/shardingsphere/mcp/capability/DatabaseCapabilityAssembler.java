@@ -86,13 +86,32 @@ public final class DatabaseCapabilityAssembler {
      * Assemble the database-level capability view for one logical database.
      *
      * @param database logical database name
+     * @return database-level capability when the database type is supported
+     */
+    public Optional<DatabaseCapability> assembleDatabaseCapability(final String database) {
+        if (null == metadataCatalog) {
+            return Optional.empty();
+        }
+        Optional<String> databaseType = metadataCatalog.findDatabaseType(database);
+        return databaseType.isPresent() ? assembleDatabaseCapability(database, databaseType.get()) : Optional.empty();
+    }
+    
+    /**
+     * Assemble the database-level capability view for one logical database.
+     *
+     * @param database logical database name
      * @param databaseType database type
      * @return database-level capability when the database type is supported
      */
     public Optional<DatabaseCapability> assembleDatabaseCapability(final String database, final String databaseType) {
+        return DatabaseCapabilityCatalog.find(database, databaseType, getDatabaseVersion(database));
+    }
+    
+    private String getDatabaseVersion(final String database) {
+        if (null == metadataCatalog) {
+            return "";
+        }
         Optional<RuntimeDatabaseDescriptor> runtimeDescriptor = metadataCatalog.findRuntimeDatabaseDescriptor(database);
-        String actualDatabaseType = runtimeDescriptor.map(RuntimeDatabaseDescriptor::getDatabaseType).orElse(databaseType);
-        String actualDatabaseVersion = runtimeDescriptor.map(RuntimeDatabaseDescriptor::getDatabaseVersion).orElse("");
-        return DatabaseCapabilityCatalog.find(database, actualDatabaseType, actualDatabaseVersion);
+        return runtimeDescriptor.map(RuntimeDatabaseDescriptor::getDatabaseVersion).orElse("");
     }
 }

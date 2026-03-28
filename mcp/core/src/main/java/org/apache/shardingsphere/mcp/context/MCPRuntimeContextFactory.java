@@ -15,29 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.execute;
+package org.apache.shardingsphere.mcp.context;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+
+import java.util.Map;
 
 /**
- * Execute-query request contract.
+ * Factory for MCP runtime context.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ExecutionRequest {
+@FunctionalInterface
+public interface MCPRuntimeContextFactory {
     
-    private final String sessionId;
-    
-    private final String database;
-    
-    private final String schema;
-    
-    private final String sql;
-    
-    private final int maxRows;
-    
-    private final int timeoutMs;
-    
-    private final DatabaseRuntime databaseRuntime;
+    /**
+     * Create MCP runtime context.
+     *
+     * @param sessionManager session manager
+     * @param runtimeDatabases runtime databases
+     * @return runtime context
+     */
+    MCPRuntimeContext create(MCPSessionManager sessionManager, Map<String, RuntimeDatabaseConfiguration> runtimeDatabases);
 }

@@ -78,11 +78,7 @@ final class MCPToolCallHandler {
         if (database.isEmpty()) {
             return successToolResult(runtimeContext.getCapabilityAssembler().assembleServiceCapability());
         }
-        String databaseType = runtimeContext.getMetadataCatalog().getDatabaseTypes().get(database);
-        if (null == databaseType) {
-            return errorToolResult("not_found", "Database capability does not exist.");
-        }
-        Optional<DatabaseCapability> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(database, databaseType);
+        Optional<DatabaseCapability> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(database);
         return capability.isPresent() ? successToolResult(payloadBuilder.createDatabaseCapabilityPayload(capability.get())) : errorToolResult("not_found", "Database capability does not exist.");
     }
     
@@ -92,11 +88,7 @@ final class MCPToolCallHandler {
         if (database.isEmpty() || sql.isEmpty()) {
             return errorToolResult("invalid_request", "Database and sql are required.");
         }
-        String databaseType = runtimeContext.getMetadataCatalog().getDatabaseTypes().get(database);
-        if (null == databaseType) {
-            return errorToolResult("not_found", "Database capability does not exist.");
-        }
-        ExecutionRequest executionRequest = new ExecutionRequest(sessionId, database, databaseType, getStringArgument(arguments, "schema"),
+        ExecutionRequest executionRequest = new ExecutionRequest(sessionId, database, getStringArgument(arguments, "schema"),
                 sql, getIntegerArgument(arguments, "max_rows", 0), getIntegerArgument(arguments, "timeout_ms", 0), runtimeContext.getDatabaseRuntime());
         ExecuteQueryResponse response = runtimeContext.getExecuteQueryFacade().execute(executionRequest);
         return response.isSuccessful() ? successToolResult(toExecuteQueryPayload(response))
