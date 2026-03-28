@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.session;
+package org.apache.shardingsphere.mcp.bootstrap.transport.lifecycle;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
@@ -24,19 +24,19 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * MCP sessions registry.
+ * Transport MCP sessions registry.
  */
-public final class MCPSessionRegistry {
+public final class TransportSessionRegistry {
+    
+    private final MCPRuntimeContext runtimeContext;
     
     private final MCPSessionManager sessionManager;
     
-    private final MCPSessionCloser sessionCloser;
-    
     private final Set<String> activeSessionIds = ConcurrentHashMap.newKeySet();
     
-    public MCPSessionRegistry(final MCPRuntimeContext runtimeContext) {
+    public TransportSessionRegistry(final MCPRuntimeContext runtimeContext) {
+        this.runtimeContext = runtimeContext;
         sessionManager = runtimeContext.getSessionManager();
-        sessionCloser = new MCPSessionCloser(runtimeContext);
     }
     
     /**
@@ -56,7 +56,7 @@ public final class MCPSessionRegistry {
      */
     public void close(final String sessionId) {
         if (activeSessionIds.remove(sessionId)) {
-            sessionCloser.closeSession(sessionId);
+            runtimeContext.closeSession(sessionId);
         }
     }
     

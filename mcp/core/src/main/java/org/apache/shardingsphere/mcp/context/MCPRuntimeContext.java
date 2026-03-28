@@ -60,6 +60,20 @@ public final class MCPRuntimeContext {
     private final ExecuteQueryFacade executeQueryFacade;
     
     /**
+     * Close one session and release session-scoped resources.
+     *
+     * @param sessionId session identifier
+     */
+    public void closeSession(final String sessionId) {
+        if (null == sessionId || sessionId.isEmpty()) {
+            return;
+        }
+        metadataRefreshCoordinator.clearSession(sessionId);
+        databaseRuntime.closeSession(sessionId);
+        sessionManager.closeSession(sessionId);
+    }
+    
+    /**
      * Create MCP runtime context.
      *
      * @param sessionManager session manager

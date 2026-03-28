@@ -26,7 +26,7 @@ import io.modelcontextprotocol.spec.McpServerTransport;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.bootstrap.transport.session.MCPSessionRegistry;
+import org.apache.shardingsphere.mcp.bootstrap.transport.lifecycle.TransportSessionRegistry;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import reactor.core.publisher.Mono;
 
@@ -39,13 +39,13 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 final class SessionManagedStdioTransportProvider extends StdioServerTransportProvider {
     
-    private final MCPSessionRegistry managedSessions;
+    private final TransportSessionRegistry managedSessions;
     
     private final AtomicBoolean activeSession;
     
     SessionManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
         super(jsonMapper);
-        managedSessions = new MCPSessionRegistry(runtimeContext);
+        managedSessions = new TransportSessionRegistry(runtimeContext);
         activeSession = new AtomicBoolean();
     }
     

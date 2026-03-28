@@ -15,63 +15,53 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.session;
+package org.apache.shardingsphere.mcp.bootstrap.transport.lifecycle;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-class MCPSessionRegistryTest {
+class TransportSessionRegistryTest {
     
     @Test
     void assertCreate() {
+        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        MCPSessionRegistry registry = new MCPSessionRegistry(createRuntimeContext(sessionManager));
+        when(runtimeContext.getSessionManager()).thenReturn(sessionManager);
+        TransportSessionRegistry registry = new TransportSessionRegistry(runtimeContext);
         registry.create("session-id");
         verify(sessionManager).createSession("session-id");
     }
     
     @Test
     void assertClose() {
+        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        DatabaseRuntime databaseRuntime = mock(DatabaseRuntime.class);
-        MCPSessionRegistry registry = new MCPSessionRegistry(createRuntimeContext(sessionManager, databaseRuntime));
+        when(runtimeContext.getSessionManager()).thenReturn(sessionManager);
+        TransportSessionRegistry registry = new TransportSessionRegistry(runtimeContext);
         registry.create("session-id");
         registry.close("session-id");
         verify(sessionManager).createSession("session-id");
-        verify(sessionManager).closeSession("session-id");
-        verify(databaseRuntime).closeSession("session-id");
+        verify(runtimeContext).closeSession("session-id");
     }
     
     @Test
     void assertCloseAll() {
+        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        DatabaseRuntime databaseRuntime = mock(DatabaseRuntime.class);
-        MCPSessionRegistry registry = new MCPSessionRegistry(createRuntimeContext(sessionManager, databaseRuntime));
+        when(runtimeContext.getSessionManager()).thenReturn(sessionManager);
+        TransportSessionRegistry registry = new TransportSessionRegistry(runtimeContext);
         registry.create("session-id");
+        clearInvocations(runtimeContext, sessionManager);
         registry.closeAll();
         registry.closeAll();
-        verify(sessionManager).createSession("session-id");
-        verify(sessionManager).closeSession("session-id");
-        verify(databaseRuntime).closeSession("session-id");
-        verifyNoMoreInteractions(databaseRuntime);
-    }
-    
-    private MCPRuntimeContext createRuntimeContext(final MCPSessionManager sessionManager) {
-        return createRuntimeContext(sessionManager, mock(DatabaseRuntime.class));
-    }
-    
-    private MCPRuntimeContext createRuntimeContext(final MCPSessionManager sessionManager, final DatabaseRuntime databaseRuntime) {
-        MCPRuntimeContext result = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSessionManager()).thenReturn(sessionManager);
-        when(result.getDatabaseRuntime()).thenReturn(databaseRuntime);
-        return result;
+        verify(runtimeContext).closeSession("session-id");
+        verifyNoInteractions(sessionManager);
     }
 }

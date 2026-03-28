@@ -32,7 +32,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.bootstrap.transport.session.MCPSessionRegistry;
+import org.apache.shardingsphere.mcp.bootstrap.transport.lifecycle.TransportSessionRegistry;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPRequestValidator.ResponseStatus;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
@@ -70,7 +70,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final StreamableHttpMCPRequestValidator requestValidator;
     
-    private final MCPSessionRegistry managedSessions;
+    private final TransportSessionRegistry managedSessions;
     
     private final ServerTransportSecurityValidator securityValidator;
     
@@ -79,7 +79,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     StreamableHttpMCPServlet(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
         delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).securityValidator(ServerTransportSecurityValidator.NOOP).build();
         requestValidator = new StreamableHttpMCPRequestValidator(runtimeContext);
-        managedSessions = new MCPSessionRegistry(runtimeContext);
+        managedSessions = new TransportSessionRegistry(runtimeContext);
         securityValidator = LoopbackOriginSecurityValidator.create(bindHost);
         closed = new AtomicBoolean();
     }
