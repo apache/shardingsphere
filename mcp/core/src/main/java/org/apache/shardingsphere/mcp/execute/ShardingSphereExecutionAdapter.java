@@ -25,8 +25,8 @@ import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLSyntaxErrorException;
 import java.sql.SQLTimeoutException;
 import java.sql.Savepoint;
@@ -34,6 +34,7 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -252,7 +253,7 @@ public final class ShardingSphereExecutionAdapter {
     }
     
     private void applySchema(final Connection connection, final String schema) throws SQLException {
-        String actualSchema = null == schema ? "" : schema.trim();
+        String actualSchema = Objects.toString(schema, "").trim();
         if (actualSchema.isEmpty()) {
             return;
         }

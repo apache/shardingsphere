@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 import java.net.URI;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -32,8 +33,6 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 final class StreamableHttpMCPRequestInspector {
-    
-    private static final String SESSION_HEADER = "MCP-Session-Id";
     
     private static final String PROTOCOL_HEADER = "MCP-Protocol-Version";
     
@@ -43,8 +42,7 @@ final class StreamableHttpMCPRequestInspector {
     
     private final String bindHost;
     
-    Optional<ResponseStatus> validate(final HttpServletRequest request) {
-        String sessionId = getSessionId(request);
+    Optional<ResponseStatus> validate(final HttpServletRequest request, final String sessionId) {
         if (sessionId.isEmpty()) {
             return Optional.of(new ResponseStatus(400, "Session ID required in mcp-session-id header"));
         }
@@ -62,15 +60,11 @@ final class StreamableHttpMCPRequestInspector {
         return Optional.empty();
     }
     
-    String getSessionId(final HttpServletRequest request) {
-        return normalize(request.getHeader(SESSION_HEADER));
-    }
-    
     Optional<ResponseStatus> validateOrigin(final HttpServletRequest request) {
         if (!isLoopbackHost(bindHost)) {
             return Optional.empty();
         }
-        String origin = normalize(request.getHeader(ORIGIN_HEADER));
+        String origin = Objects.toString(request.getHeader(ORIGIN_HEADER), "").trim();
         if (origin.isEmpty()) {
             return Optional.empty();
         }
@@ -83,17 +77,13 @@ final class StreamableHttpMCPRequestInspector {
     }
     
     private boolean isLoopbackHost(final String rawHost) {
-        String host = normalize(rawHost).toLowerCase(Locale.ENGLISH);
+        String host = Objects.toString((rawHost), "").trim().toLowerCase(Locale.ENGLISH);
         return "127.0.0.1".equals(host) || "localhost".equals(host) || "::1".equals(host);
     }
     
     private String normalizeProtocolVersion(final String rawProtocolVersion) {
-        String protocolVersion = normalize(rawProtocolVersion);
+        String protocolVersion = Objects.toString((rawProtocolVersion), "").trim();
         return protocolVersion.isEmpty() ? MCPTransportConstants.PROTOCOL_VERSION : protocolVersion;
-    }
-    
-    private String normalize(final String value) {
-        return null == value ? "" : value.trim();
     }
     
     @RequiredArgsConstructor

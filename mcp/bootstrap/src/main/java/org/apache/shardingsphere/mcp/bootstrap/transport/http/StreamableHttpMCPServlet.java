@@ -29,8 +29,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.bootstrap.transport.ManagedSessionRegistry;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
+import org.apache.shardingsphere.mcp.bootstrap.transport.ManagedSessionRegistry;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 import java.io.IOException;
@@ -39,6 +39,7 @@ import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -98,7 +99,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     }
     
     private String normalizeProtocolVersion(final String rawProtocolVersion) {
-        String actualProtocolVersion = null == rawProtocolVersion ? "" : rawProtocolVersion.trim();
+        String actualProtocolVersion = Objects.toString(rawProtocolVersion, "").trim();
         return actualProtocolVersion.isEmpty() ? MCPTransportConstants.PROTOCOL_VERSION : actualProtocolVersion;
     }
     
@@ -114,7 +115,8 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validate(request);
+        String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "").trim();
+        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validate(request, sessionId);
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
         } else {
@@ -124,9 +126,9 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        String sessionId = requestInspector.getSessionId(request);
+        String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "").trim();
         if (!sessionId.isEmpty()) {
-            Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validate(request);
+            Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validate(request, sessionId);
             if (validationFailure.isPresent()) {
                 writeResponse(response, validationFailure.get());
             } else {
@@ -144,12 +146,12 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doDelete(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validate(request);
+        String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "").trim();
+        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validate(request, sessionId);
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
             return;
         }
-        String sessionId = requestInspector.getSessionId(request);
         serviceWithApplicationClassLoader(withDefaultAcceptHeader(request), response);
         if (200 == response.getStatus()) {
             managedSessions.closeSession(sessionId);

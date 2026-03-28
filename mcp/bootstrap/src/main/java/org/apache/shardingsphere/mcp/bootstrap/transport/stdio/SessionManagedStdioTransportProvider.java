@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -39,12 +40,12 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
     
     private final ManagedSessionRegistry managedSessions;
     
-    private final AtomicReference<String> activeSessionId;
+    private final AtomicBoolean activeSession;
     
     SessionManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
         super(jsonMapper);
         managedSessions = new ManagedSessionRegistry(runtimeContext);
-        activeSessionId = new AtomicReference<>();
+        activeSession = new AtomicBoolean();
     }
     
     @Override
@@ -54,21 +55,43 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
     
     @Override
     public void setSessionFactory(final McpServerSession.Factory sessionFactory) {
-        super.setSessionFactory(transport -> createManagedSession(sessionFactory, new SessionClosingTransport(transport)));
+        super.setSessionFactory(transport -> createManagedSession(sessionFactory, transport));
     }
     
     private McpServerSession createManagedSession(final McpServerSession.Factory sessionFactory, final McpServerTransport transport) {
-        McpServerSession result = sessionFactory.create(transport);
-        String sessionId = result.getId();
-        managedSessions.createSession(sessionId);
-        activeSessionId.set(sessionId);
-        return result;
+        if (!activeSession.compareAndSet(false, true)) {
+            throw new IllegalStateException("STDIO transport supports only one active session at a time.");
+        }
+        SessionClosingTransport managedTransport = new SessionClosingTransport(transport);
+        boolean success = false;
+        try {
+            McpServerSession result = sessionFactory.create(managedTransport);
+            String sessionId = result.getId();
+            managedSessions.createSession(sessionId);
+            managedTransport.bindSessionId(sessionId);
+            success = true;
+            return result;
+        } finally {
+            if (!success) {
+                activeSession.set(false);
+            }
+        }
     }
     
     @RequiredArgsConstructor
     private final class SessionClosingTransport implements McpServerTransport {
         
         private final McpServerTransport delegate;
+        
+        private final AtomicReference<String> sessionId = new AtomicReference<>();
+        
+        private final AtomicBoolean closed = new AtomicBoolean();
+        
+        private void bindSessionId(final String sessionId) {
+            if (!this.sessionId.compareAndSet(null, sessionId)) {
+                throw new IllegalStateException("STDIO session ID has already been bound.");
+            }
+        }
         
         @Override
         public Mono<Void> sendMessage(final JSONRPCMessage message) {
@@ -95,9 +118,16 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
         }
         
         private void closeManagedSession() {
-            String sessionId = activeSessionId.getAndSet(null);
-            if (null != sessionId && !sessionId.isEmpty()) {
-                managedSessions.closeSession(sessionId);
+            if (!closed.compareAndSet(false, true)) {
+                return;
+            }
+            try {
+                String actualSessionId = sessionId.get();
+                if (null != actualSessionId && !actualSessionId.isEmpty()) {
+                    managedSessions.closeSession(actualSessionId);
+                }
+            } finally {
+                activeSession.set(false);
             }
         }
     }

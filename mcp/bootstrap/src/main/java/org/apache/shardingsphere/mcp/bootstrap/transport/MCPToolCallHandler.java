@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -71,7 +72,7 @@ final class MCPToolCallHandler {
     }
     
     private McpSchema.CallToolResult handleGetCapabilities(final Map<String, Object> arguments) {
-        String database = getStringArgument(arguments, "database");
+        String database = Objects.toString(arguments.get("database"), "").trim();
         if (database.isEmpty()) {
             return successToolResult(runtimeContext.getCapabilityAssembler().assembleServiceCapability());
         }
@@ -80,12 +81,12 @@ final class MCPToolCallHandler {
     }
     
     private McpSchema.CallToolResult handleExecuteQuery(final String sessionId, final Map<String, Object> arguments) {
-        String database = getStringArgument(arguments, "database");
-        String sql = getStringArgument(arguments, "sql");
+        String database = Objects.toString(arguments.get("database"), "").trim();
+        String sql = Objects.toString(arguments.get("sql"), "").trim();
         if (database.isEmpty() || sql.isEmpty()) {
             return errorToolResult("invalid_request", "Database and sql are required.");
         }
-        ExecutionRequest executionRequest = new ExecutionRequest(sessionId, database, getStringArgument(arguments, "schema"),
+        ExecutionRequest executionRequest = new ExecutionRequest(sessionId, database, Objects.toString(arguments.get("schema"), "").trim(),
                 sql, getIntegerArgument(arguments, "max_rows", 0), getIntegerArgument(arguments, "timeout_ms", 0), runtimeContext.getDatabaseRuntime());
         ExecuteQueryResponse response = runtimeContext.getExecuteQueryFacade().execute(executionRequest);
         return response.isSuccessful() ? successToolResult(toExecuteQueryPayload(response))
@@ -137,11 +138,6 @@ final class MCPToolCallHandler {
                 .addTextContent(JsonUtils.toJsonString(Map.of("error_code", errorCode, "message", message)))
                 .isError(Boolean.TRUE)
                 .build();
-    }
-    
-    private String getStringArgument(final Map<String, Object> arguments, final String name) {
-        Object result = arguments.get(name);
-        return null == result ? "" : result.toString().trim();
     }
     
     private int getIntegerArgument(final Map<String, Object> arguments, final String name, final int defaultValue) {

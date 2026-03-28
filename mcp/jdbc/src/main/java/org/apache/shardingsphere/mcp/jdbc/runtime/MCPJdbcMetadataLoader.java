@@ -20,11 +20,11 @@ package org.apache.shardingsphere.mcp.jdbc.runtime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
+import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -79,7 +80,7 @@ public final class MCPJdbcMetadataLoader {
         Set<String> foundSchemas = new LinkedHashSet<>();
         loadTables(databaseName, databaseMetaData, metadataObjects, discoveredMetadataObjectTypes, foundSchemas);
         loadViews(databaseName, databaseMetaData, metadataObjects, discoveredMetadataObjectTypes, foundSchemas);
-        String databaseVersion = normalize(databaseMetaData.getDatabaseProductVersion());
+        String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
         return new RuntimeMetadataSnapshot(metadataObjects, new RuntimeDatabaseDescriptor(databaseVersion, discoveredMetadataObjectTypes, resolveDefaultSchema(connection, foundSchemas)));
     }
     
@@ -88,11 +89,11 @@ public final class MCPJdbcMetadataLoader {
                             final Collection<String> foundSchemas) throws SQLException {
         try (ResultSet tables = databaseMetaData.getTables(null, null, "%", new String[]{"TABLE"})) {
             while (tables.next()) {
-                String schemaName = normalize(tables.getString("TABLE_SCHEM"));
+                String schemaName = Objects.toString(tables.getString("TABLE_SCHEM"), "").trim();
                 if (isSystemSchema(schemaName)) {
                     continue;
                 }
-                String tableName = normalize(tables.getString("TABLE_NAME"));
+                String tableName = Objects.toString(tables.getString("TABLE_NAME"), "").trim();
                 if (tableName.isEmpty()) {
                     continue;
                 }
@@ -109,11 +110,11 @@ public final class MCPJdbcMetadataLoader {
                            final List<MetadataObject> metadataObjects, final Set<MetadataObjectType> discoveredMetadataObjectTypes, final Set<String> foundSchemas) throws SQLException {
         try (ResultSet views = databaseMetaData.getTables(null, null, "%", new String[]{"VIEW"})) {
             while (views.next()) {
-                String schemaName = normalize(views.getString("TABLE_SCHEM"));
+                String schemaName = Objects.toString(views.getString("TABLE_SCHEM"), "").trim();
                 if (isSystemSchema(schemaName)) {
                     continue;
                 }
-                String viewName = normalize(views.getString("TABLE_NAME"));
+                String viewName = Objects.toString(views.getString("TABLE_NAME"), "").trim();
                 if (viewName.trim().isEmpty()) {
                     continue;
                 }
@@ -144,7 +145,7 @@ public final class MCPJdbcMetadataLoader {
                              final Collection<MetadataObjectType> discoveredMetadataObjectTypes) throws SQLException {
         try (ResultSet columns = databaseMetaData.getColumns(null, getSchemaPattern(schemaName), objectName, "%")) {
             while (columns.next()) {
-                String columnName = normalize(columns.getString("COLUMN_NAME"));
+                String columnName = Objects.toString(columns.getString("COLUMN_NAME"), "").trim();
                 if (columnName.isEmpty()) {
                     continue;
                 }
@@ -159,7 +160,7 @@ public final class MCPJdbcMetadataLoader {
         Set<String> indexNames = new LinkedHashSet<>();
         try (ResultSet indexes = databaseMetaData.getIndexInfo(null, getSchemaPattern(schemaName), tableName, false, false)) {
             while (indexes.next()) {
-                String indexName = normalize(indexes.getString("INDEX_NAME"));
+                String indexName = Objects.toString(indexes.getString("INDEX_NAME"), "").trim();
                 if (indexName.isEmpty()) {
                     continue;
                 }
@@ -173,20 +174,16 @@ public final class MCPJdbcMetadataLoader {
     }
     
     private String getSchemaPattern(final String schema) {
-        String result = normalize(schema);
+        String result = Objects.toString(schema, "").trim();
         return result.isEmpty() ? null : result;
     }
     
     private String resolveDefaultSchema(final Connection connection, final Collection<String> schemas) throws SQLException {
-        String currentSchema = normalize(connection.getSchema());
+        String currentSchema = Objects.toString(connection.getSchema(), "").trim();
         if (currentSchema.isEmpty()) {
             return schemas.isEmpty() ? "" : schemas.iterator().next();
         }
         return schemas.stream().filter(currentSchema::equalsIgnoreCase).findFirst().orElse(currentSchema);
-    }
-    
-    private String normalize(final String value) {
-        return null == value ? "" : value.trim();
     }
     
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

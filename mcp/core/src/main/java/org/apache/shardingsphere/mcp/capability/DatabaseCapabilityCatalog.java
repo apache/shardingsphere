@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 
 import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -220,7 +221,7 @@ public final class DatabaseCapabilityCatalog {
     }
     
     private static boolean isVersionAtLeast(final String databaseVersion, final int major, final int minor, final int patch) {
-        Matcher matcher = VERSION_PATTERN.matcher(null == databaseVersion ? "" : databaseVersion.trim());
+        Matcher matcher = VERSION_PATTERN.matcher(Objects.toString(databaseVersion, "").trim());
         if (!matcher.matches()) {
             return false;
         }

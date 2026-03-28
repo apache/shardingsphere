@@ -27,10 +27,13 @@ import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -62,6 +65,23 @@ class SessionManagedStdioTransportProviderTest {
     }
     
     @Test
+    void assertSetSessionFactoryWhenSessionAlreadyActive() {
+        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        McpServerSession.Factory sessionFactory = mock(McpServerSession.Factory.class);
+        McpServerSession session = mock(McpServerSession.class);
+        when(runtimeContext.getSessionManager()).thenReturn(sessionManager);
+        when(sessionFactory.create(any(McpServerTransport.class))).thenReturn(session);
+        when(session.getId()).thenReturn("session-id");
+        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(runtimeContext, MCPTransportJsonMapperFactory.create());
+        provider.setSessionFactory(sessionFactory);
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> provider.setSessionFactory(sessionFactory));
+        assertThat(actual.getMessage(), is("STDIO transport supports only one active session at a time."));
+        verify(sessionManager).createSession("session-id");
+        verifyNoMoreInteractions(sessionManager);
+    }
+    
+    @Test
     void assertCloseManagedSessionWhenTransportCloseGracefully() {
         MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
@@ -81,6 +101,41 @@ class SessionManagedStdioTransportProviderTest {
         transport.get().closeGracefully().block();
         verify(sessionManager).closeSession("session-id");
         verify(databaseRuntime).closeSession("session-id");
+    }
+    
+    @Test
+    void assertSetSessionFactoryAfterTransportClose() {
+        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        DatabaseRuntime databaseRuntime = mock(DatabaseRuntime.class);
+        McpServerSession.Factory sessionFactory = mock(McpServerSession.Factory.class);
+        McpServerSession firstSession = mock(McpServerSession.class);
+        McpServerSession secondSession = mock(McpServerSession.class);
+        AtomicReference<McpServerTransport> firstTransport = new AtomicReference<>();
+        AtomicReference<McpServerTransport> secondTransport = new AtomicReference<>();
+        AtomicInteger invocationCount = new AtomicInteger();
+        when(runtimeContext.getSessionManager()).thenReturn(sessionManager);
+        when(runtimeContext.getDatabaseRuntime()).thenReturn(databaseRuntime);
+        when(sessionFactory.create(any(McpServerTransport.class))).thenAnswer(invocation -> {
+            McpServerTransport actual = invocation.getArgument(0, McpServerTransport.class);
+            if (0 == invocationCount.getAndIncrement()) {
+                firstTransport.set(actual);
+                return firstSession;
+            }
+            secondTransport.set(actual);
+            return secondSession;
+        });
+        when(firstSession.getId()).thenReturn("session-id-1");
+        when(secondSession.getId()).thenReturn("session-id-2");
+        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(runtimeContext, MCPTransportJsonMapperFactory.create());
+        provider.setSessionFactory(sessionFactory);
+        firstTransport.get().close();
+        provider.setSessionFactory(sessionFactory);
+        verify(sessionManager).createSession("session-id-1");
+        verify(sessionManager).closeSession("session-id-1");
+        verify(databaseRuntime).closeSession("session-id-1");
+        verify(sessionManager).createSession("session-id-2");
+        assertNotNull(secondTransport.get());
     }
     
     @Test
