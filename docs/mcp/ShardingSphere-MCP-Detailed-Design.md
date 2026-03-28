@@ -207,9 +207,9 @@ shardingsphere
   - MCP Streamable HTTP
   - 协议版本基线：`2025-11-25`
 - 这意味着不再使用模糊表述“HTTP 模式”，而是明确遵守当前 MCP 标准 transport。
-- transport implementation seam 上，routing、Accept 校验、SDK session 与
+- transport implementation seam 上，routing、SDK session 与
   `DELETE` 基础语义优先复用官方 servlet provider；ShardingSphere 只补协议头、
-  follow-up contract、managed session cleanup 与必要兼容层。
+  follow-up contract、managed session cleanup、本地运行边界策略与必要兼容层。
 
 ### 7.2 MCP endpoint
 - V1 使用单一 MCP endpoint，例如：
@@ -273,8 +273,8 @@ shardingsphere
   - 本地模式默认仅绑定 `127.0.0.1`
   - 若本地模式请求显式携带 `Origin`，服务端校验其 host 必须仍为 loopback / localhost
   - 远程模式应由外部网关、反向代理或网络边界提供保护
-- 上述 `Origin` 校验优先通过 MCP Java SDK transport 的
-  `securityValidator` 扩展点实现；ShardingSphere 仅保留零损失兼容输出与
+- 上述 `Origin` 校验由 ShardingSphere 独立本地策略类在 servlet 前置阶段执行；
+  delegate 不再重复执行同一规则。ShardingSphere 继续保留零损失兼容输出与
   session 语义 glue。
 - 以上约束用于限定本地运行边界，与 MCP session 语义分层处理。
 

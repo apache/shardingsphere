@@ -164,7 +164,7 @@
 ### 7.7 HTTP 服务承载
 - 最终决策：
   - 使用 embedded Tomcat 11 承载 MCP Java SDK 的 Streamable HTTP servlet
-  - loopback `Origin` 边界优先通过 SDK `securityValidator` 承载
+  - loopback `Origin` 边界保持独立本地策略类，并由 servlet 前置校验
 - 原因：
   - 只在 bootstrap 层引入最小 servlet 容器
   - 与官方 Streamable HTTP servlet transport 对齐
@@ -374,7 +374,8 @@ shardingsphere
     - `mcp/bootstrap`
     - `distribution/mcp`
   - 不进入根工程统一依赖管理
-  - routing、Accept 校验、SDK session 与 `DELETE` 基础语义优先交给官方 provider
+  - routing、SDK session 与 `DELETE` 基础语义优先交给官方 provider
+  - provider 继续执行严格 `Accept` 校验；missing/blank `Accept` 的零损失兼容由本地 shim 承接
   - initialize `MCP-Protocol-Version` 响应头、follow-up protocol contract、
     managed session cleanup 和零损失兼容 shim 继续由 ShardingSphere 保留
 

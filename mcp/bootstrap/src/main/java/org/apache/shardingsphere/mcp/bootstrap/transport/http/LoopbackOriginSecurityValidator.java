@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.http;
 
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityValidator;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.net.URI;
 import java.util.List;
@@ -27,43 +28,48 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
-final class LoopbackOriginSecurityValidator implements ServerTransportSecurityValidator {
+/**
+ * Loopback origin security validator.
+ */
+public final class LoopbackOriginSecurityValidator implements ServerTransportSecurityValidator {
     
     private static final String ORIGIN_HEADER = "Origin";
     
-    private static final String INVALID_ORIGIN_MESSAGE = "Origin is not allowed for the current binding.";
-    
-    static ServerTransportSecurityValidator create(final String bindHost) {
-        return isLoopbackHost(bindHost) ? new LoopbackOriginSecurityValidator() : ServerTransportSecurityValidator.NOOP;
-    }
-    
-    @Override
-    public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
-        String origin = getFirstHeaderValue(headers, ORIGIN_HEADER);
-        if (origin.isEmpty()) {
-            return;
-        }
-        try {
-            String host = Objects.toString(URI.create(origin).getHost(), "").trim();
-            if (!isLoopbackHost(host)) {
-                throw new ServerTransportSecurityException(403, INVALID_ORIGIN_MESSAGE);
-            }
-        } catch (final IllegalArgumentException ex) {
-            throw new ServerTransportSecurityException(403, INVALID_ORIGIN_MESSAGE);
-        }
-    }
-    
-    private static String getFirstHeaderValue(final Map<String, List<String>> headers, final String headerName) {
-        for (Entry<String, List<String>> entry : headers.entrySet()) {
-            if (headerName.equalsIgnoreCase(entry.getKey()) && null != entry.getValue() && !entry.getValue().isEmpty()) {
-                return Objects.toString(entry.getValue().get(0), "").trim();
-            }
-        }
-        return "";
+    /**
+     * Create validator.
+     * 
+     * @param bindHost bind host
+     * @return created validator
+     */
+    public static ServerTransportSecurityValidator create(final String bindHost) {
+        return isLoopbackHost(bindHost) ? new LoopbackOriginSecurityValidator() : NOOP;
     }
     
     private static boolean isLoopbackHost(final String rawHost) {
         String host = Objects.toString(rawHost, "").trim().toLowerCase(Locale.ENGLISH);
         return "127.0.0.1".equals(host) || "localhost".equals(host) || "::1".equals(host);
+    }
+    
+    @Override
+    public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
+        String origin = getOriginValue(headers);
+        if (origin.isEmpty()) {
+            return;
+        }
+        try {
+            String host = Objects.toString(URI.create(origin).getHost(), "").trim();
+            ShardingSpherePreconditions.checkState(isLoopbackHost(host), () -> new ServerTransportSecurityException(403, "Origin is not allowed for the current binding."));
+        } catch (final IllegalArgumentException ex) {
+            throw new ServerTransportSecurityException(403, "Origin is not allowed for the current binding.");
+        }
+    }
+    
+    private static String getOriginValue(final Map<String, List<String>> headers) {
+        for (Entry<String, List<String>> entry : headers.entrySet()) {
+            if (ORIGIN_HEADER.equalsIgnoreCase(entry.getKey()) && null != entry.getValue() && !entry.getValue().isEmpty()) {
+                return Objects.toString(entry.getValue().get(0), "").trim();
+            }
+        }
+        return "";
     }
 }

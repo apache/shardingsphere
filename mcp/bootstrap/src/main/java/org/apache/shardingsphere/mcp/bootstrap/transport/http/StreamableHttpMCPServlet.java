@@ -21,12 +21,15 @@ import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.transport.HttpServletStreamableServerTransportProvider;
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityValidator;
+import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpStreamableServerSession;
 import io.modelcontextprotocol.spec.McpStreamableServerTransportProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.ManagedSessionRegistry;
@@ -35,11 +38,14 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -51,7 +57,13 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private static final String SESSION_HEADER = "MCP-Session-Id";
     
+    private static final String PROTOCOL_HEADER = "MCP-Protocol-Version";
+    
     private static final String JSON_CONTENT_TYPE = "application/json";
+    
+    private static final String ACCEPT_HEADER = "Accept";
+    
+    private static final String DEFAULT_ACCEPT = "application/json, text/event-stream";
     
     private final HttpServletStreamableServerTransportProvider delegate;
     
@@ -67,7 +79,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         requestValidator = new StreamableHttpMCPRequestValidator(runtimeContext);
         managedSessions = new ManagedSessionRegistry(runtimeContext);
         securityValidator = LoopbackOriginSecurityValidator.create(bindHost);
-        delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).securityValidator(securityValidator).build();
+        delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).securityValidator(ServerTransportSecurityValidator.NOOP).build();
     }
     
     @Override
@@ -78,10 +90,22 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     @Override
     public void setSessionFactory(final McpStreamableServerSession.Factory sessionFactory) {
         delegate.setSessionFactory(initializeRequest -> {
-            McpStreamableServerSession.McpStreamableServerSessionInit result = sessionFactory.startSession(StreamableHttpInitializeRequestUtils.normalizeProtocolVersion(initializeRequest));
+            McpStreamableServerSession.McpStreamableServerSessionInit result = sessionFactory.startSession(normalizeInitializeRequest(initializeRequest));
             managedSessions.createSession(result.session().getId());
             return result;
         });
+    }
+    
+    private McpSchema.InitializeRequest normalizeInitializeRequest(final McpSchema.InitializeRequest initializeRequest) {
+        String protocolVersion = normalizeProtocolVersion(initializeRequest.protocolVersion());
+        return protocolVersion.equals(initializeRequest.protocolVersion())
+                ? initializeRequest
+                : new McpSchema.InitializeRequest(protocolVersion, initializeRequest.capabilities(), initializeRequest.clientInfo(), initializeRequest.meta());
+    }
+    
+    private String normalizeProtocolVersion(final String rawProtocolVersion) {
+        String protocolVersion = Objects.toString(rawProtocolVersion, "").trim();
+        return protocolVersion.isEmpty() ? MCPTransportConstants.PROTOCOL_VERSION : protocolVersion;
     }
     
     @Override
@@ -116,6 +140,40 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         return result;
     }
     
+    private Optional<ResponseStatus> validateSecurity(final HttpServletRequest request) {
+        try {
+            securityValidator.validateHeaders(extractHeaders(request));
+            return Optional.empty();
+        } catch (final ServerTransportSecurityException ex) {
+            return Optional.of(new ResponseStatus(ex.getStatusCode(), ex.getMessage()));
+        }
+    }
+    
+    private Map<String, List<String>> extractHeaders(final HttpServletRequest request) {
+        Map<String, List<String>> result = new LinkedHashMap<>();
+        for (String each : Collections.list(request.getHeaderNames())) {
+            result.put(each, Collections.list(request.getHeaders(each)));
+        }
+        return result;
+    }
+    
+    private void writeResponse(final HttpServletResponse response, final ResponseStatus responseStatus) throws IOException {
+        response.setStatus(responseStatus.getStatusCode());
+        response.setContentType(JSON_CONTENT_TYPE);
+        response.getWriter().write(JsonUtils.toJsonString(Map.of("message", responseStatus.getMessage())));
+        response.getWriter().flush();
+    }
+    
+    private void serviceWithApplicationClassLoader(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+            delegate.service(request, response);
+        } finally {
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
+        }
+    }
+    
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
         String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "").trim();
@@ -131,7 +189,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
         } else {
-            serviceWithApplicationClassLoader(withDefaultAcceptHeader(request), InitializeProtocolHeaderResponseWrapper.wrap(response));
+            serviceWithApplicationClassLoader(withDefaultAcceptHeader(request), withInitializeProtocolHeader(response));
         }
     }
     
@@ -142,36 +200,6 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         if (validationFailure.isEmpty() && 200 == response.getStatus()) {
             managedSessions.closeSession(sessionId);
         }
-    }
-    
-    private void writeResponse(final HttpServletResponse response, final ResponseStatus responseStatus) throws IOException {
-        response.setStatus(responseStatus.getStatusCode());
-        response.setContentType(JSON_CONTENT_TYPE);
-        response.getWriter().write(JsonUtils.toJsonString(Map.of("message", responseStatus.getMessage())));
-        response.getWriter().flush();
-    }
-    
-    private Optional<ResponseStatus> validateSecurity(final HttpServletRequest request) {
-        try {
-            securityValidator.validateHeaders(extractHeaders(request));
-            return Optional.empty();
-        } catch (final ServerTransportSecurityException ex) {
-            return Optional.of(new ResponseStatus(ex.getStatusCode(), ex.getMessage()));
-        }
-    }
-    
-    private void serviceWithApplicationClassLoader(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
-        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-            delegate.service(request, response);
-        } finally {
-            Thread.currentThread().setContextClassLoader(originalClassLoader);
-        }
-    }
-    
-    private HttpServletRequest withDefaultAcceptHeader(final HttpServletRequest request) {
-        return DefaultAcceptHeaderRequestWrapper.wrapIfNecessary(request);
     }
     
     @Override
@@ -188,11 +216,51 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         }
     }
     
-    private Map<String, List<String>> extractHeaders(final HttpServletRequest request) {
-        Map<String, List<String>> result = new LinkedHashMap<>();
-        for (String each : Collections.list(request.getHeaderNames())) {
-            result.put(each, Collections.list(request.getHeaders(each)));
+    private HttpServletRequest withDefaultAcceptHeader(final HttpServletRequest request) {
+        if (!Objects.toString(request.getHeader(ACCEPT_HEADER), "").trim().isEmpty()) {
+            return request;
         }
-        return result;
+        return new HttpServletRequestWrapper(request) {
+            
+            @Override
+            public String getHeader(final String name) {
+                return ACCEPT_HEADER.equalsIgnoreCase(name) ? DEFAULT_ACCEPT : super.getHeader(name);
+            }
+            
+            @Override
+            public Enumeration<String> getHeaders(final String name) {
+                return ACCEPT_HEADER.equalsIgnoreCase(name) ? Collections.enumeration(List.of(DEFAULT_ACCEPT)) : super.getHeaders(name);
+            }
+            
+            @Override
+            public Enumeration<String> getHeaderNames() {
+                Set<String> result = new LinkedHashSet<>(Collections.list(super.getHeaderNames()));
+                result.add(ACCEPT_HEADER);
+                return Collections.enumeration(result);
+            }
+        };
+    }
+    
+    private HttpServletResponse withInitializeProtocolHeader(final HttpServletResponse response) {
+        return new HttpServletResponseWrapper(response) {
+            
+            @Override
+            public void setHeader(final String name, final String value) {
+                super.setHeader(name, value);
+                addNegotiatedProtocolHeader(name, value);
+            }
+            
+            @Override
+            public void addHeader(final String name, final String value) {
+                super.addHeader(name, value);
+                addNegotiatedProtocolHeader(name, value);
+            }
+            
+            private void addNegotiatedProtocolHeader(final String name, final String value) {
+                if (SESSION_HEADER.equalsIgnoreCase(name) && null != value && !value.trim().isEmpty()) {
+                    super.setHeader(PROTOCOL_HEADER, MCPTransportConstants.PROTOCOL_VERSION);
+                }
+            }
+        };
     }
 }
