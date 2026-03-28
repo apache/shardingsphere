@@ -29,10 +29,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Streamable HTTP MCP request inspector.
+ * Streamable HTTP MCP request validator.
  */
 @RequiredArgsConstructor
-public final class StreamableHttpMCPRequestInspector {
+public final class StreamableHttpMCPRequestValidator {
     
     private static final String PROTOCOL_HEADER = "MCP-Protocol-Version";
     
