@@ -33,8 +33,6 @@ import java.util.Collections;
  */
 public final class YamlMCPLaunchConfigurationSwapper implements YamlConfigurationSwapper<YamlMCPLaunchConfiguration, MCPLaunchConfiguration> {
     
-    private static final String NULL_CONFIG_ERROR_MESSAGE = "MCP launch configuration cannot be null.";
-    
     private final YamlHttpTransportConfigurationSwapper httpTransportConfigSwapper = new YamlHttpTransportConfigurationSwapper();
     
     private final YamlStdioTransportConfigurationSwapper stdioTransportConfigSwapper = new YamlStdioTransportConfigurationSwapper();
@@ -51,7 +49,7 @@ public final class YamlMCPLaunchConfigurationSwapper implements YamlConfiguratio
     
     @Override
     public MCPLaunchConfiguration swapToObject(final YamlMCPLaunchConfiguration yamlConfig) {
-        ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException(NULL_CONFIG_ERROR_MESSAGE));
+        ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("MCP launch configuration cannot be null."));
         YamlMCPTransportConfiguration yamlTransportConfig = resolveRequiredTransportConfiguration(yamlConfig);
         MCPLaunchConfiguration result = new MCPLaunchConfiguration(httpTransportConfigSwapper.swapToObject(yamlTransportConfig.getHttp()),
                 stdioTransportConfigSwapper.swapToObject(yamlTransportConfig.getStdio()),
