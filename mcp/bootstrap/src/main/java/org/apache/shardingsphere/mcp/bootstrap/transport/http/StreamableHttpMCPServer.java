@@ -55,7 +55,7 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
     
     private Path baseDirectory;
     
-    private StreamableHttpMCPServlet transportProvider;
+    private StreamableHttpMCPServlet transportServlet;
     
     private McpSyncServer syncServer;
     
@@ -73,8 +73,8 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
         if (running) {
             return;
         }
-        transportProvider = new StreamableHttpMCPServlet(runtimeContext, jsonMapper, config.getBindHost(), config.getEndpointPath());
-        syncServer = syncServerFactory.create(transportProvider);
+        transportServlet = new StreamableHttpMCPServlet(runtimeContext, jsonMapper, config.getBindHost(), config.getEndpointPath());
+        syncServer = syncServerFactory.create(transportServlet);
         try {
             tomcat = new Tomcat();
             connector = new Connector();
@@ -85,7 +85,7 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
             tomcat.setBaseDir(baseDirectory.toString());
             Context context = tomcat.addContext("", baseDirectory.toString());
             ((StandardContext) context).setClearReferencesRmiTargets(false);
-            Wrapper servletWrapper = Tomcat.addServlet(context, "mcp-streamable-http", transportProvider);
+            Wrapper servletWrapper = Tomcat.addServlet(context, "mcp-streamable-http", transportServlet);
             servletWrapper.setAsyncSupported(true);
             context.addServletMappingDecoded(config.getEndpointPath(), "mcp-streamable-http");
             tomcat.start();
@@ -99,7 +99,7 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
     @Override
     public void stop() {
         closeSyncServer();
-        transportProvider = null;
+        transportServlet = null;
         closeTomcat();
         connector = null;
         deleteBaseDirectory();
