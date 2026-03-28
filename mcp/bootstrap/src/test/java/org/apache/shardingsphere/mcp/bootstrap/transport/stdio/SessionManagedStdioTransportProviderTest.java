@@ -26,8 +26,6 @@ import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -44,7 +42,7 @@ class SessionManagedStdioTransportProviderTest {
     
     @Test
     void assertProtocolVersions() {
-        SessionManagedStdioTransportProvider provider = createProvider(mock(MCPRuntimeContext.class));
+        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(mock(MCPRuntimeContext.class), MCPTransportJsonMapperFactory.create());
         List<String> actual = provider.protocolVersions();
         assertThat(actual, is(List.of(MCPTransportConstants.PROTOCOL_VERSION)));
     }
@@ -58,7 +56,7 @@ class SessionManagedStdioTransportProviderTest {
         when(runtimeContext.getSessionManager()).thenReturn(sessionManager);
         when(sessionFactory.create(any(McpServerTransport.class))).thenReturn(session);
         when(session.getId()).thenReturn("session-id");
-        SessionManagedStdioTransportProvider provider = createProvider(runtimeContext);
+        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(runtimeContext, MCPTransportJsonMapperFactory.create());
         provider.setSessionFactory(sessionFactory);
         verify(sessionManager).createSession("session-id");
     }
@@ -78,7 +76,7 @@ class SessionManagedStdioTransportProviderTest {
             return session;
         });
         when(session.getId()).thenReturn("session-id");
-        SessionManagedStdioTransportProvider provider = createProvider(runtimeContext);
+        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(runtimeContext, MCPTransportJsonMapperFactory.create());
         provider.setSessionFactory(sessionFactory);
         transport.get().closeGracefully().block();
         verify(sessionManager).closeSession("session-id");
@@ -100,7 +98,7 @@ class SessionManagedStdioTransportProviderTest {
             return session;
         });
         when(session.getId()).thenReturn("session-id");
-        SessionManagedStdioTransportProvider provider = createProvider(runtimeContext);
+        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(runtimeContext, MCPTransportJsonMapperFactory.create());
         provider.setSessionFactory(sessionFactory);
         transport.get().close();
         verify(sessionManager).closeSession("session-id");
@@ -122,17 +120,12 @@ class SessionManagedStdioTransportProviderTest {
             return session;
         });
         when(session.getId()).thenReturn("session-id");
-        SessionManagedStdioTransportProvider provider = createProvider(runtimeContext);
+        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(runtimeContext, MCPTransportJsonMapperFactory.create());
         provider.setSessionFactory(sessionFactory);
         transport.get().close();
         transport.get().closeGracefully().block();
         verify(sessionManager).closeSession("session-id");
         verify(databaseRuntime).closeSession("session-id");
         verifyNoMoreInteractions(databaseRuntime);
-    }
-    
-    private SessionManagedStdioTransportProvider createProvider(final MCPRuntimeContext runtimeContext) {
-        return new SessionManagedStdioTransportProvider(runtimeContext, MCPTransportJsonMapperFactory.create(),
-                new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream());
     }
 }

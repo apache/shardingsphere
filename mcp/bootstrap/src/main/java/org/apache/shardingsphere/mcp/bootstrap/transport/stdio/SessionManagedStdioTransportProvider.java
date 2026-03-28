@@ -20,16 +20,14 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.json.TypeRef;
 import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
+import io.modelcontextprotocol.spec.McpSchema.JSONRPCMessage;
 import io.modelcontextprotocol.spec.McpServerSession;
 import io.modelcontextprotocol.spec.McpServerTransport;
-import io.modelcontextprotocol.spec.McpSchema.JSONRPCMessage;
-import org.apache.shardingsphere.mcp.bootstrap.transport.ManagedSessionRegistry;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
+import org.apache.shardingsphere.mcp.bootstrap.transport.ManagedSessionRegistry;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import reactor.core.publisher.Mono;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -42,9 +40,8 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
     
     private final AtomicReference<String> activeSessionId = new AtomicReference<>();
     
-    SessionManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper,
-                                         final InputStream inputStream, final OutputStream outputStream) {
-        super(jsonMapper, inputStream, outputStream);
+    SessionManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
+        super(jsonMapper);
         managedSessions = new ManagedSessionRegistry(runtimeContext);
     }
     

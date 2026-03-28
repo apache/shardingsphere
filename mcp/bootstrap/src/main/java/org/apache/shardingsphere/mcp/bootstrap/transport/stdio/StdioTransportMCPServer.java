@@ -37,7 +37,7 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
     
     public StdioTransportMCPServer(final MCPRuntimeContext runtimeContext) {
         McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
-        transportProvider = new SessionManagedStdioTransportProvider(runtimeContext, jsonMapper, System.in, System.out);
+        transportProvider = new SessionManagedStdioTransportProvider(runtimeContext, jsonMapper);
         syncServerFactory = new MCPSyncServerFactory(runtimeContext, jsonMapper);
     }
     
