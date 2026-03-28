@@ -95,6 +95,27 @@ class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeInte
     }
     
     @Test
+    void assertAcceptFollowUpRequestWithLowercaseHeaders() throws IOException, InterruptedException, SQLException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json, text/event-stream")
+                .header("mcp-session-id", sessionId)
+                .header("mcp-protocol-version", MCPTransportConstants.PROTOCOL_VERSION)
+                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
+                        "jsonrpc", "2.0",
+                        "id", "tool-1",
+                        "method", "tools/call",
+                        "params", Map.of("name", "get_capabilities", "arguments", Map.of())))))
+                .build();
+        HttpResponse<String> actualResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        assertThat(actualResponse.statusCode(), is(200));
+        assertTrue(actualResponse.body().contains("supportedTools"));
+    }
+    
+    @Test
     void assertLaunchHttpServerWithoutInitializeProtocolVersion() throws IOException, InterruptedException, SQLException {
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();

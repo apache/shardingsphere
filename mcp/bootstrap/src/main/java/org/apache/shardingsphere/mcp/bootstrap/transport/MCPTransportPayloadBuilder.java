@@ -50,10 +50,7 @@ final class MCPTransportPayloadBuilder {
     }
     
     Map<String, Object> createErrorPayload(final String errorCode, final String message) {
-        Map<String, Object> result = new LinkedHashMap<>();
-        result.put("error_code", errorCode);
-        result.put("message", message);
-        return result;
+        return Map.of("error_code", errorCode, "message", message);
     }
     
     String toDomainErrorCode(final ErrorCode errorCode) {

@@ -24,11 +24,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 import java.net.URI;
-import java.util.Enumeration;
-import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -47,60 +43,38 @@ final class StreamableHttpMCPRequestInspector {
     
     private final String bindHost;
     
-    Map<String, String> extractHeaders(final HttpServletRequest request) {
-        Map<String, String> result = new LinkedHashMap<>();
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String each = headerNames.nextElement();
-            String value = request.getHeader(each);
-            if (null != value && !value.trim().isEmpty()) {
-                result.put(each, value.trim());
-            }
-        }
-        return result;
+    Optional<ResponseStatus> validateInitializeRequest(final HttpServletRequest request) {
+        return validateOrigin(request);
     }
     
-    String getHeader(final Map<String, String> headers, final String headerName) {
-        String result = headers.get(headerName);
-        if (null != result) {
-            return result.trim();
-        }
-        for (Entry<String, String> entry : headers.entrySet()) {
-            if (entry.getKey().equalsIgnoreCase(headerName)) {
-                return entry.getValue().trim();
-            }
-        }
-        return "";
-    }
-    
-    Optional<ResponseStatus> validateInitializeRequest(final Map<String, String> headers) {
-        return validateOrigin(headers);
-    }
-    
-    Optional<ResponseStatus> validateFollowUpRequest(final Map<String, String> headers) {
-        String sessionId = getHeader(headers, SESSION_HEADER);
+    Optional<ResponseStatus> validateFollowUpRequest(final HttpServletRequest request) {
+        String sessionId = getSessionId(request);
         if (sessionId.isEmpty()) {
             return Optional.of(new ResponseStatus(400, "Session ID required in mcp-session-id header"));
         }
-        Optional<ResponseStatus> originFailure = validateOrigin(headers);
+        Optional<ResponseStatus> originFailure = validateOrigin(request);
         if (originFailure.isPresent()) {
             return originFailure;
         }
         if (!runtimeContext.getSessionManager().hasSession(sessionId)) {
             return Optional.of(new ResponseStatus(404, "Session does not exist."));
         }
-        String actualProtocolVersion = normalizeProtocolVersion(getHeader(headers, PROTOCOL_HEADER));
+        String actualProtocolVersion = normalizeProtocolVersion(request.getHeader(PROTOCOL_HEADER));
         if (!MCPTransportConstants.PROTOCOL_VERSION.equals(actualProtocolVersion)) {
             return Optional.of(new ResponseStatus(400, "Protocol version mismatch."));
         }
         return Optional.empty();
     }
     
-    private Optional<ResponseStatus> validateOrigin(final Map<String, String> headers) {
+    String getSessionId(final HttpServletRequest request) {
+        return getHeaderValue(request.getHeader(SESSION_HEADER));
+    }
+    
+    private Optional<ResponseStatus> validateOrigin(final HttpServletRequest request) {
         if (!isLoopbackHost(bindHost)) {
             return Optional.empty();
         }
-        String origin = getHeader(headers, ORIGIN_HEADER);
+        String origin = getHeaderValue(request.getHeader(ORIGIN_HEADER));
         if (origin.isEmpty()) {
             return Optional.empty();
         }
@@ -120,6 +94,10 @@ final class StreamableHttpMCPRequestInspector {
     private String normalizeProtocolVersion(final String rawProtocolVersion) {
         String actualProtocolVersion = null == rawProtocolVersion ? "" : rawProtocolVersion.trim();
         return actualProtocolVersion.isEmpty() ? MCPTransportConstants.PROTOCOL_VERSION : actualProtocolVersion;
+    }
+    
+    private String getHeaderValue(final String rawHeaderValue) {
+        return null == rawHeaderValue ? "" : rawHeaderValue.trim();
     }
     
     @RequiredArgsConstructor

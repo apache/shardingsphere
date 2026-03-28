@@ -114,8 +114,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        Map<String, String> headers = requestInspector.extractHeaders(request);
-        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validateFollowUpRequest(headers);
+        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validateFollowUpRequest(request);
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
         } else {
@@ -125,10 +124,9 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        Map<String, String> headers = requestInspector.extractHeaders(request);
-        String sessionId = requestInspector.getHeader(headers, SESSION_HEADER);
+        String sessionId = requestInspector.getSessionId(request);
         if (!sessionId.isEmpty()) {
-            Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validateFollowUpRequest(headers);
+            Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validateFollowUpRequest(request);
             if (validationFailure.isPresent()) {
                 writeResponse(response, validationFailure.get());
             } else {
@@ -136,7 +134,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
             }
             return;
         }
-        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> initializationFailure = requestInspector.validateInitializeRequest(headers);
+        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> initializationFailure = requestInspector.validateInitializeRequest(request);
         if (initializationFailure.isPresent()) {
             writeResponse(response, initializationFailure.get());
         } else {
@@ -146,13 +144,12 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doDelete(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        Map<String, String> headers = requestInspector.extractHeaders(request);
-        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validateFollowUpRequest(headers);
+        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validateFollowUpRequest(request);
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
             return;
         }
-        String sessionId = requestInspector.getHeader(headers, SESSION_HEADER);
+        String sessionId = requestInspector.getSessionId(request);
         serviceWithApplicationClassLoader(withDefaultAcceptHeader(request), response);
         if (200 == response.getStatus()) {
             managedSessions.closeSession(sessionId);

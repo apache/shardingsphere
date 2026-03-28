@@ -23,6 +23,7 @@ import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
 import io.modelcontextprotocol.spec.McpSchema.JSONRPCMessage;
 import io.modelcontextprotocol.spec.McpServerSession;
 import io.modelcontextprotocol.spec.McpServerTransport;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.ManagedSessionRegistry;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
@@ -38,11 +39,12 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
     
     private final ManagedSessionRegistry managedSessions;
     
-    private final AtomicReference<String> activeSessionId = new AtomicReference<>();
+    private final AtomicReference<String> activeSessionId;
     
     SessionManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
         super(jsonMapper);
         managedSessions = new ManagedSessionRegistry(runtimeContext);
+        activeSessionId = new AtomicReference<>();
     }
     
     @Override
@@ -52,7 +54,7 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
     
     @Override
     public void setSessionFactory(final McpServerSession.Factory sessionFactory) {
-        super.setSessionFactory(transport -> createManagedSession(sessionFactory, createManagedTransport(transport)));
+        super.setSessionFactory(transport -> createManagedSession(sessionFactory, new SessionClosingTransport(transport)));
     }
     
     private McpServerSession createManagedSession(final McpServerSession.Factory sessionFactory, final McpServerTransport transport) {
@@ -63,24 +65,19 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
         return result;
     }
     
-    private McpServerTransport createManagedTransport(final McpServerTransport transport) {
-        return new SessionClosingTransport(transport);
-    }
-    
-    private void closeManagedSession() {
-        String sessionId = activeSessionId.getAndSet(null);
-        if (null == sessionId || sessionId.isEmpty()) {
-            return;
-        }
-        managedSessions.closeSession(sessionId);
-    }
-    
+    @RequiredArgsConstructor
     private final class SessionClosingTransport implements McpServerTransport {
         
         private final McpServerTransport delegate;
         
-        private SessionClosingTransport(final McpServerTransport delegate) {
-            this.delegate = delegate;
+        @Override
+        public Mono<Void> sendMessage(final JSONRPCMessage message) {
+            return delegate.sendMessage(message);
+        }
+        
+        @Override
+        public <T> T unmarshalFrom(final Object data, final TypeRef<T> typeRef) {
+            return delegate.unmarshalFrom(data, typeRef);
         }
         
         @Override
@@ -97,14 +94,11 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
             }
         }
         
-        @Override
-        public Mono<Void> sendMessage(final JSONRPCMessage message) {
-            return delegate.sendMessage(message);
-        }
-        
-        @Override
-        public <T> T unmarshalFrom(final Object data, final TypeRef<T> typeRef) {
-            return delegate.unmarshalFrom(data, typeRef);
+        private void closeManagedSession() {
+            String sessionId = activeSessionId.getAndSet(null);
+            if (null != sessionId && !sessionId.isEmpty()) {
+                managedSessions.closeSession(sessionId);
+            }
         }
     }
 }
