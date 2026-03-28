@@ -43,10 +43,6 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
     
     private final HttpTransportConfiguration config;
     
-    private final MCPRuntimeContext runtimeContext;
-    
-    private final McpJsonMapper jsonMapper;
-    
     private final MCPSyncServerFactory syncServerFactory;
     
     private Tomcat tomcat;
@@ -59,21 +55,18 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
     
     private McpSyncServer syncServer;
     
-    private boolean running;
-    
     public StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPRuntimeContext runtimeContext) {
         this.config = config;
-        this.runtimeContext = runtimeContext;
-        jsonMapper = MCPTransportJsonMapperFactory.create();
+        McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
         syncServerFactory = new MCPSyncServerFactory(runtimeContext, jsonMapper);
+        transportServlet = new StreamableHttpMCPServlet(runtimeContext, jsonMapper, config.getBindHost(), config.getEndpointPath());
     }
     
     @Override
     public void start() throws IOException {
-        if (running) {
+        if (null != syncServer) {
             return;
         }
-        transportServlet = new StreamableHttpMCPServlet(runtimeContext, jsonMapper, config.getBindHost(), config.getEndpointPath());
         syncServer = syncServerFactory.create(transportServlet);
         try {
             tomcat = new Tomcat();
@@ -89,7 +82,6 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
             servletWrapper.setAsyncSupported(true);
             context.addServletMappingDecoded(config.getEndpointPath(), "mcp-streamable-http");
             tomcat.start();
-            running = true;
         } catch (final LifecycleException ex) {
             stop();
             throw new IOException("Failed to start embedded Tomcat runtime.", ex);
@@ -103,7 +95,6 @@ public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
         closeTomcat();
         connector = null;
         deleteBaseDirectory();
-        running = false;
     }
     
     private void closeSyncServer() {
