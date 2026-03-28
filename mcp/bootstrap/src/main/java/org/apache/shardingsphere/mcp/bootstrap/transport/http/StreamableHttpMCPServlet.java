@@ -21,15 +21,12 @@ import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.transport.HttpServletStreamableServerTransportProvider;
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityValidator;
-import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpStreamableServerSession;
 import io.modelcontextprotocol.spec.McpStreamableServerTransportProvider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.ManagedSessionRegistry;
@@ -37,18 +34,12 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.http.StreamableHttpMCPR
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -60,15 +51,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private static final String SESSION_HEADER = "MCP-Session-Id";
     
-    private static final String PROTOCOL_HEADER = "MCP-Protocol-Version";
-    
     private static final String JSON_CONTENT_TYPE = "application/json";
-    
-    private static final String ACCEPT_HEADER = "Accept";
-    
-    private static final String DEFAULT_ACCEPT = "application/json, text/event-stream";
-    
-    private static final String ORIGIN_HEADER = "Origin";
     
     private final HttpServletStreamableServerTransportProvider delegate;
     
@@ -83,9 +66,8 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     StreamableHttpMCPServlet(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
         requestValidator = new StreamableHttpMCPRequestValidator(runtimeContext);
         managedSessions = new ManagedSessionRegistry(runtimeContext);
-        securityValidator = createSecurityValidator(bindHost);
-        delegate = HttpServletStreamableServerTransportProvider.builder()
-                .jsonMapper(jsonMapper).mcpEndpoint(endpointPath).securityValidator(securityValidator).build();
+        securityValidator = LoopbackOriginSecurityValidator.create(bindHost);
+        delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).securityValidator(securityValidator).build();
     }
     
     @Override
@@ -96,22 +78,10 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     @Override
     public void setSessionFactory(final McpStreamableServerSession.Factory sessionFactory) {
         delegate.setSessionFactory(initializeRequest -> {
-            McpStreamableServerSession.McpStreamableServerSessionInit result = sessionFactory.startSession(normalizeInitializeRequest(initializeRequest));
+            McpStreamableServerSession.McpStreamableServerSessionInit result = sessionFactory.startSession(StreamableHttpInitializeRequestUtils.normalizeProtocolVersion(initializeRequest));
             managedSessions.createSession(result.session().getId());
             return result;
         });
-    }
-    
-    private McpSchema.InitializeRequest normalizeInitializeRequest(final McpSchema.InitializeRequest initializeRequest) {
-        String protocolVersion = normalizeProtocolVersion(initializeRequest.protocolVersion());
-        return protocolVersion.equals(initializeRequest.protocolVersion())
-                ? initializeRequest
-                : new McpSchema.InitializeRequest(protocolVersion, initializeRequest.capabilities(), initializeRequest.clientInfo(), initializeRequest.meta());
-    }
-    
-    private String normalizeProtocolVersion(final String rawProtocolVersion) {
-        String protocolVersion = Objects.toString(rawProtocolVersion, "").trim();
-        return protocolVersion.isEmpty() ? MCPTransportConstants.PROTOCOL_VERSION : protocolVersion;
     }
     
     @Override
@@ -161,7 +131,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
         } else {
-            serviceWithApplicationClassLoader(withDefaultAcceptHeader(request), new InitializeResponseHeaderWrapper(response));
+            serviceWithApplicationClassLoader(withDefaultAcceptHeader(request), InitializeProtocolHeaderResponseWrapper.wrap(response));
         }
     }
     
@@ -201,7 +171,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     }
     
     private HttpServletRequest withDefaultAcceptHeader(final HttpServletRequest request) {
-        return Objects.toString(request.getHeader(ACCEPT_HEADER), "").trim().isEmpty() ? new AcceptHeaderRequestWrapper(request) : request;
+        return DefaultAcceptHeaderRequestWrapper.wrapIfNecessary(request);
     }
     
     @Override
@@ -224,96 +194,5 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
             result.put(each, Collections.list(request.getHeaders(each)));
         }
         return result;
-    }
-    
-    private ServerTransportSecurityValidator createSecurityValidator(final String bindHost) {
-        return isLoopbackHost(bindHost) ? new LoopbackOriginSecurityValidator() : ServerTransportSecurityValidator.NOOP;
-    }
-    
-    private boolean isLoopbackHost(final String rawHost) {
-        String host = Objects.toString(rawHost, "").trim().toLowerCase(Locale.ENGLISH);
-        return "127.0.0.1".equals(host) || "localhost".equals(host) || "::1".equals(host);
-    }
-    
-    private static final class InitializeResponseHeaderWrapper extends HttpServletResponseWrapper {
-        
-        private InitializeResponseHeaderWrapper(final HttpServletResponse response) {
-            super(response);
-        }
-        
-        @Override
-        public void setHeader(final String name, final String value) {
-            super.setHeader(name, value);
-            addNegotiatedProtocolHeader(name, value);
-        }
-        
-        @Override
-        public void addHeader(final String name, final String value) {
-            super.addHeader(name, value);
-            addNegotiatedProtocolHeader(name, value);
-        }
-        
-        private void addNegotiatedProtocolHeader(final String name, final String value) {
-            if (SESSION_HEADER.equalsIgnoreCase(name) && null != value && !value.trim().isEmpty()) {
-                super.setHeader(PROTOCOL_HEADER, MCPTransportConstants.PROTOCOL_VERSION);
-            }
-        }
-    }
-    
-    private static final class AcceptHeaderRequestWrapper extends HttpServletRequestWrapper {
-        
-        private AcceptHeaderRequestWrapper(final HttpServletRequest request) {
-            super(request);
-        }
-        
-        @Override
-        public String getHeader(final String name) {
-            return ACCEPT_HEADER.equalsIgnoreCase(name) ? DEFAULT_ACCEPT : super.getHeader(name);
-        }
-        
-        @Override
-        public Enumeration<String> getHeaders(final String name) {
-            return ACCEPT_HEADER.equalsIgnoreCase(name) ? Collections.enumeration(List.of(DEFAULT_ACCEPT)) : super.getHeaders(name);
-        }
-        
-        @Override
-        public Enumeration<String> getHeaderNames() {
-            Set<String> result = new LinkedHashSet<>(Collections.list(super.getHeaderNames()));
-            result.add(ACCEPT_HEADER);
-            return Collections.enumeration(result);
-        }
-    }
-    
-    private static final class LoopbackOriginSecurityValidator implements ServerTransportSecurityValidator {
-        
-        @Override
-        public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
-            String origin = getFirstHeaderValue(headers, ORIGIN_HEADER);
-            if (origin.isEmpty()) {
-                return;
-            }
-            try {
-                String host = Objects.toString(URI.create(origin).getHost(), "").trim();
-                if (!isLoopbackHost(host)) {
-                    throw new ServerTransportSecurityException(403, "Origin is not allowed for the current binding.");
-                }
-            } catch (final IllegalArgumentException ex) {
-                throw new ServerTransportSecurityException(403, "Origin is not allowed for the current binding.");
-            }
-        }
-        
-        private static String getFirstHeaderValue(final Map<String, List<String>> headers, final String headerName) {
-            for (Entry<String, List<String>> entry : headers.entrySet()) {
-                if (headerName.equalsIgnoreCase(entry.getKey()) && null != entry.getValue() && !entry.getValue().isEmpty()) {
-                    return Objects.toString(entry.getValue().get(0), "").trim();
-                }
-            }
-            return "";
-        }
-        
-        private static boolean isLoopbackHost(final String rawHost) {
-            String host = Objects.toString(rawHost, "").trim().toLowerCase(Locale.ENGLISH);
-            return "127.0.0.1".equals(host) || "localhost".equals(host) || "::1".equals(host);
-        }
     }
 }
