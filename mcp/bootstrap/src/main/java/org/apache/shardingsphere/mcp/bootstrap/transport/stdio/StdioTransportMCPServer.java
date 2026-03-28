@@ -19,21 +19,15 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.stdio;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpSyncServer;
-import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
-import io.modelcontextprotocol.spec.McpServerSession;
-import io.modelcontextprotocol.spec.McpServerTransportProvider;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSessionCloser;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSyncServerFactory;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -53,10 +47,13 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
     
     public StdioTransportMCPServer(final MCPRuntimeContext runtimeContext) {
         McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
-        transportProvider = new ManagedStdioTransportProvider(
-                runtimeContext, new MCPSessionCloser(runtimeContext), jsonMapper, new LifecycleAwareInputStream(System.in, () -> terminationLatch.countDown()), System.out,
-                () -> terminationLatch.countDown());
+        transportProvider = createTransportProvider(runtimeContext, jsonMapper);
         syncServerFactory = new MCPSyncServerFactory(runtimeContext, jsonMapper);
+    }
+    
+    private ManagedStdioTransportProvider createTransportProvider(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
+        return new ManagedStdioTransportProvider(runtimeContext, new MCPSessionCloser(runtimeContext), jsonMapper,
+                new LifecycleAwareInputStream(System.in, terminationLatch::countDown), System.out, terminationLatch::countDown);
     }
     
     @Override
@@ -81,69 +78,6 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
     @Override
     public void awaitTermination() throws InterruptedException {
         terminationLatch.await();
-    }
-    
-    private static final class ManagedStdioTransportProvider implements McpServerTransportProvider {
-        
-        private final MCPRuntimeContext runtimeContext;
-        
-        private final MCPSessionCloser sessionCloser;
-        
-        private final StdioServerTransportProvider delegate;
-        
-        private final Runnable closeCallback;
-        
-        private String activeSessionId;
-        
-        private ManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final MCPSessionCloser sessionCloser, final McpJsonMapper jsonMapper,
-                                              final InputStream inputStream, final OutputStream outputStream, final Runnable closeCallback) {
-            this.runtimeContext = runtimeContext;
-            this.sessionCloser = sessionCloser;
-            this.closeCallback = closeCallback;
-            delegate = new StdioServerTransportProvider(jsonMapper, inputStream, outputStream);
-        }
-        
-        @Override
-        public List<String> protocolVersions() {
-            return List.of(MCPTransportConstants.PROTOCOL_VERSION);
-        }
-        
-        @Override
-        public void setSessionFactory(final McpServerSession.Factory sessionFactory) {
-            delegate.setSessionFactory(transport -> {
-                McpServerSession result = sessionFactory.create(transport);
-                activeSessionId = result.getId();
-                runtimeContext.getSessionManager().createSession(activeSessionId);
-                return result;
-            });
-        }
-        
-        @Override
-        public reactor.core.publisher.Mono<Void> notifyClients(final String method, final Object params) {
-            return delegate.notifyClients(method, params);
-        }
-        
-        @Override
-        public reactor.core.publisher.Mono<Void> notifyClient(final String sessionId, final String method, final Object params) {
-            return delegate.notifyClient(sessionId, method, params);
-        }
-        
-        @Override
-        public reactor.core.publisher.Mono<Void> closeGracefully() {
-            return delegate.closeGracefully().doFinally(ignored -> {
-                closeManagedSession();
-                closeCallback.run();
-            });
-        }
-        
-        private void closeManagedSession() {
-            if (null == activeSessionId || activeSessionId.isEmpty()) {
-                return;
-            }
-            sessionCloser.closeSession(activeSessionId);
-            activeSessionId = null;
-        }
-        
     }
     
     private static final class LifecycleAwareInputStream extends FilterInputStream {
