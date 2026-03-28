@@ -23,8 +23,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
-import java.net.URI;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -36,27 +34,29 @@ public final class StreamableHttpMCPRequestValidator {
     
     private static final String PROTOCOL_HEADER = "MCP-Protocol-Version";
     
-    private static final String ORIGIN_HEADER = "Origin";
-    
     private final MCPRuntimeContext runtimeContext;
     
-    private final String bindHost;
+    /**
+     * Validate session header presence.
+     *
+     * @param sessionId session ID
+     * @return response status
+     */
+    public Optional<ResponseStatus> validateSessionId(final String sessionId) {
+        if (sessionId.isEmpty()) {
+            return Optional.of(new ResponseStatus(400, "Session ID required in mcp-session-id header"));
+        }
+        return Optional.empty();
+    }
     
     /**
-     * Validate session request.
+     * Validate session request after the session header has already been checked.
      *
      * @param request request
      * @param sessionId session ID
      * @return response status
      */
     public Optional<ResponseStatus> validateSessionRequest(final HttpServletRequest request, final String sessionId) {
-        if (sessionId.isEmpty()) {
-            return Optional.of(new ResponseStatus(400, "Session ID required in mcp-session-id header"));
-        }
-        Optional<ResponseStatus> originFailure = validateInitialization(request);
-        if (originFailure.isPresent()) {
-            return originFailure;
-        }
         if (!runtimeContext.getSessionManager().hasSession(sessionId)) {
             return Optional.of(new ResponseStatus(404, "Session does not exist."));
         }
@@ -65,33 +65,6 @@ public final class StreamableHttpMCPRequestValidator {
             return Optional.of(new ResponseStatus(400, "Protocol version mismatch."));
         }
         return Optional.empty();
-    }
-    
-    /**
-     * Validate initialization request.
-     *
-     * @param request request
-     * @return response status
-     */
-    public Optional<ResponseStatus> validateInitialization(final HttpServletRequest request) {
-        if (!isLoopbackHost(bindHost)) {
-            return Optional.empty();
-        }
-        String origin = Objects.toString(request.getHeader(ORIGIN_HEADER), "").trim();
-        if (origin.isEmpty()) {
-            return Optional.empty();
-        }
-        try {
-            String host = Optional.ofNullable(URI.create(origin).getHost()).orElse("");
-            return isLoopbackHost(host) ? Optional.empty() : Optional.of(new ResponseStatus(403, "Origin is not allowed for the current binding."));
-        } catch (final IllegalArgumentException ignored) {
-            return Optional.of(new ResponseStatus(403, "Origin is not allowed for the current binding."));
-        }
-    }
-    
-    private boolean isLoopbackHost(final String rawHost) {
-        String host = Objects.toString(rawHost, "").trim().toLowerCase(Locale.ENGLISH);
-        return "127.0.0.1".equals(host) || "localhost".equals(host) || "::1".equals(host);
     }
     
     private String normalizeProtocolVersion(final String rawProtocolVersion) {

@@ -88,6 +88,10 @@
 - HTTP listener 由 `mcp/bootstrap` 局部引入的 embedded Tomcat 承载
 - MCP Java SDK 只允许出现在 `mcp/bootstrap`
 - 不引入 Spring runtime
+- HTTP transport mechanics 优先复用官方
+  `HttpServletStreamableServerTransportProvider`
+- ShardingSphere 自定义代码只保留协议版本 contract、initialize 响应头、
+  managed session cleanup 与必要兼容层
 
 ### 6.4 合规约束
 - 官方 Java SDK 使用 MIT 许可
@@ -160,6 +164,7 @@
 ### 7.7 HTTP 服务承载
 - 最终决策：
   - 使用 embedded Tomcat 11 承载 MCP Java SDK 的 Streamable HTTP servlet
+  - loopback `Origin` 边界优先通过 SDK `securityValidator` 承载
 - 原因：
   - 只在 bootstrap 层引入最小 servlet 容器
   - 与官方 Streamable HTTP servlet transport 对齐
@@ -369,6 +374,9 @@ shardingsphere
     - `mcp/bootstrap`
     - `distribution/mcp`
   - 不进入根工程统一依赖管理
+  - routing、Accept 校验、SDK session 与 `DELETE` 基础语义优先交给官方 provider
+  - initialize `MCP-Protocol-Version` 响应头、follow-up protocol contract、
+    managed session cleanup 和零损失兼容 shim 继续由 ShardingSphere 保留
 
 ### 10.3 本地调试
 - 采用：

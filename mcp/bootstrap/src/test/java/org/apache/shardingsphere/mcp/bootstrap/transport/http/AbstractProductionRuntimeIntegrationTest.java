@@ -74,6 +74,13 @@ abstract class AbstractProductionRuntimeIntegrationTest {
         return HttpClient.newHttpClient();
     }
     
+    protected final void stopRuntime() {
+        if (null != httpServer) {
+            httpServer.stop();
+            httpServer = null;
+        }
+    }
+    
     protected final String initializeSession(final HttpClient httpClient) throws IOException, InterruptedException {
         HttpRequest initializeRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")

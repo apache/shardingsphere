@@ -100,8 +100,13 @@ enum MCPToolDefinition {
         
         @Override
         ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-            return createToolRequest("list_columns", arguments, Objects.toString(arguments.get("database"), "").trim(), Objects.toString(arguments.get("schema"), "").trim(), Objects.toString(arguments.get("object_name"), "").trim(), Objects.toString(arguments.get("object_type"), "").trim().toUpperCase(Locale.ENGLISH), Collections.emptySet(),
-                    integerArgument(arguments, "page_size", 100), Objects.toString(arguments.get("page_token"), "").trim());
+            return createToolRequest("list_columns", arguments,
+                    Objects.toString(arguments.get("database"), "").trim(),
+                    Objects.toString(arguments.get("schema"), "").trim(),
+                    Objects.toString(arguments.get("object_name"), "").trim(),
+                    Objects.toString(arguments.get("object_type"), "").trim().toUpperCase(Locale.ENGLISH),
+                    Collections.emptySet(), integerArgument(arguments, "page_size", 100),
+                    Objects.toString(arguments.get("page_token"), "").trim());
         }
     },
     
@@ -121,7 +126,12 @@ enum MCPToolDefinition {
         
         @Override
         ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-            return createToolRequest("list_indexes", arguments, Objects.toString(arguments.get("database"), "").trim(), Objects.toString(arguments.get("schema"), "").trim(), Objects.toString(arguments.get("table"), "").trim(), "TABLE", Collections.emptySet(), integerArgument(arguments, "page_size", 100), Objects.toString(arguments.get("page_token"), "").trim());
+            return createToolRequest("list_indexes", arguments,
+                    Objects.toString(arguments.get("database"), "").trim(),
+                    Objects.toString(arguments.get("schema"), "").trim(),
+                    Objects.toString(arguments.get("table"), "").trim(),
+                    "TABLE", Collections.emptySet(), integerArgument(arguments, "page_size", 100),
+                    Objects.toString(arguments.get("page_token"), "").trim());
         }
     },
     
@@ -159,7 +169,11 @@ enum MCPToolDefinition {
         
         @Override
         ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-            return createToolRequest("describe_table", arguments, Objects.toString(arguments.get("database"), "").trim(), Objects.toString(arguments.get("schema"), "").trim(), Objects.toString(arguments.get("table"), "").trim(), "", Collections.emptySet(), 100, "");
+            return createToolRequest("describe_table", arguments,
+                    Objects.toString(arguments.get("database"), "").trim(),
+                    Objects.toString(arguments.get("schema"), "").trim(),
+                    Objects.toString(arguments.get("table"), "").trim(),
+                    "", Collections.emptySet(), 100, "");
         }
     },
     
@@ -176,7 +190,11 @@ enum MCPToolDefinition {
         
         @Override
         ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-            return createToolRequest("describe_view", arguments, Objects.toString(arguments.get("database"), "").trim(), Objects.toString(arguments.get("schema"), "").trim(), Objects.toString(arguments.get("view"), "").trim(), "", Collections.emptySet(), 100, "");
+            return createToolRequest("describe_view", arguments,
+                    Objects.toString(arguments.get("database"), "").trim(),
+                    Objects.toString(arguments.get("schema"), "").trim(),
+                    Objects.toString(arguments.get("view"), "").trim(),
+                    "", Collections.emptySet(), 100, "");
         }
     },
     

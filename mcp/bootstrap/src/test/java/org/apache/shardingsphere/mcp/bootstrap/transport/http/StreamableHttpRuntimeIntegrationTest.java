@@ -140,6 +140,81 @@ class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeInte
     }
     
     @Test
+    void assertLaunchHttpServerWithoutAcceptHeader() throws IOException, InterruptedException, SQLException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
+        HttpRequest initializeRequest = HttpRequest.newBuilder(createEndpointUri())
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(createInitializeRequestBody()))
+                .build();
+        HttpResponse<String> initializeResponse = httpClient.send(initializeRequest, HttpResponse.BodyHandlers.ofString());
+        assertThat(initializeResponse.statusCode(), is(200));
+        assertThat(initializeResponse.headers().firstValue("MCP-Protocol-Version").orElse(""), is(MCPTransportConstants.PROTOCOL_VERSION));
+        assertFalse(initializeResponse.headers().firstValue("MCP-Session-Id").orElse("").isEmpty());
+    }
+    
+    @Test
+    void assertAcceptFollowUpRequestWithoutProtocolHeader() throws IOException, InterruptedException, SQLException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json, text/event-stream")
+                .header("MCP-Session-Id", sessionId)
+                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
+                        "jsonrpc", "2.0",
+                        "id", "tool-1",
+                        "method", "tools/call",
+                        "params", Map.of("name", "get_capabilities", "arguments", Map.of())))))
+                .build();
+        HttpResponse<String> actualResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        assertThat(actualResponse.statusCode(), is(200));
+        assertTrue(actualResponse.body().contains("supportedTools"));
+    }
+    
+    @Test
+    void assertAcceptFollowUpRequestWithoutAcceptHeader() throws IOException, InterruptedException, SQLException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
+                .header("Content-Type", "application/json")
+                .header("MCP-Session-Id", sessionId)
+                .header("MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)
+                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
+                        "jsonrpc", "2.0",
+                        "id", "tool-1",
+                        "method", "tools/call",
+                        "params", Map.of("name", "get_capabilities", "arguments", Map.of())))))
+                .build();
+        HttpResponse<String> actualResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        assertThat(actualResponse.statusCode(), is(200));
+        assertTrue(actualResponse.body().contains("supportedTools"));
+    }
+    
+    @Test
+    void assertAcceptFollowUpRequestWithBlankAcceptHeader() throws IOException, InterruptedException, SQLException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
+                .header("Content-Type", "application/json")
+                .header("Accept", " ")
+                .header("MCP-Session-Id", sessionId)
+                .header("MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)
+                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
+                        "jsonrpc", "2.0",
+                        "id", "tool-1",
+                        "method", "tools/call",
+                        "params", Map.of("name", "get_capabilities", "arguments", Map.of())))))
+                .build();
+        HttpResponse<String> actualResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        assertThat(actualResponse.statusCode(), is(200));
+        assertTrue(actualResponse.body().contains("supportedTools"));
+    }
+    
+    @Test
     void assertRejectDeleteWithoutSessionHeader() throws IOException, InterruptedException, SQLException {
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();
@@ -216,6 +291,28 @@ class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeInte
         HttpResponse<String> initializeResponse = httpClient.send(initializeRequest, HttpResponse.BodyHandlers.ofString());
         assertThat(initializeResponse.statusCode(), is(403));
         assertTrue(initializeResponse.body().contains("Origin is not allowed"));
+    }
+    
+    @Test
+    void assertRejectFollowUpWithInvalidOrigin() throws IOException, InterruptedException, SQLException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
+                .header("Origin", "https://evil.example.com")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json, text/event-stream")
+                .header("MCP-Session-Id", sessionId)
+                .header("MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)
+                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
+                        "jsonrpc", "2.0",
+                        "id", "tool-1",
+                        "method", "tools/call",
+                        "params", Map.of("name", "get_capabilities", "arguments", Map.of())))))
+                .build();
+        HttpResponse<String> actualResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        assertThat(actualResponse.statusCode(), is(403));
+        assertTrue(actualResponse.body().contains("Origin is not allowed"));
     }
     
     @Override

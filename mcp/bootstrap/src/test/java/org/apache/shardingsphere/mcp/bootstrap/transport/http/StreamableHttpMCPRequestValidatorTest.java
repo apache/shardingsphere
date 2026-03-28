@@ -36,31 +36,10 @@ class StreamableHttpMCPRequestValidatorTest {
     
     private static final String PROTOCOL_HEADER = "MCP-Protocol-Version";
     
-    private static final String ORIGIN_HEADER = "Origin";
-    
     @Test
-    void assertValidateInitialization() {
-        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(mock(MCPRuntimeContext.class), "127.0.0.1");
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        Optional<StreamableHttpMCPRequestValidator.ResponseStatus> actual = validator.validateInitialization(request);
-        assertTrue(actual.isEmpty());
-    }
-    
-    @Test
-    void assertValidateInitializationWithInvalidOrigin() {
-        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(mock(MCPRuntimeContext.class), "127.0.0.1");
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader(ORIGIN_HEADER)).thenReturn("https://example.com");
-        StreamableHttpMCPRequestValidator.ResponseStatus actual = validator.validateInitialization(request).orElseThrow();
-        assertThat(actual.getStatusCode(), is(403));
-        assertThat(actual.getMessage(), is("Origin is not allowed for the current binding."));
-    }
-    
-    @Test
-    void assertValidateSessionRequestWithMissingSessionId() {
-        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(mock(MCPRuntimeContext.class), "127.0.0.1");
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        StreamableHttpMCPRequestValidator.ResponseStatus actual = validator.validateSessionRequest(request, "").orElseThrow();
+    void assertValidateSessionIdWithMissingSessionId() {
+        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(mock(MCPRuntimeContext.class));
+        StreamableHttpMCPRequestValidator.ResponseStatus actual = validator.validateSessionId("").orElseThrow();
         assertThat(actual.getStatusCode(), is(400));
         assertThat(actual.getMessage(), is("Session ID required in mcp-session-id header"));
     }
@@ -69,7 +48,7 @@ class StreamableHttpMCPRequestValidatorTest {
     void assertValidateSessionRequestWithUnknownSession() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         when(sessionManager.hasSession("session-id")).thenReturn(false);
-        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(createRuntimeContext(sessionManager), "127.0.0.1");
+        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(createRuntimeContext(sessionManager));
         HttpServletRequest request = mock(HttpServletRequest.class);
         StreamableHttpMCPRequestValidator.ResponseStatus actual = validator.validateSessionRequest(request, "session-id").orElseThrow();
         assertThat(actual.getStatusCode(), is(404));
@@ -80,7 +59,7 @@ class StreamableHttpMCPRequestValidatorTest {
     void assertValidateSessionRequestWithProtocolMismatch() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         when(sessionManager.hasSession("session-id")).thenReturn(true);
-        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(createRuntimeContext(sessionManager), "127.0.0.1");
+        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(createRuntimeContext(sessionManager));
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader(PROTOCOL_HEADER)).thenReturn("2024-11-05");
         StreamableHttpMCPRequestValidator.ResponseStatus actual = validator.validateSessionRequest(request, "session-id").orElseThrow();
@@ -92,9 +71,19 @@ class StreamableHttpMCPRequestValidatorTest {
     void assertValidateSessionRequest() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         when(sessionManager.hasSession("session-id")).thenReturn(true);
-        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(createRuntimeContext(sessionManager), "127.0.0.1");
+        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(createRuntimeContext(sessionManager));
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader(PROTOCOL_HEADER)).thenReturn(MCPTransportConstants.PROTOCOL_VERSION);
+        Optional<StreamableHttpMCPRequestValidator.ResponseStatus> actual = validator.validateSessionRequest(request, "session-id");
+        assertTrue(actual.isEmpty());
+    }
+    
+    @Test
+    void assertValidateSessionRequestWithoutProtocolHeader() {
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        when(sessionManager.hasSession("session-id")).thenReturn(true);
+        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(createRuntimeContext(sessionManager));
+        HttpServletRequest request = mock(HttpServletRequest.class);
         Optional<StreamableHttpMCPRequestValidator.ResponseStatus> actual = validator.validateSessionRequest(request, "session-id");
         assertTrue(actual.isEmpty());
     }

@@ -36,6 +36,8 @@ class ProductionMetadataDiscoveryIntegrationTest extends AbstractProductionRunti
     
     private String jdbcUrl;
     
+    private boolean useDriverClassName = true;
+    
     @Override
     protected void prepareRuntimeFixture() throws SQLException {
         jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-metadata");
@@ -44,7 +46,7 @@ class ProductionMetadataDiscoveryIntegrationTest extends AbstractProductionRunti
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
-        return H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
+        return Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", useDriverClassName ? "org.h2.Driver" : ""));
     }
     
     @Test
@@ -92,5 +94,18 @@ class ProductionMetadataDiscoveryIntegrationTest extends AbstractProductionRunti
         assertThat(String.valueOf(structuredContent.get("databaseType")), is("H2"));
         assertTrue(String.valueOf(structuredContent.get("supportedObjectTypes")).contains("VIEW"));
         assertTrue(String.valueOf(structuredContent.get("supportedObjectTypes")).contains("INDEX"));
+    }
+    
+    @Test
+    void assertGetCapabilitiesWithoutExplicitDriverClassName() throws SQLException, IOException, InterruptedException {
+        useDriverClassName = false;
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "get_capabilities", Map.of("database", "logic_db"));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> structuredContent = getStructuredContent(actual.body());
+        assertThat(String.valueOf(structuredContent.get("database")), is("logic_db"));
+        assertThat(String.valueOf(structuredContent.get("databaseType")), is("H2"));
     }
 }
