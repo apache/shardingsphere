@@ -28,36 +28,36 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-class ManagedSessionRegistryTest {
+class MCPSessionRegistryTest {
     
     @Test
-    void assertCreateSession() {
+    void assertCreate() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        ManagedSessionRegistry registry = new ManagedSessionRegistry(createRuntimeContext(sessionManager));
-        registry.createSession("session-id");
+        MCPSessionRegistry registry = new MCPSessionRegistry(createRuntimeContext(sessionManager));
+        registry.create("session-id");
         verify(sessionManager).createSession("session-id");
     }
     
     @Test
-    void assertCloseSession() {
+    void assertClose() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         DatabaseRuntime databaseRuntime = mock(DatabaseRuntime.class);
-        ManagedSessionRegistry registry = new ManagedSessionRegistry(createRuntimeContext(sessionManager, databaseRuntime));
-        registry.createSession("session-id");
-        registry.closeSession("session-id");
+        MCPSessionRegistry registry = new MCPSessionRegistry(createRuntimeContext(sessionManager, databaseRuntime));
+        registry.create("session-id");
+        registry.close("session-id");
         verify(sessionManager).createSession("session-id");
         verify(sessionManager).closeSession("session-id");
         verify(databaseRuntime).closeSession("session-id");
     }
     
     @Test
-    void assertCloseSessions() {
+    void assertCloseAll() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         DatabaseRuntime databaseRuntime = mock(DatabaseRuntime.class);
-        ManagedSessionRegistry registry = new ManagedSessionRegistry(createRuntimeContext(sessionManager, databaseRuntime));
-        registry.createSession("session-id");
-        registry.closeSessions();
-        registry.closeSessions();
+        MCPSessionRegistry registry = new MCPSessionRegistry(createRuntimeContext(sessionManager, databaseRuntime));
+        registry.create("session-id");
+        registry.closeAll();
+        registry.closeAll();
         verify(sessionManager).createSession("session-id");
         verify(sessionManager).closeSession("session-id");
         verify(databaseRuntime).closeSession("session-id");

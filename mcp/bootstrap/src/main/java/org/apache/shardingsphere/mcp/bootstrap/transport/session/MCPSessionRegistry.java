@@ -25,9 +25,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Registry for managed MCP sessions.
+ * MCP sessions registry.
  */
-public final class ManagedSessionRegistry {
+public final class MCPSessionRegistry {
     
     private final MCPSessionManager sessionManager;
     
@@ -35,38 +35,38 @@ public final class ManagedSessionRegistry {
     
     private final Set<String> activeSessionIds = ConcurrentHashMap.newKeySet();
     
-    public ManagedSessionRegistry(final MCPRuntimeContext runtimeContext) {
+    public MCPSessionRegistry(final MCPRuntimeContext runtimeContext) {
         sessionManager = runtimeContext.getSessionManager();
         sessionCloser = new MCPSessionCloser(runtimeContext);
     }
     
     /**
-     * Create one managed session.
+     * Create session.
      *
      * @param sessionId session ID
      */
-    public void createSession(final String sessionId) {
+    public void create(final String sessionId) {
         sessionManager.createSession(sessionId);
         activeSessionIds.add(sessionId);
     }
     
     /**
-     * Close one managed session.
+     * Close session.
      *
      * @param sessionId session ID
      */
-    public void closeSession(final String sessionId) {
+    public void close(final String sessionId) {
         if (activeSessionIds.remove(sessionId)) {
             sessionCloser.closeSession(sessionId);
         }
     }
     
     /**
-     * Close all managed sessions.
+     * Close all sessions.
      */
-    public void closeSessions() {
+    public void closeAll() {
         for (String each : new LinkedHashSet<>(activeSessionIds)) {
-            closeSession(each);
+            close(each);
         }
     }
 }

@@ -32,7 +32,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.bootstrap.transport.session.ManagedSessionRegistry;
+import org.apache.shardingsphere.mcp.bootstrap.transport.session.MCPSessionRegistry;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPRequestValidator.ResponseStatus;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
@@ -70,7 +70,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final StreamableHttpMCPRequestValidator requestValidator;
     
-    private final ManagedSessionRegistry managedSessions;
+    private final MCPSessionRegistry managedSessions;
     
     private final ServerTransportSecurityValidator securityValidator;
     
@@ -79,7 +79,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     StreamableHttpMCPServlet(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
         delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).securityValidator(ServerTransportSecurityValidator.NOOP).build();
         requestValidator = new StreamableHttpMCPRequestValidator(runtimeContext);
-        managedSessions = new ManagedSessionRegistry(runtimeContext);
+        managedSessions = new MCPSessionRegistry(runtimeContext);
         securityValidator = LoopbackOriginSecurityValidator.create(bindHost);
         closed = new AtomicBoolean();
     }
@@ -93,7 +93,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     public void setSessionFactory(final McpStreamableServerSession.Factory sessionFactory) {
         delegate.setSessionFactory(initializeRequest -> {
             McpStreamableServerSession.McpStreamableServerSessionInit result = sessionFactory.startSession(normalizeInitializeRequest(initializeRequest));
-            managedSessions.createSession(result.session().getId());
+            managedSessions.create(result.session().getId());
             return result;
         });
     }
@@ -201,13 +201,13 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "").trim();
         Optional<ResponseStatus> validationFailure = doExecute(request, response, sessionId);
         if (validationFailure.isEmpty() && 200 == response.getStatus()) {
-            managedSessions.closeSession(sessionId);
+            managedSessions.close(sessionId);
         }
     }
     
     @Override
     public reactor.core.publisher.Mono<Void> closeGracefully() {
-        return closed.compareAndSet(false, true) ? delegate.closeGracefully().doFinally(ignored -> managedSessions.closeSessions()) : reactor.core.publisher.Mono.empty();
+        return closed.compareAndSet(false, true) ? delegate.closeGracefully().doFinally(ignored -> managedSessions.closeAll()) : reactor.core.publisher.Mono.empty();
     }
     
     @Override

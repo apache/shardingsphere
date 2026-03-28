@@ -26,7 +26,7 @@ import io.modelcontextprotocol.spec.McpServerTransport;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.bootstrap.transport.session.ManagedSessionRegistry;
+import org.apache.shardingsphere.mcp.bootstrap.transport.session.MCPSessionRegistry;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import reactor.core.publisher.Mono;
 
@@ -39,13 +39,13 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 final class SessionManagedStdioTransportProvider extends StdioServerTransportProvider {
     
-    private final ManagedSessionRegistry managedSessions;
+    private final MCPSessionRegistry managedSessions;
     
     private final AtomicBoolean activeSession;
     
     SessionManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
         super(jsonMapper);
-        managedSessions = new ManagedSessionRegistry(runtimeContext);
+        managedSessions = new MCPSessionRegistry(runtimeContext);
         activeSession = new AtomicBoolean();
     }
     
@@ -66,7 +66,7 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
         try {
             McpServerSession result = sessionFactory.create(managedTransport);
             String sessionId = result.getId();
-            managedSessions.createSession(sessionId);
+            managedSessions.create(sessionId);
             managedTransport.bindSessionId(sessionId);
             failed = false;
             return result;
@@ -121,7 +121,7 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
             try {
                 String actualSessionId = sessionId.get();
                 if (null != actualSessionId && !actualSessionId.isEmpty()) {
-                    managedSessions.closeSession(actualSessionId);
+                    managedSessions.close(actualSessionId);
                 }
             } finally {
                 activeSession.set(false);
