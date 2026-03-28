@@ -69,13 +69,13 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final AtomicBoolean closed = new AtomicBoolean();
     
-    private final MCPHttpRequestValidator requestValidator;
+    private final StreamableHttpMCPRequestInspector requestValidator;
     
     private final MCPSessionCloser sessionCloser;
     
     StreamableHttpMCPServlet(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
         this.runtimeContext = runtimeContext;
-        requestValidator = new MCPHttpRequestValidator(runtimeContext, bindHost);
+        requestValidator = new StreamableHttpMCPRequestInspector(runtimeContext, bindHost);
         sessionCloser = new MCPSessionCloser(runtimeContext);
         delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).contextExtractor(request -> McpTransportContext.create(Collections.emptyMap())).build();
     }
@@ -121,7 +121,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         Map<String, String> headers = requestValidator.extractHeaders(request);
-        Optional<MCPHttpRequestValidator.ResponseStatus> validationFailure = requestValidator.validateFollowUpRequest(headers);
+        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestValidator.validateFollowUpRequest(headers);
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
         } else {
@@ -134,7 +134,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         Map<String, String> headers = requestValidator.extractHeaders(request);
         String sessionId = requestValidator.getHeader(headers, SESSION_HEADER);
         if (!sessionId.isEmpty()) {
-            Optional<MCPHttpRequestValidator.ResponseStatus> validationFailure = requestValidator.validateFollowUpRequest(headers);
+            Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestValidator.validateFollowUpRequest(headers);
             if (validationFailure.isPresent()) {
                 writeResponse(response, validationFailure.get());
             } else {
@@ -142,7 +142,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
             }
             return;
         }
-        Optional<MCPHttpRequestValidator.ResponseStatus> initializationFailure = requestValidator.validateInitializeRequest(headers);
+        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> initializationFailure = requestValidator.validateInitializeRequest(headers);
         if (initializationFailure.isPresent()) {
             writeResponse(response, initializationFailure.get());
         } else {
@@ -153,7 +153,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     @Override
     protected void doDelete(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         Map<String, String> headers = requestValidator.extractHeaders(request);
-        Optional<MCPHttpRequestValidator.ResponseStatus> validationFailure = requestValidator.validateFollowUpRequest(headers);
+        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestValidator.validateFollowUpRequest(headers);
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
             return;
@@ -165,7 +165,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         }
     }
     
-    private void writeResponse(final HttpServletResponse response, final MCPHttpRequestValidator.ResponseStatus responseStatus) throws IOException {
+    private void writeResponse(final HttpServletResponse response, final StreamableHttpMCPRequestInspector.ResponseStatus responseStatus) throws IOException {
         response.setStatus(responseStatus.getStatusCode());
         response.setContentType(JSON_CONTENT_TYPE);
         response.getWriter().write(JsonUtils.toJsonString(Map.of("message", responseStatus.getMessage())));

@@ -31,10 +31,10 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * HTTP request validator for streamable MCP transport.
+ * Streamable HTTP MCP request inspector.
  */
 @RequiredArgsConstructor
-final class MCPHttpRequestValidator {
+final class StreamableHttpMCPRequestInspector {
     
     private static final String SESSION_HEADER = "MCP-Session-Id";
     
