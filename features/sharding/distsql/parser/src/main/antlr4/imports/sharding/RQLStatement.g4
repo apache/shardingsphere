@@ -40,7 +40,7 @@ showShardingTableNodes
     ;
 
 showShardingKeyGenerators
-    : SHOW SHARDING KEY GENERATORS (FROM databaseName)?
+    : SHOW SHARDING KEY (GENERATOR keyGeneratorName | GENERATORS) (FROM databaseName)?
     ;
 
 showShardingKeyGenerateStrategies

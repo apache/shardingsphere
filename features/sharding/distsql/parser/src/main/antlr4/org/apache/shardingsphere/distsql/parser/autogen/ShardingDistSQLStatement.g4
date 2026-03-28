@@ -21,9 +21,11 @@ import Symbol, RDLStatement, RQLStatement, RALStatement;
 
 execute
     : (createShardingTableRule
+    | createShardingKeyGenerator
     | createShardingKeyGenerateStrategy
     | createDefaultShardingStrategy
     | createShardingTableReferenceRule
+    | alterShardingKeyGenerator
     | alterShardingKeyGenerateStrategy
     | alterShardingTableRule
     | alterShardingTableReferenceRule

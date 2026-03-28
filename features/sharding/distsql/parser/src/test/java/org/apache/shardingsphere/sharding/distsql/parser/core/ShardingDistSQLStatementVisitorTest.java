@@ -21,10 +21,14 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.sharding.distsql.parser.facade.ShardingDistSQLParserFacade;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.ColumnKeyGenerateStrategyDefinitionSegment;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.SequenceKeyGenerateStrategyDefinitionSegment;
+import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingKeyGenerateStrategyStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingKeyGenerateStrategyStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingKeyGenerateStrategyStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.DropShardingKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGenerateStrategiesStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
@@ -54,6 +58,15 @@ class ShardingDistSQLStatementVisitorTest {
     }
     
     @Test
+    void assertCreateKeyGenerator() {
+        CreateShardingKeyGeneratorStatement actual = (CreateShardingKeyGeneratorStatement) parse(
+                "CREATE SHARDING KEY GENERATOR snowflake_generator (TYPE(NAME='SNOWFLAKE', PROPERTIES('worker-id'=1)))");
+        assertThat(actual.getName(), is("snowflake_generator"));
+        assertThat(actual.getAlgorithmSegment().getName(), is("SNOWFLAKE"));
+        assertThat(actual.getAlgorithmSegment().getProps().getProperty("worker-id"), is("1"));
+    }
+    
+    @Test
     void assertCreateColumnStrategyWithGenerator() {
         CreateShardingKeyGenerateStrategyStatement actual = (CreateShardingKeyGenerateStrategyStatement) parse(
                 "CREATE SHARDING KEY GENERATE STRATEGY order_id_strategy (TABLE=t_order, COLUMN=order_id, GENERATOR=snowflake_generator)");
@@ -80,6 +93,14 @@ class ShardingDistSQLStatementVisitorTest {
     }
     
     @Test
+    void assertAlterKeyGenerator() {
+        AlterShardingKeyGeneratorStatement actual = (AlterShardingKeyGeneratorStatement) parse(
+                "ALTER SHARDING KEY GENERATOR snowflake_generator (TYPE(NAME='UUID'))");
+        assertThat(actual.getName(), is("snowflake_generator"));
+        assertThat(actual.getAlgorithmSegment().getName(), is("UUID"));
+    }
+    
+    @Test
     void assertCreateSequenceStrategyWithAlgorithm() {
         CreateShardingKeyGenerateStrategyStatement actual = (CreateShardingKeyGenerateStrategyStatement) parse(
                 "CREATE SHARDING KEY GENERATE STRATEGY order_sequence_strategy (SEQUENCE='order_seq', TYPE(NAME='redis_cluster_auto_increment', PROPERTIES('increment'=1)))");
@@ -101,6 +122,20 @@ class ShardingDistSQLStatementVisitorTest {
     }
     
     @Test
+    void assertShowKeyGenerators() {
+        ShowShardingKeyGeneratorsStatement actual = (ShowShardingKeyGeneratorsStatement) parse("SHOW SHARDING KEY GENERATORS FROM sharding_db");
+        assertTrue(!actual.getName().isPresent());
+        assertThat(actual.getFromDatabase().getDatabase().getIdentifier().getValue(), is("sharding_db"));
+    }
+    
+    @Test
+    void assertShowKeyGenerator() {
+        ShowShardingKeyGeneratorsStatement actual = (ShowShardingKeyGeneratorsStatement) parse("SHOW SHARDING KEY GENERATOR snowflake_generator FROM sharding_db");
+        assertThat(actual.getName().get(), is("snowflake_generator"));
+        assertThat(actual.getFromDatabase().getDatabase().getIdentifier().getValue(), is("sharding_db"));
+    }
+    
+    @Test
     void assertShowStrategy() {
         ShowShardingKeyGenerateStrategiesStatement actual = (ShowShardingKeyGenerateStrategiesStatement) parse(
                 "SHOW SHARDING KEY GENERATE STRATEGY order_id_strategy FROM sharding_db");
@@ -114,6 +149,13 @@ class ShardingDistSQLStatementVisitorTest {
                 "DROP SHARDING KEY GENERATE STRATEGY IF EXISTS order_id_strategy, order_sequence_strategy");
         assertTrue(actual.isIfExists());
         assertThat(actual.getNames(), is(Arrays.asList("order_id_strategy", "order_sequence_strategy")));
+    }
+    
+    @Test
+    void assertDropKeyGenerator() {
+        DropShardingKeyGeneratorStatement actual = (DropShardingKeyGeneratorStatement) parse("DROP SHARDING KEY GENERATOR IF EXISTS snowflake_generator, uuid_generator");
+        assertTrue(actual.isIfExists());
+        assertThat(actual.getNames(), is(Arrays.asList("snowflake_generator", "uuid_generator")));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
