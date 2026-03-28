@@ -43,11 +43,7 @@ final class StreamableHttpMCPRequestInspector {
     
     private final String bindHost;
     
-    Optional<ResponseStatus> validateInitializeRequest(final HttpServletRequest request) {
-        return validateOrigin(request);
-    }
-    
-    Optional<ResponseStatus> validateFollowUpRequest(final HttpServletRequest request) {
+    Optional<ResponseStatus> validate(final HttpServletRequest request) {
         String sessionId = getSessionId(request);
         if (sessionId.isEmpty()) {
             return Optional.of(new ResponseStatus(400, "Session ID required in mcp-session-id header"));
@@ -67,14 +63,14 @@ final class StreamableHttpMCPRequestInspector {
     }
     
     String getSessionId(final HttpServletRequest request) {
-        return getHeaderValue(request.getHeader(SESSION_HEADER));
+        return normalize(request.getHeader(SESSION_HEADER));
     }
     
-    private Optional<ResponseStatus> validateOrigin(final HttpServletRequest request) {
+    Optional<ResponseStatus> validateOrigin(final HttpServletRequest request) {
         if (!isLoopbackHost(bindHost)) {
             return Optional.empty();
         }
-        String origin = getHeaderValue(request.getHeader(ORIGIN_HEADER));
+        String origin = normalize(request.getHeader(ORIGIN_HEADER));
         if (origin.isEmpty()) {
             return Optional.empty();
         }
@@ -86,18 +82,18 @@ final class StreamableHttpMCPRequestInspector {
         }
     }
     
-    private boolean isLoopbackHost(final String host) {
-        String actualHost = null == host ? "" : host.trim().toLowerCase(Locale.ENGLISH);
-        return "127.0.0.1".equals(actualHost) || "localhost".equals(actualHost) || "::1".equals(actualHost);
+    private boolean isLoopbackHost(final String rawHost) {
+        String host = normalize(rawHost).toLowerCase(Locale.ENGLISH);
+        return "127.0.0.1".equals(host) || "localhost".equals(host) || "::1".equals(host);
     }
     
     private String normalizeProtocolVersion(final String rawProtocolVersion) {
-        String actualProtocolVersion = null == rawProtocolVersion ? "" : rawProtocolVersion.trim();
-        return actualProtocolVersion.isEmpty() ? MCPTransportConstants.PROTOCOL_VERSION : actualProtocolVersion;
+        String protocolVersion = normalize(rawProtocolVersion);
+        return protocolVersion.isEmpty() ? MCPTransportConstants.PROTOCOL_VERSION : protocolVersion;
     }
     
-    private String getHeaderValue(final String rawHeaderValue) {
-        return null == rawHeaderValue ? "" : rawHeaderValue.trim();
+    private String normalize(final String value) {
+        return null == value ? "" : value.trim();
     }
     
     @RequiredArgsConstructor

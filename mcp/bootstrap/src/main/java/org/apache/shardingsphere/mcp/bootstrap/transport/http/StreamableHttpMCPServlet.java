@@ -114,7 +114,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validateFollowUpRequest(request);
+        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validate(request);
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
         } else {
@@ -126,7 +126,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         String sessionId = requestInspector.getSessionId(request);
         if (!sessionId.isEmpty()) {
-            Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validateFollowUpRequest(request);
+            Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validate(request);
             if (validationFailure.isPresent()) {
                 writeResponse(response, validationFailure.get());
             } else {
@@ -134,7 +134,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
             }
             return;
         }
-        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> initializationFailure = requestInspector.validateInitializeRequest(request);
+        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> initializationFailure = requestInspector.validateOrigin(request);
         if (initializationFailure.isPresent()) {
             writeResponse(response, initializationFailure.get());
         } else {
@@ -144,7 +144,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     protected void doDelete(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validateFollowUpRequest(request);
+        Optional<StreamableHttpMCPRequestInspector.ResponseStatus> validationFailure = requestInspector.validate(request);
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
             return;
