@@ -167,7 +167,7 @@ abstract class AbstractProductionRuntimeE2ETest {
         MCPLaunchConfiguration launchConfiguration = MCPConfigurationLoader.load(configFile.toString());
         MCPRuntimeTransport runtimeTransport = new MCPRuntimeLauncher().launch(launchConfiguration);
         if (!(runtimeTransport instanceof StreamableHttpMCPServer)) {
-            runtimeTransport.close();
+            runtimeTransport.stop();
             throw new IllegalStateException("HTTP transport must be enabled for production runtime E2E tests.");
         }
         return (StreamableHttpMCPServer) runtimeTransport;

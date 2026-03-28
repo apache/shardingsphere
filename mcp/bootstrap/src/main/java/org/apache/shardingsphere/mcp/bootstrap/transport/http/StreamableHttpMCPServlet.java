@@ -72,8 +72,8 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     StreamableHttpMCPServlet(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
         requestValidator = new StreamableHttpMCPRequestValidator(runtimeContext, bindHost);
         managedSessions = new ManagedSessionRegistry(runtimeContext);
-        delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath)
-                .contextExtractor(request -> McpTransportContext.create(Collections.emptyMap())).build();
+        delegate = HttpServletStreamableServerTransportProvider.builder()
+                .jsonMapper(jsonMapper).mcpEndpoint(endpointPath).contextExtractor(request -> McpTransportContext.create(Collections.emptyMap())).build();
     }
     
     @Override
