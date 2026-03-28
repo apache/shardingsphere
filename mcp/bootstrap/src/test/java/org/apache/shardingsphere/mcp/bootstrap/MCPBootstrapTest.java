@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
@@ -48,13 +48,13 @@ class MCPBootstrapTest {
     @Test
     void assertMainWithDefaultConfigPath() throws IOException {
         MCPLaunchConfiguration launchConfig = createLaunchConfiguration(false);
-        MCPRuntimeTransport runtimeTransport = mock(MCPRuntimeTransport.class);
+        MCPRuntimeServer runtimeServer = mock(MCPRuntimeServer.class);
         Runtime runtime = mock(Runtime.class);
         try (
                 MockedStatic<MCPConfigurationLoader> mockedConfigurationLoader = mockStatic(MCPConfigurationLoader.class);
                 MockedStatic<Runtime> mockedRuntime = mockStatic(Runtime.class);
                 MockedConstruction<MCPRuntimeLauncher> mockedConstruction = mockConstruction(MCPRuntimeLauncher.class,
-                        (mock, context) -> when(mock.launch(launchConfig)).thenReturn(runtimeTransport))) {
+                        (mock, context) -> when(mock.launch(launchConfig)).thenReturn(runtimeServer))) {
             mockedRuntime.when(Runtime::getRuntime).thenReturn(runtime);
             mockedConfigurationLoader.when(() -> MCPConfigurationLoader.load("conf/mcp.yaml")).thenReturn(launchConfig);
             MCPBootstrap.main(new String[0]);
@@ -63,19 +63,19 @@ class MCPBootstrapTest {
             verify(actualLauncher).launch(launchConfig);
         }
         verify(runtime).addShutdownHook(any(Thread.class));
-        verifyNoInteractions(runtimeTransport);
+        verifyNoInteractions(runtimeServer);
     }
     
     @Test
     void assertMainWithTrimmedConfigPath() throws IOException {
         MCPLaunchConfiguration launchConfig = createLaunchConfiguration(false);
-        MCPRuntimeTransport runtimeTransport = mock(MCPRuntimeTransport.class);
+        MCPRuntimeServer runtimeServer = mock(MCPRuntimeServer.class);
         Runtime runtime = mock(Runtime.class);
         try (
                 MockedStatic<MCPConfigurationLoader> mockedConfigurationLoader = mockStatic(MCPConfigurationLoader.class);
                 MockedStatic<Runtime> mockedRuntime = mockStatic(Runtime.class);
                 MockedConstruction<MCPRuntimeLauncher> mockedConstruction = mockConstruction(MCPRuntimeLauncher.class,
-                        (mock, context) -> when(mock.launch(launchConfig)).thenReturn(runtimeTransport))) {
+                        (mock, context) -> when(mock.launch(launchConfig)).thenReturn(runtimeServer))) {
             mockedRuntime.when(Runtime::getRuntime).thenReturn(runtime);
             mockedConfigurationLoader.when(() -> MCPConfigurationLoader.load("custom.yaml")).thenReturn(launchConfig);
             MCPBootstrap.main(new String[]{"  custom.yaml  "});
@@ -84,20 +84,20 @@ class MCPBootstrapTest {
             verify(actualLauncher).launch(launchConfig);
         }
         verify(runtime).addShutdownHook(any(Thread.class));
-        verifyNoInteractions(runtimeTransport);
+        verifyNoInteractions(runtimeServer);
     }
     
     @Test
-    void assertMainCloseTransportWhenShutdownHookRuns() throws IOException {
+    void assertMainCloseServerWhenShutdownHookRuns() throws IOException {
         MCPLaunchConfiguration launchConfig = createLaunchConfiguration(true);
-        MCPRuntimeTransport runtimeTransport = mock(MCPRuntimeTransport.class);
+        MCPRuntimeServer runtimeServer = mock(MCPRuntimeServer.class);
         Runtime runtime = mock(Runtime.class);
         AtomicReference<Thread> shutdownHook = new AtomicReference<>();
         try (
                 MockedStatic<MCPConfigurationLoader> mockedConfigurationLoader = mockStatic(MCPConfigurationLoader.class);
                 MockedStatic<Runtime> mockedRuntime = mockStatic(Runtime.class);
                 MockedConstruction<MCPRuntimeLauncher> mockedConstruction = mockConstruction(MCPRuntimeLauncher.class,
-                        (mock, context) -> when(mock.launch(launchConfig)).thenReturn(runtimeTransport))) {
+                        (mock, context) -> when(mock.launch(launchConfig)).thenReturn(runtimeServer))) {
             mockedRuntime.when(Runtime::getRuntime).thenReturn(runtime);
             mockedConfigurationLoader.when(() -> MCPConfigurationLoader.load("conf/mcp.yaml")).thenReturn(launchConfig);
             doAnswer(invocation -> {
@@ -110,21 +110,21 @@ class MCPBootstrapTest {
             verify(actualLauncher).launch(launchConfig);
             shutdownHook.get().run();
         }
-        verify(runtimeTransport).stop();
-        verifyNoMoreInteractions(runtimeTransport);
+        verify(runtimeServer).stop();
+        verifyNoMoreInteractions(runtimeServer);
     }
     
     @Test
-    void assertMainCloseTransportOnceWhenShutdownHookRunsRepeatedly() throws IOException {
+    void assertMainCloseServerOnceWhenShutdownHookRunsRepeatedly() throws IOException {
         MCPLaunchConfiguration launchConfig = createLaunchConfiguration(true);
-        MCPRuntimeTransport runtimeTransport = mock(MCPRuntimeTransport.class);
+        MCPRuntimeServer runtimeServer = mock(MCPRuntimeServer.class);
         Runtime runtime = mock(Runtime.class);
         AtomicReference<Thread> shutdownHook = new AtomicReference<>();
         try (
                 MockedStatic<MCPConfigurationLoader> mockedConfigurationLoader = mockStatic(MCPConfigurationLoader.class);
                 MockedStatic<Runtime> mockedRuntime = mockStatic(Runtime.class);
                 MockedConstruction<MCPRuntimeLauncher> mockedConstruction = mockConstruction(MCPRuntimeLauncher.class,
-                        (mock, context) -> when(mock.launch(launchConfig)).thenReturn(runtimeTransport))) {
+                        (mock, context) -> when(mock.launch(launchConfig)).thenReturn(runtimeServer))) {
             mockedRuntime.when(Runtime::getRuntime).thenReturn(runtime);
             mockedConfigurationLoader.when(() -> MCPConfigurationLoader.load("stdio.yaml")).thenReturn(launchConfig);
             doAnswer(invocation -> {
@@ -138,8 +138,8 @@ class MCPBootstrapTest {
             shutdownHook.get().run();
             shutdownHook.get().run();
         }
-        verify(runtimeTransport).stop();
-        verifyNoMoreInteractions(runtimeTransport);
+        verify(runtimeServer).stop();
+        verifyNoMoreInteractions(runtimeServer);
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean stdioEnabled) {

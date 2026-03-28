@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,8 +45,8 @@ public final class MCPBootstrap {
     public static void main(final String[] args) throws IOException {
         // CHECKSTYLE:ON
         MCPLaunchConfiguration launchConfig = MCPConfigurationLoader.load(getConfigurationPath(args));
-        AtomicReference<MCPRuntimeTransport> runtimeTransportReference = new AtomicReference<>(new MCPRuntimeLauncher().launch(launchConfig));
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> closeRuntimeTransport(runtimeTransportReference), "shardingsphere-mcp-shutdown"));
+        AtomicReference<MCPRuntimeServer> runtimeServerReference = new AtomicReference<>(new MCPRuntimeLauncher().launch(launchConfig));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> closeRuntimeServer(runtimeServerReference), "shardingsphere-mcp-shutdown"));
     }
     
     private static String getConfigurationPath(final String[] args) {
@@ -57,10 +57,10 @@ public final class MCPBootstrap {
         return result.isEmpty() ? DEFAULT_CONFIG_PATH : result;
     }
     
-    private static void closeRuntimeTransport(final AtomicReference<MCPRuntimeTransport> runtimeTransportReference) {
-        MCPRuntimeTransport runtimeTransport = runtimeTransportReference.getAndSet(null);
-        if (null != runtimeTransport) {
-            runtimeTransport.stop();
+    private static void closeRuntimeServer(final AtomicReference<MCPRuntimeServer> runtimeServerReference) {
+        MCPRuntimeServer runtimeServer = runtimeServerReference.getAndSet(null);
+        if (null != runtimeServer) {
+            runtimeServer.stop();
         }
     }
 }

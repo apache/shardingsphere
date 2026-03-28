@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.type.http;
+package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.AfterEach;
@@ -140,12 +140,12 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     }
     
     private StreamableHttpMCPServer launchHttpServer(final MCPLaunchConfiguration launchConfiguration) throws IOException {
-        MCPRuntimeTransport actual = new MCPRuntimeLauncher().launch(launchConfiguration);
+        MCPRuntimeServer actual = new MCPRuntimeLauncher().launch(launchConfiguration);
         if (actual instanceof StreamableHttpMCPServer) {
             return (StreamableHttpMCPServer) actual;
         }
         actual.stop();
-        throw new IllegalStateException("HTTP transport must be enabled for HTTP integration tests.");
+        throw new IllegalStateException("HTTP server must be enabled for HTTP integration tests.");
     }
     
     private Map<String, Object> createInitializeRequestParams() {

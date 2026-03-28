@@ -26,8 +26,8 @@ import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguratio
 import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.lifecycle.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
-import org.apache.shardingsphere.mcp.bootstrap.transport.type.http.StreamableHttpMCPServer;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
@@ -165,12 +165,12 @@ abstract class AbstractProductionRuntimeE2ETest {
     
     private StreamableHttpMCPServer createStartedHttpServer(final Path configFile) throws IOException {
         MCPLaunchConfiguration launchConfiguration = MCPConfigurationLoader.load(configFile.toString());
-        MCPRuntimeTransport runtimeTransport = new MCPRuntimeLauncher().launch(launchConfiguration);
-        if (!(runtimeTransport instanceof StreamableHttpMCPServer)) {
-            runtimeTransport.stop();
+        MCPRuntimeServer server = new MCPRuntimeLauncher().launch(launchConfiguration);
+        if (!(server instanceof StreamableHttpMCPServer)) {
+            server.stop();
             throw new IllegalStateException("HTTP transport must be enabled for production runtime E2E tests.");
         }
-        return (StreamableHttpMCPServer) runtimeTransport;
+        return (StreamableHttpMCPServer) server;
     }
     
     private Map<String, Object> createInitializeRequestParams() {

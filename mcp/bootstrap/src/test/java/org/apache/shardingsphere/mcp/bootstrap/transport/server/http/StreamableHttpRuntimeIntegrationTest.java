@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.type.http;
+package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.jdbc.runtime.H2RuntimeTestSupport;

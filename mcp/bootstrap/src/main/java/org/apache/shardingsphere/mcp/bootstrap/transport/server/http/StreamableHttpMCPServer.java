@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.type.http;
+package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpSyncServer;
@@ -26,7 +26,7 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSyncServerFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
@@ -39,7 +39,7 @@ import java.util.Comparator;
 /**
  * Streamable HTTP MCP server.
  */
-public final class StreamableHttpMCPServer implements MCPRuntimeTransport {
+public final class StreamableHttpMCPServer implements MCPRuntimeServer {
     
     private final HttpTransportConfiguration config;
     

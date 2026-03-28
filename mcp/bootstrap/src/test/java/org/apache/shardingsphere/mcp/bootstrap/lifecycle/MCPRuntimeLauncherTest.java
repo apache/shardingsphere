@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
-import org.apache.shardingsphere.mcp.bootstrap.transport.type.stdio.StdioTransportMCPServer;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
 import org.apache.shardingsphere.mcp.jdbc.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ class MCPRuntimeLauncherTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPRuntimeTransport actual = assertDoesNotThrow(() -> runtimeLauncher.launch(
+        MCPRuntimeServer actual = assertDoesNotThrow(() -> runtimeLauncher.launch(
                 new MCPLaunchConfiguration(createHttpTransportConfiguration(true, "/mcp"), new StdioTransportConfiguration(false),
                         H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
         actual.stop();
@@ -69,7 +69,7 @@ class MCPRuntimeLauncherTest {
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
         H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPRuntimeTransport actual = assertDoesNotThrow(() -> runtimeLauncher.launch(
+        MCPRuntimeServer actual = assertDoesNotThrow(() -> runtimeLauncher.launch(
                 new MCPLaunchConfiguration(createHttpTransportConfiguration(true, "/mcp"), new StdioTransportConfiguration(false),
                         Map.of("logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl)))));
         actual.stop();
@@ -88,10 +88,10 @@ class MCPRuntimeLauncherTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher-stdio");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPRuntimeTransport actual = assertDoesNotThrow(
+        MCPRuntimeServer actual = assertDoesNotThrow(
                 () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createHttpTransportConfiguration(false, "/mcp"), new StdioTransportConfiguration(true),
                         H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
-        assertThat(actual, isA(StdioTransportMCPServer.class));
+        assertThat(actual, isA(StdioMCPServer.class));
         actual.stop();
     }
     
@@ -101,7 +101,7 @@ class MCPRuntimeLauncherTest {
         DriverManager.registerDriver(driver);
         try {
             MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-            MCPRuntimeTransport actual = assertDoesNotThrow(() -> runtimeLauncher.launch(
+            MCPRuntimeServer actual = assertDoesNotThrow(() -> runtimeLauncher.launch(
                     new MCPLaunchConfiguration(createHttpTransportConfiguration(true, "/mcp"), new StdioTransportConfiguration(false),
                             Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", CountingDriver.JDBC_URL, "", "", "")))));
             actual.stop();

@@ -15,19 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.type.stdio;
+package org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpSyncServer;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSyncServerFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 /**
- * SDK-backed STDIO MCP transport server.
+ * SDK-backed STDIO MCP server.
  */
-public final class StdioTransportMCPServer implements MCPRuntimeTransport {
+public final class StdioMCPServer implements MCPRuntimeServer {
     
     private final SessionManagedStdioTransportProvider transportProvider;
     
@@ -35,7 +35,7 @@ public final class StdioTransportMCPServer implements MCPRuntimeTransport {
     
     private McpSyncServer syncServer;
     
-    public StdioTransportMCPServer(final MCPRuntimeContext runtimeContext) {
+    public StdioMCPServer(final MCPRuntimeContext runtimeContext) {
         McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
         transportProvider = new SessionManagedStdioTransportProvider(runtimeContext, jsonMapper);
         syncServerFactory = new MCPSyncServerFactory(runtimeContext, jsonMapper);

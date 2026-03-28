@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mcp.bootstrap.lifecycle;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPRuntimeTransport;
-import org.apache.shardingsphere.mcp.bootstrap.transport.type.http.StreamableHttpMCPServer;
-import org.apache.shardingsphere.mcp.bootstrap.transport.type.stdio.StdioTransportMCPServer;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.jdbc.runtime.MCPJdbcRuntimeContextFactory;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
@@ -36,21 +36,21 @@ public final class MCPRuntimeLauncher {
      * Launch.
      *
      * @param config launch configuration
-     * @return MCP runtime transport
-     * @throws IOException when the active transport startup fails
+     * @return MCP runtime server
+     * @throws IOException when the active server startup fails
      */
-    public MCPRuntimeTransport launch(final MCPLaunchConfiguration config) throws IOException {
-        MCPRuntimeTransport result = createTransport(config, new MCPJdbcRuntimeContextFactory().create(new MCPSessionManager(), config.getDatabases()));
+    public MCPRuntimeServer launch(final MCPLaunchConfiguration config) throws IOException {
+        MCPRuntimeServer result = createRuntimeServer(config, new MCPJdbcRuntimeContextFactory().create(new MCPSessionManager(), config.getDatabases()));
         try {
             result.start();
         } catch (final IOException ex) {
             result.stop();
-            throw new IOException(String.format("Failed to start %s transport.", config.getHttpTransport().isEnabled() ? "HTTP" : "STDIO"), ex);
+            throw new IOException(String.format("Failed to start %s server.", config.getHttpTransport().isEnabled() ? "HTTP" : "STDIO"), ex);
         }
         return result;
     }
     
-    private MCPRuntimeTransport createTransport(final MCPLaunchConfiguration config, final MCPRuntimeContext runtimeContext) {
-        return config.getHttpTransport().isEnabled() ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext) : new StdioTransportMCPServer(runtimeContext);
+    private MCPRuntimeServer createRuntimeServer(final MCPLaunchConfiguration config, final MCPRuntimeContext runtimeContext) {
+        return config.getHttpTransport().isEnabled() ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext) : new StdioMCPServer(runtimeContext);
     }
 }

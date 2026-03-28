@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport;
+package org.apache.shardingsphere.mcp.bootstrap.transport.server;
 
 import java.io.IOException;
 
 /**
- * Running MCP transport.
+ * MCP runtime server.
  */
-public interface MCPRuntimeTransport {
+public interface MCPRuntimeServer {
     
     /**
-     * Start transport.
+     * Start server.
      *
      * @throws IOException IO exception
      */
     void start() throws IOException;
     
     /**
-     * Stop transport.
+     * Stop server.
      */
     void stop();
     

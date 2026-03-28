@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.type.http;
+package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
