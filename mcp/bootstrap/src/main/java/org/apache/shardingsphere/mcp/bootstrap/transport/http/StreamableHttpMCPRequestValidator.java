@@ -43,17 +43,17 @@ public final class StreamableHttpMCPRequestValidator {
     private final String bindHost;
     
     /**
-     * Validate request.
-     * 
+     * Validate session request.
+     *
      * @param request request
      * @param sessionId session ID
      * @return response status
      */
-    public Optional<ResponseStatus> validate(final HttpServletRequest request, final String sessionId) {
+    public Optional<ResponseStatus> validateSessionRequest(final HttpServletRequest request, final String sessionId) {
         if (sessionId.isEmpty()) {
             return Optional.of(new ResponseStatus(400, "Session ID required in mcp-session-id header"));
         }
-        Optional<ResponseStatus> originFailure = validateOrigin(request);
+        Optional<ResponseStatus> originFailure = validateInitialization(request);
         if (originFailure.isPresent()) {
             return originFailure;
         }
@@ -68,12 +68,12 @@ public final class StreamableHttpMCPRequestValidator {
     }
     
     /**
-     * Validate origin.
-     * 
+     * Validate initialization request.
+     *
      * @param request request
      * @return response status
      */
-    public Optional<ResponseStatus> validateOrigin(final HttpServletRequest request) {
+    public Optional<ResponseStatus> validateInitialization(final HttpServletRequest request) {
         if (!isLoopbackHost(bindHost)) {
             return Optional.empty();
         }
@@ -90,12 +90,12 @@ public final class StreamableHttpMCPRequestValidator {
     }
     
     private boolean isLoopbackHost(final String rawHost) {
-        String host = Objects.toString((rawHost), "").trim().toLowerCase(Locale.ENGLISH);
+        String host = Objects.toString(rawHost, "").trim().toLowerCase(Locale.ENGLISH);
         return "127.0.0.1".equals(host) || "localhost".equals(host) || "::1".equals(host);
     }
     
     private String normalizeProtocolVersion(final String rawProtocolVersion) {
-        String protocolVersion = Objects.toString((rawProtocolVersion), "").trim();
+        String protocolVersion = Objects.toString(rawProtocolVersion, "").trim();
         return protocolVersion.isEmpty() ? MCPTransportConstants.PROTOCOL_VERSION : protocolVersion;
     }
     

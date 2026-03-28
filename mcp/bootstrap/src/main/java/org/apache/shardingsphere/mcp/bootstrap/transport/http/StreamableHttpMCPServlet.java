@@ -65,12 +65,12 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final AtomicBoolean closed = new AtomicBoolean();
     
-    private final StreamableHttpMCPRequestValidator requestInspector;
+    private final StreamableHttpMCPRequestValidator requestValidator;
     
     private final ManagedSessionRegistry managedSessions;
     
     StreamableHttpMCPServlet(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
-        requestInspector = new StreamableHttpMCPRequestValidator(runtimeContext, bindHost);
+        requestValidator = new StreamableHttpMCPRequestValidator(runtimeContext, bindHost);
         managedSessions = new ManagedSessionRegistry(runtimeContext);
         delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath)
                 .contextExtractor(request -> McpTransportContext.create(Collections.emptyMap())).build();
@@ -116,7 +116,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     @Override
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "").trim();
-        Optional<StreamableHttpMCPRequestValidator.ResponseStatus> validationFailure = requestInspector.validate(request, sessionId);
+        Optional<StreamableHttpMCPRequestValidator.ResponseStatus> validationFailure = requestValidator.validateSessionRequest(request, sessionId);
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
         } else {
@@ -128,7 +128,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "").trim();
         if (!sessionId.isEmpty()) {
-            Optional<StreamableHttpMCPRequestValidator.ResponseStatus> validationFailure = requestInspector.validate(request, sessionId);
+            Optional<StreamableHttpMCPRequestValidator.ResponseStatus> validationFailure = requestValidator.validateSessionRequest(request, sessionId);
             if (validationFailure.isPresent()) {
                 writeResponse(response, validationFailure.get());
             } else {
@@ -136,7 +136,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
             }
             return;
         }
-        Optional<StreamableHttpMCPRequestValidator.ResponseStatus> initializationFailure = requestInspector.validateOrigin(request);
+        Optional<StreamableHttpMCPRequestValidator.ResponseStatus> initializationFailure = requestValidator.validateInitialization(request);
         if (initializationFailure.isPresent()) {
             writeResponse(response, initializationFailure.get());
         } else {
@@ -147,7 +147,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     @Override
     protected void doDelete(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
         String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "").trim();
-        Optional<StreamableHttpMCPRequestValidator.ResponseStatus> validationFailure = requestInspector.validate(request, sessionId);
+        Optional<StreamableHttpMCPRequestValidator.ResponseStatus> validationFailure = requestValidator.validateSessionRequest(request, sessionId);
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
             return;
