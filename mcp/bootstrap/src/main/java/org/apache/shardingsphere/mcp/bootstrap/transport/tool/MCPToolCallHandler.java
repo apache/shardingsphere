@@ -52,15 +52,6 @@ final class MCPToolCallHandler {
         }
     }
     
-    private McpSchema.CallToolResult handleMetadataToolCall(final String toolName, final Map<String, Object> arguments) {
-        ToolDispatchResult result = runtimeContext.getMetadataToolDispatcher().dispatch(runtimeContext.getMetadataCatalog(),
-                runtimeContext.getToolCatalog().createMetadataToolRequest(toolName, arguments));
-        if (!result.isSuccessful()) {
-            return errorToolResult(runtimeContext.getPayloadBuilder().toDomainErrorCode(result.getErrorCode().orElse(ErrorCode.INVALID_REQUEST)), result.getMessage());
-        }
-        return successToolResult(runtimeContext.getPayloadBuilder().createMetadataItemsPayload(result.getMetadataObjects(), result.getNextPageToken()));
-    }
-    
     private McpSchema.CallToolResult handleGetCapabilities(final Map<String, Object> arguments) {
         String database = runtimeContext.getToolCatalog().getCapabilityDatabase(arguments);
         if (database.isEmpty()) {
@@ -80,6 +71,15 @@ final class MCPToolCallHandler {
         Object payload = runtimeContext.getPayloadBuilder().createExecuteQueryPayload(response);
         return response.isSuccessful() ? successToolResult(payload)
                 : errorToolResult(runtimeContext.getPayloadBuilder().toDomainErrorCode(response.getError().get().getErrorCode()), response.getError().get().getMessage(), payload);
+    }
+    
+    private McpSchema.CallToolResult handleMetadataToolCall(final String toolName, final Map<String, Object> arguments) {
+        ToolDispatchResult result = runtimeContext.getMetadataToolDispatcher().dispatch(runtimeContext.getMetadataCatalog(),
+                runtimeContext.getToolCatalog().createMetadataToolRequest(toolName, arguments));
+        if (!result.isSuccessful()) {
+            return errorToolResult(runtimeContext.getPayloadBuilder().toDomainErrorCode(result.getErrorCode().orElse(ErrorCode.INVALID_REQUEST)), result.getMessage());
+        }
+        return successToolResult(runtimeContext.getPayloadBuilder().createMetadataItemsPayload(result.getMetadataObjects(), result.getNextPageToken()));
     }
     
     private McpSchema.CallToolResult successToolResult(final Object payload) {
