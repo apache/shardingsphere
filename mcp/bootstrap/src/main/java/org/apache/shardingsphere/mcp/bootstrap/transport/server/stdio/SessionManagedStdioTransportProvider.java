@@ -24,7 +24,6 @@ import io.modelcontextprotocol.spec.McpSchema.JSONRPCMessage;
 import io.modelcontextprotocol.spec.McpServerSession;
 import io.modelcontextprotocol.spec.McpServerTransport;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.session.MCPSessionLifecycleRegistry;
@@ -38,12 +37,9 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
     
     private final MCPSessionLifecycleRegistry managedSessions;
     
-    private final AtomicBoolean activeSession;
-    
     SessionManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
         super(jsonMapper);
         managedSessions = runtimeContext.getSessionLifecycleRegistry();
-        activeSession = new AtomicBoolean();
     }
     
     @Override
@@ -57,21 +53,12 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
     }
     
     private McpServerSession createManagedSession(final McpServerSession.Factory sessionFactory, final McpServerTransport transport) {
-        ShardingSpherePreconditions.checkState(activeSession.compareAndSet(false, true), () -> new IllegalStateException("STDIO transport supports only one active session at a time."));
         SessionClosingTransport managedTransport = new SessionClosingTransport(transport);
-        boolean failed = true;
-        try {
-            McpServerSession session = sessionFactory.create(managedTransport);
-            String sessionId = session.getId();
-            managedSessions.create(sessionId);
-            managedTransport.bindSessionId(sessionId);
-            failed = false;
-            return session;
-        } finally {
-            if (failed) {
-                activeSession.set(false);
-            }
-        }
+        McpServerSession session = sessionFactory.create(managedTransport);
+        String sessionId = session.getId();
+        managedSessions.create(sessionId);
+        managedTransport.bindSessionId(sessionId);
+        return session;
     }
     
     @RequiredArgsConstructor
@@ -84,7 +71,7 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
         private final AtomicBoolean closed = new AtomicBoolean();
         
         private void bindSessionId(final String sessionId) {
-            ShardingSpherePreconditions.checkState(this.sessionId.compareAndSet(null, sessionId), () -> new IllegalStateException("STDIO session ID has already been bound."));
+            this.sessionId.set(sessionId);
         }
         
         @Override
@@ -115,14 +102,7 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
             if (!closed.compareAndSet(false, true)) {
                 return;
             }
-            try {
-                String actualSessionId = sessionId.get();
-                if (null != actualSessionId && !actualSessionId.isEmpty()) {
-                    managedSessions.close(actualSessionId);
-                }
-            } finally {
-                activeSession.set(false);
-            }
+            managedSessions.close(sessionId.get());
         }
     }
 }

@@ -20,10 +20,6 @@ package org.apache.shardingsphere.mcp.session;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * Coordinate MCP session lifecycle across transports and runtime services.
  */
@@ -34,8 +30,6 @@ public final class MCPSessionLifecycleRegistry {
     
     private final MCPSessionManager sessionManager;
     
-    private final Set<String> activeSessionIds = ConcurrentHashMap.newKeySet();
-    
     /**
      * Create and register one managed session.
      *
@@ -43,7 +37,6 @@ public final class MCPSessionLifecycleRegistry {
      */
     public void create(final String sessionId) {
         sessionManager.createSession(sessionId);
-        activeSessionIds.add(sessionId);
     }
     
     /**
@@ -52,7 +45,7 @@ public final class MCPSessionLifecycleRegistry {
      * @param sessionId session identifier
      */
     public void close(final String sessionId) {
-        if (activeSessionIds.remove(sessionId)) {
+        if (sessionManager.hasSession(sessionId)) {
             databaseRuntime.closeSession(sessionId);
             sessionManager.closeSession(sessionId);
         }
@@ -62,7 +55,7 @@ public final class MCPSessionLifecycleRegistry {
      * Close all managed sessions.
      */
     public void closeAll() {
-        for (String each : new LinkedHashSet<>(activeSessionIds)) {
+        for (String each : sessionManager.getSessions().keySet()) {
             close(each);
         }
     }

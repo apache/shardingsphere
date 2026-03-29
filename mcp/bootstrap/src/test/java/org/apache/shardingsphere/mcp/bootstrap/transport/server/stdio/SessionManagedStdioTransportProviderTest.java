@@ -32,7 +32,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
@@ -62,23 +61,6 @@ class SessionManagedStdioTransportProviderTest {
         SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(runtimeContext, MCPTransportJsonMapperFactory.create());
         provider.setSessionFactory(sessionFactory);
         verify(sessionLifecycleRegistry).create("session-id");
-    }
-    
-    @Test
-    void assertSetSessionFactoryWhenSessionAlreadyActive() {
-        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
-        MCPSessionLifecycleRegistry sessionLifecycleRegistry = mock(MCPSessionLifecycleRegistry.class);
-        McpServerSession.Factory sessionFactory = mock(McpServerSession.Factory.class);
-        McpServerSession session = mock(McpServerSession.class);
-        when(runtimeContext.getSessionLifecycleRegistry()).thenReturn(sessionLifecycleRegistry);
-        when(sessionFactory.create(any(McpServerTransport.class))).thenReturn(session);
-        when(session.getId()).thenReturn("session-id");
-        SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(runtimeContext, MCPTransportJsonMapperFactory.create());
-        provider.setSessionFactory(sessionFactory);
-        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> provider.setSessionFactory(sessionFactory));
-        assertThat(actual.getMessage(), is("STDIO transport supports only one active session at a time."));
-        verify(sessionLifecycleRegistry).create("session-id");
-        verifyNoMoreInteractions(sessionLifecycleRegistry);
     }
     
     @Test

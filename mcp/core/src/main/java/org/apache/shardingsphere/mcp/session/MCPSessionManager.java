@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * MCP session manager.
  */
+@Getter
 public final class MCPSessionManager {
     
     private final Map<String, MCPSessionContext> sessions = new ConcurrentHashMap<>();

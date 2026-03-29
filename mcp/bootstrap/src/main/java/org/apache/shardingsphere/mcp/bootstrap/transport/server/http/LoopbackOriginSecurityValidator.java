@@ -57,7 +57,7 @@ final class LoopbackOriginSecurityValidator implements ServerTransportSecurityVa
     
     private static String getOriginValue(final Map<String, List<String>> headers) {
         for (Entry<String, List<String>> entry : headers.entrySet()) {
-            if (ORIGIN_HEADER.equalsIgnoreCase(entry.getKey()) && null != entry.getValue() && !entry.getValue().isEmpty()) {
+            if (ORIGIN_HEADER.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()) {
                 return Objects.toString(entry.getValue().get(0), "").trim();
             }
         }

@@ -49,7 +49,7 @@ public final class MCPBootstrap {
     }
     
     private static String getConfigurationPath(final String[] args) {
-        if (0 == args.length || null == args[0]) {
+        if (0 == args.length) {
             return DEFAULT_CONFIG_PATH;
         }
         String result = args[0].trim();

@@ -114,7 +114,7 @@ public final class MCPJdbcMetadataLoader {
                     continue;
                 }
                 String viewName = Objects.toString(views.getString("TABLE_NAME"), "").trim();
-                if (viewName.trim().isEmpty()) {
+                if (viewName.isEmpty()) {
                     continue;
                 }
                 registerSchema(databaseName, schemaName, metadataObjects, discoveredMetadataObjectTypes, foundSchemas);
@@ -167,7 +167,7 @@ public final class MCPJdbcMetadataLoader {
                     continue;
                 }
                 discoveredMetadataObjectTypes.add(MetadataObjectType.INDEX);
-                metadataObjects.add(new MetadataObject(databaseName, schemaName, MetadataObjectType.INDEX, indexName.trim(), "TABLE", tableName));
+                metadataObjects.add(new MetadataObject(databaseName, schemaName, MetadataObjectType.INDEX, indexName, "TABLE", tableName));
             }
         }
     }

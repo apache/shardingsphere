@@ -247,17 +247,17 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
             @Override
             public void setHeader(final String name, final String value) {
                 super.setHeader(name, value);
-                addNegotiatedProtocolHeader(name, value);
+                addNegotiatedProtocolHeader(name);
             }
             
             @Override
             public void addHeader(final String name, final String value) {
                 super.addHeader(name, value);
-                addNegotiatedProtocolHeader(name, value);
+                addNegotiatedProtocolHeader(name);
             }
             
-            private void addNegotiatedProtocolHeader(final String name, final String value) {
-                if (SESSION_HEADER.equalsIgnoreCase(name) && null != value && !value.trim().isEmpty()) {
+            private void addNegotiatedProtocolHeader(final String name) {
+                if (SESSION_HEADER.equalsIgnoreCase(name)) {
                     super.setHeader(PROTOCOL_HEADER, MCPTransportConstants.PROTOCOL_VERSION);
                 }
             }
