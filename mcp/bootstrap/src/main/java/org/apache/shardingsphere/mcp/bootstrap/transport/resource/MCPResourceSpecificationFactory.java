@@ -23,6 +23,7 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.resource.MCPResourcePayloadResolver;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,8 +65,10 @@ public final class MCPResourceSpecificationFactory {
      * @return resource template specifications
      */
     public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
-        return runtimeContext.getResourceUriResolver().getSupportedResources().stream().
-                filter(this::isTemplatedResource).map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource)).collect(Collectors.toList());
+        return runtimeContext.getResourceUriResolver().getSupportedResources().stream()
+                .filter(this::isTemplatedResource)
+                .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource))
+                .collect(Collectors.toList());
     }
     
     private boolean isTemplatedResource(final String resourceUri) {

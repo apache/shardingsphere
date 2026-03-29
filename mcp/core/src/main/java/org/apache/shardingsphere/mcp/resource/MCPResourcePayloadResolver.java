@@ -15,24 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.resource;
+package org.apache.shardingsphere.mcp.resource;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
-import org.apache.shardingsphere.mcp.resource.ResourceLoadResult;
-import org.apache.shardingsphere.mcp.resource.ResourceUriResolution;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
-final class MCPResourcePayloadResolver {
+/**
+ * Resolve one MCP resource URI into a transport-neutral payload.
+ */
+public final class MCPResourcePayloadResolver {
     
     private final MCPRuntimeContext runtimeContext;
     
-    Object resolve(final String resourceUri) {
+    /**
+     * Construct a resource payload resolver.
+     *
+     * @param runtimeContext runtime context
+     */
+    public MCPResourcePayloadResolver(final MCPRuntimeContext runtimeContext) {
+        this.runtimeContext = runtimeContext;
+    }
+    
+    /**
+     * Resolve one resource URI.
+     *
+     * @param resourceUri resource URI
+     * @return resolved payload
+     */
+    public Object resolve(final String resourceUri) {
         Optional<ResourceUriResolution> resolution = runtimeContext.getResourceUriResolver().resolve(resourceUri);
         if (resolution.isEmpty()) {
             return runtimeContext.getPayloadBuilder().createErrorPayload("invalid_request", "Unsupported resource URI.");
