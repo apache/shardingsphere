@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.resource;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 
 import java.util.Collections;
@@ -28,6 +29,7 @@ import java.util.Optional;
 /**
  * Loaded resource result for one request.
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class ResourceLoadResult {
     
@@ -40,13 +42,6 @@ public final class ResourceLoadResult {
     private final ErrorCode errorCode;
     
     private final String message;
-    
-    private ResourceLoadResult(final List<MetadataObject> metadataObjects, final boolean errorCodePresent, final ErrorCode errorCode, final String message) {
-        this.metadataObjects = metadataObjects;
-        this.errorCodePresent = errorCodePresent;
-        this.errorCode = errorCode;
-        this.message = message;
-    }
     
     /**
      * Determine whether the load finished successfully.

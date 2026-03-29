@@ -24,8 +24,8 @@ import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * MCP resource specification factory.
@@ -54,13 +54,8 @@ public final class MCPResourceSpecificationFactory {
      * @return resource specifications
      */
     public List<SyncResourceSpecification> createResourceSpecifications() {
-        List<SyncResourceSpecification> result = new ArrayList<>();
-        for (String each : runtimeContext.getResourceUriResolver().getSupportedResources()) {
-            if (!isTemplatedResource(each)) {
-                result.add(new SyncResourceSpecification(createResource(each), this::handleReadResource));
-            }
-        }
-        return result;
+        return runtimeContext.getResourceUriResolver().getSupportedResources().stream()
+                .filter(each -> !isTemplatedResource(each)).map(each -> new SyncResourceSpecification(createResource(each), this::handleReadResource)).collect(Collectors.toList());
     }
     
     /**
@@ -69,13 +64,12 @@ public final class MCPResourceSpecificationFactory {
      * @return resource template specifications
      */
     public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
-        List<SyncResourceTemplateSpecification> result = new ArrayList<>();
-        for (String each : runtimeContext.getResourceUriResolver().getSupportedResources()) {
-            if (isTemplatedResource(each)) {
-                result.add(new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource));
-            }
-        }
-        return result;
+        return runtimeContext.getResourceUriResolver().getSupportedResources().stream().
+                filter(this::isTemplatedResource).map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource)).collect(Collectors.toList());
+    }
+    
+    private boolean isTemplatedResource(final String resourceUri) {
+        return resourceUri.contains("{");
     }
     
     private McpSchema.Resource createResource(final String uri) {
@@ -99,9 +93,5 @@ public final class MCPResourceSpecificationFactory {
     private McpSchema.ReadResourceResult handleReadResource(final McpSyncServerExchange exchange, final McpSchema.ReadResourceRequest request) {
         Object payload = resourcePayloadResolver.resolve(request.uri());
         return new McpSchema.ReadResourceResult(List.of(new McpSchema.TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonUtils.toJsonString(payload))));
-    }
-    
-    private boolean isTemplatedResource(final String resourceUri) {
-        return resourceUri.contains("{");
     }
 }

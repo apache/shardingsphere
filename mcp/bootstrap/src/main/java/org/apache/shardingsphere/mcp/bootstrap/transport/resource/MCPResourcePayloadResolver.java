@@ -17,23 +17,31 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.resource;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.ResourceLoadResult;
 import org.apache.shardingsphere.mcp.resource.ResourceUriResolution;
 
 import java.util.Optional;
 
-final class MCPResourcePayloadResolver {
+/**
+ * MCP resource payload resolver.
+ */
+@RequiredArgsConstructor
+public final class MCPResourcePayloadResolver {
     
     private final MCPRuntimeContext runtimeContext;
     
-    MCPResourcePayloadResolver(final MCPRuntimeContext runtimeContext) {
-        this.runtimeContext = runtimeContext;
-    }
-    
-    Object resolve(final String resourceUri) {
+    /**
+     * Resolve.
+     * 
+     * @param resourceUri resource URI
+     * @return resolved payload object, or error payload if resolution fails
+     */
+    public Object resolve(final String resourceUri) {
         Optional<ResourceUriResolution> resolution = runtimeContext.getResourceUriResolver().resolve(resourceUri);
         if (resolution.isEmpty()) {
             return runtimeContext.getPayloadBuilder().createErrorPayload("invalid_request", "Unsupported resource URI.");
@@ -49,16 +57,16 @@ final class MCPResourcePayloadResolver {
     }
     
     private Object resolveDatabaseCapabilityPayload(final String database) {
+        MCPPayloadBuilder payloadBuilder = runtimeContext.getPayloadBuilder();
         Optional<DatabaseCapability> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(database);
-        return capability.map(runtimeContext.getPayloadBuilder()::createDatabaseCapabilityPayload)
-                .orElseGet(() -> runtimeContext.getPayloadBuilder().createErrorPayload("not_found", "Database capability does not exist."));
+        return capability.map(payloadBuilder::createDatabaseCapabilityPayload)
+                .orElseGet(() -> payloadBuilder.createErrorPayload("not_found", "Database capability does not exist."));
     }
     
     private Object toResourcePayload(final ResourceLoadResult loadResult) {
-        if (!loadResult.isSuccessful()) {
-            return runtimeContext.getPayloadBuilder().createErrorPayload(
-                    runtimeContext.getPayloadBuilder().toDomainErrorCode(loadResult.getErrorCode().orElse(ErrorCode.INVALID_REQUEST)), loadResult.getMessage());
-        }
-        return runtimeContext.getPayloadBuilder().createMetadataItemsPayload(loadResult.getMetadataObjects(), "");
+        MCPPayloadBuilder payloadBuilder = runtimeContext.getPayloadBuilder();
+        return loadResult.isSuccessful()
+                ? payloadBuilder.createMetadataItemsPayload(loadResult.getMetadataObjects(), "")
+                : payloadBuilder.createErrorPayload(payloadBuilder.toDomainErrorCode(loadResult.getErrorCode().orElse(ErrorCode.INVALID_REQUEST)), loadResult.getMessage());
     }
 }
