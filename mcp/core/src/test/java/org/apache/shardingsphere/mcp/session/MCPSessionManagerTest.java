@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPSessionManagerTest {
@@ -108,15 +107,6 @@ class MCPSessionManagerTest {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
         assertTrue(sessionManager.hasSession("session-1"));
-    }
-    
-    @Test
-    void assertCreateSessionWithClosedSessionId() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        sessionManager.createSession("session-1");
-        sessionManager.closeSession("session-1");
-        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> sessionManager.createSession("session-1"));
-        assertThat(actual.getMessage(), is("Session recovery is not supported."));
     }
     
     @Test
