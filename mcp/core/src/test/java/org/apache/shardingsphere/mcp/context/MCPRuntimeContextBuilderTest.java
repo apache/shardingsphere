@@ -39,8 +39,8 @@ class MCPRuntimeContextBuilderTest {
     void assertBuild() throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "runtime-context-assembler");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        MCPRuntimeContextBuilder runtimeContextAssembler = new MCPRuntimeContextBuilder();
-        MCPRuntimeContext actual = runtimeContextAssembler.build(H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl));
+        MCPRuntimeContextBuilder builder = new MCPRuntimeContextBuilder();
+        MCPRuntimeContext actual = builder.build(H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl));
         assertNotNull(actual.getSessionManager());
         assertNotNull(actual.getDatabaseRuntime());
         assertThat(actual.getMetadataCatalog().getDatabaseTypes().get("logic_db"), is("H2"));
@@ -48,8 +48,8 @@ class MCPRuntimeContextBuilderTest {
     
     @Test
     void assertBuildWithEmptyRuntimeDatabases() {
-        MCPRuntimeContextBuilder runtimeContextAssembler = new MCPRuntimeContextBuilder();
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> runtimeContextAssembler.build(Map.of()));
+        MCPRuntimeContextBuilder builder = new MCPRuntimeContextBuilder();
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> builder.build(Map.of()));
         assertThat(actual.getMessage(), is("At least one runtime database must be configured."));
     }
 }
