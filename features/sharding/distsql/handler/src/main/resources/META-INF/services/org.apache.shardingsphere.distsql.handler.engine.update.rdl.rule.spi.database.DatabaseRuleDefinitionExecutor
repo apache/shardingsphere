@@ -23,6 +23,8 @@ org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingTableRef
 org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingTableReferenceRuleExecutor
 org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingTableReferenceExecutor
 org.apache.shardingsphere.sharding.distsql.handler.update.CreateDefaultShardingStrategyExecutor
+org.apache.shardingsphere.sharding.distsql.handler.update.CreateShardingKeyGeneratorExecutor
+org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingKeyGeneratorExecutor
 org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingKeyGeneratorExecutor
 org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingAuditorExecutor
 org.apache.shardingsphere.sharding.distsql.handler.update.AlterDefaultShardingStrategyExecutor

@@ -59,6 +59,14 @@ dropDefaultShardingStrategy
     : DROP DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY ifExists?
     ;
 
+createShardingKeyGenerator
+    : CREATE SHARDING KEY GENERATOR ifNotExists? keyGeneratorName LP_ algorithmDefinition RP_
+    ;
+
+alterShardingKeyGenerator
+    : ALTER SHARDING KEY GENERATOR keyGeneratorName LP_ algorithmDefinition RP_
+    ;
+
 dropShardingKeyGenerator
     : DROP SHARDING KEY GENERATOR ifExists? keyGeneratorName (COMMA_ keyGeneratorName)*
     ;

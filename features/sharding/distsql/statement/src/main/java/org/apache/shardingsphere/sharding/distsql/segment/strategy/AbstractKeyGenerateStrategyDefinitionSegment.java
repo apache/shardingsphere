@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.segment.strategy;
 
-import lombok.Getter;
 import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.segment.DistSQLSegment;
 
@@ -26,7 +25,6 @@ import java.util.Optional;
 /**
  * Abstract key generate strategy definition segment.
  */
-@Getter
 public abstract class AbstractKeyGenerateStrategyDefinitionSegment implements DistSQLSegment {
     
     private final String keyGeneratorName;
@@ -38,10 +36,20 @@ public abstract class AbstractKeyGenerateStrategyDefinitionSegment implements Di
         this.algorithmSegment = algorithmSegment;
     }
     
+    /**
+     * Get key generator name.
+     *
+     * @return generator name
+     */
     public Optional<String> getKeyGeneratorName() {
         return Optional.ofNullable(keyGeneratorName);
     }
     
+    /**
+     * Get algorithm segment.
+     *
+     * @return algorithm segment
+     */
     public Optional<AlgorithmSegment> getAlgorithmSegment() {
         return Optional.ofNullable(algorithmSegment);
     }

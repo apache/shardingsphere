@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.statement;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.type.AlterRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.AbstractKeyGenerateStrategyDefinitionSegment;
@@ -25,17 +26,10 @@ import org.apache.shardingsphere.sharding.distsql.segment.strategy.AbstractKeyGe
  * Alter sharding key generate strategy statement.
  */
 @RequiredArgsConstructor
+@Getter
 public final class AlterShardingKeyGenerateStrategyStatement extends AlterRuleStatement {
     
     private final String name;
     
     private final AbstractKeyGenerateStrategyDefinitionSegment keyGenerateStrategySegment;
-    
-    public String getName() {
-        return name;
-    }
-    
-    public AbstractKeyGenerateStrategyDefinitionSegment getKeyGenerateStrategySegment() {
-        return keyGenerateStrategySegment;
-    }
 }

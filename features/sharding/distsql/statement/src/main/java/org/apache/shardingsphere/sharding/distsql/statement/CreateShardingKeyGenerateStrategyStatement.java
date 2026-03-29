@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.sharding.distsql.statement;
 
+import lombok.Getter;
 import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.type.CreateRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.AbstractKeyGenerateStrategyDefinitionSegment;
 
 /**
  * Create sharding key generate strategy statement.
  */
+@Getter
 public final class CreateShardingKeyGenerateStrategyStatement extends CreateRuleStatement {
     
     private final String name;
@@ -33,13 +35,5 @@ public final class CreateShardingKeyGenerateStrategyStatement extends CreateRule
         super(ifNotExists);
         this.name = name;
         this.keyGenerateStrategySegment = keyGenerateStrategySegment;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public AbstractKeyGenerateStrategyDefinitionSegment getKeyGenerateStrategySegment() {
-        return keyGenerateStrategySegment;
     }
 }
