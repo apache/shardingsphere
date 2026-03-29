@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.jdbc.config.yaml.swapper;
 
-import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.jdbc.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 

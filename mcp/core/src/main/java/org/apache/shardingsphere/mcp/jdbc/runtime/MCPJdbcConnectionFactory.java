@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.jdbc.runtime;
 
-import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

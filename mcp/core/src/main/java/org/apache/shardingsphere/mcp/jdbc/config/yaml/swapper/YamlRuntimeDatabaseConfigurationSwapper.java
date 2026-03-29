@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.jdbc.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.jdbc.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 
 /**

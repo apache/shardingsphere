@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.config.loader;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.yaml.snakeyaml.constructor.ConstructorException;

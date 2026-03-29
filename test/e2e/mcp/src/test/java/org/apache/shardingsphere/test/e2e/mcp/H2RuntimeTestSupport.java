@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp;
 
-import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
 
 import java.nio.file.Path;
 import java.sql.Connection;

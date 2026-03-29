@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
 
 import java.util.Map;
 

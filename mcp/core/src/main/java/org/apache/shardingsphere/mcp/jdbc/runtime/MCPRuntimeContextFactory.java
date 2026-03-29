@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
-import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.util.Map;

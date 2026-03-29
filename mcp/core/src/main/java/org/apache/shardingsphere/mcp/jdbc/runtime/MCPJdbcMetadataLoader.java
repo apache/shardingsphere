@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
-import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

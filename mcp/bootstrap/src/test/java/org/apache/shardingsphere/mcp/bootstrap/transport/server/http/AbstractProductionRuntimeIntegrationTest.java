@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguratio
 import org.apache.shardingsphere.mcp.bootstrap.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
