@@ -62,12 +62,12 @@ public final class MCPJdbcMetadataLoader {
     }
     
     private DatabaseMetadataSnapshot loadDatabaseSnapshot(final String databaseName, final String databaseType, final String schemaName, final DatabaseMetaData databaseMetaData) throws SQLException {
+        String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
         List<MetadataObject> metadataObjects = new LinkedList<>();
         Set<String> foundSchemas = new LinkedHashSet<>();
         loadTables(databaseName, databaseMetaData, metadataObjects, foundSchemas);
         loadViews(databaseName, databaseMetaData, metadataObjects, foundSchemas);
-        String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
-        return new DatabaseMetadataSnapshot(databaseType, metadataObjects, databaseVersion, resolveDefaultSchema(schemaName, foundSchemas));
+        return new DatabaseMetadataSnapshot(databaseType, databaseVersion, metadataObjects, resolveDefaultSchema(schemaName, foundSchemas));
     }
     
     private void loadTables(final String databaseName, final DatabaseMetaData databaseMetaData,
