@@ -191,23 +191,12 @@ public final class MCPSessionManager {
         
         private boolean closed;
         
-        /**
-         * Get the registered savepoint names.
-         *
-         * @return savepoint snapshot
-         */
-        public Set<String> getSavepoints() {
-            return new LinkedHashSet<>(savepoints);
-        }
-        
         private void bindDatabase(final String databaseName) {
             boundDatabase = databaseName;
         }
         
         private void beginTransaction() {
-            if (TransactionState.ACTIVE == transactionState) {
-                throw new IllegalStateException("Transaction already active.");
-            }
+            ShardingSpherePreconditions.checkState(TransactionState.ACTIVE != transactionState, () -> new IllegalStateException("Transaction already active."));
             autocommit = false;
             transactionState = TransactionState.ACTIVE;
         }
@@ -229,9 +218,7 @@ public final class MCPSessionManager {
         
         private void rollbackToSavepoint(final String savepointName) {
             requireActiveTransaction();
-            if (!savepoints.contains(savepointName)) {
-                throw new IllegalStateException("Savepoint does not exist.");
-            }
+            ShardingSpherePreconditions.checkContains(savepoints, savepointName, () -> new IllegalStateException("Savepoint does not exist."));
         }
         
         private void releaseSavepoint(final String savepointName) {
