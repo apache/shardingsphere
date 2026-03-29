@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpSyncServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPSyncServerFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPSyncServerFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 

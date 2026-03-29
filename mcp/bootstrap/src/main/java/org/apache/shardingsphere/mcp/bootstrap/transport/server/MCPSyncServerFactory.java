@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport;
+package org.apache.shardingsphere.mcp.bootstrap.transport.server;
 
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServer;
@@ -24,6 +24,7 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ServerCapabilities;
 import io.modelcontextprotocol.spec.McpServerTransportProvider;
 import io.modelcontextprotocol.spec.McpStreamableServerTransportProvider;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.resource.MCPResourceSpecificationFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.tool.MCPToolSpecificationFactory;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
@@ -78,11 +79,11 @@ public final class MCPSyncServerFactory {
                 .build();
     }
     
-    private ServerCapabilities createServerCapabilities() {
-        return McpSchema.ServerCapabilities.builder().resources(Boolean.FALSE, Boolean.FALSE).tools(Boolean.FALSE).build();
-    }
-    
     private String resolveServerVersion() {
         return Optional.ofNullable(MCPSyncServerFactory.class.getPackage().getImplementationVersion()).orElse("development");
+    }
+    
+    private ServerCapabilities createServerCapabilities() {
+        return McpSchema.ServerCapabilities.builder().resources(Boolean.FALSE, Boolean.FALSE).tools(Boolean.FALSE).build();
     }
 }
