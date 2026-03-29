@@ -39,8 +39,7 @@ final class MCPToolJsonSchemaAdapter {
                 required.add(each.getName());
             }
         }
-        return new McpSchema.JsonSchema("object", properties, List.copyOf(required), inputDefinition.isAdditionalPropertiesAllowed(),
-                Collections.emptyMap(), Collections.emptyMap());
+        return new McpSchema.JsonSchema("object", properties, required, inputDefinition.isAdditionalPropertiesAllowed(), Collections.emptyMap(), Collections.emptyMap());
     }
     
     private Map<String, Object> createValueSchema(final MCPToolValueDefinition valueDefinition) {
@@ -57,17 +56,10 @@ final class MCPToolJsonSchemaAdapter {
     }
     
     private Map<String, Object> createScalarSchema(final String type, final MCPToolValueDefinition valueDefinition) {
-        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
-        result.put("type", type);
-        result.put("description", valueDefinition.getDescription());
-        return result;
+        return Map.of("type", type, "description", valueDefinition.getDescription());
     }
     
     private Map<String, Object> createArraySchema(final MCPToolValueDefinition valueDefinition) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        result.put("type", "array");
-        result.put("description", valueDefinition.getDescription());
-        result.put("items", createValueSchema(valueDefinition.getItemDefinition()));
-        return result;
+        return Map.of("type", "array", "description", valueDefinition.getDescription(), "items", createValueSchema(valueDefinition.getItemDefinition()));
     }
 }
