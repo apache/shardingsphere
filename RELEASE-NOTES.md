@@ -1,5 +1,10 @@
 ## Release 5.5.4
 
+### API Changes
+
+1. DistSQL: Add DistSQL to manage sharding key generate strategies - [#38572](https://github.com/apache/shardingsphere/pull/38572)
+1. DistSQL: Add DistSQL to manage sharding key generators - [#38576](https://github.com/apache/shardingsphere/pull/38576)
+
 ### Bug Fixes
 
 1. SQL Parser: Preserve unary NOT as NotExpression for scalar-subquery table extraction in PostgreSQL - [#38187](https://github.com/apache/shardingsphere/pull/38187)
