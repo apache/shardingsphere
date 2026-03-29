@@ -32,9 +32,7 @@ class MCPSessionLifecycleRegistryTest {
         DatabaseRuntime databaseRuntime = mock(DatabaseRuntime.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         MCPSessionLifecycleRegistry registry = new MCPSessionLifecycleRegistry(databaseRuntime, sessionManager);
-        
         registry.create("session-id");
-        
         verify(sessionManager).createSession("session-id");
     }
     
@@ -45,9 +43,7 @@ class MCPSessionLifecycleRegistryTest {
         MCPSessionLifecycleRegistry registry = new MCPSessionLifecycleRegistry(databaseRuntime, sessionManager);
         registry.create("session-id");
         clearInvocations(databaseRuntime, sessionManager);
-        
         registry.close("session-id");
-        
         verify(databaseRuntime).closeSession("session-id");
         verify(sessionManager).closeSession("session-id");
     }
@@ -59,24 +55,10 @@ class MCPSessionLifecycleRegistryTest {
         MCPSessionLifecycleRegistry registry = new MCPSessionLifecycleRegistry(databaseRuntime, sessionManager);
         registry.create("session-id");
         clearInvocations(databaseRuntime, sessionManager);
-        
         registry.closeAll();
         registry.closeAll();
-        
         verify(databaseRuntime).closeSession("session-id");
         verify(sessionManager).closeSession("session-id");
         verifyNoMoreInteractions(databaseRuntime, sessionManager);
-    }
-    
-    @Test
-    void assertCleanup() {
-        DatabaseRuntime databaseRuntime = mock(DatabaseRuntime.class);
-        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        MCPSessionLifecycleRegistry registry = new MCPSessionLifecycleRegistry(databaseRuntime, sessionManager);
-        
-        registry.cleanup("session-id");
-        
-        verify(databaseRuntime).closeSession("session-id");
-        verify(sessionManager).closeSession("session-id");
     }
 }

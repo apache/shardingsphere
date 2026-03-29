@@ -59,7 +59,8 @@ public final class MCPSessionLifecycleRegistry {
             return;
         }
         if (activeSessionIds.remove(actualSessionId)) {
-            cleanup(actualSessionId);
+            databaseRuntime.closeSession(actualSessionId);
+            sessionManager.closeSession(actualSessionId);
         }
     }
     
@@ -70,20 +71,5 @@ public final class MCPSessionLifecycleRegistry {
         for (String each : new LinkedHashSet<>(activeSessionIds)) {
             close(each);
         }
-    }
-    
-    /**
-     * Clean up one session even when it is not tracked by the registry.
-     *
-     * @param sessionId session identifier
-     */
-    public void cleanup(final String sessionId) {
-        String actualSessionId = Objects.toString(sessionId, "").trim();
-        if (actualSessionId.isEmpty()) {
-            return;
-        }
-        activeSessionIds.remove(actualSessionId);
-        databaseRuntime.closeSession(actualSessionId);
-        sessionManager.closeSession(actualSessionId);
     }
 }
