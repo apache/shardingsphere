@@ -47,27 +47,26 @@ public final class MCPJdbcMetadataLoader {
     /**
      * Load metadata catalog.
      *
-     * @param connectionConfigs connection configurations
+     * @param runtimeDatabases runtime database configurations
      * @return metadata catalog
      * @throws IllegalStateException when runtime metadata cannot be loaded from one configured database
      */
-    public MetadataCatalog load(final Map<String, RuntimeDatabaseConfiguration> connectionConfigs) {
-        Map<String, String> databaseTypes = new LinkedHashMap<>(connectionConfigs.size(), 1F);
+    public MetadataCatalog load(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        Map<String, String> databaseTypes = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
         List<MetadataObject> metadataObjects = new LinkedList<>();
-        Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors = new LinkedHashMap<>(connectionConfigs.size(), 1F);
-        for (Entry<String, RuntimeDatabaseConfiguration> entry : connectionConfigs.entrySet()) {
+        Map<String, RuntimeDatabaseDescriptor> databaseDescriptors = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
+        for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
             String databaseName = entry.getKey();
-            String databaseType = entry.getValue().getDatabaseType();
+            databaseTypes.put(databaseName, entry.getValue().getDatabaseType());
             try (Connection connection = entry.getValue().openConnection(databaseName)) {
-                databaseTypes.put(databaseName, databaseType);
-                RuntimeMetadataSnapshot runtimeMetadataSnapshot = loadRuntimeMetadataSnapshot(databaseName, connection, connection.getMetaData());
-                metadataObjects.addAll(runtimeMetadataSnapshot.getMetadataObjects());
-                runtimeDatabaseDescriptors.put(databaseName, runtimeMetadataSnapshot.getRuntimeDatabaseDescriptor());
+                RuntimeMetadataSnapshot metadataSnapshot = loadRuntimeMetadataSnapshot(databaseName, connection, connection.getMetaData());
+                metadataObjects.addAll(metadataSnapshot.getMetadataObjects());
+                databaseDescriptors.put(databaseName, metadataSnapshot.getRuntimeDatabaseDescriptor());
             } catch (final SQLException ex) {
-                throw new IllegalStateException(String.format("Failed to load runtime metadata for database `%s`.", databaseName), ex);
+                throw new IllegalStateException(String.format("Failed to load metadata for database `%s`.", databaseName), ex);
             }
         }
-        return new MetadataCatalog(databaseTypes, metadataObjects, runtimeDatabaseDescriptors);
+        return new MetadataCatalog(databaseTypes, metadataObjects, databaseDescriptors);
     }
     
     private RuntimeMetadataSnapshot loadRuntimeMetadataSnapshot(final String databaseName, final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
