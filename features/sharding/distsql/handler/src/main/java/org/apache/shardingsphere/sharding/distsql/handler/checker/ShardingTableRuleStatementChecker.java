@@ -151,7 +151,7 @@ public final class ShardingTableRuleStatementChecker {
         String databaseName = database.getName();
         checkTables(databaseName, rules, currentRuleConfig, isCreated, ifNotExists);
         checkDataSources(databaseName, rules, database);
-        checkKeyGenerators(rules);
+        checkKeyGenerators(databaseName, rules, currentRuleConfig);
         checkAuditors(rules);
         checkAutoTableRule(rules.stream().filter(AutoTableRuleSegment.class::isInstance).map(AutoTableRuleSegment.class::cast).collect(Collectors.toList()));
         checkTableRule(rules.stream().filter(TableRuleSegment.class::isInstance).map(TableRuleSegment.class::cast).collect(Collectors.toList()));
@@ -387,10 +387,21 @@ public final class ShardingTableRuleStatementChecker {
         return result;
     }
     
-    private static void checkKeyGenerators(final Collection<AbstractTableRuleSegment> rules) {
-        rules.stream().map(AbstractTableRuleSegment::getKeyGenerateStrategySegment).filter(Objects::nonNull)
-                .map(KeyGenerateStrategySegment::getKeyGenerateAlgorithmSegment)
-                .forEach(each -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, each.getName(), each.getProps()));
+    private static void checkKeyGenerators(final String databaseName, final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig) {
+        Collection<String> missingKeyGenerators = new LinkedList<>();
+        rules.stream().map(AbstractTableRuleSegment::getKeyGenerateStrategySegment).filter(Objects::nonNull).forEach(each -> {
+            if (each.getAlgorithmSegment().isPresent()) {
+                TypedSPILoader.checkService(KeyGenerateAlgorithm.class, each.getKeyGenerateAlgorithmSegment().getName(), each.getKeyGenerateAlgorithmSegment().getProps());
+            } else if (!isKeyGeneratorExists(each, currentRuleConfig)) {
+                missingKeyGenerators.add(each.getKeyGeneratorName().get());
+            }
+        });
+        ShardingSpherePreconditions.checkMustEmpty(missingKeyGenerators, () -> new MissingRequiredRuleException("sharding key generator", databaseName, missingKeyGenerators));
+    }
+    
+    private static boolean isKeyGeneratorExists(final KeyGenerateStrategySegment keyGenerateStrategySegment, final ShardingRuleConfiguration currentRuleConfig) {
+        return null != currentRuleConfig && keyGenerateStrategySegment.getKeyGeneratorName().isPresent()
+                && currentRuleConfig.getKeyGenerators().containsKey(keyGenerateStrategySegment.getKeyGeneratorName().get());
     }
     
     private static void checkAuditors(final Collection<AbstractTableRuleSegment> rules) {

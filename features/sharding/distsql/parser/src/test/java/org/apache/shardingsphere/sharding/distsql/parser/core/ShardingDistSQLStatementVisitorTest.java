@@ -29,6 +29,10 @@ import org.apache.shardingsphere.sharding.distsql.statement.DropShardingKeyGener
 import org.apache.shardingsphere.sharding.distsql.statement.DropShardingKeyGeneratorStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGenerateStrategiesStatement;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGeneratorsStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.AlterShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.statement.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.segment.table.AutoTableRuleSegment;
+import org.apache.shardingsphere.sharding.distsql.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.engine.core.ParseASTNode;
@@ -156,6 +160,30 @@ class ShardingDistSQLStatementVisitorTest {
         DropShardingKeyGeneratorStatement actual = (DropShardingKeyGeneratorStatement) parse("DROP SHARDING KEY GENERATOR IF EXISTS snowflake_generator, uuid_generator");
         assertTrue(actual.isIfExists());
         assertThat(actual.getNames(), is(Arrays.asList("snowflake_generator", "uuid_generator")));
+    }
+    
+    @Test
+    void assertCreateShardingTableRuleWithKeyGenerator() {
+        CreateShardingTableRuleStatement actual = (CreateShardingTableRuleStatement) parse(
+                "CREATE SHARDING TABLE RULE t_order(DATANODES('ds_${0..1}.t_order_${0..1}'), "
+                        + "TABLE_STRATEGY(TYPE='standard', SHARDING_COLUMN=order_id, SHARDING_ALGORITHM(TYPE(NAME='inline', PROPERTIES('algorithm-expression'='t_order_${order_id % 2}')))), "
+                        + "KEY_GENERATE_STRATEGY(COLUMN=order_id, GENERATOR=snowflake_generator))");
+        TableRuleSegment actualSegment = (TableRuleSegment) actual.getRules().iterator().next();
+        assertThat(actualSegment.getKeyGenerateStrategySegment().getKeyGenerateColumn(), is("order_id"));
+        assertThat(actualSegment.getKeyGenerateStrategySegment().getKeyGeneratorName().get(), is("snowflake_generator"));
+        assertTrue(!actualSegment.getKeyGenerateStrategySegment().getAlgorithmSegment().isPresent());
+    }
+    
+    @Test
+    void assertAlterShardingAutoTableRuleWithKeyGenerator() {
+        AlterShardingTableRuleStatement actual = (AlterShardingTableRuleStatement) parse(
+                "ALTER SHARDING TABLE RULE t_order(STORAGE_UNITS(ds_0), SHARDING_COLUMN=order_id, "
+                        + "TYPE(NAME='hash_mod', PROPERTIES('sharding-count'='2')), "
+                        + "KEY_GENERATE_STRATEGY(COLUMN=order_id, GENERATOR=snowflake_generator))");
+        AutoTableRuleSegment actualSegment = (AutoTableRuleSegment) actual.getRules().iterator().next();
+        assertThat(actualSegment.getKeyGenerateStrategySegment().getKeyGenerateColumn(), is("order_id"));
+        assertThat(actualSegment.getKeyGenerateStrategySegment().getKeyGeneratorName().get(), is("snowflake_generator"));
+        assertTrue(!actualSegment.getKeyGenerateStrategySegment().getAlgorithmSegment().isPresent());
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
