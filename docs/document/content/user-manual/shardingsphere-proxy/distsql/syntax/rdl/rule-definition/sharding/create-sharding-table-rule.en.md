@@ -28,7 +28,11 @@ strategyDefinition ::=
   'TYPE' '=' strategyType ',' ('SHARDING_COLUMN' | 'SHARDING_COLUMNS') '=' columnName ',' algorithmDefinition
 
 keyGenerateStrategyDefinition ::= 
-  'KEY_GENERATE_STRATEGY' '(' 'COLUMN' '=' columnName ',' algorithmDefinition ')' 
+  'COLUMN' '=' columnName ',' keyGenerateAlgorithmDefinition
+
+keyGenerateAlgorithmDefinition ::=
+  algorithmDefinition
+  | 'GENERATOR' '=' keyGeneratorName
 
 auditStrategyDefinition ::= 
   'AUDIT_STRATEGY' '(' algorithmDefinition (',' algorithmDefinition)* ')'
@@ -55,6 +59,9 @@ storageUnitName ::=
   identifier
 
 columnName ::=
+  identifier
+
+keyGeneratorName ::=
   identifier
 
 strategyType ::=
@@ -95,6 +102,9 @@ algorithmType ::=
 - `KEY_GENERATE_STRATEGY` is used to specify the primary key generation strategy, which is optional. For the primary key
   generation strategy, please refer
   to [Distributed Primary Key](/en/user-manual/common-config/builtin-algorithm/keygen/);
+- `KEY_GENERATE_STRATEGY` supports two key generator definition styles:
+    - Define the key generation algorithm inline with `TYPE(NAME=..., PROPERTIES(...))`;
+    - Reference an existing independent `SHARDING KEY GENERATOR` with `GENERATOR=keyGeneratorName`;
 - `AUDIT_STRATEGY` is used to specify the sharding audit strategy, which is optional. For the sharding audit
   generation strategy, please refer
   to [Sharding Audit](/en/user-manual/common-config/builtin-algorithm/audit/);
@@ -125,7 +135,18 @@ AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
 );
 ```
 
-#### 3.Create sharding rule with `ifNotExists` clause
+#### 3.Reference an existing key generator
+
+```sql
+CREATE SHARDING TABLE RULE t_order (
+STORAGE_UNITS(ds_0,ds_1),
+SHARDING_COLUMN=order_id,TYPE(NAME="hash_mod",PROPERTIES("sharding-count"="4")),
+KEY_GENERATE_STRATEGY(COLUMN=another_id,GENERATOR=snowflake_generator),
+AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
+);
+```
+
+#### 4.Create sharding rule with `ifNotExists` clause
 
 - Standard sharding table rule
 
@@ -151,7 +172,7 @@ AUDIT_STRATEGY (TYPE(NAME="DML_SHARDING_CONDITIONS"),ALLOW_HINT_DISABLE=true)
 
 ### Reserved word
 
-`CREATE`, `SHARDING`, `TABLE`, `RULE`, `DATANODES`, `DATABASE_STRATEGY`, `TABLE_STRATEGY`, `KEY_GENERATE_STRATEGY`, `STORAGE_UNITS`, `SHARDING_COLUMN`, `TYPE`, `SHARDING_COLUMN`, `KEY_GENERATOR`, `SHARDING_ALGORITHM`, `COLUMN`, `NAME`, `PROPERTIES`, `AUDIT_STRATEGY`, `AUDITORS`, `ALLOW_HINT_DISABLE`
+`CREATE`, `SHARDING`, `TABLE`, `RULE`, `DATANODES`, `DATABASE_STRATEGY`, `TABLE_STRATEGY`, `KEY_GENERATE_STRATEGY`, `STORAGE_UNITS`, `SHARDING_COLUMN`, `TYPE`, `SHARDING_COLUMN`, `GENERATOR`, `SHARDING_ALGORITHM`, `COLUMN`, `NAME`, `PROPERTIES`, `AUDIT_STRATEGY`, `AUDITORS`, `ALLOW_HINT_DISABLE`
 
 ### Related links
 
