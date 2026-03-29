@@ -29,16 +29,16 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
  */
 public final class StdioMCPServer implements MCPRuntimeServer {
     
-    private final SessionManagedStdioTransportProvider transportProvider;
-    
     private final MCPSyncServerFactory syncServerFactory;
+    
+    private final SessionManagedStdioTransportProvider transportProvider;
     
     private McpSyncServer syncServer;
     
     public StdioMCPServer(final MCPRuntimeContext runtimeContext) {
         McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
-        transportProvider = new SessionManagedStdioTransportProvider(runtimeContext, jsonMapper);
         syncServerFactory = new MCPSyncServerFactory(runtimeContext, jsonMapper);
+        transportProvider = new SessionManagedStdioTransportProvider(runtimeContext, jsonMapper);
     }
     
     @Override

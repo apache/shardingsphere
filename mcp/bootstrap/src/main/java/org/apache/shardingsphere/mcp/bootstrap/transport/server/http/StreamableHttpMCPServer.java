@@ -45,15 +45,15 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
     
     private final MCPSyncServerFactory syncServerFactory;
     
+    private final StreamableHttpMCPServlet transportServlet;
+    
+    private McpSyncServer syncServer;
+    
     private Tomcat tomcat;
     
     private Connector connector;
     
     private Path baseDirectory;
-    
-    private StreamableHttpMCPServlet transportServlet;
-    
-    private McpSyncServer syncServer;
     
     public StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPRuntimeContext runtimeContext) {
         this.config = config;
@@ -91,7 +91,6 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
     @Override
     public void stop() {
         closeSyncServer();
-        transportServlet = null;
         closeTomcat();
         connector = null;
         deleteBaseDirectory();
