@@ -34,9 +34,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Session managed stdio transport provider.
- */
 final class SessionManagedStdioTransportProvider extends StdioServerTransportProvider {
     
     private final MCPSessionLifecycleRegistry managedSessions;

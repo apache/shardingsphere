@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
+import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification.Builder;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * MCP tool specification factory.
@@ -52,14 +53,8 @@ public final class MCPToolSpecificationFactory {
      * @return tool specifications
      */
     public List<SyncToolSpecification> createToolSpecifications() {
-        List<SyncToolSpecification> result = new ArrayList<>();
-        for (String each : runtimeContext.getToolCatalog().getSupportedTools()) {
-            result.add(new SyncToolSpecification.Builder()
-                    .tool(createToolDefinition(each))
-                    .callHandler(toolCallHandler::handle)
-                    .build());
-        }
-        return result;
+        return runtimeContext.getToolCatalog().getSupportedTools().stream()
+                .map(each -> new Builder().tool(createToolDefinition(each)).callHandler(toolCallHandler::handle).build()).collect(Collectors.toList());
     }
     
     private McpSchema.Tool createToolDefinition(final String toolName) {

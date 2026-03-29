@@ -28,20 +28,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
-/**
- * Loopback origin security validator.
- */
-public final class LoopbackOriginSecurityValidator implements ServerTransportSecurityValidator {
+final class LoopbackOriginSecurityValidator implements ServerTransportSecurityValidator {
     
     private static final String ORIGIN_HEADER = "Origin";
     
-    /**
-     * Create validator.
-     *
-     * @param bindHost bind host
-     * @return created validator
-     */
-    public static ServerTransportSecurityValidator create(final String bindHost) {
+    static ServerTransportSecurityValidator create(final String bindHost) {
         return isLoopbackHost(bindHost) ? new LoopbackOriginSecurityValidator() : NOOP;
     }
     

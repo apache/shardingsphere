@@ -27,21 +27,12 @@ import org.apache.shardingsphere.mcp.resource.ResourceUriResolution;
 
 import java.util.Optional;
 
-/**
- * MCP resource payload resolver.
- */
 @RequiredArgsConstructor
-public final class MCPResourcePayloadResolver {
+final class MCPResourcePayloadResolver {
     
     private final MCPRuntimeContext runtimeContext;
     
-    /**
-     * Resolve.
-     * 
-     * @param resourceUri resource URI
-     * @return resolved payload object, or error payload if resolution fails
-     */
-    public Object resolve(final String resourceUri) {
+    Object resolve(final String resourceUri) {
         Optional<ResourceUriResolution> resolution = runtimeContext.getResourceUriResolver().resolve(resourceUri);
         if (resolution.isEmpty()) {
             return runtimeContext.getPayloadBuilder().createErrorPayload("invalid_request", "Unsupported resource URI.");

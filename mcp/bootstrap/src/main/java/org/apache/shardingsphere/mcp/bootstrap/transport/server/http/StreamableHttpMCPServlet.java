@@ -49,9 +49,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Streamable HTTP MCP servlet.
- */
 final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamableServerTransportProvider {
     
     private static final long serialVersionUID = -2320345528569140021L;
