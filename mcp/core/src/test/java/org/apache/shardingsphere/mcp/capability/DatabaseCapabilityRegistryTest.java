@@ -44,12 +44,6 @@ class DatabaseCapabilityRegistryTest {
     }
     
     @Test
-    void assertGetSupportedDatabaseTypes() {
-        assertThat(DatabaseCapabilityCatalog.getSupportedDatabaseTypes(), is(Set.of(
-                "MySQL", "PostgreSQL", "openGauss", "SQLServer", "MariaDB", "Oracle", "ClickHouse", "Doris", "Hive", "Presto", "Firebird", "H2")));
-    }
-    
-    @Test
     void assertFindWithUnknownDatabaseType() {
         Optional<DatabaseCapability> actual = DatabaseCapabilityCatalog.find("logic_db", "sqlite", "");
         

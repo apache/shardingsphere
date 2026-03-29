@@ -215,8 +215,6 @@ shardingsphere
 - audit facade
 - 对 ShardingSphere 内核能力的统一门面
 - runtime service 聚合
-
-#### `mcp/jdbc`
 - JDBC runtime 配置模型
 - JDBC metadata 发现
 - `DatabaseRuntime` 装配
@@ -252,9 +250,7 @@ shardingsphere
   - `mcp/core` 依赖 `mode`
   - `mcp/core` 依赖 `kernel`
   - 必要时依赖少量 `features`
-  - `mcp/jdbc` 依赖 `mcp/core`
   - `mcp/bootstrap` 依赖 `mcp/core`
-  - `mcp/bootstrap` 依赖 `mcp/jdbc`
 - 禁止：
   - `kernel -> mcp`
   - `proxy -> mcp`

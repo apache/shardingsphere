@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
-import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
@@ -65,8 +64,6 @@ public final class MCPRuntimeContext {
     
     private final AuditRecorder auditRecorder;
     
-    private final MetadataRefreshCoordinator metadataRefreshCoordinator;
-    
     private final ExecuteQueryFacade executeQueryFacade;
     
     private final MCPPayloadBuilder payloadBuilder;
@@ -96,13 +93,10 @@ public final class MCPRuntimeContext {
         MCPToolCatalog toolCatalog = new MCPToolCatalog();
         TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(capabilityAssembler, sessionManager, databaseRuntime);
         AuditRecorder auditRecorder = new AuditRecorder();
-        MetadataRefreshCoordinator metadataRefreshCoordinator = new MetadataRefreshCoordinator();
-        MCPSessionLifecycleRegistry sessionLifecycleRegistry = new MCPSessionLifecycleRegistry(metadataRefreshCoordinator, databaseRuntime, sessionManager);
-        ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(
-                new StatementClassifier(), capabilityAssembler, transactionCommandExecutor, auditRecorder, metadataRefreshCoordinator);
+        MCPSessionLifecycleRegistry sessionLifecycleRegistry = new MCPSessionLifecycleRegistry(databaseRuntime, sessionManager);
+        ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler, transactionCommandExecutor, auditRecorder);
         MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
         return new MCPRuntimeContext(sessionManager, metadataCatalog, databaseRuntime, sessionLifecycleRegistry, capabilityAssembler,
-                metadataResourceLoader, resourceUriResolver, metadataToolDispatcher, toolCatalog, transactionCommandExecutor,
-                auditRecorder, metadataRefreshCoordinator, executeQueryFacade, payloadBuilder);
+                metadataResourceLoader, resourceUriResolver, metadataToolDispatcher, toolCatalog, transactionCommandExecutor, auditRecorder, executeQueryFacade, payloadBuilder);
     }
 }

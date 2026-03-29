@@ -42,7 +42,6 @@ class MCPRuntimeContextBuilderTest {
         assertNotNull(actual.getToolCatalog());
         assertNotNull(actual.getTransactionCommandExecutor());
         assertNotNull(actual.getAuditRecorder());
-        assertNotNull(actual.getMetadataRefreshCoordinator());
         assertNotNull(actual.getExecuteQueryFacade());
         assertNotNull(actual.getPayloadBuilder());
     }

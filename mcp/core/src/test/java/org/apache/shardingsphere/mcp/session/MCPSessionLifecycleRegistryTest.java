@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.session;
 
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.clearInvocations;
@@ -30,10 +29,9 @@ class MCPSessionLifecycleRegistryTest {
     
     @Test
     void assertCreate() {
-        MetadataRefreshCoordinator metadataRefreshCoordinator = mock(MetadataRefreshCoordinator.class);
         DatabaseRuntime databaseRuntime = mock(DatabaseRuntime.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        MCPSessionLifecycleRegistry registry = new MCPSessionLifecycleRegistry(metadataRefreshCoordinator, databaseRuntime, sessionManager);
+        MCPSessionLifecycleRegistry registry = new MCPSessionLifecycleRegistry(databaseRuntime, sessionManager);
         
         registry.create("session-id");
         
@@ -42,48 +40,42 @@ class MCPSessionLifecycleRegistryTest {
     
     @Test
     void assertClose() {
-        MetadataRefreshCoordinator metadataRefreshCoordinator = mock(MetadataRefreshCoordinator.class);
         DatabaseRuntime databaseRuntime = mock(DatabaseRuntime.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        MCPSessionLifecycleRegistry registry = new MCPSessionLifecycleRegistry(metadataRefreshCoordinator, databaseRuntime, sessionManager);
+        MCPSessionLifecycleRegistry registry = new MCPSessionLifecycleRegistry(databaseRuntime, sessionManager);
         registry.create("session-id");
-        clearInvocations(metadataRefreshCoordinator, databaseRuntime, sessionManager);
+        clearInvocations(databaseRuntime, sessionManager);
         
         registry.close("session-id");
         
-        verify(metadataRefreshCoordinator).clearSession("session-id");
         verify(databaseRuntime).closeSession("session-id");
         verify(sessionManager).closeSession("session-id");
     }
     
     @Test
     void assertCloseAll() {
-        MetadataRefreshCoordinator metadataRefreshCoordinator = mock(MetadataRefreshCoordinator.class);
         DatabaseRuntime databaseRuntime = mock(DatabaseRuntime.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        MCPSessionLifecycleRegistry registry = new MCPSessionLifecycleRegistry(metadataRefreshCoordinator, databaseRuntime, sessionManager);
+        MCPSessionLifecycleRegistry registry = new MCPSessionLifecycleRegistry(databaseRuntime, sessionManager);
         registry.create("session-id");
-        clearInvocations(metadataRefreshCoordinator, databaseRuntime, sessionManager);
+        clearInvocations(databaseRuntime, sessionManager);
         
         registry.closeAll();
         registry.closeAll();
         
-        verify(metadataRefreshCoordinator).clearSession("session-id");
         verify(databaseRuntime).closeSession("session-id");
         verify(sessionManager).closeSession("session-id");
-        verifyNoMoreInteractions(metadataRefreshCoordinator, databaseRuntime, sessionManager);
+        verifyNoMoreInteractions(databaseRuntime, sessionManager);
     }
     
     @Test
     void assertCleanup() {
-        MetadataRefreshCoordinator metadataRefreshCoordinator = mock(MetadataRefreshCoordinator.class);
         DatabaseRuntime databaseRuntime = mock(DatabaseRuntime.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        MCPSessionLifecycleRegistry registry = new MCPSessionLifecycleRegistry(metadataRefreshCoordinator, databaseRuntime, sessionManager);
+        MCPSessionLifecycleRegistry registry = new MCPSessionLifecycleRegistry(databaseRuntime, sessionManager);
         
         registry.cleanup("session-id");
         
-        verify(metadataRefreshCoordinator).clearSession("session-id");
         verify(databaseRuntime).closeSession("session-id");
         verify(sessionManager).closeSession("session-id");
     }

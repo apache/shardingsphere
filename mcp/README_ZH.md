@@ -230,8 +230,7 @@ bin/start.sh conf/mcp-stdio.yaml
 
 ## 开发参考
 
-- `mcp/core`：capability、metadata、session、audit、execute-query 契约，以及 runtime service 聚合
-- `mcp/jdbc`：JDBC runtime 配置模型、metadata 发现、`DatabaseRuntime` 装配与 JDBC-backed runtime context factory
+- `mcp/core`：capability、metadata、session、audit、execute-query 契约、runtime service 聚合，以及 JDBC runtime 配置模型、metadata 发现、`DatabaseRuntime` 装配与 JDBC-backed runtime context factory
 - `mcp/bootstrap`：基于 MCP Java SDK 的 bootstrap、HTTP / STDIO transport、顶层配置加载与生命周期管理
 - `distribution/mcp`：独立打包、启动脚本、配置、Dockerfile
 - `test/e2e/mcp`：端到端契约验证

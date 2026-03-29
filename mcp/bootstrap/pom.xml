@@ -37,11 +37,6 @@
             <artifactId>shardingsphere-mcp-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-mcp-jdbc</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
         <dependency>
             <groupId>io.modelcontextprotocol.sdk</groupId>

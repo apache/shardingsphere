@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.execute;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.StatementClass;
-import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
@@ -93,7 +92,7 @@ class ExecuteQueryFacadeTest {
     
     @Test
     void assertExecuteWithUnknownCapability() {
-        ExecuteQueryFacade facade = createFacade("Unknown", new MCPSessionManager(), new AuditRecorder(), new MetadataRefreshCoordinator());
+        ExecuteQueryFacade facade = createFacade("Unknown", new MCPSessionManager(), new AuditRecorder());
         
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 10));
         
@@ -104,7 +103,7 @@ class ExecuteQueryFacadeTest {
     
     @Test
     void assertExecuteQueryWithTruncation() {
-        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder(), new MetadataRefreshCoordinator());
+        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder());
         
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 1));
         
@@ -116,7 +115,7 @@ class ExecuteQueryFacadeTest {
     
     @Test
     void assertExecuteUpdate() {
-        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder(), new MetadataRefreshCoordinator());
+        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder());
         
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("UPDATE orders SET status = 'DONE'", 10));
         
@@ -129,7 +128,7 @@ class ExecuteQueryFacadeTest {
     void assertExecuteTransactionCommand() {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        ExecuteQueryFacade facade = createFacade("MySQL", sessionManager, new AuditRecorder(), new MetadataRefreshCoordinator());
+        ExecuteQueryFacade facade = createFacade("MySQL", sessionManager, new AuditRecorder());
         
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("BEGIN", 10));
         
@@ -139,8 +138,7 @@ class ExecuteQueryFacadeTest {
     
     @Test
     void assertExecuteDdl() {
-        MetadataRefreshCoordinator metadataRefreshCoordinator = new MetadataRefreshCoordinator();
-        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder(), metadataRefreshCoordinator);
+        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder());
         
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("CREATE TABLE orders_archive", 10));
         
@@ -151,8 +149,7 @@ class ExecuteQueryFacadeTest {
     
     @Test
     void assertExecuteDcl() {
-        MetadataRefreshCoordinator metadataRefreshCoordinator = new MetadataRefreshCoordinator();
-        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder(), metadataRefreshCoordinator);
+        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder());
         
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("GRANT SELECT ON orders TO app_user", 10));
         
@@ -163,7 +160,7 @@ class ExecuteQueryFacadeTest {
     
     @Test
     void assertExecuteExplainAnalyzeWithUnsupportedCapability() {
-        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder(), new MetadataRefreshCoordinator());
+        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder());
         
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
         
@@ -174,7 +171,7 @@ class ExecuteQueryFacadeTest {
     
     @Test
     void assertExecuteExplainAnalyzeWithSupportedCapability() {
-        ExecuteQueryFacade facade = createFacade("H2", new MCPSessionManager(), new AuditRecorder(), new MetadataRefreshCoordinator());
+        ExecuteQueryFacade facade = createFacade("H2", new MCPSessionManager(), new AuditRecorder());
         
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
         
@@ -183,12 +180,10 @@ class ExecuteQueryFacadeTest {
         assertThat(actual.getRows().size(), is(2));
     }
     
-    private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final AuditRecorder auditRecorder,
-                                            final MetadataRefreshCoordinator metadataRefreshCoordinator) {
+    private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final AuditRecorder auditRecorder) {
         DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(new MetadataCatalog(Map.of("logic_db", databaseType), Collections.emptyList()));
         return new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler,
-                new TransactionCommandExecutor(capabilityAssembler, sessionManager, new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap())),
-                auditRecorder, metadataRefreshCoordinator);
+                new TransactionCommandExecutor(capabilityAssembler, sessionManager, new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap())), auditRecorder);
     }
     
     private ExecutionRequest createExecutionRequest(final String sql, final int maxRows) {

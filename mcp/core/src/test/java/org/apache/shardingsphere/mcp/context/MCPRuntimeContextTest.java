@@ -37,7 +37,6 @@ class MCPRuntimeContextTest {
         sessionManager.createSession("session-id");
         DatabaseRuntime databaseRuntime = mock(DatabaseRuntime.class);
         MCPRuntimeContext runtimeContext = createRuntimeContext(sessionManager, databaseRuntime);
-        runtimeContext.getMetadataRefreshCoordinator().markStructureChangeCommitted("session-id", "logic_db");
         
         runtimeContext.closeSession("session-id");
         

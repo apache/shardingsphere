@@ -84,7 +84,6 @@ shardingsphere
 - 建议固定为：
   - `shardingsphere-mcp`
   - `shardingsphere-mcp-core`
-  - `shardingsphere-mcp-jdbc`
   - `shardingsphere-mcp-bootstrap`
   - `shardingsphere-mcp-distribution`
   - `shardingsphere-test-e2e-mcp`
@@ -96,7 +95,6 @@ shardingsphere
     - `packaging`：`pom`
     - `modules`：
       - `core`
-      - `jdbc`
       - `bootstrap`
   - `distribution/mcp/pom.xml`
     - `parent`：`org.apache.shardingsphere:shardingsphere-distribution`
@@ -170,8 +168,10 @@ shardingsphere
     - transport-independent session lifecycle cleanup
   - `metadata`
     - metadata discovery facade
+    - JDBC metadata discovery and runtime configuration
   - `execute`
     - `execute_query` facade
+    - `DatabaseRuntime` assembly and JDBC-backed runtime context factory
   - `audit`
     - audit facade
   - `config`
@@ -179,17 +179,7 @@ shardingsphere
   - `common`
     - 公共常量、枚举、异常
 
-### 6.2 `mcp/jdbc`
-- 推荐子包：
-  - `config`
-  - `config.yaml`
-  - `runtime`
-- 设计原则：
-  - JDBC-specific runtime 细节进入 `mcp/jdbc`
-  - `mcp/jdbc` 依赖 `mcp/core`
-  - `mcp/bootstrap` 只通过 runtime context factory 使用 JDBC runtime
-
-### 6.3 `mcp/bootstrap`
+### 6.2 `mcp/bootstrap`
 - 推荐子包：
   - `transport.http`
   - `transport.stdio`
@@ -541,7 +531,6 @@ stateDiagram-v2
 ### 13.6 E2E 依赖
 - `test/e2e/mcp` 直接依赖建议包括：
   - `shardingsphere-mcp-core`
-  - `shardingsphere-mcp-jdbc`
   - `shardingsphere-mcp-bootstrap`
   - `shardingsphere-test-e2e-env`
   - `shardingsphere-test-e2e-fixture`

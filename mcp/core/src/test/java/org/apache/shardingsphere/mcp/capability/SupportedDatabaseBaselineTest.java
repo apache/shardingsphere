@@ -36,20 +36,20 @@ class SupportedDatabaseBaselineTest {
     
     @Test
     void assertCreateDefault() {
-        Set<String> expectedDatabaseTypes = new LinkedHashSet<>();
-        expectedDatabaseTypes.add("MySQL");
-        expectedDatabaseTypes.add("PostgreSQL");
-        expectedDatabaseTypes.add("openGauss");
-        expectedDatabaseTypes.add("SQLServer");
-        expectedDatabaseTypes.add("MariaDB");
-        expectedDatabaseTypes.add("Oracle");
-        expectedDatabaseTypes.add("ClickHouse");
-        expectedDatabaseTypes.add("Doris");
-        expectedDatabaseTypes.add("Hive");
-        expectedDatabaseTypes.add("Presto");
-        expectedDatabaseTypes.add("Firebird");
-        expectedDatabaseTypes.add("H2");
-        Set<String> actualDatabaseTypes = DatabaseCapabilityCatalog.getSupportedDatabaseTypes();
+        Set<String> expectedDatabaseTypes = createDatabaseTypes("MySQL", "PostgreSQL", "openGauss", "SQLServer", "MariaDB", "Oracle", "ClickHouse", "Doris", "Hive", "Presto", "Firebird", "H2");
+        Set<String> actualDatabaseTypes = createDatabaseTypes(
+                DatabaseCapabilityCatalog.find("logic_db", "MYSQL", "").orElseThrow().getDatabaseType(),
+                DatabaseCapabilityCatalog.find("logic_db", "POSTGRESQL", "").orElseThrow().getDatabaseType(),
+                DatabaseCapabilityCatalog.find("logic_db", "OPENGAUSS", "").orElseThrow().getDatabaseType(),
+                DatabaseCapabilityCatalog.find("logic_db", "SQLSERVER", "").orElseThrow().getDatabaseType(),
+                DatabaseCapabilityCatalog.find("logic_db", "MARIADB", "").orElseThrow().getDatabaseType(),
+                DatabaseCapabilityCatalog.find("logic_db", "ORACLE", "").orElseThrow().getDatabaseType(),
+                DatabaseCapabilityCatalog.find("logic_db", "CLICKHOUSE", "").orElseThrow().getDatabaseType(),
+                DatabaseCapabilityCatalog.find("logic_db", "DORIS", "").orElseThrow().getDatabaseType(),
+                DatabaseCapabilityCatalog.find("logic_db", "HIVE", "").orElseThrow().getDatabaseType(),
+                DatabaseCapabilityCatalog.find("logic_db", "PRESTO", "").orElseThrow().getDatabaseType(),
+                DatabaseCapabilityCatalog.find("logic_db", "FIREBIRD", "").orElseThrow().getDatabaseType(),
+                DatabaseCapabilityCatalog.find("logic_db", "H2", "").orElseThrow().getDatabaseType());
         assertThat(actualDatabaseTypes.size(), is(12));
         assertThat(actualDatabaseTypes, is(expectedDatabaseTypes));
     }
@@ -92,5 +92,9 @@ class SupportedDatabaseBaselineTest {
     
     private static Set<String> createTransactionStatements(final String... statements) {
         return new LinkedHashSet<>(Arrays.asList(statements));
+    }
+    
+    private static Set<String> createDatabaseTypes(final String... databaseTypes) {
+        return new LinkedHashSet<>(Arrays.asList(databaseTypes));
     }
 }

@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
-import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
@@ -42,8 +41,6 @@ public final class ExecuteQueryFacade {
     private final TransactionCommandExecutor transactionCommandExecutor;
     
     private final AuditRecorder auditRecorder;
-    
-    private final MetadataRefreshCoordinator metadataRefreshCoordinator;
     
     /**
      * Execute one MCP SQL request.
@@ -83,11 +80,9 @@ public final class ExecuteQueryFacade {
                     ExecuteQueryResponse ddlResponse = executionRequest.getDatabaseRuntime().execute(executionRequest, classificationResult);
                     if (ddlResponse.isSuccessful()) {
                         executionRequest.getDatabaseRuntime().refreshMetadata(executionRequest.getDatabase());
-                        metadataRefreshCoordinator.markStructureChangeCommitted(executionRequest.getSessionId(), executionRequest.getDatabase());
                     }
                     return recordResult(executionRequest, ddlResponse, classificationResult.getStatementType());
                 }
-                metadataRefreshCoordinator.markStructureChangeCommitted(executionRequest.getSessionId(), executionRequest.getDatabase());
                 return recordResult(executionRequest, ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed."),
                         classificationResult.getStatementType());
             case DCL:
@@ -95,11 +90,9 @@ public final class ExecuteQueryFacade {
                     ExecuteQueryResponse dclResponse = executionRequest.getDatabaseRuntime().execute(executionRequest, classificationResult);
                     if (dclResponse.isSuccessful()) {
                         executionRequest.getDatabaseRuntime().refreshMetadata(executionRequest.getDatabase());
-                        metadataRefreshCoordinator.markDclChangeCommitted(executionRequest.getSessionId(), executionRequest.getDatabase());
                     }
                     return recordResult(executionRequest, dclResponse, classificationResult.getStatementType());
                 }
-                metadataRefreshCoordinator.markDclChangeCommitted(executionRequest.getSessionId(), executionRequest.getDatabase());
                 return recordResult(executionRequest, ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed."),
                         classificationResult.getStatementType());
             case EXPLAIN_ANALYZE:

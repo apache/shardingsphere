@@ -89,28 +89,6 @@ public final class DatabaseCapabilityCatalog {
         }
     }
     
-    /**
-     * Get supported database types.
-     *
-     * @return supported database types
-     */
-    public static Set<String> getSupportedDatabaseTypes() {
-        Set<String> result = new LinkedHashSet<>();
-        result.add(getCanonicalDatabaseType("MYSQL"));
-        result.add(getCanonicalDatabaseType("POSTGRESQL"));
-        result.add(getCanonicalDatabaseType("OPENGAUSS"));
-        result.add(getCanonicalDatabaseType("SQLSERVER"));
-        result.add(getCanonicalDatabaseType("MARIADB"));
-        result.add(getCanonicalDatabaseType("ORACLE"));
-        result.add(getCanonicalDatabaseType("CLICKHOUSE"));
-        result.add(getCanonicalDatabaseType("DORIS"));
-        result.add(getCanonicalDatabaseType("HIVE"));
-        result.add(getCanonicalDatabaseType("PRESTO"));
-        result.add(getCanonicalDatabaseType("FIREBIRD"));
-        result.add(getCanonicalDatabaseType("H2"));
-        return result;
-    }
-    
     static String normalizeDatabaseType(final String databaseType) {
         return databaseType.trim().toUpperCase(Locale.ENGLISH);
     }

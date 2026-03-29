@@ -140,7 +140,7 @@ public final class ResourceUriResolver {
     }
     
     private Optional<ResourceUriResolution> createColumnResourceResolution(final String database, final String schema, final String parentObjectName,
-                                                                          final String parentObjectType, final List<String> segments) {
+                                                                           final String parentObjectType, final List<String> segments) {
         if (7 == segments.size()) {
             return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(database, schema, MetadataObjectType.COLUMN, "", parentObjectType, parentObjectName)));
         }

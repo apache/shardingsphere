@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.session;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -31,8 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @RequiredArgsConstructor
 public final class MCPSessionLifecycleRegistry {
-    
-    private final MetadataRefreshCoordinator metadataRefreshCoordinator;
     
     private final DatabaseRuntime databaseRuntime;
     
@@ -86,7 +83,6 @@ public final class MCPSessionLifecycleRegistry {
             return;
         }
         activeSessionIds.remove(actualSessionId);
-        metadataRefreshCoordinator.clearSession(actualSessionId);
         databaseRuntime.closeSession(actualSessionId);
         sessionManager.closeSession(actualSessionId);
     }

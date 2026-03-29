@@ -23,16 +23,11 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Record MCP audit events for metadata and query activity.
  */
 public final class AuditRecorder {
-    
-    private final List<AuditRecord> records = Collections.synchronizedList(new LinkedList<>());
     
     /**
      * Record one query-execution audit event.
@@ -67,9 +62,7 @@ public final class AuditRecorder {
     
     private AuditRecord record(final String sessionId, final String database, final OperationClass operationClass, final String operationSource,
                                final boolean success, final boolean errorCodePresent, final ErrorCode errorCode, final String transactionMarker) {
-        AuditRecord result = new AuditRecord(sessionId, database, operationClass, digest(operationSource), success, errorCodePresent, errorCode, transactionMarker, Instant.now().toString());
-        records.add(result);
-        return result;
+        return new AuditRecord(sessionId, database, operationClass, digest(operationSource), success, errorCodePresent, errorCode, transactionMarker, Instant.now().toString());
     }
     
     private String digest(final String value) {
