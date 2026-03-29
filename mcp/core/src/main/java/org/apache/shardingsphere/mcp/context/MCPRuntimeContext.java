@@ -29,7 +29,6 @@ import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
 import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
-import org.apache.shardingsphere.mcp.session.MCPSessionLifecycleRegistry;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
@@ -47,8 +46,6 @@ public final class MCPRuntimeContext {
     private final MetadataCatalog metadataCatalog;
     
     private final DatabaseRuntime databaseRuntime;
-    
-    private final MCPSessionLifecycleRegistry sessionLifecycleRegistry;
     
     private final DatabaseCapabilityAssembler capabilityAssembler;
     
@@ -84,10 +81,9 @@ public final class MCPRuntimeContext {
         MCPToolCatalog toolCatalog = new MCPToolCatalog();
         TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(capabilityAssembler, sessionManager, databaseRuntime);
         AuditRecorder auditRecorder = new AuditRecorder();
-        MCPSessionLifecycleRegistry sessionLifecycleRegistry = new MCPSessionLifecycleRegistry(databaseRuntime, sessionManager);
         ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler, transactionCommandExecutor, auditRecorder);
         MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
-        return new MCPRuntimeContext(sessionManager, metadataCatalog, databaseRuntime, sessionLifecycleRegistry, capabilityAssembler,
+        return new MCPRuntimeContext(sessionManager, metadataCatalog, databaseRuntime, capabilityAssembler,
                 metadataResourceLoader, resourceUriResolver, metadataToolDispatcher, toolCatalog, transactionCommandExecutor, auditRecorder, executeQueryFacade, payloadBuilder);
     }
 }

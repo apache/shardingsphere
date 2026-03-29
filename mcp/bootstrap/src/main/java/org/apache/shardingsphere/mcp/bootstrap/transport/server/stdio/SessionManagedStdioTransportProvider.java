@@ -26,7 +26,6 @@ import io.modelcontextprotocol.spec.McpServerTransport;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.session.MCPSessionLifecycleRegistry;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -35,11 +34,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 final class SessionManagedStdioTransportProvider extends StdioServerTransportProvider {
     
-    private final MCPSessionLifecycleRegistry managedSessions;
+    private final MCPRuntimeContext runtimeContext;
     
     SessionManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
         super(jsonMapper);
-        managedSessions = runtimeContext.getSessionLifecycleRegistry();
+        this.runtimeContext = runtimeContext;
     }
     
     @Override
@@ -56,7 +55,7 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
         SessionClosingTransport managedTransport = new SessionClosingTransport(transport);
         McpServerSession session = sessionFactory.create(managedTransport);
         String sessionId = session.getId();
-        managedSessions.create(sessionId);
+        runtimeContext.getSessionManager().createSession(sessionId);
         managedTransport.bindSessionId(sessionId);
         return session;
     }
@@ -99,10 +98,10 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
         }
         
         private void closeManagedSession() {
-            if (!closed.compareAndSet(false, true)) {
-                return;
+            if (closed.compareAndSet(false, true)) {
+                runtimeContext.getSessionManager().closeSession(sessionId.get());
+                runtimeContext.getDatabaseRuntime().closeSession(sessionId.get());
             }
-            managedSessions.close(sessionId.get());
         }
     }
 }
