@@ -23,6 +23,9 @@ import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -38,6 +41,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -61,13 +65,18 @@ class MCPJdbcMetadataLoaderTest {
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         MetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
         assertThat(actual.getDatabaseTypes().get("logic_db"), is("H2"));
-        assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "orders"));
-        assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "order_items"));
-        assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.VIEW, "active_orders"));
-        assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.COLUMN, "status"));
-        assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.INDEX, "idx_orders_status"));
         DatabaseMetadataSnapshot databaseSnapshot = actual.findDatabaseSnapshot("logic_db").orElseThrow();
         assertThat(databaseSnapshot.getDefaultSchema(), is("public"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("loadMetadataObjectArguments")
+    void assertLoadWithMetadataObject(final String name, final MetadataObjectType objectType, final String objectName) throws SQLException {
+        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader-" + objectName);
+        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
+        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
+        MetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
+        assertTrue(containsMetadataObject(actual.getMetadataObjects(), objectType, objectName));
     }
     
     @Test
@@ -101,21 +110,40 @@ class MCPJdbcMetadataLoaderTest {
         }
     }
     
+    @Test
+    void assertLoadWithSchemaRegisteredOnce() throws SQLException {
+        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader-shared-schema");
+        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
+        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
+        MetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
+        long actualSchemaCount = actual.getMetadataObjects().stream().filter(each -> MetadataObjectType.SCHEMA == each.getObjectType()).count();
+        assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "orders"));
+        assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.VIEW, "active_orders"));
+        assertThat(actualSchemaCount, is(1L));
+    }
+    
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl) {
         return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
+    }
+    
+    private static Stream<Arguments> loadMetadataObjectArguments() {
+        return Stream.of(
+                Arguments.of("table orders", MetadataObjectType.TABLE, "orders"),
+                Arguments.of("table order_items", MetadataObjectType.TABLE, "order_items"),
+                Arguments.of("view active_orders", MetadataObjectType.VIEW, "active_orders"),
+                Arguments.of("column status", MetadataObjectType.COLUMN, "status"),
+                Arguments.of("index idx_orders_status", MetadataObjectType.INDEX, "idx_orders_status"));
     }
     
     private Connection createConnectionWithoutSchema() throws SQLException {
         Connection result = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
-        ResultSet schemaResultSet = mockResultSet("TABLE_SCHEM");
         ResultSet tableResultSet = mockResultSet("TABLE_NAME", "orders");
         ResultSet viewResultSet = mockResultSet("TABLE_NAME");
         ResultSet columnResultSet = mockResultSet("COLUMN_NAME", "order_id");
         ResultSet indexResultSet = mockResultSet("INDEX_NAME");
         when(result.getMetaData()).thenReturn(databaseMetaData);
         when(result.getSchema()).thenReturn(null);
-        when(databaseMetaData.getSchemas()).thenReturn(schemaResultSet);
         when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3);
             return "TABLE".equals(tableTypes[0]) ? tableResultSet : viewResultSet;
