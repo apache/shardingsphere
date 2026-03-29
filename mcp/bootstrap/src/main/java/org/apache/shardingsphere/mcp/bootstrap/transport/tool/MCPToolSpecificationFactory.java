@@ -21,6 +21,7 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification.Builder;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.MCPToolPayloadResolver;
 
@@ -31,7 +32,7 @@ import java.util.List;
  */
 public final class MCPToolSpecificationFactory {
     
-    private final MCPRuntimeContext runtimeContext;
+    private final MCPToolCatalog toolCatalog;
     
     private final MCPToolCallHandler toolCallHandler;
     
@@ -43,7 +44,7 @@ public final class MCPToolSpecificationFactory {
      * @param runtimeContext runtime context
      */
     public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        this.runtimeContext = runtimeContext;
+        toolCatalog = runtimeContext.getToolCatalog();
         toolCallHandler = new MCPToolCallHandler(new MCPToolPayloadResolver(runtimeContext));
         mcpToolJsonSchemaAdapter = new MCPToolJsonSchemaAdapter();
     }
@@ -54,8 +55,7 @@ public final class MCPToolSpecificationFactory {
      * @return tool specifications
      */
     public List<SyncToolSpecification> createToolSpecifications() {
-        return runtimeContext.getToolCatalog().getToolDescriptors().stream()
-                .map(each -> new Builder().tool(createToolDefinition(each)).callHandler(toolCallHandler::handle).build()).toList();
+        return toolCatalog.getToolDescriptors().stream().map(each -> new Builder().tool(createToolDefinition(each)).callHandler(toolCallHandler::handle).build()).toList();
     }
     
     private McpSchema.Tool createToolDefinition(final MCPToolDescriptor toolDescriptor) {
