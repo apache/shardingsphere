@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.jdbc.runtime;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
@@ -29,23 +31,20 @@ import java.util.Map;
 /**
  * MCP runtime context factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPRuntimeContextFactory {
     
-    private final MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-    
-    private final MCPDatabaseRuntimeFactory databaseRuntimeFactory = new MCPDatabaseRuntimeFactory();
-    
     /**
-     * Create MCP runtime context.
+     * Create a new instance of MCP runtime context.
      *
      * @param sessionManager session manager
      * @param runtimeDatabases runtime databases
      * @return runtime context
      */
-    public MCPRuntimeContext create(final MCPSessionManager sessionManager, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        ShardingSpherePreconditions.checkState(!runtimeDatabases.isEmpty(), () -> new IllegalArgumentException("At least one runtime database must be configured."));
-        MetadataCatalog metadataCatalog = metadataLoader.load(runtimeDatabases);
-        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.createDatabaseRuntime(runtimeDatabases, metadataCatalog);
+    public static MCPRuntimeContext newInstance(final MCPSessionManager sessionManager, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        ShardingSpherePreconditions.checkNotEmpty(runtimeDatabases, () -> new IllegalArgumentException("At least one runtime database must be configured."));
+        MetadataCatalog metadataCatalog = new MCPJdbcMetadataLoader().load(runtimeDatabases);
+        DatabaseRuntime databaseRuntime = new MCPDatabaseRuntimeFactory().createDatabaseRuntime(runtimeDatabases, metadataCatalog);
         return MCPRuntimeContext.create(sessionManager, metadataCatalog, databaseRuntime);
     }
 }
