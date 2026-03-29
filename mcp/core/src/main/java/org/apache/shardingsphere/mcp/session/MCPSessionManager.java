@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -167,11 +168,9 @@ public final class MCPSessionManager {
         return findSession(sessionId).orElseThrow(() -> new IllegalStateException("Session does not exist."));
     }
     
-    private static String normalizeValue(final String value, final String fieldName) {
-        String result = value.trim();
-        if (result.isEmpty()) {
-            throw new IllegalArgumentException(fieldName + " cannot be empty.");
-        }
+    private String normalizeValue(final String value, final String fieldName) {
+        String result = Objects.toString(value, "").trim();
+        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(fieldName + " cannot be empty."));
         return result;
     }
     
