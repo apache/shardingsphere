@@ -22,6 +22,7 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification.Bu
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.tool.MCPToolPayloadResolver;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ public final class MCPToolSpecificationFactory {
      */
     public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
         this.runtimeContext = runtimeContext;
-        toolCallHandler = new MCPToolCallHandler(runtimeContext);
+        toolCallHandler = new MCPToolCallHandler(new MCPToolPayloadResolver(runtimeContext));
         mcpToolJsonSchemaAdapter = new MCPToolJsonSchemaAdapter();
     }
     
