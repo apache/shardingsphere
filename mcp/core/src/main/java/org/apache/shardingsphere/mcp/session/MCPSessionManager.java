@@ -237,9 +237,7 @@ public final class MCPSessionManager {
         
         private void releaseSavepoint(final String savepointName) {
             requireActiveTransaction();
-            if (!savepoints.remove(savepointName)) {
-                throw new IllegalStateException("Savepoint does not exist.");
-            }
+            ShardingSpherePreconditions.checkState(savepoints.remove(savepointName), () -> new IllegalStateException("Savepoint does not exist."));
         }
         
         private void rollbackPendingWork() {
@@ -250,9 +248,7 @@ public final class MCPSessionManager {
         }
         
         private void requireActiveTransaction() {
-            if (TransactionState.ACTIVE != transactionState) {
-                throw new IllegalStateException("No active transaction.");
-            }
+            ShardingSpherePreconditions.checkState(TransactionState.ACTIVE == transactionState, () -> new IllegalStateException("No active transaction."));
         }
         
         private void close() {
