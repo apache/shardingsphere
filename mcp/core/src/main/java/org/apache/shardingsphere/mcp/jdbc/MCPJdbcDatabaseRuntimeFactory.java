@@ -34,8 +34,6 @@ import java.util.Objects;
  */
 public final class MCPJdbcDatabaseRuntimeFactory {
     
-    private final MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-    
     /**
      * Create one adapter-backed database runtime.
      *
@@ -49,12 +47,12 @@ public final class MCPJdbcDatabaseRuntimeFactory {
             connectionProviders.put(each.getKey(), () -> each.getValue().openConnection(each.getKey()));
         }
         ShardingSphereExecutionAdapter executionAdapter = new ShardingSphereExecutionAdapter(connectionProviders);
-        return new DatabaseRuntime(executionAdapter, database -> refreshMetadata(database, runtimeDatabases.get(database), metadataCatalog, metadataLoader));
+        return new DatabaseRuntime(executionAdapter, database -> refreshMetadata(database, runtimeDatabases.get(database), metadataCatalog));
     }
     
     private void refreshMetadata(final String database, final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
-                                 final MetadataCatalog metadataCatalog, final MCPJdbcMetadataLoader metadataLoader) {
-        MetadataCatalog refreshedCatalog = metadataLoader.load(Collections.singletonMap(database, runtimeDatabaseConfig));
+                                 final MetadataCatalog metadataCatalog) {
+        MetadataCatalog refreshedCatalog = new MCPJdbcMetadataLoader().load(Collections.singletonMap(database, runtimeDatabaseConfig));
         RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = Objects.requireNonNull(refreshedCatalog.getRuntimeDatabaseDescriptors().get(database), "runtimeDatabaseDescriptor cannot be null");
         metadataCatalog.replaceDatabaseSnapshot(database, refreshedCatalog.getDatabaseTypes().get(database), refreshedCatalog.getMetadataObjects(), runtimeDatabaseDescriptor);
     }

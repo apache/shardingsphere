@@ -126,13 +126,13 @@ public final class MCPJdbcMetadataLoader {
         return "INFORMATION_SCHEMA".equals(upperSchemaName) || "PG_CATALOG".equals(upperSchemaName) || "SYSTEM_LOBS".equals(upperSchemaName);
     }
     
-    private void registerSchema(final String databaseName, final String schema,
+    private void registerSchema(final String databaseName, final String schemaName,
                                 final Collection<MetadataObject> metadataObjects, final Collection<MetadataObjectType> foundMetadataObjectTypes, final Collection<String> foundSchemas) {
-        if (schema.isEmpty() || !foundSchemas.add(schema)) {
+        if (schemaName.isEmpty() || !foundSchemas.add(schemaName)) {
             return;
         }
         foundMetadataObjectTypes.add(MetadataObjectType.SCHEMA);
-        metadataObjects.add(new MetadataObject(databaseName, schema, MetadataObjectType.SCHEMA, schema, "", ""));
+        metadataObjects.add(new MetadataObject(databaseName, schemaName, MetadataObjectType.SCHEMA, schemaName, "", ""));
     }
     
     private void loadColumns(final String databaseName, final DatabaseMetaData databaseMetaData, final String schemaName,
