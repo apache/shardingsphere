@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.capability;
 
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
-import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 
 import java.util.Optional;
@@ -85,7 +85,7 @@ public final class DatabaseCapabilityAssembler {
         if (null == metadataCatalog) {
             return "";
         }
-        Optional<RuntimeDatabaseDescriptor> runtimeDescriptor = metadataCatalog.findRuntimeDatabaseDescriptor(databaseName);
-        return runtimeDescriptor.map(RuntimeDatabaseDescriptor::getDatabaseVersion).orElse("");
+        Optional<DatabaseMetadataSnapshot> databaseSnapshot = metadataCatalog.findDatabaseSnapshot(databaseName);
+        return databaseSnapshot.map(DatabaseMetadataSnapshot::getDatabaseVersion).orElse("");
     }
 }

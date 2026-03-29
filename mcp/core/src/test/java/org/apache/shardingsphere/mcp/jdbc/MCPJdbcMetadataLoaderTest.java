@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.jdbc;
 
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
-import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -66,8 +66,8 @@ class MCPJdbcMetadataLoaderTest {
         assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.VIEW, "active_orders"));
         assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.COLUMN, "status"));
         assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.INDEX, "idx_orders_status"));
-        RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = actual.findRuntimeDatabaseDescriptor("logic_db").orElseThrow();
-        assertThat(runtimeDatabaseDescriptor.getDefaultSchema(), is("public"));
+        DatabaseMetadataSnapshot databaseSnapshot = actual.findDatabaseSnapshot("logic_db").orElseThrow();
+        assertThat(databaseSnapshot.getDefaultSchema(), is("public"));
     }
     
     @Test
@@ -81,8 +81,7 @@ class MCPJdbcMetadataLoaderTest {
                 "logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl));
         MetadataCatalog actual = metadataLoader.load(connectionConfigs);
         assertThat(actual.getDatabaseTypes().size(), is(2));
-        assertThat(actual.getRuntimeDatabaseDescriptors().size(), is(2));
-        assertTrue(actual.findRuntimeDatabaseDescriptor("analytics_db").isPresent());
+        assertTrue(actual.findDatabaseSnapshot("analytics_db").isPresent());
     }
     
     @Test
@@ -95,8 +94,8 @@ class MCPJdbcMetadataLoaderTest {
             assertFalse(actual.getMetadataObjects().stream().anyMatch(each -> MetadataObjectType.SCHEMA == each.getObjectType()));
             assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "orders"));
             assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.COLUMN, "order_id"));
-            RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = actual.findRuntimeDatabaseDescriptor("logic_db").orElseThrow();
-            assertThat(runtimeDatabaseDescriptor.getDefaultSchema(), is(""));
+            DatabaseMetadataSnapshot databaseSnapshot = actual.findDatabaseSnapshot("logic_db").orElseThrow();
+            assertThat(databaseSnapshot.getDefaultSchema(), is(""));
         } finally {
             DriverManager.deregisterDriver(mockDriver);
         }

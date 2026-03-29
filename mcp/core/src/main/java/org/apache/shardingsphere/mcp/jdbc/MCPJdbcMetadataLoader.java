@@ -17,13 +17,10 @@
 
 package org.apache.shardingsphere.mcp.jdbc;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
-import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -52,30 +49,27 @@ public final class MCPJdbcMetadataLoader {
      * @throws IllegalStateException when runtime metadata cannot be loaded from one configured database
      */
     public MetadataCatalog load(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        Map<String, String> databaseTypes = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
-        List<MetadataObject> metadataObjects = new LinkedList<>();
-        Map<String, RuntimeDatabaseDescriptor> databaseDescriptors = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
+        Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
         for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
             String databaseName = entry.getKey();
-            databaseTypes.put(databaseName, entry.getValue().getDatabaseType());
             try (Connection connection = entry.getValue().openConnection(databaseName)) {
-                RuntimeMetadataSnapshot metadataSnapshot = loadRuntimeMetadataSnapshot(databaseName, connection.getSchema(), connection.getMetaData());
-                metadataObjects.addAll(metadataSnapshot.getMetadataObjects());
-                databaseDescriptors.put(databaseName, metadataSnapshot.getRuntimeDatabaseDescriptor());
+                databaseSnapshots.put(databaseName,
+                        loadDatabaseSnapshot(databaseName, entry.getValue().getDatabaseType(), connection.getSchema(), connection.getMetaData()));
             } catch (final SQLException ex) {
                 throw new IllegalStateException(String.format("Failed to load metadata for database `%s`.", databaseName), ex);
             }
         }
-        return new MetadataCatalog(databaseTypes, metadataObjects, databaseDescriptors);
+        return new MetadataCatalog(databaseSnapshots);
     }
     
-    private RuntimeMetadataSnapshot loadRuntimeMetadataSnapshot(final String databaseName, final String schemaName, final DatabaseMetaData databaseMetaData) throws SQLException {
+    private DatabaseMetadataSnapshot loadDatabaseSnapshot(final String databaseName, final String databaseType,
+                                                          final String schemaName, final DatabaseMetaData databaseMetaData) throws SQLException {
         List<MetadataObject> metadataObjects = new LinkedList<>();
         Set<String> foundSchemas = new LinkedHashSet<>();
         loadTables(databaseName, databaseMetaData, metadataObjects, foundSchemas);
         loadViews(databaseName, databaseMetaData, metadataObjects, foundSchemas);
         String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
-        return new RuntimeMetadataSnapshot(metadataObjects, new RuntimeDatabaseDescriptor(databaseVersion, resolveDefaultSchema(schemaName, foundSchemas)));
+        return new DatabaseMetadataSnapshot(databaseType, metadataObjects, databaseVersion, resolveDefaultSchema(schemaName, foundSchemas));
     }
     
     private void loadTables(final String databaseName, final DatabaseMetaData databaseMetaData,
@@ -171,14 +165,5 @@ public final class MCPJdbcMetadataLoader {
             return schemas.isEmpty() ? "" : schemas.iterator().next();
         }
         return schemas.stream().filter(schema::equalsIgnoreCase).findFirst().orElse(schema);
-    }
-    
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    @Getter(AccessLevel.PRIVATE)
-    private static final class RuntimeMetadataSnapshot {
-        
-        private final List<MetadataObject> metadataObjects;
-        
-        private final RuntimeDatabaseDescriptor runtimeDatabaseDescriptor;
     }
 }

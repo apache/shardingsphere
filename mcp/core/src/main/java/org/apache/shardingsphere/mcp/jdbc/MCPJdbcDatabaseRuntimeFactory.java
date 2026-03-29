@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.jdbc;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ShardingSphereExecutionAdapter;
 import org.apache.shardingsphere.mcp.execute.ShardingSphereExecutionAdapter.ConnectionProvider;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
-import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -52,7 +52,8 @@ public final class MCPJdbcDatabaseRuntimeFactory {
     
     private void refreshMetadata(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final MetadataCatalog metadataCatalog) {
         MetadataCatalog refreshedCatalog = new MCPJdbcMetadataLoader().load(Collections.singletonMap(databaseName, runtimeDatabaseConfig));
-        RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = Objects.requireNonNull(refreshedCatalog.getRuntimeDatabaseDescriptors().get(databaseName), "runtimeDatabaseDescriptor cannot be null");
-        metadataCatalog.replaceDatabaseSnapshot(databaseName, refreshedCatalog.getDatabaseTypes().get(databaseName), refreshedCatalog.getMetadataObjects(), runtimeDatabaseDescriptor);
+        DatabaseMetadataSnapshot databaseSnapshot = Objects.requireNonNull(refreshedCatalog.findDatabaseSnapshot(databaseName).orElse(null),
+                "databaseSnapshot cannot be null");
+        metadataCatalog.replaceDatabaseSnapshot(databaseName, databaseSnapshot);
     }
 }

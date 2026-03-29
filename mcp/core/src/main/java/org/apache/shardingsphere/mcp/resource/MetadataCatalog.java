@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Map.Entry;
 
 /**
  * Immutable in-memory metadata catalog for discovery tests and adapters.
@@ -41,19 +42,16 @@ public final class MetadataCatalog {
      * @param metadataObjects metadata objects
      */
     public MetadataCatalog(final Map<String, String> databaseTypes, final Collection<MetadataObject> metadataObjects) {
-        this(databaseTypes, metadataObjects, Collections.emptyMap());
+        this(createDatabaseSnapshots(databaseTypes, metadataObjects));
     }
     
     /**
-     * Construct a metadata catalog with runtime descriptors.
+     * Construct a metadata catalog with per-database snapshots.
      *
-     * @param databaseTypes database-to-type mapping
-     * @param metadataObjects metadata objects
-     * @param runtimeDatabaseDescriptors runtime database descriptors
+     * @param databaseSnapshots per-database snapshots
      */
-    public MetadataCatalog(final Map<String, String> databaseTypes, final Collection<MetadataObject> metadataObjects,
-                           final Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors) {
-        replaceSnapshot(databaseTypes, metadataObjects, runtimeDatabaseDescriptors);
+    public MetadataCatalog(final Map<String, DatabaseMetadataSnapshot> databaseSnapshots) {
+        replaceSnapshot(databaseSnapshots);
     }
     
     /**
@@ -75,54 +73,24 @@ public final class MetadataCatalog {
     }
     
     /**
-     * Get the current runtime database descriptors.
+     * Replace the metadata snapshot.
      *
-     * @return runtime database descriptors
+     * @param databaseSnapshots per-database snapshots
      */
-    public Map<String, RuntimeDatabaseDescriptor> getRuntimeDatabaseDescriptors() {
-        return snapshot.getRuntimeDatabaseDescriptors();
+    public void replaceSnapshot(final Map<String, DatabaseMetadataSnapshot> databaseSnapshots) {
+        snapshot = createSnapshot(databaseSnapshots);
     }
     
     /**
-     * Replace the runtime metadata snapshot.
-     *
-     * @param databaseTypes database-to-type mapping
-     * @param metadataObjects metadata objects
-     * @param runtimeDatabaseDescriptors runtime database descriptors
-     */
-    public void replaceSnapshot(final Map<String, String> databaseTypes, final Collection<MetadataObject> metadataObjects,
-                                final Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors) {
-        snapshot = new Snapshot(Collections.unmodifiableMap(new LinkedHashMap<>(databaseTypes)),
-                Collections.unmodifiableList(new LinkedList<>(metadataObjects)),
-                Collections.unmodifiableMap(new LinkedHashMap<>(runtimeDatabaseDescriptors)));
-    }
-    
-    /**
-     * Replace the runtime metadata snapshot for one logical database.
+     * Replace the metadata snapshot for one logical database.
      *
      * @param databaseName logical database name
-     * @param databaseType database type
-     * @param metadataObjects metadata objects for the logical database
-     * @param runtimeDatabaseDescriptor runtime database descriptor
+     * @param databaseSnapshot database metadata snapshot
      */
-    public void replaceDatabaseSnapshot(final String databaseName, final String databaseType, final Collection<MetadataObject> metadataObjects,
-                                        final RuntimeDatabaseDescriptor runtimeDatabaseDescriptor) {
-        Map<String, String> databaseTypes = new LinkedHashMap<>(snapshot.getDatabaseTypes());
-        databaseTypes.put(databaseName, databaseType);
-        LinkedList<MetadataObject> actualMetadataObjects = new LinkedList<>();
-        for (MetadataObject each : snapshot.getMetadataObjects()) {
-            if (!databaseName.equals(each.getDatabase())) {
-                actualMetadataObjects.add(each);
-            }
-        }
-        for (MetadataObject each : metadataObjects) {
-            if (databaseName.equals(each.getDatabase())) {
-                actualMetadataObjects.add(each);
-            }
-        }
-        Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors = new LinkedHashMap<>(snapshot.getRuntimeDatabaseDescriptors());
-        runtimeDatabaseDescriptors.put(databaseName, runtimeDatabaseDescriptor);
-        replaceSnapshot(databaseTypes, actualMetadataObjects, runtimeDatabaseDescriptors);
+    public void replaceDatabaseSnapshot(final String databaseName, final DatabaseMetadataSnapshot databaseSnapshot) {
+        Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>(snapshot.getDatabaseSnapshots());
+        databaseSnapshots.put(databaseName, databaseSnapshot);
+        replaceSnapshot(databaseSnapshots);
     }
     
     /**
@@ -136,29 +104,66 @@ public final class MetadataCatalog {
     }
     
     /**
-     * Find one runtime database descriptor.
+     * Find one database metadata snapshot.
      *
      * @param databaseName logical database name
-     * @return runtime database descriptor when present
+     * @return database metadata snapshot when present
      */
-    public Optional<RuntimeDatabaseDescriptor> findRuntimeDatabaseDescriptor(final String databaseName) {
-        return Optional.ofNullable(snapshot.getRuntimeDatabaseDescriptors().get(databaseName));
+    public Optional<DatabaseMetadataSnapshot> findDatabaseSnapshot(final String databaseName) {
+        return Optional.ofNullable(snapshot.getDatabaseSnapshots().get(databaseName));
+    }
+    
+    private Snapshot createSnapshot(final Map<String, DatabaseMetadataSnapshot> databaseSnapshots) {
+        Map<String, DatabaseMetadataSnapshot> actualDatabaseSnapshots = new LinkedHashMap<>(databaseSnapshots.size(), 1F);
+        Map<String, String> databaseTypes = new LinkedHashMap<>(databaseSnapshots.size(), 1F);
+        List<MetadataObject> metadataObjects = new LinkedList<>();
+        for (Entry<String, DatabaseMetadataSnapshot> entry : databaseSnapshots.entrySet()) {
+            DatabaseMetadataSnapshot databaseSnapshot = copySnapshot(entry.getValue());
+            actualDatabaseSnapshots.put(entry.getKey(), databaseSnapshot);
+            if (!databaseSnapshot.getDatabaseType().isEmpty()) {
+                databaseTypes.put(entry.getKey(), databaseSnapshot.getDatabaseType());
+            }
+            metadataObjects.addAll(databaseSnapshot.getMetadataObjects());
+        }
+        return new Snapshot(Collections.unmodifiableMap(actualDatabaseSnapshots), Collections.unmodifiableMap(databaseTypes),
+                Collections.unmodifiableList(new LinkedList<>(metadataObjects)));
+    }
+    
+    private DatabaseMetadataSnapshot copySnapshot(final DatabaseMetadataSnapshot databaseSnapshot) {
+        return new DatabaseMetadataSnapshot(databaseSnapshot.getDatabaseType(), databaseSnapshot.getMetadataObjects(), databaseSnapshot.getDatabaseVersion(), databaseSnapshot.getDefaultSchema());
+    }
+    
+    private static Map<String, DatabaseMetadataSnapshot> createDatabaseSnapshots(final Map<String, String> databaseTypes, final Collection<MetadataObject> metadataObjects) {
+        Map<String, List<MetadataObject>> metadataObjectsByDatabase = new LinkedHashMap<>();
+        for (MetadataObject each : metadataObjects) {
+            metadataObjectsByDatabase.computeIfAbsent(each.getDatabase(), unused -> new LinkedList<>()).add(each);
+        }
+        Map<String, DatabaseMetadataSnapshot> result = new LinkedHashMap<>(Math.max(databaseTypes.size(), metadataObjectsByDatabase.size()), 1F);
+        for (Entry<String, String> entry : databaseTypes.entrySet()) {
+            List<MetadataObject> actualMetadataObjects = metadataObjectsByDatabase.remove(entry.getKey());
+            result.put(entry.getKey(), new DatabaseMetadataSnapshot(entry.getValue(),
+                    null == actualMetadataObjects ? Collections.emptyList() : actualMetadataObjects));
+        }
+        for (Entry<String, List<MetadataObject>> entry : metadataObjectsByDatabase.entrySet()) {
+            result.put(entry.getKey(), new DatabaseMetadataSnapshot("", entry.getValue()));
+        }
+        return result;
     }
     
     @Getter
     private static final class Snapshot {
         
+        private final Map<String, DatabaseMetadataSnapshot> databaseSnapshots;
+        
         private final Map<String, String> databaseTypes;
         
         private final List<MetadataObject> metadataObjects;
         
-        private final Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors;
-        
-        private Snapshot(final Map<String, String> databaseTypes, final List<MetadataObject> metadataObjects,
-                         final Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors) {
+        private Snapshot(final Map<String, DatabaseMetadataSnapshot> databaseSnapshots,
+                         final Map<String, String> databaseTypes, final List<MetadataObject> metadataObjects) {
+            this.databaseSnapshots = databaseSnapshots;
             this.databaseTypes = databaseTypes;
             this.metadataObjects = metadataObjects;
-            this.runtimeDatabaseDescriptors = runtimeDatabaseDescriptors;
         }
     }
 }

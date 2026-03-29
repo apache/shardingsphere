@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.capability;
 
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
-import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 import org.junit.jupiter.api.Test;
 
@@ -92,8 +92,8 @@ class DatabaseCapabilityAssemblerTest {
     
     @Test
     void assertAssembleDatabaseCapabilityWithRuntimeOverlay() {
-        MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of("logic_db", "MySQL"), Collections.emptyList(), Map.of(
-                "logic_db", new RuntimeDatabaseDescriptor("8.0.32", "public")));
+        MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of(
+                "logic_db", new DatabaseMetadataSnapshot("MySQL", Collections.emptyList(), "8.0.32", "public")));
         DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler(metadataCatalog);
         
         Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db");
