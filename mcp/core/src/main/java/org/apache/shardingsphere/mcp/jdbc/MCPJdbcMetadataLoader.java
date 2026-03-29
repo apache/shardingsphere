@@ -67,9 +67,9 @@ public final class MCPJdbcMetadataLoader {
     
     private DatabaseMetadataSnapshot loadDatabaseSnapshot(final String databaseName, final String databaseType, final String schemaName, final DatabaseMetaData databaseMetaData) throws SQLException {
         String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
-        MetadataLoadResult result = loadTables(databaseName, databaseMetaData);
-        result.merge(loadViews(databaseName, databaseMetaData));
-        return new DatabaseMetadataSnapshot(databaseType, databaseVersion, result.getMetadataObjects(), resolveDefaultSchema(schemaName, result.getFoundSchemas()));
+        MetadataLoadResult metadataLoadResult = loadTables(databaseName, databaseMetaData);
+        metadataLoadResult.merge(loadViews(databaseName, databaseMetaData));
+        return new DatabaseMetadataSnapshot(databaseType, databaseVersion, metadataLoadResult.getMetadataObjects(), resolveDefaultSchema(schemaName, metadataLoadResult.getFoundSchemas()));
     }
     
     private MetadataLoadResult loadTables(final String databaseName, final DatabaseMetaData databaseMetaData) throws SQLException {
@@ -123,10 +123,9 @@ public final class MCPJdbcMetadataLoader {
         try (ResultSet columns = databaseMetaData.getColumns(null, getSchemaPattern(schemaName), objectName, "%")) {
             while (columns.next()) {
                 String columnName = Objects.toString(columns.getString("COLUMN_NAME"), "").trim();
-                if (columnName.isEmpty()) {
-                    continue;
+                if (!columnName.isEmpty()) {
+                    result.addMetadataObject(new MetadataObject(databaseName, schemaName, MetadataObjectType.COLUMN, columnName, parentObjectType, objectName));
                 }
-                result.addMetadataObject(new MetadataObject(databaseName, schemaName, MetadataObjectType.COLUMN, columnName, parentObjectType, objectName));
             }
         }
         return result;
@@ -138,13 +137,9 @@ public final class MCPJdbcMetadataLoader {
         try (ResultSet indexes = databaseMetaData.getIndexInfo(null, getSchemaPattern(schemaName), tableName, false, false)) {
             while (indexes.next()) {
                 String indexName = Objects.toString(indexes.getString("INDEX_NAME"), "").trim();
-                if (indexName.isEmpty()) {
-                    continue;
+                if (!indexName.isEmpty() && indexNames.add(indexName)) {
+                    result.addMetadataObject(new MetadataObject(databaseName, schemaName, MetadataObjectType.INDEX, indexName, "TABLE", tableName));
                 }
-                if (!indexNames.add(indexName)) {
-                    continue;
-                }
-                result.addMetadataObject(new MetadataObject(databaseName, schemaName, MetadataObjectType.INDEX, indexName, "TABLE", tableName));
             }
         }
         return result;
