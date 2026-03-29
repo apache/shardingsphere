@@ -55,10 +55,10 @@ public final class MCPToolSpecificationFactory {
      * @return tool specifications
      */
     public List<SyncToolSpecification> createToolSpecifications() {
-        return toolCatalog.getToolDescriptors().stream().map(each -> new Builder().tool(createToolDefinition(each)).callHandler(toolCallHandler::handle).build()).toList();
+        return toolCatalog.getToolDescriptors().stream().map(each -> new Builder().tool(createTool(each)).callHandler(toolCallHandler::handle).build()).toList();
     }
     
-    private McpSchema.Tool createToolDefinition(final MCPToolDescriptor toolDescriptor) {
+    private McpSchema.Tool createTool(final MCPToolDescriptor toolDescriptor) {
         return McpSchema.Tool.builder()
                 .name(toolDescriptor.getName())
                 .title(toolDescriptor.getTitle())
