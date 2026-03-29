@@ -40,7 +40,7 @@ public final class MCPRuntimeLauncher {
      * @throws IOException when the active server startup fails
      */
     public MCPRuntimeServer launch(final MCPLaunchConfiguration config) throws IOException {
-        MCPRuntimeContext runtimeContext = MCPJdbcRuntimeContextFactory.newInstance(new MCPSessionManager(), config.getDatabases());
+        MCPRuntimeContext runtimeContext = MCPJdbcRuntimeContextFactory.newInstance(config.getDatabases());
         MCPRuntimeServer result = config.getHttpTransport().isEnabled() ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext) : new StdioMCPServer(runtimeContext);
         try {
             result.start();
