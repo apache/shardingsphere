@@ -21,17 +21,17 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * MCP session manager.
  */
 public final class MCPSessionManager {
     
-    private final ConcurrentMap<String, SessionContext> sessions = new ConcurrentHashMap<>();
+    private final Map<String, SessionContext> sessions = new ConcurrentHashMap<>();
     
     private final Set<String> closedSessionIds = ConcurrentHashMap.newKeySet();
     
