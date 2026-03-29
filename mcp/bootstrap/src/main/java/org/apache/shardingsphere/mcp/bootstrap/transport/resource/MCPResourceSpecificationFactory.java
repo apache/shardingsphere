@@ -24,6 +24,7 @@ import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.resource.MCPResourcePayloadResolver;
+import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +36,7 @@ public final class MCPResourceSpecificationFactory {
     
     private static final String JSON_CONTENT_TYPE = "application/json";
     
-    private final MCPRuntimeContext runtimeContext;
+    private final ResourceUriResolver resourceUriResolver;
     
     private final MCPResourcePayloadResolver resourcePayloadResolver;
     
@@ -45,7 +46,7 @@ public final class MCPResourceSpecificationFactory {
      * @param runtimeContext runtime context
      */
     public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        this.runtimeContext = runtimeContext;
+        resourceUriResolver = runtimeContext.getResourceUriResolver();
         resourcePayloadResolver = new MCPResourcePayloadResolver(runtimeContext);
     }
     
@@ -55,7 +56,7 @@ public final class MCPResourceSpecificationFactory {
      * @return resource specifications
      */
     public List<SyncResourceSpecification> createResourceSpecifications() {
-        return runtimeContext.getResourceUriResolver().getSupportedResources().stream()
+        return resourceUriResolver.getSupportedResources().stream()
                 .filter(each -> !isTemplatedResource(each)).map(each -> new SyncResourceSpecification(createResource(each), this::handleReadResource)).collect(Collectors.toList());
     }
     
@@ -65,7 +66,7 @@ public final class MCPResourceSpecificationFactory {
      * @return resource template specifications
      */
     public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
-        return runtimeContext.getResourceUriResolver().getSupportedResources().stream()
+        return resourceUriResolver.getSupportedResources().stream()
                 .filter(this::isTemplatedResource)
                 .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource))
                 .collect(Collectors.toList());
