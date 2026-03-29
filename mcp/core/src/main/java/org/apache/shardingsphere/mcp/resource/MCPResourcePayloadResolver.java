@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.ErrorCode;
@@ -27,18 +28,10 @@ import java.util.Optional;
 /**
  * Resolve one MCP resource URI into a transport-neutral payload.
  */
+@RequiredArgsConstructor
 public final class MCPResourcePayloadResolver {
     
     private final MCPRuntimeContext runtimeContext;
-    
-    /**
-     * Construct a resource payload resolver.
-     *
-     * @param runtimeContext runtime context
-     */
-    public MCPResourcePayloadResolver(final MCPRuntimeContext runtimeContext) {
-        this.runtimeContext = runtimeContext;
-    }
     
     /**
      * Resolve one resource URI.
