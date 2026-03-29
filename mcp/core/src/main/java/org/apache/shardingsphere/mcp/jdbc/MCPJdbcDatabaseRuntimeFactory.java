@@ -50,10 +50,9 @@ public final class MCPJdbcDatabaseRuntimeFactory {
         return new DatabaseRuntime(executionAdapter, database -> refreshMetadata(database, runtimeDatabases.get(database), metadataCatalog));
     }
     
-    private void refreshMetadata(final String database, final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
-                                 final MetadataCatalog metadataCatalog) {
-        MetadataCatalog refreshedCatalog = new MCPJdbcMetadataLoader().load(Collections.singletonMap(database, runtimeDatabaseConfig));
-        RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = Objects.requireNonNull(refreshedCatalog.getRuntimeDatabaseDescriptors().get(database), "runtimeDatabaseDescriptor cannot be null");
-        metadataCatalog.replaceDatabaseSnapshot(database, refreshedCatalog.getDatabaseTypes().get(database), refreshedCatalog.getMetadataObjects(), runtimeDatabaseDescriptor);
+    private void refreshMetadata(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final MetadataCatalog metadataCatalog) {
+        MetadataCatalog refreshedCatalog = new MCPJdbcMetadataLoader().load(Collections.singletonMap(databaseName, runtimeDatabaseConfig));
+        RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = Objects.requireNonNull(refreshedCatalog.getRuntimeDatabaseDescriptors().get(databaseName), "runtimeDatabaseDescriptor cannot be null");
+        metadataCatalog.replaceDatabaseSnapshot(databaseName, refreshedCatalog.getDatabaseTypes().get(databaseName), refreshedCatalog.getMetadataObjects(), runtimeDatabaseDescriptor);
     }
 }

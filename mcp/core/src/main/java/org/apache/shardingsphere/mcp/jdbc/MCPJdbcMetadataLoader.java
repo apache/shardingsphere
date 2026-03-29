@@ -160,8 +160,8 @@ public final class MCPJdbcMetadataLoader {
         }
     }
     
-    private String getSchemaPattern(final String schema) {
-        String result = Objects.toString(schema, "").trim();
+    private String getSchemaPattern(final String schemaName) {
+        String result = Objects.toString(schemaName, "").trim();
         return result.isEmpty() ? null : result;
     }
     

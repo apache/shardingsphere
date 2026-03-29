@@ -91,71 +91,71 @@ public final class ResourceUriResolver {
         return createSchemaResourceResolution(database, segments);
     }
     
-    private Optional<ResourceUriResolution> createSchemaResourceResolution(final String database, final List<String> segments) {
+    private Optional<ResourceUriResolution> createSchemaResourceResolution(final String databaseName, final List<String> segments) {
         if (3 == segments.size()) {
-            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(database, "", MetadataObjectType.SCHEMA, "", "", "")));
+            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(databaseName, "", MetadataObjectType.SCHEMA, "", "", "")));
         }
-        String schema = segments.get(3);
+        String schemaName = segments.get(3);
         if (4 == segments.size()) {
-            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(database, schema, MetadataObjectType.SCHEMA, schema, "", "")));
+            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(databaseName, schemaName, MetadataObjectType.SCHEMA, schemaName, "", "")));
         }
         if ("tables".equals(segments.get(4))) {
-            return createTableResourceResolution(database, schema, segments);
+            return createTableResourceResolution(databaseName, schemaName, segments);
         }
         if ("views".equals(segments.get(4))) {
-            return createViewResourceResolution(database, schema, segments);
+            return createViewResourceResolution(databaseName, schemaName, segments);
         }
         return Optional.empty();
     }
     
-    private Optional<ResourceUriResolution> createTableResourceResolution(final String database, final String schema, final List<String> segments) {
+    private Optional<ResourceUriResolution> createTableResourceResolution(final String databaseName, final String schemaName, final List<String> segments) {
         if (5 == segments.size()) {
-            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(database, schema, MetadataObjectType.TABLE, "", "", "")));
+            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(databaseName, schemaName, MetadataObjectType.TABLE, "", "", "")));
         }
-        String table = segments.get(5);
+        String tableName = segments.get(5);
         if (6 == segments.size()) {
-            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(database, schema, MetadataObjectType.TABLE, table, "", "")));
+            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(databaseName, schemaName, MetadataObjectType.TABLE, tableName, "", "")));
         }
         if ("columns".equals(segments.get(6))) {
-            return createColumnResourceResolution(database, schema, table, "TABLE", segments);
+            return createColumnResourceResolution(databaseName, schemaName, tableName, "TABLE", segments);
         }
         if ("indexes".equals(segments.get(6))) {
-            return createIndexResourceResolution(database, schema, table, segments);
+            return createIndexResourceResolution(databaseName, schemaName, tableName, segments);
         }
         return Optional.empty();
     }
     
-    private Optional<ResourceUriResolution> createViewResourceResolution(final String database, final String schema, final List<String> segments) {
+    private Optional<ResourceUriResolution> createViewResourceResolution(final String databaseName, final String schemaName, final List<String> segments) {
         if (5 == segments.size()) {
-            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(database, schema, MetadataObjectType.VIEW, "", "", "")));
+            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(databaseName, schemaName, MetadataObjectType.VIEW, "", "", "")));
         }
         String view = segments.get(5);
         if (6 == segments.size()) {
-            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(database, schema, MetadataObjectType.VIEW, view, "", "")));
+            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(databaseName, schemaName, MetadataObjectType.VIEW, view, "", "")));
         }
         if (!"columns".equals(segments.get(6))) {
             return Optional.empty();
         }
-        return createColumnResourceResolution(database, schema, view, "VIEW", segments);
+        return createColumnResourceResolution(databaseName, schemaName, view, "VIEW", segments);
     }
     
-    private Optional<ResourceUriResolution> createColumnResourceResolution(final String database, final String schema, final String parentObjectName,
+    private Optional<ResourceUriResolution> createColumnResourceResolution(final String databaseName, final String schemaName, final String parentObjectName,
                                                                            final String parentObjectType, final List<String> segments) {
         if (7 == segments.size()) {
-            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(database, schema, MetadataObjectType.COLUMN, "", parentObjectType, parentObjectName)));
+            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(databaseName, schemaName, MetadataObjectType.COLUMN, "", parentObjectType, parentObjectName)));
         }
         if (8 == segments.size()) {
-            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(database, schema, MetadataObjectType.COLUMN, segments.get(7), parentObjectType, parentObjectName)));
+            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(databaseName, schemaName, MetadataObjectType.COLUMN, segments.get(7), parentObjectType, parentObjectName)));
         }
         return Optional.empty();
     }
     
-    private Optional<ResourceUriResolution> createIndexResourceResolution(final String database, final String schema, final String table, final List<String> segments) {
+    private Optional<ResourceUriResolution> createIndexResourceResolution(final String databaseName, final String schemaName, final String tableName, final List<String> segments) {
         if (7 == segments.size()) {
-            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(database, schema, MetadataObjectType.INDEX, "", "TABLE", table)));
+            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(databaseName, schemaName, MetadataObjectType.INDEX, "", "TABLE", tableName)));
         }
         if (8 == segments.size()) {
-            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(database, schema, MetadataObjectType.INDEX, segments.get(7), "TABLE", table)));
+            return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(databaseName, schemaName, MetadataObjectType.INDEX, segments.get(7), "TABLE", tableName)));
         }
         return Optional.empty();
     }

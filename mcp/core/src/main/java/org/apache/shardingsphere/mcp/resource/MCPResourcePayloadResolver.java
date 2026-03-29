@@ -54,9 +54,9 @@ public final class MCPResourcePayloadResolver {
         }
     }
     
-    private Object resolveDatabaseCapabilityPayload(final String database) {
+    private Object resolveDatabaseCapabilityPayload(final String databaseName) {
         MCPPayloadBuilder payloadBuilder = runtimeContext.getPayloadBuilder();
-        Optional<DatabaseCapability> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(database);
+        Optional<DatabaseCapability> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(databaseName);
         return capability.map(payloadBuilder::createDatabaseCapabilityPayload)
                 .orElseGet(() -> payloadBuilder.createErrorPayload("not_found", "Database capability does not exist."));
     }

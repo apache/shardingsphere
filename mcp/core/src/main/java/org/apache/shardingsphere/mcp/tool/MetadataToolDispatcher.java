@@ -114,10 +114,10 @@ public final class MetadataToolDispatcher {
         return paginate(result, toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
     }
     
-    private List<MetadataObject> loadSearchResults(final MetadataCatalog metadataCatalog, final String database, final ToolRequest toolRequest) {
+    private List<MetadataObject> loadSearchResults(final MetadataCatalog metadataCatalog, final String databaseName, final ToolRequest toolRequest) {
         List<MetadataObject> result = new LinkedList<>();
         for (MetadataObjectType each : getSearchObjectTypes(toolRequest.getObjectTypes())) {
-            ResourceLoadResult loadResult = resourceLoader.load(metadataCatalog, new ResourceRequest(database, toolRequest.getSchema(), each, "", "", ""));
+            ResourceLoadResult loadResult = resourceLoader.load(metadataCatalog, new ResourceRequest(databaseName, toolRequest.getSchema(), each, "", "", ""));
             if (!loadResult.isSuccessful()) {
                 continue;
             }

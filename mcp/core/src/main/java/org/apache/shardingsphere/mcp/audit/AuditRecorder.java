@@ -33,36 +33,36 @@ public final class AuditRecorder {
      * Record one query-execution audit event.
      *
      * @param sessionId session identifier
-     * @param database logical database name
+     * @param databaseName logical database name
      * @param sql SQL text
      * @param success success flag
      * @param transactionMarker optional transaction marker
      * @return recorded audit entry
      */
-    public AuditRecord recordQueryExecution(final String sessionId, final String database, final String sql, final boolean success,
+    public AuditRecord recordQueryExecution(final String sessionId, final String databaseName, final String sql, final boolean success,
                                             final String transactionMarker) {
-        return record(sessionId, database, OperationClass.QUERY_EXECUTION, sql, success, false, MCPErrorCode.INVALID_REQUEST, transactionMarker);
+        return record(sessionId, databaseName, OperationClass.QUERY_EXECUTION, sql, success, false, MCPErrorCode.INVALID_REQUEST, transactionMarker);
     }
     
     /**
      * Record one query-execution audit event with one error code.
      *
      * @param sessionId session identifier
-     * @param database logical database name
+     * @param databaseName logical database name
      * @param sql SQL text
      * @param success success flag
      * @param errorCode error code
      * @param transactionMarker optional transaction marker
      * @return recorded audit entry
      */
-    public AuditRecord recordQueryExecution(final String sessionId, final String database, final String sql, final boolean success,
+    public AuditRecord recordQueryExecution(final String sessionId, final String databaseName, final String sql, final boolean success,
                                             final MCPErrorCode errorCode, final String transactionMarker) {
-        return record(sessionId, database, OperationClass.QUERY_EXECUTION, sql, success, true, errorCode, transactionMarker);
+        return record(sessionId, databaseName, OperationClass.QUERY_EXECUTION, sql, success, true, errorCode, transactionMarker);
     }
     
-    private AuditRecord record(final String sessionId, final String database, final OperationClass operationClass, final String operationSource,
+    private AuditRecord record(final String sessionId, final String databaseName, final OperationClass operationClass, final String operationSource,
                                final boolean success, final boolean errorCodePresent, final MCPErrorCode errorCode, final String transactionMarker) {
-        return new AuditRecord(sessionId, database, operationClass, digest(operationSource), success, errorCodePresent, errorCode, transactionMarker, Instant.now().toString());
+        return new AuditRecord(sessionId, databaseName, operationClass, digest(operationSource), success, errorCodePresent, errorCode, transactionMarker, Instant.now().toString());
     }
     
     private String digest(final String value) {

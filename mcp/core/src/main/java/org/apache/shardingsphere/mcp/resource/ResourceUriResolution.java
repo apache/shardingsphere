@@ -46,11 +46,11 @@ public final class ResourceUriResolution {
     /**
      * Create one database capability resolution.
      *
-     * @param database logical database name
+     * @param databaseName logical database name
      * @return resource URI resolution
      */
-    public static ResourceUriResolution databaseCapabilities(final String database) {
-        return new ResourceUriResolution(ResourceUriResolutionType.DATABASE_CAPABILITIES, database, null);
+    public static ResourceUriResolution databaseCapabilities(final String databaseName) {
+        return new ResourceUriResolution(ResourceUriResolutionType.DATABASE_CAPABILITIES, databaseName, null);
     }
     
     /**

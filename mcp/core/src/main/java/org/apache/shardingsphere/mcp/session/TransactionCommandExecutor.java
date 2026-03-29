@@ -46,41 +46,41 @@ public final class TransactionCommandExecutor {
      * Execute one transaction-control or savepoint command with pre-classified SQL metadata.
      *
      * @param sessionId session identifier
-     * @param database logical database name
+     * @param databaseName logical database name
      * @param databaseType database type
      * @param classificationResult statement classification result
      * @return execution response
      */
-    public ExecuteQueryResponse execute(final String sessionId, final String database, final String databaseType, final ClassificationResult classificationResult) {
-        Optional<DatabaseCapability> databaseCapability = capabilityAssembler.assembleDatabaseCapability(database, databaseType);
+    public ExecuteQueryResponse execute(final String sessionId, final String databaseName, final String databaseType, final ClassificationResult classificationResult) {
+        Optional<DatabaseCapability> databaseCapability = capabilityAssembler.assembleDatabaseCapability(databaseName, databaseType);
         if (databaseCapability.isEmpty()) {
             return ExecuteQueryResponse.error(MCPErrorCode.NOT_FOUND, "Database capability does not exist.");
         }
-        return execute(sessionId, database, databaseCapability.get(), classificationResult);
+        return execute(sessionId, databaseName, databaseCapability.get(), classificationResult);
     }
     
     /**
      * Execute one transaction-control or savepoint command with resolved database capability.
      *
      * @param sessionId session identifier
-     * @param database logical database name
+     * @param databaseName logical database name
      * @param databaseCapability resolved database capability
      * @param classificationResult statement classification result
      * @return execution response
      */
-    public ExecuteQueryResponse execute(final String sessionId, final String database, final DatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
-        return execute(sessionId, database, databaseCapability, classificationResult.getStatementType(),
+    public ExecuteQueryResponse execute(final String sessionId, final String databaseName, final DatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
+        return execute(sessionId, databaseName, databaseCapability, classificationResult.getStatementType(),
                 classificationResult.getSavepointName().map(each -> each.toUpperCase(Locale.ENGLISH)).orElse(""));
     }
     
-    private ExecuteQueryResponse execute(final String sessionId, final String database, final DatabaseCapability databaseCapability, final String statementType, final String savepointName) {
+    private ExecuteQueryResponse execute(final String sessionId, final String databaseName, final DatabaseCapability databaseCapability, final String statementType, final String savepointName) {
         try {
             if ("BEGIN".equals(statementType) || "START TRANSACTION".equals(statementType)) {
                 if (!databaseCapability.isSupportsTransactionControl()) {
                     return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
                 }
-                sessionManager.beginTransaction(sessionId, database);
-                databaseRuntime.beginTransaction(sessionId, database);
+                sessionManager.beginTransaction(sessionId, databaseName);
+                databaseRuntime.beginTransaction(sessionId, databaseName);
                 return ExecuteQueryResponse.statementAck(statementType, "Transaction started.");
             }
             if ("COMMIT".equals(statementType)) {

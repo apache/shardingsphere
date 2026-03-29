@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.execute;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 
 import java.util.Collections;
@@ -67,23 +68,23 @@ public final class DatabaseRuntime {
     /**
      * Find one query result definition.
      *
-     * @param database logical database name
+     * @param databaseName logical database name
      * @param objectName object name
      * @return query result when present
      */
-    public Optional<QueryResult> findQueryResult(final String database, final String objectName) {
-        return Optional.ofNullable(queryResults.get(buildKey(database, objectName)));
+    public Optional<QueryResult> findQueryResult(final String databaseName, final String objectName) {
+        return Optional.ofNullable(queryResults.get(buildKey(databaseName, objectName)));
     }
     
     /**
      * Find one update count definition.
      *
-     * @param database logical database name
+     * @param databaseName logical database name
      * @param objectName object name
      * @return update count when present
      */
-    public Optional<Integer> findUpdateCount(final String database, final String objectName) {
-        return Optional.ofNullable(updateCounts.get(buildKey(database, objectName)));
+    public Optional<Integer> findUpdateCount(final String databaseName, final String objectName) {
+        return Optional.ofNullable(updateCounts.get(buildKey(databaseName, objectName)));
     }
     
     /**
@@ -110,11 +111,11 @@ public final class DatabaseRuntime {
      * Begin one transaction on the runtime backend.
      *
      * @param sessionId session identifier
-     * @param database logical database name
+     * @param databaseName logical database name
      */
-    public void beginTransaction(final String sessionId, final String database) {
+    public void beginTransaction(final String sessionId, final String databaseName) {
         if (isAdapterBacked()) {
-            getRequiredExecutionAdapter().beginTransaction(sessionId, database);
+            getRequiredExecutionAdapter().beginTransaction(sessionId, databaseName);
         }
     }
     
@@ -179,10 +180,10 @@ public final class DatabaseRuntime {
     /**
      * Refresh runtime metadata after committed changes.
      *
-     * @param database logical database name
+     * @param databaseName logical database name
      */
-    public void refreshMetadata(final String database) {
-        metadataRefresher.accept(database);
+    public void refreshMetadata(final String databaseName) {
+        metadataRefresher.accept(databaseName);
     }
     
     /**
@@ -197,13 +198,11 @@ public final class DatabaseRuntime {
     }
     
     private ShardingSphereExecutionAdapter getRequiredExecutionAdapter() {
-        if (!isAdapterBacked()) {
-            throw new IllegalStateException("Execution adapter does not exist.");
-        }
+        ShardingSpherePreconditions.checkState(isAdapterBacked(), () -> new IllegalStateException("Execution adapter does not exist."));
         return executionAdapter;
     }
     
-    private String buildKey(final String database, final String objectName) {
-        return database + ":" + objectName.toLowerCase();
+    private String buildKey(final String databaseName, final String objectName) {
+        return databaseName + ":" + objectName.toLowerCase();
     }
 }

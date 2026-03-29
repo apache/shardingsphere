@@ -59,33 +59,33 @@ public final class DatabaseCapabilityAssembler {
     /**
      * Assemble the database-level capability view for one logical database.
      *
-     * @param database logical database name
+     * @param databaseName logical database name
      * @return database-level capability when the database type is supported
      */
-    public Optional<DatabaseCapability> assembleDatabaseCapability(final String database) {
+    public Optional<DatabaseCapability> assembleDatabaseCapability(final String databaseName) {
         if (null == metadataCatalog) {
             return Optional.empty();
         }
-        Optional<String> databaseType = metadataCatalog.findDatabaseType(database);
-        return databaseType.isPresent() ? assembleDatabaseCapability(database, databaseType.get()) : Optional.empty();
+        Optional<String> databaseType = metadataCatalog.findDatabaseType(databaseName);
+        return databaseType.isPresent() ? assembleDatabaseCapability(databaseName, databaseType.get()) : Optional.empty();
     }
     
     /**
      * Assemble the database-level capability view for one logical database.
      *
-     * @param database logical database name
+     * @param databaseName logical database name
      * @param databaseType database type
      * @return database-level capability when the database type is supported
      */
-    public Optional<DatabaseCapability> assembleDatabaseCapability(final String database, final String databaseType) {
-        return DatabaseCapabilityCatalog.find(database, databaseType, getDatabaseVersion(database));
+    public Optional<DatabaseCapability> assembleDatabaseCapability(final String databaseName, final String databaseType) {
+        return DatabaseCapabilityCatalog.find(databaseName, databaseType, getDatabaseVersion(databaseName));
     }
     
-    private String getDatabaseVersion(final String database) {
+    private String getDatabaseVersion(final String databaseName) {
         if (null == metadataCatalog) {
             return "";
         }
-        Optional<RuntimeDatabaseDescriptor> runtimeDescriptor = metadataCatalog.findRuntimeDatabaseDescriptor(database);
+        Optional<RuntimeDatabaseDescriptor> runtimeDescriptor = metadataCatalog.findRuntimeDatabaseDescriptor(databaseName);
         return runtimeDescriptor.map(RuntimeDatabaseDescriptor::getDatabaseVersion).orElse("");
     }
 }

@@ -222,14 +222,14 @@ public final class MCPToolCatalog {
                 stringArgument(arguments, "view"), "", Collections.emptySet(), 100, "");
     }
     
-    private static ToolRequest createToolRequest(final String toolName, final Map<String, Object> arguments, final String database,
-                                                 final String schema, final String objectName, final String parentObjectType,
+    private static ToolRequest createToolRequest(final String toolName, final Map<String, Object> arguments, final String databaseName,
+                                                 final String schemaName, final String objectName, final String parentObjectType,
                                                  final Set<MetadataObjectType> objectTypes, final int pageSize, final String pageToken) {
         String query = stringArgument(arguments, "query");
         if (query.isEmpty()) {
             query = stringArgument(arguments, "search");
         }
-        return new ToolRequest(toolName, database, schema, objectName, parentObjectType, query, objectTypes, pageSize, pageToken);
+        return new ToolRequest(toolName, databaseName, schemaName, objectName, parentObjectType, query, objectTypes, pageSize, pageToken);
     }
     
     private static Set<MetadataObjectType> objectTypes(final Map<String, Object> arguments) {

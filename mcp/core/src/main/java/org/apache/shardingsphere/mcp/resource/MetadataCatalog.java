@@ -100,49 +100,49 @@ public final class MetadataCatalog {
     /**
      * Replace the runtime metadata snapshot for one logical database.
      *
-     * @param database logical database name
+     * @param databaseName logical database name
      * @param databaseType database type
      * @param metadataObjects metadata objects for the logical database
      * @param runtimeDatabaseDescriptor runtime database descriptor
      */
-    public void replaceDatabaseSnapshot(final String database, final String databaseType, final Collection<MetadataObject> metadataObjects,
+    public void replaceDatabaseSnapshot(final String databaseName, final String databaseType, final Collection<MetadataObject> metadataObjects,
                                         final RuntimeDatabaseDescriptor runtimeDatabaseDescriptor) {
         Map<String, String> databaseTypes = new LinkedHashMap<>(snapshot.getDatabaseTypes());
-        databaseTypes.put(database, databaseType);
+        databaseTypes.put(databaseName, databaseType);
         LinkedList<MetadataObject> actualMetadataObjects = new LinkedList<>();
         for (MetadataObject each : snapshot.getMetadataObjects()) {
-            if (!database.equals(each.getDatabase())) {
+            if (!databaseName.equals(each.getDatabase())) {
                 actualMetadataObjects.add(each);
             }
         }
         for (MetadataObject each : metadataObjects) {
-            if (database.equals(each.getDatabase())) {
+            if (databaseName.equals(each.getDatabase())) {
                 actualMetadataObjects.add(each);
             }
         }
         Map<String, RuntimeDatabaseDescriptor> runtimeDatabaseDescriptors = new LinkedHashMap<>(snapshot.getRuntimeDatabaseDescriptors());
-        runtimeDatabaseDescriptors.put(database, runtimeDatabaseDescriptor);
+        runtimeDatabaseDescriptors.put(databaseName, runtimeDatabaseDescriptor);
         replaceSnapshot(databaseTypes, actualMetadataObjects, runtimeDatabaseDescriptors);
     }
     
     /**
      * Find one database type.
      *
-     * @param database logical database name
+     * @param databaseName logical database name
      * @return database type when present
      */
-    public Optional<String> findDatabaseType(final String database) {
-        return Optional.ofNullable(snapshot.getDatabaseTypes().get(database));
+    public Optional<String> findDatabaseType(final String databaseName) {
+        return Optional.ofNullable(snapshot.getDatabaseTypes().get(databaseName));
     }
     
     /**
      * Find one runtime database descriptor.
      *
-     * @param database logical database name
+     * @param databaseName logical database name
      * @return runtime database descriptor when present
      */
-    public Optional<RuntimeDatabaseDescriptor> findRuntimeDatabaseDescriptor(final String database) {
-        return Optional.ofNullable(snapshot.getRuntimeDatabaseDescriptors().get(database));
+    public Optional<RuntimeDatabaseDescriptor> findRuntimeDatabaseDescriptor(final String databaseName) {
+        return Optional.ofNullable(snapshot.getRuntimeDatabaseDescriptors().get(databaseName));
     }
     
     @Getter

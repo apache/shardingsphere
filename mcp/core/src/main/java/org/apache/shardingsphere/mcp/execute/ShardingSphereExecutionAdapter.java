@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -61,7 +62,7 @@ public final class ShardingSphereExecutionAdapter {
         try {
             Optional<SessionConnectionContext> sessionConnectionContext = findSessionConnection(executionRequest.getSessionId());
             if (sessionConnectionContext.isPresent()) {
-                if (!sessionConnectionContext.get().getDatabase().equals(executionRequest.getDatabase())) {
+                if (!sessionConnectionContext.get().getDatabaseName().equals(executionRequest.getDatabase())) {
                     return ExecuteQueryResponse.error(MCPErrorCode.TRANSACTION_STATE_ERROR, "Cross-database transaction switching is not supported.");
                 }
                 connection = sessionConnectionContext.get().getConnection();
@@ -115,17 +116,17 @@ public final class ShardingSphereExecutionAdapter {
      * Begin one session transaction.
      *
      * @param sessionId session identifier
-     * @param database logical database name
+     * @param databaseName logical database name
      * @throws IllegalStateException when the transaction is already active or the connection cannot be opened
      */
-    public void beginTransaction(final String sessionId, final String database) {
+    public void beginTransaction(final String sessionId, final String databaseName) {
         if (sessionConnections.containsKey(sessionId)) {
             throw new IllegalStateException("Transaction already active.");
         }
         try {
-            Connection connection = openConnection(database);
+            Connection connection = openConnection(databaseName);
             connection.setAutoCommit(false);
-            sessionConnections.put(sessionId, new SessionConnectionContext(database, connection));
+            sessionConnections.put(sessionId, new SessionConnectionContext(databaseName, connection));
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex.getMessage(), ex);
         }
@@ -246,14 +247,14 @@ public final class ShardingSphereExecutionAdapter {
         return ExecuteQueryResponse.resultSet(columns, rows, truncated);
     }
     
-    private Connection openConnection(final String database) throws SQLException {
-        ConnectionProvider connectionProvider = Optional.ofNullable(connectionProviders.get(database))
-                .orElseThrow(() -> new IllegalStateException(String.format("Database `%s` is not configured.", database)));
+    private Connection openConnection(final String databaseName) throws SQLException {
+        ConnectionProvider connectionProvider = Optional.ofNullable(connectionProviders.get(databaseName))
+                .orElseThrow(() -> new IllegalStateException(String.format("Database `%s` is not configured.", databaseName)));
         return connectionProvider.getConnection();
     }
     
-    private void applySchema(final Connection connection, final String schema) throws SQLException {
-        String actualSchema = Objects.toString(schema, "").trim();
+    private void applySchema(final Connection connection, final String schemaName) throws SQLException {
+        String actualSchema = Objects.toString(schemaName, "").trim();
         if (actualSchema.isEmpty()) {
             return;
         }
@@ -298,26 +299,15 @@ public final class ShardingSphereExecutionAdapter {
         Connection getConnection() throws SQLException;
     }
     
+    @RequiredArgsConstructor
+    @Getter
     private static final class SessionConnectionContext {
         
-        private final String database;
+        private final String databaseName;
         
         private final Connection connection;
         
         private final Map<String, Savepoint> savepoints = new ConcurrentHashMap<>();
-        
-        private SessionConnectionContext(final String database, final Connection connection) {
-            this.database = database;
-            this.connection = connection;
-        }
-        
-        private String getDatabase() {
-            return database;
-        }
-        
-        private Connection getConnection() {
-            return connection;
-        }
         
         private void addSavepoint(final String savepointName, final Savepoint savepoint) {
             savepoints.put(savepointName, savepoint);

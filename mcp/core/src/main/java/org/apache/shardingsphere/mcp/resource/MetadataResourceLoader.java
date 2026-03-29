@@ -60,9 +60,9 @@ public final class MetadataResourceLoader {
         return sortMetadataObjects(result);
     }
     
-    private Optional<DatabaseCapability> resolveDatabaseCapability(final MetadataCatalog metadataCatalog, final String database) {
-        metadataCatalog.findDatabaseType(database).orElseThrow(() -> new IllegalStateException("Database does not exist."));
-        return new DatabaseCapabilityAssembler(metadataCatalog).assembleDatabaseCapability(database);
+    private Optional<DatabaseCapability> resolveDatabaseCapability(final MetadataCatalog metadataCatalog, final String databaseName) {
+        metadataCatalog.findDatabaseType(databaseName).orElseThrow(() -> new IllegalStateException("Database does not exist."));
+        return new DatabaseCapabilityAssembler(metadataCatalog).assembleDatabaseCapability(databaseName);
     }
     
     private List<MetadataObject> filterMetadataObjects(final MetadataCatalog metadataCatalog, final ResourceRequest resourceRequest,
