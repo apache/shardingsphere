@@ -37,7 +37,7 @@ public final class MCPPayloadBuilder {
      * @return payload
      */
     public Map<String, Object> createDatabaseCapabilityPayload(final DatabaseCapability capability) {
-        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Object> result = new LinkedHashMap<>(32, 1F);
         result.put("database", capability.getDatabase());
         result.put("databaseType", capability.getDatabaseType());
         result.put("minSupportedVersion", capability.getMinSupportedVersion());

@@ -30,57 +30,57 @@ final class MCPToolInputSchemaFactory {
     McpSchema.JsonSchema createInputSchema(final String toolName) {
         switch (toolName) {
             case "list_schemas":
-                return createObjectSchema(List.of(property("database", createStringSchema("Logical database name."))), List.of("database"));
+                return createObjectSchema(List.of(Map.entry("database", createStringSchema("Logical database name."))), List.of("database"));
             case "list_tables":
             case "list_views":
                 return createPagedMetadataSchema("Logical database name.", "Schema name.");
             case "list_columns":
                 return createObjectSchema(List.of(
-                        property("database", createStringSchema("Logical database name.")),
-                        property("schema", createStringSchema("Schema name.")),
-                        property("object_type", createStringSchema("Parent object type: table or view.")),
-                        property("object_name", createStringSchema("Parent object name.")),
-                        property("search", createStringSchema("Optional fuzzy filter.")),
-                        property("page_size", createIntegerSchema("Requested page size.")),
-                        property("page_token", createStringSchema("Opaque pagination token."))),
+                        Map.entry("database", createStringSchema("Logical database name.")),
+                        Map.entry("schema", createStringSchema("Schema name.")),
+                        Map.entry("object_type", createStringSchema("Parent object type: table or view.")),
+                        Map.entry("object_name", createStringSchema("Parent object name.")),
+                        Map.entry("search", createStringSchema("Optional fuzzy filter.")),
+                        Map.entry("page_size", createIntegerSchema("Requested page size.")),
+                        Map.entry("page_token", createStringSchema("Opaque pagination token."))),
                         List.of("database", "schema", "object_type", "object_name"));
             case "list_indexes":
                 return createObjectSchema(List.of(
-                        property("database", createStringSchema("Logical database name.")),
-                        property("schema", createStringSchema("Schema name.")),
-                        property("table", createStringSchema("Table name.")),
-                        property("search", createStringSchema("Optional fuzzy filter.")),
-                        property("page_size", createIntegerSchema("Requested page size.")),
-                        property("page_token", createStringSchema("Opaque pagination token."))),
+                        Map.entry("database", createStringSchema("Logical database name.")),
+                        Map.entry("schema", createStringSchema("Schema name.")),
+                        Map.entry("table", createStringSchema("Table name.")),
+                        Map.entry("search", createStringSchema("Optional fuzzy filter.")),
+                        Map.entry("page_size", createIntegerSchema("Requested page size.")),
+                        Map.entry("page_token", createStringSchema("Opaque pagination token."))),
                         List.of("database", "schema", "table"));
             case "search_metadata":
                 return createObjectSchema(List.of(
-                        property("database", createStringSchema("Optional logical database name.")),
-                        property("schema", createStringSchema("Optional schema name.")),
-                        property("query", createStringSchema("Search query.")),
-                        property("object_types", createArraySchema("Optional object-type filter.")),
-                        property("page_size", createIntegerSchema("Requested page size.")),
-                        property("page_token", createStringSchema("Opaque pagination token."))),
+                        Map.entry("database", createStringSchema("Optional logical database name.")),
+                        Map.entry("schema", createStringSchema("Optional schema name.")),
+                        Map.entry("query", createStringSchema("Search query.")),
+                        Map.entry("object_types", createArraySchema("Optional object-type filter.")),
+                        Map.entry("page_size", createIntegerSchema("Requested page size.")),
+                        Map.entry("page_token", createStringSchema("Opaque pagination token."))),
                         List.of("query"));
             case "describe_table":
                 return createObjectSchema(List.of(
-                        property("database", createStringSchema("Logical database name.")),
-                        property("schema", createStringSchema("Schema name.")),
-                        property("table", createStringSchema("Table name."))),
+                        Map.entry("database", createStringSchema("Logical database name.")),
+                        Map.entry("schema", createStringSchema("Schema name.")),
+                        Map.entry("table", createStringSchema("Table name."))),
                         List.of("database", "schema", "table"));
             case "describe_view":
                 return createObjectSchema(List.of(
-                        property("database", createStringSchema("Logical database name.")),
-                        property("schema", createStringSchema("Schema name.")),
-                        property("view", createStringSchema("View name."))),
+                        Map.entry("database", createStringSchema("Logical database name.")),
+                        Map.entry("schema", createStringSchema("Schema name.")),
+                        Map.entry("view", createStringSchema("View name."))),
                         List.of("database", "schema", "view"));
             case "execute_query":
                 return createObjectSchema(List.of(
-                        property("database", createStringSchema("Logical database name.")),
-                        property("schema", createStringSchema("Optional schema name.")),
-                        property("sql", createStringSchema("Single SQL statement.")),
-                        property("max_rows", createIntegerSchema("Optional maximum row count.")),
-                        property("timeout_ms", createIntegerSchema("Optional timeout in milliseconds."))),
+                        Map.entry("database", createStringSchema("Logical database name.")),
+                        Map.entry("schema", createStringSchema("Optional schema name.")),
+                        Map.entry("sql", createStringSchema("Single SQL statement.")),
+                        Map.entry("max_rows", createIntegerSchema("Optional maximum row count.")),
+                        Map.entry("timeout_ms", createIntegerSchema("Optional timeout in milliseconds."))),
                         List.of("database", "sql"));
             default:
                 return createObjectSchema(Collections.emptyList(), Collections.emptyList());
@@ -89,11 +89,11 @@ final class MCPToolInputSchemaFactory {
     
     private McpSchema.JsonSchema createPagedMetadataSchema(final String databaseDescription, final String schemaDescription) {
         return createObjectSchema(List.of(
-                property("database", createStringSchema(databaseDescription)),
-                property("schema", createStringSchema(schemaDescription)),
-                property("search", createStringSchema("Optional fuzzy filter.")),
-                property("page_size", createIntegerSchema("Requested page size.")),
-                property("page_token", createStringSchema("Opaque pagination token."))),
+                Map.entry("database", createStringSchema(databaseDescription)),
+                Map.entry("schema", createStringSchema(schemaDescription)),
+                Map.entry("search", createStringSchema("Optional fuzzy filter.")),
+                Map.entry("page_size", createIntegerSchema("Requested page size.")),
+                Map.entry("page_token", createStringSchema("Opaque pagination token."))),
                 List.of("database", "schema"));
     }
     
@@ -103,10 +103,6 @@ final class MCPToolInputSchemaFactory {
             schemaProperties.put(entry.getKey(), entry.getValue());
         }
         return new McpSchema.JsonSchema("object", schemaProperties, required, Boolean.TRUE, Collections.emptyMap(), Collections.emptyMap());
-    }
-    
-    private Entry<String, Object> property(final String name, final Object value) {
-        return Map.entry(name, value);
     }
     
     private Map<String, Object> createStringSchema(final String description) {
