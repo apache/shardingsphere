@@ -17,29 +17,23 @@
 
 package org.apache.shardingsphere.sharding.distsql.statement;
 
-import org.apache.shardingsphere.distsql.statement.type.rql.rule.database.ShowDatabaseRulesStatement;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
-
-import java.util.Optional;
+import lombok.Getter;
+import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
+import org.apache.shardingsphere.distsql.statement.type.rdl.rule.database.type.CreateRuleStatement;
 
 /**
- * Show sharding key generate strategies statement.
+ * Create sharding key generator statement.
  */
-public final class ShowShardingKeyGenerateStrategiesStatement extends ShowDatabaseRulesStatement {
+@Getter
+public final class CreateShardingKeyGeneratorStatement extends CreateRuleStatement {
     
     private final String name;
     
-    public ShowShardingKeyGenerateStrategiesStatement(final String name, final FromDatabaseSegment fromDatabase) {
-        super(fromDatabase);
-        this.name = name;
-    }
+    private final AlgorithmSegment algorithmSegment;
     
-    /**
-     * Get name.
-     *
-     * @return name.
-     */
-    public Optional<String> getName() {
-        return Optional.ofNullable(name);
+    public CreateShardingKeyGeneratorStatement(final boolean ifNotExists, final String name, final AlgorithmSegment algorithmSegment) {
+        super(ifNotExists);
+        this.name = name;
+        this.algorithmSegment = algorithmSegment;
     }
 }
