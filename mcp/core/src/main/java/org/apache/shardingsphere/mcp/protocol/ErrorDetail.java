@@ -18,25 +18,16 @@
 package org.apache.shardingsphere.mcp.protocol;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Unified error detail payload.
+ * Error detail payload.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ErrorDetail {
     
     private final ErrorCode errorCode;
     
     private final String message;
-    
-    /**
-     * Construct an error detail.
-     *
-     * @param errorCode unified error code
-     * @param message error message
-     */
-    public ErrorDetail(final ErrorCode errorCode, final String message) {
-        this.errorCode = errorCode;
-        this.message = message;
-    }
 }

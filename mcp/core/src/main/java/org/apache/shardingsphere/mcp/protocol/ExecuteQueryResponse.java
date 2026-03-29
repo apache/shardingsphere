@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.protocol;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.Optional;
 /**
  * Unified response model for the MCP {@code execute_query} tool.
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class ExecuteQueryResponse {
     
@@ -51,20 +53,6 @@ public final class ExecuteQueryResponse {
     
     @Getter(AccessLevel.NONE)
     private final ErrorDetail error;
-    
-    private ExecuteQueryResponse(final ResultKind resultKind, final List<ColumnDefinition> columns, final List<List<Object>> rows, final int affectedRows,
-                                 final String statementType, final String status, final String message, final boolean truncated, final boolean errorPresent, final ErrorDetail error) {
-        this.resultKind = resultKind;
-        this.columns = columns;
-        this.rows = rows;
-        this.affectedRows = affectedRows;
-        this.statementType = statementType;
-        this.status = status;
-        this.message = message;
-        this.truncated = truncated;
-        this.errorPresent = errorPresent;
-        this.error = error;
-    }
     
     /**
      * Create a result-set response.

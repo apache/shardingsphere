@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.mcp.protocol;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Column metadata definition for result sets.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ColumnDefinition {
     
@@ -32,19 +34,4 @@ public final class ColumnDefinition {
     private final String nativeType;
     
     private final boolean nullable;
-    
-    /**
-     * Construct a column definition.
-     *
-     * @param columnName column name
-     * @param logicalType logical type
-     * @param nativeType native type
-     * @param nullable nullable flag
-     */
-    public ColumnDefinition(final String columnName, final String logicalType, final String nativeType, final boolean nullable) {
-        this.columnName = columnName;
-        this.logicalType = logicalType;
-        this.nativeType = nativeType;
-        this.nullable = nullable;
-    }
 }
