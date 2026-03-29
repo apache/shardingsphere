@@ -33,8 +33,6 @@ class MCPRuntimeContextBuilderTest {
     @Test
     void assertCreate() {
         MCPRuntimeContext actual = createRuntimeContext(new MCPSessionManager());
-        
-        assertNotNull(actual.getSessionLifecycleRegistry());
         assertNotNull(actual.getCapabilityAssembler());
         assertNotNull(actual.getMetadataResourceLoader());
         assertNotNull(actual.getResourceUriResolver());
@@ -50,13 +48,11 @@ class MCPRuntimeContextBuilderTest {
     void assertAssembleServiceCapability() {
         MCPRuntimeContext runtimeContext = createRuntimeContext(new MCPSessionManager());
         ServiceCapability actual = runtimeContext.getCapabilityAssembler().assembleServiceCapability();
-        
         assertTrue(actual.getSupportedResources().contains("shardingsphere://capabilities"));
         assertTrue(actual.getSupportedTools().contains("execute_query"));
     }
     
     private MCPRuntimeContext createRuntimeContext(final MCPSessionManager sessionManager) {
-        return MCPRuntimeContext.create(sessionManager, new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()),
-                new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
+        return MCPRuntimeContext.create(sessionManager, new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()), new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
     }
 }
