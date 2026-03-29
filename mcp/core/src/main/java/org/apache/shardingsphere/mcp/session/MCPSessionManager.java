@@ -36,8 +36,6 @@ public final class MCPSessionManager {
     
     private final Map<String, MCPSessionContext> sessions = new ConcurrentHashMap<>();
     
-    private final Set<String> closedSessionIds = ConcurrentHashMap.newKeySet();
-    
     /**
      * Create a new session.
      *
@@ -46,7 +44,6 @@ public final class MCPSessionManager {
      */
     public MCPSessionContext createSession(final String sessionId) {
         String actualSessionId = normalizeValue(sessionId, "sessionId");
-        ShardingSpherePreconditions.checkState(!closedSessionIds.contains(actualSessionId), () -> new IllegalStateException("Session recovery is not supported."));
         MCPSessionContext result = new MCPSessionContext(actualSessionId);
         ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(actualSessionId, result), () -> new IllegalStateException("Session already exists."));
         return result;
@@ -136,7 +133,6 @@ public final class MCPSessionManager {
             sessionContext.rollbackPendingWork();
             sessionContext.close();
         }
-        closedSessionIds.add(actualSessionId);
     }
     
     private String normalizeValue(final String value, final String fieldName) {
