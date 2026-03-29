@@ -41,7 +41,6 @@ public final class MCPSessionManager {
      *
      * @param sessionId session identifier
      * @return created session context
-     * @throws IllegalStateException when the session cannot be created or recovered
      */
     public SessionContext createSession(final String sessionId) {
         String actualSessionId = normalizeValue(sessionId, "sessionId");
@@ -66,16 +65,13 @@ public final class MCPSessionManager {
      *
      * @param sessionId session identifier
      * @param databaseName logical database name
-     * @throws IllegalStateException when an active transaction tries to switch databases
      */
     public void bindDatabase(final String sessionId, final String databaseName) {
         SessionContext sessionContext = requireSession(sessionId);
         String actualDatabaseName = normalizeValue(databaseName, "databaseName");
-        if (TransactionState.ACTIVE == sessionContext.getTransactionState()
-                && !sessionContext.getBoundDatabase().isEmpty()
-                && !sessionContext.getBoundDatabase().equals(actualDatabaseName)) {
-            throw new IllegalStateException("Cross-database transaction switching is not supported.");
-        }
+        ShardingSpherePreconditions.checkState(
+                TransactionState.ACTIVE != sessionContext.getTransactionState() || sessionContext.getBoundDatabase().isEmpty() || sessionContext.getBoundDatabase().equals(actualDatabaseName),
+                () -> new IllegalStateException("Cross-database transaction switching is not supported."));
         sessionContext.bindDatabase(actualDatabaseName);
     }
     
