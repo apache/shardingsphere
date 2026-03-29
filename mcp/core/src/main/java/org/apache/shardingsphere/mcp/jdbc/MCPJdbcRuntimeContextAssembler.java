@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.jdbc;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
@@ -28,22 +26,25 @@ import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import java.util.Map;
 
 /**
- * MCP JDBC runtime context factory.
+ * MCP JDBC runtime context assembler.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MCPJdbcRuntimeContextFactory {
+public final class MCPJdbcRuntimeContextAssembler {
+    
+    private final MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
+    
+    private final MCPJdbcDatabaseRuntimeFactory databaseRuntimeFactory = new MCPJdbcDatabaseRuntimeFactory();
     
     /**
-     * Create a new instance of MCP runtime context.
+     * Assemble MCP runtime context.
      *
      * @param runtimeDatabases runtime databases
      * @return runtime context
      */
-    public static MCPRuntimeContext newInstance(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+    public MCPRuntimeContext assemble(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         ShardingSpherePreconditions.checkNotEmpty(runtimeDatabases, () -> new IllegalArgumentException("At least one runtime database must be configured."));
         MCPSessionManager sessionManager = new MCPSessionManager();
-        MetadataCatalog metadataCatalog = new MCPJdbcMetadataLoader().load(runtimeDatabases);
-        DatabaseRuntime databaseRuntime = new MCPDatabaseRuntimeFactory().createDatabaseRuntime(runtimeDatabases, metadataCatalog);
+        MetadataCatalog metadataCatalog = metadataLoader.load(runtimeDatabases);
+        DatabaseRuntime databaseRuntime = databaseRuntimeFactory.create(runtimeDatabases, metadataCatalog);
         return MCPRuntimeContext.create(sessionManager, metadataCatalog, databaseRuntime);
     }
 }

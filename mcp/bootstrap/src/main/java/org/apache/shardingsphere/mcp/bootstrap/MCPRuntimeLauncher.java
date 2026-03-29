@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.jdbc.MCPJdbcRuntimeContextFactory;
+import org.apache.shardingsphere.mcp.jdbc.MCPJdbcRuntimeContextAssembler;
 
 import java.io.IOException;
 
@@ -39,7 +39,7 @@ public final class MCPRuntimeLauncher {
      * @throws IOException when the active server startup fails
      */
     public MCPRuntimeServer launch(final MCPLaunchConfiguration config) throws IOException {
-        MCPRuntimeContext runtimeContext = MCPJdbcRuntimeContextFactory.newInstance(config.getDatabases());
+        MCPRuntimeContext runtimeContext = new MCPJdbcRuntimeContextAssembler().assemble(config.getDatabases());
         MCPRuntimeServer result = config.getHttpTransport().isEnabled() ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext) : new StdioMCPServer(runtimeContext);
         try {
             result.start();

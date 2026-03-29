@@ -30,9 +30,9 @@ import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
- * MCP database runtime factory.
+ * MCP JDBC database runtime factory.
  */
-public final class MCPDatabaseRuntimeFactory {
+public final class MCPJdbcDatabaseRuntimeFactory {
     
     private final MCPJdbcConnectionFactory jdbcConnectionFactory = new MCPJdbcConnectionFactory();
     
@@ -45,8 +45,7 @@ public final class MCPDatabaseRuntimeFactory {
      * @param metadataCatalog metadata catalog
      * @return database runtime
      */
-    public DatabaseRuntime createDatabaseRuntime(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
-                                                 final MetadataCatalog metadataCatalog) {
+    public DatabaseRuntime create(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final MetadataCatalog metadataCatalog) {
         Map<String, ConnectionProvider> connectionProviders = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
         for (Entry<String, RuntimeDatabaseConfiguration> each : runtimeDatabases.entrySet()) {
             connectionProviders.put(each.getKey(), () -> jdbcConnectionFactory.openConnection(each.getKey(), each.getValue()));
