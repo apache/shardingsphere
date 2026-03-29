@@ -17,42 +17,39 @@
 
 package org.apache.shardingsphere.mcp.context;
 
-import org.apache.shardingsphere.mcp.capability.ServiceCapability;
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-import java.util.Collections;
+import java.nio.file.Path;
+import java.sql.SQLException;
+import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MCPRuntimeContextBuilderTest {
     
+    @TempDir
+    private Path tempDir;
+    
     @Test
-    void assertCreate() {
-        MCPRuntimeContext actual = createRuntimeContext(new MCPSessionManager());
-        assertNotNull(actual.getCapabilityAssembler());
-        assertNotNull(actual.getMetadataResourceLoader());
-        assertNotNull(actual.getResourceUriResolver());
-        assertNotNull(actual.getMetadataToolDispatcher());
-        assertNotNull(actual.getToolCatalog());
-        assertNotNull(actual.getTransactionCommandExecutor());
-        assertNotNull(actual.getAuditRecorder());
-        assertNotNull(actual.getExecuteQueryFacade());
-        assertNotNull(actual.getPayloadBuilder());
+    void assertBuild() throws SQLException {
+        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "runtime-context-assembler");
+        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
+        MCPRuntimeContextBuilder runtimeContextAssembler = new MCPRuntimeContextBuilder();
+        MCPRuntimeContext actual = runtimeContextAssembler.build(H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl));
+        assertNotNull(actual.getSessionManager());
+        assertNotNull(actual.getDatabaseRuntime());
+        assertThat(actual.getMetadataCatalog().getDatabaseTypes().get("logic_db"), is("H2"));
     }
     
     @Test
-    void assertAssembleServiceCapability() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext(new MCPSessionManager());
-        ServiceCapability actual = runtimeContext.getCapabilityAssembler().assembleServiceCapability();
-        assertTrue(actual.getSupportedResources().contains("shardingsphere://capabilities"));
-        assertTrue(actual.getSupportedTools().contains("execute_query"));
-    }
-    
-    private MCPRuntimeContext createRuntimeContext(final MCPSessionManager sessionManager) {
-        return MCPRuntimeContext.create(sessionManager, new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()), new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
+    void assertBuildWithEmptyRuntimeDatabases() {
+        MCPRuntimeContextBuilder runtimeContextAssembler = new MCPRuntimeContextBuilder();
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> runtimeContextAssembler.build(Map.of()));
+        assertThat(actual.getMessage(), is("At least one runtime database must be configured."));
     }
 }
