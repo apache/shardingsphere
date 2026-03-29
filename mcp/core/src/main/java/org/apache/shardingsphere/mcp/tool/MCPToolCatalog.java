@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
@@ -52,6 +50,8 @@ public final class MCPToolCatalog {
             ToolDefinition.GET_CAPABILITIES,
             ToolDefinition.EXECUTE_QUERY);
     
+    private static final List<MCPToolDescriptor> SUPPORTED_TOOL_DESCRIPTORS = createSupportedToolDescriptors();
+    
     private static final List<String> SUPPORTED_TOOL_NAMES = createSupportedToolNames();
     
     /**
@@ -64,13 +64,32 @@ public final class MCPToolCatalog {
     }
     
     /**
+     * Get supported tool descriptors.
+     *
+     * @return supported tool descriptors
+     */
+    public List<MCPToolDescriptor> getToolDescriptors() {
+        return SUPPORTED_TOOL_DESCRIPTORS;
+    }
+    
+    /**
+     * Find one supported tool descriptor.
+     *
+     * @param toolName tool name
+     * @return matched tool descriptor
+     */
+    public Optional<MCPToolDescriptor> findToolDescriptor(final String toolName) {
+        return findToolDefinition(toolName).map(ToolDefinition::getDescriptor);
+    }
+    
+    /**
      * Determine whether the named tool exists.
      *
      * @param toolName tool name
      * @return {@code true} when supported
      */
     public boolean contains(final String toolName) {
-        return findDefinition(toolName).isPresent();
+        return findToolDescriptor(toolName).isPresent();
     }
     
     /**
@@ -80,7 +99,7 @@ public final class MCPToolCatalog {
      * @return tool title
      */
     public String getTitle(final String toolName) {
-        return findDefinition(toolName).orElseThrow(() -> new IllegalStateException(String.format("Unknown MCP tool `%s`.", toolName))).getTitle();
+        return getRequiredToolDescriptor(toolName).getTitle();
     }
     
     /**
@@ -90,7 +109,7 @@ public final class MCPToolCatalog {
      * @return {@code true} when the tool is a metadata tool
      */
     public boolean isMetadataTool(final String toolName) {
-        return findDefinition(toolName).map(ToolDefinition::isMetadataTool).orElse(false);
+        return findToolDescriptor(toolName).map(MCPToolDescriptor::isMetadataTool).orElse(false);
     }
     
     /**
@@ -101,7 +120,7 @@ public final class MCPToolCatalog {
      * @return normalized metadata tool request
      */
     public ToolRequest createMetadataToolRequest(final String toolName, final Map<String, Object> arguments) {
-        return findDefinition(toolName).orElseThrow(() -> new IllegalStateException(String.format("Unknown MCP tool `%s`.", toolName))).createMetadataToolRequest(arguments);
+        return getRequiredToolDefinition(toolName).createMetadataToolRequest(arguments);
     }
     
     /**
@@ -127,7 +146,15 @@ public final class MCPToolCatalog {
                 integerArgument(arguments, "max_rows", 0), integerArgument(arguments, "timeout_ms", 0), databaseRuntime);
     }
     
-    private Optional<ToolDefinition> findDefinition(final String toolName) {
+    private MCPToolDescriptor getRequiredToolDescriptor(final String toolName) {
+        return findToolDescriptor(toolName).orElseThrow(() -> createUnknownToolException(toolName));
+    }
+    
+    private ToolDefinition getRequiredToolDefinition(final String toolName) {
+        return findToolDefinition(toolName).orElseThrow(() -> createUnknownToolException(toolName));
+    }
+    
+    private Optional<ToolDefinition> findToolDefinition(final String toolName) {
         for (ToolDefinition each : SUPPORTED_TOOLS) {
             if (each.getName().equals(toolName)) {
                 return Optional.of(each);
@@ -136,9 +163,21 @@ public final class MCPToolCatalog {
         return Optional.empty();
     }
     
-    private static List<String> createSupportedToolNames() {
-        List<String> result = new ArrayList<>(SUPPORTED_TOOLS.size());
+    private IllegalStateException createUnknownToolException(final String toolName) {
+        return new IllegalStateException(String.format("Unknown MCP tool `%s`.", toolName));
+    }
+    
+    private static List<MCPToolDescriptor> createSupportedToolDescriptors() {
+        List<MCPToolDescriptor> result = new ArrayList<>(SUPPORTED_TOOLS.size());
         for (ToolDefinition each : SUPPORTED_TOOLS) {
+            result.add(each.getDescriptor());
+        }
+        return List.copyOf(result);
+    }
+    
+    private static List<String> createSupportedToolNames() {
+        List<String> result = new ArrayList<>(SUPPORTED_TOOL_DESCRIPTORS.size());
+        for (MCPToolDescriptor each : SUPPORTED_TOOL_DESCRIPTORS) {
             result.add(each.getName());
         }
         return List.copyOf(result);
@@ -147,6 +186,40 @@ public final class MCPToolCatalog {
     private static ToolRequest createPagedMetadataToolRequest(final String toolName, final Map<String, Object> arguments) {
         return createToolRequest(toolName, arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
                 "", "", Collections.emptySet(), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
+    }
+    
+    private static ToolRequest createListDatabasesRequest(final Map<String, Object> arguments) {
+        return createToolRequest("list_databases", arguments, "", "", "", "", Collections.emptySet(), 100, "");
+    }
+    
+    private static ToolRequest createListSchemasRequest(final Map<String, Object> arguments) {
+        return createToolRequest("list_schemas", arguments, stringArgument(arguments, "database"), "", "", "", Collections.emptySet(), 100, "");
+    }
+    
+    private static ToolRequest createListColumnsRequest(final Map<String, Object> arguments) {
+        return createToolRequest("list_columns", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
+                stringArgument(arguments, "object_name"), stringArgument(arguments, "object_type").toUpperCase(Locale.ENGLISH),
+                Collections.emptySet(), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
+    }
+    
+    private static ToolRequest createListIndexesRequest(final Map<String, Object> arguments) {
+        return createToolRequest("list_indexes", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
+                stringArgument(arguments, "table"), "TABLE", Collections.emptySet(), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
+    }
+    
+    private static ToolRequest createSearchMetadataRequest(final Map<String, Object> arguments) {
+        return createToolRequest("search_metadata", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
+                "", "", objectTypes(arguments), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
+    }
+    
+    private static ToolRequest createDescribeTableRequest(final Map<String, Object> arguments) {
+        return createToolRequest("describe_table", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
+                stringArgument(arguments, "table"), "", Collections.emptySet(), 100, "");
+    }
+    
+    private static ToolRequest createDescribeViewRequest(final Map<String, Object> arguments) {
+        return createToolRequest("describe_view", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
+                stringArgument(arguments, "view"), "", Collections.emptySet(), 100, "");
     }
     
     private static ToolRequest createToolRequest(final String toolName, final Map<String, Object> arguments, final String database,
@@ -200,26 +273,27 @@ public final class MCPToolCatalog {
         }
     }
     
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private enum ToolDefinition {
         
-        LIST_DATABASES("list_databases", true) {
+        LIST_DATABASES(createDescriptor("list_databases", MCPToolDispatchKind.METADATA, MCPToolInputDefinition.empty())) {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-                return createToolRequest("list_databases", arguments, "", "", "", "", Collections.emptySet(), 100, "");
+                return createListDatabasesRequest(arguments);
             }
         },
         
-        LIST_SCHEMAS("list_schemas", true) {
+        LIST_SCHEMAS(createDescriptor("list_schemas", MCPToolDispatchKind.METADATA, MCPToolInputDefinition.create(
+                requiredStringField("database", "Logical database name.")))) {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-                return createToolRequest("list_schemas", arguments, stringArgument(arguments, "database"), "", "", "", Collections.emptySet(), 100, "");
+                return createListSchemasRequest(arguments);
             }
         },
         
-        LIST_TABLES("list_tables", true) {
+        LIST_TABLES(createDescriptor("list_tables", MCPToolDispatchKind.METADATA,
+                createPagedMetadataInputDefinition("Logical database name.", "Schema name."))) {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
@@ -227,7 +301,8 @@ public final class MCPToolCatalog {
             }
         },
         
-        LIST_VIEWS("list_views", true) {
+        LIST_VIEWS(createDescriptor("list_views", MCPToolDispatchKind.METADATA,
+                createPagedMetadataInputDefinition("Logical database name.", "Schema name."))) {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
@@ -235,81 +310,137 @@ public final class MCPToolCatalog {
             }
         },
         
-        LIST_COLUMNS("list_columns", true) {
+        LIST_COLUMNS(createDescriptor("list_columns", MCPToolDispatchKind.METADATA, MCPToolInputDefinition.create(
+                requiredStringField("database", "Logical database name."),
+                requiredStringField("schema", "Schema name."),
+                requiredStringField("object_type", "Parent object type: table or view."),
+                requiredStringField("object_name", "Parent object name."),
+                optionalStringField("search", "Optional fuzzy filter."),
+                optionalIntegerField("page_size", "Requested page size."),
+                optionalStringField("page_token", "Opaque pagination token.")))) {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-                return createToolRequest("list_columns", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
-                        stringArgument(arguments, "object_name"), stringArgument(arguments, "object_type").toUpperCase(Locale.ENGLISH),
-                        Collections.emptySet(), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
+                return createListColumnsRequest(arguments);
             }
         },
         
-        LIST_INDEXES("list_indexes", true) {
+        LIST_INDEXES(createDescriptor("list_indexes", MCPToolDispatchKind.METADATA, MCPToolInputDefinition.create(
+                requiredStringField("database", "Logical database name."),
+                requiredStringField("schema", "Schema name."),
+                requiredStringField("table", "Table name."),
+                optionalStringField("search", "Optional fuzzy filter."),
+                optionalIntegerField("page_size", "Requested page size."),
+                optionalStringField("page_token", "Opaque pagination token.")))) {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-                return createToolRequest("list_indexes", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
-                        stringArgument(arguments, "table"), "TABLE", Collections.emptySet(), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
+                return createListIndexesRequest(arguments);
             }
         },
         
-        SEARCH_METADATA("search_metadata", true) {
+        SEARCH_METADATA(createDescriptor("search_metadata", MCPToolDispatchKind.METADATA, MCPToolInputDefinition.create(
+                optionalStringField("database", "Optional logical database name."),
+                optionalStringField("schema", "Optional schema name."),
+                requiredStringField("query", "Search query."),
+                optionalStringArrayField("object_types", "Optional object-type filter."),
+                optionalIntegerField("page_size", "Requested page size."),
+                optionalStringField("page_token", "Opaque pagination token.")))) {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-                return createToolRequest("search_metadata", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
-                        "", "", objectTypes(arguments), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
+                return createSearchMetadataRequest(arguments);
             }
         },
         
-        DESCRIBE_TABLE("describe_table", true) {
+        DESCRIBE_TABLE(createDescriptor("describe_table", MCPToolDispatchKind.METADATA, MCPToolInputDefinition.create(
+                requiredStringField("database", "Logical database name."),
+                requiredStringField("schema", "Schema name."),
+                requiredStringField("table", "Table name.")))) {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-                return createToolRequest("describe_table", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
-                        stringArgument(arguments, "table"), "", Collections.emptySet(), 100, "");
+                return createDescribeTableRequest(arguments);
             }
         },
         
-        DESCRIBE_VIEW("describe_view", true) {
+        DESCRIBE_VIEW(createDescriptor("describe_view", MCPToolDispatchKind.METADATA, MCPToolInputDefinition.create(
+                requiredStringField("database", "Logical database name."),
+                requiredStringField("schema", "Schema name."),
+                requiredStringField("view", "View name.")))) {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-                return createToolRequest("describe_view", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
-                        stringArgument(arguments, "view"), "", Collections.emptySet(), 100, "");
+                return createDescribeViewRequest(arguments);
             }
         },
         
-        GET_CAPABILITIES("get_capabilities", false),
+        GET_CAPABILITIES(createDescriptor("get_capabilities", MCPToolDispatchKind.CAPABILITY, MCPToolInputDefinition.create(
+                optionalStringField("database", "Optional logical database name.")))),
         
-        EXECUTE_QUERY("execute_query", false);
+        EXECUTE_QUERY(createDescriptor("execute_query", MCPToolDispatchKind.EXECUTION, MCPToolInputDefinition.create(
+                requiredStringField("database", "Logical database name."),
+                optionalStringField("schema", "Optional schema name."),
+                requiredStringField("sql", "Single SQL statement."),
+                optionalIntegerField("max_rows", "Optional maximum row count."),
+                optionalIntegerField("timeout_ms", "Optional timeout in milliseconds."))));
         
-        private final String name;
+        private final MCPToolDescriptor descriptor;
         
-        private final boolean metadataTool;
+        ToolDefinition(final MCPToolDescriptor descriptor) {
+            this.descriptor = descriptor;
+        }
         
         String getName() {
-            return name;
+            return descriptor.getName();
         }
         
-        boolean isMetadataTool() {
-            return metadataTool;
-        }
-        
-        String getTitle() {
-            String[] segments = name.split("_");
-            List<String> words = new ArrayList<>(segments.length);
-            for (String each : segments) {
-                if (!each.isEmpty()) {
-                    words.add(Character.toUpperCase(each.charAt(0)) + each.substring(1));
-                }
-            }
-            return String.join(" ", words);
+        MCPToolDescriptor getDescriptor() {
+            return descriptor;
         }
         
         ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
             throw new UnsupportedOperationException("Not a metadata tool.");
         }
+    }
+    
+    private static MCPToolDescriptor createDescriptor(final String name, final MCPToolDispatchKind dispatchKind, final MCPToolInputDefinition inputDefinition) {
+        return MCPToolDescriptor.create(name, createTitle(name), "ShardingSphere MCP tool: " + name, dispatchKind, inputDefinition);
+    }
+    
+    private static String createTitle(final String toolName) {
+        String[] segments = toolName.split("_");
+        List<String> words = new ArrayList<>(segments.length);
+        for (String each : segments) {
+            if (!each.isEmpty()) {
+                words.add(Character.toUpperCase(each.charAt(0)) + each.substring(1));
+            }
+        }
+        return String.join(" ", words);
+    }
+    
+    private static MCPToolInputDefinition createPagedMetadataInputDefinition(final String databaseDescription, final String schemaDescription) {
+        return MCPToolInputDefinition.create(
+                requiredStringField("database", databaseDescription),
+                requiredStringField("schema", schemaDescription),
+                optionalStringField("search", "Optional fuzzy filter."),
+                optionalIntegerField("page_size", "Requested page size."),
+                optionalStringField("page_token", "Opaque pagination token."));
+    }
+    
+    private static MCPToolFieldDefinition requiredStringField(final String name, final String description) {
+        return MCPToolFieldDefinition.required(name, MCPToolValueDefinition.string(description));
+    }
+    
+    private static MCPToolFieldDefinition optionalStringField(final String name, final String description) {
+        return MCPToolFieldDefinition.optional(name, MCPToolValueDefinition.string(description));
+    }
+    
+    private static MCPToolFieldDefinition optionalIntegerField(final String name, final String description) {
+        return MCPToolFieldDefinition.optional(name, MCPToolValueDefinition.integer(description));
+    }
+    
+    private static MCPToolFieldDefinition optionalStringArrayField(final String name, final String description) {
+        return MCPToolFieldDefinition.optional(name, MCPToolValueDefinition.stringArray(description));
     }
 }

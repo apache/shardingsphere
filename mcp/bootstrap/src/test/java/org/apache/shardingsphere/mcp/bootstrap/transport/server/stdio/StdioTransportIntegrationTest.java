@@ -46,15 +46,29 @@ class StdioTransportIntegrationTest {
                     Map.of("protocolVersion", MCPTransportConstants.PROTOCOL_VERSION, "capabilities", Map.of(), "clientInfo", Map.of("name", "stdio-test", "version", "1.0.0")));
             client.notifyServer("notifications/initialized", Map.of());
             Map<String, Object> actualToolsResult = client.request("tool-list-1", "tools/list", Map.of());
-            Map<String, Object> actualCallToolResult = client.request("tool-call-1", "tools/call", Map.of("name", "list_databases", "arguments", Map.of()));
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> actualTools = (List<Map<String, Object>>) actualToolsResult.get("tools");
+            Map<String, Object> actualListDatabasesTool = actualTools.stream()
+                    .filter(each -> "list_databases".equals(each.get("name")))
+                    .findFirst()
+                    .orElseThrow();
+            Map<String, Object> actualListDatabasesInputSchema = castToMap(actualListDatabasesTool.get("inputSchema"));
+            assertThat(actualInitializeResult.get("protocolVersion"), is(MCPTransportConstants.PROTOCOL_VERSION));
+            assertTrue(actualTools.stream().anyMatch(each -> "list_databases".equals(each.get("name"))));
+            assertTrue(castToMap(actualListDatabasesInputSchema.get("properties")).isEmpty());
+            Map<String, Object> actualGetCapabilitiesTool = actualTools.stream()
+                    .filter(each -> "get_capabilities".equals(each.get("name")))
+                    .findFirst()
+                    .orElseThrow();
+            Map<String, Object> actualGetCapabilitiesInputSchema = castToMap(actualGetCapabilitiesTool.get("inputSchema"));
+            Map<String, Object> actualGetCapabilitiesProperties = castToMap(actualGetCapabilitiesInputSchema.get("properties"));
+            assertTrue(actualGetCapabilitiesProperties.containsKey("database"));
+            assertThat(String.valueOf(castToMap(actualGetCapabilitiesProperties.get("database")).get("type")), is("string"));
+            Map<String, Object> actualCallToolResult = client.request("tool-call-1", "tools/call", Map.of("name", "list_databases", "arguments", Map.of()));
             @SuppressWarnings("unchecked")
             Map<String, Object> actualStructuredContent = (Map<String, Object>) actualCallToolResult.get("structuredContent");
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> actualItems = (List<Map<String, Object>>) actualStructuredContent.get("items");
-            assertThat(actualInitializeResult.get("protocolVersion"), is(MCPTransportConstants.PROTOCOL_VERSION));
-            assertTrue(actualTools.stream().anyMatch(each -> "list_databases".equals(each.get("name"))));
             assertThat(actualItems.size(), is(1));
         }
     }
@@ -87,5 +101,10 @@ class StdioTransportIntegrationTest {
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> castToMap(final Object value) {
+        return (Map<String, Object>) value;
     }
 }

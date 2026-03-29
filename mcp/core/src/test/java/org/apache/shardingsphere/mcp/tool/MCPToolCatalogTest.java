@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,22 +39,51 @@ class MCPToolCatalogTest {
     void assertGetSupportedTools() {
         assertThat(toolCatalog.getSupportedTools().size(), is(11));
         assertThat(toolCatalog.getSupportedTools().get(5), is("list_indexes"));
+    }
+    
+    @Test
+    void assertGetToolDescriptors() {
+        MCPToolDescriptor actualListDatabases = toolCatalog.findToolDescriptor("list_databases").orElseThrow();
+        MCPToolDescriptor actualGetCapabilities = toolCatalog.findToolDescriptor("get_capabilities").orElseThrow();
+        
+        assertThat(toolCatalog.getToolDescriptors().size(), is(11));
+        assertThat(actualListDatabases.getInputDefinition().getFields().size(), is(0));
+        assertThat(actualGetCapabilities.getDescription(), is("ShardingSphere MCP tool: get_capabilities"));
+        assertThat(actualGetCapabilities.getDispatchKind(), is(MCPToolDispatchKind.CAPABILITY));
+        assertThat(actualGetCapabilities.getInputDefinition().getFields().size(), is(1));
+        assertThat(actualGetCapabilities.getInputDefinition().getFields().get(0).getName(), is("database"));
+        assertFalse(actualGetCapabilities.getInputDefinition().getFields().get(0).isRequired());
+        assertThat(actualGetCapabilities.getInputDefinition().getFields().get(0).getValueDefinition().getType(), is(MCPToolValueDefinition.Type.STRING));
+    }
+    
+    @Test
+    void assertContains() {
         assertTrue(toolCatalog.contains("execute_query"));
         assertFalse(toolCatalog.contains("unsupported_tool"));
     }
     
     @Test
-    void assertGetTitleAndMetadataTool() {
+    void assertGetTitle() {
         assertThat(toolCatalog.getTitle("search_metadata"), is("Search Metadata"));
+    }
+    
+    @Test
+    void assertIsMetadataTool() {
         assertTrue(toolCatalog.isMetadataTool("describe_table"));
         assertFalse(toolCatalog.isMetadataTool("get_capabilities"));
         assertFalse(toolCatalog.isMetadataTool("execute_query"));
     }
     
     @Test
+    void assertGetCapabilityDatabase() {
+        assertThat(toolCatalog.getCapabilityDatabase(Map.of("database", "logic_db")), is("logic_db"));
+        assertThat(toolCatalog.getCapabilityDatabase(Collections.emptyMap()), is(""));
+    }
+    
+    @Test
     void assertCreateMetadataToolRequest() {
         ToolRequest actual = toolCatalog.createMetadataToolRequest("search_metadata",
-                Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", java.util.List.of("table", "view", "invalid"),
+                Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("table", "view", "invalid"),
                         "page_size", "8", "page_token", "16"));
         
         assertThat(actual.getToolName(), is("search_metadata"));

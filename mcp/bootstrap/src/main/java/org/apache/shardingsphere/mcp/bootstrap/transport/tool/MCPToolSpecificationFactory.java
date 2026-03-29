@@ -21,9 +21,9 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification.Builder;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * MCP tool specification factory.
@@ -53,16 +53,16 @@ public final class MCPToolSpecificationFactory {
      * @return tool specifications
      */
     public List<SyncToolSpecification> createToolSpecifications() {
-        return runtimeContext.getToolCatalog().getSupportedTools().stream()
-                .map(each -> new Builder().tool(createToolDefinition(each)).callHandler(toolCallHandler::handle).build()).collect(Collectors.toList());
+        return runtimeContext.getToolCatalog().getToolDescriptors().stream()
+                .map(each -> new Builder().tool(createToolDefinition(each)).callHandler(toolCallHandler::handle).build()).toList();
     }
     
-    private McpSchema.Tool createToolDefinition(final String toolName) {
+    private McpSchema.Tool createToolDefinition(final MCPToolDescriptor toolDescriptor) {
         return McpSchema.Tool.builder()
-                .name(toolName)
-                .title(runtimeContext.getToolCatalog().getTitle(toolName))
-                .description("ShardingSphere MCP tool: " + toolName)
-                .inputSchema(toolInputSchemaFactory.createInputSchema(toolName))
+                .name(toolDescriptor.getName())
+                .title(toolDescriptor.getTitle())
+                .description(toolDescriptor.getDescription())
+                .inputSchema(toolInputSchemaFactory.createInputSchema(toolDescriptor.getInputDefinition()))
                 .build();
     }
 }
