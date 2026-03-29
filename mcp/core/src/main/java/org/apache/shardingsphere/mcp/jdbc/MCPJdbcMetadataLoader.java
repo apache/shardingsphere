@@ -53,8 +53,7 @@ public final class MCPJdbcMetadataLoader {
         for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
             String databaseName = entry.getKey();
             try (Connection connection = entry.getValue().openConnection(databaseName)) {
-                databaseSnapshots.put(databaseName,
-                        loadDatabaseSnapshot(databaseName, entry.getValue().getDatabaseType(), connection.getSchema(), connection.getMetaData()));
+                databaseSnapshots.put(databaseName, loadDatabaseSnapshot(databaseName, entry.getValue().getDatabaseType(), connection.getSchema(), connection.getMetaData()));
             } catch (final SQLException ex) {
                 throw new IllegalStateException(String.format("Failed to load metadata for database `%s`.", databaseName), ex);
             }
@@ -62,8 +61,7 @@ public final class MCPJdbcMetadataLoader {
         return new MetadataCatalog(databaseSnapshots);
     }
     
-    private DatabaseMetadataSnapshot loadDatabaseSnapshot(final String databaseName, final String databaseType,
-                                                          final String schemaName, final DatabaseMetaData databaseMetaData) throws SQLException {
+    private DatabaseMetadataSnapshot loadDatabaseSnapshot(final String databaseName, final String databaseType, final String schemaName, final DatabaseMetaData databaseMetaData) throws SQLException {
         List<MetadataObject> metadataObjects = new LinkedList<>();
         Set<String> foundSchemas = new LinkedHashSet<>();
         loadTables(databaseName, databaseMetaData, metadataObjects, foundSchemas);
