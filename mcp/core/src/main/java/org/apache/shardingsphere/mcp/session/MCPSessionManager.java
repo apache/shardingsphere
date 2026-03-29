@@ -43,9 +43,8 @@ public final class MCPSessionManager {
      * @return created session context
      */
     public MCPSessionContext createSession(final String sessionId) {
-        String actualSessionId = normalizeValue(sessionId, "sessionId");
-        MCPSessionContext result = new MCPSessionContext(actualSessionId);
-        ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(actualSessionId, result), () -> new IllegalStateException("Session already exists."));
+        MCPSessionContext result = new MCPSessionContext(sessionId);
+        ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(sessionId, result), () -> new IllegalStateException("Session already exists."));
         return result;
     }
     
@@ -108,7 +107,7 @@ public final class MCPSessionManager {
     }
     
     MCPSessionContext getSession(final String sessionId) {
-        return Optional.ofNullable(sessions.get(normalizeValue(sessionId, "sessionId"))).orElseThrow(() -> new IllegalStateException("Session does not exist."));
+        return Optional.ofNullable(sessions.get(sessionId)).orElseThrow(() -> new IllegalStateException("Session does not exist."));
     }
     
     /**
@@ -118,7 +117,7 @@ public final class MCPSessionManager {
      * @return {@code true} when the session exists
      */
     public boolean hasSession(final String sessionId) {
-        return sessions.containsKey(normalizeValue(sessionId, "sessionId"));
+        return sessions.containsKey(sessionId);
     }
     
     /**
@@ -127,8 +126,7 @@ public final class MCPSessionManager {
      * @param sessionId session identifier
      */
     public void closeSession(final String sessionId) {
-        String actualSessionId = normalizeValue(sessionId, "sessionId");
-        MCPSessionContext sessionContext = sessions.remove(actualSessionId);
+        MCPSessionContext sessionContext = sessions.remove(sessionId);
         if (null != sessionContext) {
             sessionContext.rollbackPendingWork();
             sessionContext.close();

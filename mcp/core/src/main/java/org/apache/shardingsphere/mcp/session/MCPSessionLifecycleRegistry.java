@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 
 import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,9 +42,8 @@ public final class MCPSessionLifecycleRegistry {
      * @param sessionId session identifier
      */
     public void create(final String sessionId) {
-        String actualSessionId = Objects.toString(sessionId, "").trim();
-        sessionManager.createSession(actualSessionId);
-        activeSessionIds.add(actualSessionId);
+        sessionManager.createSession(sessionId);
+        activeSessionIds.add(sessionId);
     }
     
     /**
@@ -54,13 +52,9 @@ public final class MCPSessionLifecycleRegistry {
      * @param sessionId session identifier
      */
     public void close(final String sessionId) {
-        String actualSessionId = Objects.toString(sessionId, "").trim();
-        if (actualSessionId.isEmpty()) {
-            return;
-        }
-        if (activeSessionIds.remove(actualSessionId)) {
-            databaseRuntime.closeSession(actualSessionId);
-            sessionManager.closeSession(actualSessionId);
+        if (activeSessionIds.remove(sessionId)) {
+            databaseRuntime.closeSession(sessionId);
+            sessionManager.closeSession(sessionId);
         }
     }
     
