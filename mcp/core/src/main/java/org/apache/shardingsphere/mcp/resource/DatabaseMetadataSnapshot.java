@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 
 /**
  * Per-database metadata snapshot with runtime facts.
  */
+@RequiredArgsConstructor
 @Getter
 public final class DatabaseMetadataSnapshot {
     
@@ -36,13 +36,6 @@ public final class DatabaseMetadataSnapshot {
     private final Collection<MetadataObject> metadataObjects;
     
     private final String defaultSchema;
-    
-    public DatabaseMetadataSnapshot(final String databaseType, final String databaseVersion, final Collection<MetadataObject> metadataObjects, final String defaultSchema) {
-        this.databaseType = databaseType;
-        this.databaseVersion = databaseVersion;
-        this.metadataObjects = Collections.unmodifiableList(new LinkedList<>(metadataObjects));
-        this.defaultSchema = defaultSchema;
-    }
     
     public DatabaseMetadataSnapshot(final String databaseType, final Collection<MetadataObject> metadataObjects) {
         this(databaseType, "", metadataObjects, "");
