@@ -41,9 +41,9 @@ public final class MCPJdbcRuntimeContextFactory {
      */
     public static MCPRuntimeContext newInstance(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         ShardingSpherePreconditions.checkNotEmpty(runtimeDatabases, () -> new IllegalArgumentException("At least one runtime database must be configured."));
-        MCPSessionManager mcpSessionManager = new MCPSessionManager();
+        MCPSessionManager sessionManager = new MCPSessionManager();
         MetadataCatalog metadataCatalog = new MCPJdbcMetadataLoader().load(runtimeDatabases);
         DatabaseRuntime databaseRuntime = new MCPDatabaseRuntimeFactory().createDatabaseRuntime(runtimeDatabases, metadataCatalog);
-        return MCPRuntimeContext.create(mcpSessionManager, metadataCatalog, databaseRuntime);
+        return MCPRuntimeContext.create(sessionManager, metadataCatalog, databaseRuntime);
     }
 }

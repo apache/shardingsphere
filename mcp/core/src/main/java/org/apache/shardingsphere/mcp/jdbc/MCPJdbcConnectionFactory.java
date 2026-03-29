@@ -31,20 +31,20 @@ public final class MCPJdbcConnectionFactory {
      * Open connection.
      *
      * @param databaseName database name
-     * @param runtimeDatabaseConfig runtime database configuration
+     * @param databaseConfig runtime database configuration
      * @return connection
      * @throws SQLException SQL exception
      */
-    public Connection openConnection(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) throws SQLException {
-        loadDriver(databaseName, runtimeDatabaseConfig);
+    public Connection openConnection(final String databaseName, final RuntimeDatabaseConfiguration databaseConfig) throws SQLException {
+        loadDriver(databaseName, databaseConfig);
         Properties props = new Properties();
-        if (!runtimeDatabaseConfig.getUsername().isEmpty()) {
-            props.setProperty("user", runtimeDatabaseConfig.getUsername());
+        if (!databaseConfig.getUsername().isEmpty()) {
+            props.setProperty("user", databaseConfig.getUsername());
         }
-        if (!runtimeDatabaseConfig.getPassword().isEmpty()) {
-            props.setProperty("password", runtimeDatabaseConfig.getPassword());
+        if (!databaseConfig.getPassword().isEmpty()) {
+            props.setProperty("password", databaseConfig.getPassword());
         }
-        return props.isEmpty() ? DriverManager.getConnection(runtimeDatabaseConfig.getJdbcUrl()) : DriverManager.getConnection(runtimeDatabaseConfig.getJdbcUrl(), props);
+        return props.isEmpty() ? DriverManager.getConnection(databaseConfig.getJdbcUrl()) : DriverManager.getConnection(databaseConfig.getJdbcUrl(), props);
     }
     
     private void loadDriver(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
