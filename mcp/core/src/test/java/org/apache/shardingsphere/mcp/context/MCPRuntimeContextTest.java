@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.context;
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -32,7 +31,7 @@ class MCPRuntimeContextTest {
     
     @Test
     void assertCreate() {
-        MCPRuntimeContext actual = createRuntimeContext(new MCPSessionManager());
+        MCPRuntimeContext actual = createRuntimeContext();
         assertNotNull(actual.getCapabilityAssembler());
         assertNotNull(actual.getMetadataResourceLoader());
         assertNotNull(actual.getResourceUriResolver());
@@ -46,13 +45,13 @@ class MCPRuntimeContextTest {
     
     @Test
     void assertAssembleServiceCapability() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext(new MCPSessionManager());
+        MCPRuntimeContext runtimeContext = createRuntimeContext();
         ServiceCapability actual = runtimeContext.getCapabilityAssembler().assembleServiceCapability();
         assertTrue(actual.getSupportedResources().contains("shardingsphere://capabilities"));
         assertTrue(actual.getSupportedTools().contains("execute_query"));
     }
     
-    private MCPRuntimeContext createRuntimeContext(final MCPSessionManager sessionManager) {
-        return MCPRuntimeContext.create(sessionManager, new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()), new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
+    private MCPRuntimeContext createRuntimeContext() {
+        return new MCPRuntimeContextTestBuilder().build(new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()), new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
     }
 }

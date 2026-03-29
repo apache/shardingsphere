@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.mcp.context;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
-import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
@@ -37,7 +35,7 @@ import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher;
 /**
  * MCP runtime context.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Getter
 public final class MCPRuntimeContext {
     
@@ -64,26 +62,4 @@ public final class MCPRuntimeContext {
     private final ExecuteQueryFacade executeQueryFacade;
     
     private final MCPPayloadBuilder payloadBuilder;
-    
-    /**
-     * Create MCP runtime context.
-     *
-     * @param sessionManager session manager
-     * @param metadataCatalog metadata catalog
-     * @param databaseRuntime database runtime
-     * @return MCP runtime context
-     */
-    public static MCPRuntimeContext create(final MCPSessionManager sessionManager, final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
-        DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(metadataCatalog);
-        MetadataResourceLoader metadataResourceLoader = new MetadataResourceLoader();
-        ResourceUriResolver resourceUriResolver = new ResourceUriResolver();
-        MetadataToolDispatcher metadataToolDispatcher = new MetadataToolDispatcher(metadataResourceLoader);
-        MCPToolCatalog toolCatalog = new MCPToolCatalog();
-        TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(capabilityAssembler, sessionManager, databaseRuntime);
-        AuditRecorder auditRecorder = new AuditRecorder();
-        ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler, transactionCommandExecutor, auditRecorder);
-        MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
-        return new MCPRuntimeContext(sessionManager, metadataCatalog, databaseRuntime, capabilityAssembler,
-                metadataResourceLoader, resourceUriResolver, metadataToolDispatcher, toolCatalog, transactionCommandExecutor, auditRecorder, executeQueryFacade, payloadBuilder);
-    }
 }

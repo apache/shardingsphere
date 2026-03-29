@@ -17,15 +17,11 @@
 
 package org.apache.shardingsphere.mcp.context;
 
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
-import org.apache.shardingsphere.mcp.jdbc.MCPJdbcDatabaseRuntimeFactory;
-import org.apache.shardingsphere.mcp.jdbc.MCPJdbcMetadataLoader;
-import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
@@ -35,24 +31,20 @@ import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher;
 
-import java.util.Map;
-
 /**
- * MCP runtime context builder.
+ * MCP runtime context builder for tests.
  */
-public final class MCPRuntimeContextBuilder {
+public final class MCPRuntimeContextTestBuilder {
     
     /**
-     * Build MCP runtime context.
+     * Build MCP runtime context for tests.
      *
-     * @param runtimeDatabases runtime databases
-     * @return built context
+     * @param metadataCatalog metadata catalog
+     * @param databaseRuntime database runtime
+     * @return runtime context
      */
-    public MCPRuntimeContext build(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        ShardingSpherePreconditions.checkNotEmpty(runtimeDatabases, () -> new IllegalArgumentException("At least one runtime database must be configured."));
+    public MCPRuntimeContext build(final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        MetadataCatalog metadataCatalog = new MCPJdbcMetadataLoader().load(runtimeDatabases);
-        DatabaseRuntime databaseRuntime = new MCPJdbcDatabaseRuntimeFactory().create(runtimeDatabases, metadataCatalog);
         DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(metadataCatalog);
         MetadataResourceLoader metadataResourceLoader = new MetadataResourceLoader();
         ResourceUriResolver resourceUriResolver = new ResourceUriResolver();
@@ -65,5 +57,4 @@ public final class MCPRuntimeContextBuilder {
         return new MCPRuntimeContext(sessionManager, metadataCatalog, databaseRuntime, capabilityAssembler,
                 metadataResourceLoader, resourceUriResolver, metadataToolDispatcher, toolCatalog, transactionCommandExecutor, auditRecorder, executeQueryFacade, payloadBuilder);
     }
-    
 }

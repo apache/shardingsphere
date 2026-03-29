@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestBuilder;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.QueryResult;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
@@ -108,7 +107,7 @@ class MCPToolPayloadResolverTest {
     }
     
     private MCPToolPayloadResolver createResolver() {
-        return new MCPToolPayloadResolver(MCPRuntimeContext.create(new MCPSessionManager(), createMetadataCatalog(), createDatabaseRuntime()));
+        return new MCPToolPayloadResolver(new MCPRuntimeContextTestBuilder().build(createMetadataCatalog(), createDatabaseRuntime()));
     }
     
     private MetadataCatalog createMetadataCatalog() {
