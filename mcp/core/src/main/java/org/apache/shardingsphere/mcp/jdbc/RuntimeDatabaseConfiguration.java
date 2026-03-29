@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.jdbc.config;
+package org.apache.shardingsphere.mcp.jdbc;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

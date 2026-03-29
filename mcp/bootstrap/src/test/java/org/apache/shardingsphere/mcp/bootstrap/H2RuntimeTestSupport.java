@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap;
 
-import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 
 import java.nio.file.Path;
 import java.sql.Connection;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp;
 
-import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

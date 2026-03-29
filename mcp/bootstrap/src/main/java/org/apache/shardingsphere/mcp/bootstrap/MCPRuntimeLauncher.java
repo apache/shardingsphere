@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.jdbc.runtime.MCPJdbcRuntimeContextFactory;
+import org.apache.shardingsphere.mcp.jdbc.MCPJdbcRuntimeContextFactory;
 
 import java.io.IOException;
 

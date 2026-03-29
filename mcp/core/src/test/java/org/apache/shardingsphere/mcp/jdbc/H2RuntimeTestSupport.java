@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.jdbc.runtime;
-
-import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
+package org.apache.shardingsphere.mcp.jdbc;
 
 import java.nio.file.Path;
 import java.sql.Connection;
