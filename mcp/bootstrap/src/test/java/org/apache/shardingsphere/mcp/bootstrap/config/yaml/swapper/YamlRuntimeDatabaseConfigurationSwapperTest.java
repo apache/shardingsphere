@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.jdbc.config.yaml.swapper;
+package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
+import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.jdbc.config.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.jdbc.config.yaml.config.YamlRuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,7 +32,6 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
     @Test
     void assertSwapToObject() {
         RuntimeDatabaseConfiguration actual = swapper.swapToObject(createYamlConfig());
-        
         assertThat(actual.getDatabaseType(), is("H2"));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:logic"));
         assertThat(actual.getUsername(), is(" demo "));
@@ -44,9 +43,7 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
     void assertSwapToObjectWithDatabaseTypeMissing() {
         YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
         yamlConfig.setDatabaseType(null);
-        
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        
         assertThat(actual.getMessage(), is("Runtime database property `databaseType` is required."));
     }
     
@@ -54,16 +51,13 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
     void assertSwapToObjectWithUsernameMissing() {
         YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
         yamlConfig.setUsername(null);
-        
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig));
-        
         assertThat(actual.getMessage(), is("Runtime database property `username` is required. Use an empty string when no value is needed."));
     }
     
     @Test
     void assertSwapToObjectWithNullConfiguration() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(null));
-        
         assertThat(actual.getMessage(), is("Runtime database configuration cannot be null."));
     }
     
@@ -71,7 +65,6 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
     void assertSwapToYamlConfiguration() {
         YamlRuntimeDatabaseConfiguration actual = swapper.swapToYamlConfiguration(
                 new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"));
-        
         assertThat(actual.getDatabaseType(), is("H2"));
         assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:logic"));
         assertThat(actual.getUsername(), is(""));

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.jdbc.config.yaml.config;
+package org.apache.shardingsphere.mcp.bootstrap.config.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -29,10 +29,10 @@ import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import java.util.Map;
 
 /**
- * MCP runtime context factory.
+ * MCP JDBC runtime context factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MCPRuntimeContextFactory {
+public final class MCPJdbcRuntimeContextFactory {
     
     /**
      * Create a new instance of MCP runtime context.
