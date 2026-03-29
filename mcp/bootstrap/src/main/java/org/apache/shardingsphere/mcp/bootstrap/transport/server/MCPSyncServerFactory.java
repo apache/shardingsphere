@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServer;
 import io.modelcontextprotocol.server.McpSyncServer;
-import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.ServerCapabilities;
 import io.modelcontextprotocol.spec.McpServerTransportProvider;
 import io.modelcontextprotocol.spec.McpStreamableServerTransportProvider;
@@ -70,20 +69,12 @@ public final class MCPSyncServerFactory {
     
     private McpSyncServer create(final McpServer.SyncSpecification<?> specification) {
         return specification.jsonMapper(jsonMapper)
-                .serverInfo(MCPTransportConstants.SERVER_NAME, resolveServerVersion())
+                .serverInfo(MCPTransportConstants.SERVER_NAME, Optional.ofNullable(MCPSyncServerFactory.class.getPackage().getImplementationVersion()).orElse("development"))
                 .instructions(MCPTransportConstants.SERVER_INSTRUCTIONS)
-                .capabilities(createServerCapabilities())
+                .capabilities(ServerCapabilities.builder().resources(Boolean.FALSE, Boolean.FALSE).tools(Boolean.FALSE).build())
                 .tools(toolSpecificationFactory.createToolSpecifications())
                 .resources(resourceSpecificationFactory.createResourceSpecifications())
                 .resourceTemplates(resourceSpecificationFactory.createResourceTemplateSpecifications())
                 .build();
-    }
-    
-    private String resolveServerVersion() {
-        return Optional.ofNullable(MCPSyncServerFactory.class.getPackage().getImplementationVersion()).orElse("development");
-    }
-    
-    private ServerCapabilities createServerCapabilities() {
-        return McpSchema.ServerCapabilities.builder().resources(Boolean.FALSE, Boolean.FALSE).tools(Boolean.FALSE).build();
     }
 }

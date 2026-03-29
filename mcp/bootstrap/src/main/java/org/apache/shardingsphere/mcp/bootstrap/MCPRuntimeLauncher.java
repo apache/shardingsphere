@@ -40,7 +40,8 @@ public final class MCPRuntimeLauncher {
      * @throws IOException when the active server startup fails
      */
     public MCPRuntimeServer launch(final MCPLaunchConfiguration config) throws IOException {
-        MCPRuntimeServer result = createRuntimeServer(config, new MCPJdbcRuntimeContextFactory().create(new MCPSessionManager(), config.getDatabases()));
+        MCPRuntimeContext runtimeContext = new MCPJdbcRuntimeContextFactory().create(new MCPSessionManager(), config.getDatabases());
+        MCPRuntimeServer result = config.getHttpTransport().isEnabled() ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext) : new StdioMCPServer(runtimeContext);
         try {
             result.start();
         } catch (final IOException ex) {
@@ -48,9 +49,5 @@ public final class MCPRuntimeLauncher {
             throw new IOException(String.format("Failed to start %s server.", config.getHttpTransport().isEnabled() ? "HTTP" : "STDIO"), ex);
         }
         return result;
-    }
-    
-    private MCPRuntimeServer createRuntimeServer(final MCPLaunchConfiguration config, final MCPRuntimeContext runtimeContext) {
-        return config.getHttpTransport().isEnabled() ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext) : new StdioMCPServer(runtimeContext);
     }
 }

@@ -32,26 +32,10 @@ import java.util.Map;
  */
 public final class MCPJdbcRuntimeContextFactory implements MCPRuntimeContextFactory {
     
-    private final MCPJdbcMetadataLoader metadataLoader;
+    private final MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
     
-    private final MCPDatabaseRuntimeFactory databaseRuntimeFactory;
+    private final MCPDatabaseRuntimeFactory databaseRuntimeFactory = new MCPDatabaseRuntimeFactory();
     
-    public MCPJdbcRuntimeContextFactory() {
-        this(new MCPJdbcMetadataLoader(), new MCPDatabaseRuntimeFactory());
-    }
-    
-    MCPJdbcRuntimeContextFactory(final MCPJdbcMetadataLoader metadataLoader, final MCPDatabaseRuntimeFactory databaseRuntimeFactory) {
-        this.metadataLoader = metadataLoader;
-        this.databaseRuntimeFactory = databaseRuntimeFactory;
-    }
-    
-    /**
-     * Create one JDBC-backed MCP runtime context.
-     *
-     * @param sessionManager session manager
-     * @param runtimeDatabases runtime databases
-     * @return runtime context
-     */
     @Override
     public MCPRuntimeContext create(final MCPSessionManager sessionManager, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         ShardingSpherePreconditions.checkState(!runtimeDatabases.isEmpty(), () -> new IllegalArgumentException("At least one runtime database must be configured."));
