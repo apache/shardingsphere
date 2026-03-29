@@ -50,19 +50,14 @@
 
 ### RuntimeDatabaseDescriptor
 
-- **Purpose**: Describe one logical database as seen by the real runtime and feed capability assembly plus discovery responses.
+- **Purpose**: Capture one logical database's runtime facts that complement capability assembly and discovery responses without duplicating them.
 - **Fields**:
-  - `database`
-  - `databaseType`
+  - `databaseVersion`
   - `defaultSchema`
-  - `supportedObjectTypes`
-  - `supportsCrossSchemaSql`
-  - `supportsExplainAnalyze`
-  - `runtimeHints`
 - **Validation rules**:
-  - `database` and `databaseType` are mandatory.
-  - Optional object support such as `index` must be explicit.
-  - Runtime facts may refine, but must not contradict, fixed product guarantees without a mapped error or override rule.
+  - `databaseVersion` may be blank when the backend cannot expose a reliable product version.
+  - `defaultSchema` is a runtime fact derived from the active connection or discovered schemas and may be blank.
+  - Runtime facts must not duplicate database capability matrices or metadata object inventories.
 
 ### CapabilityAssemblyInput
 

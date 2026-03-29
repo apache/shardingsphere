@@ -20,18 +20,14 @@ package org.apache.shardingsphere.mcp.resource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Set;
-
 /**
- * Runtime database descriptor.
+ * Runtime database facts.
  */
 @RequiredArgsConstructor
 @Getter
 public final class RuntimeDatabaseDescriptor {
     
     private final String databaseVersion;
-    
-    private final Set<MetadataObjectType> discoveredMetadataObjectTypes;
     
     private final String defaultSchema;
 }

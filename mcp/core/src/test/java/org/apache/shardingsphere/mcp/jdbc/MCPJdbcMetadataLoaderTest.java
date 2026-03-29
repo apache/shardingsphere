@@ -68,9 +68,6 @@ class MCPJdbcMetadataLoaderTest {
         assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.INDEX, "idx_orders_status"));
         RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = actual.findRuntimeDatabaseDescriptor("logic_db").orElseThrow();
         assertThat(runtimeDatabaseDescriptor.getDefaultSchema(), is("public"));
-        assertTrue(runtimeDatabaseDescriptor.getDiscoveredMetadataObjectTypes().contains(MetadataObjectType.TABLE));
-        assertTrue(runtimeDatabaseDescriptor.getDiscoveredMetadataObjectTypes().contains(MetadataObjectType.VIEW));
-        assertTrue(runtimeDatabaseDescriptor.getDiscoveredMetadataObjectTypes().contains(MetadataObjectType.INDEX));
     }
     
     @Test
@@ -100,8 +97,6 @@ class MCPJdbcMetadataLoaderTest {
             assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.COLUMN, "order_id"));
             RuntimeDatabaseDescriptor runtimeDatabaseDescriptor = actual.findRuntimeDatabaseDescriptor("logic_db").orElseThrow();
             assertThat(runtimeDatabaseDescriptor.getDefaultSchema(), is(""));
-            assertFalse(runtimeDatabaseDescriptor.getDiscoveredMetadataObjectTypes().contains(MetadataObjectType.SCHEMA));
-            assertTrue(runtimeDatabaseDescriptor.getDiscoveredMetadataObjectTypes().contains(MetadataObjectType.TABLE));
         } finally {
             DriverManager.deregisterDriver(mockDriver);
         }

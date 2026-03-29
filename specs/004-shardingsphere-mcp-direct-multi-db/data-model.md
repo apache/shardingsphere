@@ -74,23 +74,18 @@
 - **Validation rules**:
   - A snapshot belongs to exactly one logical database.
   - Failed refresh attempts must not replace an existing successful snapshot with empty data.
-  - `runtimeDescriptor` must remain consistent with the active database capability view.
+  - `runtimeDescriptor` carries only runtime facts such as version and default schema, and must not duplicate capability or resource inventory state.
 
 ### RuntimeDatabaseDescriptor
 
-- **Purpose**: Describe one logical database as exposed by the direct runtime for capability assembly and discovery behavior.
+- **Purpose**: Capture one logical database's runtime facts for capability assembly and discovery behavior.
 - **Fields**:
-  - `database`
-  - `databaseType`
+  - `databaseVersion`
   - `defaultSchema`
-  - `supportedObjectTypes`
-  - `supportsCrossSchemaSql`
-  - `supportsExplainAnalyze`
-  - `availabilityState`
 - **Validation rules**:
-  - `database` and `databaseType` are mandatory.
-  - Optional object support such as `index` must be explicit.
-  - Availability changes must not silently erase object support facts that still come from the last successful snapshot.
+  - `databaseVersion` may be blank when the connected backend does not expose a reliable version string.
+  - `defaultSchema` is derived from the live connection or discovered schemas and may be blank.
+  - Runtime facts must not duplicate database capability or metadata inventory data.
 
 ### SessionRoutingContext
 
