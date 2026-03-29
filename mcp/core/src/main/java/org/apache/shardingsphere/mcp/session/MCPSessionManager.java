@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mcp.session;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.LinkedHashSet;
@@ -32,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class MCPSessionManager {
     
-    private final Map<String, SessionContext> sessions = new ConcurrentHashMap<>();
+    private final Map<String, MCPSessionContext> sessions = new ConcurrentHashMap<>();
     
     private final Set<String> closedSessionIds = ConcurrentHashMap.newKeySet();
     
@@ -42,10 +44,10 @@ public final class MCPSessionManager {
      * @param sessionId session identifier
      * @return created session context
      */
-    public SessionContext createSession(final String sessionId) {
+    public MCPSessionContext createSession(final String sessionId) {
         String actualSessionId = normalizeValue(sessionId, "sessionId");
         ShardingSpherePreconditions.checkState(!closedSessionIds.contains(actualSessionId), () -> new IllegalStateException("Session recovery is not supported."));
-        SessionContext result = new SessionContext(actualSessionId);
+        MCPSessionContext result = new MCPSessionContext(actualSessionId);
         ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(actualSessionId, result), () -> new IllegalStateException("Session already exists."));
         return result;
     }
@@ -56,7 +58,7 @@ public final class MCPSessionManager {
      * @param sessionId session identifier
      * @return session context when present
      */
-    public Optional<SessionContext> findSession(final String sessionId) {
+    public Optional<MCPSessionContext> findSession(final String sessionId) {
         return Optional.ofNullable(sessions.get(normalizeValue(sessionId, "sessionId")));
     }
     
@@ -67,7 +69,7 @@ public final class MCPSessionManager {
      * @param databaseName logical database name
      */
     public void bindDatabase(final String sessionId, final String databaseName) {
-        SessionContext sessionContext = requireSession(sessionId);
+        MCPSessionContext sessionContext = requireSession(sessionId);
         String actualDatabaseName = normalizeValue(databaseName, "databaseName");
         ShardingSpherePreconditions.checkState(
                 TransactionState.ACTIVE != sessionContext.getTransactionState() || sessionContext.getBoundDatabase().isEmpty() || sessionContext.getBoundDatabase().equals(actualDatabaseName),
@@ -82,7 +84,7 @@ public final class MCPSessionManager {
      * @param databaseName logical database name
      */
     public void beginTransaction(final String sessionId, final String databaseName) {
-        SessionContext sessionContext = requireSession(sessionId);
+        MCPSessionContext sessionContext = requireSession(sessionId);
         bindDatabase(sessionId, databaseName);
         sessionContext.beginTransaction();
     }
@@ -152,7 +154,7 @@ public final class MCPSessionManager {
      */
     public void closeSession(final String sessionId) {
         String actualSessionId = normalizeValue(sessionId, "sessionId");
-        SessionContext sessionContext = sessions.remove(actualSessionId);
+        MCPSessionContext sessionContext = sessions.remove(actualSessionId);
         if (null != sessionContext) {
             sessionContext.rollbackPendingWork();
             sessionContext.close();
@@ -160,7 +162,7 @@ public final class MCPSessionManager {
         closedSessionIds.add(actualSessionId);
     }
     
-    private SessionContext requireSession(final String sessionId) {
+    private MCPSessionContext requireSession(final String sessionId) {
         return findSession(sessionId).orElseThrow(() -> new IllegalStateException("Session does not exist."));
     }
     
@@ -171,10 +173,11 @@ public final class MCPSessionManager {
     }
     
     /**
-     * Mutable in-memory session context used by the skeleton runtime.
+     * MCP session context.
      */
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     @Getter
-    public static final class SessionContext {
+    public static final class MCPSessionContext {
         
         private final String sessionId;
         
@@ -187,10 +190,6 @@ public final class MCPSessionManager {
         private String boundDatabase = "";
         
         private boolean closed;
-        
-        private SessionContext(final String sessionId) {
-            this.sessionId = sessionId;
-        }
         
         /**
          * Get the registered savepoint names.
