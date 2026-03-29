@@ -20,6 +20,11 @@ package org.apache.shardingsphere.mcp.jdbc;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Properties;
+
 /**
  * Runtime database configuration for one logical database binding.
  */
@@ -36,4 +41,34 @@ public final class RuntimeDatabaseConfiguration {
     private final String password;
     
     private final String driverClassName;
+    
+    /**
+     * Open connection.
+     *
+     * @param databaseName database name
+     * @return connection
+     * @throws SQLException SQL exception
+     */
+    public Connection openConnection(final String databaseName) throws SQLException {
+        loadDriver(databaseName);
+        Properties props = new Properties();
+        if (!username.isEmpty()) {
+            props.setProperty("user", username);
+        }
+        if (!password.isEmpty()) {
+            props.setProperty("password", password);
+        }
+        return props.isEmpty() ? DriverManager.getConnection(jdbcUrl) : DriverManager.getConnection(jdbcUrl, props);
+    }
+    
+    private void loadDriver(final String databaseName) {
+        if (driverClassName.isEmpty()) {
+            return;
+        }
+        try {
+            Class.forName(driverClassName);
+        } catch (final ClassNotFoundException ex) {
+            throw new IllegalStateException(String.format("JDBC driver `%s` is not available for database `%s`.", driverClassName, databaseName), ex);
+        }
+    }
 }

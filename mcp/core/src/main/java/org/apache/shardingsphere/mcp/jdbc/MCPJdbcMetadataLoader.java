@@ -44,8 +44,6 @@ import java.util.Set;
  */
 public final class MCPJdbcMetadataLoader {
     
-    private final MCPJdbcConnectionFactory jdbcConnectionFactory = new MCPJdbcConnectionFactory();
-    
     /**
      * Load metadata catalog.
      *
@@ -60,9 +58,9 @@ public final class MCPJdbcMetadataLoader {
         for (Entry<String, RuntimeDatabaseConfiguration> entry : connectionConfigs.entrySet()) {
             String databaseName = entry.getKey();
             String databaseType = entry.getValue().getDatabaseType();
-            try (Connection connection = jdbcConnectionFactory.openConnection(databaseName, entry.getValue())) {
+            try (Connection connection = entry.getValue().openConnection(databaseName)) {
                 databaseTypes.put(databaseName, databaseType);
-                RuntimeMetadataSnapshot runtimeMetadataSnapshot = loadRuntimeMetadataSnapshot(databaseName, databaseType, connection, connection.getMetaData());
+                RuntimeMetadataSnapshot runtimeMetadataSnapshot = loadRuntimeMetadataSnapshot(databaseName, connection, connection.getMetaData());
                 metadataObjects.addAll(runtimeMetadataSnapshot.getMetadataObjects());
                 runtimeDatabaseDescriptors.put(databaseName, runtimeMetadataSnapshot.getRuntimeDatabaseDescriptor());
             } catch (final SQLException ex) {
@@ -72,8 +70,7 @@ public final class MCPJdbcMetadataLoader {
         return new MetadataCatalog(databaseTypes, metadataObjects, runtimeDatabaseDescriptors);
     }
     
-    private RuntimeMetadataSnapshot loadRuntimeMetadataSnapshot(final String databaseName,
-                                                                final String databaseType, final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
+    private RuntimeMetadataSnapshot loadRuntimeMetadataSnapshot(final String databaseName, final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
         List<MetadataObject> metadataObjects = new LinkedList<>();
         Set<MetadataObjectType> discoveredMetadataObjectTypes = new LinkedHashSet<>();
         Set<String> foundSchemas = new LinkedHashSet<>();

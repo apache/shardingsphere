@@ -27,10 +27,9 @@ import java.sql.SQLException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class MCPJdbcConnectionFactoryTest {
+class RuntimeDatabaseConfigurationTest {
     
     @TempDir
     private Path tempDir;
@@ -39,20 +38,16 @@ class MCPJdbcConnectionFactoryTest {
     void assertOpenConnectionWithoutDriverClassName() throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "connection-factory");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        MCPJdbcConnectionFactory connectionFactory = new MCPJdbcConnectionFactory();
-        
-        try (
-                Connection actual = connectionFactory.openConnection("logic_db", new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", ""))) {
-            assertNotNull(actual);
+        try (Connection actual = new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "").openConnection("logic_db")) {
             assertFalse(actual.isClosed());
         }
     }
     
+    @SuppressWarnings("resource")
     @Test
     void assertOpenConnectionWithUnavailableDriverClassName() {
-        MCPJdbcConnectionFactory connectionFactory = new MCPJdbcConnectionFactory();
-        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> connectionFactory.openConnection(
-                "logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:missing-driver", "", "", "org.example.MissingDriver")));
+        IllegalStateException actual = assertThrows(IllegalStateException.class,
+                () -> new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:missing-driver", "", "", "org.example.MissingDriver").openConnection("logic_db"));
         assertThat(actual.getMessage(), is("JDBC driver `org.example.MissingDriver` is not available for database `logic_db`."));
     }
 }

@@ -34,8 +34,6 @@ import java.util.Objects;
  */
 public final class MCPJdbcDatabaseRuntimeFactory {
     
-    private final MCPJdbcConnectionFactory jdbcConnectionFactory = new MCPJdbcConnectionFactory();
-    
     private final MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
     
     /**
@@ -48,7 +46,7 @@ public final class MCPJdbcDatabaseRuntimeFactory {
     public DatabaseRuntime create(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final MetadataCatalog metadataCatalog) {
         Map<String, ConnectionProvider> connectionProviders = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
         for (Entry<String, RuntimeDatabaseConfiguration> each : runtimeDatabases.entrySet()) {
-            connectionProviders.put(each.getKey(), () -> jdbcConnectionFactory.openConnection(each.getKey(), each.getValue()));
+            connectionProviders.put(each.getKey(), () -> each.getValue().openConnection(each.getKey()));
         }
         ShardingSphereExecutionAdapter executionAdapter = new ShardingSphereExecutionAdapter(connectionProviders);
         return new DatabaseRuntime(executionAdapter, database -> refreshMetadata(database, runtimeDatabases.get(database), metadataCatalog, metadataLoader));
