@@ -52,6 +52,6 @@ class MCPRuntimeContextTest {
     }
     
     private MCPRuntimeContext createRuntimeContext() {
-        return new MCPRuntimeContextTestBuilder().build(new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()), new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
+        return new MCPRuntimeContextTestBuilder().build(new MetadataCatalog(Collections.emptyMap()), new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
     }
 }

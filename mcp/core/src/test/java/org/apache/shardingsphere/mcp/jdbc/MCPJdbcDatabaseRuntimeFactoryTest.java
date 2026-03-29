@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.jdbc;
 
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
@@ -65,8 +66,8 @@ class MCPJdbcDatabaseRuntimeFactoryTest {
         MCPJdbcDatabaseRuntimeFactory databaseRuntimeFactory = new MCPJdbcDatabaseRuntimeFactory();
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabaseConfigs = Map.of(
                 "logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.example.MissingDriver"));
-        MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of("logic_db", "H2"),
-                List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", "")));
+        MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of("logic_db",
+                new DatabaseMetadataSnapshot("H2", List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", "")))));
         DatabaseRuntime actual = databaseRuntimeFactory.create(runtimeDatabaseConfigs, metadataCatalog);
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> actual.refreshMetadata("logic_db"));
         assertThat(ex.getMessage(), is("JDBC driver `org.example.MissingDriver` is not available for database `logic_db`."));

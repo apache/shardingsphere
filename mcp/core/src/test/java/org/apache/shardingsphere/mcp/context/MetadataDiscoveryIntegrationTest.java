@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MetadataDiscoveryIntegrationTest {
     
     private MCPRuntimeContext createRuntimeContext() {
-        return new MCPRuntimeContextTestBuilder().build(new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()),
+        return new MCPRuntimeContextTestBuilder().build(new MetadataCatalog(Collections.emptyMap()),
                 new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
     }
     

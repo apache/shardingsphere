@@ -25,7 +25,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -38,7 +37,7 @@ class SupportedDatabaseContractMatrixE2ETest {
     @MethodSource("assertCapabilityMatrixCases")
     void assertCapabilityMatrix(final String name, final String databaseType, final boolean expectedTransactionControl,
                                 final boolean expectedSavepoint, final boolean expectedIndexSupport) {
-        DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler(new MetadataCatalog(Map.of(), List.of()));
+        DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler(new MetadataCatalog(Map.of()));
         DatabaseCapability actual = assembler.assembleDatabaseCapability("logic_db", databaseType).get();
         assertThat(actual.isSupportsTransactionControl(), is(expectedTransactionControl));
         assertThat(actual.isSupportsSavepoint(), is(expectedSavepoint));

@@ -121,6 +121,8 @@ class DatabaseCapabilityAssemblerTest {
     }
     
     private DatabaseCapabilityAssembler createAssembler() {
-        return new DatabaseCapabilityAssembler(new MetadataCatalog(Map.of("logic_db", "MySQL", "warehouse", "Hive"), Collections.emptyList()));
+        return new DatabaseCapabilityAssembler(new MetadataCatalog(Map.of(
+                "logic_db", new DatabaseMetadataSnapshot("MySQL", Collections.emptyList()),
+                "warehouse", new DatabaseMetadataSnapshot("Hive", Collections.emptyList()))));
     }
 }

@@ -127,7 +127,7 @@ class TransactionCommandExecutorTest {
     }
     
     private DatabaseCapabilityAssembler createCapabilityAssembler() {
-        return new DatabaseCapabilityAssembler(new MetadataCatalog(Collections.emptyMap(), Collections.emptyList()));
+        return new DatabaseCapabilityAssembler(new MetadataCatalog(Collections.emptyMap()));
     }
     
     private DatabaseRuntime createDatabaseRuntime() {

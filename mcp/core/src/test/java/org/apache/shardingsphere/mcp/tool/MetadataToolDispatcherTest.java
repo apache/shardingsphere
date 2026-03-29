@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
@@ -29,7 +30,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -193,27 +194,26 @@ class MetadataToolDispatcherTest {
     }
     
     private MetadataCatalog createMetadataCatalog() {
-        Map<String, String> databaseTypes = new LinkedHashMap<>();
-        databaseTypes.put("logic_db", "MySQL");
-        databaseTypes.put("analytics_db", "PostgreSQL");
-        databaseTypes.put("warehouse", "Hive");
-        LinkedList<MetadataObject> metadataObjects = new LinkedList<>();
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""));
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""));
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "order_items", "", ""));
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.VIEW, "active_orders", "", ""));
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.COLUMN, "order_id", "TABLE", "orders"));
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.COLUMN, "status", "TABLE", "orders"));
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.INDEX, "idx_orders_status", "TABLE", "orders"));
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.MATERIALIZED_VIEW, "mv_orders", "", ""));
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.SEQUENCE, "order_seq", "", ""));
-        metadataObjects.add(new MetadataObject("analytics_db", "public", MetadataObjectType.SCHEMA, "public", "", ""));
-        metadataObjects.add(new MetadataObject("analytics_db", "public", MetadataObjectType.TABLE, "metrics", "", ""));
-        metadataObjects.add(new MetadataObject("analytics_db", "public", MetadataObjectType.COLUMN, "metric_id", "TABLE", "metrics"));
-        metadataObjects.add(new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""));
-        metadataObjects.add(new MetadataObject("warehouse", "warehouse", MetadataObjectType.TABLE, "facts", "", ""));
-        metadataObjects.add(new MetadataObject("warehouse", "warehouse", MetadataObjectType.COLUMN, "fact_id", "TABLE", "facts"));
-        return new MetadataCatalog(databaseTypes, metadataObjects);
+        Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
+        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", List.of(
+                new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
+                new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""),
+                new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "order_items", "", ""),
+                new MetadataObject("logic_db", "public", MetadataObjectType.VIEW, "active_orders", "", ""),
+                new MetadataObject("logic_db", "public", MetadataObjectType.COLUMN, "order_id", "TABLE", "orders"),
+                new MetadataObject("logic_db", "public", MetadataObjectType.COLUMN, "status", "TABLE", "orders"),
+                new MetadataObject("logic_db", "public", MetadataObjectType.INDEX, "idx_orders_status", "TABLE", "orders"),
+                new MetadataObject("logic_db", "public", MetadataObjectType.MATERIALIZED_VIEW, "mv_orders", "", ""),
+                new MetadataObject("logic_db", "public", MetadataObjectType.SEQUENCE, "order_seq", "", ""))));
+        databaseSnapshots.put("analytics_db", new DatabaseMetadataSnapshot("PostgreSQL", List.of(
+                new MetadataObject("analytics_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
+                new MetadataObject("analytics_db", "public", MetadataObjectType.TABLE, "metrics", "", ""),
+                new MetadataObject("analytics_db", "public", MetadataObjectType.COLUMN, "metric_id", "TABLE", "metrics"))));
+        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot("Hive", List.of(
+                new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""),
+                new MetadataObject("warehouse", "warehouse", MetadataObjectType.TABLE, "facts", "", ""),
+                new MetadataObject("warehouse", "warehouse", MetadataObjectType.COLUMN, "fact_id", "TABLE", "facts"))));
+        return new MetadataCatalog(databaseSnapshots);
     }
     
     private MetadataToolDispatcher createDispatcher() {

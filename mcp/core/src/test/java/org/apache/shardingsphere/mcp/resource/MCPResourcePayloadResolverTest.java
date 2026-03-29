@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -96,15 +95,14 @@ class MCPResourcePayloadResolverTest {
     }
     
     private MetadataCatalog createMetadataCatalog() {
-        Map<String, String> databaseTypes = new LinkedHashMap<>();
-        databaseTypes.put("logic_db", "MySQL");
-        databaseTypes.put("warehouse", "Hive");
-        LinkedList<MetadataObject> metadataObjects = new LinkedList<>();
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""));
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""));
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "order_items", "", ""));
-        metadataObjects.add(new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""));
-        metadataObjects.add(new MetadataObject("warehouse", "warehouse", MetadataObjectType.TABLE, "facts", "", ""));
-        return new MetadataCatalog(databaseTypes, metadataObjects);
+        Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
+        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", List.of(
+                new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
+                new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""),
+                new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "order_items", "", ""))));
+        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot("Hive", List.of(
+                new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""),
+                new MetadataObject("warehouse", "warehouse", MetadataObjectType.TABLE, "facts", "", ""))));
+        return new MetadataCatalog(databaseSnapshots);
     }
 }

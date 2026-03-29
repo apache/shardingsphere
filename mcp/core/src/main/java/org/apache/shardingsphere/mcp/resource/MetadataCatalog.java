@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.resource;
 
 import lombok.Getter;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -34,16 +33,6 @@ import java.util.Map.Entry;
 public final class MetadataCatalog {
     
     private volatile Snapshot snapshot;
-    
-    /**
-     * Construct a metadata catalog.
-     *
-     * @param databaseTypes database-to-type mapping
-     * @param metadataObjects metadata objects
-     */
-    public MetadataCatalog(final Map<String, String> databaseTypes, final Collection<MetadataObject> metadataObjects) {
-        this(createDatabaseSnapshots(databaseTypes, metadataObjects));
-    }
     
     /**
      * Construct a metadata catalog with per-database snapshots.
@@ -131,23 +120,6 @@ public final class MetadataCatalog {
     
     private DatabaseMetadataSnapshot copySnapshot(final DatabaseMetadataSnapshot databaseSnapshot) {
         return new DatabaseMetadataSnapshot(databaseSnapshot.getDatabaseType(), databaseSnapshot.getMetadataObjects(), databaseSnapshot.getDatabaseVersion(), databaseSnapshot.getDefaultSchema());
-    }
-    
-    private static Map<String, DatabaseMetadataSnapshot> createDatabaseSnapshots(final Map<String, String> databaseTypes, final Collection<MetadataObject> metadataObjects) {
-        Map<String, List<MetadataObject>> metadataObjectsByDatabase = new LinkedHashMap<>();
-        for (MetadataObject each : metadataObjects) {
-            metadataObjectsByDatabase.computeIfAbsent(each.getDatabase(), unused -> new LinkedList<>()).add(each);
-        }
-        Map<String, DatabaseMetadataSnapshot> result = new LinkedHashMap<>(Math.max(databaseTypes.size(), metadataObjectsByDatabase.size()), 1F);
-        for (Entry<String, String> entry : databaseTypes.entrySet()) {
-            List<MetadataObject> actualMetadataObjects = metadataObjectsByDatabase.remove(entry.getKey());
-            result.put(entry.getKey(), new DatabaseMetadataSnapshot(entry.getValue(),
-                    null == actualMetadataObjects ? Collections.emptyList() : actualMetadataObjects));
-        }
-        for (Entry<String, List<MetadataObject>> entry : metadataObjectsByDatabase.entrySet()) {
-            result.put(entry.getKey(), new DatabaseMetadataSnapshot("", entry.getValue()));
-        }
-        return result;
     }
     
     @Getter

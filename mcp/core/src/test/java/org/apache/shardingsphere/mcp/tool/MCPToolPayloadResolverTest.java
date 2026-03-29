@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestBuilder;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.QueryResult;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
@@ -111,14 +112,13 @@ class MCPToolPayloadResolverTest {
     }
     
     private MetadataCatalog createMetadataCatalog() {
-        Map<String, String> databaseTypes = new LinkedHashMap<>();
-        databaseTypes.put("logic_db", "MySQL");
-        databaseTypes.put("warehouse", "Hive");
-        LinkedList<MetadataObject> metadataObjects = new LinkedList<>();
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""));
-        metadataObjects.add(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""));
-        metadataObjects.add(new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""));
-        return new MetadataCatalog(databaseTypes, metadataObjects);
+        Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
+        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", List.of(
+                new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
+                new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""))));
+        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot("Hive", List.of(
+                new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""))));
+        return new MetadataCatalog(databaseSnapshots);
     }
     
     private DatabaseRuntime createDatabaseRuntime() {
