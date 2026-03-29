@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
 
@@ -51,19 +51,19 @@ public final class ExecuteQueryFacade {
     public ExecuteQueryResponse execute(final ExecutionRequest executionRequest) {
         Optional<DatabaseCapability> databaseCapability = capabilityAssembler.assembleDatabaseCapability(executionRequest.getDatabase());
         if (databaseCapability.isEmpty()) {
-            return recordFailure(executionRequest, "QUERY", ErrorCode.NOT_FOUND, "Database capability does not exist.");
+            return recordFailure(executionRequest, "QUERY", MCPErrorCode.NOT_FOUND, "Database capability does not exist.");
         }
         DatabaseCapability actualDatabaseCapability = databaseCapability.get();
         ClassificationResult classificationResult;
         try {
             classificationResult = statementClassifier.classify(executionRequest.getSql());
         } catch (final UnsupportedOperationException ex) {
-            return recordFailure(executionRequest, "QUERY", ErrorCode.UNSUPPORTED, ex.getMessage());
+            return recordFailure(executionRequest, "QUERY", MCPErrorCode.UNSUPPORTED, ex.getMessage());
         } catch (final IllegalArgumentException ex) {
-            return recordFailure(executionRequest, "QUERY", ErrorCode.INVALID_REQUEST, ex.getMessage());
+            return recordFailure(executionRequest, "QUERY", MCPErrorCode.INVALID_REQUEST, ex.getMessage());
         }
         if (!actualDatabaseCapability.getSupportedStatementClasses().contains(classificationResult.getStatementClass())) {
-            return recordFailure(executionRequest, classificationResult.getStatementType(), ErrorCode.UNSUPPORTED, "Statement class is not supported.");
+            return recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "Statement class is not supported.");
         }
         switch (classificationResult.getStatementClass()) {
             case TRANSACTION_CONTROL:
@@ -97,11 +97,11 @@ public final class ExecuteQueryFacade {
                         classificationResult.getStatementType());
             case EXPLAIN_ANALYZE:
                 if (!actualDatabaseCapability.isSupportsExplainAnalyze()) {
-                    return recordFailure(executionRequest, classificationResult.getStatementType(), ErrorCode.UNSUPPORTED, "EXPLAIN ANALYZE is not supported.");
+                    return recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "EXPLAIN ANALYZE is not supported.");
                 }
                 return recordResult(executionRequest, executeQuery(executionRequest, classificationResult, actualDatabaseCapability), classificationResult.getStatementType());
             default:
-                return recordFailure(executionRequest, classificationResult.getStatementType(), ErrorCode.UNSUPPORTED, "Statement class is not supported.");
+                return recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "Statement class is not supported.");
         }
     }
     
@@ -112,7 +112,7 @@ public final class ExecuteQueryFacade {
         Optional<QueryResult> queryResult = executionRequest.getDatabaseRuntime().findQueryResult(executionRequest.getDatabase(),
                 classificationResult.getTargetObjectName().orElse("RESULT"));
         if (queryResult.isEmpty()) {
-            return ExecuteQueryResponse.error(ErrorCode.NOT_FOUND, "Query target does not exist.");
+            return ExecuteQueryResponse.error(MCPErrorCode.NOT_FOUND, "Query target does not exist.");
         }
         int effectiveMaxRows = getEffectiveMaxRows(executionRequest, databaseCapability);
         List<List<Object>> rows = queryResult.get().getRows();
@@ -128,7 +128,7 @@ public final class ExecuteQueryFacade {
         Optional<Integer> updateCount = executionRequest.getDatabaseRuntime().findUpdateCount(executionRequest.getDatabase(),
                 classificationResult.getTargetObjectName().orElse("RESULT"));
         return updateCount.map(integer -> ExecuteQueryResponse.updateCount(classificationResult.getStatementType(), integer))
-                .orElseGet(() -> ExecuteQueryResponse.error(ErrorCode.NOT_FOUND, "Update target does not exist."));
+                .orElseGet(() -> ExecuteQueryResponse.error(MCPErrorCode.NOT_FOUND, "Update target does not exist."));
     }
     
     private int getEffectiveMaxRows(final ExecutionRequest executionRequest, final DatabaseCapability databaseCapability) {
@@ -145,12 +145,12 @@ public final class ExecuteQueryFacade {
                     executionRequest.getSql(), true, transactionMarker);
             return response;
         }
-        ErrorCode errorCode = response.getError().get().getErrorCode();
+        MCPErrorCode errorCode = response.getError().get().getErrorCode();
         auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), false, errorCode, transactionMarker);
         return response;
     }
     
-    private ExecuteQueryResponse recordFailure(final ExecutionRequest executionRequest, final String transactionMarker, final ErrorCode errorCode, final String message) {
+    private ExecuteQueryResponse recordFailure(final ExecutionRequest executionRequest, final String transactionMarker, final MCPErrorCode errorCode, final String message) {
         ExecuteQueryResponse result = ExecuteQueryResponse.error(errorCode, message);
         auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(),
                 executionRequest.getSql(), false, errorCode, transactionMarker);

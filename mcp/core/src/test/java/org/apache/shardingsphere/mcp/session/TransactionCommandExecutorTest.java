@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -74,7 +74,7 @@ class TransactionCommandExecutorTest {
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getErrorCode(), is(ErrorCode.UNSUPPORTED));
+        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.UNSUPPORTED));
     }
     
     @Test
@@ -100,7 +100,7 @@ class TransactionCommandExecutorTest {
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getErrorCode(), is(ErrorCode.INVALID_REQUEST));
+        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.INVALID_REQUEST));
     }
     
     @Test
@@ -113,7 +113,7 @@ class TransactionCommandExecutorTest {
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getErrorCode(), is(ErrorCode.TRANSACTION_STATE_ERROR));
+        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.TRANSACTION_STATE_ERROR));
     }
     
     private void prepareTransactionState(final MCPSessionManager sessionManager, final String sql) {

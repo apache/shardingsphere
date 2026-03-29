@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.QueryResult;
-import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
@@ -123,9 +123,9 @@ class MCPToolPayloadResolverTest {
     }
     
     private DatabaseRuntime createDatabaseRuntime() {
-        LinkedList<ColumnDefinition> columns = new LinkedList<>();
-        columns.add(new ColumnDefinition("order_id", "INTEGER", "INT", false));
-        columns.add(new ColumnDefinition("status", "VARCHAR", "VARCHAR", true));
+        LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
+        columns.add(new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INT", false));
+        columns.add(new ExecuteQueryColumnDefinition("status", "VARCHAR", "VARCHAR", true));
         LinkedList<List<Object>> rows = new LinkedList<>();
         rows.add(new LinkedList<>(List.of(1, "NEW")));
         rows.add(new LinkedList<>(List.of(2, "DONE")));

@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 
 import java.util.Map;
@@ -83,7 +83,7 @@ public final class MCPToolPayloadResolver {
         ToolDispatchResult result = runtimeContext.getMetadataToolDispatcher().dispatch(runtimeContext.getMetadataCatalog(),
                 runtimeContext.getToolCatalog().createMetadataToolRequest(toolName, arguments));
         if (!result.isSuccessful()) {
-            return error(runtimeContext.getPayloadBuilder().toDomainErrorCode(result.getErrorCode().orElse(ErrorCode.INVALID_REQUEST)), result.getMessage());
+            return error(runtimeContext.getPayloadBuilder().toDomainErrorCode(result.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST)), result.getMessage());
         }
         return MCPToolPayloadResult.success(runtimeContext.getPayloadBuilder().createMetadataItemsPayload(result.getMetadataObjects(), result.getNextPageToken()));
     }

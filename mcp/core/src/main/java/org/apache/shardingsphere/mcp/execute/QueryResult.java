@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.execute;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ import java.util.List;
 @Getter
 public final class QueryResult {
     
-    private final List<ColumnDefinition> columns;
+    private final List<ExecuteQueryColumnDefinition> columns;
     
     private final List<List<Object>> rows;
 }

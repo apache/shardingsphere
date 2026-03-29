@@ -17,10 +17,17 @@
 
 package org.apache.shardingsphere.mcp.protocol;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
- * Unified error code family for MCP.
+ * Error detail payload.
  */
-public enum ErrorCode {
+@RequiredArgsConstructor
+@Getter
+public final class ExecuteQueryErrorDetail {
     
-    INVALID_REQUEST, NOT_FOUND, UNSUPPORTED, CONFLICT, TIMEOUT, UNAVAILABLE, TRANSACTION_STATE_ERROR, QUERY_FAILED
+    private final MCPErrorCode errorCode;
+    
+    private final String message;
 }

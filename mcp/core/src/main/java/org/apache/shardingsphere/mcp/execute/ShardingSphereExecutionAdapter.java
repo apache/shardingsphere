@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.execute;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 
 import java.sql.Connection;
@@ -62,7 +62,7 @@ public final class ShardingSphereExecutionAdapter {
             Optional<SessionConnectionContext> sessionConnectionContext = findSessionConnection(executionRequest.getSessionId());
             if (sessionConnectionContext.isPresent()) {
                 if (!sessionConnectionContext.get().getDatabase().equals(executionRequest.getDatabase())) {
-                    return ExecuteQueryResponse.error(ErrorCode.TRANSACTION_STATE_ERROR, "Cross-database transaction switching is not supported.");
+                    return ExecuteQueryResponse.error(MCPErrorCode.TRANSACTION_STATE_ERROR, "Cross-database transaction switching is not supported.");
                 }
                 connection = sessionConnectionContext.get().getConnection();
             } else {
@@ -82,7 +82,7 @@ public final class ShardingSphereExecutionAdapter {
                 case QUERY:
                 case EXPLAIN_ANALYZE:
                     if (!hasResultSet) {
-                        return ExecuteQueryResponse.error(ErrorCode.QUERY_FAILED, "Query did not return a result set.");
+                        return ExecuteQueryResponse.error(MCPErrorCode.QUERY_FAILED, "Query did not return a result set.");
                     }
                     return createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows());
                 case DML:
@@ -91,16 +91,16 @@ public final class ShardingSphereExecutionAdapter {
                 case DCL:
                     return ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed.");
                 default:
-                    return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Statement class is not supported.");
+                    return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Statement class is not supported.");
             }
         } catch (final SQLTimeoutException ex) {
-            return ExecuteQueryResponse.error(ErrorCode.TIMEOUT, ex.getMessage());
+            return ExecuteQueryResponse.error(MCPErrorCode.TIMEOUT, ex.getMessage());
         } catch (final SQLFeatureNotSupportedException ex) {
-            return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, ex.getMessage());
+            return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, ex.getMessage());
         } catch (final SQLSyntaxErrorException ex) {
-            return ExecuteQueryResponse.error(ErrorCode.INVALID_REQUEST, ex.getMessage());
+            return ExecuteQueryResponse.error(MCPErrorCode.INVALID_REQUEST, ex.getMessage());
         } catch (final SQLException ex) {
-            return ExecuteQueryResponse.error(ErrorCode.QUERY_FAILED, ex.getMessage());
+            return ExecuteQueryResponse.error(MCPErrorCode.QUERY_FAILED, ex.getMessage());
         } finally {
             if (closeConnection && null != connection) {
                 try {
@@ -224,9 +224,9 @@ public final class ShardingSphereExecutionAdapter {
     
     private ExecuteQueryResponse createResultSetResponse(final ResultSet resultSet, final int maxRows) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-        LinkedList<ColumnDefinition> columns = new LinkedList<>();
+        LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
         for (int index = 1; index <= resultSetMetaData.getColumnCount(); index++) {
-            columns.add(new ColumnDefinition(resultSetMetaData.getColumnLabel(index), resultSetMetaData.getColumnTypeName(index),
+            columns.add(new ExecuteQueryColumnDefinition(resultSetMetaData.getColumnLabel(index), resultSetMetaData.getColumnTypeName(index),
                     resultSetMetaData.getColumnTypeName(index), ResultSetMetaData.columnNoNulls != resultSetMetaData.isNullable(index)));
         }
         LinkedList<List<Object>> rows = new LinkedList<>();

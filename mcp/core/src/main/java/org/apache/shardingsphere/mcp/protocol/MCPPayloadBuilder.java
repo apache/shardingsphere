@@ -120,7 +120,7 @@ public final class MCPPayloadBuilder {
      * @param errorCode protocol error code
      * @return domain error code
      */
-    public String toDomainErrorCode(final ErrorCode errorCode) {
+    public String toDomainErrorCode(final MCPErrorCode errorCode) {
         return errorCode.name().toLowerCase(Locale.ENGLISH);
     }
 }

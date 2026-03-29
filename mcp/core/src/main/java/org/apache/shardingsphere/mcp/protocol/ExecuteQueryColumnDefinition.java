@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ColumnDefinition {
+public final class ExecuteQueryColumnDefinition {
     
     private final String columnName;
     

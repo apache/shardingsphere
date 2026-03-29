@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
@@ -107,7 +107,7 @@ class MetadataToolDispatcherTest {
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
-        assertThat(actual.getErrorCode().get(), is(ErrorCode.INVALID_REQUEST));
+        assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
         assertThat(actual.getMessage(), is("Schema cannot be provided without database."));
     }
     
@@ -131,7 +131,7 @@ class MetadataToolDispatcherTest {
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
-        assertThat(actual.getErrorCode().get(), is(ErrorCode.UNSUPPORTED));
+        assertThat(actual.getErrorCode().get(), is(MCPErrorCode.UNSUPPORTED));
     }
     
     @Test
@@ -142,7 +142,7 @@ class MetadataToolDispatcherTest {
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
-        assertThat(actual.getErrorCode().get(), is(ErrorCode.INVALID_REQUEST));
+        assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
         assertThat(actual.getMessage(), is("Invalid page token."));
     }
     
@@ -165,7 +165,7 @@ class MetadataToolDispatcherTest {
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
-        assertThat(actual.getErrorCode().get(), is(ErrorCode.INVALID_REQUEST));
+        assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
         assertThat(actual.getMessage(), is("Unsupported metadata tool."));
     }
     
@@ -178,7 +178,7 @@ class MetadataToolDispatcherTest {
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
-        assertThat(actual.getErrorCode().get(), is(ErrorCode.INVALID_REQUEST));
+        assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
         assertThat(actual.getMessage(), is(expectedMessage));
     }
     

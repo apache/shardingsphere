@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
@@ -65,13 +65,13 @@ public final class MetadataToolDispatcher {
                         toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "list_columns":
                 if (toolRequest.getObjectName().isEmpty() || toolRequest.getParentObjectType().isEmpty()) {
-                    return ToolDispatchResult.error(ErrorCode.INVALID_REQUEST, "Parent object type and object name are required.");
+                    return ToolDispatchResult.error(MCPErrorCode.INVALID_REQUEST, "Parent object type and object name are required.");
                 }
                 return paginate(validateAndLoad(metadataCatalog, toolRequest, MetadataObjectType.COLUMN, toolRequest.getParentObjectType(), true, true),
                         toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "list_indexes":
                 if (toolRequest.getObjectName().isEmpty()) {
-                    return ToolDispatchResult.error(ErrorCode.INVALID_REQUEST, "Table name is required.");
+                    return ToolDispatchResult.error(MCPErrorCode.INVALID_REQUEST, "Table name is required.");
                 }
                 return paginate(validateAndLoad(metadataCatalog, toolRequest, MetadataObjectType.INDEX, "TABLE", true, true),
                         toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
@@ -82,17 +82,17 @@ public final class MetadataToolDispatcher {
             case "describe_view":
                 return describeObject(metadataCatalog, toolRequest, MetadataObjectType.VIEW);
             default:
-                return ToolDispatchResult.error(ErrorCode.INVALID_REQUEST, "Unsupported metadata tool.");
+                return ToolDispatchResult.error(MCPErrorCode.INVALID_REQUEST, "Unsupported metadata tool.");
         }
     }
     
     private ResourceLoadResult validateAndLoad(final MetadataCatalog metadataCatalog, final ToolRequest toolRequest, final MetadataObjectType objectType,
                                                final String parentObjectType, final boolean requireDatabase, final boolean requireSchema) {
         if (requireDatabase && toolRequest.getDatabase().isEmpty()) {
-            return ResourceLoadResult.error(ErrorCode.INVALID_REQUEST, "Database is required.");
+            return ResourceLoadResult.error(MCPErrorCode.INVALID_REQUEST, "Database is required.");
         }
         if (requireSchema && toolRequest.getSchema().isEmpty()) {
-            return ResourceLoadResult.error(ErrorCode.INVALID_REQUEST, "Schema is required.");
+            return ResourceLoadResult.error(MCPErrorCode.INVALID_REQUEST, "Schema is required.");
         }
         return resourceLoader.load(metadataCatalog, new ResourceRequest(toolRequest.getDatabase(), toolRequest.getSchema(), objectType, "",
                 parentObjectType, toolRequest.getObjectName()));
@@ -100,7 +100,7 @@ public final class MetadataToolDispatcher {
     
     private ToolDispatchResult searchMetadata(final MetadataCatalog metadataCatalog, final ToolRequest toolRequest) {
         if (!toolRequest.getSchema().isEmpty() && toolRequest.getDatabase().isEmpty()) {
-            return ToolDispatchResult.error(ErrorCode.INVALID_REQUEST, "Schema cannot be provided without database.");
+            return ToolDispatchResult.error(MCPErrorCode.INVALID_REQUEST, "Schema cannot be provided without database.");
         }
         List<MetadataObject> result = new LinkedList<>();
         if (toolRequest.getDatabase().isEmpty()) {
@@ -148,7 +148,7 @@ public final class MetadataToolDispatcher {
     
     private ToolDispatchResult describeObject(final MetadataCatalog metadataCatalog, final ToolRequest toolRequest, final MetadataObjectType objectType) {
         if (toolRequest.getDatabase().isEmpty() || toolRequest.getSchema().isEmpty() || toolRequest.getObjectName().isEmpty()) {
-            return ToolDispatchResult.error(ErrorCode.INVALID_REQUEST, "Database, schema, and object name are required.");
+            return ToolDispatchResult.error(MCPErrorCode.INVALID_REQUEST, "Database, schema, and object name are required.");
         }
         ResourceLoadResult objectResult = resourceLoader.load(metadataCatalog, new ResourceRequest(toolRequest.getDatabase(), toolRequest.getSchema(),
                 objectType, toolRequest.getObjectName(), "", ""));
@@ -176,7 +176,7 @@ public final class MetadataToolDispatcher {
         try {
             actualOffset = pageToken.isEmpty() ? 0 : Integer.parseInt(pageToken);
         } catch (final NumberFormatException ignored) {
-            return ToolDispatchResult.error(ErrorCode.INVALID_REQUEST, "Invalid page token.");
+            return ToolDispatchResult.error(MCPErrorCode.INVALID_REQUEST, "Invalid page token.");
         }
         int actualPageSize = 0 < pageSize ? pageSize : 100;
         List<MetadataObject> filteredObjects = filterByQuery(metadataObjects, query);

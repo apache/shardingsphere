@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 
 import java.util.Locale;
@@ -54,7 +54,7 @@ public final class TransactionCommandExecutor {
     public ExecuteQueryResponse execute(final String sessionId, final String database, final String databaseType, final ClassificationResult classificationResult) {
         Optional<DatabaseCapability> databaseCapability = capabilityAssembler.assembleDatabaseCapability(database, databaseType);
         if (databaseCapability.isEmpty()) {
-            return ExecuteQueryResponse.error(ErrorCode.NOT_FOUND, "Database capability does not exist.");
+            return ExecuteQueryResponse.error(MCPErrorCode.NOT_FOUND, "Database capability does not exist.");
         }
         return execute(sessionId, database, databaseCapability.get(), classificationResult);
     }
@@ -77,7 +77,7 @@ public final class TransactionCommandExecutor {
         try {
             if ("BEGIN".equals(statementType) || "START TRANSACTION".equals(statementType)) {
                 if (!databaseCapability.isSupportsTransactionControl()) {
-                    return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Transaction control is not supported.");
+                    return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
                 }
                 sessionManager.beginTransaction(sessionId, database);
                 databaseRuntime.beginTransaction(sessionId, database);
@@ -85,7 +85,7 @@ public final class TransactionCommandExecutor {
             }
             if ("COMMIT".equals(statementType)) {
                 if (!databaseCapability.isSupportsTransactionControl()) {
-                    return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Transaction control is not supported.");
+                    return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
                 }
                 databaseRuntime.commitTransaction(sessionId);
                 sessionManager.commitTransaction(sessionId);
@@ -93,7 +93,7 @@ public final class TransactionCommandExecutor {
             }
             if ("ROLLBACK".equals(statementType)) {
                 if (!databaseCapability.isSupportsTransactionControl()) {
-                    return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Transaction control is not supported.");
+                    return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
                 }
                 databaseRuntime.rollbackTransaction(sessionId);
                 sessionManager.rollbackTransaction(sessionId);
@@ -101,7 +101,7 @@ public final class TransactionCommandExecutor {
             }
             if ("SAVEPOINT".equals(statementType)) {
                 if (!databaseCapability.isSupportsSavepoint()) {
-                    return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Savepoint is not supported.");
+                    return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
                 }
                 databaseRuntime.createSavepoint(sessionId, savepointName);
                 sessionManager.rememberSavepoint(sessionId, savepointName);
@@ -109,7 +109,7 @@ public final class TransactionCommandExecutor {
             }
             if ("ROLLBACK TO SAVEPOINT".equals(statementType)) {
                 if (!databaseCapability.isSupportsSavepoint()) {
-                    return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Savepoint is not supported.");
+                    return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
                 }
                 sessionManager.rollbackToSavepoint(sessionId, savepointName);
                 databaseRuntime.rollbackToSavepoint(sessionId, savepointName);
@@ -117,15 +117,15 @@ public final class TransactionCommandExecutor {
             }
             if ("RELEASE SAVEPOINT".equals(statementType)) {
                 if (!databaseCapability.isSupportsSavepoint()) {
-                    return ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Savepoint is not supported.");
+                    return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
                 }
                 sessionManager.releaseSavepoint(sessionId, savepointName);
                 databaseRuntime.releaseSavepoint(sessionId, savepointName);
                 return ExecuteQueryResponse.statementAck("RELEASE SAVEPOINT", "Savepoint released.");
             }
-            return ExecuteQueryResponse.error(ErrorCode.INVALID_REQUEST, "Statement is not a transaction command.");
+            return ExecuteQueryResponse.error(MCPErrorCode.INVALID_REQUEST, "Statement is not a transaction command.");
         } catch (final IllegalStateException ex) {
-            return ExecuteQueryResponse.error(ErrorCode.TRANSACTION_STATE_ERROR, ex.getMessage());
+            return ExecuteQueryResponse.error(MCPErrorCode.TRANSACTION_STATE_ERROR, ex.getMessage());
         }
     }
 }

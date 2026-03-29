@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
@@ -87,7 +87,7 @@ class MetadataResourceLoaderTest {
         ResourceLoadResult actual = loader.load(createMetadataCatalog(), new ResourceRequest("warehouse", "warehouse", MetadataObjectType.INDEX, "", "TABLE", "facts"));
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
-        assertThat(actual.getErrorCode().get(), is(ErrorCode.UNSUPPORTED));
+        assertThat(actual.getErrorCode().get(), is(MCPErrorCode.UNSUPPORTED));
         assertThat(actual.getMessage(), is("Index resources are not supported for the current database."));
     }
     

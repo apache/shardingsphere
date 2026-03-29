@@ -32,9 +32,9 @@ import java.util.Optional;
 @Getter
 public final class ExecuteQueryResponse {
     
-    private final ResultKind resultKind;
+    private final ExecuteQueryResultKind resultKind;
     
-    private final List<ColumnDefinition> columns;
+    private final List<ExecuteQueryColumnDefinition> columns;
     
     private final List<List<Object>> rows;
     
@@ -52,7 +52,7 @@ public final class ExecuteQueryResponse {
     private final boolean errorPresent;
     
     @Getter(AccessLevel.NONE)
-    private final ErrorDetail error;
+    private final ExecuteQueryErrorDetail error;
     
     /**
      * Create a result-set response.
@@ -62,8 +62,8 @@ public final class ExecuteQueryResponse {
      * @param truncated truncation flag
      * @return result-set response
      */
-    public static ExecuteQueryResponse resultSet(final List<ColumnDefinition> columns, final List<List<Object>> rows, final boolean truncated) {
-        return new ExecuteQueryResponse(ResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated, false, createAbsentErrorDetail());
+    public static ExecuteQueryResponse resultSet(final List<ExecuteQueryColumnDefinition> columns, final List<List<Object>> rows, final boolean truncated) {
+        return new ExecuteQueryResponse(ExecuteQueryResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated, false, createAbsentErrorDetail());
     }
     
     /**
@@ -74,7 +74,7 @@ public final class ExecuteQueryResponse {
      * @return update-count response
      */
     public static ExecuteQueryResponse updateCount(final String statementType, final int affectedRows) {
-        return new ExecuteQueryResponse(ResultKind.UPDATE_COUNT, Collections.emptyList(), Collections.emptyList(), affectedRows,
+        return new ExecuteQueryResponse(ExecuteQueryResultKind.UPDATE_COUNT, Collections.emptyList(), Collections.emptyList(), affectedRows,
                 statementType, "OK", "", false, false, createAbsentErrorDetail());
     }
     
@@ -86,7 +86,7 @@ public final class ExecuteQueryResponse {
      * @return acknowledgement response
      */
     public static ExecuteQueryResponse statementAck(final String statementType, final String message) {
-        return new ExecuteQueryResponse(ResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
+        return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
                 statementType, "OK", message, false, false, createAbsentErrorDetail());
     }
     
@@ -97,9 +97,9 @@ public final class ExecuteQueryResponse {
      * @param message error message
      * @return error response
      */
-    public static ExecuteQueryResponse error(final ErrorCode errorCode, final String message) {
-        ErrorDetail errorDetail = new ErrorDetail(errorCode, message);
-        return new ExecuteQueryResponse(ResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
+    public static ExecuteQueryResponse error(final MCPErrorCode errorCode, final String message) {
+        ExecuteQueryErrorDetail errorDetail = new ExecuteQueryErrorDetail(errorCode, message);
+        return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
                 "ERROR", "ERROR", errorDetail.getMessage(), false, true, errorDetail);
     }
     
@@ -117,11 +117,11 @@ public final class ExecuteQueryResponse {
      *
      * @return optional error detail
      */
-    public Optional<ErrorDetail> getError() {
+    public Optional<ExecuteQueryErrorDetail> getError() {
         return errorPresent ? Optional.of(error) : Optional.empty();
     }
     
-    private static ErrorDetail createAbsentErrorDetail() {
-        return new ErrorDetail(ErrorCode.INVALID_REQUEST, "");
+    private static ExecuteQueryErrorDetail createAbsentErrorDetail() {
+        return new ExecuteQueryErrorDetail(MCPErrorCode.INVALID_REQUEST, "");
     }
 }

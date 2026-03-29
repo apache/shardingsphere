@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.resource;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -45,7 +45,7 @@ public final class MetadataResourceLoader {
         }
         Optional<DatabaseCapability> databaseCapability = resolveDatabaseCapability(metadataCatalog, resourceRequest.getDatabase());
         if (MetadataObjectType.INDEX == resourceRequest.getObjectType() && !supportsObjectType(databaseCapability, MetadataObjectType.INDEX)) {
-            return ResourceLoadResult.error(ErrorCode.UNSUPPORTED, "Index resources are not supported for the current database.");
+            return ResourceLoadResult.error(MCPErrorCode.UNSUPPORTED, "Index resources are not supported for the current database.");
         }
         return ResourceLoadResult.success(filterMetadataObjects(metadataCatalog, resourceRequest, databaseCapability));
     }

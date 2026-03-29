@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.tool;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.ResourceLoadResult;
 
@@ -41,12 +41,12 @@ public final class ToolDispatchResult {
     private final boolean errorCodePresent;
     
     @Getter(AccessLevel.NONE)
-    private final ErrorCode errorCode;
+    private final MCPErrorCode errorCode;
     
     private final String message;
     
     private ToolDispatchResult(final List<MetadataObject> metadataObjects, final String nextPageToken,
-                               final boolean errorCodePresent, final ErrorCode errorCode, final String message) {
+                               final boolean errorCodePresent, final MCPErrorCode errorCode, final String message) {
         this.metadataObjects = metadataObjects;
         this.nextPageToken = nextPageToken;
         this.errorCodePresent = errorCodePresent;
@@ -64,10 +64,10 @@ public final class ToolDispatchResult {
     }
     
     static ToolDispatchResult success(final List<MetadataObject> metadataObjects, final String nextPageToken) {
-        return new ToolDispatchResult(metadataObjects, nextPageToken, false, ErrorCode.INVALID_REQUEST, "");
+        return new ToolDispatchResult(metadataObjects, nextPageToken, false, MCPErrorCode.INVALID_REQUEST, "");
     }
     
-    static ToolDispatchResult error(final ErrorCode errorCode, final String message) {
+    static ToolDispatchResult error(final MCPErrorCode errorCode, final String message) {
         return new ToolDispatchResult(Collections.emptyList(), "", true, errorCode, message);
     }
     
@@ -82,7 +82,7 @@ public final class ToolDispatchResult {
      *
      * @return optional error code
      */
-    public Optional<ErrorCode> getErrorCode() {
+    public Optional<MCPErrorCode> getErrorCode() {
         return errorCodePresent ? Optional.of(errorCode) : Optional.empty();
     }
 }

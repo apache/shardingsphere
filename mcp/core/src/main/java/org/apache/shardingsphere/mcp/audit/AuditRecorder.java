@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.audit;
 
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -41,7 +41,7 @@ public final class AuditRecorder {
      */
     public AuditRecord recordQueryExecution(final String sessionId, final String database, final String sql, final boolean success,
                                             final String transactionMarker) {
-        return record(sessionId, database, OperationClass.QUERY_EXECUTION, sql, success, false, ErrorCode.INVALID_REQUEST, transactionMarker);
+        return record(sessionId, database, OperationClass.QUERY_EXECUTION, sql, success, false, MCPErrorCode.INVALID_REQUEST, transactionMarker);
     }
     
     /**
@@ -56,12 +56,12 @@ public final class AuditRecorder {
      * @return recorded audit entry
      */
     public AuditRecord recordQueryExecution(final String sessionId, final String database, final String sql, final boolean success,
-                                            final ErrorCode errorCode, final String transactionMarker) {
+                                            final MCPErrorCode errorCode, final String transactionMarker) {
         return record(sessionId, database, OperationClass.QUERY_EXECUTION, sql, success, true, errorCode, transactionMarker);
     }
     
     private AuditRecord record(final String sessionId, final String database, final OperationClass operationClass, final String operationSource,
-                               final boolean success, final boolean errorCodePresent, final ErrorCode errorCode, final String transactionMarker) {
+                               final boolean success, final boolean errorCodePresent, final MCPErrorCode errorCode, final String transactionMarker) {
         return new AuditRecord(sessionId, database, operationClass, digest(operationSource), success, errorCodePresent, errorCode, transactionMarker, Instant.now().toString());
     }
     

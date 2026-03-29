@@ -21,9 +21,9 @@ import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.StatementClass;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
-import org.apache.shardingsphere.mcp.protocol.ResultKind;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
@@ -98,7 +98,7 @@ class ExecuteQueryFacadeTest {
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getErrorCode(), is(ErrorCode.NOT_FOUND));
+        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.NOT_FOUND));
     }
     
     @Test
@@ -108,7 +108,7 @@ class ExecuteQueryFacadeTest {
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 1));
         
         assertTrue(actual.isSuccessful());
-        assertThat(actual.getResultKind(), is(ResultKind.RESULT_SET));
+        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(1));
         assertTrue(actual.isTruncated());
     }
@@ -120,7 +120,7 @@ class ExecuteQueryFacadeTest {
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("UPDATE orders SET status = 'DONE'", 10));
         
         assertTrue(actual.isSuccessful());
-        assertThat(actual.getResultKind(), is(ResultKind.UPDATE_COUNT));
+        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
         assertThat(actual.getAffectedRows(), is(3));
     }
     
@@ -143,7 +143,7 @@ class ExecuteQueryFacadeTest {
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("CREATE TABLE orders_archive", 10));
         
         assertTrue(actual.isSuccessful());
-        assertThat(actual.getResultKind(), is(ResultKind.STATEMENT_ACK));
+        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
         assertThat(actual.getMessage(), is("Statement executed."));
     }
     
@@ -154,7 +154,7 @@ class ExecuteQueryFacadeTest {
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("GRANT SELECT ON orders TO app_user", 10));
         
         assertTrue(actual.isSuccessful());
-        assertThat(actual.getResultKind(), is(ResultKind.STATEMENT_ACK));
+        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
         assertThat(actual.getMessage(), is("Statement executed."));
     }
     
@@ -166,7 +166,7 @@ class ExecuteQueryFacadeTest {
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getErrorCode(), is(ErrorCode.UNSUPPORTED));
+        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.UNSUPPORTED));
     }
     
     @Test
@@ -176,7 +176,7 @@ class ExecuteQueryFacadeTest {
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
         
         assertTrue(actual.isSuccessful());
-        assertThat(actual.getResultKind(), is(ResultKind.RESULT_SET));
+        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(2));
     }
     
@@ -191,9 +191,9 @@ class ExecuteQueryFacadeTest {
     }
     
     private DatabaseRuntime createRuntime() {
-        LinkedList<ColumnDefinition> columns = new LinkedList<>();
-        columns.add(new ColumnDefinition("order_id", "INTEGER", "INT", false));
-        columns.add(new ColumnDefinition("status", "VARCHAR", "VARCHAR", true));
+        LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
+        columns.add(new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INT", false));
+        columns.add(new ExecuteQueryColumnDefinition("status", "VARCHAR", "VARCHAR", true));
         LinkedList<List<Object>> rows = new LinkedList<>();
         rows.add(new LinkedList<>(List.of(1, "NEW")));
         rows.add(new LinkedList<>(List.of(2, "DONE")));

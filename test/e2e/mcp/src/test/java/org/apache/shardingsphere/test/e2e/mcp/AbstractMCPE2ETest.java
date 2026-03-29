@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.QueryResult;
-import org.apache.shardingsphere.mcp.protocol.ColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
@@ -288,8 +288,8 @@ abstract class AbstractMCPE2ETest {
     }
     
     private QueryResult createQueryResult(final String columnName, final int firstValue, final int secondValue) {
-        LinkedList<ColumnDefinition> columns = new LinkedList<>();
-        columns.add(new ColumnDefinition(columnName, "INTEGER", "INT", false));
+        LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
+        columns.add(new ExecuteQueryColumnDefinition(columnName, "INTEGER", "INT", false));
         LinkedList<List<Object>> rows = new LinkedList<>();
         rows.add(new LinkedList<>(List.of(firstValue)));
         rows.add(new LinkedList<>(List.of(secondValue)));

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.execute;
 
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.ResultKind;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -49,7 +49,7 @@ class ShardingSphereExecutionAdapterTest {
         ShardingSphereExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
         ExecuteQueryResponse actual = adapter.execute(createExecutionRequest("logic_db", "SELECT status FROM orders ORDER BY order_id"),
                 new StatementClassifier().classify("SELECT status FROM orders ORDER BY order_id"));
-        assertThat(actual.getResultKind(), is(ResultKind.RESULT_SET));
+        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(2));
     }
     
@@ -60,7 +60,7 @@ class ShardingSphereExecutionAdapterTest {
         ShardingSphereExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
         ExecuteQueryResponse actual = adapter.execute(createExecutionRequest("logic_db", "UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"),
                 new StatementClassifier().classify("UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
-        assertThat(actual.getResultKind(), is(ResultKind.UPDATE_COUNT));
+        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
         assertThat(actual.getAffectedRows(), is(1));
         assertThat(querySingleString(jdbcUrl), is("PROCESSING"));
     }

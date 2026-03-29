@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.resource;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 
 import java.util.Optional;
@@ -65,6 +65,6 @@ public final class MCPResourcePayloadResolver {
         MCPPayloadBuilder payloadBuilder = runtimeContext.getPayloadBuilder();
         return loadResult.isSuccessful()
                 ? payloadBuilder.createMetadataItemsPayload(loadResult.getMetadataObjects(), "")
-                : payloadBuilder.createErrorPayload(payloadBuilder.toDomainErrorCode(loadResult.getErrorCode().orElse(ErrorCode.INVALID_REQUEST)), loadResult.getMessage());
+                : payloadBuilder.createErrorPayload(payloadBuilder.toDomainErrorCode(loadResult.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST)), loadResult.getMessage());
     }
 }

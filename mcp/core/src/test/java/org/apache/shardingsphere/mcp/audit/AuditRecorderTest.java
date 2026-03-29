@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.audit;
 
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,10 +42,10 @@ class AuditRecorderTest {
     void assertRecordQueryExecutionWithErrorCode() {
         AuditRecorder auditRecorder = new AuditRecorder();
         
-        AuditRecord actual = auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", false, ErrorCode.INVALID_REQUEST, "QUERY");
+        AuditRecord actual = auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", false, MCPErrorCode.INVALID_REQUEST, "QUERY");
         
         assertThat(actual.getOperationClass(), is(OperationClass.QUERY_EXECUTION));
         assertTrue(actual.getErrorCode().isPresent());
-        assertThat(actual.getErrorCode().get(), is(ErrorCode.INVALID_REQUEST));
+        assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
     }
 }

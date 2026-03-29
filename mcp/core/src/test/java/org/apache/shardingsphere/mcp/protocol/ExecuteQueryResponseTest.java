@@ -31,9 +31,9 @@ class ExecuteQueryResponseTest {
     
     @Test
     void assertResultSet() {
-        ExecuteQueryResponse actual = ExecuteQueryResponse.resultSet(List.of(new ColumnDefinition("order_id", "INT", "INT", false)), List.of(List.of(1)), true);
+        ExecuteQueryResponse actual = ExecuteQueryResponse.resultSet(List.of(new ExecuteQueryColumnDefinition("order_id", "INT", "INT", false)), List.of(List.of(1)), true);
         
-        assertThat(actual.getResultKind(), is(ResultKind.RESULT_SET));
+        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getColumns().size(), is(1));
         assertThat(actual.getRows().size(), is(1));
         assertTrue(actual.isTruncated());
@@ -43,7 +43,7 @@ class ExecuteQueryResponseTest {
     void assertUpdateCount() {
         ExecuteQueryResponse actual = ExecuteQueryResponse.updateCount("UPDATE", 2);
         
-        assertThat(actual.getResultKind(), is(ResultKind.UPDATE_COUNT));
+        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
         assertThat(actual.getStatementType(), is("UPDATE"));
         assertThat(actual.getAffectedRows(), is(2));
         assertThat(actual.getStatus(), is("OK"));
@@ -53,19 +53,19 @@ class ExecuteQueryResponseTest {
     void assertStatementAck() {
         ExecuteQueryResponse actual = ExecuteQueryResponse.statementAck("COMMIT", "Transaction committed.");
         
-        assertThat(actual.getResultKind(), is(ResultKind.STATEMENT_ACK));
+        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
         assertThat(actual.getStatementType(), is("COMMIT"));
         assertThat(actual.getMessage(), is("Transaction committed."));
     }
     
     @Test
     void assertError() {
-        ExecuteQueryResponse actual = ExecuteQueryResponse.error(ErrorCode.UNSUPPORTED, "Feature is not supported.");
+        ExecuteQueryResponse actual = ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Feature is not supported.");
         
         assertThat(actual.getStatementType(), is("ERROR"));
         assertThat(actual.getStatus(), is("ERROR"));
         assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getErrorCode(), is(ErrorCode.UNSUPPORTED));
+        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.UNSUPPORTED));
     }
     
     @Test
@@ -77,7 +77,7 @@ class ExecuteQueryResponseTest {
     
     @Test
     void assertIsSuccessfulWithError() {
-        ExecuteQueryResponse actual = ExecuteQueryResponse.error(ErrorCode.QUERY_FAILED, "Failure.");
+        ExecuteQueryResponse actual = ExecuteQueryResponse.error(MCPErrorCode.QUERY_FAILED, "Failure.");
         
         assertFalse(actual.isSuccessful());
     }

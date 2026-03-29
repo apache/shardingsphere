@@ -68,7 +68,7 @@ class MCPPayloadBuilderTest {
     @Test
     void assertCreateExecuteQueryPayload() {
         ExecuteQueryResponse response = ExecuteQueryResponse.resultSet(
-                List.of(new ColumnDefinition("order_id", "INTEGER", "INTEGER", false)),
+                List.of(new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INTEGER", false)),
                 List.of(List.of(1L)), false);
         
         Map<String, Object> actual = payloadBuilder.createExecuteQueryPayload(response);
@@ -82,7 +82,7 @@ class MCPPayloadBuilderTest {
     
     @Test
     void assertCreateExecuteQueryPayloadWithError() {
-        Map<String, Object> actual = payloadBuilder.createExecuteQueryPayload(ExecuteQueryResponse.error(ErrorCode.NOT_FOUND, "missing table"));
+        Map<String, Object> actual = payloadBuilder.createExecuteQueryPayload(ExecuteQueryResponse.error(MCPErrorCode.NOT_FOUND, "missing table"));
         
         assertThat(actual.get("result_kind"), is("statement_ack"));
         assertTrue(actual.containsKey("error"));
@@ -99,6 +99,6 @@ class MCPPayloadBuilderTest {
     
     @Test
     void assertToDomainErrorCode() {
-        assertThat(payloadBuilder.toDomainErrorCode(ErrorCode.NOT_FOUND), is("not_found"));
+        assertThat(payloadBuilder.toDomainErrorCode(MCPErrorCode.NOT_FOUND), is("not_found"));
     }
 }

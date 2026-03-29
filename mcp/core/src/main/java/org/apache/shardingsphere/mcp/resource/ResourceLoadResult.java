@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.resource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +39,7 @@ public final class ResourceLoadResult {
     private final boolean errorCodePresent;
     
     @Getter(AccessLevel.NONE)
-    private final ErrorCode errorCode;
+    private final MCPErrorCode errorCode;
     
     private final String message;
     
@@ -59,7 +59,7 @@ public final class ResourceLoadResult {
      * @return successful resource load result
      */
     public static ResourceLoadResult success(final List<MetadataObject> metadataObjects) {
-        return new ResourceLoadResult(metadataObjects, false, ErrorCode.INVALID_REQUEST, "");
+        return new ResourceLoadResult(metadataObjects, false, MCPErrorCode.INVALID_REQUEST, "");
     }
     
     /**
@@ -69,7 +69,7 @@ public final class ResourceLoadResult {
      * @param message error message
      * @return failed resource load result
      */
-    public static ResourceLoadResult error(final ErrorCode errorCode, final String message) {
+    public static ResourceLoadResult error(final MCPErrorCode errorCode, final String message) {
         return new ResourceLoadResult(Collections.emptyList(), true, errorCode, message);
     }
     
@@ -78,7 +78,7 @@ public final class ResourceLoadResult {
      *
      * @return optional error code
      */
-    public Optional<ErrorCode> getErrorCode() {
+    public Optional<MCPErrorCode> getErrorCode() {
         return errorCodePresent ? Optional.of(errorCode) : Optional.empty();
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.protocol;
 /**
  * Unified result kinds for {@code execute_query}.
  */
-public enum ResultKind {
+public enum ExecuteQueryResultKind {
     
     RESULT_SET, UPDATE_COUNT, STATEMENT_ACK
 }
