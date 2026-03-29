@@ -339,7 +339,10 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitKeyGenerateDefinition(final KeyGenerateDefinitionContext ctx) {
-        return null == ctx ? null : new KeyGenerateStrategySegment(IdentifierValueUtils.getValue(ctx.columnName()), (AlgorithmSegment) visit(ctx.algorithmDefinition()));
+        return null == ctx
+                ? null
+                : new KeyGenerateStrategySegment(IdentifierValueUtils.getValue(ctx.columnName()),
+                        getAlgorithmSegment(ctx.keyGenerateAlgorithmDefinition()), getKeyGeneratorName(ctx.keyGenerateAlgorithmDefinition()));
     }
     
     @Override

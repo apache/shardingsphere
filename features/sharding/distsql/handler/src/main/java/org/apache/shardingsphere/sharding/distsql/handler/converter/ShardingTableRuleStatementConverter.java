@@ -89,6 +89,7 @@ public final class ShardingTableRuleStatementConverter {
     private static Map<String, AlgorithmConfiguration> createKeyGeneratorConfiguration(final AbstractTableRuleSegment ruleSegment) {
         Map<String, AlgorithmConfiguration> result = new HashMap<>();
         Optional.ofNullable(ruleSegment.getKeyGenerateStrategySegment())
+                .filter(optional -> optional.getAlgorithmSegment().isPresent())
                 .ifPresent(optional -> result.put(getKeyGeneratorName(ruleSegment.getLogicTable(), optional.getKeyGenerateAlgorithmSegment().getName()),
                         createAlgorithmConfiguration(optional.getKeyGenerateAlgorithmSegment())));
         return result;
@@ -98,7 +99,7 @@ public final class ShardingTableRuleStatementConverter {
         Map<String, KeyGenerateStrategiesConfiguration> result = new HashMap<>();
         Optional.ofNullable(ruleSegment.getKeyGenerateStrategySegment())
                 .ifPresent(optional -> result.put(getKeyGenerateStrategyName(ruleSegment.getLogicTable(), optional.getKeyGenerateColumn()),
-                        new ColumnKeyGenerateStrategiesRuleConfiguration(getKeyGeneratorName(ruleSegment.getLogicTable(), optional.getKeyGenerateAlgorithmSegment().getName()),
+                        new ColumnKeyGenerateStrategiesRuleConfiguration(getKeyGeneratorName(ruleSegment.getLogicTable(), optional),
                                 ruleSegment.getLogicTable(), optional.getKeyGenerateColumn())));
         return result;
     }
@@ -186,7 +187,7 @@ public final class ShardingTableRuleStatementConverter {
     }
     
     private static KeyGenerateStrategyConfiguration createKeyGenerateStrategyConfiguration(final String logicTable, final KeyGenerateStrategySegment strategySegment) {
-        return new KeyGenerateStrategyConfiguration(strategySegment.getKeyGenerateColumn(), getKeyGeneratorName(logicTable, strategySegment.getKeyGenerateAlgorithmSegment().getName()));
+        return new KeyGenerateStrategyConfiguration(strategySegment.getKeyGenerateColumn(), getKeyGeneratorName(logicTable, strategySegment));
     }
     
     private static ShardingAuditStrategyConfiguration createShardingAuditStrategyConfiguration(final AuditStrategySegment strategySegment) {
@@ -217,6 +218,10 @@ public final class ShardingTableRuleStatementConverter {
     
     private static String getKeyGeneratorName(final String tableName, final String algorithmType) {
         return String.format("%s_%s", tableName, algorithmType).toLowerCase();
+    }
+    
+    private static String getKeyGeneratorName(final String tableName, final KeyGenerateStrategySegment strategySegment) {
+        return strategySegment.getKeyGeneratorName().orElseGet(() -> getKeyGeneratorName(tableName, strategySegment.getKeyGenerateAlgorithmSegment().getName()));
     }
     
     private static String getKeyGenerateStrategyName(final String tableName, final String keyGenerateColumn) {

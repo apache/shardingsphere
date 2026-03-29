@@ -144,7 +144,7 @@ tableStrategy
     ;
 
 keyGenerateDefinition
-    : KEY_GENERATE_STRATEGY LP_ COLUMN EQ_ columnName COMMA_ algorithmDefinition RP_
+    : KEY_GENERATE_STRATEGY LP_ COLUMN EQ_ columnName COMMA_ keyGenerateAlgorithmDefinition RP_
     ;
 
 keyGenerateStrategyDefinition
