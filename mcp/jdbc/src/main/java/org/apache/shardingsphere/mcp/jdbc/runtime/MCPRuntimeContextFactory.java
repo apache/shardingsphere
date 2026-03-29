@@ -19,24 +19,29 @@ package org.apache.shardingsphere.mcp.jdbc.runtime;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContextFactory;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.runtime.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.util.Map;
 
 /**
- * Build one JDBC-backed MCP runtime context.
+ * MCP runtime context factory.
  */
-public final class MCPJdbcRuntimeContextFactory implements MCPRuntimeContextFactory {
+public final class MCPRuntimeContextFactory {
     
     private final MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
     
     private final MCPDatabaseRuntimeFactory databaseRuntimeFactory = new MCPDatabaseRuntimeFactory();
     
-    @Override
+    /**
+     * Create MCP runtime context.
+     *
+     * @param sessionManager session manager
+     * @param runtimeDatabases runtime databases
+     * @return runtime context
+     */
     public MCPRuntimeContext create(final MCPSessionManager sessionManager, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         ShardingSpherePreconditions.checkState(!runtimeDatabases.isEmpty(), () -> new IllegalArgumentException("At least one runtime database must be configured."));
         MetadataCatalog metadataCatalog = metadataLoader.load(runtimeDatabases);

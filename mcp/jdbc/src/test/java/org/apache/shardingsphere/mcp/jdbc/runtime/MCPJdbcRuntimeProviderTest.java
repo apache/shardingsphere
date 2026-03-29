@@ -35,7 +35,7 @@ class MCPJdbcRuntimeProviderTest {
     @TempDir
     private Path tempDir;
     
-    private final MCPJdbcRuntimeContextFactory runtimeContextFactory = new MCPJdbcRuntimeContextFactory();
+    private final MCPRuntimeContextFactory runtimeContextFactory = new MCPRuntimeContextFactory();
     
     @Test
     void assertCreate() throws SQLException {
