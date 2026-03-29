@@ -27,9 +27,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MCPToolInputSchemaFactoryTest {
+class MCPToolJsonSchemaAdapterTest {
     
-    private final MCPToolInputSchemaFactory toolInputSchemaFactory = new MCPToolInputSchemaFactory();
+    private final MCPToolJsonSchemaAdapter toolInputSchemaFactory = new MCPToolJsonSchemaAdapter();
     
     private final MCPToolCatalog toolCatalog = new MCPToolCatalog();
     

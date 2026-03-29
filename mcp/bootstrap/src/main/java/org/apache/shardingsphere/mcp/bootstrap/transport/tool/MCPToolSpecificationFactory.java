@@ -34,7 +34,7 @@ public final class MCPToolSpecificationFactory {
     
     private final MCPToolCallHandler toolCallHandler;
     
-    private final MCPToolInputSchemaFactory toolInputSchemaFactory;
+    private final MCPToolJsonSchemaAdapter mcpToolJsonSchemaAdapter;
     
     /**
      * Create MCP tool specification factory.
@@ -44,7 +44,7 @@ public final class MCPToolSpecificationFactory {
     public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
         this.runtimeContext = runtimeContext;
         toolCallHandler = new MCPToolCallHandler(runtimeContext);
-        toolInputSchemaFactory = new MCPToolInputSchemaFactory();
+        mcpToolJsonSchemaAdapter = new MCPToolJsonSchemaAdapter();
     }
     
     /**
@@ -62,7 +62,7 @@ public final class MCPToolSpecificationFactory {
                 .name(toolDescriptor.getName())
                 .title(toolDescriptor.getTitle())
                 .description(toolDescriptor.getDescription())
-                .inputSchema(toolInputSchemaFactory.createInputSchema(toolDescriptor.getInputDefinition()))
+                .inputSchema(mcpToolJsonSchemaAdapter.createInputSchema(toolDescriptor.getInputDefinition()))
                 .build();
     }
 }

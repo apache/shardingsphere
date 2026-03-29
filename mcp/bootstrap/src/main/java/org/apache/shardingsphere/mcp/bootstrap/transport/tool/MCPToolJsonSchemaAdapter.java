@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-final class MCPToolInputSchemaFactory {
+final class MCPToolJsonSchemaAdapter {
     
     McpSchema.JsonSchema createInputSchema(final MCPToolInputDefinition inputDefinition) {
         Map<String, Object> properties = new LinkedHashMap<>(inputDefinition.getFields().size(), 1F);
