@@ -69,15 +69,6 @@ public final class MCPRuntimeContext {
     private final MCPPayloadBuilder payloadBuilder;
     
     /**
-     * Close one session and release session-scoped resources.
-     *
-     * @param sessionId session identifier
-     */
-    public void closeSession(final String sessionId) {
-        sessionLifecycleRegistry.cleanup(sessionId);
-    }
-    
-    /**
      * Create MCP runtime context.
      *
      * @param sessionManager session manager
