@@ -53,40 +53,13 @@ public final class MCPSessionManager {
     }
     
     /**
-     * Find a session by identifier.
-     *
-     * @param sessionId session identifier
-     * @return session context when present
-     */
-    public Optional<MCPSessionContext> findSession(final String sessionId) {
-        return Optional.ofNullable(sessions.get(normalizeValue(sessionId, "sessionId")));
-    }
-    
-    /**
-     * Bind a logical database to the session.
-     *
-     * @param sessionId session identifier
-     * @param databaseName logical database name
-     */
-    public void bindDatabase(final String sessionId, final String databaseName) {
-        MCPSessionContext sessionContext = requireSession(sessionId);
-        String actualDatabaseName = normalizeValue(databaseName, "databaseName");
-        ShardingSpherePreconditions.checkState(
-                TransactionState.ACTIVE != sessionContext.getTransactionState() || sessionContext.getBoundDatabase().isEmpty() || sessionContext.getBoundDatabase().equals(actualDatabaseName),
-                () -> new IllegalStateException("Cross-database transaction switching is not supported."));
-        sessionContext.bindDatabase(actualDatabaseName);
-    }
-    
-    /**
      * Transition the session into transaction state.
      *
      * @param sessionId session identifier
      * @param databaseName logical database name
      */
     public void beginTransaction(final String sessionId, final String databaseName) {
-        MCPSessionContext sessionContext = requireSession(sessionId);
-        bindDatabase(sessionId, databaseName);
-        sessionContext.beginTransaction();
+        getSession(sessionId).beginTransaction(normalizeValue(databaseName, "databaseName"));
     }
     
     /**
@@ -96,7 +69,7 @@ public final class MCPSessionManager {
      * @param savepointName savepoint name
      */
     public void rememberSavepoint(final String sessionId, final String savepointName) {
-        requireSession(sessionId).rememberSavepoint(normalizeValue(savepointName, "savepointName"));
+        getSession(sessionId).rememberSavepoint(normalizeValue(savepointName, "savepointName"));
     }
     
     /**
@@ -105,7 +78,7 @@ public final class MCPSessionManager {
      * @param sessionId session identifier
      */
     public void commitTransaction(final String sessionId) {
-        requireSession(sessionId).commitTransaction();
+        getSession(sessionId).commitTransaction();
     }
     
     /**
@@ -114,7 +87,7 @@ public final class MCPSessionManager {
      * @param sessionId session identifier
      */
     public void rollbackTransaction(final String sessionId) {
-        requireSession(sessionId).rollbackTransaction();
+        getSession(sessionId).rollbackTransaction();
     }
     
     /**
@@ -124,7 +97,7 @@ public final class MCPSessionManager {
      * @param savepointName savepoint name
      */
     public void rollbackToSavepoint(final String sessionId, final String savepointName) {
-        requireSession(sessionId).rollbackToSavepoint(normalizeValue(savepointName, "savepointName"));
+        getSession(sessionId).rollbackToSavepoint(normalizeValue(savepointName, "savepointName"));
     }
     
     /**
@@ -134,7 +107,11 @@ public final class MCPSessionManager {
      * @param savepointName savepoint name
      */
     public void releaseSavepoint(final String sessionId, final String savepointName) {
-        requireSession(sessionId).releaseSavepoint(normalizeValue(savepointName, "savepointName"));
+        getSession(sessionId).releaseSavepoint(normalizeValue(savepointName, "savepointName"));
+    }
+    
+    MCPSessionContext getSession(final String sessionId) {
+        return Optional.ofNullable(sessions.get(normalizeValue(sessionId, "sessionId"))).orElseThrow(() -> new IllegalStateException("Session does not exist."));
     }
     
     /**
@@ -162,10 +139,6 @@ public final class MCPSessionManager {
         closedSessionIds.add(actualSessionId);
     }
     
-    private MCPSessionContext requireSession(final String sessionId) {
-        return findSession(sessionId).orElseThrow(() -> new IllegalStateException("Session does not exist."));
-    }
-    
     private String normalizeValue(final String value, final String fieldName) {
         String result = Objects.toString(value, "").trim();
         ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(fieldName + " cannot be empty."));
@@ -191,11 +164,10 @@ public final class MCPSessionManager {
         
         private boolean closed;
         
-        private void bindDatabase(final String databaseName) {
+        private void beginTransaction(final String databaseName) {
+            ShardingSpherePreconditions.checkState(TransactionState.ACTIVE != transactionState || boundDatabase.isEmpty() || boundDatabase.equals(databaseName),
+                    () -> new IllegalStateException("Cross-database transaction switching is not supported."));
             boundDatabase = databaseName;
-        }
-        
-        private void beginTransaction() {
             ShardingSpherePreconditions.checkState(TransactionState.ACTIVE != transactionState, () -> new IllegalStateException("Transaction already active."));
             autocommit = false;
             transactionState = TransactionState.ACTIVE;
