@@ -61,12 +61,12 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
         SessionClosingTransport managedTransport = new SessionClosingTransport(transport);
         boolean failed = true;
         try {
-            McpServerSession result = sessionFactory.create(managedTransport);
-            String sessionId = result.getId();
+            McpServerSession session = sessionFactory.create(managedTransport);
+            String sessionId = session.getId();
             managedSessions.create(sessionId);
             managedTransport.bindSessionId(sessionId);
             failed = false;
-            return result;
+            return session;
         } finally {
             if (failed) {
                 activeSession.set(false);
