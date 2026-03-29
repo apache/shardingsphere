@@ -22,7 +22,6 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpec
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadBuilder;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 import java.util.ArrayList;
@@ -43,11 +42,10 @@ public final class MCPResourceSpecificationFactory {
      * Create MCP resource specification factory.
      *
      * @param runtimeContext runtime context
-     * @param payloadBuilder payload builder
      */
-    public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext, final MCPTransportPayloadBuilder payloadBuilder) {
+    public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext) {
         this.runtimeContext = runtimeContext;
-        resourcePayloadResolver = new MCPResourcePayloadResolver(runtimeContext, payloadBuilder);
+        resourcePayloadResolver = new MCPResourcePayloadResolver(runtimeContext);
     }
     
     /**
@@ -57,7 +55,7 @@ public final class MCPResourceSpecificationFactory {
      */
     public List<SyncResourceSpecification> createResourceSpecifications() {
         List<SyncResourceSpecification> result = new ArrayList<>();
-        for (String each : runtimeContext.getCapabilityAssembler().assembleServiceCapability().getSupportedResources()) {
+        for (String each : runtimeContext.getResourceUriResolver().getSupportedResources()) {
             if (!isTemplatedResource(each)) {
                 result.add(new SyncResourceSpecification(createResource(each), this::handleReadResource));
             }
@@ -72,7 +70,7 @@ public final class MCPResourceSpecificationFactory {
      */
     public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
         List<SyncResourceTemplateSpecification> result = new ArrayList<>();
-        for (String each : runtimeContext.getCapabilityAssembler().assembleServiceCapability().getSupportedResources()) {
+        for (String each : runtimeContext.getResourceUriResolver().getSupportedResources()) {
             if (isTemplatedResource(each)) {
                 result.add(new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource));
             }

@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport;
+package org.apache.shardingsphere.mcp.protocol;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.resource.MetadataObject;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 /**
- * Builder for transport payloads shared across MCP handlers.
+ * Build transport-neutral MCP payloads.
  */
-public final class MCPTransportPayloadBuilder {
+public final class MCPPayloadBuilder {
     
     /**
      * Create database capability payload.
@@ -55,6 +56,50 @@ public final class MCPTransportPayloadBuilder {
         result.put("dclTransactionBehavior", capability.getDclTransactionBehavior());
         result.put("explainAnalyzeResultBehavior", capability.getExplainAnalyzeResultBehavior());
         result.put("explainAnalyzeTransactionBehavior", capability.getExplainAnalyzeTransactionBehavior());
+        return result;
+    }
+    
+    /**
+     * Create metadata items payload.
+     *
+     * @param metadataObjects metadata objects
+     * @param nextPageToken next page token
+     * @return payload
+     */
+    public Map<String, Object> createMetadataItemsPayload(final List<MetadataObject> metadataObjects, final String nextPageToken) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("items", metadataObjects);
+        if (null != nextPageToken && !nextPageToken.isEmpty()) {
+            result.put("next_page_token", nextPageToken);
+        }
+        return result;
+    }
+    
+    /**
+     * Create execute-query payload.
+     *
+     * @param response execute-query response
+     * @return payload
+     */
+    public Map<String, Object> createExecuteQueryPayload(final ExecuteQueryResponse response) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("result_kind", response.getResultKind().name().toLowerCase(Locale.ENGLISH));
+        result.put("statement_type", response.getStatementType());
+        result.put("status", response.getStatus());
+        if (!response.getColumns().isEmpty()) {
+            result.put("columns", response.getColumns());
+        }
+        if (!response.getRows().isEmpty()) {
+            result.put("rows", response.getRows());
+        }
+        if (0 != response.getAffectedRows()) {
+            result.put("affected_rows", response.getAffectedRows());
+        }
+        if (!response.getMessage().isEmpty()) {
+            result.put("message", response.getMessage());
+        }
+        result.put("truncated", response.isTruncated());
+        response.getError().ifPresent(error -> result.put("error", createErrorPayload(toDomainErrorCode(error.getErrorCode()), error.getMessage())));
         return result;
     }
     

@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport;
+package org.apache.shardingsphere.mcp.protocol;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.ResultBehavior;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.StatementClass;
 import org.apache.shardingsphere.mcp.capability.TransactionBoundaryBehavior;
-import org.apache.shardingsphere.mcp.protocol.ErrorCode;
+import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MCPTransportPayloadBuilderTest {
+class MCPPayloadBuilderTest {
     
-    private final MCPTransportPayloadBuilder payloadBuilder = new MCPTransportPayloadBuilder();
+    private final MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
     
     @Test
     void assertCreateDatabaseCapabilityPayload() {
@@ -52,6 +54,39 @@ class MCPTransportPayloadBuilderTest {
         assertThat(actual.get("maxRowsDefault"), is(100));
         assertThat(actual.get("defaultSchemaSemantics"), is(SchemaSemantics.NATIVE_SCHEMA));
         assertTrue((Boolean) actual.get("supportsTransactionControl"));
+    }
+    
+    @Test
+    void assertCreateMetadataItemsPayload() {
+        Map<String, Object> actual = payloadBuilder.createMetadataItemsPayload(
+                List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", "")), "10");
+        
+        assertThat(((List<?>) actual.get("items")).size(), is(1));
+        assertThat(actual.get("next_page_token"), is("10"));
+    }
+    
+    @Test
+    void assertCreateExecuteQueryPayload() {
+        ExecuteQueryResponse response = ExecuteQueryResponse.resultSet(
+                List.of(new ColumnDefinition("order_id", "INTEGER", "INTEGER", false)),
+                List.of(List.of(1L)), false);
+        
+        Map<String, Object> actual = payloadBuilder.createExecuteQueryPayload(response);
+        
+        assertThat(actual.get("result_kind"), is("result_set"));
+        assertThat(actual.get("statement_type"), is("QUERY"));
+        assertThat(((List<?>) actual.get("columns")).size(), is(1));
+        assertThat(((List<?>) actual.get("rows")).size(), is(1));
+        assertFalse((Boolean) actual.get("truncated"));
+    }
+    
+    @Test
+    void assertCreateExecuteQueryPayloadWithError() {
+        Map<String, Object> actual = payloadBuilder.createExecuteQueryPayload(ExecuteQueryResponse.error(ErrorCode.NOT_FOUND, "missing table"));
+        
+        assertThat(actual.get("result_kind"), is("statement_ack"));
+        assertTrue(actual.containsKey("error"));
+        assertThat(((Map<?, ?>) actual.get("error")).get("error_code"), is("not_found"));
     }
     
     @Test

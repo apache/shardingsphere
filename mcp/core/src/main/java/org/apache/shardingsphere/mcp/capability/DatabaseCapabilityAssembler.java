@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.mcp.capability;
 
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
 import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
+import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,40 +30,13 @@ import java.util.Set;
  */
 public final class DatabaseCapabilityAssembler {
     
-    private static final List<String> SUPPORTED_RESOURCES = List.of(
-            "shardingsphere://capabilities",
-            "shardingsphere://databases",
-            "shardingsphere://databases/{database}",
-            "shardingsphere://databases/{database}/capabilities",
-            "shardingsphere://databases/{database}/schemas",
-            "shardingsphere://databases/{database}/schemas/{schema}",
-            "shardingsphere://databases/{database}/schemas/{schema}/tables",
-            "shardingsphere://databases/{database}/schemas/{schema}/views",
-            "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
-            "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns",
-            "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
-            "shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
-            "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns",
-            "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
-            "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
-            "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}");
-    
-    private static final List<String> SUPPORTED_TOOLS = List.of(
-            "list_databases",
-            "list_schemas",
-            "list_tables",
-            "list_views",
-            "list_columns",
-            "list_indexes",
-            "search_metadata",
-            "describe_table",
-            "describe_view",
-            "get_capabilities",
-            "execute_query");
-    
     private static final Set<StatementClass> SUPPORTED_STATEMENT_CLASSES = Set.of(StatementClass.values());
     
     private final MetadataCatalog metadataCatalog;
+    
+    private final ResourceUriResolver resourceUriResolver = new ResourceUriResolver();
+    
+    private final MCPToolCatalog toolCatalog = new MCPToolCatalog();
     
     /**
      * Construct an assembler with runtime metadata facts.
@@ -79,7 +53,7 @@ public final class DatabaseCapabilityAssembler {
      * @return service-level capability
      */
     public ServiceCapability assembleServiceCapability() {
-        return new ServiceCapability(SUPPORTED_RESOURCES, SUPPORTED_TOOLS, SUPPORTED_STATEMENT_CLASSES);
+        return new ServiceCapability(resourceUriResolver.getSupportedResources(), toolCatalog.getSupportedTools(), SUPPORTED_STATEMENT_CLASSES);
     }
     
     /**

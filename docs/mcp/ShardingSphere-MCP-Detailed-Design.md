@@ -158,14 +158,16 @@ shardingsphere
 - 说明：
   - `protocol`
     - 协议对象与 DTO
+    - transport-neutral payload builder
   - `resource`
-    - resource 映射与读取
+    - resource 映射、读取与 URI 解析
   - `tool`
-    - tool handler 与 dispatcher
+    - tool catalog、参数归一化与 dispatcher
   - `capability`
     - capability matrix / assembler
   - `session`
     - session / tx / savepoint 管理
+    - transport-independent session lifecycle cleanup
   - `metadata`
     - metadata discovery facade
   - `execute`
@@ -199,6 +201,8 @@ shardingsphere
   - core 不依赖 bootstrap
   - bootstrap 依赖 core
   - transport 细节不进入 core
+  - bootstrap 只保留 MCP Java SDK / Tomcat / servlet / stdio adapter
+  - tool input schema 与 SDK `Tool` / `Resource` 注册留在 bootstrap
 
 ## 7. 协议与 Transport 详细设计
 

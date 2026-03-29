@@ -26,10 +26,14 @@ import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
+import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
+import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
+import org.apache.shardingsphere.mcp.session.MCPSessionLifecycleRegistry;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
+import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher;
 
 /**
@@ -45,11 +49,17 @@ public final class MCPRuntimeContext {
     
     private final DatabaseRuntime databaseRuntime;
     
+    private final MCPSessionLifecycleRegistry sessionLifecycleRegistry;
+    
     private final DatabaseCapabilityAssembler capabilityAssembler;
     
     private final MetadataResourceLoader metadataResourceLoader;
     
+    private final ResourceUriResolver resourceUriResolver;
+    
     private final MetadataToolDispatcher metadataToolDispatcher;
+    
+    private final MCPToolCatalog toolCatalog;
     
     private final TransactionCommandExecutor transactionCommandExecutor;
     
@@ -59,18 +69,15 @@ public final class MCPRuntimeContext {
     
     private final ExecuteQueryFacade executeQueryFacade;
     
+    private final MCPPayloadBuilder payloadBuilder;
+    
     /**
      * Close one session and release session-scoped resources.
      *
      * @param sessionId session identifier
      */
     public void closeSession(final String sessionId) {
-        if (null == sessionId || sessionId.isEmpty()) {
-            return;
-        }
-        metadataRefreshCoordinator.clearSession(sessionId);
-        databaseRuntime.closeSession(sessionId);
-        sessionManager.closeSession(sessionId);
+        sessionLifecycleRegistry.cleanup(sessionId);
     }
     
     /**
@@ -84,13 +91,18 @@ public final class MCPRuntimeContext {
     public static MCPRuntimeContext create(final MCPSessionManager sessionManager, final MetadataCatalog metadataCatalog, final DatabaseRuntime databaseRuntime) {
         DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(metadataCatalog);
         MetadataResourceLoader metadataResourceLoader = new MetadataResourceLoader();
+        ResourceUriResolver resourceUriResolver = new ResourceUriResolver();
         MetadataToolDispatcher metadataToolDispatcher = new MetadataToolDispatcher(metadataResourceLoader);
+        MCPToolCatalog toolCatalog = new MCPToolCatalog();
         TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(capabilityAssembler, sessionManager, databaseRuntime);
         AuditRecorder auditRecorder = new AuditRecorder();
         MetadataRefreshCoordinator metadataRefreshCoordinator = new MetadataRefreshCoordinator();
+        MCPSessionLifecycleRegistry sessionLifecycleRegistry = new MCPSessionLifecycleRegistry(metadataRefreshCoordinator, databaseRuntime, sessionManager);
         ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(
                 new StatementClassifier(), capabilityAssembler, transactionCommandExecutor, auditRecorder, metadataRefreshCoordinator);
-        return new MCPRuntimeContext(sessionManager, metadataCatalog, databaseRuntime, capabilityAssembler,
-                metadataResourceLoader, metadataToolDispatcher, transactionCommandExecutor, auditRecorder, metadataRefreshCoordinator, executeQueryFacade);
+        MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
+        return new MCPRuntimeContext(sessionManager, metadataCatalog, databaseRuntime, sessionLifecycleRegistry, capabilityAssembler,
+                metadataResourceLoader, resourceUriResolver, metadataToolDispatcher, toolCatalog, transactionCommandExecutor,
+                auditRecorder, metadataRefreshCoordinator, executeQueryFacade, payloadBuilder);
     }
 }

@@ -34,13 +34,17 @@ class MCPRuntimeContextBuilderTest {
     void assertCreate() {
         MCPRuntimeContext actual = createRuntimeContext(new MCPSessionManager());
         
+        assertNotNull(actual.getSessionLifecycleRegistry());
         assertNotNull(actual.getCapabilityAssembler());
         assertNotNull(actual.getMetadataResourceLoader());
+        assertNotNull(actual.getResourceUriResolver());
         assertNotNull(actual.getMetadataToolDispatcher());
+        assertNotNull(actual.getToolCatalog());
         assertNotNull(actual.getTransactionCommandExecutor());
         assertNotNull(actual.getAuditRecorder());
         assertNotNull(actual.getMetadataRefreshCoordinator());
         assertNotNull(actual.getExecuteQueryFacade());
+        assertNotNull(actual.getPayloadBuilder());
     }
     
     @Test

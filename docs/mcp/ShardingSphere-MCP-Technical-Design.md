@@ -207,6 +207,10 @@ shardingsphere
 - metadata discovery facade
 - execute_query facade
 - session / transaction facade
+- session lifecycle registry
+- resource URI resolver
+- tool catalog 与参数归一化
+- 通用 payload / error payload builder
 - error model
 - audit facade
 - 对 ShardingSphere 内核能力的统一门面
@@ -222,8 +226,9 @@ shardingsphere
 - MCP server 启动入口
 - HTTP / STDIO transport 装配
 - 配置加载
+- MCP Java SDK `Tool` / `ResourceTemplate` schema 适配
 - tools / resources 注册
-- 生命周期管理
+- servlet / stdio 生命周期接线
 
 #### `distribution/mcp`
 - `shardingsphere-mcp-distribution`

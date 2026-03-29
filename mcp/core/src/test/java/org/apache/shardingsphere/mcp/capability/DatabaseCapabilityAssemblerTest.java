@@ -19,7 +19,9 @@ package org.apache.shardingsphere.mcp.capability;
 
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
 import org.apache.shardingsphere.mcp.resource.RuntimeDatabaseDescriptor;
+import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -42,8 +44,10 @@ class DatabaseCapabilityAssemblerTest {
         
         ServiceCapability actualServiceCapability = assembler.assembleServiceCapability();
         
+        assertThat(actualServiceCapability.getSupportedResources(), is(new ResourceUriResolver().getSupportedResources()));
         assertThat(actualServiceCapability.getSupportedResources().size(), is(16));
         assertThat(actualServiceCapability.getSupportedResources().get(0), is("shardingsphere://capabilities"));
+        assertThat(actualServiceCapability.getSupportedTools(), is(new MCPToolCatalog().getSupportedTools()));
         assertThat(actualServiceCapability.getSupportedTools().size(), is(11));
         assertThat(actualServiceCapability.getSupportedTools().get(5), is("list_indexes"));
         assertThat(actualServiceCapability.getSupportedStatementClasses().size(), is(7));

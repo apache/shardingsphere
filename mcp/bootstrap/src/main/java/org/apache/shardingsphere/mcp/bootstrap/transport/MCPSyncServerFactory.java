@@ -43,9 +43,8 @@ public final class MCPSyncServerFactory {
     
     public MCPSyncServerFactory(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
         this.jsonMapper = jsonMapper;
-        MCPTransportPayloadBuilder payloadBuilder = new MCPTransportPayloadBuilder();
-        toolSpecificationFactory = new MCPToolSpecificationFactory(runtimeContext, payloadBuilder);
-        resourceSpecificationFactory = new MCPResourceSpecificationFactory(runtimeContext, payloadBuilder);
+        toolSpecificationFactory = new MCPToolSpecificationFactory(runtimeContext);
+        resourceSpecificationFactory = new MCPResourceSpecificationFactory(runtimeContext);
     }
     
     /**

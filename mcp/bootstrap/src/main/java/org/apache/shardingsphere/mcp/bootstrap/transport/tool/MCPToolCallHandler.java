@@ -21,7 +21,6 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadBuilder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
@@ -30,10 +29,7 @@ import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.tool.ToolDispatchResult;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -41,84 +37,49 @@ final class MCPToolCallHandler {
     
     private final MCPRuntimeContext runtimeContext;
     
-    private final MCPTransportPayloadBuilder payloadBuilder;
-    
     McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
         Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Collections.emptyMap());
-        Optional<MCPToolDefinition> toolDefinition = MCPToolDefinition.findByName(request.name());
-        if (toolDefinition.isEmpty()) {
+        if (!runtimeContext.getToolCatalog().contains(request.name())) {
             return errorToolResult("invalid_request", "Unsupported tool.");
         }
-        switch (toolDefinition.get()) {
-            case GET_CAPABILITIES:
+        switch (request.name()) {
+            case "get_capabilities":
                 return handleGetCapabilities(arguments);
-            case EXECUTE_QUERY:
+            case "execute_query":
                 return handleExecuteQuery(exchange.sessionId(), arguments);
             default:
-                return handleMetadataToolCall(toolDefinition.get(), arguments);
+                return handleMetadataToolCall(request.name(), arguments);
         }
     }
     
-    private McpSchema.CallToolResult handleMetadataToolCall(final MCPToolDefinition toolDefinition, final Map<String, Object> arguments) {
-        ToolDispatchResult result = runtimeContext.getMetadataToolDispatcher().dispatch(runtimeContext.getMetadataCatalog(), toolDefinition.createMetadataToolRequest(arguments));
+    private McpSchema.CallToolResult handleMetadataToolCall(final String toolName, final Map<String, Object> arguments) {
+        ToolDispatchResult result = runtimeContext.getMetadataToolDispatcher().dispatch(runtimeContext.getMetadataCatalog(),
+                runtimeContext.getToolCatalog().createMetadataToolRequest(toolName, arguments));
         if (!result.isSuccessful()) {
-            return errorToolResult(payloadBuilder.toDomainErrorCode(result.getErrorCode().orElse(ErrorCode.INVALID_REQUEST)), result.getMessage());
+            return errorToolResult(runtimeContext.getPayloadBuilder().toDomainErrorCode(result.getErrorCode().orElse(ErrorCode.INVALID_REQUEST)), result.getMessage());
         }
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("items", result.getMetadataObjects());
-        if (!result.getNextPageToken().isEmpty()) {
-            payload.put("next_page_token", result.getNextPageToken());
-        }
-        return successToolResult(payload);
+        return successToolResult(runtimeContext.getPayloadBuilder().createMetadataItemsPayload(result.getMetadataObjects(), result.getNextPageToken()));
     }
     
     private McpSchema.CallToolResult handleGetCapabilities(final Map<String, Object> arguments) {
-        String database = Objects.toString(arguments.get("database"), "").trim();
+        String database = runtimeContext.getToolCatalog().getCapabilityDatabase(arguments);
         if (database.isEmpty()) {
             return successToolResult(runtimeContext.getCapabilityAssembler().assembleServiceCapability());
         }
         Optional<DatabaseCapability> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(database);
-        return capability.isPresent() ? successToolResult(payloadBuilder.createDatabaseCapabilityPayload(capability.get())) : errorToolResult("not_found", "Database capability does not exist.");
+        return capability.isPresent() ? successToolResult(runtimeContext.getPayloadBuilder().createDatabaseCapabilityPayload(capability.get()))
+                : errorToolResult("not_found", "Database capability does not exist.");
     }
     
     private McpSchema.CallToolResult handleExecuteQuery(final String sessionId, final Map<String, Object> arguments) {
-        String database = Objects.toString(arguments.get("database"), "").trim();
-        String sql = Objects.toString(arguments.get("sql"), "").trim();
-        if (database.isEmpty() || sql.isEmpty()) {
+        ExecutionRequest executionRequest = runtimeContext.getToolCatalog().createExecutionRequest(sessionId, arguments, runtimeContext.getDatabaseRuntime());
+        if (executionRequest.getDatabase().isEmpty() || executionRequest.getSql().isEmpty()) {
             return errorToolResult("invalid_request", "Database and sql are required.");
         }
-        ExecutionRequest executionRequest = new ExecutionRequest(sessionId, database, Objects.toString(arguments.get("schema"), "").trim(),
-                sql, getIntegerArgument(arguments, "max_rows", 0), getIntegerArgument(arguments, "timeout_ms", 0), runtimeContext.getDatabaseRuntime());
         ExecuteQueryResponse response = runtimeContext.getExecuteQueryFacade().execute(executionRequest);
-        return response.isSuccessful() ? successToolResult(toExecuteQueryPayload(response))
-                : errorToolResult(payloadBuilder.toDomainErrorCode(response.getError().get().getErrorCode()), response.getError().get().getMessage(), toExecuteQueryPayload(response));
-    }
-    
-    private Map<String, Object> toExecuteQueryPayload(final ExecuteQueryResponse response) {
-        Map<String, Object> payload = new LinkedHashMap<>();
-        payload.put("result_kind", response.getResultKind().name().toLowerCase(Locale.ENGLISH));
-        payload.put("statement_type", response.getStatementType());
-        payload.put("status", response.getStatus());
-        if (!response.getColumns().isEmpty()) {
-            payload.put("columns", response.getColumns());
-        }
-        if (!response.getRows().isEmpty()) {
-            payload.put("rows", response.getRows());
-        }
-        if (0 != response.getAffectedRows()) {
-            payload.put("affected_rows", response.getAffectedRows());
-        }
-        if (!response.getMessage().isEmpty()) {
-            payload.put("message", response.getMessage());
-        }
-        payload.put("truncated", response.isTruncated());
-        if (response.getError().isPresent()) {
-            Map<String, Object> error = new LinkedHashMap<>();
-            error.put("error_code", payloadBuilder.toDomainErrorCode(response.getError().get().getErrorCode()));
-            error.put("message", response.getError().get().getMessage());
-            payload.put("error", error);
-        }
-        return payload;
+        Object payload = runtimeContext.getPayloadBuilder().createExecuteQueryPayload(response);
+        return response.isSuccessful() ? successToolResult(payload)
+                : errorToolResult(runtimeContext.getPayloadBuilder().toDomainErrorCode(response.getError().get().getErrorCode()), response.getError().get().getMessage(), payload);
     }
     
     private McpSchema.CallToolResult successToolResult(final Object payload) {
@@ -130,7 +91,7 @@ final class MCPToolCallHandler {
     }
     
     private McpSchema.CallToolResult errorToolResult(final String errorCode, final String message) {
-        return errorToolResult(errorCode, message, payloadBuilder.createErrorPayload(errorCode, message));
+        return errorToolResult(errorCode, message, runtimeContext.getPayloadBuilder().createErrorPayload(errorCode, message));
     }
     
     private McpSchema.CallToolResult errorToolResult(final String errorCode, final String message, final Object payload) {
@@ -139,24 +100,5 @@ final class MCPToolCallHandler {
                 .addTextContent(JsonUtils.toJsonString(Map.of("error_code", errorCode, "message", message)))
                 .isError(Boolean.TRUE)
                 .build();
-    }
-    
-    private int getIntegerArgument(final Map<String, Object> arguments, final String name, final int defaultValue) {
-        Object result = arguments.get(name);
-        if (null == result) {
-            return defaultValue;
-        }
-        if (result instanceof Number) {
-            return ((Number) result).intValue();
-        }
-        String actualValue = result.toString().trim();
-        if (actualValue.isEmpty()) {
-            return defaultValue;
-        }
-        try {
-            return Integer.parseInt(actualValue);
-        } catch (final NumberFormatException ignored) {
-            return defaultValue;
-        }
     }
 }

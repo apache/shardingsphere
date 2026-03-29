@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadBuilder;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 
 import java.util.ArrayList;
@@ -34,15 +33,17 @@ public final class MCPToolSpecificationFactory {
     
     private final MCPToolCallHandler toolCallHandler;
     
+    private final MCPToolInputSchemaFactory toolInputSchemaFactory;
+    
     /**
      * Create MCP tool specification factory.
      *
      * @param runtimeContext runtime context
-     * @param payloadBuilder payload builder
      */
-    public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext, final MCPTransportPayloadBuilder payloadBuilder) {
+    public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
         this.runtimeContext = runtimeContext;
-        toolCallHandler = new MCPToolCallHandler(runtimeContext, payloadBuilder);
+        toolCallHandler = new MCPToolCallHandler(runtimeContext);
+        toolInputSchemaFactory = new MCPToolInputSchemaFactory();
     }
     
     /**
@@ -52,23 +53,21 @@ public final class MCPToolSpecificationFactory {
      */
     public List<SyncToolSpecification> createToolSpecifications() {
         List<SyncToolSpecification> result = new ArrayList<>();
-        for (String each : runtimeContext.getCapabilityAssembler().assembleServiceCapability().getSupportedTools()) {
-            MCPToolDefinition toolDefinition = MCPToolDefinition.findByName(each)
-                    .orElseThrow(() -> new IllegalStateException(String.format("Unknown MCP tool `%s`.", each)));
+        for (String each : runtimeContext.getToolCatalog().getSupportedTools()) {
             result.add(new SyncToolSpecification.Builder()
-                    .tool(createToolDefinition(toolDefinition))
+                    .tool(createToolDefinition(each))
                     .callHandler(toolCallHandler::handle)
                     .build());
         }
         return result;
     }
     
-    private McpSchema.Tool createToolDefinition(final MCPToolDefinition toolDefinition) {
+    private McpSchema.Tool createToolDefinition(final String toolName) {
         return McpSchema.Tool.builder()
-                .name(toolDefinition.getName())
-                .title(toolDefinition.getTitle())
-                .description("ShardingSphere MCP tool: " + toolDefinition.getName())
-                .inputSchema(toolDefinition.createInputSchema())
+                .name(toolName)
+                .title(runtimeContext.getToolCatalog().getTitle(toolName))
+                .description("ShardingSphere MCP tool: " + toolName)
+                .inputSchema(toolInputSchemaFactory.createInputSchema(toolName))
                 .build();
     }
 }
