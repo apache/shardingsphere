@@ -18,17 +18,18 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
- * Immutable in-memory metadata catalog for discovery tests and adapters.
+ * Metadata catalog.
  */
 public final class MetadataCatalog {
     
@@ -41,6 +42,25 @@ public final class MetadataCatalog {
      */
     public MetadataCatalog(final Map<String, DatabaseMetadataSnapshot> databaseSnapshots) {
         replaceSnapshot(databaseSnapshots);
+    }
+    
+    private void replaceSnapshot(final Map<String, DatabaseMetadataSnapshot> databaseSnapshots) {
+        Map<String, DatabaseMetadataSnapshot> actualDatabaseSnapshots = new LinkedHashMap<>(databaseSnapshots.size(), 1F);
+        Map<String, String> databaseTypes = new LinkedHashMap<>(databaseSnapshots.size(), 1F);
+        List<MetadataObject> metadataObjects = new LinkedList<>();
+        for (Entry<String, DatabaseMetadataSnapshot> entry : databaseSnapshots.entrySet()) {
+            DatabaseMetadataSnapshot databaseSnapshot = copySnapshot(entry.getValue());
+            actualDatabaseSnapshots.put(entry.getKey(), databaseSnapshot);
+            if (!databaseSnapshot.getDatabaseType().isEmpty()) {
+                databaseTypes.put(entry.getKey(), databaseSnapshot.getDatabaseType());
+            }
+            metadataObjects.addAll(databaseSnapshot.getMetadataObjects());
+        }
+        snapshot = new Snapshot(Collections.unmodifiableMap(actualDatabaseSnapshots), Collections.unmodifiableMap(databaseTypes), Collections.unmodifiableList(new LinkedList<>(metadataObjects)));
+    }
+    
+    private DatabaseMetadataSnapshot copySnapshot(final DatabaseMetadataSnapshot databaseSnapshot) {
+        return new DatabaseMetadataSnapshot(databaseSnapshot.getDatabaseType(), databaseSnapshot.getDatabaseVersion(), databaseSnapshot.getMetadataObjects());
     }
     
     /**
@@ -59,15 +79,6 @@ public final class MetadataCatalog {
      */
     public List<MetadataObject> getMetadataObjects() {
         return snapshot.getMetadataObjects();
-    }
-    
-    /**
-     * Replace the metadata snapshot.
-     *
-     * @param databaseSnapshots per-database snapshots
-     */
-    public void replaceSnapshot(final Map<String, DatabaseMetadataSnapshot> databaseSnapshots) {
-        snapshot = createSnapshot(databaseSnapshots);
     }
     
     /**
@@ -102,26 +113,7 @@ public final class MetadataCatalog {
         return Optional.ofNullable(snapshot.getDatabaseSnapshots().get(databaseName));
     }
     
-    private Snapshot createSnapshot(final Map<String, DatabaseMetadataSnapshot> databaseSnapshots) {
-        Map<String, DatabaseMetadataSnapshot> actualDatabaseSnapshots = new LinkedHashMap<>(databaseSnapshots.size(), 1F);
-        Map<String, String> databaseTypes = new LinkedHashMap<>(databaseSnapshots.size(), 1F);
-        List<MetadataObject> metadataObjects = new LinkedList<>();
-        for (Entry<String, DatabaseMetadataSnapshot> entry : databaseSnapshots.entrySet()) {
-            DatabaseMetadataSnapshot databaseSnapshot = copySnapshot(entry.getValue());
-            actualDatabaseSnapshots.put(entry.getKey(), databaseSnapshot);
-            if (!databaseSnapshot.getDatabaseType().isEmpty()) {
-                databaseTypes.put(entry.getKey(), databaseSnapshot.getDatabaseType());
-            }
-            metadataObjects.addAll(databaseSnapshot.getMetadataObjects());
-        }
-        return new Snapshot(Collections.unmodifiableMap(actualDatabaseSnapshots), Collections.unmodifiableMap(databaseTypes),
-                Collections.unmodifiableList(new LinkedList<>(metadataObjects)));
-    }
-    
-    private DatabaseMetadataSnapshot copySnapshot(final DatabaseMetadataSnapshot databaseSnapshot) {
-        return new DatabaseMetadataSnapshot(databaseSnapshot.getDatabaseType(), databaseSnapshot.getDatabaseVersion(), databaseSnapshot.getMetadataObjects());
-    }
-    
+    @RequiredArgsConstructor
     @Getter
     private static final class Snapshot {
         
@@ -130,12 +122,5 @@ public final class MetadataCatalog {
         private final Map<String, String> databaseTypes;
         
         private final List<MetadataObject> metadataObjects;
-        
-        private Snapshot(final Map<String, DatabaseMetadataSnapshot> databaseSnapshots,
-                         final Map<String, String> databaseTypes, final List<MetadataObject> metadataObjects) {
-            this.databaseSnapshots = databaseSnapshots;
-            this.databaseTypes = databaseTypes;
-            this.metadataObjects = metadataObjects;
-        }
     }
 }
