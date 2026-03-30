@@ -45,22 +45,15 @@ public final class MetadataCatalog {
     }
     
     private void replaceSnapshot(final Map<String, DatabaseMetadataSnapshot> databaseSnapshots) {
-        Map<String, DatabaseMetadataSnapshot> actualDatabaseSnapshots = new LinkedHashMap<>(databaseSnapshots.size(), 1F);
         Map<String, String> databaseTypes = new LinkedHashMap<>(databaseSnapshots.size(), 1F);
         List<MetadataObject> metadataObjects = new LinkedList<>();
         for (Entry<String, DatabaseMetadataSnapshot> entry : databaseSnapshots.entrySet()) {
-            DatabaseMetadataSnapshot databaseSnapshot = copySnapshot(entry.getValue());
-            actualDatabaseSnapshots.put(entry.getKey(), databaseSnapshot);
-            if (!databaseSnapshot.getDatabaseType().isEmpty()) {
-                databaseTypes.put(entry.getKey(), databaseSnapshot.getDatabaseType());
+            if (!entry.getValue().getDatabaseType().isEmpty()) {
+                databaseTypes.put(entry.getKey(), entry.getValue().getDatabaseType());
             }
-            metadataObjects.addAll(databaseSnapshot.getMetadataObjects());
+            metadataObjects.addAll(entry.getValue().getMetadataObjects());
         }
-        snapshot = new Snapshot(Collections.unmodifiableMap(actualDatabaseSnapshots), Collections.unmodifiableMap(databaseTypes), Collections.unmodifiableList(new LinkedList<>(metadataObjects)));
-    }
-    
-    private DatabaseMetadataSnapshot copySnapshot(final DatabaseMetadataSnapshot databaseSnapshot) {
-        return new DatabaseMetadataSnapshot(databaseSnapshot.getDatabaseType(), databaseSnapshot.getDatabaseVersion(), databaseSnapshot.getMetadataObjects());
+        snapshot = new Snapshot(Collections.unmodifiableMap(databaseSnapshots), Collections.unmodifiableMap(databaseTypes), Collections.unmodifiableList(new LinkedList<>(metadataObjects)));
     }
     
     /**
