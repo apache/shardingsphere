@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
-import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
 import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import lombok.Getter;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.datanode.InvalidDataNodeFormatException;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Data node.
@@ -163,14 +161,11 @@ public final class DataNode {
             return false;
         }
         DataNode dataNode = (DataNode) object;
-        return Objects.equal(Optional.ofNullable(dataSourceName).map(CaseInsensitiveString::of).orElse(null), Optional.ofNullable(dataNode.dataSourceName).map(CaseInsensitiveString::of).orElse(null))
-                && Objects.equal(Optional.ofNullable(tableName).map(CaseInsensitiveString::of).orElse(null), Optional.ofNullable(dataNode.tableName).map(CaseInsensitiveString::of).orElse(null))
-                && Objects.equal(Optional.ofNullable(schemaName).map(CaseInsensitiveString::of).orElse(null), Optional.ofNullable(dataNode.schemaName).map(CaseInsensitiveString::of).orElse(null));
+        return Objects.equal(dataSourceName, dataNode.dataSourceName) && Objects.equal(tableName, dataNode.tableName) && Objects.equal(schemaName, dataNode.schemaName);
     }
     
     @Override
     public int hashCode() {
-        return Objects.hashCode(Optional.ofNullable(dataSourceName).map(CaseInsensitiveString::of).orElse(null), Optional.ofNullable(tableName).map(CaseInsensitiveString::of).orElse(null),
-                Optional.ofNullable(schemaName).map(CaseInsensitiveString::of).orElse(null));
+        return Objects.hashCode(dataSourceName, tableName, schemaName);
     }
 }

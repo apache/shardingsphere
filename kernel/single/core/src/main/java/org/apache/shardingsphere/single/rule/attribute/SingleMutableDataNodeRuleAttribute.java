@@ -79,7 +79,7 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
     
     @Override
     public void remove(final String schemaName, final String tableName) {
-        remove(Collections.singleton(schemaName.toLowerCase()), tableName);
+        remove(Collections.singleton(schemaName), tableName);
     }
     
     @Override
@@ -92,7 +92,7 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
             Iterator<DataNode> iterator = dataNodes.iterator();
             while (iterator.hasNext()) {
                 DataNode dataNode = iterator.next();
-                if (schemaNames.contains(dataNode.getSchemaName().toLowerCase())) {
+                if (schemaNames.contains(dataNode.getSchemaName())) {
                     iterator.remove();
                     configuration.getTables().remove(SingleTableLoadUtils.getDataNodeString(protocolType, dataNode.getDataSourceName(), dataNode.getSchemaName(), each));
                 }
@@ -109,7 +109,7 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
     public Optional<DataNode> findTableDataNode(final String schemaName, final String tableName) {
         Collection<DataNode> dataNodes = findTableDataNodes(tableName);
         for (DataNode each : dataNodes) {
-            if (schemaName.equalsIgnoreCase(each.getSchemaName())) {
+            if (schemaName.equals(each.getSchemaName())) {
                 return Optional.of(each);
             }
         }

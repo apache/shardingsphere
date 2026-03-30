@@ -391,6 +391,7 @@ class SingleRuleTest {
     private static Stream<Arguments> getSingleTablesArguments() {
         return Stream.of(
                 Arguments.of("table exists in same schema", new QualifiedTable("foo_db", "employee"), true, "foo_db", "employee"),
+                Arguments.of("table exists in schema with different case", new QualifiedTable("FOO_DB", "employee"), false, null, null),
                 Arguments.of("table exists in different schema", new QualifiedTable("bar_db", "employee"), false, null, null),
                 Arguments.of("table does not exist", new QualifiedTable("foo_db", "missing_table"), false, null, null));
     }

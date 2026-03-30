@@ -153,6 +153,19 @@ class SingleTableDataNodeLoaderTest {
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", localDataSourceMap, Collections.emptyList());
         assertTrue(actual.containsKey("Test3"));
         assertTrue(actual.containsKey("test3"));
+        assertThat(actual.get("Test3").iterator().next().getTableName(), is("Test3"));
+        assertThat(actual.get("test3").iterator().next().getTableName(), is("test3"));
+    }
+    
+    @Test
+    void assertLoadWithDataSourceMapPreservesCaseSensitiveDataNodes() throws SQLException {
+        Map<String, DataSource> localDataSourceMap = new LinkedHashMap<>(2, 1F);
+        localDataSourceMap.put("foo_ds", mockDataSource("foo_ds", Collections.singletonList("foo_tbl")));
+        localDataSourceMap.put("FOO_DS", mockDataSource("FOO_DS", Collections.singletonList("foo_tbl")));
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", localDataSourceMap, Collections.emptyList());
+        assertThat(actual.get("foo_tbl").size(), is(2));
+        assertThat(actual.get("foo_tbl").stream().map(DataNode::getDataSourceName).collect(Collectors.toCollection(LinkedHashSet::new)),
+                is(new LinkedHashSet<>(Arrays.asList("foo_ds", "FOO_DS"))));
     }
     
     @Test
