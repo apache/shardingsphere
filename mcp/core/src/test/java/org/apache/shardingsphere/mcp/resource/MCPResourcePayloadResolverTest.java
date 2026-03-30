@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.resource;
 
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestBuilder;
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -84,7 +84,7 @@ class MCPResourcePayloadResolverTest {
     }
     
     private MCPResourcePayloadResolver createResolver() {
-        return new MCPResourcePayloadResolver(new MCPRuntimeContextTestBuilder().build(createDatabaseMetadataSnapshots(), new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap())));
+        return new MCPResourcePayloadResolver(new MCPRuntimeContextTestBuilder().build(createDatabaseMetadataSnapshots(), new DatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap())));
     }
     
     private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {

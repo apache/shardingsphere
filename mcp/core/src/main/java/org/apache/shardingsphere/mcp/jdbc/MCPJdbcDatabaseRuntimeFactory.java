@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.jdbc;
 
 import org.apache.shardingsphere.mcp.execute.ConnectionProvider;
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.ShardingSphereExecutionAdapter;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
@@ -40,12 +40,12 @@ public final class MCPJdbcDatabaseRuntimeFactory {
      * @param databaseMetadataSnapshots database metadata snapshots
      * @return database runtime
      */
-    public DatabaseRuntime create(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
+    public DatabaseExecutionBackend create(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
         Map<String, ConnectionProvider> connectionProviders = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
         for (Entry<String, RuntimeDatabaseConfiguration> each : runtimeDatabases.entrySet()) {
             connectionProviders.put(each.getKey(), () -> each.getValue().openConnection(each.getKey()));
         }
-        return new DatabaseRuntime(new ShardingSphereExecutionAdapter(connectionProviders), database -> refreshMetadata(database, runtimeDatabases.get(database), databaseMetadataSnapshots));
+        return new DatabaseExecutionBackend(new ShardingSphereExecutionAdapter(connectionProviders), database -> refreshMetadata(database, runtimeDatabases.get(database), databaseMetadataSnapshots));
     }
     
     private void refreshMetadata(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {

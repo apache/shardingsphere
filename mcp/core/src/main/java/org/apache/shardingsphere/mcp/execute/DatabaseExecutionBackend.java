@@ -29,11 +29,11 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
- * In-memory execution runtime for tests and bootstrap adapters.
+ * Database execution backend.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class DatabaseRuntime {
+public final class DatabaseExecutionBackend {
     
     private final Map<String, QueryResult> queryResults;
     
@@ -44,12 +44,12 @@ public final class DatabaseRuntime {
     
     private final Consumer<String> metadataRefresher;
     
-    public DatabaseRuntime(final Map<String, QueryResult> queryResults, final Map<String, Integer> updateCounts) {
+    public DatabaseExecutionBackend(final Map<String, QueryResult> queryResults, final Map<String, Integer> updateCounts) {
         this(queryResults, updateCounts, null, ignored -> {
         });
     }
     
-    public DatabaseRuntime(final ShardingSphereExecutionAdapter executionAdapter, final Consumer<String> metadataRefresher) {
+    public DatabaseExecutionBackend(final ShardingSphereExecutionAdapter executionAdapter, final Consumer<String> metadataRefresher) {
         this(Collections.emptyMap(), Collections.emptyMap(), executionAdapter, metadataRefresher);
     }
     

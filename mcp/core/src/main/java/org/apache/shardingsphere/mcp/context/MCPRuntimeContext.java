@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
@@ -43,7 +43,7 @@ public final class MCPRuntimeContext {
     
     private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     
-    private final DatabaseRuntime databaseRuntime;
+    private final DatabaseExecutionBackend databaseExecutionBackend;
     
     private final DatabaseCapabilityAssembler capabilityAssembler;
     

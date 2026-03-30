@@ -68,7 +68,7 @@ public final class MCPToolPayloadResolver {
     }
     
     private MCPToolPayloadResult resolveExecuteQuery(final String sessionId, final Map<String, Object> arguments) {
-        ExecutionRequest executionRequest = runtimeContext.getToolCatalog().createExecutionRequest(sessionId, arguments, runtimeContext.getDatabaseRuntime());
+        ExecutionRequest executionRequest = runtimeContext.getToolCatalog().createExecutionRequest(sessionId, arguments, runtimeContext.getDatabaseExecutionBackend());
         if (executionRequest.getDatabase().isEmpty() || executionRequest.getSql().isEmpty()) {
             return error("invalid_request", "Database and sql are required.");
         }

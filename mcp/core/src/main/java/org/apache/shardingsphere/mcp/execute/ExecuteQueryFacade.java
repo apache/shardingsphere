@@ -76,20 +76,20 @@ public final class ExecuteQueryFacade {
             case DML:
                 return recordResult(executionRequest, executeUpdate(executionRequest, classificationResult), classificationResult.getStatementType());
             case DDL:
-                if (executionRequest.getDatabaseRuntime().isAdapterBacked()) {
-                    ExecuteQueryResponse ddlResponse = executionRequest.getDatabaseRuntime().execute(executionRequest, classificationResult);
+                if (executionRequest.getDatabaseExecutionBackend().isAdapterBacked()) {
+                    ExecuteQueryResponse ddlResponse = executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult);
                     if (ddlResponse.isSuccessful()) {
-                        executionRequest.getDatabaseRuntime().refreshMetadata(executionRequest.getDatabase());
+                        executionRequest.getDatabaseExecutionBackend().refreshMetadata(executionRequest.getDatabase());
                     }
                     return recordResult(executionRequest, ddlResponse, classificationResult.getStatementType());
                 }
                 return recordResult(executionRequest, ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed."),
                         classificationResult.getStatementType());
             case DCL:
-                if (executionRequest.getDatabaseRuntime().isAdapterBacked()) {
-                    ExecuteQueryResponse dclResponse = executionRequest.getDatabaseRuntime().execute(executionRequest, classificationResult);
+                if (executionRequest.getDatabaseExecutionBackend().isAdapterBacked()) {
+                    ExecuteQueryResponse dclResponse = executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult);
                     if (dclResponse.isSuccessful()) {
-                        executionRequest.getDatabaseRuntime().refreshMetadata(executionRequest.getDatabase());
+                        executionRequest.getDatabaseExecutionBackend().refreshMetadata(executionRequest.getDatabase());
                     }
                     return recordResult(executionRequest, dclResponse, classificationResult.getStatementType());
                 }
@@ -106,10 +106,10 @@ public final class ExecuteQueryFacade {
     }
     
     private ExecuteQueryResponse executeQuery(final ExecutionRequest executionRequest, final ClassificationResult classificationResult, final DatabaseCapability databaseCapability) {
-        if (executionRequest.getDatabaseRuntime().isAdapterBacked()) {
-            return executionRequest.getDatabaseRuntime().execute(executionRequest, classificationResult);
+        if (executionRequest.getDatabaseExecutionBackend().isAdapterBacked()) {
+            return executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult);
         }
-        Optional<QueryResult> queryResult = executionRequest.getDatabaseRuntime().findQueryResult(executionRequest.getDatabase(),
+        Optional<QueryResult> queryResult = executionRequest.getDatabaseExecutionBackend().findQueryResult(executionRequest.getDatabase(),
                 classificationResult.getTargetObjectName().orElse("RESULT"));
         if (queryResult.isEmpty()) {
             return ExecuteQueryResponse.error(MCPErrorCode.NOT_FOUND, "Query target does not exist.");
@@ -122,10 +122,10 @@ public final class ExecuteQueryFacade {
     }
     
     private ExecuteQueryResponse executeUpdate(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
-        if (executionRequest.getDatabaseRuntime().isAdapterBacked()) {
-            return executionRequest.getDatabaseRuntime().execute(executionRequest, classificationResult);
+        if (executionRequest.getDatabaseExecutionBackend().isAdapterBacked()) {
+            return executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult);
         }
-        Optional<Integer> updateCount = executionRequest.getDatabaseRuntime().findUpdateCount(executionRequest.getDatabase(),
+        Optional<Integer> updateCount = executionRequest.getDatabaseExecutionBackend().findUpdateCount(executionRequest.getDatabase(),
                 classificationResult.getTargetObjectName().orElse("RESULT"));
         return updateCount.map(integer -> ExecuteQueryResponse.updateCount(classificationResult.getStatementType(), integer))
                 .orElseGet(() -> ExecuteQueryResponse.error(MCPErrorCode.NOT_FOUND, "Update target does not exist."));

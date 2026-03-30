@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
@@ -99,10 +99,10 @@ class MCPToolCatalogTest {
     
     @Test
     void assertCreateExecutionRequest() {
-        DatabaseRuntime databaseRuntime = new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap());
+        DatabaseExecutionBackend databaseExecutionBackend = new DatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap());
         
         ExecutionRequest actual = toolCatalog.createExecutionRequest("session-id",
-                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT 1", "max_rows", "20", "timeout_ms", 3000), databaseRuntime);
+                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT 1", "max_rows", "20", "timeout_ms", 3000), databaseExecutionBackend);
         
         assertThat(actual.getSessionId(), is("session-id"));
         assertThat(actual.getDatabase(), is("logic_db"));
@@ -110,6 +110,6 @@ class MCPToolCatalogTest {
         assertThat(actual.getSql(), is("SELECT 1"));
         assertThat(actual.getMaxRows(), is(20));
         assertThat(actual.getTimeoutMs(), is(3000));
-        assertThat(actual.getDatabaseRuntime(), is(databaseRuntime));
+        assertThat(actual.getDatabaseExecutionBackend(), is(databaseExecutionBackend));
     }
 }

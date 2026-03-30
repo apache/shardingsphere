@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.session;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
@@ -130,7 +130,7 @@ class TransactionCommandExecutorTest {
         return new DatabaseCapabilityAssembler(new DatabaseMetadataSnapshots(Collections.emptyMap()));
     }
     
-    private DatabaseRuntime createDatabaseRuntime() {
-        return new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap());
+    private DatabaseExecutionBackend createDatabaseRuntime() {
+        return new DatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap());
     }
 }

@@ -185,14 +185,14 @@ class ExecuteQueryFacadeTest {
         DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot(databaseType, "", Collections.emptyList()))));
         return new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler,
-                new TransactionCommandExecutor(capabilityAssembler, sessionManager, new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap())), auditRecorder);
+                new TransactionCommandExecutor(capabilityAssembler, sessionManager, new DatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap())), auditRecorder);
     }
     
     private ExecutionRequest createExecutionRequest(final String sql, final int maxRows) {
         return new ExecutionRequest("session-1", "logic_db", "public", sql, maxRows, 1000, createRuntime());
     }
     
-    private DatabaseRuntime createRuntime() {
+    private DatabaseExecutionBackend createRuntime() {
         LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
         columns.add(new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INT", false));
         columns.add(new ExecuteQueryColumnDefinition("status", "VARCHAR", "VARCHAR", true));
@@ -203,6 +203,6 @@ class ExecuteQueryFacadeTest {
         queryResults.put("logic_db:orders", new QueryResult(columns, new LinkedList<>(rows)));
         Map<String, Integer> updateCounts = new LinkedHashMap<>();
         updateCounts.put("logic_db:orders", 3);
-        return new DatabaseRuntime(queryResults, updateCounts);
+        return new DatabaseExecutionBackend(queryResults, updateCounts);
     }
 }

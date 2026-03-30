@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestBuilder;
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.QueryResult;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
@@ -121,7 +121,7 @@ class MCPToolPayloadResolverTest {
         return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     
-    private DatabaseRuntime createDatabaseRuntime() {
+    private DatabaseExecutionBackend createDatabaseRuntime() {
         LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
         columns.add(new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INT", false));
         columns.add(new ExecuteQueryColumnDefinition("status", "VARCHAR", "VARCHAR", true));
@@ -130,6 +130,6 @@ class MCPToolPayloadResolverTest {
         rows.add(new LinkedList<>(List.of(2, "DONE")));
         Map<String, QueryResult> queryResults = new LinkedHashMap<>();
         queryResults.put("logic_db:orders", new QueryResult(columns, rows));
-        return new DatabaseRuntime(queryResults, Map.of());
+        return new DatabaseExecutionBackend(queryResults, Map.of());
     }
 }

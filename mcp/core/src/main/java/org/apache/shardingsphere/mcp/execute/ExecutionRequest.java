@@ -39,5 +39,5 @@ public final class ExecutionRequest {
     
     private final int timeoutMs;
     
-    private final DatabaseRuntime databaseRuntime;
+    private final DatabaseExecutionBackend databaseExecutionBackend;
 }

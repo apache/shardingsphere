@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.context;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.jdbc.MCPJdbcDatabaseRuntimeFactory;
@@ -52,17 +52,17 @@ public final class MCPRuntimeContextBuilder {
         ShardingSpherePreconditions.checkNotEmpty(runtimeDatabases, () -> new IllegalArgumentException("At least one runtime database must be configured."));
         MCPSessionManager sessionManager = new MCPSessionManager();
         DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
-        DatabaseRuntime databaseRuntime = new MCPJdbcDatabaseRuntimeFactory().create(runtimeDatabases, databaseMetadataSnapshots);
+        DatabaseExecutionBackend databaseExecutionBackend = new MCPJdbcDatabaseRuntimeFactory().create(runtimeDatabases, databaseMetadataSnapshots);
         DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(databaseMetadataSnapshots);
         MetadataResourceLoader metadataResourceLoader = new MetadataResourceLoader();
         ResourceUriResolver resourceUriResolver = new ResourceUriResolver();
         MetadataToolDispatcher metadataToolDispatcher = new MetadataToolDispatcher(metadataResourceLoader);
         MCPToolCatalog toolCatalog = new MCPToolCatalog();
-        TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(capabilityAssembler, sessionManager, databaseRuntime);
+        TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(capabilityAssembler, sessionManager, databaseExecutionBackend);
         AuditRecorder auditRecorder = new AuditRecorder();
         ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler, transactionCommandExecutor, auditRecorder);
         MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
-        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, databaseRuntime, capabilityAssembler,
+        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, databaseExecutionBackend, capabilityAssembler,
                 metadataResourceLoader, resourceUriResolver, metadataToolDispatcher, toolCatalog, transactionCommandExecutor, auditRecorder, executeQueryFacade, payloadBuilder);
     }
     

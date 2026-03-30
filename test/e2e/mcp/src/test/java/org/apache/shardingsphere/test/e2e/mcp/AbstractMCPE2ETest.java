@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestBuilder;
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.QueryResult;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
@@ -179,7 +179,7 @@ abstract class AbstractMCPE2ETest {
         return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     
-    protected final DatabaseRuntime createDatabaseRuntime() {
+    protected final DatabaseExecutionBackend createDatabaseRuntime() {
         Map<String, QueryResult> queryResults = new LinkedHashMap<>();
         queryResults.put("logic_db:orders", createQueryResult("order_id", 1, 2));
         queryResults.put("analytics_db:metrics", createQueryResult("metric_id", 10, 20));
@@ -188,7 +188,7 @@ abstract class AbstractMCPE2ETest {
         updateCounts.put("logic_db:orders", 2);
         updateCounts.put("analytics_db:metrics", 1);
         updateCounts.put("warehouse:facts", 1);
-        return new DatabaseRuntime(queryResults, updateCounts);
+        return new DatabaseExecutionBackend(queryResults, updateCounts);
     }
     
     protected final Map<String, String> createRequestHeaders() {
@@ -197,9 +197,9 @@ abstract class AbstractMCPE2ETest {
     
     private void launchRuntimeInternal() {
         DatabaseMetadataSnapshots databaseMetadataSnapshots = createDatabaseMetadataSnapshots();
-        DatabaseRuntime databaseRuntime = createDatabaseRuntime();
+        DatabaseExecutionBackend databaseExecutionBackend = createDatabaseRuntime();
         StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH),
-                runtimeContextTestBuilder.build(databaseMetadataSnapshots, databaseRuntime));
+                runtimeContextTestBuilder.build(databaseMetadataSnapshots, databaseExecutionBackend));
         try {
             httpServer.start();
         } catch (final IOException ex) {

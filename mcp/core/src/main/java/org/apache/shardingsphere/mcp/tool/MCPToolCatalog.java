@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 
@@ -138,12 +138,12 @@ public final class MCPToolCatalog {
      *
      * @param sessionId session identifier
      * @param arguments raw tool arguments
-     * @param databaseRuntime database runtime
+     * @param databaseExecutionBackend database runtime
      * @return normalized execute-query request
      */
-    public ExecutionRequest createExecutionRequest(final String sessionId, final Map<String, Object> arguments, final DatabaseRuntime databaseRuntime) {
+    public ExecutionRequest createExecutionRequest(final String sessionId, final Map<String, Object> arguments, final DatabaseExecutionBackend databaseExecutionBackend) {
         return new ExecutionRequest(sessionId, stringArgument(arguments, "database"), stringArgument(arguments, "schema"), stringArgument(arguments, "sql"),
-                integerArgument(arguments, "max_rows", 0), integerArgument(arguments, "timeout_ms", 0), databaseRuntime);
+                integerArgument(arguments, "max_rows", 0), integerArgument(arguments, "timeout_ms", 0), databaseExecutionBackend);
     }
     
     private MCPToolDescriptor getRequiredToolDescriptor(final String toolName) {

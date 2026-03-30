@@ -171,7 +171,7 @@ class ShardingSphereExecutionAdapterTest {
     }
     
     private ExecutionRequest createExecutionRequest(final String databaseName, final String sql) {
-        return new ExecutionRequest("session-1", databaseName, "public", sql, 10, 1000, new DatabaseRuntime(Map.of(), Map.of()));
+        return new ExecutionRequest("session-1", databaseName, "public", sql, 10, 1000, new DatabaseExecutionBackend(Map.of(), Map.of()));
     }
     
     private String createJdbcUrl(final String databaseName) {

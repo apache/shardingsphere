@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.jdbc;
 
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MCPJdbcDatabaseRuntimeFactoryTest {
+class MCPJdbcDatabaseExecutionBackendFactoryTest {
     
     @TempDir
     private Path tempDir;
@@ -53,7 +53,7 @@ class MCPJdbcDatabaseRuntimeFactoryTest {
                 "logic_db", new RuntimeDatabaseConfiguration("H2", firstJdbcUrl, "", "", "org.h2.Driver"),
                 "analytics_db", new RuntimeDatabaseConfiguration("H2", secondJdbcUrl, "", "", "org.h2.Driver"));
         DatabaseMetadataSnapshots databaseMetadataSnapshots = jdbcMetadataLoader.load(connectionConfigs);
-        DatabaseRuntime actual = databaseRuntimeFactory.create(connectionConfigs, databaseMetadataSnapshots);
+        DatabaseExecutionBackend actual = databaseRuntimeFactory.create(connectionConfigs, databaseMetadataSnapshots);
         H2RuntimeTestSupport.executeStatements(firstJdbcUrl, "CREATE TABLE public.orders_archive (order_id INT PRIMARY KEY)");
         actual.refreshMetadata("logic_db");
         assertTrue(databaseMetadataSnapshots.getDatabaseTypes().containsKey("analytics_db"));
@@ -68,7 +68,7 @@ class MCPJdbcDatabaseRuntimeFactoryTest {
                 "logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.example.MissingDriver"));
         DatabaseMetadataSnapshots databaseMetadataSnapshots = new DatabaseMetadataSnapshots(Map.of("logic_db",
                 new DatabaseMetadataSnapshot("H2", "", List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", "")))));
-        DatabaseRuntime actual = databaseRuntimeFactory.create(runtimeDatabaseConfigs, databaseMetadataSnapshots);
+        DatabaseExecutionBackend actual = databaseRuntimeFactory.create(runtimeDatabaseConfigs, databaseMetadataSnapshots);
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> actual.refreshMetadata("logic_db"));
         assertThat(ex.getMessage(), is("JDBC driver `org.example.MissingDriver` is not available for database `logic_db`."));
         assertTrue(databaseMetadataSnapshots.getDatabaseTypes().containsKey("logic_db"));

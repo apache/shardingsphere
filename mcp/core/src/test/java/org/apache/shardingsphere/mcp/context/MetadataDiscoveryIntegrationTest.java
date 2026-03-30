@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.context;
 
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
-import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
+import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MetadataDiscoveryIntegrationTest {
     
     private MCPRuntimeContext createRuntimeContext() {
-        return new MCPRuntimeContextTestBuilder().build(new DatabaseMetadataSnapshots(Collections.emptyMap()), new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
+        return new MCPRuntimeContextTestBuilder().build(new DatabaseMetadataSnapshots(Collections.emptyMap()), new DatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap()));
     }
     
     @Test
