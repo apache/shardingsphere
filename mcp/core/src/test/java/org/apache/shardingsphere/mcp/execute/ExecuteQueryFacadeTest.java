@@ -185,7 +185,8 @@ class ExecuteQueryFacadeTest {
         DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot(databaseType, "", Collections.emptyList()))));
         return new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler,
-                new TransactionCommandExecutor(capabilityAssembler, sessionManager, new DatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap())), auditRecorder);
+                new TransactionCommandExecutor(capabilityAssembler, sessionManager, new FixtureDatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap())),
+                auditRecorder);
     }
     
     private ExecutionRequest createExecutionRequest(final String sql, final int maxRows) {
@@ -203,6 +204,6 @@ class ExecuteQueryFacadeTest {
         queryResults.put("logic_db:orders", new QueryResult(columns, new LinkedList<>(rows)));
         Map<String, Integer> updateCounts = new LinkedHashMap<>();
         updateCounts.put("logic_db:orders", 3);
-        return new DatabaseExecutionBackend(queryResults, updateCounts);
+        return new FixtureDatabaseExecutionBackend(queryResults, updateCounts);
     }
 }

@@ -17,117 +17,45 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 /**
  * Database execution backend.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
-public final class DatabaseExecutionBackend {
-    
-    private final Map<String, QueryResult> queryResults;
-    
-    private final Map<String, Integer> updateCounts;
-    
-    @Getter(AccessLevel.NONE)
-    private final ShardingSphereExecutionAdapter executionAdapter;
-    
-    private final Consumer<String> metadataRefresher;
-    
-    public DatabaseExecutionBackend(final Map<String, QueryResult> queryResults, final Map<String, Integer> updateCounts) {
-        this(queryResults, updateCounts, null, ignored -> {
-        });
-    }
-    
-    public DatabaseExecutionBackend(final ShardingSphereExecutionAdapter executionAdapter, final Consumer<String> metadataRefresher) {
-        this(Collections.emptyMap(), Collections.emptyMap(), executionAdapter, metadataRefresher);
-    }
+public interface DatabaseExecutionBackend {
     
     /**
-     * Find one query result definition.
-     *
-     * @param databaseName logical database name
-     * @param objectName object name
-     * @return query result when present
-     */
-    public Optional<QueryResult> findQueryResult(final String databaseName, final String objectName) {
-        return Optional.ofNullable(queryResults.get(buildKey(databaseName, objectName)));
-    }
-    
-    /**
-     * Find one update count definition.
-     *
-     * @param databaseName logical database name
-     * @param objectName object name
-     * @return update count when present
-     */
-    public Optional<Integer> findUpdateCount(final String databaseName, final String objectName) {
-        return Optional.ofNullable(updateCounts.get(buildKey(databaseName, objectName)));
-    }
-    
-    /**
-     * Determine whether the runtime delegates to one real execution adapter.
-     *
-     * @return {@code true} when backed by one execution adapter
-     */
-    public boolean isAdapterBacked() {
-        return null != executionAdapter;
-    }
-    
-    /**
-     * Execute one classified request through the adapter.
+     * Execute one classified request.
      *
      * @param executionRequest execution request
      * @param classificationResult classification result
+     * @param databaseCapability resolved database capability
      * @return execution response
      */
-    public ExecuteQueryResponse execute(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
-        return getRequiredExecutionAdapter().execute(executionRequest, classificationResult);
-    }
+    ExecuteQueryResponse execute(ExecutionRequest executionRequest, ClassificationResult classificationResult, DatabaseCapability databaseCapability);
     
     /**
-     * Begin one transaction on the runtime backend.
+     * Begin one transaction on the backend.
      *
      * @param sessionId session identifier
      * @param databaseName logical database name
      */
-    public void beginTransaction(final String sessionId, final String databaseName) {
-        if (isAdapterBacked()) {
-            getRequiredExecutionAdapter().beginTransaction(sessionId, databaseName);
-        }
-    }
+    void beginTransaction(String sessionId, String databaseName);
     
     /**
      * Commit one backend transaction.
      *
      * @param sessionId session identifier
      */
-    public void commitTransaction(final String sessionId) {
-        if (isAdapterBacked()) {
-            getRequiredExecutionAdapter().commitTransaction(sessionId);
-        }
-    }
+    void commitTransaction(String sessionId);
     
     /**
      * Roll back one backend transaction.
      *
      * @param sessionId session identifier
      */
-    public void rollbackTransaction(final String sessionId) {
-        if (isAdapterBacked()) {
-            getRequiredExecutionAdapter().rollbackTransaction(sessionId);
-        }
-    }
+    void rollbackTransaction(String sessionId);
     
     /**
      * Create one backend savepoint.
@@ -135,11 +63,7 @@ public final class DatabaseExecutionBackend {
      * @param sessionId session identifier
      * @param savepointName savepoint name
      */
-    public void createSavepoint(final String sessionId, final String savepointName) {
-        if (isAdapterBacked()) {
-            getRequiredExecutionAdapter().createSavepoint(sessionId, savepointName);
-        }
-    }
+    void createSavepoint(String sessionId, String savepointName);
     
     /**
      * Roll back one backend savepoint.
@@ -147,11 +71,7 @@ public final class DatabaseExecutionBackend {
      * @param sessionId session identifier
      * @param savepointName savepoint name
      */
-    public void rollbackToSavepoint(final String sessionId, final String savepointName) {
-        if (isAdapterBacked()) {
-            getRequiredExecutionAdapter().rollbackToSavepoint(sessionId, savepointName);
-        }
-    }
+    void rollbackToSavepoint(String sessionId, String savepointName);
     
     /**
      * Release one backend savepoint.
@@ -159,38 +79,19 @@ public final class DatabaseExecutionBackend {
      * @param sessionId session identifier
      * @param savepointName savepoint name
      */
-    public void releaseSavepoint(final String sessionId, final String savepointName) {
-        if (isAdapterBacked()) {
-            getRequiredExecutionAdapter().releaseSavepoint(sessionId, savepointName);
-        }
-    }
+    void releaseSavepoint(String sessionId, String savepointName);
     
     /**
-     * Refresh runtime metadata after committed changes.
+     * Refresh backend metadata after committed changes.
      *
      * @param databaseName logical database name
      */
-    public void refreshMetadata(final String databaseName) {
-        metadataRefresher.accept(databaseName);
-    }
+    void refreshMetadata(String databaseName);
     
     /**
      * Close one backend session and release resources.
      *
      * @param sessionId session identifier
      */
-    public void closeSession(final String sessionId) {
-        if (isAdapterBacked()) {
-            getRequiredExecutionAdapter().closeSession(sessionId);
-        }
-    }
-    
-    private ShardingSphereExecutionAdapter getRequiredExecutionAdapter() {
-        ShardingSpherePreconditions.checkState(isAdapterBacked(), () -> new IllegalStateException("Execution adapter does not exist."));
-        return executionAdapter;
-    }
-    
-    private String buildKey(final String databaseName, final String objectName) {
-        return databaseName + ":" + objectName.toLowerCase();
-    }
+    void closeSession(String sessionId);
 }

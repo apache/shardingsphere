@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
+import org.apache.shardingsphere.mcp.execute.FixtureDatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 
@@ -99,7 +100,7 @@ class MCPToolCatalogTest {
     
     @Test
     void assertCreateExecutionRequest() {
-        DatabaseExecutionBackend databaseExecutionBackend = new DatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap());
+        DatabaseExecutionBackend databaseExecutionBackend = new FixtureDatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap());
         
         ExecutionRequest actual = toolCatalog.createExecutionRequest("session-id",
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT 1", "max_rows", "20", "timeout_ms", 3000), databaseExecutionBackend);

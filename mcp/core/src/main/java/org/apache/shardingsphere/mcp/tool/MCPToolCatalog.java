@@ -138,7 +138,7 @@ public final class MCPToolCatalog {
      *
      * @param sessionId session identifier
      * @param arguments raw tool arguments
-     * @param databaseExecutionBackend database runtime
+     * @param databaseExecutionBackend database execution backend
      * @return normalized execute-query request
      */
     public ExecutionRequest createExecutionRequest(final String sessionId, final Map<String, Object> arguments, final DatabaseExecutionBackend databaseExecutionBackend) {

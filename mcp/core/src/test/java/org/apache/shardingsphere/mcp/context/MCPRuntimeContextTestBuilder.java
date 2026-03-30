@@ -40,7 +40,7 @@ public final class MCPRuntimeContextTestBuilder {
      * Build MCP runtime context for tests.
      *
      * @param databaseMetadataSnapshots database metadata snapshots
-     * @param databaseExecutionBackend database runtime
+     * @param databaseExecutionBackend database execution backend
      * @return runtime context
      */
     public MCPRuntimeContext build(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final DatabaseExecutionBackend databaseExecutionBackend) {

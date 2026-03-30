@@ -25,11 +25,10 @@ import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
- * Execute the unified MCP {@code execute_query} contract against an in-memory runtime model.
+ * Execute the unified MCP {@code execute_query} contract against a database execution backend.
  */
 @RequiredArgsConstructor
 public final class ExecuteQueryFacade {
@@ -72,69 +71,33 @@ public final class ExecuteQueryFacade {
                         executionRequest.getDatabase(), actualDatabaseCapability, classificationResult),
                         classificationResult.getStatementType());
             case QUERY:
-                return recordResult(executionRequest, executeQuery(executionRequest, classificationResult, actualDatabaseCapability), classificationResult.getStatementType());
+                return recordResult(executionRequest, executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult, actualDatabaseCapability),
+                        classificationResult.getStatementType());
             case DML:
-                return recordResult(executionRequest, executeUpdate(executionRequest, classificationResult), classificationResult.getStatementType());
+                return recordResult(executionRequest, executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult, actualDatabaseCapability),
+                        classificationResult.getStatementType());
             case DDL:
-                if (executionRequest.getDatabaseExecutionBackend().isAdapterBacked()) {
-                    ExecuteQueryResponse ddlResponse = executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult);
-                    if (ddlResponse.isSuccessful()) {
-                        executionRequest.getDatabaseExecutionBackend().refreshMetadata(executionRequest.getDatabase());
-                    }
-                    return recordResult(executionRequest, ddlResponse, classificationResult.getStatementType());
-                }
-                return recordResult(executionRequest, ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed."),
+                return recordResult(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult, actualDatabaseCapability),
                         classificationResult.getStatementType());
             case DCL:
-                if (executionRequest.getDatabaseExecutionBackend().isAdapterBacked()) {
-                    ExecuteQueryResponse dclResponse = executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult);
-                    if (dclResponse.isSuccessful()) {
-                        executionRequest.getDatabaseExecutionBackend().refreshMetadata(executionRequest.getDatabase());
-                    }
-                    return recordResult(executionRequest, dclResponse, classificationResult.getStatementType());
-                }
-                return recordResult(executionRequest, ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed."),
+                return recordResult(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult, actualDatabaseCapability),
                         classificationResult.getStatementType());
             case EXPLAIN_ANALYZE:
                 if (!actualDatabaseCapability.isSupportsExplainAnalyze()) {
                     return recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "EXPLAIN ANALYZE is not supported.");
                 }
-                return recordResult(executionRequest, executeQuery(executionRequest, classificationResult, actualDatabaseCapability), classificationResult.getStatementType());
+                return recordResult(executionRequest, executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult, actualDatabaseCapability),
+                        classificationResult.getStatementType());
             default:
                 return recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "Statement class is not supported.");
         }
     }
     
-    private ExecuteQueryResponse executeQuery(final ExecutionRequest executionRequest, final ClassificationResult classificationResult, final DatabaseCapability databaseCapability) {
-        if (executionRequest.getDatabaseExecutionBackend().isAdapterBacked()) {
-            return executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult);
-        }
-        Optional<QueryResult> queryResult = executionRequest.getDatabaseExecutionBackend().findQueryResult(executionRequest.getDatabase(),
-                classificationResult.getTargetObjectName().orElse("RESULT"));
-        if (queryResult.isEmpty()) {
-            return ExecuteQueryResponse.error(MCPErrorCode.NOT_FOUND, "Query target does not exist.");
-        }
-        int effectiveMaxRows = getEffectiveMaxRows(executionRequest, databaseCapability);
-        List<List<Object>> rows = queryResult.get().getRows();
-        boolean truncated = rows.size() > effectiveMaxRows;
-        List<List<Object>> actualRows = truncated ? rows.subList(0, effectiveMaxRows) : rows;
-        return ExecuteQueryResponse.resultSet(queryResult.get().getColumns(), actualRows, truncated);
-    }
-    
-    private ExecuteQueryResponse executeUpdate(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
-        if (executionRequest.getDatabaseExecutionBackend().isAdapterBacked()) {
-            return executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult);
-        }
-        Optional<Integer> updateCount = executionRequest.getDatabaseExecutionBackend().findUpdateCount(executionRequest.getDatabase(),
-                classificationResult.getTargetObjectName().orElse("RESULT"));
-        return updateCount.map(integer -> ExecuteQueryResponse.updateCount(classificationResult.getStatementType(), integer))
-                .orElseGet(() -> ExecuteQueryResponse.error(MCPErrorCode.NOT_FOUND, "Update target does not exist."));
-    }
-    
-    private int getEffectiveMaxRows(final ExecutionRequest executionRequest, final DatabaseCapability databaseCapability) {
-        int result = executionRequest.getMaxRows();
-        if (0 >= result) {
-            result = databaseCapability.getMaxRowsDefault();
+    private ExecuteQueryResponse executeAndRefreshMetadata(final ExecutionRequest executionRequest, final ClassificationResult classificationResult,
+                                                           final DatabaseCapability databaseCapability) {
+        ExecuteQueryResponse result = executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult, databaseCapability);
+        if (result.isSuccessful()) {
+            executionRequest.getDatabaseExecutionBackend().refreshMetadata(executionRequest.getDatabase());
         }
         return result;
     }

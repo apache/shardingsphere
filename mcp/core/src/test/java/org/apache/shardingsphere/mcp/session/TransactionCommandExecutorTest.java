@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.session;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
+import org.apache.shardingsphere.mcp.execute.FixtureDatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
@@ -44,7 +45,7 @@ class TransactionCommandExecutorTest {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
         prepareTransactionState(sessionManager, sql);
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseRuntime());
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseExecutionBackend());
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify(sql));
         
@@ -68,7 +69,7 @@ class TransactionCommandExecutorTest {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
         sessionManager.beginTransaction("session-1", "warehouse");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseRuntime());
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseExecutionBackend());
         
         ExecuteQueryResponse actual = executor.execute("session-1", "warehouse", "Hive", new StatementClassifier().classify("SAVEPOINT sp_1"));
         
@@ -81,7 +82,7 @@ class TransactionCommandExecutorTest {
     void assertExecuteWithClassificationResult() {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseRuntime());
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseExecutionBackend());
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify("BEGIN"));
         
@@ -94,7 +95,7 @@ class TransactionCommandExecutorTest {
     void assertExecuteWithInvalidCommand() {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseRuntime());
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseExecutionBackend());
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify("SELECT 1"));
         
@@ -107,7 +108,7 @@ class TransactionCommandExecutorTest {
     void assertExecuteWithNoActiveTransaction() {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseRuntime());
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, createDatabaseExecutionBackend());
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify("COMMIT"));
         
@@ -130,7 +131,7 @@ class TransactionCommandExecutorTest {
         return new DatabaseCapabilityAssembler(new DatabaseMetadataSnapshots(Collections.emptyMap()));
     }
     
-    private DatabaseExecutionBackend createDatabaseRuntime() {
-        return new DatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap());
+    private DatabaseExecutionBackend createDatabaseExecutionBackend() {
+        return new FixtureDatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap());
     }
 }
