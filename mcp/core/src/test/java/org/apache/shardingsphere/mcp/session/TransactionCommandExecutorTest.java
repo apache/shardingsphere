@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -127,7 +127,7 @@ class TransactionCommandExecutorTest {
     }
     
     private DatabaseCapabilityAssembler createCapabilityAssembler() {
-        return new DatabaseCapabilityAssembler(new MetadataCatalog(Collections.emptyMap()));
+        return new DatabaseCapabilityAssembler(new DatabaseMetadataSnapshots(Collections.emptyMap()));
     }
     
     private DatabaseRuntime createDatabaseRuntime() {

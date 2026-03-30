@@ -43,7 +43,7 @@ class MCPRuntimeContextBuilderTest {
         MCPRuntimeContext actual = builder.build(H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl));
         assertNotNull(actual.getSessionManager());
         assertNotNull(actual.getDatabaseRuntime());
-        assertThat(actual.getMetadataCatalog().getDatabaseTypes().get("logic_db"), is("H2"));
+        assertThat(actual.getDatabaseMetadataSnapshots().getDatabaseTypes().get("logic_db"), is("H2"));
     }
     
     @Test

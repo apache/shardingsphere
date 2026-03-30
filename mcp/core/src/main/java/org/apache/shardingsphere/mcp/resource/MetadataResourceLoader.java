@@ -35,24 +35,24 @@ public final class MetadataResourceLoader {
     /**
      * Load one metadata resource view from the supplied catalog.
      *
-     * @param metadataCatalog metadata catalog
+     * @param databaseMetadataSnapshots database metadata snapshots
      * @param resourceRequest resource request
      * @return loaded metadata resource result
      */
-    public ResourceLoadResult load(final MetadataCatalog metadataCatalog, final ResourceRequest resourceRequest) {
+    public ResourceLoadResult load(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final ResourceRequest resourceRequest) {
         if (MetadataObjectType.DATABASE == resourceRequest.getObjectType()) {
-            return ResourceLoadResult.success(filterDatabases(metadataCatalog, resourceRequest));
+            return ResourceLoadResult.success(filterDatabases(databaseMetadataSnapshots, resourceRequest));
         }
-        Optional<DatabaseCapability> databaseCapability = resolveDatabaseCapability(metadataCatalog, resourceRequest.getDatabase());
+        Optional<DatabaseCapability> databaseCapability = resolveDatabaseCapability(databaseMetadataSnapshots, resourceRequest.getDatabase());
         if (MetadataObjectType.INDEX == resourceRequest.getObjectType() && !supportsObjectType(databaseCapability, MetadataObjectType.INDEX)) {
             return ResourceLoadResult.error(MCPErrorCode.UNSUPPORTED, "Index resources are not supported for the current database.");
         }
-        return ResourceLoadResult.success(filterMetadataObjects(metadataCatalog, resourceRequest, databaseCapability));
+        return ResourceLoadResult.success(filterMetadataObjects(databaseMetadataSnapshots, resourceRequest, databaseCapability));
     }
     
-    private List<MetadataObject> filterDatabases(final MetadataCatalog metadataCatalog, final ResourceRequest resourceRequest) {
+    private List<MetadataObject> filterDatabases(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final ResourceRequest resourceRequest) {
         List<MetadataObject> result = new LinkedList<>();
-        for (String each : metadataCatalog.getDatabaseTypes().keySet()) {
+        for (String each : databaseMetadataSnapshots.getDatabaseTypes().keySet()) {
             if (resourceRequest.getObjectName().isEmpty() || each.equals(resourceRequest.getObjectName())) {
                 result.add(new MetadataObject(each, "", MetadataObjectType.DATABASE, each, "", ""));
             }
@@ -60,15 +60,15 @@ public final class MetadataResourceLoader {
         return sortMetadataObjects(result);
     }
     
-    private Optional<DatabaseCapability> resolveDatabaseCapability(final MetadataCatalog metadataCatalog, final String databaseName) {
-        metadataCatalog.findDatabaseType(databaseName).orElseThrow(() -> new IllegalStateException("Database does not exist."));
-        return new DatabaseCapabilityAssembler(metadataCatalog).assembleDatabaseCapability(databaseName);
+    private Optional<DatabaseCapability> resolveDatabaseCapability(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName) {
+        databaseMetadataSnapshots.findDatabaseType(databaseName).orElseThrow(() -> new IllegalStateException("Database does not exist."));
+        return new DatabaseCapabilityAssembler(databaseMetadataSnapshots).assembleDatabaseCapability(databaseName);
     }
     
-    private List<MetadataObject> filterMetadataObjects(final MetadataCatalog metadataCatalog, final ResourceRequest resourceRequest,
+    private List<MetadataObject> filterMetadataObjects(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final ResourceRequest resourceRequest,
                                                        final Optional<DatabaseCapability> databaseCapability) {
         List<MetadataObject> result = new LinkedList<>();
-        for (MetadataObject each : metadataCatalog.getMetadataObjects()) {
+        for (MetadataObject each : databaseMetadataSnapshots.getMetadataObjects()) {
             if (!resourceRequest.getDatabase().equals(each.getDatabase())) {
                 continue;
             }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.jdbc;
 
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
@@ -49,16 +49,16 @@ class MCPJdbcDatabaseRuntimeFactoryTest {
         String secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "factory-refresh-second");
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
         H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
-        Map<String, RuntimeDatabaseConfiguration> connectionConfigurations = Map.of(
+        Map<String, RuntimeDatabaseConfiguration> connectionConfigs = Map.of(
                 "logic_db", new RuntimeDatabaseConfiguration("H2", firstJdbcUrl, "", "", "org.h2.Driver"),
                 "analytics_db", new RuntimeDatabaseConfiguration("H2", secondJdbcUrl, "", "", "org.h2.Driver"));
-        MetadataCatalog metadataCatalog = jdbcMetadataLoader.load(connectionConfigurations);
-        DatabaseRuntime actual = databaseRuntimeFactory.create(connectionConfigurations, metadataCatalog);
+        DatabaseMetadataSnapshots databaseMetadataSnapshots = jdbcMetadataLoader.load(connectionConfigs);
+        DatabaseRuntime actual = databaseRuntimeFactory.create(connectionConfigs, databaseMetadataSnapshots);
         H2RuntimeTestSupport.executeStatements(firstJdbcUrl, "CREATE TABLE public.orders_archive (order_id INT PRIMARY KEY)");
         actual.refreshMetadata("logic_db");
-        assertTrue(metadataCatalog.getDatabaseTypes().containsKey("analytics_db"));
-        assertThat(metadataCatalog.getMetadataObjects().stream().filter(each -> "logic_db".equals(each.getDatabase())).map(MetadataObject::getName).toList(), hasItems("orders_archive"));
-        assertThat(metadataCatalog.getMetadataObjects().stream().filter(each -> "analytics_db".equals(each.getDatabase())).map(MetadataObject::getName).toList(), hasItems("orders"));
+        assertTrue(databaseMetadataSnapshots.getDatabaseTypes().containsKey("analytics_db"));
+        assertThat(databaseMetadataSnapshots.getMetadataObjects().stream().filter(each -> "logic_db".equals(each.getDatabase())).map(MetadataObject::getName).toList(), hasItems("orders_archive"));
+        assertThat(databaseMetadataSnapshots.getMetadataObjects().stream().filter(each -> "analytics_db".equals(each.getDatabase())).map(MetadataObject::getName).toList(), hasItems("orders"));
     }
     
     @Test
@@ -66,12 +66,12 @@ class MCPJdbcDatabaseRuntimeFactoryTest {
         MCPJdbcDatabaseRuntimeFactory databaseRuntimeFactory = new MCPJdbcDatabaseRuntimeFactory();
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabaseConfigs = Map.of(
                 "logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.example.MissingDriver"));
-        MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of("logic_db",
+        DatabaseMetadataSnapshots databaseMetadataSnapshots = new DatabaseMetadataSnapshots(Map.of("logic_db",
                 new DatabaseMetadataSnapshot("H2", List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", "")))));
-        DatabaseRuntime actual = databaseRuntimeFactory.create(runtimeDatabaseConfigs, metadataCatalog);
+        DatabaseRuntime actual = databaseRuntimeFactory.create(runtimeDatabaseConfigs, databaseMetadataSnapshots);
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> actual.refreshMetadata("logic_db"));
         assertThat(ex.getMessage(), is("JDBC driver `org.example.MissingDriver` is not available for database `logic_db`."));
-        assertTrue(metadataCatalog.getDatabaseTypes().containsKey("logic_db"));
-        assertThat(metadataCatalog.getMetadataObjects().stream().map(MetadataObject::getName).toList(), hasItems("orders"));
+        assertTrue(databaseMetadataSnapshots.getDatabaseTypes().containsKey("logic_db"));
+        assertThat(databaseMetadataSnapshots.getMetadataObjects().stream().map(MetadataObject::getName).toList(), hasItems("orders"));
     }
 }

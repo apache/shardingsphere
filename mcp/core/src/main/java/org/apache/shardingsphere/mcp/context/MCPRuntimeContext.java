@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
 import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
@@ -41,7 +41,7 @@ public final class MCPRuntimeContext {
     
     private final MCPSessionManager sessionManager;
     
-    private final MetadataCatalog metadataCatalog;
+    private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     
     private final DatabaseRuntime databaseRuntime;
     

@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.mcp.capability;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 
@@ -28,24 +29,16 @@ import java.util.Set;
 /**
  * Assemble MCP service-level and database-level capability views.
  */
+@RequiredArgsConstructor
 public final class DatabaseCapabilityAssembler {
     
     private static final Set<StatementClass> SUPPORTED_STATEMENT_CLASSES = Set.of(StatementClass.values());
     
-    private final MetadataCatalog metadataCatalog;
+    private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     
     private final ResourceUriResolver resourceUriResolver = new ResourceUriResolver();
     
     private final MCPToolCatalog toolCatalog = new MCPToolCatalog();
-    
-    /**
-     * Construct an assembler with runtime metadata facts.
-     *
-     * @param metadataCatalog metadata catalog
-     */
-    public DatabaseCapabilityAssembler(final MetadataCatalog metadataCatalog) {
-        this.metadataCatalog = metadataCatalog;
-    }
     
     /**
      * Assemble the service-level capability surface.
@@ -63,10 +56,10 @@ public final class DatabaseCapabilityAssembler {
      * @return database-level capability when the database type is supported
      */
     public Optional<DatabaseCapability> assembleDatabaseCapability(final String databaseName) {
-        if (null == metadataCatalog) {
+        if (null == databaseMetadataSnapshots) {
             return Optional.empty();
         }
-        Optional<String> databaseType = metadataCatalog.findDatabaseType(databaseName);
+        Optional<String> databaseType = databaseMetadataSnapshots.findDatabaseType(databaseName);
         return databaseType.isPresent() ? assembleDatabaseCapability(databaseName, databaseType.get()) : Optional.empty();
     }
     
@@ -82,10 +75,10 @@ public final class DatabaseCapabilityAssembler {
     }
     
     private String getDatabaseVersion(final String databaseName) {
-        if (null == metadataCatalog) {
+        if (null == databaseMetadataSnapshots) {
             return "";
         }
-        Optional<DatabaseMetadataSnapshot> databaseSnapshot = metadataCatalog.findDatabaseSnapshot(databaseName);
+        Optional<DatabaseMetadataSnapshot> databaseSnapshot = databaseMetadataSnapshots.findDatabaseSnapshot(databaseName);
         return databaseSnapshot.map(DatabaseMetadataSnapshot::getDatabaseVersion).orElse("");
     }
 }

@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Collection;
 
 /**
- * Per-database metadata snapshot with runtime facts.
+ * Database metadata snapshot.
  */
 @RequiredArgsConstructor
 @Getter

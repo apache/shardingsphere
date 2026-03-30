@@ -50,7 +50,7 @@ public final class MCPResourcePayloadResolver {
             case DATABASE_CAPABILITIES:
                 return resolveDatabaseCapabilityPayload(resolution.get().getDatabase().orElse(""));
             default:
-                return toResourcePayload(runtimeContext.getMetadataResourceLoader().load(runtimeContext.getMetadataCatalog(), resolution.get().getResourceRequest().orElseThrow()));
+                return toResourcePayload(runtimeContext.getMetadataResourceLoader().load(runtimeContext.getDatabaseMetadataSnapshots(), resolution.get().getResourceRequest().orElseThrow()));
         }
     }
     

@@ -80,8 +80,8 @@ public final class MCPToolPayloadResolver {
     }
     
     private MCPToolPayloadResult resolveMetadataTool(final String toolName, final Map<String, Object> arguments) {
-        ToolDispatchResult result = runtimeContext.getMetadataToolDispatcher().dispatch(runtimeContext.getMetadataCatalog(),
-                runtimeContext.getToolCatalog().createMetadataToolRequest(toolName, arguments));
+        ToolDispatchResult result = runtimeContext.getMetadataToolDispatcher().dispatch(
+                runtimeContext.getDatabaseMetadataSnapshots(), runtimeContext.getToolCatalog().createMetadataToolRequest(toolName, arguments));
         if (!result.isSuccessful()) {
             return error(runtimeContext.getPayloadBuilder().toDomainErrorCode(result.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST)), result.getMessage());
         }

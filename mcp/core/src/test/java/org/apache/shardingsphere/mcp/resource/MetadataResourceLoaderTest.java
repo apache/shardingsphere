@@ -43,7 +43,7 @@ class MetadataResourceLoaderTest {
     @Test
     void assertLoadDatabases() {
         MetadataResourceLoader loader = createLoader();
-        ResourceLoadResult actual = loader.load(createMetadataCatalog(), new ResourceRequest("", "", MetadataObjectType.DATABASE, "", "", ""));
+        ResourceLoadResult actual = loader.load(createDatabaseMetadataSnapshots(), new ResourceRequest("", "", MetadataObjectType.DATABASE, "", "", ""));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(3));
         assertThat(actual.getMetadataObjects().get(0).getName(), is("analytics_db"));
@@ -53,7 +53,7 @@ class MetadataResourceLoaderTest {
     @Test
     void assertLoadDatabaseByObjectName() {
         MetadataResourceLoader loader = createLoader();
-        ResourceLoadResult actual = loader.load(createMetadataCatalog(), new ResourceRequest("", "", MetadataObjectType.DATABASE, "logic_db", "", ""));
+        ResourceLoadResult actual = loader.load(createDatabaseMetadataSnapshots(), new ResourceRequest("", "", MetadataObjectType.DATABASE, "logic_db", "", ""));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(1));
         assertThat(actual.getMetadataObjects().get(0).getName(), is("logic_db"));
@@ -62,7 +62,7 @@ class MetadataResourceLoaderTest {
     @Test
     void assertLoadTableMetadata() {
         MetadataResourceLoader loader = createLoader();
-        ResourceLoadResult actual = loader.load(createMetadataCatalog(), new ResourceRequest("logic_db", "public", MetadataObjectType.TABLE, "", "", ""));
+        ResourceLoadResult actual = loader.load(createDatabaseMetadataSnapshots(), new ResourceRequest("logic_db", "public", MetadataObjectType.TABLE, "", "", ""));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(2));
         assertThat(actual.getMetadataObjects().get(0).getName(), is("order_items"));
@@ -72,7 +72,7 @@ class MetadataResourceLoaderTest {
     @Test
     void assertLoadColumnsByParentObject() {
         MetadataResourceLoader loader = createLoader();
-        ResourceLoadResult actual = loader.load(createMetadataCatalog(), new ResourceRequest("logic_db", "public", MetadataObjectType.COLUMN, "", "TABLE", "orders"));
+        ResourceLoadResult actual = loader.load(createDatabaseMetadataSnapshots(), new ResourceRequest("logic_db", "public", MetadataObjectType.COLUMN, "", "TABLE", "orders"));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(2));
         assertThat(actual.getMetadataObjects().get(0).getName(), is("order_id"));
@@ -82,7 +82,7 @@ class MetadataResourceLoaderTest {
     @Test
     void assertLoadWithUnsupportedIndexResource() {
         MetadataResourceLoader loader = createLoader();
-        ResourceLoadResult actual = loader.load(createMetadataCatalog(), new ResourceRequest("warehouse", "warehouse", MetadataObjectType.INDEX, "", "TABLE", "facts"));
+        ResourceLoadResult actual = loader.load(createDatabaseMetadataSnapshots(), new ResourceRequest("warehouse", "warehouse", MetadataObjectType.INDEX, "", "TABLE", "facts"));
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
         assertThat(actual.getErrorCode().get(), is(MCPErrorCode.UNSUPPORTED));
@@ -92,7 +92,7 @@ class MetadataResourceLoaderTest {
     @Test
     void assertLoadWithExcludedObjectType() {
         MetadataResourceLoader loader = createLoader();
-        ResourceLoadResult actual = loader.load(createMetadataCatalog(), new ResourceRequest("logic_db", "public", MetadataObjectType.MATERIALIZED_VIEW, "", "", ""));
+        ResourceLoadResult actual = loader.load(createDatabaseMetadataSnapshots(), new ResourceRequest("logic_db", "public", MetadataObjectType.MATERIALIZED_VIEW, "", "", ""));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(0));
     }
@@ -101,23 +101,23 @@ class MetadataResourceLoaderTest {
     void assertLoadWithUnknownDatabase() {
         MetadataResourceLoader loader = createLoader();
         IllegalStateException actual = assertThrows(IllegalStateException.class,
-                () -> loader.load(createMetadataCatalog(), new ResourceRequest("missing_db", "public", MetadataObjectType.TABLE, "", "", "")));
+                () -> loader.load(createDatabaseMetadataSnapshots(), new ResourceRequest("missing_db", "public", MetadataObjectType.TABLE, "", "", "")));
         assertThat(actual.getMessage(), is("Database does not exist."));
     }
     
     @Test
     void assertReplaceDatabaseSnapshot() {
-        MetadataCatalog metadataCatalog = createMetadataCatalog();
-        metadataCatalog.replaceDatabaseSnapshot("logic_db", new DatabaseMetadataSnapshot("MySQL",
+        DatabaseMetadataSnapshots databaseMetadataSnapshots = createDatabaseMetadataSnapshots();
+        databaseMetadataSnapshots.replaceDatabaseSnapshot("logic_db", new DatabaseMetadataSnapshot("MySQL",
                 "", List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders_archive", "", ""))));
-        assertThat(metadataCatalog.getDatabaseTypes().size(), is(3));
-        assertThat(metadataCatalog.getMetadataObjects().stream().filter(each -> "logic_db".equals(each.getDatabase())).map(MetadataObject::getName).toList(),
+        assertThat(databaseMetadataSnapshots.getDatabaseTypes().size(), is(3));
+        assertThat(databaseMetadataSnapshots.getMetadataObjects().stream().filter(each -> "logic_db".equals(each.getDatabase())).map(MetadataObject::getName).toList(),
                 is(List.of("orders_archive")));
-        assertThat(metadataCatalog.getMetadataObjects().stream().filter(each -> "analytics_db".equals(each.getDatabase())).map(MetadataObject::getName).toList(),
+        assertThat(databaseMetadataSnapshots.getMetadataObjects().stream().filter(each -> "analytics_db".equals(each.getDatabase())).map(MetadataObject::getName).toList(),
                 is(List.of("public", "metrics", "metric_id")));
     }
     
-    private MetadataCatalog createMetadataCatalog() {
+    private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
         Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
         databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", List.of(
                 new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
@@ -137,7 +137,7 @@ class MetadataResourceLoaderTest {
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""),
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.TABLE, "facts", "", ""),
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.COLUMN, "fact_id", "TABLE", "facts"))));
-        return new MetadataCatalog(databaseSnapshots);
+        return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     
     private MetadataResourceLoader createLoader() {

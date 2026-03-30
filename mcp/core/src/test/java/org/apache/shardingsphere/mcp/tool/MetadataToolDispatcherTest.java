@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
@@ -55,7 +55,7 @@ class MetadataToolDispatcherTest {
     void assertDispatchListDatabases() {
         MetadataToolDispatcher dispatcher = createDispatcher();
         
-        ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("list_databases", "", "", "", "", "", Set.of(), 10, ""));
+        ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("list_databases", "", "", "", "", "", Set.of(), 10, ""));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(3));
@@ -67,7 +67,7 @@ class MetadataToolDispatcherTest {
     void assertDispatchListTablesWithPagination() {
         MetadataToolDispatcher dispatcher = createDispatcher();
         
-        ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("list_tables", "logic_db", "public", "", "", "order", Set.of(), 1, ""));
+        ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("list_tables", "logic_db", "public", "", "", "order", Set.of(), 1, ""));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(1));
@@ -85,7 +85,7 @@ class MetadataToolDispatcherTest {
         objectTypes.add(MetadataObjectType.MATERIALIZED_VIEW);
         objectTypes.add(MetadataObjectType.SEQUENCE);
         
-        ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("search_metadata", "", "", "", "", "order", objectTypes, 20, ""));
+        ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("search_metadata", "", "", "", "", "order", objectTypes, 20, ""));
         
         Set<String> actualNames = new LinkedHashSet<>();
         for (MetadataObject each : actual.getMetadataObjects()) {
@@ -104,7 +104,7 @@ class MetadataToolDispatcherTest {
     void assertDispatchSearchMetadataWithSchemaWithoutDatabase() {
         MetadataToolDispatcher dispatcher = createDispatcher();
         
-        ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("search_metadata", "", "public", "", "", "order", Set.of(), 10, ""));
+        ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("search_metadata", "", "public", "", "", "order", Set.of(), 10, ""));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
@@ -116,7 +116,7 @@ class MetadataToolDispatcherTest {
     void assertDispatchDescribeView() {
         MetadataToolDispatcher dispatcher = createDispatcher();
         
-        ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("describe_view", "logic_db", "public", "active_orders", "", "", Set.of(), 10, ""));
+        ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("describe_view", "logic_db", "public", "active_orders", "", "", Set.of(), 10, ""));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(1));
@@ -128,7 +128,7 @@ class MetadataToolDispatcherTest {
     void assertDispatchListIndexesWithUnsupportedDatabaseType() {
         MetadataToolDispatcher dispatcher = createDispatcher();
         
-        ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("list_indexes", "warehouse", "warehouse", "facts", "", "", Set.of(), 10, ""));
+        ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("list_indexes", "warehouse", "warehouse", "facts", "", "", Set.of(), 10, ""));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
@@ -139,7 +139,7 @@ class MetadataToolDispatcherTest {
     void assertDispatchWithInvalidPageToken() {
         MetadataToolDispatcher dispatcher = createDispatcher();
         
-        ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, "invalid"));
+        ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, "invalid"));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
@@ -151,7 +151,7 @@ class MetadataToolDispatcherTest {
     void assertDispatchWithPageOffsetBeyondResultSize() {
         MetadataToolDispatcher dispatcher = createDispatcher();
         
-        ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, "99"));
+        ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, "99"));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(0));
@@ -162,7 +162,7 @@ class MetadataToolDispatcherTest {
     void assertDispatchWithUnsupportedTool() {
         MetadataToolDispatcher dispatcher = createDispatcher();
         
-        ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), new ToolRequest("unsupported_tool", "", "", "", "", "", Set.of(), 10, ""));
+        ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("unsupported_tool", "", "", "", "", "", Set.of(), 10, ""));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
@@ -175,7 +175,7 @@ class MetadataToolDispatcherTest {
     void assertDispatchWithMissingRequiredField(final String name, final ToolRequest toolRequest, final String expectedMessage) {
         MetadataToolDispatcher dispatcher = createDispatcher();
         
-        ToolDispatchResult actual = dispatcher.dispatch(createMetadataCatalog(), toolRequest);
+        ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), toolRequest);
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
@@ -193,7 +193,7 @@ class MetadataToolDispatcherTest {
                         "Database, schema, and object name are required."));
     }
     
-    private MetadataCatalog createMetadataCatalog() {
+    private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
         Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
         databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", List.of(
                 new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
@@ -213,7 +213,7 @@ class MetadataToolDispatcherTest {
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""),
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.TABLE, "facts", "", ""),
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.COLUMN, "fact_id", "TABLE", "facts"))));
-        return new MetadataCatalog(databaseSnapshots);
+        return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     
     private MetadataToolDispatcher createDispatcher() {

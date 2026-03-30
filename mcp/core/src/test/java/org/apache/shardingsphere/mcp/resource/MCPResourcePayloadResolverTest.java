@@ -37,7 +37,6 @@ class MCPResourcePayloadResolverTest {
     @Test
     void assertResolveWithUnsupportedResourceUri() {
         Object actual = createResolver().resolve("unsupported://resource");
-        
         assertThat(actual, isA(Map.class));
         assertThat(((Map<?, ?>) actual).get("error_code"), is("invalid_request"));
         assertThat(((Map<?, ?>) actual).get("message"), is("Unsupported resource URI."));
@@ -46,7 +45,6 @@ class MCPResourcePayloadResolverTest {
     @Test
     void assertResolveServiceCapabilities() {
         Object actual = createResolver().resolve("shardingsphere://capabilities");
-        
         assertThat(actual, isA(ServiceCapability.class));
         assertTrue(((ServiceCapability) actual).getSupportedResources().contains("shardingsphere://databases/{database}/capabilities"));
         assertTrue(((ServiceCapability) actual).getSupportedTools().contains("get_capabilities"));
@@ -55,7 +53,6 @@ class MCPResourcePayloadResolverTest {
     @Test
     void assertResolveDatabaseCapabilities() {
         Object actual = createResolver().resolve("shardingsphere://databases/logic_db/capabilities");
-        
         assertThat(actual, isA(Map.class));
         assertThat(((Map<?, ?>) actual).get("database"), is("logic_db"));
         assertThat(((Map<?, ?>) actual).get("databaseType"), is("MySQL"));
@@ -65,7 +62,6 @@ class MCPResourcePayloadResolverTest {
     @Test
     void assertResolveWithUnknownDatabaseCapabilities() {
         Object actual = createResolver().resolve("shardingsphere://databases/missing_db/capabilities");
-        
         assertThat(actual, isA(Map.class));
         assertThat(((Map<?, ?>) actual).get("error_code"), is("not_found"));
         assertThat(((Map<?, ?>) actual).get("message"), is("Database capability does not exist."));
@@ -74,7 +70,6 @@ class MCPResourcePayloadResolverTest {
     @Test
     void assertResolveMetadataItems() {
         Object actual = createResolver().resolve("shardingsphere://databases/logic_db/schemas/public/tables");
-        
         assertThat(actual, isA(Map.class));
         assertThat(((List<?>) ((Map<?, ?>) actual).get("items")).size(), is(2));
         assertThat(((MetadataObject) ((List<?>) ((Map<?, ?>) actual).get("items")).get(0)).getName(), is("order_items"));
@@ -83,18 +78,16 @@ class MCPResourcePayloadResolverTest {
     @Test
     void assertResolveWithUnsupportedIndexResource() {
         Object actual = createResolver().resolve("shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes");
-        
         assertThat(actual, isA(Map.class));
         assertThat(((Map<?, ?>) actual).get("error_code"), is("unsupported"));
         assertThat(((Map<?, ?>) actual).get("message"), is("Index resources are not supported for the current database."));
     }
     
     private MCPResourcePayloadResolver createResolver() {
-        return new MCPResourcePayloadResolver(new MCPRuntimeContextTestBuilder().build(createMetadataCatalog(),
-                new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap())));
+        return new MCPResourcePayloadResolver(new MCPRuntimeContextTestBuilder().build(createDatabaseMetadataSnapshots(), new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap())));
     }
     
-    private MetadataCatalog createMetadataCatalog() {
+    private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
         Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
         databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", List.of(
                 new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
@@ -103,6 +96,6 @@ class MCPResourcePayloadResolverTest {
         databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot("Hive", List.of(
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""),
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.TABLE, "facts", "", ""))));
-        return new MetadataCatalog(databaseSnapshots);
+        return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
 }

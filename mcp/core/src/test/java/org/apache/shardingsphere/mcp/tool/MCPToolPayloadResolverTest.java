@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.QueryResult;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
@@ -108,17 +108,17 @@ class MCPToolPayloadResolverTest {
     }
     
     private MCPToolPayloadResolver createResolver() {
-        return new MCPToolPayloadResolver(new MCPRuntimeContextTestBuilder().build(createMetadataCatalog(), createDatabaseRuntime()));
+        return new MCPToolPayloadResolver(new MCPRuntimeContextTestBuilder().build(createDatabaseMetadataSnapshots(), createDatabaseRuntime()));
     }
     
-    private MetadataCatalog createMetadataCatalog() {
+    private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
         Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
         databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", List.of(
                 new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
                 new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""))));
         databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot("Hive", List.of(
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""))));
-        return new MetadataCatalog(databaseSnapshots);
+        return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     
     private DatabaseRuntime createDatabaseRuntime() {

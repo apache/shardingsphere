@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.QueryResult;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.AfterEach;
@@ -156,7 +156,7 @@ abstract class AbstractMCPE2ETest {
         return castToMap(payload.get(key));
     }
     
-    protected final MetadataCatalog createMetadataCatalog() {
+    protected final DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
         Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
         databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", List.of(
                 new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
@@ -176,7 +176,7 @@ abstract class AbstractMCPE2ETest {
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""),
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.TABLE, "facts", "", ""),
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.COLUMN, "fact_id", "TABLE", "facts"))));
-        return new MetadataCatalog(databaseSnapshots);
+        return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     
     protected final DatabaseRuntime createDatabaseRuntime() {
@@ -196,10 +196,10 @@ abstract class AbstractMCPE2ETest {
     }
     
     private void launchRuntimeInternal() {
-        MetadataCatalog metadataCatalog = createMetadataCatalog();
+        DatabaseMetadataSnapshots databaseMetadataSnapshots = createDatabaseMetadataSnapshots();
         DatabaseRuntime databaseRuntime = createDatabaseRuntime();
         StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH),
-                runtimeContextTestBuilder.build(metadataCatalog, databaseRuntime));
+                runtimeContextTestBuilder.build(databaseMetadataSnapshots, databaseRuntime));
         try {
             httpServer.start();
         } catch (final IOException ex) {

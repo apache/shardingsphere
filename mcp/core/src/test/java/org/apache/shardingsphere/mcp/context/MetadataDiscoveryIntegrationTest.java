@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.context;
 
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -29,14 +29,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MetadataDiscoveryIntegrationTest {
     
     private MCPRuntimeContext createRuntimeContext() {
-        return new MCPRuntimeContextTestBuilder().build(new MetadataCatalog(Collections.emptyMap()),
-                new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
+        return new MCPRuntimeContextTestBuilder().build(new DatabaseMetadataSnapshots(Collections.emptyMap()), new DatabaseRuntime(Collections.emptyMap(), Collections.emptyMap()));
     }
     
     @Test
     void assertDefaultResources() {
         ServiceCapability actual = createRuntimeContext().getCapabilityAssembler().assembleServiceCapability();
-        
         assertTrue(actual.getSupportedResources().contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes"));
         assertTrue(actual.getSupportedResources().contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}"));
     }
@@ -44,7 +42,6 @@ class MetadataDiscoveryIntegrationTest {
     @Test
     void assertDefaultServiceCapability() {
         ServiceCapability actual = createRuntimeContext().getCapabilityAssembler().assembleServiceCapability();
-        
         assertTrue(actual.getSupportedTools().contains("execute_query"));
         assertTrue(actual.getSupportedResources().contains("shardingsphere://capabilities"));
     }
@@ -52,7 +49,6 @@ class MetadataDiscoveryIntegrationTest {
     @Test
     void assertDefaultTools() {
         ServiceCapability actual = createRuntimeContext().getCapabilityAssembler().assembleServiceCapability();
-        
         assertTrue(actual.getSupportedTools().contains("search_metadata"));
         assertTrue(actual.getSupportedTools().contains("describe_table"));
     }

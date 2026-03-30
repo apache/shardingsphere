@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.jdbc;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 
@@ -45,13 +45,13 @@ public final class MCPJdbcMetadataLoader {
     private static final Set<String> SYSTEM_SCHEMAS = Set.of("INFORMATION_SCHEMA", "PG_CATALOG", "SYSTEM_LOBS");
     
     /**
-     * Load metadata catalog.
+     * Load database metadata snapshots.
      *
      * @param runtimeDatabases runtime database configurations
-     * @return metadata catalog
+     * @return loaded database metadata snapshots
      * @throws IllegalStateException when runtime metadata cannot be loaded from one configured database
      */
-    public MetadataCatalog load(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+    public DatabaseMetadataSnapshots load(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
         for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
             String databaseName = entry.getKey();
@@ -61,7 +61,7 @@ public final class MCPJdbcMetadataLoader {
                 throw new IllegalStateException(String.format("Failed to load metadata for database `%s`.", databaseName), ex);
             }
         }
-        return new MetadataCatalog(databaseSnapshots);
+        return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     
     private DatabaseMetadataSnapshot loadDatabaseSnapshot(final String databaseName, final String databaseType, final DatabaseMetaData databaseMetaData) throws SQLException {

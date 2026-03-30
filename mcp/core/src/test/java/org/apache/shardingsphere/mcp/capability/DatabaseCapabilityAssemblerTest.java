@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.capability;
 
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
@@ -92,12 +92,9 @@ class DatabaseCapabilityAssemblerTest {
     
     @Test
     void assertAssembleDatabaseCapabilityWithRuntimeOverlay() {
-        MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of(
-                "logic_db", new DatabaseMetadataSnapshot("MySQL", "8.0.32", Collections.emptyList())));
-        DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler(metadataCatalog);
-        
+        DatabaseMetadataSnapshots snapshots = new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("MySQL", "8.0.32", Collections.emptyList())));
+        DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler(snapshots);
         Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db");
-        
         assertTrue(actualCapability.isPresent());
         assertTrue(actualCapability.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
         assertFalse(actualCapability.get().isSupportsCrossSchemaSql());
@@ -121,7 +118,7 @@ class DatabaseCapabilityAssemblerTest {
     }
     
     private DatabaseCapabilityAssembler createAssembler() {
-        return new DatabaseCapabilityAssembler(new MetadataCatalog(Map.of(
+        return new DatabaseCapabilityAssembler(new DatabaseMetadataSnapshots(Map.of(
                 "logic_db", new DatabaseMetadataSnapshot("MySQL", Collections.emptyList()),
                 "warehouse", new DatabaseMetadataSnapshot("Hive", Collections.emptyList()))));
     }

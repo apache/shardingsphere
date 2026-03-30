@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ShardingSphereExecutionAdapter;
 import org.apache.shardingsphere.mcp.execute.ShardingSphereExecutionAdapter.ConnectionProvider;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -38,22 +38,21 @@ public final class MCPJdbcDatabaseRuntimeFactory {
      * Create one adapter-backed database runtime.
      *
      * @param runtimeDatabases runtime databases
-     * @param metadataCatalog metadata catalog
+     * @param databaseMetadataSnapshots database metadata snapshots
      * @return database runtime
      */
-    public DatabaseRuntime create(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final MetadataCatalog metadataCatalog) {
+    public DatabaseRuntime create(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
         Map<String, ConnectionProvider> connectionProviders = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
         for (Entry<String, RuntimeDatabaseConfiguration> each : runtimeDatabases.entrySet()) {
             connectionProviders.put(each.getKey(), () -> each.getValue().openConnection(each.getKey()));
         }
         ShardingSphereExecutionAdapter executionAdapter = new ShardingSphereExecutionAdapter(connectionProviders);
-        return new DatabaseRuntime(executionAdapter, database -> refreshMetadata(database, runtimeDatabases.get(database), metadataCatalog));
+        return new DatabaseRuntime(executionAdapter, database -> refreshMetadata(database, runtimeDatabases.get(database), databaseMetadataSnapshots));
     }
     
-    private void refreshMetadata(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final MetadataCatalog metadataCatalog) {
-        MetadataCatalog refreshedCatalog = new MCPJdbcMetadataLoader().load(Collections.singletonMap(databaseName, runtimeDatabaseConfig));
-        DatabaseMetadataSnapshot databaseSnapshot = Objects.requireNonNull(refreshedCatalog.findDatabaseSnapshot(databaseName).orElse(null),
-                "databaseSnapshot cannot be null");
-        metadataCatalog.replaceDatabaseSnapshot(databaseName, databaseSnapshot);
+    private void refreshMetadata(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
+        DatabaseMetadataSnapshots refreshedSnapshots = new MCPJdbcMetadataLoader().load(Collections.singletonMap(databaseName, runtimeDatabaseConfig));
+        DatabaseMetadataSnapshot databaseSnapshot = Objects.requireNonNull(refreshedSnapshots.findDatabaseSnapshot(databaseName).orElse(null), "databaseSnapshot cannot be null");
+        databaseMetadataSnapshots.replaceDatabaseSnapshot(databaseName, databaseSnapshot);
     }
 }

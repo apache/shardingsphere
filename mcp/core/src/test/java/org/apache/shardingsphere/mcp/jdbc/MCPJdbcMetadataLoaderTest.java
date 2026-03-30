@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.jdbc;
 
-import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
@@ -62,7 +62,7 @@ class MCPJdbcMetadataLoaderTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-        MetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
+        DatabaseMetadataSnapshots actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
         assertThat(actual.getDatabaseTypes().get("logic_db"), is("H2"));
         assertFalse(actual.findDatabaseSnapshot("logic_db").orElseThrow().getDatabaseVersion().isEmpty());
     }
@@ -73,7 +73,7 @@ class MCPJdbcMetadataLoaderTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader-" + objectName);
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-        MetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
+        DatabaseMetadataSnapshots actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
         assertTrue(containsMetadataObject(actual.getMetadataObjects(), objectType, objectName));
     }
     
@@ -86,7 +86,7 @@ class MCPJdbcMetadataLoaderTest {
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         Map<String, RuntimeDatabaseConfiguration> connectionConfigs = Map.of(
                 "logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl));
-        MetadataCatalog actual = metadataLoader.load(connectionConfigs);
+        DatabaseMetadataSnapshots actual = metadataLoader.load(connectionConfigs);
         assertThat(actual.getDatabaseTypes().size(), is(2));
         assertTrue(actual.findDatabaseSnapshot("analytics_db").isPresent());
     }
@@ -97,7 +97,7 @@ class MCPJdbcMetadataLoaderTest {
         Driver mockDriver = new MockDriver("jdbc:mock:no-schema", createConnectionWithoutSchema());
         DriverManager.registerDriver(mockDriver);
         try {
-            MetadataCatalog actual = metadataLoader.load(Map.of("logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mock:no-schema", "", "", "")));
+            DatabaseMetadataSnapshots actual = metadataLoader.load(Map.of("logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mock:no-schema", "", "", "")));
             assertFalse(actual.getMetadataObjects().stream().anyMatch(each -> MetadataObjectType.SCHEMA == each.getObjectType()));
             assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "orders"));
             assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.COLUMN, "order_id"));
@@ -112,7 +112,7 @@ class MCPJdbcMetadataLoaderTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader-shared-schema");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-        MetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
+        DatabaseMetadataSnapshots actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
         long actualSchemaCount = actual.getMetadataObjects().stream().filter(each -> MetadataObjectType.SCHEMA == each.getObjectType()).count();
         assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "orders"));
         assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.VIEW, "active_orders"));
