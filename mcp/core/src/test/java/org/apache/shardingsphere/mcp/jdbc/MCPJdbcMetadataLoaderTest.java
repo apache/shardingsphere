@@ -64,7 +64,7 @@ class MCPJdbcMetadataLoaderTest {
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         DatabaseMetadataSnapshots actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
         assertThat(actual.getDatabaseTypes().get("logic_db"), is("H2"));
-        assertFalse(actual.findDatabaseSnapshot("logic_db").orElseThrow().getDatabaseVersion().isEmpty());
+        assertFalse(actual.findSnapshot("logic_db").orElseThrow().getDatabaseVersion().isEmpty());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -88,7 +88,7 @@ class MCPJdbcMetadataLoaderTest {
                 "logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl));
         DatabaseMetadataSnapshots actual = metadataLoader.load(connectionConfigs);
         assertThat(actual.getDatabaseTypes().size(), is(2));
-        assertTrue(actual.findDatabaseSnapshot("analytics_db").isPresent());
+        assertTrue(actual.findSnapshot("analytics_db").isPresent());
     }
     
     @Test
@@ -101,7 +101,7 @@ class MCPJdbcMetadataLoaderTest {
             assertFalse(actual.getMetadataObjects().stream().anyMatch(each -> MetadataObjectType.SCHEMA == each.getObjectType()));
             assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "orders"));
             assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.COLUMN, "order_id"));
-            assertThat(actual.findDatabaseSnapshot("logic_db").orElseThrow().getDatabaseVersion(), is(""));
+            assertThat(actual.findSnapshot("logic_db").orElseThrow().getDatabaseVersion(), is(""));
         } finally {
             DriverManager.deregisterDriver(mockDriver);
         }

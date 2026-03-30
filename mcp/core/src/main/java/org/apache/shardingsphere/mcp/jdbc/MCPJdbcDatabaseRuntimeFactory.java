@@ -52,7 +52,7 @@ public final class MCPJdbcDatabaseRuntimeFactory {
     
     private void refreshMetadata(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
         DatabaseMetadataSnapshots refreshedSnapshots = new MCPJdbcMetadataLoader().load(Collections.singletonMap(databaseName, runtimeDatabaseConfig));
-        DatabaseMetadataSnapshot databaseSnapshot = Objects.requireNonNull(refreshedSnapshots.findDatabaseSnapshot(databaseName).orElse(null), "databaseSnapshot cannot be null");
-        databaseMetadataSnapshots.replaceDatabaseSnapshot(databaseName, databaseSnapshot);
+        DatabaseMetadataSnapshot databaseSnapshot = Objects.requireNonNull(refreshedSnapshots.findSnapshot(databaseName).orElse(null), "databaseSnapshot cannot be null");
+        databaseMetadataSnapshots.replaceSnapshot(databaseName, databaseSnapshot);
     }
 }

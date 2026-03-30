@@ -78,7 +78,7 @@ public final class DatabaseCapabilityAssembler {
         if (null == databaseMetadataSnapshots) {
             return "";
         }
-        Optional<DatabaseMetadataSnapshot> databaseSnapshot = databaseMetadataSnapshots.findDatabaseSnapshot(databaseName);
+        Optional<DatabaseMetadataSnapshot> databaseSnapshot = databaseMetadataSnapshots.findSnapshot(databaseName);
         return databaseSnapshot.map(DatabaseMetadataSnapshot::getDatabaseVersion).orElse("");
     }
 }

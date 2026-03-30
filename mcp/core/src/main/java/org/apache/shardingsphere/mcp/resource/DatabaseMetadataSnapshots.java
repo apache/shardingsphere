@@ -64,17 +64,17 @@ public final class DatabaseMetadataSnapshots {
      * @param databaseName database name
      * @return found database metadata snapshot
      */
-    public Optional<DatabaseMetadataSnapshot> findDatabaseSnapshot(final String databaseName) {
+    public Optional<DatabaseMetadataSnapshot> findSnapshot(final String databaseName) {
         return Optional.ofNullable(databaseSnapshots.get(databaseName));
     }
     
     /**
-     * Replace the metadata snapshot for one logical database.
+     * Replace database metadata snapshot.
      *
-     * @param databaseName logical database name
+     * @param databaseName database name
      * @param databaseSnapshot database metadata snapshot
      */
-    public void replaceDatabaseSnapshot(final String databaseName, final DatabaseMetadataSnapshot databaseSnapshot) {
+    public void replaceSnapshot(final String databaseName, final DatabaseMetadataSnapshot databaseSnapshot) {
         databaseSnapshots.put(databaseName, databaseSnapshot);
         databaseTypes.put(databaseName, databaseSnapshot.getDatabaseType());
         metadataObjects.clear();
