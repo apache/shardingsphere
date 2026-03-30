@@ -44,23 +44,11 @@ public final class DatabaseRuntime {
     
     private final Consumer<String> metadataRefresher;
     
-    /**
-     * Construct one in-memory execution runtime.
-     *
-     * @param queryResults query results keyed by {@code database:object}
-     * @param updateCounts update counts keyed by {@code database:object}
-     */
     public DatabaseRuntime(final Map<String, QueryResult> queryResults, final Map<String, Integer> updateCounts) {
         this(queryResults, updateCounts, null, ignored -> {
         });
     }
     
-    /**
-     * Construct one adapter-backed execution runtime.
-     *
-     * @param executionAdapter execution adapter
-     * @param metadataRefresher metadata refresh callback
-     */
     public DatabaseRuntime(final ShardingSphereExecutionAdapter executionAdapter, final Consumer<String> metadataRefresher) {
         this(Collections.emptyMap(), Collections.emptyMap(), executionAdapter, metadataRefresher);
     }
