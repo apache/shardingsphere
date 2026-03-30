@@ -15,60 +15,52 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.jdbc;
+package org.apache.shardingsphere.mcp.resource;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class RuntimeDatabaseConfigurationTest {
-    
-    @TempDir
-    private Path tempDir;
+class DatabaseMetadataSnapshotTest {
     
     @Test
-    void assertOpenConnectionWithoutDriverClassName() throws SQLException {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "connection-factory");
-        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        try (Connection actual = new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "").openConnection("logic_db")) {
-            assertFalse(actual.isClosed());
-        }
+    void assertConstruct() {
+        DatabaseMetadataSnapshot actual = new DatabaseMetadataSnapshot("MySQL", Collections.emptyList());
+        assertThat(actual.getDatabaseType(), is("MySQL"));
+        assertThat(actual.getDatabaseVersion(), is(""));
+        assertThat(actual.getMetadataObjects(), is(Collections.emptyList()));
     }
     
-    @SuppressWarnings("resource")
     @Test
-    void assertOpenConnectionWithUnavailableDriverClassName() {
-        IllegalStateException actual = assertThrows(IllegalStateException.class,
-                () -> new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:missing-driver", "", "", "org.example.MissingDriver").openConnection("logic_db"));
-        assertThat(actual.getMessage(), is("JDBC driver `org.example.MissingDriver` is not available for database `logic_db`."));
+    void assertConstructWithDatabaseVersion() {
+        DatabaseMetadataSnapshot actual = new DatabaseMetadataSnapshot("MySQL", "8.0.32", Collections.emptyList());
+        assertThat(actual.getDatabaseType(), is("MySQL"));
+        assertThat(actual.getDatabaseVersion(), is("8.0.32"));
+        assertThat(actual.getMetadataObjects(), is(Collections.emptyList()));
     }
     
     @Test
     void assertConstructWithNullDatabaseType() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> new RuntimeDatabaseConfiguration(null, "jdbc:h2:mem:logic", "", "", ""));
+                () -> new DatabaseMetadataSnapshot(null, Collections.emptyList()));
         assertThat(actual.getMessage(), is("databaseType cannot be null."));
     }
     
     @Test
     void assertConstructWithEmptyDatabaseType() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> new RuntimeDatabaseConfiguration("", "jdbc:h2:mem:logic", "", "", ""));
+                () -> new DatabaseMetadataSnapshot("", Collections.emptyList()));
         assertThat(actual.getMessage(), is("databaseType cannot be empty."));
     }
     
     @Test
     void assertConstructWithBlankDatabaseType() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> new RuntimeDatabaseConfiguration("   ", "jdbc:h2:mem:logic", "", "", ""));
+                () -> new DatabaseMetadataSnapshot("   ", Collections.emptyList()));
         assertThat(actual.getMessage(), is("databaseType cannot be empty."));
     }
 }

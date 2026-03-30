@@ -18,14 +18,13 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 
 /**
  * Per-database metadata snapshot with runtime facts.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DatabaseMetadataSnapshot {
     
@@ -35,7 +34,19 @@ public final class DatabaseMetadataSnapshot {
     
     private final Collection<MetadataObject> metadataObjects;
     
+    public DatabaseMetadataSnapshot(final String databaseType, final String databaseVersion, final Collection<MetadataObject> metadataObjects) {
+        this.databaseType = validateDatabaseType(databaseType);
+        this.databaseVersion = databaseVersion;
+        this.metadataObjects = metadataObjects;
+    }
+    
     public DatabaseMetadataSnapshot(final String databaseType, final Collection<MetadataObject> metadataObjects) {
         this(databaseType, "", metadataObjects);
+    }
+    
+    private String validateDatabaseType(final String databaseType) {
+        ShardingSpherePreconditions.checkNotNull(databaseType, () -> new IllegalArgumentException("databaseType cannot be null."));
+        ShardingSpherePreconditions.checkState(!databaseType.isBlank(), () -> new IllegalArgumentException("databaseType cannot be empty."));
+        return databaseType;
     }
 }

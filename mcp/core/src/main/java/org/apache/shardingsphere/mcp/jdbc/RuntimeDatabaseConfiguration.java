@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.jdbc;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -28,7 +28,6 @@ import java.util.Properties;
 /**
  * Runtime database configuration for one logical database binding.
  */
-@RequiredArgsConstructor
 @Getter
 public final class RuntimeDatabaseConfiguration {
     
@@ -41,6 +40,20 @@ public final class RuntimeDatabaseConfiguration {
     private final String password;
     
     private final String driverClassName;
+    
+    public RuntimeDatabaseConfiguration(final String databaseType, final String jdbcUrl, final String username, final String password, final String driverClassName) {
+        this.databaseType = validateDatabaseType(databaseType);
+        this.jdbcUrl = jdbcUrl;
+        this.username = username;
+        this.password = password;
+        this.driverClassName = driverClassName;
+    }
+    
+    private String validateDatabaseType(final String databaseType) {
+        ShardingSpherePreconditions.checkNotNull(databaseType, () -> new IllegalArgumentException("databaseType cannot be null."));
+        ShardingSpherePreconditions.checkState(!databaseType.isBlank(), () -> new IllegalArgumentException("databaseType cannot be empty."));
+        return databaseType;
+    }
     
     /**
      * Open connection.

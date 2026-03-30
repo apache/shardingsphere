@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.resource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,12 +47,10 @@ public final class MetadataCatalog {
         Map<String, String> databaseTypes = new LinkedHashMap<>(databaseSnapshots.size(), 1F);
         List<MetadataObject> metadataObjects = new LinkedList<>();
         for (Entry<String, DatabaseMetadataSnapshot> entry : databaseSnapshots.entrySet()) {
-            if (!entry.getValue().getDatabaseType().isEmpty()) {
-                databaseTypes.put(entry.getKey(), entry.getValue().getDatabaseType());
-            }
+            databaseTypes.put(entry.getKey(), entry.getValue().getDatabaseType());
             metadataObjects.addAll(entry.getValue().getMetadataObjects());
         }
-        snapshot = new Snapshot(Collections.unmodifiableMap(databaseSnapshots), Collections.unmodifiableMap(databaseTypes), Collections.unmodifiableList(new LinkedList<>(metadataObjects)));
+        snapshot = new Snapshot(databaseSnapshots, databaseTypes, metadataObjects);
     }
     
     /**
