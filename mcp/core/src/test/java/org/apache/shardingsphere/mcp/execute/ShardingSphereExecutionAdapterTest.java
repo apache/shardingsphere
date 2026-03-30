@@ -163,7 +163,7 @@ class ShardingSphereExecutionAdapterTest {
     }
     
     private ShardingSphereExecutionAdapter createAdapter(final Map<String, String> jdbcUrls) {
-        Map<String, ShardingSphereExecutionAdapter.ConnectionProvider> connectionProviders = new LinkedHashMap<>();
+        Map<String, ConnectionProvider> connectionProviders = new LinkedHashMap<>();
         for (Entry<String, String> entry : jdbcUrls.entrySet()) {
             connectionProviders.put(entry.getKey(), () -> DriverManager.getConnection(entry.getValue()));
         }

@@ -284,21 +284,6 @@ public final class ShardingSphereExecutionAdapter {
         }
     }
     
-    /**
-     * Open one JDBC connection.
-     */
-    @FunctionalInterface
-    public interface ConnectionProvider {
-        
-        /**
-         * Get one connection.
-         *
-         * @return opened connection
-         * @throws SQLException when connection open fails
-         */
-        Connection getConnection() throws SQLException;
-    }
-    
     @RequiredArgsConstructor
     @Getter
     private static final class SessionConnectionContext {

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.jdbc;
 
+import org.apache.shardingsphere.mcp.execute.ConnectionProvider;
 import org.apache.shardingsphere.mcp.execute.DatabaseRuntime;
 import org.apache.shardingsphere.mcp.execute.ShardingSphereExecutionAdapter;
-import org.apache.shardingsphere.mcp.execute.ShardingSphereExecutionAdapter.ConnectionProvider;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 
@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 
 /**
  * MCP JDBC database runtime factory.
@@ -46,13 +45,12 @@ public final class MCPJdbcDatabaseRuntimeFactory {
         for (Entry<String, RuntimeDatabaseConfiguration> each : runtimeDatabases.entrySet()) {
             connectionProviders.put(each.getKey(), () -> each.getValue().openConnection(each.getKey()));
         }
-        ShardingSphereExecutionAdapter executionAdapter = new ShardingSphereExecutionAdapter(connectionProviders);
-        return new DatabaseRuntime(executionAdapter, database -> refreshMetadata(database, runtimeDatabases.get(database), databaseMetadataSnapshots));
+        return new DatabaseRuntime(new ShardingSphereExecutionAdapter(connectionProviders), database -> refreshMetadata(database, runtimeDatabases.get(database), databaseMetadataSnapshots));
     }
     
     private void refreshMetadata(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
         DatabaseMetadataSnapshots refreshedSnapshots = new MCPJdbcMetadataLoader().load(Collections.singletonMap(databaseName, runtimeDatabaseConfig));
-        DatabaseMetadataSnapshot databaseSnapshot = Objects.requireNonNull(refreshedSnapshots.findSnapshot(databaseName).orElse(null), "databaseSnapshot cannot be null");
+        DatabaseMetadataSnapshot databaseSnapshot = refreshedSnapshots.findSnapshot(databaseName).orElseThrow(() -> new IllegalArgumentException("databaseSnapshot cannot be null"));
         databaseMetadataSnapshots.replaceSnapshot(databaseName, databaseSnapshot);
     }
 }
