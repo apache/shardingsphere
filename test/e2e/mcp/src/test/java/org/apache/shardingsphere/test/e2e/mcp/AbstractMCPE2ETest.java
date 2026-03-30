@@ -158,7 +158,7 @@ abstract class AbstractMCPE2ETest {
     
     protected final DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
         Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
-        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", List.of(
+        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", "", List.of(
                 new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
                 new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""),
                 new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "order_items", "", ""),
@@ -168,11 +168,11 @@ abstract class AbstractMCPE2ETest {
                 new MetadataObject("logic_db", "public", MetadataObjectType.INDEX, "idx_orders_status", "TABLE", "orders"),
                 new MetadataObject("logic_db", "public", MetadataObjectType.MATERIALIZED_VIEW, "mv_orders", "", ""),
                 new MetadataObject("logic_db", "public", MetadataObjectType.SEQUENCE, "order_seq", "", ""))));
-        databaseSnapshots.put("analytics_db", new DatabaseMetadataSnapshot("PostgreSQL", List.of(
+        databaseSnapshots.put("analytics_db", new DatabaseMetadataSnapshot("PostgreSQL", "", List.of(
                 new MetadataObject("analytics_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
                 new MetadataObject("analytics_db", "public", MetadataObjectType.TABLE, "metrics", "", ""),
                 new MetadataObject("analytics_db", "public", MetadataObjectType.COLUMN, "metric_id", "TABLE", "metrics"))));
-        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot("Hive", List.of(
+        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot("Hive", "", List.of(
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""),
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.TABLE, "facts", "", ""),
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.COLUMN, "fact_id", "TABLE", "facts"))));

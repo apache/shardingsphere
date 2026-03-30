@@ -34,8 +34,4 @@ public final class DatabaseMetadataSnapshot {
     private final String databaseVersion;
     
     private final Collection<MetadataObject> metadataObjects;
-    
-    public DatabaseMetadataSnapshot(final String databaseType, final Collection<MetadataObject> metadataObjects) {
-        this(databaseType, "", metadataObjects);
-    }
 }

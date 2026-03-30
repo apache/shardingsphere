@@ -41,9 +41,7 @@ class DatabaseCapabilityAssemblerTest {
     @Test
     void assertAssembleServiceCapability() {
         DatabaseCapabilityAssembler assembler = createAssembler();
-        
         ServiceCapability actualServiceCapability = assembler.assembleServiceCapability();
-        
         assertThat(actualServiceCapability.getSupportedResources(), is(new ResourceUriResolver().getSupportedResources()));
         assertThat(actualServiceCapability.getSupportedResources().size(), is(16));
         assertThat(actualServiceCapability.getSupportedResources().get(0), is("shardingsphere://capabilities"));
@@ -57,9 +55,7 @@ class DatabaseCapabilityAssemblerTest {
     @Test
     void assertAssembleDatabaseCapability() {
         DatabaseCapabilityAssembler assembler = createAssembler();
-        
         Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db");
-        
         assertTrue(actualCapability.isPresent());
         assertThat(actualCapability.get().getDatabase(), is("logic_db"));
         assertThat(actualCapability.get().getDatabaseType(), is("MySQL"));
@@ -79,9 +75,7 @@ class DatabaseCapabilityAssemblerTest {
     @Test
     void assertAssembleDatabaseCapabilityWithoutIndex() {
         DatabaseCapabilityAssembler assembler = createAssembler();
-        
         Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("warehouse");
-        
         assertTrue(actualCapability.isPresent());
         assertFalse(actualCapability.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
         assertFalse(actualCapability.get().isSupportsTransactionControl());
@@ -103,23 +97,17 @@ class DatabaseCapabilityAssemblerTest {
     
     @Test
     void assertAssembleDatabaseCapabilityWithUnknownDatabaseType() {
-        DatabaseCapabilityAssembler assembler = createAssembler();
-        
-        Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db", "unknown");
-        
-        assertFalse(actualCapability.isPresent());
+        assertFalse(createAssembler().assembleDatabaseCapability("logic_db", "unknown").isPresent());
     }
     
     @Test
     void assertConstructWithNullMetadataCatalog() {
-        DatabaseCapabilityAssembler actual = assertDoesNotThrow(() -> new DatabaseCapabilityAssembler(null));
-        
-        assertNotNull(actual);
+        assertNotNull(assertDoesNotThrow(() -> new DatabaseCapabilityAssembler(null)));
     }
     
     private DatabaseCapabilityAssembler createAssembler() {
         return new DatabaseCapabilityAssembler(new DatabaseMetadataSnapshots(Map.of(
-                "logic_db", new DatabaseMetadataSnapshot("MySQL", Collections.emptyList()),
-                "warehouse", new DatabaseMetadataSnapshot("Hive", Collections.emptyList()))));
+                "logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()),
+                "warehouse", new DatabaseMetadataSnapshot("Hive", "", Collections.emptyList()))));
     }
 }

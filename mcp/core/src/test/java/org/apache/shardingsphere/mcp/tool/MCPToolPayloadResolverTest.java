@@ -113,10 +113,10 @@ class MCPToolPayloadResolverTest {
     
     private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
         Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
-        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", List.of(
+        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", "", List.of(
                 new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
                 new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""))));
-        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot("Hive", List.of(
+        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot("Hive", "", List.of(
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""))));
         return new DatabaseMetadataSnapshots(databaseSnapshots);
     }

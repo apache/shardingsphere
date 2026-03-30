@@ -67,7 +67,7 @@ class MCPJdbcDatabaseRuntimeFactoryTest {
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabaseConfigs = Map.of(
                 "logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.example.MissingDriver"));
         DatabaseMetadataSnapshots databaseMetadataSnapshots = new DatabaseMetadataSnapshots(Map.of("logic_db",
-                new DatabaseMetadataSnapshot("H2", List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", "")))));
+                new DatabaseMetadataSnapshot("H2", "", List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", "")))));
         DatabaseRuntime actual = databaseRuntimeFactory.create(runtimeDatabaseConfigs, databaseMetadataSnapshots);
         IllegalStateException ex = assertThrows(IllegalStateException.class, () -> actual.refreshMetadata("logic_db"));
         assertThat(ex.getMessage(), is("JDBC driver `org.example.MissingDriver` is not available for database `logic_db`."));

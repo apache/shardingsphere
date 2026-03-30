@@ -89,11 +89,11 @@ class MCPResourcePayloadResolverTest {
     
     private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
         Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
-        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", List.of(
+        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", "", List.of(
                 new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
                 new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""),
                 new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "order_items", "", ""))));
-        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot("Hive", List.of(
+        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot("Hive", "", List.of(
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""),
                 new MetadataObject("warehouse", "warehouse", MetadataObjectType.TABLE, "facts", "", ""))));
         return new DatabaseMetadataSnapshots(databaseSnapshots);
