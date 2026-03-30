@@ -97,7 +97,7 @@ docs/mcp/ShardingSphere-MCP-Detailed-Design.md
 ### 2. 用显式 logical database 拓扑代替单库 runtime props
 
 - runtime 需要表达多个 logical database 绑定。
-- 绑定项必须显式命名、全局唯一，并允许各自拥有数据库类型、schema 默认值和 capability 覆盖。
+- 绑定项必须显式命名、全局唯一，并允许各自拥有数据库类型、schema 语义和 capability 覆盖。
 
 ### 3. 启动 fail-fast，运行后单库故障隔离
 

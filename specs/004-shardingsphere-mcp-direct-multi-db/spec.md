@@ -93,8 +93,8 @@ ShardingSphere，当前需求就没有被满足。
 - 当两个配置项声明了相同的 logical database 名称时，系统必须启动失败。
 - 当 logical database 名称与底层数据库原生 catalog 或 schema 名称不同，系统仍以配置的
   logical database 名称作为 MCP 公共面的一级目标标识。
-- 当某个数据库没有独立 schema 概念时，系统仍需暴露统一 schema 语义，且默认 schema 名称来自该 logical database
-  的显式绑定配置，而不是从 logical database 名称隐式推导。
+- 当某个数据库没有独立 schema 概念时，系统仍需暴露统一 schema 语义，
+  且公共契约不额外引入 schema 名称推导字段。
 - 当 `schema` 被提供但 `database` 缺失时，系统必须返回 `invalid_request`。
 - 当服务已经成功启动，但单个数据库的后续 refresh 失败时，系统必须保留该数据库最近一次成功的 metadata snapshot，
   而不是把其降级成空 catalog。
@@ -125,7 +125,7 @@ ShardingSphere，当前需求就没有被满足。
   在事务存续期间若后续请求切换到其他 `database`，系统 MUST 返回 `conflict`
   或 `transaction_state_error`。
 - **FR-009**: 每个 logical database MUST 能独立声明或继承其 database type、
-  schema 默认值、对象暴露边界和 capability 覆盖，不得要求所有已配置数据库共享同一组运行时属性。
+  schema 语义、对象暴露边界和 capability 覆盖，不得要求所有已配置数据库共享同一组运行时属性。
 - **FR-010**: 当某个目标数据库不支持事务控制、savepoint、`index` 或
   `EXPLAIN ANALYZE` 时，系统 MUST 按统一 capability 契约返回 `unsupported`。
 - **FR-011**: 服务启动时 MUST 对全部已配置的 logical databases 执行一致的启动校验；
@@ -145,7 +145,7 @@ ShardingSphere，当前需求就没有被满足。
 - **FR-017**: 公共 resources、tools、审计记录和诊断输出 MUST NOT 暴露原始密码、
   secret 明文或带凭据的连接串。
 - **FR-018**: 当数据库没有独立 schema 概念时，系统 MUST 通过统一 schema
-  语义对外暴露 discovery 结果，且默认 schema 取自该 logical database 的显式绑定配置。
+  语义对外暴露 discovery 结果，而不引入额外的 schema 名称推导契约。
 - **FR-019**: `search_metadata` 在省略 `database` 时 MUST 在全部已装载的
   logical databases 范围内搜索；当指定 `schema` 但未指定 `database` 时 MUST
   返回 `invalid_request`。
@@ -160,7 +160,7 @@ ShardingSphere，当前需求就没有被满足。
 
 - **Direct Runtime Topology**: MCP 服务当前装载的全部 logical database 绑定及其统一运行边界。
 - **Logical Database Binding**: 一个 logical `database` 名称与其目标数据库类型、连接目标、
-  schema 默认值、对象暴露边界和 capability 覆盖之间的绑定关系。
+  schema 语义、对象暴露边界和 capability 覆盖之间的绑定关系。
 - **Database Availability State**: 某个 logical database 当前是否完成启动校验、是否暂时不可用、
   最近一次成功 metadata 装载时间以及最近一次失败原因的聚合状态。
 - **Metadata Snapshot**: 某个 logical database 最近一次成功装载得到的可读 discovery 视图。

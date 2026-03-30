@@ -44,7 +44,7 @@ The configuration must define at least:
   - one or more logical database bindings
   - per-binding database type
   - per-binding backend locator and credentials
-  - per-binding default schema behavior when needed
+  - per-binding unified schema semantics when needed
 
 Operational expectations:
 

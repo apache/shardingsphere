@@ -38,18 +38,16 @@
   - `database` 必须显式命名且在一个 runtime 中唯一。
   - `databaseType` 与 `jdbcUrl` 是 direct binding 的最小必填项。
   - `driverClassName` 为可选覆盖项，而不是必填项。
-  - schema 范围与默认 schema 不再由 operator 配置提供。
+  - schema 范围不再由 operator 配置提供。
 
 ### RuntimeSchemaDiscoveryFacts
 
 - **Purpose**: 描述 direct runtime 在 metadata 发现阶段由 JDBC 自动识别出的 schema 事实。
 - **Fields**:
   - `discoveredSchemas`
-  - `defaultSchema`
 - **Validation rules**:
-  - 优先使用 `Connection.getSchema()`。
-  - 若当前 schema 不可用，则回退到 `DatabaseMetaData.getSchemas()` 过滤后的结果。
-  - `defaultSchema` 是运行时事实，可为空，但不是 operator-facing 输入。
+  - schema facts 由 JDBC metadata 自动识别，而不是 operator 手工填写。
+  - schema facts 允许为空，但空值必须来自真实发现结果，而不是隐式配置回填。
 
 ### DerivedDatabaseCapabilityFacts
 

@@ -93,7 +93,7 @@ class DatabaseCapabilityAssemblerTest {
     @Test
     void assertAssembleDatabaseCapabilityWithRuntimeOverlay() {
         MetadataCatalog metadataCatalog = new MetadataCatalog(Map.of(
-                "logic_db", new DatabaseMetadataSnapshot("MySQL", "8.0.32", Collections.emptyList(), "public")));
+                "logic_db", new DatabaseMetadataSnapshot("MySQL", "8.0.32", Collections.emptyList())));
         DatabaseCapabilityAssembler assembler = new DatabaseCapabilityAssembler(metadataCatalog);
         
         Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db");

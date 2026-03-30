@@ -15,7 +15,7 @@ MCP V1 公共协议，不引入新的 transport，也不改变 direct multi-data
 
 - 让 `runtimeDatabases` 成为 single-db 与 multi-db 的统一 canonical 入口
 - 去掉 `runtime` 包裹层和 `runtime.databaseDefaults` 这类 YAML-only sugar
-- 移除 `schemaPattern` 与 `defaultSchema` 的 operator-facing 配置，改由 JDBC metadata 自动发现
+- 移除 `schemaPattern` 等 operator-facing schema 发现配置，改由 JDBC metadata 自动发现
 - 把 `driverClassName` 降为 optional override
 - 把 `supportsCrossSchemaSql` 与 `supportsExplainAnalyze` 从常规 operator 配置中移除
 - 对 legacy `runtime.*` keys 和 legacy capability booleans 提供明确拒绝诊断
@@ -128,9 +128,9 @@ capability booleans 的加载行为与诊断，并确认默认发行配置与 RE
 - **FR-006**: `driverClassName` MUST 为 optional override；若未配置，系统 MUST 尝试依赖 classpath 与
   `DriverManager` 自动发现 JDBC driver。
 - **FR-007**: 若显式配置了 `driverClassName` 且该类不可用，系统 MUST fail fast 并输出 driver-specific 诊断。
-- **FR-008**: `schemaPattern` 与 `defaultSchema` MUST NOT 继续作为 canonical direct runtime operator 配置字段。
-- **FR-009**: direct runtime loader MUST 使用 `Connection.getSchema()`、`DatabaseMetaData.getSchemas()` 和
-  deterministic fallback 自动推导 schema 范围与 `defaultSchema` 运行时事实。
+- **FR-008**: `schemaPattern` MUST NOT 继续作为 canonical direct runtime operator 配置字段。
+- **FR-009**: direct runtime loader MUST 通过 JDBC metadata 自动推导 schema 范围，而不是要求 operator
+  继续声明额外的 schema 发现配置。
 - **FR-010**: `supportsCrossSchemaSql` 与 `supportsExplainAnalyze` MUST NOT 继续作为 canonical direct runtime
   operator 配置字段。
 - **FR-011**: direct runtime 的 `supportsCrossSchemaSql` 与 `supportsExplainAnalyze` MUST 由系统根据
@@ -154,8 +154,7 @@ capability booleans 的加载行为与诊断，并确认默认发行配置与 RE
 - **Canonical Direct Runtime Configuration**: 顶级 `runtimeDatabases` 组成的 direct runtime canonical YAML 结构。
 - **Logical Database Binding Configuration**: 一个 logical database 的 direct JDBC binding，包含连接输入与
   optional driver override。
-- **Runtime Schema Discovery Facts**: direct runtime 在启动时通过 JDBC metadata 识别出的 schema 列表与
-  `defaultSchema` 事实。
+- **Runtime Schema Discovery Facts**: direct runtime 在启动时通过 JDBC metadata 识别出的 schema 列表。
 - **Derived Database Capability Facts**: 系统根据 database type、database version 和运行时 metadata
   生成的 capability 事实集合。
 - **Legacy Runtime Alias Input**: `runtime.props`、`runtime.defaults`、`runtime.databaseDefaults`、

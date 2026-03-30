@@ -119,7 +119,7 @@ public final class MetadataCatalog {
     }
     
     private DatabaseMetadataSnapshot copySnapshot(final DatabaseMetadataSnapshot databaseSnapshot) {
-        return new DatabaseMetadataSnapshot(databaseSnapshot.getDatabaseType(), databaseSnapshot.getDatabaseVersion(), databaseSnapshot.getMetadataObjects(), databaseSnapshot.getDefaultSchema());
+        return new DatabaseMetadataSnapshot(databaseSnapshot.getDatabaseType(), databaseSnapshot.getDatabaseVersion(), databaseSnapshot.getMetadataObjects());
     }
     
     @Getter

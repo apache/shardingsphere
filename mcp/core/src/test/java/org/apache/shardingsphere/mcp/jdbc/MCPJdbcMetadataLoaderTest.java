@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.jdbc;
 
-import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.MetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
@@ -65,8 +64,7 @@ class MCPJdbcMetadataLoaderTest {
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         MetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
         assertThat(actual.getDatabaseTypes().get("logic_db"), is("H2"));
-        DatabaseMetadataSnapshot databaseSnapshot = actual.findDatabaseSnapshot("logic_db").orElseThrow();
-        assertThat(databaseSnapshot.getDefaultSchema(), is("public"));
+        assertFalse(actual.findDatabaseSnapshot("logic_db").orElseThrow().getDatabaseVersion().isEmpty());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -103,8 +101,7 @@ class MCPJdbcMetadataLoaderTest {
             assertFalse(actual.getMetadataObjects().stream().anyMatch(each -> MetadataObjectType.SCHEMA == each.getObjectType()));
             assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "orders"));
             assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.COLUMN, "order_id"));
-            DatabaseMetadataSnapshot databaseSnapshot = actual.findDatabaseSnapshot("logic_db").orElseThrow();
-            assertThat(databaseSnapshot.getDefaultSchema(), is(""));
+            assertThat(actual.findDatabaseSnapshot("logic_db").orElseThrow().getDatabaseVersion(), is(""));
         } finally {
             DriverManager.deregisterDriver(mockDriver);
         }
@@ -143,7 +140,6 @@ class MCPJdbcMetadataLoaderTest {
         ResultSet columnResultSet = mockResultSet("COLUMN_NAME", "order_id");
         ResultSet indexResultSet = mockResultSet("INDEX_NAME");
         when(result.getMetaData()).thenReturn(databaseMetaData);
-        when(result.getSchema()).thenReturn(null);
         when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3);
             return "TABLE".equals(tableTypes[0]) ? tableResultSet : viewResultSet;

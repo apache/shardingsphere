@@ -9,7 +9,6 @@
 - 不再在新示例里手工配置 `supportsCrossSchemaSql`
 - 不再在新示例里手工配置 `supportsExplainAnalyze`
 - 不再在新示例里手工配置 `schemaPattern`
-- 不再在新示例里手工配置 `defaultSchema`
 - `driverClassName` 只在需要显式覆盖时提供
 
 ## 2. Prepare the packaged runtime
@@ -45,7 +44,7 @@ Notes:
 
 - 这个示例刻意省略 `driverClassName`，用来强调它只是 optional override。
 - 当 classpath 自动发现不足时，再为具体 binding 显式补 `driverClassName`。
-- schema 范围与默认 schema 由 JDBC metadata 自动发现。
+- schema 范围由 JDBC metadata 自动发现。
 - capability booleans 由系统自动推导。
 
 ## 4. Start the runtime

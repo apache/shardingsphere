@@ -22,14 +22,13 @@
   - `database`
   - `databaseType`
   - `connectionTarget`
-  - `defaultSchema`
   - `schemaSemantics`
   - `capabilityOverride`
   - `supportedObjectTypes`
 - **Validation rules**:
   - `database` is mandatory and unique within one runtime topology.
   - `databaseType` must be part of the V1 supported database set.
-  - `defaultSchema` must be explicit when the target database does not expose native schema namespaces.
+  - `schemaSemantics` must stay aligned with the V1 unified schema contract.
   - `capabilityOverride` may narrow or clarify behavior, but must not contradict fixed V1 guarantees.
 
 ### ConnectionTarget
@@ -74,17 +73,15 @@
 - **Validation rules**:
   - A snapshot belongs to exactly one logical database.
   - Failed refresh attempts must not replace an existing successful snapshot with empty data.
-  - `runtimeDescriptor` carries only runtime facts such as version and default schema, and must not duplicate capability or resource inventory state.
+  - `runtimeDescriptor` carries only runtime facts such as version, and must not duplicate capability or resource inventory state.
 
 ### RuntimeDatabaseDescriptor
 
 - **Purpose**: Capture one logical database's runtime facts for capability assembly and discovery behavior.
 - **Fields**:
   - `databaseVersion`
-  - `defaultSchema`
 - **Validation rules**:
   - `databaseVersion` may be blank when the connected backend does not expose a reliable version string.
-  - `defaultSchema` is derived from the live connection or discovered schemas and may be blank.
   - Runtime facts must not duplicate database capability or metadata inventory data.
 
 ### SessionRoutingContext

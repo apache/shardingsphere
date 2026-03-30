@@ -27,7 +27,6 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -57,7 +56,7 @@ public final class MCPJdbcMetadataLoader {
         for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
             String databaseName = entry.getKey();
             try (Connection connection = entry.getValue().openConnection(databaseName)) {
-                databaseSnapshots.put(databaseName, loadDatabaseSnapshot(databaseName, entry.getValue().getDatabaseType(), connection.getSchema(), connection.getMetaData()));
+                databaseSnapshots.put(databaseName, loadDatabaseSnapshot(databaseName, entry.getValue().getDatabaseType(), connection.getMetaData()));
             } catch (final SQLException ex) {
                 throw new IllegalStateException(String.format("Failed to load metadata for database `%s`.", databaseName), ex);
             }
@@ -65,11 +64,11 @@ public final class MCPJdbcMetadataLoader {
         return new MetadataCatalog(databaseSnapshots);
     }
     
-    private DatabaseMetadataSnapshot loadDatabaseSnapshot(final String databaseName, final String databaseType, final String schemaName, final DatabaseMetaData databaseMetaData) throws SQLException {
+    private DatabaseMetadataSnapshot loadDatabaseSnapshot(final String databaseName, final String databaseType, final DatabaseMetaData databaseMetaData) throws SQLException {
         String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
         MetadataAccumulator accumulator = loadTables(databaseName, databaseMetaData);
         accumulator.merge(loadViews(databaseName, databaseMetaData));
-        return new DatabaseMetadataSnapshot(databaseType, databaseVersion, accumulator.getMetadataObjects(), resolveDefaultSchema(schemaName, accumulator.getFoundSchemas()));
+        return new DatabaseMetadataSnapshot(databaseType, databaseVersion, accumulator.getMetadataObjects());
     }
     
     private MetadataAccumulator loadTables(final String databaseName, final DatabaseMetaData databaseMetaData) throws SQLException {
@@ -148,14 +147,6 @@ public final class MCPJdbcMetadataLoader {
     private String getSchemaPattern(final String schemaName) {
         String result = Objects.toString(schemaName, "").trim();
         return result.isEmpty() ? null : result;
-    }
-    
-    private String resolveDefaultSchema(final String currentSchema, final Collection<String> schemas) {
-        String schema = Objects.toString(currentSchema, "").trim();
-        if (schema.isEmpty()) {
-            return schemas.isEmpty() ? "" : schemas.iterator().next();
-        }
-        return schemas.stream().filter(schema::equalsIgnoreCase).findFirst().orElse(schema);
     }
     
     @Getter

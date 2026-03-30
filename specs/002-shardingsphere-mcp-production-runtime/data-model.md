@@ -53,10 +53,8 @@
 - **Purpose**: Capture one logical database's runtime facts that complement capability assembly and discovery responses without duplicating them.
 - **Fields**:
   - `databaseVersion`
-  - `defaultSchema`
 - **Validation rules**:
   - `databaseVersion` may be blank when the backend cannot expose a reliable product version.
-  - `defaultSchema` is a runtime fact derived from the active connection or discovered schemas and may be blank.
   - Runtime facts must not duplicate database capability matrices or metadata object inventories.
 
 ### CapabilityAssemblyInput

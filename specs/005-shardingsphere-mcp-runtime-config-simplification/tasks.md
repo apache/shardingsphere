@@ -78,7 +78,7 @@
 
 ### Implementation for User Story 2
 
-- [x] T021 [P] [US2] Capture version-aware runtime facts in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/main/java/org/apache/shardingsphere/mcp/resource/RuntimeDatabaseDescriptor.java`
+- [x] T021 [P] [US2] Capture version-aware runtime facts in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/main/java/org/apache/shardingsphere/mcp/resource/DatabaseMetadataSnapshot.java`
 - [x] T022 [P] [US2] Load capability derivation inputs from JDBC metadata in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/JdbcMetadataLoader.java`
 - [x] T023 [P] [US2] Overlay automatic direct-runtime capability facts in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/main/java/org/apache/shardingsphere/mcp/capability/DatabaseCapabilityAssembler.java`
 - [x] T024 [P] [US2] Extend type-level capability defaults with version-aware hooks in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/main/java/org/apache/shardingsphere/mcp/capability/DatabaseCapabilityRegistry.java`

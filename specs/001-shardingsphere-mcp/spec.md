@@ -97,7 +97,7 @@
 
 - 当调用方指定 `schema` 但未指定 `database` 时，系统必须返回 `invalid_request`。
 - 当底层数据库没有独立 `schema` 概念时，系统仍需暴露统一 `schema` 语义，
-  且默认 schema 名称与 logical database 名称一致。
+  且公共契约不额外引入 schema 名称推导字段。
 - 当目标 database 不支持事务控制或 savepoint 时，相关语句必须统一返回 `unsupported`。
 - 当事务已绑定一个 database 后再次指定其他 database 时，系统必须返回 `conflict`。
 - 当查询结果超过 `max_rows` 或 database capability 的默认返回行数限制时，

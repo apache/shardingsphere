@@ -79,7 +79,7 @@ mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/runtime/Jdbc
 mcp/core/src/main/java/org/apache/shardingsphere/mcp/capability/DatabaseCapabilityAssembler.java
 mcp/core/src/main/java/org/apache/shardingsphere/mcp/capability/DatabaseCapabilityRegistry.java
 mcp/core/src/main/java/org/apache/shardingsphere/mcp/execute/ExecuteQueryFacade.java
-mcp/core/src/main/java/org/apache/shardingsphere/mcp/resource/RuntimeDatabaseDescriptor.java
+mcp/core/src/main/java/org/apache/shardingsphere/mcp/resource/DatabaseMetadataSnapshot.java
 mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/
 mcp/core/src/test/java/org/apache/shardingsphere/mcp/
 test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/
@@ -108,7 +108,7 @@ docs/mcp/ShardingSphere-MCP-Detailed-Design.md
 
 - 不再保留 `runtime.databaseDefaults` 或其他 shared-defaults canonical 写法。
 - 每个 logical database entry 都显式声明自己的运行时输入。
-- `schemaPattern` 与 `defaultSchema` 从 operator-facing YAML 中移除。
+- `schemaPattern` 从 operator-facing YAML 中移除。
 
 ### 4. `driverClassName` 只保留为 optional override
 
