@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
-import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
@@ -48,8 +47,6 @@ public final class MCPRuntimeContext {
     private final MCPCapabilityBuilder capabilityBuilder;
     
     private final MetadataResourceLoader metadataResourceLoader;
-    
-    private final ResourceUriResolver resourceUriResolver;
     
     private final MetadataToolDispatcher metadataToolDispatcher;
     

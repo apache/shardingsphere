@@ -40,7 +40,7 @@ public final class MCPResourcePayloadResolver {
      * @return resolved payload
      */
     public Object resolve(final String resourceUri) {
-        Optional<ResourceUriResolution> resolution = runtimeContext.getResourceUriResolver().resolve(resourceUri);
+        Optional<ResourceUriResolution> resolution = new ResourceUriResolver().resolve(resourceUri);
         if (resolution.isEmpty()) {
             return runtimeContext.getPayloadBuilder().createErrorPayload("invalid_request", "Unsupported resource URI.");
         }

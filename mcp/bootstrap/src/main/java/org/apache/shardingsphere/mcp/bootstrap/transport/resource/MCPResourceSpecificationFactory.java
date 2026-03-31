@@ -46,7 +46,7 @@ public final class MCPResourceSpecificationFactory {
      * @param runtimeContext runtime context
      */
     public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        resourceUriResolver = runtimeContext.getResourceUriResolver();
+        resourceUriResolver = new ResourceUriResolver();
         resourcePayloadResolver = new MCPResourcePayloadResolver(runtimeContext);
     }
     
