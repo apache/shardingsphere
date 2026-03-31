@@ -34,13 +34,17 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class DatabaseExecutionBackend {
     
-    private final MCPJdbcExecutionAdapter executionAdapter;
-    
-    private final MCPJdbcMetadataLoader metadataLoader;
-    
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
     
     private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
+    
+    private final MCPJdbcExecutionAdapter executionAdapter;
+    
+    public DatabaseExecutionBackend(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
+        this.runtimeDatabases = runtimeDatabases;
+        this.databaseMetadataSnapshots = databaseMetadataSnapshots;
+        executionAdapter = new MCPJdbcExecutionAdapter(runtimeDatabases);
+    }
     
     /**
      * Execute one classified request.
@@ -117,7 +121,7 @@ public final class DatabaseExecutionBackend {
      * @param databaseName logical database name
      */
     public void refreshMetadata(final String databaseName) {
-        DatabaseMetadataSnapshots refreshedSnapshots = metadataLoader.load(Collections.singletonMap(databaseName, getRequiredRuntimeDatabaseConfiguration(databaseName)));
+        DatabaseMetadataSnapshots refreshedSnapshots = new MCPJdbcMetadataLoader().load(Collections.singletonMap(databaseName, getRequiredRuntimeDatabaseConfiguration(databaseName)));
         DatabaseMetadataSnapshot databaseSnapshot = refreshedSnapshots.findSnapshot(databaseName).orElseThrow(() -> new IllegalArgumentException("databaseSnapshot cannot be null"));
         databaseMetadataSnapshots.replaceSnapshot(databaseName, databaseSnapshot);
     }

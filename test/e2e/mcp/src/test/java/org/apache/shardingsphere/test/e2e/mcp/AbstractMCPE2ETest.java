@@ -23,21 +23,22 @@ import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestBuilder;
 import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
-import org.apache.shardingsphere.mcp.execute.QueryResult;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
+import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Path;
+import java.sql.SQLException;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -52,6 +53,9 @@ abstract class AbstractMCPE2ETest {
     private static final String ENDPOINT_PATH = "/gateway";
     
     private final MCPRuntimeContextTestBuilder runtimeContextTestBuilder = new MCPRuntimeContextTestBuilder();
+    
+    @TempDir
+    private Path tempDir;
     
     private StreamableHttpMCPServer httpServer;
     
@@ -179,16 +183,14 @@ abstract class AbstractMCPE2ETest {
         return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     
-    protected final DatabaseExecutionBackend createDatabaseRuntime() {
-        Map<String, QueryResult> queryResults = new LinkedHashMap<>();
-        queryResults.put("logic_db:orders", createQueryResult("order_id", 1, 2));
-        queryResults.put("analytics_db:metrics", createQueryResult("metric_id", 10, 20));
-        queryResults.put("warehouse:facts", createQueryResult("fact_id", 100, 200));
-        Map<String, Integer> updateCounts = new LinkedHashMap<>();
-        updateCounts.put("logic_db:orders", 2);
-        updateCounts.put("analytics_db:metrics", 1);
-        updateCounts.put("warehouse:facts", 1);
-        return new DatabaseExecutionBackend(queryResults, updateCounts);
+    protected final DatabaseExecutionBackend createDatabaseRuntime(final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases();
+        try {
+            initializeRuntimeDatabases(runtimeDatabases);
+        } catch (final SQLException ex) {
+            throw new IllegalStateException("Failed to initialize MCP E2E runtime databases.", ex);
+        }
+        return new DatabaseExecutionBackend(runtimeDatabases, databaseMetadataSnapshots);
     }
     
     protected final Map<String, String> createRequestHeaders() {
@@ -197,7 +199,7 @@ abstract class AbstractMCPE2ETest {
     
     private void launchRuntimeInternal() {
         DatabaseMetadataSnapshots databaseMetadataSnapshots = createDatabaseMetadataSnapshots();
-        DatabaseExecutionBackend databaseExecutionBackend = createDatabaseRuntime();
+        DatabaseExecutionBackend databaseExecutionBackend = createDatabaseRuntime(databaseMetadataSnapshots);
         StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH),
                 runtimeContextTestBuilder.build(databaseMetadataSnapshots, databaseExecutionBackend));
         try {
@@ -288,12 +290,31 @@ abstract class AbstractMCPE2ETest {
         return hasDataLine ? result.toString() : trimmedResponseBody;
     }
     
-    private QueryResult createQueryResult(final String columnName, final int firstValue, final int secondValue) {
-        LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
-        columns.add(new ExecuteQueryColumnDefinition(columnName, "INTEGER", "INT", false));
-        LinkedList<List<Object>> rows = new LinkedList<>();
-        rows.add(new LinkedList<>(List.of(firstValue)));
-        rows.add(new LinkedList<>(List.of(secondValue)));
-        return new QueryResult(columns, rows);
+    private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
+        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>();
+        result.put("logic_db", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-logic"));
+        result.put("analytics_db", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-analytics"));
+        result.put("warehouse", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-warehouse"));
+        return result;
+    }
+    
+    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseName) {
+        return new RuntimeDatabaseConfiguration("H2", H2RuntimeTestSupport.createJdbcUrl(tempDir, databaseName), "", "", "org.h2.Driver");
+    }
+    
+    private void initializeRuntimeDatabases(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws SQLException {
+        H2RuntimeTestSupport.initializeDatabase(runtimeDatabases.get("logic_db").getJdbcUrl());
+        H2RuntimeTestSupport.executeStatements(runtimeDatabases.get("analytics_db").getJdbcUrl(),
+                "CREATE SCHEMA IF NOT EXISTS public",
+                "SET SCHEMA public",
+                "CREATE TABLE IF NOT EXISTS metrics (metric_id INT PRIMARY KEY, metric_name VARCHAR(32))",
+                "MERGE INTO metrics (metric_id, metric_name) KEY (metric_id) VALUES (10, 'cpu')",
+                "MERGE INTO metrics (metric_id, metric_name) KEY (metric_id) VALUES (20, 'memory')");
+        H2RuntimeTestSupport.executeStatements(runtimeDatabases.get("warehouse").getJdbcUrl(),
+                "CREATE SCHEMA IF NOT EXISTS warehouse",
+                "SET SCHEMA warehouse",
+                "CREATE TABLE IF NOT EXISTS facts (fact_id INT PRIMARY KEY, total INT)",
+                "MERGE INTO facts (fact_id, total) KEY (fact_id) VALUES (100, 1)",
+                "MERGE INTO facts (fact_id, total) KEY (fact_id) VALUES (200, 2)");
     }
 }
