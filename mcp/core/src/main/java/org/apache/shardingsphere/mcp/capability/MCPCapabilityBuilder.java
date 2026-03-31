@@ -39,21 +39,21 @@ public final class MCPCapabilityBuilder {
     private final ResourceUriResolver resourceUriResolver = new ResourceUriResolver();
     
     /**
-     * Assemble the service-level capability surface.
+     * Build the service-level capability.
      *
      * @return service-level capability
      */
-    public ServiceCapability assembleServiceCapability() {
+    public ServiceCapability buildServiceCapability() {
         return new ServiceCapability(resourceUriResolver.getSupportedResources(), new MCPToolCatalog().getSupportedTools(), SUPPORTED_STATEMENT_CLASSES);
     }
     
     /**
-     * Assemble the database-level capability view for one logical database.
+     * Build the database-level capability.
      *
      * @param databaseName logical database name
      * @return database-level capability when the database type is supported
      */
-    public Optional<DatabaseCapability> assembleDatabaseCapability(final String databaseName) {
+    public Optional<DatabaseCapability> buildDatabaseCapability(final String databaseName) {
         Optional<String> databaseType = databaseMetadataSnapshots.findDatabaseType(databaseName);
         return databaseType.isPresent() ? DatabaseCapabilityCatalog.find(databaseName, databaseType.get(), getDatabaseVersion(databaseName)) : Optional.empty();
     }

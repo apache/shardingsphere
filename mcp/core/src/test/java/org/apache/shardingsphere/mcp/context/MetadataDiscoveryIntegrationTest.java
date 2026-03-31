@@ -36,21 +36,21 @@ class MetadataDiscoveryIntegrationTest {
     
     @Test
     void assertDefaultResources() {
-        ServiceCapability actual = createRuntimeContext().getCapabilityBuilder().assembleServiceCapability();
+        ServiceCapability actual = createRuntimeContext().getCapabilityBuilder().buildServiceCapability();
         assertTrue(actual.getSupportedResources().contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes"));
         assertTrue(actual.getSupportedResources().contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}"));
     }
     
     @Test
     void assertDefaultServiceCapability() {
-        ServiceCapability actual = createRuntimeContext().getCapabilityBuilder().assembleServiceCapability();
+        ServiceCapability actual = createRuntimeContext().getCapabilityBuilder().buildServiceCapability();
         assertTrue(actual.getSupportedTools().contains("execute_query"));
         assertTrue(actual.getSupportedResources().contains("shardingsphere://capabilities"));
     }
     
     @Test
     void assertDefaultTools() {
-        ServiceCapability actual = createRuntimeContext().getCapabilityBuilder().assembleServiceCapability();
+        ServiceCapability actual = createRuntimeContext().getCapabilityBuilder().buildServiceCapability();
         assertTrue(actual.getSupportedTools().contains("search_metadata"));
         assertTrue(actual.getSupportedTools().contains("describe_table"));
     }

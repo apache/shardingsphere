@@ -151,7 +151,7 @@ class TransactionCommandExecutorTest {
     }
     
     private DatabaseCapability createCapability(final String databaseName) {
-        return createCapabilityBuilder().assembleDatabaseCapability(databaseName).orElseThrow(IllegalStateException::new);
+        return createCapabilityBuilder().buildDatabaseCapability(databaseName).orElseThrow(IllegalStateException::new);
     }
     
     private void assertDatabaseExecution(final String sql, final MCPJdbcExecutionAdapter jdbcExecutionAdapter) {

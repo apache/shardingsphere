@@ -51,7 +51,7 @@ public final class ExecuteQueryFacade {
      * @return execution response
      */
     public ExecuteQueryResponse execute(final ExecutionRequest executionRequest) {
-        Optional<DatabaseCapability> databaseCapability = capabilityBuilder.assembleDatabaseCapability(executionRequest.getDatabase());
+        Optional<DatabaseCapability> databaseCapability = capabilityBuilder.buildDatabaseCapability(executionRequest.getDatabase());
         if (databaseCapability.isEmpty()) {
             return recordFailure(executionRequest, "QUERY", MCPErrorCode.NOT_FOUND, "Database capability does not exist.");
         }

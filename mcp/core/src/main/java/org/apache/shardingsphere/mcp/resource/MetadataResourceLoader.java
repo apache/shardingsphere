@@ -63,7 +63,7 @@ public final class MetadataResourceLoader {
     
     private Set<MetadataObjectType> getSupportedMetadataObjectTypes(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName) {
         databaseMetadataSnapshots.findDatabaseType(databaseName).orElseThrow(() -> new IllegalStateException("Database does not exist."));
-        return new MCPCapabilityBuilder(databaseMetadataSnapshots).assembleDatabaseCapability(databaseName)
+        return new MCPCapabilityBuilder(databaseMetadataSnapshots).buildDatabaseCapability(databaseName)
                 .map(DatabaseCapability::getSupportedMetadataObjectTypes).orElseGet(Collections::emptySet);
     }
     

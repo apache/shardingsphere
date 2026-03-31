@@ -37,63 +37,59 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MCPCapabilityBuilderTest {
     
     @Test
-    void assertAssembleServiceCapability() {
-        MCPCapabilityBuilder assembler = createAssembler();
-        ServiceCapability actualServiceCapability = assembler.assembleServiceCapability();
-        assertThat(actualServiceCapability.getSupportedResources(), is(new ResourceUriResolver().getSupportedResources()));
-        assertThat(actualServiceCapability.getSupportedResources().size(), is(16));
-        assertThat(actualServiceCapability.getSupportedResources().get(0), is("shardingsphere://capabilities"));
-        assertThat(actualServiceCapability.getSupportedTools(), is(new MCPToolCatalog().getSupportedTools()));
-        assertThat(actualServiceCapability.getSupportedTools().size(), is(11));
-        assertThat(actualServiceCapability.getSupportedTools().get(5), is("list_indexes"));
-        assertThat(actualServiceCapability.getSupportedStatementClasses().size(), is(7));
-        assertTrue(actualServiceCapability.getSupportedStatementClasses().contains(StatementClass.EXPLAIN_ANALYZE));
+    void assertBuildServiceCapability() {
+        ServiceCapability actual = createCapabilityBuilder().buildServiceCapability();
+        assertThat(actual.getSupportedResources(), is(new ResourceUriResolver().getSupportedResources()));
+        assertThat(actual.getSupportedResources().size(), is(16));
+        assertThat(actual.getSupportedResources().get(0), is("shardingsphere://capabilities"));
+        assertThat(actual.getSupportedTools(), is(new MCPToolCatalog().getSupportedTools()));
+        assertThat(actual.getSupportedTools().size(), is(11));
+        assertThat(actual.getSupportedTools().get(5), is("list_indexes"));
+        assertThat(actual.getSupportedStatementClasses().size(), is(7));
+        assertTrue(actual.getSupportedStatementClasses().contains(StatementClass.EXPLAIN_ANALYZE));
     }
     
     @Test
-    void assertAssembleDatabaseCapability() {
-        MCPCapabilityBuilder assembler = createAssembler();
-        Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db");
-        assertTrue(actualCapability.isPresent());
-        assertThat(actualCapability.get().getDatabase(), is("logic_db"));
-        assertThat(actualCapability.get().getDatabaseType(), is("MySQL"));
-        assertThat(actualCapability.get().getMinSupportedVersion(), is("BASELINE"));
-        assertThat(actualCapability.get().getSupportedMetadataObjectTypes(),
+    void assertBuildDatabaseCapability() {
+        Optional<DatabaseCapability> actual = createCapabilityBuilder().buildDatabaseCapability("logic_db");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getDatabase(), is("logic_db"));
+        assertThat(actual.get().getDatabaseType(), is("MySQL"));
+        assertThat(actual.get().getMinSupportedVersion(), is("BASELINE"));
+        assertThat(actual.get().getSupportedMetadataObjectTypes(),
                 is(EnumSet.of(MetadataObjectType.SCHEMA, MetadataObjectType.TABLE, MetadataObjectType.VIEW, MetadataObjectType.COLUMN, MetadataObjectType.INDEX)));
-        assertTrue(actualCapability.get().isSupportsTransactionControl());
-        assertTrue(actualCapability.get().isSupportsSavepoint());
-        assertThat(actualCapability.get().getSupportedTransactionStatements().size(), is(7));
-        assertThat(actualCapability.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
-        assertFalse(actualCapability.get().isSupportsCrossSchemaSql());
-        assertFalse(actualCapability.get().isSupportsExplainAnalyze());
-        assertThat(actualCapability.get().getExplainAnalyzeResultBehavior(), is(ResultBehavior.UNSUPPORTED));
-        assertThat(actualCapability.get().getExplainAnalyzeTransactionBehavior(), is(TransactionBoundaryBehavior.UNSUPPORTED));
+        assertTrue(actual.get().isSupportsTransactionControl());
+        assertTrue(actual.get().isSupportsSavepoint());
+        assertThat(actual.get().getSupportedTransactionStatements().size(), is(7));
+        assertThat(actual.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
+        assertFalse(actual.get().isSupportsCrossSchemaSql());
+        assertFalse(actual.get().isSupportsExplainAnalyze());
+        assertThat(actual.get().getExplainAnalyzeResultBehavior(), is(ResultBehavior.UNSUPPORTED));
+        assertThat(actual.get().getExplainAnalyzeTransactionBehavior(), is(TransactionBoundaryBehavior.UNSUPPORTED));
     }
     
     @Test
-    void assertAssembleDatabaseCapabilityWithoutIndex() {
-        MCPCapabilityBuilder assembler = createAssembler();
-        Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("warehouse");
-        assertTrue(actualCapability.isPresent());
-        assertFalse(actualCapability.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
-        assertFalse(actualCapability.get().isSupportsTransactionControl());
-        assertFalse(actualCapability.get().isSupportsSavepoint());
-        assertThat(actualCapability.get().getSupportedTransactionStatements().size(), is(0));
-        assertThat(actualCapability.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
+    void assertBuildDatabaseCapabilityWithoutIndex() {
+        Optional<DatabaseCapability> actual = createCapabilityBuilder().buildDatabaseCapability("warehouse");
+        assertTrue(actual.isPresent());
+        assertFalse(actual.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
+        assertFalse(actual.get().isSupportsTransactionControl());
+        assertFalse(actual.get().isSupportsSavepoint());
+        assertThat(actual.get().getSupportedTransactionStatements().size(), is(0));
+        assertThat(actual.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
     }
     
     @Test
-    void assertAssembleDatabaseCapabilityWithRuntimeOverlay() {
+    void assertBuildDatabaseCapabilityWithRuntimeOverlay() {
         DatabaseMetadataSnapshots snapshots = new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("MySQL", "8.0.32", Collections.emptyList())));
-        MCPCapabilityBuilder assembler = new MCPCapabilityBuilder(snapshots);
-        Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db");
-        assertTrue(actualCapability.isPresent());
-        assertTrue(actualCapability.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
-        assertFalse(actualCapability.get().isSupportsCrossSchemaSql());
-        assertTrue(actualCapability.get().isSupportsExplainAnalyze());
+        Optional<DatabaseCapability> actual = new MCPCapabilityBuilder(snapshots).buildDatabaseCapability("logic_db");
+        assertTrue(actual.isPresent());
+        assertTrue(actual.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
+        assertFalse(actual.get().isSupportsCrossSchemaSql());
+        assertTrue(actual.get().isSupportsExplainAnalyze());
     }
     
-    private MCPCapabilityBuilder createAssembler() {
+    private MCPCapabilityBuilder createCapabilityBuilder() {
         return new MCPCapabilityBuilder(new DatabaseMetadataSnapshots(Map.of(
                 "logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()),
                 "warehouse", new DatabaseMetadataSnapshot("Hive", "", Collections.emptyList()))));

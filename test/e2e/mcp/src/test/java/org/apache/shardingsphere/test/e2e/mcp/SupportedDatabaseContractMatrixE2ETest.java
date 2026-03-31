@@ -41,7 +41,7 @@ class SupportedDatabaseContractMatrixE2ETest {
                                 final boolean expectedSavepoint, final boolean expectedIndexSupport) {
         MCPCapabilityBuilder assembler = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot(databaseType, "", Collections.emptyList()))));
-        DatabaseCapability actual = assembler.assembleDatabaseCapability("logic_db").get();
+        DatabaseCapability actual = assembler.buildDatabaseCapability("logic_db").get();
         assertThat(actual.isSupportsTransactionControl(), is(expectedTransactionControl));
         assertThat(actual.isSupportsSavepoint(), is(expectedSavepoint));
         assertThat(actual.getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX), is(expectedIndexSupport));
