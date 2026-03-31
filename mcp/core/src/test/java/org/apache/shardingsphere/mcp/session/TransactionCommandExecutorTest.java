@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.session;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
-import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
@@ -45,18 +45,18 @@ class TransactionCommandExecutorTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteCases")
     void assertExecute(final String name, final String sql, final String expectedStatementType, final String expectedMessage) {
-        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
+        MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
         prepareTransactionState(sessionManager, sql);
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, databaseExecutionBackend);
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, jdbcExecutionAdapter);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify(sql));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getStatementType(), is(expectedStatementType));
         assertThat(actual.getMessage(), is(expectedMessage));
-        assertDatabaseExecution(sql, databaseExecutionBackend);
+        assertDatabaseExecution(sql, jdbcExecutionAdapter);
     }
     
     static Stream<Arguments> assertExecuteCases() {
@@ -71,64 +71,64 @@ class TransactionCommandExecutorTest {
     
     @Test
     void assertExecuteWithUnsupportedSavepoint() {
-        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
+        MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
         sessionManager.beginTransaction("session-1", "warehouse");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, databaseExecutionBackend);
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, jdbcExecutionAdapter);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "warehouse", "Hive", new StatementClassifier().classify("SAVEPOINT sp_1"));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
         assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.UNSUPPORTED));
-        verifyNoInteractions(databaseExecutionBackend);
+        verifyNoInteractions(jdbcExecutionAdapter);
     }
     
     @Test
     void assertExecuteWithClassificationResult() {
-        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
+        MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, databaseExecutionBackend);
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, jdbcExecutionAdapter);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify("BEGIN"));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getStatementType(), is("BEGIN"));
         assertThat(actual.getMessage(), is("Transaction started."));
-        verify(databaseExecutionBackend).beginTransaction("session-1", "logic_db");
+        verify(jdbcExecutionAdapter).beginTransaction("session-1", "logic_db");
     }
     
     @Test
     void assertExecuteWithInvalidCommand() {
-        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
+        MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, databaseExecutionBackend);
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, jdbcExecutionAdapter);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify("SELECT 1"));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
         assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.INVALID_REQUEST));
-        verifyNoInteractions(databaseExecutionBackend);
+        verifyNoInteractions(jdbcExecutionAdapter);
     }
     
     @Test
     void assertExecuteWithNoActiveTransaction() {
-        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
-        doThrow(new IllegalStateException("Transaction is not active.")).when(databaseExecutionBackend).commitTransaction("session-1");
+        MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
+        doThrow(new IllegalStateException("Transaction is not active.")).when(jdbcExecutionAdapter).commitTransaction("session-1");
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, databaseExecutionBackend);
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, jdbcExecutionAdapter);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify("COMMIT"));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
         assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.TRANSACTION_STATE_ERROR));
-        verify(databaseExecutionBackend).commitTransaction("session-1");
+        verify(jdbcExecutionAdapter).commitTransaction("session-1");
     }
     
     private void prepareTransactionState(final MCPSessionManager sessionManager, final String sql) {
@@ -145,27 +145,27 @@ class TransactionCommandExecutorTest {
         return new DatabaseCapabilityAssembler(new DatabaseMetadataSnapshots(Collections.emptyMap()));
     }
     
-    private void assertDatabaseExecution(final String sql, final DatabaseExecutionBackend databaseExecutionBackend) {
+    private void assertDatabaseExecution(final String sql, final MCPJdbcExecutionAdapter jdbcExecutionAdapter) {
         if ("BEGIN".equals(sql)) {
-            verify(databaseExecutionBackend).beginTransaction("session-1", "logic_db");
+            verify(jdbcExecutionAdapter).beginTransaction("session-1", "logic_db");
             return;
         }
         if ("COMMIT".equals(sql)) {
-            verify(databaseExecutionBackend).commitTransaction("session-1");
+            verify(jdbcExecutionAdapter).commitTransaction("session-1");
             return;
         }
         if ("ROLLBACK".equals(sql)) {
-            verify(databaseExecutionBackend).rollbackTransaction("session-1");
+            verify(jdbcExecutionAdapter).rollbackTransaction("session-1");
             return;
         }
         if (sql.startsWith("SAVEPOINT")) {
-            verify(databaseExecutionBackend).createSavepoint("session-1", "SP_1");
+            verify(jdbcExecutionAdapter).createSavepoint("session-1", "SP_1");
             return;
         }
         if (sql.startsWith("ROLLBACK TO SAVEPOINT")) {
-            verify(databaseExecutionBackend).rollbackToSavepoint("session-1", "SP_1");
+            verify(jdbcExecutionAdapter).rollbackToSavepoint("session-1", "SP_1");
             return;
         }
-        verify(databaseExecutionBackend).releaseSavepoint("session-1", "SP_1");
+        verify(jdbcExecutionAdapter).releaseSavepoint("session-1", "SP_1");
     }
 }

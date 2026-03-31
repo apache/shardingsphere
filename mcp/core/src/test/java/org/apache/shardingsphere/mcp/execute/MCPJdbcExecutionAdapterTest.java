@@ -37,7 +37,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.mock;
 
 class MCPJdbcExecutionAdapterTest {
     
@@ -189,7 +188,7 @@ class MCPJdbcExecutionAdapterTest {
     }
     
     private ExecutionRequest createExecutionRequest(final String databaseName, final String sql, final int maxRows) {
-        return new ExecutionRequest("session-1", databaseName, "public", sql, maxRows, 1000, mock(DatabaseExecutionBackend.class));
+        return new ExecutionRequest("session-1", databaseName, "public", sql, maxRows, 1000);
     }
     
     private String createJdbcUrl(final String databaseName) {

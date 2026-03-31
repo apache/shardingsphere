@@ -38,6 +38,4 @@ public final class ExecutionRequest {
     private final int maxRows;
     
     private final int timeoutMs;
-    
-    private final DatabaseExecutionBackend databaseExecutionBackend;
 }

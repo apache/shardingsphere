@@ -22,7 +22,7 @@ import io.modelcontextprotocol.spec.McpServerTransport;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
@@ -67,12 +67,12 @@ class SessionManagedStdioTransportProviderTest {
     void assertCloseManagedSessionWhenTransportCloseGracefully() {
         MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
+        MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
         McpServerSession.Factory sessionFactory = mock(McpServerSession.Factory.class);
         McpServerSession session = mock(McpServerSession.class);
         AtomicReference<McpServerTransport> transport = new AtomicReference<>();
         when(runtimeContext.getSessionManager()).thenReturn(sessionManager);
-        when(runtimeContext.getDatabaseExecutionBackend()).thenReturn(databaseExecutionBackend);
+        when(runtimeContext.getJdbcExecutionAdapter()).thenReturn(jdbcExecutionAdapter);
         when(sessionFactory.create(any(McpServerTransport.class))).thenAnswer(invocation -> {
             transport.set(invocation.getArgument(0, McpServerTransport.class));
             return session;
@@ -80,18 +80,18 @@ class SessionManagedStdioTransportProviderTest {
         when(session.getId()).thenReturn("session-id");
         SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(runtimeContext, MCPTransportJsonMapperFactory.create());
         provider.setSessionFactory(sessionFactory);
-        clearInvocations(runtimeContext, sessionManager, databaseExecutionBackend);
+        clearInvocations(runtimeContext, sessionManager, jdbcExecutionAdapter);
         transport.get().closeGracefully().block();
         verify(sessionManager).closeSession("session-id");
-        verify(databaseExecutionBackend).closeSession("session-id");
-        verifyNoMoreInteractions(sessionManager, databaseExecutionBackend);
+        verify(jdbcExecutionAdapter).closeSession("session-id");
+        verifyNoMoreInteractions(sessionManager, jdbcExecutionAdapter);
     }
     
     @Test
     void assertSetSessionFactoryAfterTransportClose() {
         MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
+        MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
         McpServerSession.Factory sessionFactory = mock(McpServerSession.Factory.class);
         McpServerSession firstSession = mock(McpServerSession.class);
         McpServerSession secondSession = mock(McpServerSession.class);
@@ -99,7 +99,7 @@ class SessionManagedStdioTransportProviderTest {
         AtomicReference<McpServerTransport> secondTransport = new AtomicReference<>();
         AtomicInteger invocationCount = new AtomicInteger();
         when(runtimeContext.getSessionManager()).thenReturn(sessionManager);
-        when(runtimeContext.getDatabaseExecutionBackend()).thenReturn(databaseExecutionBackend);
+        when(runtimeContext.getJdbcExecutionAdapter()).thenReturn(jdbcExecutionAdapter);
         when(sessionFactory.create(any(McpServerTransport.class))).thenAnswer(invocation -> {
             McpServerTransport actual = invocation.getArgument(0, McpServerTransport.class);
             if (0 == invocationCount.getAndIncrement()) {
@@ -118,8 +118,8 @@ class SessionManagedStdioTransportProviderTest {
         verify(sessionManager).createSession("session-id-1");
         verify(sessionManager).closeSession("session-id-1");
         verify(sessionManager).createSession("session-id-2");
-        verify(databaseExecutionBackend).closeSession("session-id-1");
-        verifyNoMoreInteractions(sessionManager, databaseExecutionBackend);
+        verify(jdbcExecutionAdapter).closeSession("session-id-1");
+        verifyNoMoreInteractions(sessionManager, jdbcExecutionAdapter);
         assertNotNull(secondTransport.get());
     }
     
@@ -127,12 +127,12 @@ class SessionManagedStdioTransportProviderTest {
     void assertCloseManagedSessionWhenTransportClose() {
         MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
+        MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
         McpServerSession.Factory sessionFactory = mock(McpServerSession.Factory.class);
         McpServerSession session = mock(McpServerSession.class);
         AtomicReference<McpServerTransport> transport = new AtomicReference<>();
         when(runtimeContext.getSessionManager()).thenReturn(sessionManager);
-        when(runtimeContext.getDatabaseExecutionBackend()).thenReturn(databaseExecutionBackend);
+        when(runtimeContext.getJdbcExecutionAdapter()).thenReturn(jdbcExecutionAdapter);
         when(sessionFactory.create(any(McpServerTransport.class))).thenAnswer(invocation -> {
             transport.set(invocation.getArgument(0, McpServerTransport.class));
             return session;
@@ -140,23 +140,23 @@ class SessionManagedStdioTransportProviderTest {
         when(session.getId()).thenReturn("session-id");
         SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(runtimeContext, MCPTransportJsonMapperFactory.create());
         provider.setSessionFactory(sessionFactory);
-        clearInvocations(runtimeContext, sessionManager, databaseExecutionBackend);
+        clearInvocations(runtimeContext, sessionManager, jdbcExecutionAdapter);
         transport.get().close();
         verify(sessionManager).closeSession("session-id");
-        verify(databaseExecutionBackend).closeSession("session-id");
-        verifyNoMoreInteractions(sessionManager, databaseExecutionBackend);
+        verify(jdbcExecutionAdapter).closeSession("session-id");
+        verifyNoMoreInteractions(sessionManager, jdbcExecutionAdapter);
     }
     
     @Test
     void assertCloseManagedSessionOnlyOnceWhenTransportClosedRepeatedly() {
         MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
+        MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
         McpServerSession.Factory sessionFactory = mock(McpServerSession.Factory.class);
         McpServerSession session = mock(McpServerSession.class);
         AtomicReference<McpServerTransport> transport = new AtomicReference<>();
         when(runtimeContext.getSessionManager()).thenReturn(sessionManager);
-        when(runtimeContext.getDatabaseExecutionBackend()).thenReturn(databaseExecutionBackend);
+        when(runtimeContext.getJdbcExecutionAdapter()).thenReturn(jdbcExecutionAdapter);
         when(sessionFactory.create(any(McpServerTransport.class))).thenAnswer(invocation -> {
             transport.set(invocation.getArgument(0, McpServerTransport.class));
             return session;
@@ -164,11 +164,11 @@ class SessionManagedStdioTransportProviderTest {
         when(session.getId()).thenReturn("session-id");
         SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(runtimeContext, MCPTransportJsonMapperFactory.create());
         provider.setSessionFactory(sessionFactory);
-        clearInvocations(runtimeContext, sessionManager, databaseExecutionBackend);
+        clearInvocations(runtimeContext, sessionManager, jdbcExecutionAdapter);
         transport.get().close();
         transport.get().closeGracefully().block();
         verify(sessionManager).closeSession("session-id");
-        verify(databaseExecutionBackend).closeSession("session-id");
-        verifyNoMoreInteractions(sessionManager, databaseExecutionBackend);
+        verify(jdbcExecutionAdapter).closeSession("session-id");
+        verifyNoMoreInteractions(sessionManager, jdbcExecutionAdapter);
     }
 }

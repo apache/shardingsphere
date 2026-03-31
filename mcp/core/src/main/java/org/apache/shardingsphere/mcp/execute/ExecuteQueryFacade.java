@@ -40,6 +40,8 @@ public final class ExecuteQueryFacade {
     
     private final TransactionCommandExecutor transactionCommandExecutor;
     
+    private final MCPJdbcExecutionAdapter jdbcExecutionAdapter;
+    
     private final AuditRecorder auditRecorder;
     
     private final MetadataRefreshCoordinator metadataRefreshCoordinator;
@@ -74,10 +76,10 @@ public final class ExecuteQueryFacade {
                         executionRequest.getDatabase(), actualDatabaseCapability, classificationResult),
                         classificationResult.getStatementType());
             case QUERY:
-                return recordResult(executionRequest, executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult),
+                return recordResult(executionRequest, jdbcExecutionAdapter.execute(executionRequest, classificationResult),
                         classificationResult.getStatementType());
             case DML:
-                return recordResult(executionRequest, executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult),
+                return recordResult(executionRequest, jdbcExecutionAdapter.execute(executionRequest, classificationResult),
                         classificationResult.getStatementType());
             case DDL:
                 return recordResult(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult),
@@ -89,7 +91,7 @@ public final class ExecuteQueryFacade {
                 if (!actualDatabaseCapability.isSupportsExplainAnalyze()) {
                     return recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "EXPLAIN ANALYZE is not supported.");
                 }
-                return recordResult(executionRequest, executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult),
+                return recordResult(executionRequest, jdbcExecutionAdapter.execute(executionRequest, classificationResult),
                         classificationResult.getStatementType());
             default:
                 return recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "Statement class is not supported.");
@@ -97,7 +99,7 @@ public final class ExecuteQueryFacade {
     }
     
     private ExecuteQueryResponse executeAndRefreshMetadata(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
-        ExecuteQueryResponse result = executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult);
+        ExecuteQueryResponse result = jdbcExecutionAdapter.execute(executionRequest, classificationResult);
         if (result.isSuccessful()) {
             metadataRefreshCoordinator.refresh(executionRequest.getDatabase());
         }

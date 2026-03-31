@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.context;
 
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
-import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
@@ -43,22 +43,22 @@ public final class MCPRuntimeContextTestBuilder {
      * Build MCP runtime context for tests.
      *
      * @param databaseMetadataSnapshots database metadata snapshots
-     * @param databaseExecutionBackend database execution backend
+     * @param jdbcExecutionAdapter JDBC execution adapter
      * @return runtime context
      */
-    public MCPRuntimeContext build(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final DatabaseExecutionBackend databaseExecutionBackend) {
+    public MCPRuntimeContext build(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final MCPJdbcExecutionAdapter jdbcExecutionAdapter) {
         MCPSessionManager sessionManager = new MCPSessionManager();
         DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(databaseMetadataSnapshots);
         MetadataResourceLoader metadataResourceLoader = new MetadataResourceLoader();
         ResourceUriResolver resourceUriResolver = new ResourceUriResolver();
         MetadataToolDispatcher metadataToolDispatcher = new MetadataToolDispatcher(metadataResourceLoader);
         MCPToolCatalog toolCatalog = new MCPToolCatalog();
-        TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(capabilityAssembler, sessionManager, databaseExecutionBackend);
+        TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(capabilityAssembler, sessionManager, jdbcExecutionAdapter);
         AuditRecorder auditRecorder = new AuditRecorder();
         ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler,
-                transactionCommandExecutor, auditRecorder, mock(MetadataRefreshCoordinator.class));
+                transactionCommandExecutor, jdbcExecutionAdapter, auditRecorder, mock(MetadataRefreshCoordinator.class));
         MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
-        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, databaseExecutionBackend, capabilityAssembler,
+        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, jdbcExecutionAdapter, capabilityAssembler,
                 metadataResourceLoader, resourceUriResolver, metadataToolDispatcher, toolCatalog, transactionCommandExecutor, auditRecorder, executeQueryFacade, payloadBuilder);
     }
 }

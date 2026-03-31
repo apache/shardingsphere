@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 class MCPToolCatalogTest {
     
@@ -100,10 +98,8 @@ class MCPToolCatalogTest {
     
     @Test
     void assertCreateExecutionRequest() {
-        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
-        
         ExecutionRequest actual = toolCatalog.createExecutionRequest("session-id",
-                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT 1", "max_rows", "20", "timeout_ms", 3000), databaseExecutionBackend);
+                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT 1", "max_rows", "20", "timeout_ms", 3000));
         
         assertThat(actual.getSessionId(), is("session-id"));
         assertThat(actual.getDatabase(), is("logic_db"));
@@ -111,6 +107,5 @@ class MCPToolCatalogTest {
         assertThat(actual.getSql(), is("SELECT 1"));
         assertThat(actual.getMaxRows(), is(20));
         assertThat(actual.getTimeoutMs(), is(3000));
-        assertThat(actual.getDatabaseExecutionBackend(), is(databaseExecutionBackend));
     }
 }

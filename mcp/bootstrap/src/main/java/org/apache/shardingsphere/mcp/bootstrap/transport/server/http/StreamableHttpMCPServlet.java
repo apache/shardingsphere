@@ -198,7 +198,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         Optional<ResponseStatus> validationFailure = doExecute(request, response, sessionId);
         if (validationFailure.isEmpty() && 200 == response.getStatus()) {
             runtimeContext.getSessionManager().closeSession(sessionId);
-            runtimeContext.getDatabaseExecutionBackend().closeSession(sessionId);
+            runtimeContext.getJdbcExecutionAdapter().closeSession(sessionId);
         }
     }
     
@@ -210,7 +210,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     private void closeAllSessions() {
         for (String each : runtimeContext.getSessionManager().getSessions().keySet()) {
             runtimeContext.getSessionManager().closeSession(each);
-            runtimeContext.getDatabaseExecutionBackend().closeSession(each);
+            runtimeContext.getJdbcExecutionAdapter().closeSession(each);
         }
     }
     
