@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
@@ -37,44 +36,31 @@ public final class ToolDispatchResult {
     
     private final String nextPageToken;
     
-    @Getter(AccessLevel.NONE)
-    private final boolean errorCodePresent;
+    private final boolean successful;
     
-    @Getter(AccessLevel.NONE)
     private final MCPErrorCode errorCode;
     
     private final String message;
     
     private ToolDispatchResult(final List<MetadataObject> metadataObjects, final String nextPageToken,
-                               final boolean errorCodePresent, final MCPErrorCode errorCode, final String message) {
+                               final boolean successful, final MCPErrorCode errorCode, final String message) {
         this.metadataObjects = metadataObjects;
         this.nextPageToken = nextPageToken;
-        this.errorCodePresent = errorCodePresent;
+        this.successful = successful;
         this.errorCode = errorCode;
         this.message = message;
     }
     
-    /**
-     * Determine whether the tool request finished successfully.
-     *
-     * @return {@code true} when no error is attached
-     */
-    public boolean isSuccessful() {
-        return !errorCodePresent;
-    }
-    
     static ToolDispatchResult success(final List<MetadataObject> metadataObjects, final String nextPageToken) {
-        return new ToolDispatchResult(metadataObjects, nextPageToken, false, MCPErrorCode.INVALID_REQUEST, "");
+        return new ToolDispatchResult(metadataObjects, nextPageToken, true, MCPErrorCode.INVALID_REQUEST, "");
     }
     
     static ToolDispatchResult error(final MCPErrorCode errorCode, final String message) {
-        return new ToolDispatchResult(Collections.emptyList(), "", true, errorCode, message);
+        return new ToolDispatchResult(Collections.emptyList(), "", false, errorCode, message);
     }
     
     static ToolDispatchResult fromResourceLoadResult(final ResourceLoadResult loadResult) {
-        return loadResult.getErrorCode().isPresent()
-                ? error(loadResult.getErrorCode().get(), loadResult.getMessage())
-                : success(loadResult.getMetadataObjects(), "");
+        return loadResult.isSuccessful() ? success(loadResult.getMetadataObjects(), "") : error(loadResult.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST), loadResult.getMessage());
     }
     
     /**
@@ -83,6 +69,6 @@ public final class ToolDispatchResult {
      * @return optional error code
      */
     public Optional<MCPErrorCode> getErrorCode() {
-        return errorCodePresent ? Optional.of(errorCode) : Optional.empty();
+        return successful ? Optional.empty() : Optional.of(errorCode);
     }
 }

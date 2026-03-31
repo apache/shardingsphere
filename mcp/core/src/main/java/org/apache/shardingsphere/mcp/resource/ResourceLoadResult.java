@@ -35,22 +35,11 @@ public final class ResourceLoadResult {
     
     private final List<MetadataObject> metadataObjects;
     
-    @Getter(AccessLevel.NONE)
-    private final boolean errorCodePresent;
+    private final boolean successful;
     
-    @Getter(AccessLevel.NONE)
     private final MCPErrorCode errorCode;
     
     private final String message;
-    
-    /**
-     * Determine whether the load finished successfully.
-     *
-     * @return {@code true} when no error is attached
-     */
-    public boolean isSuccessful() {
-        return !errorCodePresent;
-    }
     
     /**
      * Create a successful resource load result.
@@ -59,7 +48,7 @@ public final class ResourceLoadResult {
      * @return successful resource load result
      */
     public static ResourceLoadResult success(final List<MetadataObject> metadataObjects) {
-        return new ResourceLoadResult(metadataObjects, false, MCPErrorCode.INVALID_REQUEST, "");
+        return new ResourceLoadResult(metadataObjects, true, MCPErrorCode.INVALID_REQUEST, "");
     }
     
     /**
@@ -70,7 +59,7 @@ public final class ResourceLoadResult {
      * @return failed resource load result
      */
     public static ResourceLoadResult error(final MCPErrorCode errorCode, final String message) {
-        return new ResourceLoadResult(Collections.emptyList(), true, errorCode, message);
+        return new ResourceLoadResult(Collections.emptyList(), false, errorCode, message);
     }
     
     /**
@@ -79,6 +68,6 @@ public final class ResourceLoadResult {
      * @return optional error code
      */
     public Optional<MCPErrorCode> getErrorCode() {
-        return errorCodePresent ? Optional.of(errorCode) : Optional.empty();
+        return successful ? Optional.empty() : Optional.of(errorCode);
     }
 }

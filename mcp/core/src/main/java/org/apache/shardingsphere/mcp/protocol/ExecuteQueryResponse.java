@@ -48,8 +48,7 @@ public final class ExecuteQueryResponse {
     
     private final boolean truncated;
     
-    @Getter(AccessLevel.NONE)
-    private final boolean errorPresent;
+    private final boolean successful;
     
     @Getter(AccessLevel.NONE)
     private final ExecuteQueryErrorDetail error;
@@ -63,7 +62,7 @@ public final class ExecuteQueryResponse {
      * @return result-set response
      */
     public static ExecuteQueryResponse resultSet(final List<ExecuteQueryColumnDefinition> columns, final List<List<Object>> rows, final boolean truncated) {
-        return new ExecuteQueryResponse(ExecuteQueryResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated, false, createAbsentErrorDetail());
+        return new ExecuteQueryResponse(ExecuteQueryResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated, true, createAbsentErrorDetail());
     }
     
     /**
@@ -75,7 +74,7 @@ public final class ExecuteQueryResponse {
      */
     public static ExecuteQueryResponse updateCount(final String statementType, final int affectedRows) {
         return new ExecuteQueryResponse(ExecuteQueryResultKind.UPDATE_COUNT, Collections.emptyList(), Collections.emptyList(), affectedRows,
-                statementType, "OK", "", false, false, createAbsentErrorDetail());
+                statementType, "OK", "", false, true, createAbsentErrorDetail());
     }
     
     /**
@@ -87,7 +86,7 @@ public final class ExecuteQueryResponse {
      */
     public static ExecuteQueryResponse statementAck(final String statementType, final String message) {
         return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
-                statementType, "OK", message, false, false, createAbsentErrorDetail());
+                statementType, "OK", message, false, true, createAbsentErrorDetail());
     }
     
     /**
@@ -100,16 +99,7 @@ public final class ExecuteQueryResponse {
     public static ExecuteQueryResponse error(final MCPErrorCode errorCode, final String message) {
         ExecuteQueryErrorDetail errorDetail = new ExecuteQueryErrorDetail(errorCode, message);
         return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
-                "ERROR", "ERROR", errorDetail.getMessage(), false, true, errorDetail);
-    }
-    
-    /**
-     * Determine whether the response completed successfully.
-     *
-     * @return {@code true} when no unified error is attached
-     */
-    public boolean isSuccessful() {
-        return !errorPresent;
+                "ERROR", "ERROR", errorDetail.getMessage(), false, false, errorDetail);
     }
     
     /**
@@ -118,7 +108,7 @@ public final class ExecuteQueryResponse {
      * @return optional error detail
      */
     public Optional<ExecuteQueryErrorDetail> getError() {
-        return errorPresent ? Optional.of(error) : Optional.empty();
+        return successful ? Optional.empty() : Optional.of(error);
     }
     
     private static ExecuteQueryErrorDetail createAbsentErrorDetail() {
