@@ -36,8 +36,7 @@ class PostgreSQLSystemFunctionTest {
     void assertPgGetUserById() {
         assertThat(PostgreSQLSystemFunction.pgGetUserById(2L), is("mock user"));
     }
-
-
+    
     @Test
     void assertVersion() {
         String expectedVersion = "PostgreSQL " + ShardingSphereVersion.VERSION + "-ShardingSphere-Proxy";
