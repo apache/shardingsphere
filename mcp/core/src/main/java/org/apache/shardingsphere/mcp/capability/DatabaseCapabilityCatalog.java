@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.capability;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 
 import java.util.LinkedHashSet;
@@ -30,12 +32,10 @@ import java.util.regex.Pattern;
 /**
  * Built-in MCP database capability catalog.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseCapabilityCatalog {
     
     private static final Pattern VERSION_PATTERN = Pattern.compile("(\\d+)(?:\\.(\\d+))?(?:\\.(\\d+))?.*");
-    
-    private DatabaseCapabilityCatalog() {
-    }
     
     /**
      * Find one capability definition by database type and version.
@@ -125,7 +125,7 @@ public final class DatabaseCapabilityCatalog {
     }
     
     static Set<String> createSupportedTransactionStatements(final TransactionCapability transactionCapability) {
-        Set<String> result = new LinkedHashSet<>();
+        Set<String> result = new LinkedHashSet<>(16, 1F);
         if (TransactionCapability.NONE != transactionCapability) {
             result.add("BEGIN");
             result.add("START TRANSACTION");
@@ -154,7 +154,7 @@ public final class DatabaseCapabilityCatalog {
     }
     
     private static Set<MetadataObjectType> createSupportedMetadataObjectTypes(final boolean indexSupported) {
-        Set<MetadataObjectType> result = new LinkedHashSet<>();
+        Set<MetadataObjectType> result = new LinkedHashSet<>(16, 1F);
         result.add(MetadataObjectType.SCHEMA);
         result.add(MetadataObjectType.TABLE);
         result.add(MetadataObjectType.VIEW);
@@ -166,7 +166,7 @@ public final class DatabaseCapabilityCatalog {
     }
     
     private static Set<StatementClass> createSupportedStatementClasses(final TransactionCapability transactionCapability, final boolean supportsExplainAnalyze) {
-        Set<StatementClass> result = new LinkedHashSet<>();
+        Set<StatementClass> result = new LinkedHashSet<>(16, 1F);
         result.add(StatementClass.QUERY);
         result.add(StatementClass.DML);
         result.add(StatementClass.DDL);

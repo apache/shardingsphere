@@ -93,11 +93,6 @@ class DatabaseCapabilityAssemblerTest {
         assertTrue(actualCapability.get().isSupportsExplainAnalyze());
     }
     
-    @Test
-    void assertAssembleDatabaseCapabilityWithUnknownDatabaseType() {
-        assertFalse(createAssembler().assembleDatabaseCapability("logic_db", "unknown").isPresent());
-    }
-    
     private DatabaseCapabilityAssembler createAssembler() {
         return new DatabaseCapabilityAssembler(new DatabaseMetadataSnapshots(Map.of(
                 "logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()),

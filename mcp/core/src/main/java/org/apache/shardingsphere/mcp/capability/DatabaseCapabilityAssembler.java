@@ -57,22 +57,10 @@ public final class DatabaseCapabilityAssembler {
      */
     public Optional<DatabaseCapability> assembleDatabaseCapability(final String databaseName) {
         Optional<String> databaseType = databaseMetadataSnapshots.findDatabaseType(databaseName);
-        return databaseType.isPresent() ? assembleDatabaseCapability(databaseName, databaseType.get()) : Optional.empty();
-    }
-    
-    /**
-     * Assemble the database-level capability view for one logical database.
-     *
-     * @param databaseName logical database name
-     * @param databaseType database type
-     * @return database-level capability when the database type is supported
-     */
-    public Optional<DatabaseCapability> assembleDatabaseCapability(final String databaseName, final String databaseType) {
-        return DatabaseCapabilityCatalog.find(databaseName, databaseType, getDatabaseVersion(databaseName));
+        return databaseType.isPresent() ? DatabaseCapabilityCatalog.find(databaseName, databaseType.get(), getDatabaseVersion(databaseName)) : Optional.empty();
     }
     
     private String getDatabaseVersion(final String databaseName) {
-        Optional<DatabaseMetadataSnapshot> databaseSnapshot = databaseMetadataSnapshots.findSnapshot(databaseName);
-        return databaseSnapshot.map(DatabaseMetadataSnapshot::getDatabaseVersion).orElse("");
+        return databaseMetadataSnapshots.findSnapshot(databaseName).map(DatabaseMetadataSnapshot::getDatabaseVersion).orElse("");
     }
 }
