@@ -63,7 +63,7 @@ ALL_SCENARIOS=$(jq -cn '[
 ALL_ADAPTERS='["proxy","jdbc"]'
 ALL_MODES='["Standalone","Cluster"]'
 ALL_DATABASES='["MySQL","PostgreSQL"]'
-SMOKE_SCENARIOS='["empty_rules","db","tbl","encrypt","readwrite_splitting","passthrough"]'
+SMOKE_SCENARIOS='["tbl"]'
 
 # Build matrix JSON from dimension arrays and scenarios, applying exclude/include rules
 build_matrix() {
@@ -190,6 +190,7 @@ fi
 # Determine scenarios from feature labels
 any_feature_triggered=false
 scenarios_set=()
+smoke_scenarios_set=()
 
 add_scenario() {
   local s="$1"
@@ -199,8 +200,18 @@ add_scenario() {
   scenarios_set+=("$s")
 }
 
+add_smoke_scenario() {
+  local s="$1"
+  for existing in "${smoke_scenarios_set[@]+"${smoke_scenarios_set[@]}"}"; do
+    [ "$existing" = "$s" ] && return
+  done
+  smoke_scenarios_set+=("$s")
+}
+
 if [ "$feature_sharding" = "true" ]; then
   any_feature_triggered=true
+  add_smoke_scenario "db"
+  add_smoke_scenario "tbl"
   for s in db tbl dbtbl_with_readwrite_splitting dbtbl_with_readwrite_splitting_and_encrypt \
             sharding_and_encrypt sharding_and_shadow sharding_encrypt_shadow \
             mask_sharding mask_encrypt_sharding db_tbl_sql_federation; do
@@ -210,6 +221,7 @@ fi
 
 if [ "$feature_encrypt" = "true" ]; then
   any_feature_triggered=true
+  add_smoke_scenario "encrypt"
   for s in encrypt dbtbl_with_readwrite_splitting_and_encrypt sharding_and_encrypt \
             encrypt_and_readwrite_splitting encrypt_shadow sharding_encrypt_shadow \
             mask_encrypt mask_encrypt_sharding; do
@@ -219,6 +231,7 @@ fi
 
 if [ "$feature_readwrite_splitting" = "true" ]; then
   any_feature_triggered=true
+  add_smoke_scenario "readwrite_splitting"
   for s in readwrite_splitting dbtbl_with_readwrite_splitting \
             dbtbl_with_readwrite_splitting_and_encrypt encrypt_and_readwrite_splitting \
             readwrite_splitting_and_shadow; do
@@ -228,6 +241,7 @@ fi
 
 if [ "$feature_shadow" = "true" ]; then
   any_feature_triggered=true
+  add_smoke_scenario "shadow"
   for s in shadow encrypt_shadow readwrite_splitting_and_shadow sharding_and_shadow \
             sharding_encrypt_shadow; do
     add_scenario "$s"
@@ -236,6 +250,7 @@ fi
 
 if [ "$feature_mask" = "true" ]; then
   any_feature_triggered=true
+  add_smoke_scenario "mask"
   for s in mask mask_encrypt mask_sharding mask_encrypt_sharding; do
     add_scenario "$s"
   done
@@ -265,8 +280,20 @@ fi
 
 echo "::notice::any_base_change=$any_base_change, any_feature_triggered=$any_feature_triggered, dimensions adapters=$adapters modes=$modes databases=$databases"
 
-# Always generate smoke-matrix (fixed 6 scenarios), and DO NOT add the extra passthrough job
-SMOKE_MATRIX=$(build_matrix "$adapters" "$modes" "$databases" "$SMOKE_SCENARIOS" false)
+# Generate smoke-matrix from default or feature-mapped smoke scenarios, and DO NOT add the extra passthrough job
+if [ "$any_feature_triggered" = "true" ]; then
+  if [ "${#smoke_scenarios_set[@]}" -eq 0 ]; then
+    smoke_scenarios_json="$SMOKE_SCENARIOS"
+    echo "::notice::smoke-matrix reason=feature-triggered-without-smoke-mapping, fallback scenarios: $smoke_scenarios_json"
+  else
+    smoke_scenarios_json=$(printf '%s\n' "${smoke_scenarios_set[@]}" | jq -R . | jq -sc .)
+    echo "::notice::smoke-matrix reason=feature-triggered, scenarios: $smoke_scenarios_json"
+  fi
+else
+  smoke_scenarios_json="$SMOKE_SCENARIOS"
+  echo "::notice::smoke-matrix reason=default, scenarios: $smoke_scenarios_json"
+fi
+SMOKE_MATRIX=$(build_matrix "$adapters" "$modes" "$databases" "$smoke_scenarios_json" false)
 log_counts "smoke-matrix" "$SMOKE_MATRIX"
 
 # Build full-matrix scenarios
