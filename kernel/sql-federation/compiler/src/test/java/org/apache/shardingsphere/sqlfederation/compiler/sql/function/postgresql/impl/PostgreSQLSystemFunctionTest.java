@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl;
 
+import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
+import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,5 +35,12 @@ class PostgreSQLSystemFunctionTest {
     @Test
     void assertPgGetUserById() {
         assertThat(PostgreSQLSystemFunction.pgGetUserById(2L), is("mock user"));
+    }
+
+
+    @Test
+    void assertVersion() {
+        String expectedVersion = "PostgreSQL " + ShardingSphereVersion.VERSION + "-ShardingSphere-Proxy";
+        assertThat(PostgreSQLSystemFunction.version(), CoreMatchers.is(expectedVersion));
     }
 }
