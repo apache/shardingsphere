@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.execute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
@@ -36,7 +36,7 @@ public final class ExecuteQueryFacade {
     
     private final StatementClassifier statementClassifier;
     
-    private final DatabaseCapabilityBuilder capabilityBuilder;
+    private final MCPCapabilityBuilder capabilityBuilder;
     
     private final TransactionCommandExecutor transactionCommandExecutor;
     

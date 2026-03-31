@@ -34,11 +34,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DatabaseCapabilityBuilderTest {
+class MCPCapabilityBuilderTest {
     
     @Test
     void assertAssembleServiceCapability() {
-        DatabaseCapabilityBuilder assembler = createAssembler();
+        MCPCapabilityBuilder assembler = createAssembler();
         ServiceCapability actualServiceCapability = assembler.assembleServiceCapability();
         assertThat(actualServiceCapability.getSupportedResources(), is(new ResourceUriResolver().getSupportedResources()));
         assertThat(actualServiceCapability.getSupportedResources().size(), is(16));
@@ -52,7 +52,7 @@ class DatabaseCapabilityBuilderTest {
     
     @Test
     void assertAssembleDatabaseCapability() {
-        DatabaseCapabilityBuilder assembler = createAssembler();
+        MCPCapabilityBuilder assembler = createAssembler();
         Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db");
         assertTrue(actualCapability.isPresent());
         assertThat(actualCapability.get().getDatabase(), is("logic_db"));
@@ -72,7 +72,7 @@ class DatabaseCapabilityBuilderTest {
     
     @Test
     void assertAssembleDatabaseCapabilityWithoutIndex() {
-        DatabaseCapabilityBuilder assembler = createAssembler();
+        MCPCapabilityBuilder assembler = createAssembler();
         Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("warehouse");
         assertTrue(actualCapability.isPresent());
         assertFalse(actualCapability.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
@@ -85,7 +85,7 @@ class DatabaseCapabilityBuilderTest {
     @Test
     void assertAssembleDatabaseCapabilityWithRuntimeOverlay() {
         DatabaseMetadataSnapshots snapshots = new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("MySQL", "8.0.32", Collections.emptyList())));
-        DatabaseCapabilityBuilder assembler = new DatabaseCapabilityBuilder(snapshots);
+        MCPCapabilityBuilder assembler = new MCPCapabilityBuilder(snapshots);
         Optional<DatabaseCapability> actualCapability = assembler.assembleDatabaseCapability("logic_db");
         assertTrue(actualCapability.isPresent());
         assertTrue(actualCapability.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
@@ -93,8 +93,8 @@ class DatabaseCapabilityBuilderTest {
         assertTrue(actualCapability.get().isSupportsExplainAnalyze());
     }
     
-    private DatabaseCapabilityBuilder createAssembler() {
-        return new DatabaseCapabilityBuilder(new DatabaseMetadataSnapshots(Map.of(
+    private MCPCapabilityBuilder createAssembler() {
+        return new MCPCapabilityBuilder(new DatabaseMetadataSnapshots(Map.of(
                 "logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()),
                 "warehouse", new DatabaseMetadataSnapshot("Hive", "", Collections.emptyList()))));
     }

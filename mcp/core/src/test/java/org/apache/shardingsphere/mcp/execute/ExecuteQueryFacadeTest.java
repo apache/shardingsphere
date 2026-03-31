@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.execute;
 
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.capability.StatementClass;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
@@ -189,7 +189,7 @@ class ExecuteQueryFacadeTest {
     
     private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final AuditRecorder auditRecorder,
                                             final MCPJdbcExecutionAdapter jdbcExecutionAdapter, final MetadataRefreshCoordinator metadataRefreshCoordinator) {
-        DatabaseCapabilityBuilder capabilityBuilder = new DatabaseCapabilityBuilder(
+        MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot(databaseType, "", Collections.emptyList()))));
         return new ExecuteQueryFacade(new StatementClassifier(), capabilityBuilder,
                 new TransactionCommandExecutor(sessionManager, jdbcExecutionAdapter),

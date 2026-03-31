@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.session;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
@@ -144,8 +144,8 @@ class TransactionCommandExecutorTest {
         }
     }
     
-    private DatabaseCapabilityBuilder createCapabilityBuilder() {
-        return new DatabaseCapabilityBuilder(new DatabaseMetadataSnapshots(Map.of(
+    private MCPCapabilityBuilder createCapabilityBuilder() {
+        return new MCPCapabilityBuilder(new DatabaseMetadataSnapshots(Map.of(
                 "logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()),
                 "warehouse", new DatabaseMetadataSnapshot("Hive", "", Collections.emptyList()))));
     }

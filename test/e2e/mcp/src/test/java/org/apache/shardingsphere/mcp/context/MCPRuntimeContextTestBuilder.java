@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.context;
 
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
@@ -50,7 +50,7 @@ public final class MCPRuntimeContextTestBuilder {
      */
     public MCPRuntimeContext build(final Map<String, RuntimeDatabaseConfiguration> databaseConfigs, final DatabaseMetadataSnapshots databaseMetadataSnapshots, final MCPJdbcExecutionAdapter executionAdapter) {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        DatabaseCapabilityBuilder capabilityBuilder = new DatabaseCapabilityBuilder(databaseMetadataSnapshots);
+        MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         MetadataResourceLoader metadataResourceLoader = new MetadataResourceLoader();
         ResourceUriResolver resourceUriResolver = new ResourceUriResolver();
         MetadataToolDispatcher metadataToolDispatcher = new MetadataToolDispatcher(metadataResourceLoader);

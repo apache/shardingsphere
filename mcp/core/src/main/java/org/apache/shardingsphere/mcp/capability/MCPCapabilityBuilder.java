@@ -27,10 +27,10 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Database capability builder.
+ * MCP capability builder.
  */
 @RequiredArgsConstructor
-public final class DatabaseCapabilityBuilder {
+public final class MCPCapabilityBuilder {
     
     private static final Set<StatementClass> SUPPORTED_STATEMENT_CLASSES = Set.of(StatementClass.values());
     
