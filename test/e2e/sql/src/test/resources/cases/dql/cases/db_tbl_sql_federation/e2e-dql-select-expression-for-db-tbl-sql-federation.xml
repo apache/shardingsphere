@@ -22,6 +22,6 @@
         <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
     </test-case>-->
     <test-case sql="SELECT version()" db-types="PostgreSQL" scenario-types="db_tbl_sql_federation">
-        <assertion />
+        <assertion expected-data-file="select_version.xml" />
     </test-case>
 </e2e-test-cases>

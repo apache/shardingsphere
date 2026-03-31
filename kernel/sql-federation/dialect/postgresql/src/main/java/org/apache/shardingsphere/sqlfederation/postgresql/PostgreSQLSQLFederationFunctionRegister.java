@@ -22,6 +22,8 @@ import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.DialectSQLFederationFunctionRegister;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl.PostgreSQLSystemFunction;
 
+import java.util.Objects;
+
 /**
  * SQL federation function register for PostgreSQL.
  */
@@ -33,7 +35,7 @@ public final class PostgreSQLSQLFederationFunctionRegister implements DialectSQL
             schemaPlus.add("pg_table_is_visible", ScalarFunctionImpl.create(PostgreSQLSystemFunction.class, "pgTableIsVisible"));
             schemaPlus.add("pg_get_userbyid", ScalarFunctionImpl.create(PostgreSQLSystemFunction.class, "pgGetUserById"));
             if (schemaPlus.getFunctions("version").isEmpty()) {
-                schemaPlus.add("version", ScalarFunctionImpl.create(PostgreSQLVersionFunction.class, "version"));
+                schemaPlus.add("version", Objects.requireNonNull(ScalarFunctionImpl.create(PostgreSQLSystemFunction.class, "version")));
             }
         }
     }

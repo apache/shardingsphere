@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sqlfederation.postgresql;
 
 import org.apache.shardingsphere.infra.version.ShardingSphereVersion;
+import org.apache.shardingsphere.sqlfederation.compiler.sql.function.postgresql.impl.PostgreSQLSystemFunction;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +29,7 @@ class PostgreSQLVersionFunctionTest {
     @Test
     void assertVersion() {
         String expectedVersion = "PostgreSQL " + ShardingSphereVersion.VERSION + "-ShardingSphere-Proxy";
-        assertThat(PostgreSQLVersionFunction.version(), CoreMatchers.is(expectedVersion));
+        assertThat(PostgreSQLSystemFunction.version(), CoreMatchers.is(expectedVersion));
     }
     
 }

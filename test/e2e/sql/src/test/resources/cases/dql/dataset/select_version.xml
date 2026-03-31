@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <metadata>
+        <column name="version" />
+    </metadata>
+    <row>
+        <value>PostgreSQL 5.5.4-SNAPSHOT-ShardingSphere-Proxy</value>
+    </row>
+</dataset>
