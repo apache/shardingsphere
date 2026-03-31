@@ -25,6 +25,7 @@
 1. SQL Parser: Support MySQL CREATE EVENT and additional CREATE FUNCTION RETURN syntax - [#38237](https://github.com/apache/shardingsphere/pull/38237)
 1. SQL Parser: Support MySQL subquery table projection alias visit to SQL statement - [#38320](https://github.com/apache/shardingsphere/pull/38320)
 1. SQL Parser: Enhance select window partition by order by, lead placeholder parse - [#38392](https://github.com/apache/shardingsphere/pull/38392)
+1. SQL Parser: Support MariaDB cycleClause, groupConcatLimitClause, MEDIAN window function parse - [#38579](https://github.com/apache/shardingsphere/pull/38579)
 1. SQL Binder: Support select order by index bind metadata - [#38386](https://github.com/apache/shardingsphere/pull/38386)
 1. SQL Binder: Support SQL bind when with temp table name is same with physical table - [#38411](https://github.com/apache/shardingsphere/pull/38411)
 1. JDBC: Support setMaxRows and getMaxRows method in jdbc when not execute SQL - [#38337](https://github.com/apache/shardingsphere/pull/38337)
