@@ -48,6 +48,11 @@ public final class PostgreSQLSystemFunction {
         return "mock user";
     }
     
+    /**
+     * Mock version function.
+     *
+     * @return PostgreSQL version string
+     */
     @SuppressWarnings("unused")
     public static String version() {
         return "PostgreSQL "

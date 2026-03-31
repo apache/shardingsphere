@@ -52,16 +52,10 @@ class PostgreSQLSQLFederationFunctionRegisterTest {
     @Test
     void assertNoRegistrationWhenNotPgCatalog() {
         SchemaPlus schemaPlus = Frameworks.createRootSchema(true);
-        register.registerFunction(schemaPlus, "pg_catalog");
-        assertFunction(schemaPlus.getFunctions("pg_table_is_visible"), PostgreSQLSystemFunction.class, "pgTableIsVisible");
-        assertFunction(schemaPlus.getFunctions("pg_get_userbyid"), PostgreSQLSystemFunction.class, "pgGetUserById");
-        assertFunction(schemaPlus.getFunctions("version"), PostgreSQLSystemFunction.class, "version");
-        
-        SchemaPlus anotherSchema = Frameworks.createRootSchema(true);
-        register.registerFunction(anotherSchema, "public");
-        assertFunction(anotherSchema.getFunctions("pg_table_is_visible"), PostgreSQLSystemFunction.class, "pgTableIsVisible");
-        assertFunction(anotherSchema.getFunctions("pg_get_userbyid"), PostgreSQLSystemFunction.class, "pgGetUserById");
-        assertFunction(anotherSchema.getFunctions("version"), PostgreSQLSystemFunction.class, "version");
+        register.registerFunction(schemaPlus, "public");
+        assertThat(schemaPlus.getFunctions("pg_table_is_visible").size(), is(0));
+        assertThat(schemaPlus.getFunctions("pg_get_userbyid").size(), is(0));
+        assertTrue(schemaPlus.getFunctions("version").isEmpty());
     }
     
     private void assertFunction(final Collection<Function> functions, final Class<?> expectedClass, final String expectedMethod) {
