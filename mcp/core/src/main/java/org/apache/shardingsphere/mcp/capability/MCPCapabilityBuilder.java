@@ -38,15 +38,13 @@ public final class MCPCapabilityBuilder {
     
     private final ResourceUriResolver resourceUriResolver = new ResourceUriResolver();
     
-    private final MCPToolCatalog toolCatalog = new MCPToolCatalog();
-    
     /**
      * Assemble the service-level capability surface.
      *
      * @return service-level capability
      */
     public ServiceCapability assembleServiceCapability() {
-        return new ServiceCapability(resourceUriResolver.getSupportedResources(), toolCatalog.getSupportedTools(), SUPPORTED_STATEMENT_CLASSES);
+        return new ServiceCapability(resourceUriResolver.getSupportedResources(), new MCPToolCatalog().getSupportedTools(), SUPPORTED_STATEMENT_CLASSES);
     }
     
     /**
