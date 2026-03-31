@@ -46,63 +46,84 @@ public final class TransactionCommandExecutor {
      * @return execution response
      */
     public ExecuteQueryResponse execute(final String sessionId, final String databaseName, final DatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
-        return execute(sessionId, databaseName, databaseCapability, classificationResult.getStatementType(),
-                classificationResult.getSavepointName().map(each -> each.toUpperCase(Locale.ENGLISH)).orElse(""));
-    }
-    
-    private ExecuteQueryResponse execute(final String sessionId, final String databaseName, final DatabaseCapability databaseCapability, final String statementType, final String savepointName) {
+        String statementType = classificationResult.getStatementType();
         try {
             if ("BEGIN".equals(statementType) || "START TRANSACTION".equals(statementType)) {
-                if (!databaseCapability.isSupportsTransactionControl()) {
-                    return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
-                }
-                sessionManager.beginTransaction(sessionId, databaseName);
-                jdbcExecutionAdapter.beginTransaction(sessionId, databaseName);
-                return ExecuteQueryResponse.statementAck(statementType, "Transaction started.");
+                return executeBeginTransaction(sessionId, databaseName, databaseCapability, statementType);
             }
             if ("COMMIT".equals(statementType)) {
-                if (!databaseCapability.isSupportsTransactionControl()) {
-                    return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
-                }
-                jdbcExecutionAdapter.commitTransaction(sessionId);
-                sessionManager.commitTransaction(sessionId);
-                return ExecuteQueryResponse.statementAck("COMMIT", "Transaction committed.");
+                return executeCommit(sessionId, databaseCapability);
             }
             if ("ROLLBACK".equals(statementType)) {
-                if (!databaseCapability.isSupportsTransactionControl()) {
-                    return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
-                }
-                jdbcExecutionAdapter.rollbackTransaction(sessionId);
-                sessionManager.rollbackTransaction(sessionId);
-                return ExecuteQueryResponse.statementAck("ROLLBACK", "Transaction rolled back.");
+                return executeRollback(sessionId, databaseCapability);
             }
+            String savepointName = classificationResult.getSavepointName().map(each -> each.toUpperCase(Locale.ENGLISH)).orElse("");
             if ("SAVEPOINT".equals(statementType)) {
-                if (!databaseCapability.isSupportsSavepoint()) {
-                    return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
-                }
-                jdbcExecutionAdapter.createSavepoint(sessionId, savepointName);
-                sessionManager.rememberSavepoint(sessionId, savepointName);
-                return ExecuteQueryResponse.statementAck("SAVEPOINT", "Savepoint created.");
+                return executeSavepoint(sessionId, databaseCapability, savepointName);
             }
             if ("ROLLBACK TO SAVEPOINT".equals(statementType)) {
-                if (!databaseCapability.isSupportsSavepoint()) {
-                    return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
-                }
-                sessionManager.rollbackToSavepoint(sessionId, savepointName);
-                jdbcExecutionAdapter.rollbackToSavepoint(sessionId, savepointName);
-                return ExecuteQueryResponse.statementAck("ROLLBACK TO SAVEPOINT", "Savepoint rolled back.");
+                return executeRollbackSavepoint(sessionId, databaseCapability, savepointName);
             }
             if ("RELEASE SAVEPOINT".equals(statementType)) {
-                if (!databaseCapability.isSupportsSavepoint()) {
-                    return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
-                }
-                sessionManager.releaseSavepoint(sessionId, savepointName);
-                jdbcExecutionAdapter.releaseSavepoint(sessionId, savepointName);
-                return ExecuteQueryResponse.statementAck("RELEASE SAVEPOINT", "Savepoint released.");
+                return executeReleaseSavepoint(sessionId, databaseCapability, savepointName);
             }
             return ExecuteQueryResponse.error(MCPErrorCode.INVALID_REQUEST, "Statement is not a transaction command.");
         } catch (final IllegalStateException ex) {
             return ExecuteQueryResponse.error(MCPErrorCode.TRANSACTION_STATE_ERROR, ex.getMessage());
         }
+    }
+    
+    private ExecuteQueryResponse executeBeginTransaction(final String sessionId, final String databaseName, final DatabaseCapability databaseCapability, final String statementType) {
+        if (!databaseCapability.isSupportsTransactionControl()) {
+            return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
+        }
+        sessionManager.beginTransaction(sessionId, databaseName);
+        jdbcExecutionAdapter.beginTransaction(sessionId, databaseName);
+        return ExecuteQueryResponse.statementAck(statementType, "Transaction started.");
+    }
+    
+    private ExecuteQueryResponse executeCommit(final String sessionId, final DatabaseCapability databaseCapability) {
+        if (!databaseCapability.isSupportsTransactionControl()) {
+            return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
+        }
+        jdbcExecutionAdapter.commitTransaction(sessionId);
+        sessionManager.commitTransaction(sessionId);
+        return ExecuteQueryResponse.statementAck("COMMIT", "Transaction committed.");
+    }
+    
+    private ExecuteQueryResponse executeRollback(final String sessionId, final DatabaseCapability databaseCapability) {
+        if (!databaseCapability.isSupportsTransactionControl()) {
+            return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
+        }
+        jdbcExecutionAdapter.rollbackTransaction(sessionId);
+        sessionManager.rollbackTransaction(sessionId);
+        return ExecuteQueryResponse.statementAck("ROLLBACK", "Transaction rolled back.");
+    }
+    
+    private ExecuteQueryResponse executeSavepoint(final String sessionId, final DatabaseCapability databaseCapability, final String savepointName) {
+        if (!databaseCapability.isSupportsSavepoint()) {
+            return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
+        }
+        jdbcExecutionAdapter.createSavepoint(sessionId, savepointName);
+        sessionManager.rememberSavepoint(sessionId, savepointName);
+        return ExecuteQueryResponse.statementAck("SAVEPOINT", "Savepoint created.");
+    }
+    
+    private ExecuteQueryResponse executeRollbackSavepoint(final String sessionId, final DatabaseCapability databaseCapability, final String savepointName) {
+        if (!databaseCapability.isSupportsSavepoint()) {
+            return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
+        }
+        sessionManager.rollbackToSavepoint(sessionId, savepointName);
+        jdbcExecutionAdapter.rollbackToSavepoint(sessionId, savepointName);
+        return ExecuteQueryResponse.statementAck("ROLLBACK TO SAVEPOINT", "Savepoint rolled back.");
+    }
+    
+    private ExecuteQueryResponse executeReleaseSavepoint(final String sessionId, final DatabaseCapability databaseCapability, final String savepointName) {
+        if (!databaseCapability.isSupportsSavepoint()) {
+            return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
+        }
+        sessionManager.releaseSavepoint(sessionId, savepointName);
+        jdbcExecutionAdapter.releaseSavepoint(sessionId, savepointName);
+        return ExecuteQueryResponse.statementAck("RELEASE SAVEPOINT", "Savepoint released.");
     }
 }
