@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 
 import java.util.Map;
 import java.util.Optional;
@@ -35,7 +36,9 @@ public final class MCPToolPayloadResolver {
     
     private final MCPRuntimeContext runtimeContext;
     
-    MCPToolCatalog toolCatalog = new MCPToolCatalog();
+    private final MCPToolCatalog toolCatalog = new MCPToolCatalog();
+    
+    private final MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
     
     /**
      * Resolve one tool call.
@@ -65,7 +68,7 @@ public final class MCPToolPayloadResolver {
             return MCPToolPayloadResult.success(runtimeContext.getCapabilityBuilder().assembleServiceCapability());
         }
         Optional<DatabaseCapability> capability = runtimeContext.getCapabilityBuilder().assembleDatabaseCapability(database);
-        return capability.map(optional -> MCPToolPayloadResult.success(runtimeContext.getPayloadBuilder().createDatabaseCapabilityPayload(optional)))
+        return capability.map(optional -> MCPToolPayloadResult.success(payloadBuilder.createDatabaseCapabilityPayload(optional)))
                 .orElseGet(() -> error("not_found", "Database capability does not exist."));
     }
     
@@ -75,22 +78,20 @@ public final class MCPToolPayloadResolver {
             return error("invalid_request", "Database and sql are required.");
         }
         ExecuteQueryResponse response = runtimeContext.getExecuteQueryFacade().execute(executionRequest);
-        Object payload = runtimeContext.getPayloadBuilder().createExecuteQueryPayload(response);
-        return response.isSuccessful() ? MCPToolPayloadResult.success(payload)
-                : MCPToolPayloadResult.error(runtimeContext.getPayloadBuilder().toDomainErrorCode(response.getError().get().getErrorCode()),
-                        response.getError().get().getMessage(), payload);
+        Object payload = payloadBuilder.createExecuteQueryPayload(response);
+        return response.isSuccessful()
+                ? MCPToolPayloadResult.success(payload)
+                : MCPToolPayloadResult.error(payloadBuilder.toDomainErrorCode(response.getError().get().getErrorCode()), response.getError().get().getMessage(), payload);
     }
     
     private MCPToolPayloadResult resolveMetadataTool(final String toolName, final Map<String, Object> arguments) {
-        ToolDispatchResult result = new MetadataToolDispatcher().dispatch(
-                runtimeContext.getDatabaseMetadataSnapshots(), toolCatalog.createMetadataToolRequest(toolName, arguments));
-        if (!result.isSuccessful()) {
-            return error(runtimeContext.getPayloadBuilder().toDomainErrorCode(result.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST)), result.getMessage());
-        }
-        return MCPToolPayloadResult.success(runtimeContext.getPayloadBuilder().createMetadataItemsPayload(result.getMetadataObjects(), result.getNextPageToken()));
+        ToolDispatchResult result = new MetadataToolDispatcher().dispatch(runtimeContext.getDatabaseMetadataSnapshots(), toolCatalog.createMetadataToolRequest(toolName, arguments));
+        return result.isSuccessful()
+                ? MCPToolPayloadResult.success(payloadBuilder.createMetadataItemsPayload(result.getMetadataObjects(), result.getNextPageToken()))
+                : error(payloadBuilder.toDomainErrorCode(result.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST)), result.getMessage());
     }
     
     private MCPToolPayloadResult error(final String errorCode, final String message) {
-        return MCPToolPayloadResult.error(errorCode, message, runtimeContext.getPayloadBuilder().createErrorPayload(errorCode, message));
+        return MCPToolPayloadResult.error(errorCode, message, payloadBuilder.createErrorPayload(errorCode, message));
     }
 }

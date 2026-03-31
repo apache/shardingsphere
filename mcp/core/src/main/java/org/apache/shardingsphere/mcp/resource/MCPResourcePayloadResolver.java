@@ -33,6 +33,8 @@ public final class MCPResourcePayloadResolver {
     
     private final MCPRuntimeContext runtimeContext;
     
+    private final MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
+    
     /**
      * Resolve one resource URI.
      *
@@ -42,7 +44,7 @@ public final class MCPResourcePayloadResolver {
     public Object resolve(final String resourceUri) {
         Optional<ResourceUriResolution> resolution = new ResourceUriResolver().resolve(resourceUri);
         if (resolution.isEmpty()) {
-            return runtimeContext.getPayloadBuilder().createErrorPayload("invalid_request", "Unsupported resource URI.");
+            return payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI.");
         }
         switch (resolution.get().getType()) {
             case SERVICE_CAPABILITIES:
@@ -55,14 +57,12 @@ public final class MCPResourcePayloadResolver {
     }
     
     private Object resolveDatabaseCapabilityPayload(final String databaseName) {
-        MCPPayloadBuilder payloadBuilder = runtimeContext.getPayloadBuilder();
         Optional<DatabaseCapability> capability = runtimeContext.getCapabilityBuilder().assembleDatabaseCapability(databaseName);
         return capability.map(payloadBuilder::createDatabaseCapabilityPayload)
                 .orElseGet(() -> payloadBuilder.createErrorPayload("not_found", "Database capability does not exist."));
     }
     
     private Object toResourcePayload(final ResourceLoadResult loadResult) {
-        MCPPayloadBuilder payloadBuilder = runtimeContext.getPayloadBuilder();
         return loadResult.isSuccessful()
                 ? payloadBuilder.createMetadataItemsPayload(loadResult.getMetadataObjects(), "")
                 : payloadBuilder.createErrorPayload(payloadBuilder.toDomainErrorCode(loadResult.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST)), loadResult.getMessage());

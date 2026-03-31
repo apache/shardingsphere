@@ -36,7 +36,6 @@ class MCPRuntimeContextTest {
         assertNotNull(actual.getCapabilityBuilder());
         assertNotNull(actual.getTransactionCommandExecutor());
         assertNotNull(actual.getExecuteQueryFacade());
-        assertNotNull(actual.getPayloadBuilder());
     }
     
     @Test
