@@ -31,7 +31,7 @@ class MetadataDiscoveryIntegrationTest {
     
     private MCPRuntimeContext createRuntimeContext() {
         MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
-        return new MCPRuntimeContextTestBuilder().build(new DatabaseMetadataSnapshots(Collections.emptyMap()), jdbcExecutionAdapter);
+        return new MCPRuntimeContextTestFactory().create(new DatabaseMetadataSnapshots(Collections.emptyMap()), jdbcExecutionAdapter);
     }
     
     @Test

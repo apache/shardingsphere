@@ -19,15 +19,27 @@ package org.apache.shardingsphere.test.e2e.mcp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestBuilder;
+import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
+import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
+import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
+import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
+import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
+import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -51,8 +63,6 @@ abstract class AbstractMCPE2ETest {
     private static final String PROTOCOL_VERSION = "2025-11-25";
     
     private static final String ENDPOINT_PATH = "/gateway";
-    
-    private final MCPRuntimeContextTestBuilder runtimeContextTestBuilder = new MCPRuntimeContextTestBuilder();
     
     @TempDir
     private Path tempDir;
@@ -201,7 +211,7 @@ abstract class AbstractMCPE2ETest {
         DatabaseMetadataSnapshots databaseMetadataSnapshots = createDatabaseMetadataSnapshots();
         MCPJdbcExecutionAdapter executionAdapter = createMCPJdbcExecutionAdapter();
         StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH),
-                runtimeContextTestBuilder.build(createRuntimeDatabases(), databaseMetadataSnapshots, executionAdapter));
+                createRuntimeContext(createRuntimeDatabases(), databaseMetadataSnapshots, executionAdapter));
         try {
             httpServer.start();
         } catch (final IOException ex) {
@@ -209,6 +219,23 @@ abstract class AbstractMCPE2ETest {
             throw new IllegalStateException("Failed to start HTTP transport.", ex);
         }
         this.httpServer = httpServer;
+    }
+    
+    private MCPRuntimeContext createRuntimeContext(final Map<String, RuntimeDatabaseConfiguration> databaseConfigs,
+                                                   final DatabaseMetadataSnapshots databaseMetadataSnapshots, final MCPJdbcExecutionAdapter executionAdapter) {
+        MCPSessionManager sessionManager = new MCPSessionManager();
+        MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
+        MetadataResourceLoader metadataResourceLoader = new MetadataResourceLoader();
+        ResourceUriResolver resourceUriResolver = new ResourceUriResolver();
+        MetadataToolDispatcher metadataToolDispatcher = new MetadataToolDispatcher(metadataResourceLoader);
+        MCPToolCatalog toolCatalog = new MCPToolCatalog();
+        TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(sessionManager, executionAdapter);
+        AuditRecorder auditRecorder = new AuditRecorder();
+        ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(new StatementClassifier(), capabilityBuilder, transactionCommandExecutor,
+                new MCPJdbcExecutionAdapter(databaseConfigs), auditRecorder, new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
+        MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
+        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, executionAdapter, capabilityBuilder,
+                metadataResourceLoader, resourceUriResolver, metadataToolDispatcher, toolCatalog, transactionCommandExecutor, auditRecorder, executeQueryFacade, payloadBuilder);
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,

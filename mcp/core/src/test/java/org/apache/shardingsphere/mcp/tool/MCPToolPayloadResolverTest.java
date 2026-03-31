@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestBuilder;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
 import org.apache.shardingsphere.mcp.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
@@ -112,7 +112,7 @@ class MCPToolPayloadResolverTest {
     }
     
     private MCPToolPayloadResolver createResolver() {
-        return new MCPToolPayloadResolver(new MCPRuntimeContextTestBuilder().build(createDatabaseMetadataSnapshots(), createJdbcExecutionAdapter()));
+        return new MCPToolPayloadResolver(new MCPRuntimeContextTestFactory().create(createDatabaseMetadataSnapshots(), createJdbcExecutionAdapter()));
     }
     
     private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestBuilder;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
 import org.junit.jupiter.api.Test;
 
@@ -85,7 +85,7 @@ class MCPResourcePayloadResolverTest {
     
     private MCPResourcePayloadResolver createResolver() {
         MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
-        return new MCPResourcePayloadResolver(new MCPRuntimeContextTestBuilder().build(createDatabaseMetadataSnapshots(), jdbcExecutionAdapter));
+        return new MCPResourcePayloadResolver(new MCPRuntimeContextTestFactory().create(createDatabaseMetadataSnapshots(), jdbcExecutionAdapter));
     }
     
     private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
