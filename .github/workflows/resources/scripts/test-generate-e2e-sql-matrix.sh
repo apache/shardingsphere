@@ -136,6 +136,9 @@ assert_all_dimensions() {
 assert_full_trigger() {
   local label="$1" outputs="$2"
   assert_eq "$label: has-jobs" "true" "$(get_output "$outputs" "has-jobs")"
+  local smoke_matrix
+  smoke_matrix=$(get_output "$outputs" "smoke-matrix")
+  assert_scenarios "$label: smoke-matrix uses default scenario" "$smoke_matrix" '["tbl"]'
   local full_matrix
   full_matrix=$(get_output "$outputs" "full-matrix")
   assert_all_scenarios "$label: full-matrix has all 21 scenarios" "$full_matrix"
@@ -253,6 +256,8 @@ echo "=== D. Feature scenario mapping ==="
 echo ""
 echo "--- #13: feature_sharding ---"
 outputs=$(run_script "$(build_filters feature_sharding=true)")
+smoke=$(get_output "$outputs" "smoke-matrix")
+assert_scenarios "#13: sharding smoke scenarios" "$smoke" '["db","tbl"]'
 full=$(get_output "$outputs" "full-matrix")
 expected_sharding='["db","tbl","dbtbl_with_readwrite_splitting","dbtbl_with_readwrite_splitting_and_encrypt","sharding_and_encrypt","sharding_and_shadow","sharding_encrypt_shadow","mask_sharding","mask_encrypt_sharding","db_tbl_sql_federation"]'
 assert_scenarios "#13: sharding scenarios" "$full" "$expected_sharding"
@@ -261,6 +266,8 @@ assert_all_dimensions "#13" "$full"
 echo ""
 echo "--- #14: feature_encrypt ---"
 outputs=$(run_script "$(build_filters feature_encrypt=true)")
+smoke=$(get_output "$outputs" "smoke-matrix")
+assert_scenarios "#14: encrypt smoke scenarios" "$smoke" '["encrypt"]'
 full=$(get_output "$outputs" "full-matrix")
 expected_encrypt='["encrypt","dbtbl_with_readwrite_splitting_and_encrypt","sharding_and_encrypt","encrypt_and_readwrite_splitting","encrypt_shadow","sharding_encrypt_shadow","mask_encrypt","mask_encrypt_sharding"]'
 assert_scenarios "#14: encrypt scenarios" "$full" "$expected_encrypt"
@@ -269,6 +276,8 @@ assert_all_dimensions "#14" "$full"
 echo ""
 echo "--- #15: feature_readwrite_splitting ---"
 outputs=$(run_script "$(build_filters feature_readwrite_splitting=true)")
+smoke=$(get_output "$outputs" "smoke-matrix")
+assert_scenarios "#15: readwrite_splitting smoke scenarios" "$smoke" '["readwrite_splitting"]'
 full=$(get_output "$outputs" "full-matrix")
 expected_rws='["readwrite_splitting","dbtbl_with_readwrite_splitting","dbtbl_with_readwrite_splitting_and_encrypt","encrypt_and_readwrite_splitting","readwrite_splitting_and_shadow"]'
 assert_scenarios "#15: readwrite_splitting scenarios" "$full" "$expected_rws"
@@ -277,6 +286,8 @@ assert_all_dimensions "#15" "$full"
 echo ""
 echo "--- #16: feature_shadow ---"
 outputs=$(run_script "$(build_filters feature_shadow=true)")
+smoke=$(get_output "$outputs" "smoke-matrix")
+assert_scenarios "#16: shadow smoke scenarios" "$smoke" '["shadow"]'
 full=$(get_output "$outputs" "full-matrix")
 expected_shadow='["shadow","encrypt_shadow","readwrite_splitting_and_shadow","sharding_and_shadow","sharding_encrypt_shadow"]'
 assert_scenarios "#16: shadow scenarios" "$full" "$expected_shadow"
@@ -285,6 +296,8 @@ assert_all_dimensions "#16" "$full"
 echo ""
 echo "--- #17: feature_mask ---"
 outputs=$(run_script "$(build_filters feature_mask=true)")
+smoke=$(get_output "$outputs" "smoke-matrix")
+assert_scenarios "#17: mask smoke scenarios" "$smoke" '["mask"]'
 full=$(get_output "$outputs" "full-matrix")
 expected_mask='["mask","mask_encrypt","mask_sharding","mask_encrypt_sharding"]'
 assert_scenarios "#17: mask scenarios" "$full" "$expected_mask"
@@ -293,6 +306,8 @@ assert_all_dimensions "#17" "$full"
 echo ""
 echo "--- #18: feature_distsql ---"
 outputs=$(run_script "$(build_filters feature_distsql=true)")
+smoke=$(get_output "$outputs" "smoke-matrix")
+assert_scenarios "#18: distsql smoke fallback scenarios" "$smoke" '["tbl"]'
 full=$(get_output "$outputs" "full-matrix")
 assert_scenarios "#18: distsql scenarios" "$full" '["distsql_rdl"]'
 assert_all_dimensions "#18" "$full"
@@ -300,6 +315,8 @@ assert_all_dimensions "#18" "$full"
 echo ""
 echo "--- #19: feature_sql_federation ---"
 outputs=$(run_script "$(build_filters feature_sql_federation=true)")
+smoke=$(get_output "$outputs" "smoke-matrix")
+assert_scenarios "#19: sql_federation smoke fallback scenarios" "$smoke" '["tbl"]'
 full=$(get_output "$outputs" "full-matrix")
 assert_scenarios "#19: sql_federation scenarios" "$full" '["db_tbl_sql_federation"]'
 assert_all_dimensions "#19" "$full"
@@ -307,6 +324,8 @@ assert_all_dimensions "#19" "$full"
 echo ""
 echo "--- #20: feature_broadcast ---"
 outputs=$(run_script "$(build_filters feature_broadcast=true)")
+smoke=$(get_output "$outputs" "smoke-matrix")
+assert_scenarios "#20: broadcast smoke fallback scenarios" "$smoke" '["tbl"]'
 full=$(get_output "$outputs" "full-matrix")
 assert_scenarios "#20: broadcast scenarios" "$full" '["empty_rules"]'
 assert_all_dimensions "#20" "$full"
@@ -338,6 +357,12 @@ assert_eq "#22: same full-matrix as feature_sharding only" \
 assert_eq "#22: same smoke-matrix as feature_sharding only" \
   "$(get_output "$outputs_feature" "smoke-matrix")" \
   "$(get_output "$outputs_mixed" "smoke-matrix")"
+
+echo ""
+echo "--- #23: mixed features merge smoke scenarios ---"
+outputs=$(run_script "$(build_filters feature_sharding=true feature_encrypt=true)")
+smoke=$(get_output "$outputs" "smoke-matrix")
+assert_scenarios "#23: smoke scenarios are merged and deduplicated" "$smoke" '["db","encrypt","tbl"]'
 
 # ============================================================
 # Summary
