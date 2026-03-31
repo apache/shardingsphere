@@ -34,9 +34,9 @@ import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
 @Getter
 public final class MCPRuntimeContext {
     
-    private final MCPSessionManager sessionManager;
-    
     private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
+    
+    private final MCPSessionManager sessionManager;
     
     private final MCPJdbcStatementExecutor statementExecutor;
     
