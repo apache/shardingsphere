@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -37,26 +36,15 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MetadataToolDispatcherTest {
     
     @Test
-    void assertConstructWithNullResourceLoader() {
-        MetadataToolDispatcher actual = assertDoesNotThrow(() -> new MetadataToolDispatcher(null));
-        
-        assertNotNull(actual);
-    }
-    
-    @Test
     void assertDispatchListDatabases() {
-        MetadataToolDispatcher dispatcher = createDispatcher();
-        
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("list_databases", "", "", "", "", "", Set.of(), 10, ""));
-        
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(3));
         assertThat(actual.getMetadataObjects().get(0).getName(), is("analytics_db"));
@@ -65,10 +53,8 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchListTablesWithPagination() {
-        MetadataToolDispatcher dispatcher = createDispatcher();
-        
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("list_tables", "logic_db", "public", "", "", "order", Set.of(), 1, ""));
-        
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(1));
         assertThat(actual.getMetadataObjects().get(0).getName(), is("order_items"));
@@ -77,16 +63,14 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchSearchMetadataAcrossDatabases() {
-        MetadataToolDispatcher dispatcher = createDispatcher();
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         Set<MetadataObjectType> objectTypes = new LinkedHashSet<>();
         objectTypes.add(MetadataObjectType.TABLE);
         objectTypes.add(MetadataObjectType.VIEW);
         objectTypes.add(MetadataObjectType.INDEX);
         objectTypes.add(MetadataObjectType.MATERIALIZED_VIEW);
         objectTypes.add(MetadataObjectType.SEQUENCE);
-        
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("search_metadata", "", "", "", "", "order", objectTypes, 20, ""));
-        
         Set<String> actualNames = new LinkedHashSet<>();
         for (MetadataObject each : actual.getMetadataObjects()) {
             actualNames.add(each.getName());
@@ -102,10 +86,8 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchSearchMetadataWithSchemaWithoutDatabase() {
-        MetadataToolDispatcher dispatcher = createDispatcher();
-        
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("search_metadata", "", "public", "", "", "order", Set.of(), 10, ""));
-        
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
         assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
@@ -114,10 +96,8 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchDescribeView() {
-        MetadataToolDispatcher dispatcher = createDispatcher();
-        
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("describe_view", "logic_db", "public", "active_orders", "", "", Set.of(), 10, ""));
-        
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(1));
         assertThat(actual.getMetadataObjects().get(0).getName(), is("active_orders"));
@@ -126,10 +106,8 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchListIndexesWithUnsupportedDatabaseType() {
-        MetadataToolDispatcher dispatcher = createDispatcher();
-        
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("list_indexes", "warehouse", "warehouse", "facts", "", "", Set.of(), 10, ""));
-        
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
         assertThat(actual.getErrorCode().get(), is(MCPErrorCode.UNSUPPORTED));
@@ -137,10 +115,8 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchWithInvalidPageToken() {
-        MetadataToolDispatcher dispatcher = createDispatcher();
-        
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, "invalid"));
-        
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
         assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
@@ -149,10 +125,8 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchWithPageOffsetBeyondResultSize() {
-        MetadataToolDispatcher dispatcher = createDispatcher();
-        
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, "99"));
-        
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(0));
         assertThat(actual.getNextPageToken(), is(""));
@@ -160,10 +134,8 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchWithUnsupportedTool() {
-        MetadataToolDispatcher dispatcher = createDispatcher();
-        
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("unsupported_tool", "", "", "", "", "", Set.of(), 10, ""));
-        
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
         assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
@@ -173,24 +145,12 @@ class MetadataToolDispatcherTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertDispatchWithMissingRequiredFieldCases")
     void assertDispatchWithMissingRequiredField(final String name, final ToolRequest toolRequest, final String expectedMessage) {
-        MetadataToolDispatcher dispatcher = createDispatcher();
-        
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), toolRequest);
-        
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
         assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
         assertThat(actual.getMessage(), is(expectedMessage));
-    }
-    
-    static Stream<Arguments> assertDispatchWithMissingRequiredFieldCases() {
-        return Stream.of(
-                Arguments.of("list schemas without database", new ToolRequest("list_schemas", "", "", "", "", "", Set.of(), 10, ""), "Database is required."),
-                Arguments.of("list columns without object name", new ToolRequest("list_columns", "logic_db", "public", "", "TABLE", "", Set.of(), 10, ""),
-                        "Parent object type and object name are required."),
-                Arguments.of("list indexes without table", new ToolRequest("list_indexes", "logic_db", "public", "", "", "", Set.of(), 10, ""), "Table name is required."),
-                Arguments.of("describe table without object name", new ToolRequest("describe_table", "logic_db", "public", "", "", "", Set.of(), 10, ""),
-                        "Database, schema, and object name are required."));
     }
     
     private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
@@ -216,7 +176,13 @@ class MetadataToolDispatcherTest {
         return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     
-    private MetadataToolDispatcher createDispatcher() {
-        return new MetadataToolDispatcher(new MetadataResourceLoader());
+    static Stream<Arguments> assertDispatchWithMissingRequiredFieldCases() {
+        return Stream.of(
+                Arguments.of("list schemas without database", new ToolRequest("list_schemas", "", "", "", "", "", Set.of(), 10, ""), "Database is required."),
+                Arguments.of("list columns without object name", new ToolRequest("list_columns", "logic_db", "public", "", "TABLE", "", Set.of(), 10, ""),
+                        "Parent object type and object name are required."),
+                Arguments.of("list indexes without table", new ToolRequest("list_indexes", "logic_db", "public", "", "", "", Set.of(), 10, ""), "Table name is required."),
+                Arguments.of("describe table without object name", new ToolRequest("describe_table", "logic_db", "public", "", "", "", Set.of(), 10, ""),
+                        "Database, schema, and object name are required."));
     }
 }

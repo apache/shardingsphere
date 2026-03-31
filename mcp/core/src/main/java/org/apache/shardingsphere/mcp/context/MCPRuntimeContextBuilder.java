@@ -54,9 +54,8 @@ public final class MCPRuntimeContextBuilder {
         MCPJdbcExecutionAdapter jdbcExecutionAdapter = new MCPJdbcExecutionAdapter(runtimeDatabases);
         DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
-        MetadataResourceLoader metadataResourceLoader = new MetadataResourceLoader();
         ResourceUriResolver resourceUriResolver = new ResourceUriResolver();
-        MetadataToolDispatcher metadataToolDispatcher = new MetadataToolDispatcher(metadataResourceLoader);
+        MetadataToolDispatcher metadataToolDispatcher = new MetadataToolDispatcher();
         MCPToolCatalog toolCatalog = new MCPToolCatalog();
         TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(sessionManager, jdbcExecutionAdapter);
         AuditRecorder auditRecorder = new AuditRecorder();
@@ -65,7 +64,7 @@ public final class MCPRuntimeContextBuilder {
                 transactionCommandExecutor, jdbcExecutionAdapter, auditRecorder, metadataRefreshCoordinator);
         MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
         return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, jdbcExecutionAdapter, capabilityBuilder,
-                metadataResourceLoader, resourceUriResolver, metadataToolDispatcher, toolCatalog, transactionCommandExecutor, auditRecorder, executeQueryFacade, payloadBuilder);
+                new MetadataResourceLoader(), resourceUriResolver, metadataToolDispatcher, toolCatalog, transactionCommandExecutor, auditRecorder, executeQueryFacade, payloadBuilder);
     }
     
 }
