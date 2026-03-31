@@ -60,9 +60,9 @@ public final class MCPToolPayloadResolver {
     private MCPToolPayloadResult resolveGetCapabilities(final Map<String, Object> arguments) {
         String database = runtimeContext.getToolCatalog().getCapabilityDatabase(arguments);
         if (database.isEmpty()) {
-            return MCPToolPayloadResult.success(runtimeContext.getCapabilityAssembler().assembleServiceCapability());
+            return MCPToolPayloadResult.success(runtimeContext.getCapabilityBuilder().assembleServiceCapability());
         }
-        Optional<DatabaseCapability> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(database);
+        Optional<DatabaseCapability> capability = runtimeContext.getCapabilityBuilder().assembleDatabaseCapability(database);
         return capability.map(optional -> MCPToolPayloadResult.success(runtimeContext.getPayloadBuilder().createDatabaseCapabilityPayload(optional)))
                 .orElseGet(() -> error("not_found", "Database capability does not exist."));
     }

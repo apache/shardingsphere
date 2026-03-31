@@ -144,14 +144,14 @@ class TransactionCommandExecutorTest {
         }
     }
     
-    private DatabaseCapabilityBuilder createCapabilityAssembler() {
+    private DatabaseCapabilityBuilder createCapabilityBuilder() {
         return new DatabaseCapabilityBuilder(new DatabaseMetadataSnapshots(Map.of(
                 "logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()),
                 "warehouse", new DatabaseMetadataSnapshot("Hive", "", Collections.emptyList()))));
     }
     
     private DatabaseCapability createCapability(final String databaseName) {
-        return createCapabilityAssembler().assembleDatabaseCapability(databaseName).orElseThrow(IllegalStateException::new);
+        return createCapabilityBuilder().assembleDatabaseCapability(databaseName).orElseThrow(IllegalStateException::new);
     }
     
     private void assertDatabaseExecution(final String sql, final MCPJdbcExecutionAdapter jdbcExecutionAdapter) {

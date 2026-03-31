@@ -33,7 +33,7 @@ class MCPRuntimeContextTest {
     @Test
     void assertCreate() {
         MCPRuntimeContext actual = createRuntimeContext();
-        assertNotNull(actual.getCapabilityAssembler());
+        assertNotNull(actual.getCapabilityBuilder());
         assertNotNull(actual.getMetadataResourceLoader());
         assertNotNull(actual.getResourceUriResolver());
         assertNotNull(actual.getMetadataToolDispatcher());
@@ -47,7 +47,7 @@ class MCPRuntimeContextTest {
     @Test
     void assertAssembleServiceCapability() {
         MCPRuntimeContext runtimeContext = createRuntimeContext();
-        ServiceCapability actual = runtimeContext.getCapabilityAssembler().assembleServiceCapability();
+        ServiceCapability actual = runtimeContext.getCapabilityBuilder().assembleServiceCapability();
         assertTrue(actual.getSupportedResources().contains("shardingsphere://capabilities"));
         assertTrue(actual.getSupportedTools().contains("execute_query"));
     }

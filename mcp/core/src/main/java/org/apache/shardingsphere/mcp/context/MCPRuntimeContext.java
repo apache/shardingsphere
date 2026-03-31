@@ -45,7 +45,7 @@ public final class MCPRuntimeContext {
     
     private final MCPJdbcExecutionAdapter jdbcExecutionAdapter;
     
-    private final DatabaseCapabilityBuilder capabilityAssembler;
+    private final DatabaseCapabilityBuilder capabilityBuilder;
     
     private final MetadataResourceLoader metadataResourceLoader;
     

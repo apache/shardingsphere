@@ -46,7 +46,7 @@ public final class MCPResourcePayloadResolver {
         }
         switch (resolution.get().getType()) {
             case SERVICE_CAPABILITIES:
-                return runtimeContext.getCapabilityAssembler().assembleServiceCapability();
+                return runtimeContext.getCapabilityBuilder().assembleServiceCapability();
             case DATABASE_CAPABILITIES:
                 return resolveDatabaseCapabilityPayload(resolution.get().getDatabase().orElse(""));
             default:
@@ -56,7 +56,7 @@ public final class MCPResourcePayloadResolver {
     
     private Object resolveDatabaseCapabilityPayload(final String databaseName) {
         MCPPayloadBuilder payloadBuilder = runtimeContext.getPayloadBuilder();
-        Optional<DatabaseCapability> capability = runtimeContext.getCapabilityAssembler().assembleDatabaseCapability(databaseName);
+        Optional<DatabaseCapability> capability = runtimeContext.getCapabilityBuilder().assembleDatabaseCapability(databaseName);
         return capability.map(payloadBuilder::createDatabaseCapabilityPayload)
                 .orElseGet(() -> payloadBuilder.createErrorPayload("not_found", "Database capability does not exist."));
     }

@@ -36,7 +36,7 @@ public final class ExecuteQueryFacade {
     
     private final StatementClassifier statementClassifier;
     
-    private final DatabaseCapabilityBuilder capabilityAssembler;
+    private final DatabaseCapabilityBuilder capabilityBuilder;
     
     private final TransactionCommandExecutor transactionCommandExecutor;
     
@@ -53,7 +53,7 @@ public final class ExecuteQueryFacade {
      * @return execution response
      */
     public ExecuteQueryResponse execute(final ExecutionRequest executionRequest) {
-        Optional<DatabaseCapability> databaseCapability = capabilityAssembler.assembleDatabaseCapability(executionRequest.getDatabase());
+        Optional<DatabaseCapability> databaseCapability = capabilityBuilder.assembleDatabaseCapability(executionRequest.getDatabase());
         if (databaseCapability.isEmpty()) {
             return recordFailure(executionRequest, "QUERY", MCPErrorCode.NOT_FOUND, "Database capability does not exist.");
         }
