@@ -72,28 +72,28 @@ public final class MCPJdbcExecutionAdapter {
                 closeConnection = true;
             }
             applySchema(connection, executionRequest.getSchema());
-            Statement statement = connection.createStatement();
-            if (0 < executionRequest.getMaxRows()) {
-                statement.setMaxRows(executionRequest.getMaxRows());
-            }
-            if (0 < executionRequest.getTimeoutMs()) {
-                statement.setQueryTimeout((executionRequest.getTimeoutMs() + 999) / 1000);
-            }
-            boolean hasResultSet = statement.execute(classificationResult.getNormalizedSql());
-            switch (classificationResult.getStatementClass()) {
-                case QUERY:
-                case EXPLAIN_ANALYZE:
-                    if (!hasResultSet) {
-                        return ExecuteQueryResponse.error(MCPErrorCode.QUERY_FAILED, "Query did not return a result set.");
-                    }
-                    return createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows());
-                case DML:
-                    return ExecuteQueryResponse.updateCount(classificationResult.getStatementType(), statement.getUpdateCount());
-                case DDL:
-                case DCL:
-                    return ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed.");
-                default:
-                    return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Statement class is not supported.");
+            try (Statement statement = connection.createStatement()) {
+                if (0 < executionRequest.getMaxRows()) {
+                    statement.setMaxRows(executionRequest.getMaxRows());
+                }
+                if (0 < executionRequest.getTimeoutMs()) {
+                    statement.setQueryTimeout((executionRequest.getTimeoutMs() + 999) / 1000);
+                }
+                boolean hasResultSet = statement.execute(classificationResult.getNormalizedSql());
+                switch (classificationResult.getStatementClass()) {
+                    case QUERY:
+                    case EXPLAIN_ANALYZE:
+                        return hasResultSet
+                                ? createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows())
+                                : ExecuteQueryResponse.error(MCPErrorCode.QUERY_FAILED, "Query did not return a result set.");
+                    case DML:
+                        return ExecuteQueryResponse.updateCount(classificationResult.getStatementType(), statement.getUpdateCount());
+                    case DDL:
+                    case DCL:
+                        return ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed.");
+                    default:
+                        return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Statement class is not supported.");
+                }
             }
         } catch (final SQLTimeoutException ex) {
             return ExecuteQueryResponse.error(MCPErrorCode.TIMEOUT, ex.getMessage());
